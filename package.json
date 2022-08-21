@@ -1,0 +1,26 @@
+{
+  "name": "@newkrok/nape-js",
+  "version": "1.0.0",
+  "description": "Nape Physics Engine compiled to JavaScript",
+  "main": "js/libs/nape-js.module.js",
+  "bin": {
+    "three-particles": "js/libs/nape-js.module.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NewKrok/nape-js"
+  },
+  "keywords": [
+    "nape",
+    "physics",
+    "2d",
+    "javascript",
+    "library"
+  ],
+  "author": "Istvan Krisztian Somoracz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NewKrok/nape-js/issues"
+  },
+  "homepage": "https://github.com/NewKrok/nape-js#readme"
+}
