@@ -1,0 +1,120 @@
+name: Release & Publish to npm
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # Skip runs triggered by the version bump commit (loop prevention)
+    if: "!startsWith(github.event.head_commit.message, 'release: v')"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      # Determine version bump from commit messages since last tag
+      - name: Determine version bump
+        id: bump
+        run: |
+          # Get the latest tag, or use initial commit if none
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --oneline --format="%s")
+          else
+            COMMITS=$(git log "${LAST_TAG}..HEAD" --oneline --format="%s")
+          fi
+
+          # Filter out release commits
+          COMMITS=$(echo "$COMMITS" | grep -v "^release: v" || true)
+
+          echo "Commits since last tag:"
+          echo "$COMMITS"
+
+          if [ -z "$COMMITS" ]; then
+            echo "bump=none" >> "$GITHUB_OUTPUT"
+            echo "No new commits to release."
+            exit 0
+          fi
+
+          BUMP="none"
+
+          # Check for breaking changes (major)
+          if echo "$COMMITS" | grep -qiE "^.+!:|BREAKING CHANGE"; then
+            BUMP="major"
+          # Check for features (minor)
+          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
+            BUMP="minor"
+          # Check for fixes, perf, refactor, etc. (patch)
+          elif echo "$COMMITS" | grep -qiE "^(fix|perf|refactor|build|docs|style|chore)(\(.+\))?:"; then
+            BUMP="patch"
+          fi
+
+          # If no conventional commits found but there are commits, default to patch
+          if [ "$BUMP" = "none" ] && [ -n "$COMMITS" ]; then
+            BUMP="patch"
+          fi
+
+          echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+          echo "Determined bump: $BUMP"
+
+      # Bump version in package.json and create git tag
+      - name: Bump version and tag
+        if: steps.bump.outputs.bump != 'none'
+        id: version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          NEW_VERSION=$(npm version ${{ steps.bump.outputs.bump }} -m "release: v%s")
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "New version: $NEW_VERSION"
+
+      # Push version commit and tag
+      - name: Push version commit and tag
+        if: steps.bump.outputs.bump != 'none'
+        run: |
+          git push origin master --follow-tags
+
+      # Publish to npm
+      - name: Publish to npm
+        if: steps.bump.outputs.bump != 'none'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Create GitHub Release
+      - name: Create GitHub Release
+        if: steps.bump.outputs.bump != 'none'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.version.outputs.version }}';
+            const { data: release } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: version,
+              name: version,
+              generate_release_notes: true,
+            });
+            console.log(`Created release: ${release.html_url}`);
