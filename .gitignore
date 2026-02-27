@@ -1,0 +1,4 @@
+node_modules/
+dist/
+src/core/nape-compiled.js
+*.tsbuildinfo
