@@ -54,7 +54,7 @@ function drawBody(body) {
   ctx.rotate(rot);
 
   const isStatic = body.isStatic();
-  const sleeping = body.isSleeping();
+  const sleeping = body.isSleeping;
 
   for (const shape of body.shapes) {
     if (shape.isCircle()) {
