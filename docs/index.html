@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js — 2D Physics Engine for TypeScript</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="container">
+      <h1>nape-js</h1>
+      <p class="subtitle">Modern TypeScript wrapper for the Nape 2D physics engine</p>
+      <p class="tagline">
+        Rigid bodies &bull; Convex polygons &bull; Circle shapes &bull; Constraints &bull;
+        Collision callbacks &bull; Spatial queries &mdash; all with a clean, typed API.
+      </p>
+      <div class="hero-actions">
+        <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary">GitHub</a>
+        <a href="#demos" class="btn btn-secondary">Try the Demos</a>
+        <a href="#benchmarks" class="btn btn-secondary">Benchmarks</a>
+      </div>
+      <div class="install-box">
+        <code>npm install @newkrok/nape-js</code>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== DEMOS ===== -->
+  <section id="demos" class="section">
+    <div class="container">
+      <h2>Interactive Demos</h2>
+      <p class="section-desc">Click/drag on the canvas to interact. Pick a demo below.</p>
+
+      <nav class="demo-tabs" id="demoTabs">
+        <button class="tab active" data-demo="falling">Falling Shapes</button>
+        <button class="tab" data-demo="pyramid">Pyramid</button>
+        <button class="tab" data-demo="chain">Pendulum Chain</button>
+        <button class="tab" data-demo="explosion">Impulse Blast</button>
+      </nav>
+
+      <div class="canvas-wrap">
+        <canvas id="demoCanvas" width="900" height="500"></canvas>
+        <div class="canvas-overlay" id="canvasOverlay">Loading engine&hellip;</div>
+      </div>
+
+      <div class="demo-bar">
+        <span id="fpsLabel">FPS: —</span>
+        <span id="bodyCount">Bodies: —</span>
+        <span id="stepTime">Step: —</span>
+        <button class="btn btn-small" id="resetBtn">Reset</button>
+        <label class="toggle-label">
+          <input type="checkbox" id="debugDraw" checked /> Show outlines
+        </label>
+      </div>
+
+      <div class="demo-description" id="demoDescription"></div>
+    </div>
+  </section>
+
+  <!-- ===== BEFORE / AFTER ===== -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2>Before &amp; After</h2>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h3>v1 — Raw Haxe API</h3>
+          <pre><code>import initNape from "./nape-js.module.js";
+initNape();
+
+const body = new nape.phys.Body(
+  nape.phys.BodyType.get_DYNAMIC()
+);
+body.get_shapes().add(
+  new nape.shape.Polygon(
+    nape.shape.Polygon.box(100, 100)
+  )
+);
+body.get_position().set_x(200);
+body.set_rotation(Math.PI / 2);
+body.set_space(space);</code></pre>
+        </div>
+        <div class="compare-card highlight">
+          <h3>v2 — TypeScript Wrapper</h3>
+          <pre><code>import { Body, BodyType, Polygon }
+  from "@newkrok/nape-js";
+
+const body = new Body(BodyType.DYNAMIC);
+body.shapes.add(
+  new Polygon(Polygon.box(100, 100))
+);
+body.position.x = 200;
+body.rotation = Math.PI / 2;
+body.space = space;</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BENCHMARKS ===== -->
+  <section id="benchmarks" class="section">
+    <div class="container">
+      <h2>Benchmarks</h2>
+      <p class="section-desc">
+        Measured in your browser right now. Each test runs the physics <code>step()</code>
+        in a tight loop and reports the median time per step.
+      </p>
+      <button class="btn btn-primary" id="runBenchmark">Run Benchmarks</button>
+      <div class="bench-results" id="benchResults">
+        <p class="bench-hint">Press the button to start.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== API OVERVIEW ===== -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2>API at a Glance</h2>
+      <div class="api-grid">
+        <div class="api-card">
+          <h3>Core</h3>
+          <ul>
+            <li><b>Space</b> — physics world</li>
+            <li><b>Body</b> — rigid body</li>
+            <li><b>Vec2</b> — 2D vector</li>
+            <li><b>AABB</b> — bounding box</li>
+          </ul>
+        </div>
+        <div class="api-card">
+          <h3>Shapes</h3>
+          <ul>
+            <li><b>Circle</b> — radius-based</li>
+            <li><b>Polygon</b> — convex hull</li>
+            <li><code>Polygon.box(w, h)</code></li>
+            <li><code>Polygon.regular(r, r, n)</code></li>
+          </ul>
+        </div>
+        <div class="api-card">
+          <h3>Constraints</h3>
+          <ul>
+            <li><b>PivotJoint</b></li>
+            <li><b>DistanceJoint</b></li>
+            <li><b>WeldJoint</b></li>
+            <li><b>AngleJoint</b></li>
+            <li><b>MotorJoint</b></li>
+            <li><b>LineJoint</b></li>
+            <li><b>PulleyJoint</b></li>
+          </ul>
+        </div>
+        <div class="api-card">
+          <h3>Callbacks</h3>
+          <ul>
+            <li><b>InteractionListener</b></li>
+            <li><b>BodyListener</b></li>
+            <li><b>ConstraintListener</b></li>
+            <li><b>PreListener</b></li>
+            <li><b>CbType</b> + <b>CbEvent</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p>
+        Original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a>
+        &bull; JS compiler by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a>
+        &bull; TypeScript wrapper by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a>
+      </p>
+      <p>MIT License</p>
+    </div>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

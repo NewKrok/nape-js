@@ -1,4 +1,5 @@
 node_modules/
 dist/
 src/core/nape-compiled.js
+docs/nape-js.esm.js
 *.tsbuildinfo
