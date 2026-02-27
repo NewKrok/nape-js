@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js — Examples</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .examples-hero {
+      text-align: center;
+      padding: 48px 24px 32px;
+      background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .examples-hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .examples-hero p { color: var(--text-dim); margin-top: 8px; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    @media (max-width: 500px) {
+      .examples-grid { grid-template-columns: 1fr; }
+    }
+    .example-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .example-card:hover,
+    .example-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(88,166,255,0.1);
+    }
+    .example-card-canvas {
+      display: block;
+      width: 100%;
+      height: 240px;
+      background: #0a0e14;
+    }
+    .example-card-info {
+      padding: 14px 16px;
+    }
+    .example-card-info h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .example-card-info p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .example-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      margin-right: 4px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header class="examples-hero">
+    <div class="container">
+      <a href="index.html" class="back-link">&larr; Back to Home</a>
+      <h1>Examples</h1>
+      <p>Click any card to interact. Click/drag on the canvas to play with the simulation.</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="examples-grid" id="examplesGrid"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        Original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a>
+        &bull; JS compiler by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a>
+        &bull; TypeScript wrapper by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a>
+      </p>
+      <p>MIT License</p>
+    </div>
+  </footer>
+
+  <script type="module" src="examples.js"></script>
+</body>
+</html>

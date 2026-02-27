@@ -163,6 +163,19 @@ a:hover { text-decoration: underline; }
   color: #fff;
   border-color: var(--accent);
 }
+.tab-more {
+  background: transparent;
+  color: var(--green);
+  border-color: var(--green);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.tab-more:hover {
+  background: var(--green);
+  color: var(--bg);
+  text-decoration: none;
+}
 
 /* ---------- Canvas ---------- */
 .canvas-wrap {
