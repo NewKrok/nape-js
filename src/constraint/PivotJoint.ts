@@ -8,14 +8,9 @@ import { Constraint } from "./Constraint";
  * A pivot (pin) joint that constrains two bodies to share an anchor point.
  */
 export class PivotJoint extends Constraint {
-  constructor(
-    body1: Body | null,
-    body2: Body | null,
-    anchor1: Vec2,
-    anchor2: Vec2,
-  ) {
+  constructor(body1: Body | null, body2: Body | null, anchor1: Vec2, anchor2: Vec2) {
     super();
-    (this as Writable<PivotJoint>)._inner = new (getNape()).constraint.PivotJoint(
+    (this as Writable<PivotJoint>)._inner = new (getNape().constraint.PivotJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,

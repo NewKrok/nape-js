@@ -17,9 +17,13 @@ let _circleWrap: SubclassWrapFn | undefined;
 let _polygonWrap: SubclassWrapFn | undefined;
 
 /** @internal Called by Circle at module init. */
-export function _bindCircleWrap(fn: SubclassWrapFn): void { _circleWrap = fn; }
+export function _bindCircleWrap(fn: SubclassWrapFn): void {
+  _circleWrap = fn;
+}
 /** @internal Called by Polygon at module init. */
-export function _bindPolygonWrap(fn: SubclassWrapFn): void { _polygonWrap = fn; }
+export function _bindPolygonWrap(fn: SubclassWrapFn): void {
+  _polygonWrap = fn;
+}
 
 /**
  * Base class for physics shapes (Circle, Polygon).
@@ -65,44 +69,88 @@ export class Shape {
     this._inner.set_body(value?._inner ?? null);
   }
 
-  get worldCOM(): Vec2 { return Vec2._wrap(this._inner.get_worldCOM()); }
+  get worldCOM(): Vec2 {
+    return Vec2._wrap(this._inner.get_worldCOM());
+  }
 
-  get localCOM(): Vec2 { return Vec2._wrap(this._inner.get_localCOM()); }
-  set localCOM(value: Vec2) { this._inner.set_localCOM(value._inner); }
+  get localCOM(): Vec2 {
+    return Vec2._wrap(this._inner.get_localCOM());
+  }
+  set localCOM(value: Vec2) {
+    this._inner.set_localCOM(value._inner);
+  }
 
-  get area(): number { return this._inner.get_area(); }
-  get inertia(): number { return this._inner.get_inertia(); }
-  get angDrag(): number { return this._inner.get_angDrag(); }
+  get area(): number {
+    return this._inner.get_area();
+  }
+  get inertia(): number {
+    return this._inner.get_inertia();
+  }
+  get angDrag(): number {
+    return this._inner.get_angDrag();
+  }
 
-  get material(): Material { return Material._wrap(this._inner.get_material()); }
-  set material(value: Material) { this._inner.set_material(value._inner); }
+  get material(): Material {
+    return Material._wrap(this._inner.get_material());
+  }
+  set material(value: Material) {
+    this._inner.set_material(value._inner);
+  }
 
-  get filter(): InteractionFilter { return InteractionFilter._wrap(this._inner.get_filter()); }
-  set filter(value: InteractionFilter) { this._inner.set_filter(value._inner); }
+  get filter(): InteractionFilter {
+    return InteractionFilter._wrap(this._inner.get_filter());
+  }
+  set filter(value: InteractionFilter) {
+    this._inner.set_filter(value._inner);
+  }
 
-  get fluidProperties(): FluidProperties { return FluidProperties._wrap(this._inner.get_fluidProperties()); }
-  set fluidProperties(value: FluidProperties) { this._inner.set_fluidProperties(value._inner); }
+  get fluidProperties(): FluidProperties {
+    return FluidProperties._wrap(this._inner.get_fluidProperties());
+  }
+  set fluidProperties(value: FluidProperties) {
+    this._inner.set_fluidProperties(value._inner);
+  }
 
   /** Callback types assigned to this shape. */
   get cbTypes(): CbTypeSet {
     const raw = this._inner.get_cbTypes();
     return {
       _inner: raw,
-      add(cbType: { _inner: NapeInner }) { raw.add(cbType._inner); },
-      remove(cbType: { _inner: NapeInner }) { raw.remove(cbType._inner); },
-      has(cbType: { _inner: NapeInner }): boolean { return raw.has(cbType._inner); },
-      clear() { raw.clear(); },
-      get length(): number { return raw.get_length(); },
+      add(cbType: { _inner: NapeInner }) {
+        raw.add(cbType._inner);
+      },
+      remove(cbType: { _inner: NapeInner }) {
+        raw.remove(cbType._inner);
+      },
+      has(cbType: { _inner: NapeInner }): boolean {
+        return raw.has(cbType._inner);
+      },
+      clear() {
+        raw.clear();
+      },
+      get length(): number {
+        return raw.get_length();
+      },
     };
   }
 
-  get fluidEnabled(): boolean { return this._inner.get_fluidEnabled(); }
-  set fluidEnabled(value: boolean) { this._inner.set_fluidEnabled(value); }
+  get fluidEnabled(): boolean {
+    return this._inner.get_fluidEnabled();
+  }
+  set fluidEnabled(value: boolean) {
+    this._inner.set_fluidEnabled(value);
+  }
 
-  get sensorEnabled(): boolean { return this._inner.get_sensorEnabled(); }
-  set sensorEnabled(value: boolean) { this._inner.set_sensorEnabled(value); }
+  get sensorEnabled(): boolean {
+    return this._inner.get_sensorEnabled();
+  }
+  set sensorEnabled(value: boolean) {
+    this._inner.set_sensorEnabled(value);
+  }
 
-  get bounds(): AABB { return AABB._wrap(this._inner.get_bounds()); }
+  get bounds(): AABB {
+    return AABB._wrap(this._inner.get_bounds());
+  }
 
   /** Cast to Circle — returns the Circle wrapper or null if not a circle. */
   get castCircle(): Shape | null {
@@ -122,17 +170,35 @@ export class Shape {
   // Methods
   // ---------------------------------------------------------------------------
 
-  isCircle(): boolean { return this._inner.isCircle(); }
-  isPolygon(): boolean { return this._inner.isPolygon(); }
+  isCircle(): boolean {
+    return this._inner.isCircle();
+  }
+  isPolygon(): boolean {
+    return this._inner.isPolygon();
+  }
 
-  translate(translation: Vec2): void { this._inner.translate(translation._inner); }
-  scale(scaleX: number, scaleY: number): void { this._inner.scale(scaleX, scaleY); }
-  rotate(angle: number): void { this._inner.rotate(angle); }
-  transform(matrix: { _inner: NapeInner }): void { this._inner.transform(matrix._inner); }
-  contains(point: Vec2): boolean { return this._inner.contains(point._inner); }
+  translate(translation: Vec2): void {
+    this._inner.translate(translation._inner);
+  }
+  scale(scaleX: number, scaleY: number): void {
+    this._inner.scale(scaleX, scaleY);
+  }
+  rotate(angle: number): void {
+    this._inner.rotate(angle);
+  }
+  transform(matrix: { _inner: NapeInner }): void {
+    this._inner.transform(matrix._inner);
+  }
+  contains(point: Vec2): boolean {
+    return this._inner.contains(point._inner);
+  }
 
-  copy(): Shape { return Shape._wrap(this._inner.copy()); }
-  toString(): string { return this._inner.toString(); }
+  copy(): Shape {
+    return Shape._wrap(this._inner.copy());
+  }
+  toString(): string {
+    return this._inner.toString();
+  }
 }
 
 /** Lightweight typed interface for the callback type set on a shape. */

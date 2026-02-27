@@ -28,7 +28,7 @@ export class InteractionListener extends Listener {
     precedence: number = 0,
   ) {
     super();
-    (this as Writable<InteractionListener>)._inner = new (getNape()).callbacks.InteractionListener(
+    (this as Writable<InteractionListener>)._inner = new (getNape().callbacks.InteractionListener)(
       toNativeCbEvent(event),
       toNativeInteractionType(interactionType),
       options1._inner,
@@ -41,9 +41,7 @@ export class InteractionListener extends Listener {
   /** @internal */
   static _wrap(inner: NapeInner): InteractionListener {
     return getOrCreate(inner, (raw) => {
-      const l = Object.create(
-        InteractionListener.prototype,
-      ) as InteractionListener;
+      const l = Object.create(InteractionListener.prototype) as InteractionListener;
       (l as Writable<InteractionListener>)._inner = raw;
       return l;
     });

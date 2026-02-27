@@ -18,12 +18,7 @@ describe("PivotJoint", () => {
     body2.shapes.add(new Circle(5));
     body2.space = space;
 
-    const joint = new PivotJoint(
-      body1,
-      body2,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(body1, body2, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     expect(joint.body1).toBeDefined();
@@ -43,12 +38,7 @@ describe("PivotJoint", () => {
 
     // Anchor at (0,0) on body1, anchor at (0,0) on body2
     // This constrains the two bodies to overlap at their origins
-    const joint = new PivotJoint(
-      anchor,
-      bob,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, bob, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     // Step simulation

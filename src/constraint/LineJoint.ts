@@ -19,7 +19,7 @@ export class LineJoint extends Constraint {
     jointMax: number,
   ) {
     super();
-    (this as Writable<LineJoint>)._inner = new (getNape()).constraint.LineJoint(
+    (this as Writable<LineJoint>)._inner = new (getNape().constraint.LineJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,

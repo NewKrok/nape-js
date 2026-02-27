@@ -23,7 +23,7 @@ export class PulleyJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    (this as Writable<PulleyJoint>)._inner = new (getNape()).constraint.PulleyJoint(
+    (this as Writable<PulleyJoint>)._inner = new (getNape().constraint.PulleyJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       body3?._inner ?? null,

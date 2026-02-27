@@ -8,14 +8,9 @@ import { Constraint } from "./Constraint";
  * Motor joint — applies angular velocity to rotate bodies relative to each other.
  */
 export class MotorJoint extends Constraint {
-  constructor(
-    body1: Body | null,
-    body2: Body | null,
-    rate: number,
-    ratio: number = 1.0,
-  ) {
+  constructor(body1: Body | null, body2: Body | null, rate: number, ratio: number = 1.0) {
     super();
-    (this as Writable<MotorJoint>)._inner = new (getNape()).constraint.MotorJoint(
+    (this as Writable<MotorJoint>)._inner = new (getNape().constraint.MotorJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       rate,

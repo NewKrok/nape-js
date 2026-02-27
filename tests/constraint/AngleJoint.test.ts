@@ -11,13 +11,7 @@ describe("AngleJoint", () => {
     const body1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
     const body2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
 
-    const joint = new AngleJoint(
-      body1,
-      body2,
-      -Math.PI / 4,
-      Math.PI / 4,
-      1.0,
-    );
+    const joint = new AngleJoint(body1, body2, -Math.PI / 4, Math.PI / 4, 1.0);
 
     expect(joint.body1).toBeDefined();
     expect(joint.body2).toBeDefined();

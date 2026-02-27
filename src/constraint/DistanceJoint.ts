@@ -17,7 +17,7 @@ export class DistanceJoint extends Constraint {
     jointMax: number,
   ) {
     super();
-    (this as Writable<DistanceJoint>)._inner = new (getNape()).constraint.DistanceJoint(
+    (this as Writable<DistanceJoint>)._inner = new (getNape().constraint.DistanceJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,

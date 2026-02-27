@@ -3,6 +3,10 @@
   "version": "2.0.0",
   "description": "Nape Physics Engine - Modern TypeScript wrapper for 2D physics simulation",
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,15 +23,15 @@
     }
   },
   "files": [
-    "dist",
-    "js/libs"
+    "dist"
   ],
   "scripts": {
-    "prebuild": "node scripts/build-nape-module.mjs",
-    "build": "npm run prebuild && tsup",
-    "pretest": "npm run prebuild",
+    "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "eslint src/ tests/",
+    "format": "prettier --write src/ tests/",
+    "format:check": "prettier --check src/ tests/",
     "benchmark": "npm run build && node benchmarks/run.mjs",
     "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js"
   },
@@ -51,8 +55,13 @@
   },
   "homepage": "https://github.com/NewKrok/nape-js#readme",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^3.0.0"
   }
 }

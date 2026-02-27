@@ -16,8 +16,12 @@ export class Material {
     density: number = 1.0,
     rollingFriction: number = 0.001,
   ) {
-    this._inner = new (getNape()).phys.Material(
-      elasticity, dynamicFriction, staticFriction, density, rollingFriction,
+    this._inner = new (getNape().phys.Material)(
+      elasticity,
+      dynamicFriction,
+      staticFriction,
+      density,
+      rollingFriction,
     );
   }
 
@@ -30,23 +34,49 @@ export class Material {
     });
   }
 
-  get elasticity(): number { return this._inner.get_elasticity(); }
-  set elasticity(value: number) { this._inner.set_elasticity(value); }
+  get elasticity(): number {
+    return this._inner.get_elasticity();
+  }
+  set elasticity(value: number) {
+    this._inner.set_elasticity(value);
+  }
 
-  get dynamicFriction(): number { return this._inner.get_dynamicFriction(); }
-  set dynamicFriction(value: number) { this._inner.set_dynamicFriction(value); }
+  get dynamicFriction(): number {
+    return this._inner.get_dynamicFriction();
+  }
+  set dynamicFriction(value: number) {
+    this._inner.set_dynamicFriction(value);
+  }
 
-  get staticFriction(): number { return this._inner.get_staticFriction(); }
-  set staticFriction(value: number) { this._inner.set_staticFriction(value); }
+  get staticFriction(): number {
+    return this._inner.get_staticFriction();
+  }
+  set staticFriction(value: number) {
+    this._inner.set_staticFriction(value);
+  }
 
-  get density(): number { return this._inner.get_density(); }
-  set density(value: number) { this._inner.set_density(value); }
+  get density(): number {
+    return this._inner.get_density();
+  }
+  set density(value: number) {
+    this._inner.set_density(value);
+  }
 
-  get rollingFriction(): number { return this._inner.get_rollingFriction(); }
-  set rollingFriction(value: number) { this._inner.set_rollingFriction(value); }
+  get rollingFriction(): number {
+    return this._inner.get_rollingFriction();
+  }
+  set rollingFriction(value: number) {
+    this._inner.set_rollingFriction(value);
+  }
 
-  get userData(): Record<string, unknown> { return this._inner.get_userData(); }
+  get userData(): Record<string, unknown> {
+    return this._inner.get_userData();
+  }
 
-  copy(): Material { return Material._wrap(this._inner.copy()); }
-  toString(): string { return this._inner.toString(); }
+  copy(): Material {
+    return Material._wrap(this._inner.copy());
+  }
+  toString(): string {
+    return this._inner.toString();
+  }
 }

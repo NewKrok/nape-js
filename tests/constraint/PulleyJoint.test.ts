@@ -189,11 +189,11 @@ describe("PulleyJoint", () => {
     // constrained by the pulley relationship
     const dist1 = Math.sqrt(
       Math.pow(hangLeft.position.x - pulleyLeft.position.x, 2) +
-      Math.pow(hangLeft.position.y - pulleyLeft.position.y, 2),
+        Math.pow(hangLeft.position.y - pulleyLeft.position.y, 2),
     );
     const dist2 = Math.sqrt(
       Math.pow(hangRight.position.x - pulleyRight.position.x, 2) +
-      Math.pow(hangRight.position.y - pulleyRight.position.y, 2),
+        Math.pow(hangRight.position.y - pulleyRight.position.y, 2),
     );
     const totalDist = dist1 + dist2;
 

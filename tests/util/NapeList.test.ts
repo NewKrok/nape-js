@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Body, BodyType, Circle, Polygon, Space, Vec2 } from "../../src";
+import { Body, BodyType, Circle, Space, Vec2 } from "../../src";
 
 describe("NapeList", () => {
   it("should report correct length for body shapes", () => {

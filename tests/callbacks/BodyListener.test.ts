@@ -9,32 +9,20 @@ import { Vec2 } from "../../src/geom/Vec2";
 
 describe("BodyListener", () => {
   it("should construct with WAKE event", () => {
-    const listener = new BodyListener(
-      CbEvent.WAKE,
-      CbType.ANY_BODY,
-      () => {},
-    );
+    const listener = new BodyListener(CbEvent.WAKE, CbType.ANY_BODY, () => {});
     expect(listener).toBeInstanceOf(BodyListener);
     expect(listener._inner).toBeDefined();
   });
 
   it("should construct with SLEEP event", () => {
-    const listener = new BodyListener(
-      CbEvent.SLEEP,
-      CbType.ANY_BODY,
-      () => {},
-    );
+    const listener = new BodyListener(CbEvent.SLEEP, CbType.ANY_BODY, () => {});
     expect(listener).toBeInstanceOf(BodyListener);
     expect(listener._inner).toBeDefined();
   });
 
   it("should be added to a space", () => {
     const space = new Space(new Vec2(0, 100));
-    const listener = new BodyListener(
-      CbEvent.WAKE,
-      CbType.ANY_BODY,
-      () => {},
-    );
+    const listener = new BodyListener(CbEvent.WAKE, CbType.ANY_BODY, () => {});
     listener.space = space;
     expect(listener.space).toBeInstanceOf(Space);
   });
@@ -43,11 +31,9 @@ describe("BodyListener", () => {
     const space = new Space(new Vec2(0, 0));
     let sleepCount = 0;
 
-    const listener = new BodyListener(
-      CbEvent.SLEEP,
-      CbType.ANY_BODY,
-      () => { sleepCount++; },
-    );
+    const listener = new BodyListener(CbEvent.SLEEP, CbType.ANY_BODY, () => {
+      sleepCount++;
+    });
     listener.space = space;
 
     // Create a body with no gravity and no velocity -- it should auto-sleep

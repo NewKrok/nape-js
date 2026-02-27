@@ -16,7 +16,7 @@ export class AngleJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    (this as Writable<AngleJoint>)._inner = new (getNape()).constraint.AngleJoint(
+    (this as Writable<AngleJoint>)._inner = new (getNape().constraint.AngleJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       jointMin,

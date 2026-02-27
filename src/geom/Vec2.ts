@@ -11,7 +11,7 @@ export class Vec2 {
   readonly _inner: NapeInner;
 
   constructor(x: number = 0, y: number = 0) {
-    this._inner = new (getNape()).geom.Vec2(x, y);
+    this._inner = new (getNape().geom.Vec2)(x, y);
   }
 
   /** @internal Wrap an existing Haxe Vec2 with caching. */

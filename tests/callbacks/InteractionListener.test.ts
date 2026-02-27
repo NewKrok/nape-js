@@ -35,7 +35,9 @@ describe("InteractionListener", () => {
       InteractionType.COLLISION,
       cbType,
       cbType,
-      () => { collisionDetected = true; },
+      () => {
+        collisionDetected = true;
+      },
     );
     listener.space = space;
 

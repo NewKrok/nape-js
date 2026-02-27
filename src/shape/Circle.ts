@@ -16,7 +16,7 @@ export class Circle extends Shape {
     filter?: InteractionFilter,
   ) {
     super();
-    (this as Writable<Circle>)._inner = new (getNape()).shape.Circle(
+    (this as Writable<Circle>)._inner = new (getNape().shape.Circle)(
       radius,
       localCOM?._inner,
       material?._inner,
@@ -33,8 +33,12 @@ export class Circle extends Shape {
     });
   }
 
-  get radius(): number { return this._inner.get_radius(); }
-  set radius(value: number) { this._inner.set_radius(value); }
+  get radius(): number {
+    return this._inner.get_radius();
+  }
+  set radius(value: number) {
+    this._inner.set_radius(value);
+  }
 }
 
 // Bind Circle._wrap into Shape so Shape._wrap can dispatch without circular import.
