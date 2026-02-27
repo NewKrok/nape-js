@@ -2,6 +2,7 @@ import { getNape } from "../core/engine";
 import { CbType } from "./CbType";
 import { OptionType } from "./OptionType";
 import { InteractionType, toNativeInteractionType } from "./InteractionType";
+import { PreFlag, toNativePreFlag } from "./PreFlag";
 import { Listener } from "./Listener";
 
 /**
@@ -19,11 +20,21 @@ export class PreListener extends Listener {
   ) {
     super();
     const nape = getNape();
+
+    // Wrap handler to auto-convert PreFlag enum values to native
+    const wrappedHandler = (cb: any) => {
+      const result = handler(cb);
+      if (typeof result === "string" && result in PreFlag) {
+        return toNativePreFlag(result as PreFlag);
+      }
+      return result;
+    };
+
     this._inner = new nape.callbacks.PreListener(
       toNativeInteractionType(interactionType),
       options1._inner,
       options2._inner,
-      handler,
+      wrappedHandler,
       precedence,
       pure,
     );

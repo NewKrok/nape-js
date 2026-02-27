@@ -99,6 +99,19 @@ export class Shape {
     this._inner.set_fluidProperties(value._inner);
   }
 
+  /** Callback types assigned to this shape. */
+  get cbTypes(): any {
+    const raw = this._inner.get_cbTypes();
+    return {
+      _inner: raw,
+      add(cbType: any) { raw.add(cbType._inner ?? cbType); },
+      remove(cbType: any) { raw.remove(cbType._inner ?? cbType); },
+      has(cbType: any) { return raw.has(cbType._inner ?? cbType); },
+      clear() { raw.clear(); },
+      get length() { return raw.get_length(); },
+    };
+  }
+
   get fluidEnabled(): boolean {
     return this._inner.get_fluidEnabled();
   }

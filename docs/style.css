@@ -346,6 +346,89 @@ a:hover { text-decoration: underline; }
   color: var(--green);
 }
 
+/* ---------- Code Preview Panel ---------- */
+.code-panel {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+}
+.code-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.code-panel-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.code-panel-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-codepen {
+  background: var(--surface) !important;
+  color: var(--green) !important;
+  border-color: var(--green) !important;
+}
+.btn-codepen:hover {
+  background: var(--green) !important;
+  color: var(--bg) !important;
+}
+.code-panel-body {
+  margin: 0;
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text);
+  max-height: 420px;
+  overflow-y: auto;
+}
+.code-panel-body code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Syntax highlighting (simple classes) */
+.code-panel-body .kw   { color: #ff7b72; }
+.code-panel-body .fn   { color: #d2a8ff; }
+.code-panel-body .str  { color: #a5d6ff; }
+.code-panel-body .num  { color: #79c0ff; }
+.code-panel-body .cm   { color: #8b949e; font-style: italic; }
+.code-panel-body .type { color: #7ee787; }
+
+/* Copy success toast */
+.copy-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 10px 20px;
+  background: var(--green);
+  color: var(--bg);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 1000;
+  pointer-events: none;
+}
+.copy-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ---------- Footer ---------- */
 .footer {
   text-align: center;
