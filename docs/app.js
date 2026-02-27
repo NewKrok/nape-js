@@ -1,12 +1,14 @@
 /**
- * nape-js Demo Page — interactive demos + live benchmarks
+ * nape-js Demo Page — interactive demos + live benchmarks + code preview + CodePen export
  *
  * Imports the bundled ESM library from nape-js.esm.js
  * (copied from dist/index.js during build:docs).
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon,
-  PivotJoint, DistanceJoint, Material, InteractionFilter,
+  PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
+  Material, InteractionFilter, InteractionGroup,
+  CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
 } from "./nape-js.esm.js";
 
 // =========================================================================
@@ -21,6 +23,9 @@ const bodyCountLabel = document.getElementById("bodyCount");
 const stepTimeLabel = document.getElementById("stepTime");
 const demoDescEl = document.getElementById("demoDescription");
 const debugDrawCb = /** @type {HTMLInputElement} */ (document.getElementById("debugDraw"));
+const codePreviewEl = document.getElementById("codePreview");
+const copyCodeBtn = document.getElementById("copyCodeBtn");
+const codepenBtn = document.getElementById("codepenBtn");
 
 const W = canvas.width;
 const H = canvas.height;
@@ -44,6 +49,24 @@ function getCanvasScale() {
   return { sx: W / rect.width, sy: H / rect.height };
 }
 
+// Color palette for variety
+const COLORS = [
+  { fill: "rgba(88,166,255,0.18)", stroke: "#58a6ff" },
+  { fill: "rgba(210,153,34,0.18)", stroke: "#d29922" },
+  { fill: "rgba(63,185,80,0.18)", stroke: "#3fb950" },
+  { fill: "rgba(248,81,73,0.18)", stroke: "#f85149" },
+  { fill: "rgba(163,113,247,0.18)", stroke: "#a371f7" },
+  { fill: "rgba(219,171,255,0.18)", stroke: "#dbabff" },
+];
+
+function bodyColor(body) {
+  if (body.isStatic()) return { fill: "rgba(120,160,200,0.15)", stroke: "#607888" };
+  if (body.isSleeping) return { fill: "rgba(100,200,100,0.12)", stroke: "#3fb950" };
+  // Use userData for consistent color, or default
+  const idx = (body.userData?._colorIdx ?? 0) % COLORS.length;
+  return COLORS[idx];
+}
+
 function drawBody(body) {
   const px = body.position.x;
   const py = body.position.y;
@@ -53,38 +76,26 @@ function drawBody(body) {
   ctx.translate(px, py);
   ctx.rotate(rot);
 
-  const isStatic = body.isStatic();
-  const sleeping = body.isSleeping;
+  const { fill, stroke } = debugDrawCb.checked
+    ? bodyColor(body)
+    : { fill: body.isStatic() ? "#2a3a48" : body.isSleeping ? "#1a3020" : "#162540", stroke: null };
 
   for (const shape of body.shapes) {
     if (shape.isCircle()) {
       const r = shape.castCircle.radius;
       ctx.beginPath();
       ctx.arc(0, 0, r, 0, Math.PI * 2);
-
-      if (debugDrawCb.checked) {
-        ctx.fillStyle = isStatic
-          ? "rgba(120,160,200,0.15)"
-          : sleeping
-            ? "rgba(100,200,100,0.12)"
-            : "rgba(88,166,255,0.18)";
-        ctx.fill();
-        ctx.strokeStyle = isStatic ? "#607888" : sleeping ? "#3fb950" : "#58a6ff";
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
         ctx.lineWidth = 1.2;
         ctx.stroke();
-        // Radius line to show rotation
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(r, 0);
-        ctx.strokeStyle = isStatic ? "#607888" : "#58a6ff55";
+        ctx.strokeStyle = stroke + "55";
         ctx.stroke();
-      } else {
-        ctx.fillStyle = isStatic
-          ? "#2a3a48"
-          : sleeping
-            ? "#1a3020"
-            : "#162540";
-        ctx.fill();
       }
     } else if (shape.isPolygon()) {
       const verts = shape.castPolygon.localVerts;
@@ -99,24 +110,12 @@ function drawBody(body) {
         ctx.lineTo(v.get_x(), v.get_y());
       }
       ctx.closePath();
-
-      if (debugDrawCb.checked) {
-        ctx.fillStyle = isStatic
-          ? "rgba(120,160,200,0.15)"
-          : sleeping
-            ? "rgba(100,200,100,0.12)"
-            : "rgba(88,166,255,0.18)";
-        ctx.fill();
-        ctx.strokeStyle = isStatic ? "#607888" : sleeping ? "#3fb950" : "#58a6ff";
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
         ctx.lineWidth = 1.2;
         ctx.stroke();
-      } else {
-        ctx.fillStyle = isStatic
-          ? "#2a3a48"
-          : sleeping
-            ? "#1a3020"
-            : "#162540";
-        ctx.fill();
       }
     }
   }
@@ -124,28 +123,131 @@ function drawBody(body) {
   ctx.restore();
 }
 
-function drawConstraint(constraint) {
-  // Only draw PivotJoints for now
-  if (!constraint._inner || !constraint._inner.get_body1 || !constraint._inner.get_body2) return;
-  try {
-    const b1 = constraint._inner.get_body1();
-    const b2 = constraint._inner.get_body2();
-    if (!b1 || !b2) return;
+// =========================================================================
+// Code preview & CodePen
+// =========================================================================
 
-    const p1x = b1.get_position().get_x();
-    const p1y = b1.get_position().get_y();
-    const p2x = b2.get_position().get_x();
-    const p2y = b2.get_position().get_y();
+/** Simple syntax highlighter for JS/TS code */
+function highlightCode(code) {
+  return code
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/(\/\/.*)/g, '<span class="cm">$1</span>')
+    .replace(/\b(import|from|export|const|let|var|new|for|if|else|return|function|class|extends|of|in|true|false|null|undefined|typeof|this|continue|break)\b/g, '<span class="kw">$1</span>')
+    .replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>')
+    .replace(/(["'`])(?:(?!\1).)*\1/g, '<span class="str">$&</span>')
+    .replace(/\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|Math)\b/g, '<span class="type">$1</span>');
+}
 
-    ctx.beginPath();
-    ctx.moveTo(p1x, p1y);
-    ctx.lineTo(p2x, p2y);
-    ctx.strokeStyle = "#d2992266";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  } catch (_) {
-    // Ignore render errors for unsupported constraint types
+function updateCodePreview(demo) {
+  const code = demo.code || "// No source code available for this demo.";
+  codePreviewEl.innerHTML = highlightCode(code);
+}
+
+function copyCode() {
+  const demo = DEMOS[currentDemo];
+  const code = demo.code || "";
+  navigator.clipboard.writeText(code).then(() => {
+    showToast("Copied to clipboard!");
+  });
+}
+
+function showToast(msg) {
+  let toast = document.querySelector(".copy-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "copy-toast";
+    document.body.appendChild(toast);
   }
+  toast.textContent = msg;
+  toast.classList.add("visible");
+  setTimeout(() => toast.classList.remove("visible"), 1800);
+}
+
+const NAPE_CDN = "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
+
+function openInCodePen() {
+  const demo = DEMOS[currentDemo];
+  const code = demo.code || "";
+
+  const html = `<canvas id="demoCanvas" width="900" height="500" style="background:#0a0e14;display:block;max-width:100%;border:1px solid #30363d;border-radius:8px"></canvas>`;
+
+  const css = `body { margin: 20px; background: #0d1117; font-family: sans-serif; color: #e6edf3; }`;
+
+  // Wrap the demo code in a module-style setup
+  const js = `import {
+  Space, Body, BodyType, Vec2, Circle, Polygon,
+  PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
+  Material, InteractionFilter, InteractionGroup,
+  CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
+} from "${NAPE_CDN}";
+
+const canvas = document.getElementById("demoCanvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+${code}`;
+
+  // Create a hidden form and submit to CodePen
+  const data = {
+    title: `nape-js — ${demo.label || currentDemo}`,
+    description: `Interactive physics demo using nape-js TypeScript wrapper.\nhttps://github.com/NewKrok/nape-js`,
+    html,
+    css,
+    js,
+    js_module: true,
+  };
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "https://codepen.io/pen/define";
+  form.target = "_blank";
+  const input = document.createElement("input");
+  input.type = "hidden";
+  input.name = "data";
+  input.value = JSON.stringify(data);
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
+copyCodeBtn.addEventListener("click", copyCode);
+codepenBtn.addEventListener("click", openInCodePen);
+
+// =========================================================================
+// Shared helpers
+// =========================================================================
+
+let _colorCounter = 0;
+
+function addWalls() {
+  const thickness = 20;
+  const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - thickness / 2));
+  floor.shapes.add(new Polygon(Polygon.box(W, thickness)));
+  floor.space = space;
+  const left = new Body(BodyType.STATIC, new Vec2(thickness / 2, H / 2));
+  left.shapes.add(new Polygon(Polygon.box(thickness, H)));
+  left.space = space;
+  const right = new Body(BodyType.STATIC, new Vec2(W - thickness / 2, H / 2));
+  right.shapes.add(new Polygon(Polygon.box(thickness, H)));
+  right.space = space;
+  const ceil = new Body(BodyType.STATIC, new Vec2(W / 2, thickness / 2));
+  ceil.shapes.add(new Polygon(Polygon.box(W, thickness)));
+  ceil.space = space;
+}
+
+function spawnRandomShape(x, y) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+  if (Math.random() < 0.5) {
+    body.shapes.add(new Circle(6 + Math.random() * 14));
+  } else {
+    const w = 10 + Math.random() * 24;
+    const h = 10 + Math.random() * 24;
+    body.shapes.add(new Polygon(Polygon.box(w, h)));
+  }
+  try { body.userData._colorIdx = _colorCounter++; } catch(_) {}
+  body.space = space;
+  return body;
 }
 
 // =========================================================================
@@ -155,11 +257,12 @@ function drawConstraint(constraint) {
 const DEMOS = {
   // ------ Falling Shapes ------
   falling: {
+    label: "Falling Shapes",
     desc: 'Random boxes and circles fall into a container. <b>Click</b> to spawn more shapes at the cursor.',
     setup() {
       space = new Space(new Vec2(0, 600));
+      _colorCounter = 0;
       addWalls();
-
       for (let i = 0; i < 80; i++) {
         spawnRandomShape(100 + Math.random() * 700, 50 + Math.random() * 200);
       }
@@ -169,13 +272,48 @@ const DEMOS = {
         spawnRandomShape(x + (Math.random() - 0.5) * 40, y + (Math.random() - 0.5) * 40);
       }
     },
+    code: `// Create a Space with downward gravity
+const space = new Space(new Vec2(0, 600));
+
+// Add static walls (floor, ceiling, left, right)
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+// Spawn random shapes
+for (let i = 0; i < 80; i++) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(
+    100 + Math.random() * 700,
+    50 + Math.random() * 200,
+  ));
+
+  if (Math.random() < 0.5) {
+    body.shapes.add(new Circle(6 + Math.random() * 14));
+  } else {
+    const w = 10 + Math.random() * 24;
+    const h = 10 + Math.random() * 24;
+    body.shapes.add(new Polygon(Polygon.box(w, h)));
+  }
+
+  body.space = space;
+}
+
+// Step the simulation each frame
+function loop() {
+  space.step(1 / 60, 8, 3);
+  // ... render bodies ...
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Pyramid ------
   pyramid: {
+    label: "Pyramid Stress Test",
     desc: 'A classic box-stacking pyramid. <b>Click</b> to drop a heavy ball onto it.',
     setup() {
       space = new Space(new Vec2(0, 600));
+      _colorCounter = 0;
       addWalls();
 
       const boxSize = 28;
@@ -192,6 +330,7 @@ const DEMOS = {
             startY - row * boxSize,
           ));
           b.shapes.add(new Polygon(Polygon.box(boxSize - 2, boxSize - 2)));
+          try { b.userData._colorIdx = row; } catch(_) {}
           b.space = space;
         }
       }
@@ -199,12 +338,49 @@ const DEMOS = {
     click(x, y) {
       const ball = new Body(BodyType.DYNAMIC, new Vec2(x, y));
       ball.shapes.add(new Circle(25, undefined, new Material(0.3, 0.2, 0.3, 5)));
+      try { ball.userData._colorIdx = 3; } catch(_) {}
       ball.space = space;
     },
+    code: `// Pyramid stress test — stacking many boxes
+const space = new Space(new Vec2(0, 600));
+
+// Static floor
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+// Build a pyramid of boxes
+const boxSize = 28;
+const rows = 14;
+const startX = W / 2;
+const startY = H - 30 - boxSize / 2;
+
+for (let row = 0; row < rows; row++) {
+  const cols = rows - row;
+  const offsetX = startX - (cols * boxSize) / 2 + boxSize / 2;
+  for (let col = 0; col < cols; col++) {
+    const b = new Body(BodyType.DYNAMIC, new Vec2(
+      offsetX + col * boxSize,
+      startY - row * boxSize,
+    ));
+    b.shapes.add(new Polygon(Polygon.box(boxSize - 2, boxSize - 2)));
+    b.space = space;
+  }
+}
+
+// Drop a heavy ball on click
+function dropBall(x, y) {
+  const ball = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+  ball.shapes.add(new Circle(25, undefined,
+    new Material(0.3, 0.2, 0.3, 5) // density = 5
+  ));
+  ball.space = space;
+}`,
   },
 
   // ------ Pendulum Chain ------
   chain: {
+    label: "Pendulum Chain",
     desc: 'A pendulum chain made of <code>PivotJoint</code> constraints. <b>Click</b> to apply an impulse near the cursor.',
     setup() {
       space = new Space(new Vec2(0, 400));
@@ -226,6 +402,7 @@ const DEMOS = {
           anchorY,
         ));
         link.shapes.add(new Circle(5));
+        try { link.userData._colorIdx = i % 2; } catch(_) {}
         link.space = space;
 
         const joint = new PivotJoint(
@@ -237,12 +414,12 @@ const DEMOS = {
         prev = link;
       }
 
-      // Heavy bob at the end
       const bob = new Body(BodyType.DYNAMIC, new Vec2(
         anchorX + links * linkLen + linkLen,
         anchorY,
       ));
       bob.shapes.add(new Circle(18, undefined, new Material(0.3, 0.3, 0.5, 8)));
+      try { bob.userData._colorIdx = 3; } catch(_) {}
       bob.space = space;
 
       const lastJoint = new PivotJoint(
@@ -253,7 +430,6 @@ const DEMOS = {
       lastJoint.space = space;
     },
     click(x, y) {
-      // Apply impulse to nearby bodies
       for (const body of space.bodies) {
         if (body.isStatic()) continue;
         const dx = body.position.x - x;
@@ -265,20 +441,63 @@ const DEMOS = {
         }
       }
     },
+    code: `// Pendulum chain using PivotJoint constraints
+const space = new Space(new Vec2(0, 400));
+
+// Static anchor point
+const anchor = new Body(BodyType.STATIC, new Vec2(W / 2, 40));
+anchor.shapes.add(new Circle(6));
+anchor.space = space;
+
+// Create chain links connected by PivotJoints
+const links = 20;
+const linkLen = 18;
+let prev = anchor;
+
+for (let i = 0; i < links; i++) {
+  const link = new Body(BodyType.DYNAMIC, new Vec2(
+    W / 2 + (i + 1) * linkLen, 40,
+  ));
+  link.shapes.add(new Circle(5));
+  link.space = space;
+
+  // PivotJoint: pin two bodies at local anchor points
+  const joint = new PivotJoint(
+    prev, link,
+    new Vec2(i === 0 ? 0 : linkLen / 2, 0),
+    new Vec2(-linkLen / 2, 0),
+  );
+  joint.space = space;
+  prev = link;
+}
+
+// Heavy bob at the end
+const bob = new Body(BodyType.DYNAMIC, new Vec2(
+  W / 2 + links * linkLen + linkLen, 40,
+));
+bob.shapes.add(new Circle(18, undefined,
+  new Material(0.3, 0.3, 0.5, 8),
+));
+bob.space = space;
+
+const lastJoint = new PivotJoint(
+  prev, bob,
+  new Vec2(linkLen / 2, 0),
+  new Vec2(-18, 0),
+);
+lastJoint.space = space;`,
   },
 
   // ------ Explosion / Impulse Blast ------
   explosion: {
+    label: "Impulse Blast",
     desc: '<b>Click</b> anywhere to create an impulse blast that pushes nearby bodies away.',
     setup() {
       space = new Space(new Vec2(0, 500));
+      _colorCounter = 0;
       addWalls();
-
-      // Fill with mixed shapes
       for (let i = 0; i < 120; i++) {
-        const x = 100 + Math.random() * 700;
-        const y = 100 + Math.random() * 350;
-        spawnRandomShape(x, y);
+        spawnRandomShape(100 + Math.random() * 700, 100 + Math.random() * 350);
       }
     },
     click(x, y) {
@@ -294,8 +513,7 @@ const DEMOS = {
           body.applyImpulse(new Vec2(dx / dist * force, dy / dist * force));
         }
       }
-
-      // Visual pulse (draw a circle briefly)
+      // Visual pulse
       ctx.save();
       ctx.beginPath();
       ctx.arc(x, y, 200, 0, Math.PI * 2);
@@ -304,40 +522,767 @@ const DEMOS = {
       ctx.stroke();
       ctx.restore();
     },
-  },
-};
+    code: `// Impulse blast — apply radial impulse on click
+const space = new Space(new Vec2(0, 500));
 
-function addWalls() {
-  const thickness = 20;
-  // Floor
-  const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - thickness / 2));
-  floor.shapes.add(new Polygon(Polygon.box(W, thickness)));
-  floor.space = space;
-  // Left wall
-  const left = new Body(BodyType.STATIC, new Vec2(thickness / 2, H / 2));
-  left.shapes.add(new Polygon(Polygon.box(thickness, H)));
-  left.space = space;
-  // Right wall
-  const right = new Body(BodyType.STATIC, new Vec2(W - thickness / 2, H / 2));
-  right.shapes.add(new Polygon(Polygon.box(thickness, H)));
-  right.space = space;
-  // Ceiling (to keep things in bounds)
-  const ceil = new Body(BodyType.STATIC, new Vec2(W / 2, thickness / 2));
-  ceil.shapes.add(new Polygon(Polygon.box(W, thickness)));
-  ceil.space = space;
-}
-
-function spawnRandomShape(x, y) {
-  const body = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+// Fill with mixed shapes
+for (let i = 0; i < 120; i++) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(
+    100 + Math.random() * 700,
+    100 + Math.random() * 350,
+  ));
   if (Math.random() < 0.5) {
     body.shapes.add(new Circle(6 + Math.random() * 14));
   } else {
-    const w = 10 + Math.random() * 24;
-    const h = 10 + Math.random() * 24;
-    body.shapes.add(new Polygon(Polygon.box(w, h)));
+    body.shapes.add(new Polygon(
+      Polygon.box(10 + Math.random() * 24, 10 + Math.random() * 24)
+    ));
   }
   body.space = space;
-  return body;
+}
+
+// On click: radial impulse blast
+function blast(clickX, clickY) {
+  for (const body of space.bodies) {
+    if (body.isStatic()) continue;
+    const dx = body.position.x - clickX;
+    const dy = body.position.y - clickY;
+    const distSq = dx * dx + dy * dy;
+    const maxDist = 200;
+    if (distSq < maxDist * maxDist && distSq > 1) {
+      const dist = Math.sqrt(distSq);
+      const force = 2000 * (1 - dist / maxDist);
+      body.applyImpulse(
+        new Vec2(dx / dist * force, dy / dist * force)
+      );
+    }
+  }
+}`,
+  },
+
+  // ------ Constraints Showcase ------
+  constraints: {
+    label: "Constraints Showcase",
+    desc: 'All built-in constraint types in one scene: PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint. <b>Click</b> to apply impulse.',
+    setup() {
+      space = new Space(new Vec2(0, 300));
+      addWalls();
+
+      // --- PivotJoint (pinned rotating bar) ---
+      const pivotAnchor = new Body(BodyType.STATIC, new Vec2(120, 80));
+      pivotAnchor.shapes.add(new Circle(5));
+      pivotAnchor.space = space;
+
+      const bar1 = new Body(BodyType.DYNAMIC, new Vec2(120, 80));
+      bar1.shapes.add(new Polygon(Polygon.box(80, 10)));
+      try { bar1.userData._colorIdx = 0; } catch(_) {}
+      bar1.space = space;
+
+      const pj = new PivotJoint(pivotAnchor, bar1, new Vec2(0, 0), new Vec2(0, 0));
+      pj.space = space;
+
+      // --- DistanceJoint (spring) ---
+      const dAnchor = new Body(BodyType.STATIC, new Vec2(300, 60));
+      dAnchor.shapes.add(new Circle(5));
+      dAnchor.space = space;
+
+      const dBall = new Body(BodyType.DYNAMIC, new Vec2(300, 180));
+      dBall.shapes.add(new Circle(15));
+      try { dBall.userData._colorIdx = 1; } catch(_) {}
+      dBall.space = space;
+
+      const dj = new DistanceJoint(dAnchor, dBall, new Vec2(0, 0), new Vec2(0, 0), 80, 120);
+      dj.stiff = false;
+      dj.frequency = 2;
+      dj.damping = 0.3;
+      dj.space = space;
+
+      // --- AngleJoint ---
+      const aAnchor = new Body(BodyType.STATIC, new Vec2(480, 80));
+      aAnchor.shapes.add(new Circle(5));
+      aAnchor.space = space;
+
+      const aBar = new Body(BodyType.DYNAMIC, new Vec2(480, 80));
+      aBar.shapes.add(new Polygon(Polygon.box(60, 10)));
+      try { aBar.userData._colorIdx = 2; } catch(_) {}
+      aBar.space = space;
+
+      const apj = new PivotJoint(aAnchor, aBar, new Vec2(0, 0), new Vec2(0, 0));
+      apj.space = space;
+
+      const aj = new AngleJoint(aAnchor, aBar, -Math.PI / 4, Math.PI / 4);
+      aj.stiff = false;
+      aj.frequency = 3;
+      aj.damping = 0.5;
+      aj.space = space;
+
+      // --- WeldJoint (two bodies glued) ---
+      const w1 = new Body(BodyType.DYNAMIC, new Vec2(640, 100));
+      w1.shapes.add(new Polygon(Polygon.box(30, 30)));
+      try { w1.userData._colorIdx = 4; } catch(_) {}
+      w1.space = space;
+
+      const w2 = new Body(BodyType.DYNAMIC, new Vec2(670, 100));
+      w2.shapes.add(new Circle(15));
+      try { w2.userData._colorIdx = 5; } catch(_) {}
+      w2.space = space;
+
+      const wj = new WeldJoint(w1, w2, new Vec2(15, 0), new Vec2(-15, 0));
+      wj.space = space;
+
+      // --- MotorJoint (spinning wheel) ---
+      const mAnchor = new Body(BodyType.STATIC, new Vec2(800, 100));
+      mAnchor.shapes.add(new Circle(5));
+      mAnchor.space = space;
+
+      const wheel = new Body(BodyType.DYNAMIC, new Vec2(800, 100));
+      wheel.shapes.add(new Polygon(Polygon.regular(30, 30, 6)));
+      try { wheel.userData._colorIdx = 3; } catch(_) {}
+      wheel.space = space;
+
+      const mpj = new PivotJoint(mAnchor, wheel, new Vec2(0, 0), new Vec2(0, 0));
+      mpj.space = space;
+
+      const mj = new MotorJoint(mAnchor, wheel, 3);
+      mj.space = space;
+
+      // --- LineJoint (slider) ---
+      const lAnchor = new Body(BodyType.STATIC, new Vec2(120, 300));
+      lAnchor.shapes.add(new Circle(5));
+      lAnchor.space = space;
+
+      const slider = new Body(BodyType.DYNAMIC, new Vec2(200, 300));
+      slider.shapes.add(new Polygon(Polygon.box(30, 20)));
+      try { slider.userData._colorIdx = 1; } catch(_) {}
+      slider.space = space;
+
+      const lj = new LineJoint(lAnchor, slider, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -80, 80);
+      lj.space = space;
+
+      // Some loose shapes to interact with
+      for (let i = 0; i < 30; i++) {
+        spawnRandomShape(100 + Math.random() * 700, 200 + Math.random() * 200);
+      }
+    },
+    click(x, y) {
+      for (const body of space.bodies) {
+        if (body.isStatic()) continue;
+        const dx = body.position.x - x;
+        const dy = body.position.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          const force = 600 * (1 - dist / 150);
+          body.applyImpulse(new Vec2(dx / dist * force, dy / dist * force));
+        }
+      }
+    },
+    code: `// Constraints showcase — all built-in joint types
+const space = new Space(new Vec2(0, 300));
+
+// --- PivotJoint: pin two bodies at a shared point ---
+const pivotAnchor = new Body(BodyType.STATIC, new Vec2(120, 80));
+pivotAnchor.shapes.add(new Circle(5));
+pivotAnchor.space = space;
+
+const bar = new Body(BodyType.DYNAMIC, new Vec2(120, 80));
+bar.shapes.add(new Polygon(Polygon.box(80, 10)));
+bar.space = space;
+
+const pivot = new PivotJoint(
+  pivotAnchor, bar,
+  new Vec2(0, 0), new Vec2(0, 0),
+);
+pivot.space = space;
+
+// --- DistanceJoint: spring between two bodies ---
+const dAnchor = new Body(BodyType.STATIC, new Vec2(300, 60));
+dAnchor.shapes.add(new Circle(5));
+dAnchor.space = space;
+
+const ball = new Body(BodyType.DYNAMIC, new Vec2(300, 180));
+ball.shapes.add(new Circle(15));
+ball.space = space;
+
+const spring = new DistanceJoint(
+  dAnchor, ball,
+  new Vec2(0, 0), new Vec2(0, 0),
+  80,  // jointMin
+  120, // jointMax
+);
+spring.stiff = false;
+spring.frequency = 2;
+spring.damping = 0.3;
+spring.space = space;
+
+// --- AngleJoint: limit rotation range ---
+const aj = new AngleJoint(
+  pivotAnchor, bar,
+  -Math.PI / 4,  // min angle
+  Math.PI / 4,   // max angle
+);
+aj.space = space;
+
+// --- WeldJoint: glue two bodies together ---
+const weld = new WeldJoint(
+  body1, body2,
+  new Vec2(15, 0), new Vec2(-15, 0),
+);
+weld.space = space;
+
+// --- MotorJoint: constant angular velocity ---
+const motor = new MotorJoint(anchor, wheel, 3);
+motor.space = space;
+
+// --- LineJoint: slide along an axis ---
+const line = new LineJoint(
+  anchor, slider,
+  new Vec2(0, 0), new Vec2(0, 0),
+  new Vec2(1, 0), // direction
+  -80, 80,         // min/max range
+);
+line.space = space;`,
+  },
+
+  // ------ Soft Body ------
+  softbody: {
+    label: "Soft Body",
+    desc: 'Soft bodies created with <code>DistanceJoint</code> springs. <b>Click</b> to drop a new soft body.',
+    setup() {
+      space = new Space(new Vec2(0, 400));
+      addWalls();
+      createSoftBody(W / 2 - 80, 100, 6, 6, 22, 0);
+      createSoftBody(W / 2 + 80, 80, 5, 5, 26, 2);
+    },
+    click(x, y) {
+      const cols = 4 + Math.floor(Math.random() * 4);
+      const rows = 4 + Math.floor(Math.random() * 4);
+      createSoftBody(x, y, cols, rows, 20, Math.floor(Math.random() * 6));
+    },
+    code: `// Soft bodies using DistanceJoint springs
+const space = new Space(new Vec2(0, 400));
+
+function createSoftBody(startX, startY, cols, rows, gap) {
+  const bodies = [];
+
+  // Create grid of small circle bodies
+  for (let r = 0; r < rows; r++) {
+    bodies[r] = [];
+    for (let c = 0; c < cols; c++) {
+      const b = new Body(BodyType.DYNAMIC, new Vec2(
+        startX + c * gap,
+        startY + r * gap,
+      ));
+      b.shapes.add(new Circle(4));
+      b.space = space;
+      bodies[r][c] = b;
+    }
+  }
+
+  // Connect with spring DistanceJoints
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      // Horizontal spring
+      if (c < cols - 1) {
+        const dj = new DistanceJoint(
+          bodies[r][c], bodies[r][c + 1],
+          new Vec2(0, 0), new Vec2(0, 0),
+          gap * 0.8, gap * 1.2,
+        );
+        dj.stiff = false;
+        dj.frequency = 15;
+        dj.damping = 0.4;
+        dj.space = space;
+      }
+      // Vertical spring
+      if (r < rows - 1) {
+        const dj = new DistanceJoint(
+          bodies[r][c], bodies[r + 1][c],
+          new Vec2(0, 0), new Vec2(0, 0),
+          gap * 0.8, gap * 1.2,
+        );
+        dj.stiff = false;
+        dj.frequency = 15;
+        dj.damping = 0.4;
+        dj.space = space;
+      }
+      // Diagonal (shear) spring
+      if (c < cols - 1 && r < rows - 1) {
+        const diag = gap * Math.SQRT2;
+        const dj = new DistanceJoint(
+          bodies[r][c], bodies[r + 1][c + 1],
+          new Vec2(0, 0), new Vec2(0, 0),
+          diag * 0.8, diag * 1.2,
+        );
+        dj.stiff = false;
+        dj.frequency = 15;
+        dj.damping = 0.4;
+        dj.space = space;
+      }
+    }
+  }
+}
+
+createSoftBody(300, 100, 6, 6, 22);`,
+  },
+
+  // ------ One-Way Platforms ------
+  oneway: {
+    label: "One-Way Platforms",
+    desc: 'Bodies can pass through platforms from below but rest on them from above, using <code>PreListener</code>. Conveyor belts push shapes sideways. <b>Click</b> to spawn.',
+    setup() {
+      space = new Space(new Vec2(0, 600));
+      addWalls();
+
+      // CbType for one-way platforms
+      const platformType = new CbType();
+      const objectType = new CbType();
+
+      // PreListener: ignore collisions when object is moving upward relative to platform
+      const preListener = new PreListener(
+        InteractionType.COLLISION,
+        platformType,
+        objectType,
+        (cb) => {
+          const arbiter = cb.get_arbiter();
+          if (!arbiter) return PreFlag.ACCEPT;
+          try {
+            const colArb = arbiter.get_collisionArbiter();
+            if (!colArb) return PreFlag.ACCEPT;
+            const ny = colArb.get_normal().get_y();
+            // If normal points upward (platform below), accept; otherwise ignore
+            return ny < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
+          } catch (_) {
+            return PreFlag.ACCEPT;
+          }
+        },
+      );
+      preListener.space = space;
+
+      // Create staggered platforms
+      const platformPositions = [
+        { x: 300, y: 400, w: 200 },
+        { x: 600, y: 320, w: 180 },
+        { x: 250, y: 240, w: 200 },
+        { x: 650, y: 160, w: 180 },
+      ];
+
+      for (const p of platformPositions) {
+        const plat = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
+        plat.shapes.add(new Polygon(Polygon.box(p.w, 10)));
+        plat.shapes.at(0).cbTypes.add(platformType);
+        plat.space = space;
+      }
+
+      // Conveyor belt platform (kinematic)
+      const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
+      conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
+      conveyor.surfaceVel = new Vec2(100, 0);
+      conveyor.space = space;
+
+      // Drop some shapes
+      for (let i = 0; i < 25; i++) {
+        const b = spawnRandomShape(
+          150 + Math.random() * 600,
+          -Math.random() * 300,
+        );
+        for (const s of b.shapes) {
+          s.cbTypes.add(objectType);
+        }
+      }
+
+      this._objectType = objectType;
+    },
+    click(x, y) {
+      for (let i = 0; i < 5; i++) {
+        const b = spawnRandomShape(
+          x + (Math.random() - 0.5) * 40,
+          y + (Math.random() - 0.5) * 40,
+        );
+        if (this._objectType) {
+          for (const s of b.shapes) {
+            s.cbTypes.add(this._objectType);
+          }
+        }
+      }
+    },
+    code: `// One-way platforms using PreListener callbacks
+const space = new Space(new Vec2(0, 600));
+
+// Define callback types
+const platformType = new CbType();
+const objectType = new CbType();
+
+// PreListener: decide per-frame whether to accept collision
+const preListener = new PreListener(
+  InteractionType.COLLISION,
+  platformType,
+  objectType,
+  (cb) => {
+    const arbiter = cb.get_arbiter();
+    const colArb = arbiter.get_collisionArbiter();
+    const ny = colArb.get_normal().get_y();
+    // Accept if normal points up (object on top), ignore otherwise
+    return ny < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
+  },
+);
+preListener.space = space;
+
+// Create a platform and tag it
+const platform = new Body(BodyType.STATIC, new Vec2(300, 350));
+platform.shapes.add(new Polygon(Polygon.box(200, 10)));
+platform.shapes.at(0).cbTypes.add(platformType);
+platform.space = space;
+
+// Conveyor belt (kinematic body with surface velocity)
+const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
+conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
+conveyor.surfaceVel = new Vec2(100, 0); // push right
+conveyor.space = space;
+
+// Spawn objects tagged with objectType
+const obj = new Body(BodyType.DYNAMIC, new Vec2(300, 100));
+obj.shapes.add(new Circle(12));
+obj.shapes.at(0).cbTypes.add(objectType);
+obj.space = space;`,
+  },
+
+  // ------ Orbital Gravity (Mario Galaxy style) ------
+  gravity: {
+    label: "Orbital Gravity",
+    desc: 'Mario Galaxy-style gravity: bodies are pulled toward a central planet. <b>Click</b> to spawn orbiting bodies.',
+    setup() {
+      space = new Space(new Vec2(0, 0)); // no global gravity
+      _colorCounter = 0;
+
+      // Central "planet"
+      const planet = new Body(BodyType.STATIC, new Vec2(W / 2, H / 2));
+      planet.shapes.add(new Circle(40));
+      planet.space = space;
+
+      // Orbiting bodies
+      for (let i = 0; i < 50; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 100 + Math.random() * 180;
+        const b = spawnRandomShape(
+          W / 2 + Math.cos(angle) * dist,
+          H / 2 + Math.sin(angle) * dist,
+        );
+        // Give tangential velocity for orbit
+        const speed = 80 + Math.random() * 60;
+        b.velocity = new Vec2(
+          -Math.sin(angle) * speed,
+          Math.cos(angle) * speed,
+        );
+      }
+
+      this._planetX = W / 2;
+      this._planetY = H / 2;
+    },
+    step() {
+      // Apply gravity toward center for all dynamic bodies
+      const cx = this._planetX;
+      const cy = this._planetY;
+      const G = 800000;
+      for (const body of space.bodies) {
+        if (body.isStatic()) continue;
+        const dx = cx - body.position.x;
+        const dy = cy - body.position.y;
+        const distSq = dx * dx + dy * dy;
+        if (distSq < 100) continue;
+        const dist = Math.sqrt(distSq);
+        const force = G / distSq;
+        body.force = new Vec2(dx / dist * force, dy / dist * force);
+      }
+    },
+    click(x, y) {
+      const b = spawnRandomShape(x, y);
+      const dx = this._planetX - x;
+      const dy = this._planetY - y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const speed = 100;
+      b.velocity = new Vec2(-dy / dist * speed, dx / dist * speed);
+    },
+    code: `// Orbital gravity — Mario Galaxy style
+const space = new Space(new Vec2(0, 0)); // no global gravity!
+
+// Static "planet" at center
+const planet = new Body(BodyType.STATIC, new Vec2(W / 2, H / 2));
+planet.shapes.add(new Circle(40));
+planet.space = space;
+
+// Spawn orbiting bodies with tangential velocity
+for (let i = 0; i < 50; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 100 + Math.random() * 180;
+
+  const body = new Body(BodyType.DYNAMIC, new Vec2(
+    W / 2 + Math.cos(angle) * dist,
+    H / 2 + Math.sin(angle) * dist,
+  ));
+  body.shapes.add(new Circle(6 + Math.random() * 10));
+  body.space = space;
+
+  // Tangential velocity for orbit
+  const speed = 80 + Math.random() * 60;
+  body.velocity = new Vec2(
+    -Math.sin(angle) * speed,
+    Math.cos(angle) * speed,
+  );
+}
+
+// Each frame: apply gravitational force toward center
+function applyGravity() {
+  const G = 800000;
+  for (const body of space.bodies) {
+    if (body.isStatic()) continue;
+    const dx = W / 2 - body.position.x;
+    const dy = H / 2 - body.position.y;
+    const distSq = dx * dx + dy * dy;
+    if (distSq < 100) continue;
+    const dist = Math.sqrt(distSq);
+    const force = G / distSq;
+    body.force = new Vec2(
+      dx / dist * force,
+      dy / dist * force,
+    );
+  }
+}`,
+  },
+
+  // ------ Filtering Interactions ------
+  filtering: {
+    label: "Filtering",
+    desc: 'Three groups of shapes that only collide within their own group, using <code>InteractionFilter</code>. <b>Click</b> to spawn in the nearest group.',
+    setup() {
+      space = new Space(new Vec2(0, 500));
+      _colorCounter = 0;
+      addWalls();
+
+      this._groups = [
+        { filter: new InteractionFilter(1, 1), colorIdx: 0 },
+        { filter: new InteractionFilter(2, 2), colorIdx: 1 },
+        { filter: new InteractionFilter(4, 4), colorIdx: 3 },
+      ];
+
+      const regions = [
+        { x: 200, label: "Group 1" },
+        { x: 450, label: "Group 2" },
+        { x: 700, label: "Group 3" },
+      ];
+
+      for (let g = 0; g < 3; g++) {
+        for (let i = 0; i < 20; i++) {
+          const b = new Body(BodyType.DYNAMIC, new Vec2(
+            regions[g].x + (Math.random() - 0.5) * 120,
+            50 + Math.random() * 200,
+          ));
+          if (Math.random() < 0.5) {
+            b.shapes.add(new Circle(8 + Math.random() * 10, undefined, undefined, this._groups[g].filter));
+          } else {
+            const sz = 10 + Math.random() * 18;
+            b.shapes.add(new Polygon(Polygon.box(sz, sz), undefined, this._groups[g].filter));
+          }
+          try { b.userData._colorIdx = this._groups[g].colorIdx; } catch(_) {}
+          b.space = space;
+        }
+      }
+    },
+    click(x, y) {
+      // Find nearest group region
+      const gx = [200, 450, 700];
+      let nearest = 0;
+      let minDist = Math.abs(x - gx[0]);
+      for (let i = 1; i < 3; i++) {
+        const d = Math.abs(x - gx[i]);
+        if (d < minDist) { minDist = d; nearest = i; }
+      }
+      const grp = this._groups[nearest];
+      for (let i = 0; i < 5; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(
+          x + (Math.random() - 0.5) * 30,
+          y + (Math.random() - 0.5) * 30,
+        ));
+        b.shapes.add(new Circle(8 + Math.random() * 10, undefined, undefined, grp.filter));
+        try { b.userData._colorIdx = grp.colorIdx; } catch(_) {}
+        b.space = space;
+      }
+    },
+    code: `// Collision filtering — shapes only collide within their group
+const space = new Space(new Vec2(0, 500));
+
+// InteractionFilter(collisionGroup, collisionMask)
+// Bodies collide when (a.group & b.mask) != 0 && (b.group & a.mask) != 0
+const filterRed   = new InteractionFilter(1, 1); // group=1, mask=1
+const filterGreen = new InteractionFilter(2, 2); // group=2, mask=2
+const filterBlue  = new InteractionFilter(4, 4); // group=4, mask=4
+
+// Red shapes — only collide with other reds
+for (let i = 0; i < 20; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(
+    200 + (Math.random() - 0.5) * 120,
+    50 + Math.random() * 200,
+  ));
+  b.shapes.add(new Circle(10, undefined, undefined, filterRed));
+  b.space = space;
+}
+
+// Green shapes — only collide with other greens
+for (let i = 0; i < 20; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(
+    450 + (Math.random() - 0.5) * 120,
+    50 + Math.random() * 200,
+  ));
+  b.shapes.add(new Circle(10, undefined, undefined, filterGreen));
+  b.space = space;
+}
+
+// Blue shapes — only collide with other blues
+for (let i = 0; i < 20; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(
+    700 + (Math.random() - 0.5) * 120,
+    50 + Math.random() * 200,
+  ));
+  b.shapes.add(new Circle(10, undefined, undefined, filterBlue));
+  b.space = space;
+}`,
+  },
+
+  // ------ Stacking / Balance ------
+  stacking: {
+    label: "Stacking",
+    desc: 'Towers of various shapes testing stacking stability. <b>Click</b> to drop a heavy box.',
+    setup() {
+      space = new Space(new Vec2(0, 600));
+      _colorCounter = 0;
+      addWalls();
+
+      // Tower 1: boxes
+      for (let i = 0; i < 12; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(200, H - 30 - 25 * i - 12.5));
+        b.shapes.add(new Polygon(Polygon.box(40, 25)));
+        try { b.userData._colorIdx = 0; } catch(_) {}
+        b.space = space;
+      }
+
+      // Tower 2: circles
+      for (let i = 0; i < 10; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(400, H - 30 - 24 * i - 12));
+        b.shapes.add(new Circle(12));
+        try { b.userData._colorIdx = 1; } catch(_) {}
+        b.space = space;
+      }
+
+      // Tower 3: mixed hexagons
+      for (let i = 0; i < 10; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(
+          600 + (Math.random() - 0.5) * 4,
+          H - 30 - 28 * i - 14,
+        ));
+        b.shapes.add(new Polygon(Polygon.regular(18, 18, 6)));
+        try { b.userData._colorIdx = 2; } catch(_) {}
+        b.space = space;
+      }
+
+      // Tower 4: wide thin boxes
+      for (let i = 0; i < 14; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(
+          780 + (i % 2 === 0 ? 0 : 10),
+          H - 30 - 16 * i - 8,
+        ));
+        b.shapes.add(new Polygon(Polygon.box(60, 14)));
+        try { b.userData._colorIdx = 4; } catch(_) {}
+        b.space = space;
+      }
+    },
+    click(x, y) {
+      const b = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+      b.shapes.add(new Polygon(Polygon.box(50, 50), new Material(0.3, 0.3, 0.3, 5)));
+      try { b.userData._colorIdx = 3; } catch(_) {}
+      b.space = space;
+    },
+    code: `// Stacking stability test — towers of various shapes
+const space = new Space(new Vec2(0, 600));
+
+// Static floor
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+// Tower of boxes
+for (let i = 0; i < 12; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(
+    200, H - 30 - 25 * i - 12.5,
+  ));
+  b.shapes.add(new Polygon(Polygon.box(40, 25)));
+  b.space = space;
+}
+
+// Tower of circles
+for (let i = 0; i < 10; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(
+    400, H - 30 - 24 * i - 12,
+  ));
+  b.shapes.add(new Circle(12));
+  b.space = space;
+}
+
+// Tower of hexagons (regular polygon with 6 sides)
+for (let i = 0; i < 10; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(
+    600, H - 30 - 28 * i - 14,
+  ));
+  b.shapes.add(new Polygon(
+    Polygon.regular(18, 18, 6) // xRadius, yRadius, sides
+  ));
+  b.space = space;
+}`,
+  },
+};
+
+// =========================================================================
+// Soft body helper
+// =========================================================================
+
+function createSoftBody(startX, startY, cols, rows, gap, colorIdx) {
+  const bodies = [];
+  for (let r = 0; r < rows; r++) {
+    bodies[r] = [];
+    for (let c = 0; c < cols; c++) {
+      const b = new Body(BodyType.DYNAMIC, new Vec2(
+        startX + c * gap,
+        startY + r * gap,
+      ));
+      b.shapes.add(new Circle(4));
+      try { b.userData._colorIdx = colorIdx; } catch(_) {}
+      b.space = space;
+      bodies[r][c] = b;
+    }
+  }
+
+  function springConnect(b1, b2, restLen) {
+    const dj = new DistanceJoint(
+      b1, b2,
+      new Vec2(0, 0), new Vec2(0, 0),
+      restLen * 0.8, restLen * 1.2,
+    );
+    dj.stiff = false;
+    dj.frequency = 15;
+    dj.damping = 0.4;
+    dj.space = space;
+  }
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (c < cols - 1) springConnect(bodies[r][c], bodies[r][c + 1], gap);
+      if (r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c], gap);
+      if (c < cols - 1 && r < rows - 1) {
+        springConnect(bodies[r][c], bodies[r + 1][c + 1], gap * Math.SQRT2);
+      }
+      if (c > 0 && r < rows - 1) {
+        springConnect(bodies[r][c], bodies[r + 1][c - 1], gap * Math.SQRT2);
+      }
+    }
+  }
 }
 
 // =========================================================================
@@ -348,13 +1293,13 @@ function startDemo(name) {
   if (animId) cancelAnimationFrame(animId);
   currentDemo = name;
 
-  // Update tabs
   document.querySelectorAll(".tab").forEach(t => {
     t.classList.toggle("active", t.dataset.demo === name);
   });
 
   const demo = DEMOS[name];
   demoDescEl.innerHTML = demo.desc;
+  updateCodePreview(demo);
   demo.setup();
 
   lastTime = performance.now();
@@ -368,7 +1313,6 @@ function loop() {
   const dt = now - lastTime;
   lastTime = now;
 
-  // FPS counter
   frameCount++;
   fpsAccum += dt;
   if (fpsAccum >= 500) {
@@ -378,19 +1322,21 @@ function loop() {
     fpsAccum = 0;
   }
 
-  // Physics step
+  // Per-demo step logic (e.g. custom gravity)
+  const demo = DEMOS[currentDemo];
+  if (demo.step) demo.step();
+
   const stepStart = performance.now();
   space.step(1 / 60, 8, 3);
   const stepMs = performance.now() - stepStart;
   stepTimeLabel.textContent = `Step: ${stepMs.toFixed(2)}ms`;
 
-  // Count bodies
   bodyCountLabel.textContent = `Bodies: ${space.bodies.length}`;
 
   // Render
   ctx.clearRect(0, 0, W, H);
 
-  // Draw background grid
+  // Background grid
   ctx.strokeStyle = "#1a2030";
   ctx.lineWidth = 0.5;
   for (let x = 0; x < W; x += 50) {
@@ -400,7 +1346,7 @@ function loop() {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
   }
 
-  // Draw constraints (raw access for now)
+  // Draw constraints
   try {
     const rawConstraints = space._inner.get_constraints();
     const cLen = rawConstraints.get_length();
@@ -450,7 +1396,6 @@ canvas.addEventListener("mousemove", (e) => {
   const { sx, sy } = getCanvasScale();
   mouseX = (e.clientX - rect.left) * sx;
   mouseY = (e.clientY - rect.top) * sy;
-  // Continuous spawning for falling demo
   if (currentDemo === "falling") {
     spawnRandomShape(mouseX + (Math.random()-0.5)*20, mouseY + (Math.random()-0.5)*20);
   }
@@ -459,7 +1404,6 @@ canvas.addEventListener("mousemove", (e) => {
 canvas.addEventListener("mouseup", () => { mouseDown = false; });
 canvas.addEventListener("mouseleave", () => { mouseDown = false; });
 
-// Touch support
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
   const touch = e.touches[0];
@@ -470,13 +1414,11 @@ canvas.addEventListener("touchstart", (e) => {
   DEMOS[currentDemo].click?.(mouseX, mouseY);
 }, { passive: false });
 
-// Demo tab switching
 document.getElementById("demoTabs").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
   if (tab) startDemo(tab.dataset.demo);
 });
 
-// Reset
 document.getElementById("resetBtn").addEventListener("click", () => {
   startDemo(currentDemo);
 });
@@ -489,14 +1431,11 @@ function runBenchmarkSuite() {
   const resultsEl = document.getElementById("benchResults");
   resultsEl.innerHTML = '<p class="bench-running">Running benchmarks&hellip;</p>';
 
-  // Use setTimeout to let the UI update
   setTimeout(() => {
     const results = [];
 
-    // Benchmark helper
     function benchStep(label, bodyCount, iterations) {
       const sp = new Space(new Vec2(0, 600));
-      // floor
       const fl = new Body(BodyType.STATIC, new Vec2(450, 550));
       fl.shapes.add(new Polygon(Polygon.box(900, 20)));
       fl.space = sp;
@@ -515,7 +1454,6 @@ function runBenchmarkSuite() {
         b.space = sp;
       }
 
-      // Warm up
       for (let i = 0; i < 5; i++) sp.step(1/60, 8, 3);
 
       const times = [];
@@ -540,7 +1478,6 @@ function runBenchmarkSuite() {
     benchStep("1 000 bodies", 1000, 50);
     benchStep("2 000 bodies", 2000, 30);
 
-    // Render results
     const maxAvg = Math.max(...results.map(r => r.avg));
 
     let html = `

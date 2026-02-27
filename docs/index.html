@@ -38,6 +38,12 @@
         <button class="tab" data-demo="pyramid">Pyramid</button>
         <button class="tab" data-demo="chain">Pendulum Chain</button>
         <button class="tab" data-demo="explosion">Impulse Blast</button>
+        <button class="tab" data-demo="constraints">Constraints</button>
+        <button class="tab" data-demo="softbody">Soft Body</button>
+        <button class="tab" data-demo="oneway">One-Way Platforms</button>
+        <button class="tab" data-demo="gravity">Orbital Gravity</button>
+        <button class="tab" data-demo="filtering">Filtering</button>
+        <button class="tab" data-demo="stacking">Stacking</button>
       </nav>
 
       <div class="canvas-wrap">
@@ -56,6 +62,18 @@
       </div>
 
       <div class="demo-description" id="demoDescription"></div>
+
+      <!-- Code Preview Panel -->
+      <div class="code-panel" id="codePanel">
+        <div class="code-panel-header">
+          <span class="code-panel-title">Source Code</span>
+          <div class="code-panel-actions">
+            <button class="btn btn-small" id="copyCodeBtn" title="Copy to clipboard">Copy</button>
+            <button class="btn btn-small btn-codepen" id="codepenBtn" title="Open in CodePen">CodePen</button>
+          </div>
+        </div>
+        <pre class="code-panel-body"><code id="codePreview"></code></pre>
+      </div>
     </div>
   </section>
 
