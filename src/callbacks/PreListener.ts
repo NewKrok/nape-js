@@ -1,9 +1,11 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
 import { CbType } from "./CbType";
 import { OptionType } from "./OptionType";
 import { InteractionType, toNativeInteractionType } from "./InteractionType";
 import { PreFlag, toNativePreFlag } from "./PreFlag";
 import { Listener } from "./Listener";
+import type { NapeInner, Writable } from "../geom/Vec2";
 
 /**
  * Listener that fires before collision resolution, allowing
@@ -14,15 +16,14 @@ export class PreListener extends Listener {
     interactionType: InteractionType,
     options1: CbType | OptionType,
     options2: CbType | OptionType,
-    handler: (callback: any) => any,
+    handler: (callback: NapeInner) => PreFlag | NapeInner,
     precedence: number = 0,
     pure: boolean = false,
   ) {
     super();
-    const nape = getNape();
 
     // Wrap handler to auto-convert PreFlag enum values to native
-    const wrappedHandler = (cb: any) => {
+    const wrappedHandler = (cb: NapeInner) => {
       const result = handler(cb);
       if (typeof result === "string" && result in PreFlag) {
         return toNativePreFlag(result as PreFlag);
@@ -30,7 +31,7 @@ export class PreListener extends Listener {
       return result;
     };
 
-    this._inner = new nape.callbacks.PreListener(
+    (this as Writable<PreListener>)._inner = new (getNape()).callbacks.PreListener(
       toNativeInteractionType(interactionType),
       options1._inner,
       options2._inner,
@@ -41,10 +42,11 @@ export class PreListener extends Listener {
   }
 
   /** @internal */
-  static _wrap(inner: any): PreListener {
-    if (!inner) return null as unknown as PreListener;
-    const l = Object.create(PreListener.prototype) as PreListener;
-    l._inner = inner;
-    return l;
+  static _wrap(inner: NapeInner): PreListener {
+    return getOrCreate(inner, (raw) => {
+      const l = Object.create(PreListener.prototype) as PreListener;
+      (l as Writable<PreListener>)._inner = raw;
+      return l;
+    });
   }
 }

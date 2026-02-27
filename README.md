@@ -1,5 +1,11 @@
 # @newkrok/nape-js
 
+[![npm version](https://img.shields.io/npm/v/@newkrok/nape-js.svg)](https://www.npmjs.com/package/@newkrok/nape-js)
+[![npm downloads](https://img.shields.io/npm/dm/@newkrok/nape-js.svg)](https://www.npmjs.com/package/@newkrok/nape-js)
+[![tests](https://img.shields.io/badge/tests-141%20passed-brightgreen.svg)](https://github.com/NewKrok/nape-js)
+[![bundle size](https://img.shields.io/badge/gzip-414%20KB-blue.svg)](https://github.com/NewKrok/nape-js)
+[![license](https://img.shields.io/npm/l/@newkrok/nape-js.svg)](https://github.com/NewKrok/nape-js/blob/master/LICENSE)
+
 Modern TypeScript wrapper for the [Nape](https://github.com/deltaluca/nape) 2D physics engine.
 
 - Original Haxe engine by Luca Deltodesco
@@ -130,7 +136,7 @@ body.space = space;
 ```bash
 npm install
 npm run build    # Compile TypeScript + bundle
-npm test         # Run tests (71 tests)
+npm test         # Run tests (141 tests)
 npm run benchmark # Performance benchmarks
 ```
 

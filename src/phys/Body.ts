@@ -1,9 +1,10 @@
 import { getNape } from "../core/engine";
-import { registerWrapper, wrapWith } from "../core/registry";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { AABB } from "../geom/AABB";
 import { NapeList } from "../util/NapeList";
 import { Shape } from "../shape/Shape";
+import { Space } from "../space/Space";
 import { Material } from "./Material";
 import { FluidProperties } from "./FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
@@ -14,195 +15,110 @@ import { BodyType, toNativeBodyType, fromNativeBodyType } from "./BodyType";
  */
 export class Body {
   /** @internal */
-  _inner: any;
+  readonly _inner: NapeInner;
 
   constructor(type: BodyType = BodyType.DYNAMIC, position?: Vec2) {
-    const nape = getNape();
-    this._inner = new nape.phys.Body(
+    this._inner = new (getNape()).phys.Body(
       toNativeBodyType(type),
       position?._inner,
     );
   }
 
   /** @internal */
-  static _wrap(inner: any): Body {
-    if (!inner) return null as unknown as Body;
-    const b = Object.create(Body.prototype) as Body;
-    b._inner = inner;
-    return b;
+  static _wrap(inner: NapeInner): Body {
+    return getOrCreate(inner, (raw) => {
+      const b = Object.create(Body.prototype) as Body;
+      (b as Writable<Body>)._inner = raw;
+      return b;
+    });
   }
 
   // ---------------------------------------------------------------------------
   // Type
   // ---------------------------------------------------------------------------
 
-  get type(): BodyType {
-    return fromNativeBodyType(this._inner.get_type());
-  }
-  set type(value: BodyType) {
-    this._inner.set_type(toNativeBodyType(value));
-  }
+  get type(): BodyType { return fromNativeBodyType(this._inner.get_type()); }
+  set type(value: BodyType) { this._inner.set_type(toNativeBodyType(value)); }
 
-  isStatic(): boolean {
-    return this._inner.isStatic();
-  }
-  isDynamic(): boolean {
-    return this._inner.isDynamic();
-  }
-  isKinematic(): boolean {
-    return this._inner.isKinematic();
-  }
+  isStatic(): boolean { return this._inner.isStatic(); }
+  isDynamic(): boolean { return this._inner.isDynamic(); }
+  isKinematic(): boolean { return this._inner.isKinematic(); }
 
   // ---------------------------------------------------------------------------
   // Position & rotation
   // ---------------------------------------------------------------------------
 
-  get position(): Vec2 {
-    return Vec2._wrap(this._inner.get_position());
-  }
-  set position(value: Vec2) {
-    this._inner.set_position(value._inner);
-  }
+  get position(): Vec2 { return Vec2._wrap(this._inner.get_position()); }
+  set position(value: Vec2) { this._inner.set_position(value._inner); }
 
-  get rotation(): number {
-    return this._inner.get_rotation();
-  }
-  set rotation(value: number) {
-    this._inner.set_rotation(value);
-  }
+  get rotation(): number { return this._inner.get_rotation(); }
+  set rotation(value: number) { this._inner.set_rotation(value); }
 
   // ---------------------------------------------------------------------------
   // Velocity
   // ---------------------------------------------------------------------------
 
-  get velocity(): Vec2 {
-    return Vec2._wrap(this._inner.get_velocity());
-  }
-  set velocity(value: Vec2) {
-    this._inner.set_velocity(value._inner);
-  }
+  get velocity(): Vec2 { return Vec2._wrap(this._inner.get_velocity()); }
+  set velocity(value: Vec2) { this._inner.set_velocity(value._inner); }
 
-  get angularVel(): number {
-    return this._inner.get_angularVel();
-  }
-  set angularVel(value: number) {
-    this._inner.set_angularVel(value);
-  }
+  get angularVel(): number { return this._inner.get_angularVel(); }
+  set angularVel(value: number) { this._inner.set_angularVel(value); }
 
-  get kinematicVel(): Vec2 {
-    return Vec2._wrap(this._inner.get_kinematicVel());
-  }
-  set kinematicVel(value: Vec2) {
-    this._inner.set_kinematicVel(value._inner);
-  }
+  get kinematicVel(): Vec2 { return Vec2._wrap(this._inner.get_kinematicVel()); }
+  set kinematicVel(value: Vec2) { this._inner.set_kinematicVel(value._inner); }
 
-  get kinAngVel(): number {
-    return this._inner.get_kinAngVel();
-  }
-  set kinAngVel(value: number) {
-    this._inner.set_kinAngVel(value);
-  }
+  get kinAngVel(): number { return this._inner.get_kinAngVel(); }
+  set kinAngVel(value: number) { this._inner.set_kinAngVel(value); }
 
-  get surfaceVel(): Vec2 {
-    return Vec2._wrap(this._inner.get_surfaceVel());
-  }
-  set surfaceVel(value: Vec2) {
-    this._inner.set_surfaceVel(value._inner);
-  }
+  get surfaceVel(): Vec2 { return Vec2._wrap(this._inner.get_surfaceVel()); }
+  set surfaceVel(value: Vec2) { this._inner.set_surfaceVel(value._inner); }
 
   // ---------------------------------------------------------------------------
   // Force & torque
   // ---------------------------------------------------------------------------
 
-  get force(): Vec2 {
-    return Vec2._wrap(this._inner.get_force());
-  }
-  set force(value: Vec2) {
-    this._inner.set_force(value._inner);
-  }
+  get force(): Vec2 { return Vec2._wrap(this._inner.get_force()); }
+  set force(value: Vec2) { this._inner.set_force(value._inner); }
 
-  get torque(): number {
-    return this._inner.get_torque();
-  }
-  set torque(value: number) {
-    this._inner.set_torque(value);
-  }
+  get torque(): number { return this._inner.get_torque(); }
+  set torque(value: number) { this._inner.set_torque(value); }
 
   // ---------------------------------------------------------------------------
   // Mass & inertia
   // ---------------------------------------------------------------------------
 
-  get mass(): number {
-    return this._inner.get_mass();
-  }
-  set mass(value: number) {
-    this._inner.set_mass(value);
-  }
+  get mass(): number { return this._inner.get_mass(); }
+  set mass(value: number) { this._inner.set_mass(value); }
 
-  get inertia(): number {
-    return this._inner.get_inertia();
-  }
-  set inertia(value: number) {
-    this._inner.set_inertia(value);
-  }
+  get inertia(): number { return this._inner.get_inertia(); }
+  set inertia(value: number) { this._inner.set_inertia(value); }
 
-  get constraintMass(): number {
-    return this._inner.get_constraintMass();
-  }
+  get constraintMass(): number { return this._inner.get_constraintMass(); }
+  get constraintInertia(): number { return this._inner.get_constraintInertia(); }
 
-  get constraintInertia(): number {
-    return this._inner.get_constraintInertia();
-  }
+  get gravMass(): number { return this._inner.get_gravMass(); }
+  set gravMass(value: number) { this._inner.set_gravMass(value); }
 
-  get gravMass(): number {
-    return this._inner.get_gravMass();
-  }
-  set gravMass(value: number) {
-    this._inner.set_gravMass(value);
-  }
-
-  get gravMassScale(): number {
-    return this._inner.get_gravMassScale();
-  }
-  set gravMassScale(value: number) {
-    this._inner.set_gravMassScale(value);
-  }
+  get gravMassScale(): number { return this._inner.get_gravMassScale(); }
+  set gravMassScale(value: number) { this._inner.set_gravMassScale(value); }
 
   // ---------------------------------------------------------------------------
   // Flags
   // ---------------------------------------------------------------------------
 
-  get isBullet(): boolean {
-    return this._inner.get_isBullet();
-  }
-  set isBullet(value: boolean) {
-    this._inner.set_isBullet(value);
-  }
+  get isBullet(): boolean { return this._inner.get_isBullet(); }
+  set isBullet(value: boolean) { this._inner.set_isBullet(value); }
 
-  get disableCCD(): boolean {
-    return this._inner.get_disableCCD();
-  }
-  set disableCCD(value: boolean) {
-    this._inner.set_disableCCD(value);
-  }
+  get disableCCD(): boolean { return this._inner.get_disableCCD(); }
+  set disableCCD(value: boolean) { this._inner.set_disableCCD(value); }
 
-  get allowMovement(): boolean {
-    return this._inner.get_allowMovement();
-  }
-  set allowMovement(value: boolean) {
-    this._inner.set_allowMovement(value);
-  }
+  get allowMovement(): boolean { return this._inner.get_allowMovement(); }
+  set allowMovement(value: boolean) { this._inner.set_allowMovement(value); }
 
-  get allowRotation(): boolean {
-    return this._inner.get_allowRotation();
-  }
-  set allowRotation(value: boolean) {
-    this._inner.set_allowRotation(value);
-  }
+  get allowRotation(): boolean { return this._inner.get_allowRotation(); }
+  set allowRotation(value: boolean) { this._inner.set_allowRotation(value); }
 
-  get isSleeping(): boolean {
-    return this._inner.get_isSleeping();
-  }
+  get isSleeping(): boolean { return this._inner.get_isSleeping(); }
 
   // ---------------------------------------------------------------------------
   // Relationships
@@ -212,149 +128,72 @@ export class Body {
     return new NapeList(this._inner.get_shapes(), Shape._wrap);
   }
 
-  get space(): any {
-    return wrapWith("Space", this._inner.get_space());
+  get space(): Space {
+    return Space._wrap(this._inner.get_space());
   }
-  set space(value: any) {
+  set space(value: Space | null) {
     this._inner.set_space(value?._inner ?? null);
   }
 
-  get compound(): any {
-    return this._inner.get_compound();
-  }
-  set compound(value: any) {
+  get compound(): NapeInner { return this._inner.get_compound(); }
+  set compound(value: { _inner: NapeInner } | null) {
     this._inner.set_compound(value?._inner ?? null);
   }
 
-  get bounds(): AABB {
-    return AABB._wrap(this._inner.get_bounds());
-  }
-
-  get constraintVelocity(): Vec2 {
-    return Vec2._wrap(this._inner.get_constraintVelocity());
-  }
-
-  get localCOM(): Vec2 {
-    return Vec2._wrap(this._inner.get_localCOM());
-  }
-
-  get worldCOM(): Vec2 {
-    return Vec2._wrap(this._inner.get_worldCOM());
-  }
-
-  get userData(): any {
-    return this._inner.get_userData();
-  }
+  get bounds(): AABB { return AABB._wrap(this._inner.get_bounds()); }
+  get constraintVelocity(): Vec2 { return Vec2._wrap(this._inner.get_constraintVelocity()); }
+  get localCOM(): Vec2 { return Vec2._wrap(this._inner.get_localCOM()); }
+  get worldCOM(): Vec2 { return Vec2._wrap(this._inner.get_worldCOM()); }
+  get userData(): Record<string, unknown> { return this._inner.get_userData(); }
 
   // ---------------------------------------------------------------------------
   // Methods
   // ---------------------------------------------------------------------------
 
-  /** Integrate the body forward by deltaTime seconds. */
-  integrate(deltaTime: number): void {
-    this._inner.integrate(deltaTime);
-  }
+  integrate(deltaTime: number): void { this._inner.integrate(deltaTime); }
 
-  /** Apply a linear impulse at an optional world-space point. */
   applyImpulse(impulse: Vec2, pos?: Vec2, sleepable?: boolean): void {
     this._inner.applyImpulse(impulse._inner, pos?._inner, sleepable);
   }
 
-  /** Apply an angular impulse (torque × dt). */
   applyAngularImpulse(impulse: number, sleepable?: boolean): void {
     this._inner.applyAngularImpulse(impulse, sleepable);
   }
 
-  /** Set velocity so the body reaches the target position/rotation in deltaTime. */
-  setVelocityFromTarget(
-    targetPosition: Vec2,
-    targetRotation: number,
-    deltaTime: number,
-  ): void {
-    this._inner.setVelocityFromTarget(
-      targetPosition._inner,
-      targetRotation,
-      deltaTime,
-    );
+  setVelocityFromTarget(targetPosition: Vec2, targetRotation: number, deltaTime: number): void {
+    this._inner.setVelocityFromTarget(targetPosition._inner, targetRotation, deltaTime);
   }
 
-  /** Transform a point from local to world coordinates. */
   localPointToWorld(point: Vec2, weak: boolean = false): Vec2 {
     return Vec2._wrap(this._inner.localPointToWorld(point._inner, weak));
   }
 
-  /** Transform a point from world to local coordinates. */
   worldPointToLocal(point: Vec2, weak: boolean = false): Vec2 {
     return Vec2._wrap(this._inner.worldPointToLocal(point._inner, weak));
   }
 
-  /** Transform a direction vector from local to world coordinates. */
   localVectorToWorld(vector: Vec2, weak: boolean = false): Vec2 {
     return Vec2._wrap(this._inner.localVectorToWorld(vector._inner, weak));
   }
 
-  /** Transform a direction vector from world to local coordinates. */
   worldVectorToLocal(vector: Vec2, weak: boolean = false): Vec2 {
     return Vec2._wrap(this._inner.worldVectorToLocal(vector._inner, weak));
   }
 
-  /** Translate all shapes on this body by the given offset. */
-  translateShapes(translation: Vec2): void {
-    this._inner.translateShapes(translation._inner);
-  }
+  translateShapes(translation: Vec2): void { this._inner.translateShapes(translation._inner); }
+  rotateShapes(angle: number): void { this._inner.rotateShapes(angle); }
+  scaleShapes(scaleX: number, scaleY: number): void { this._inner.scaleShapes(scaleX, scaleY); }
+  align(): void { this._inner.align(); }
 
-  /** Rotate all shapes on this body by the given angle. */
-  rotateShapes(angle: number): void {
-    this._inner.rotateShapes(angle);
-  }
+  rotate(centre: Vec2, angle: number): void { this._inner.rotate(centre._inner, angle); }
 
-  /** Scale all shapes on this body. */
-  scaleShapes(scaleX: number, scaleY: number): void {
-    this._inner.scaleShapes(scaleX, scaleY);
-  }
+  setShapeMaterials(material: Material): void { this._inner.setShapeMaterials(material._inner); }
+  setShapeFilters(filter: InteractionFilter): void { this._inner.setShapeFilters(filter._inner); }
+  setShapeFluidProperties(fluidProperties: FluidProperties): void { this._inner.setShapeFluidProperties(fluidProperties._inner); }
 
-  /** Align the body so that its center of mass is at its position. */
-  align(): void {
-    this._inner.align();
-  }
+  contains(point: Vec2): boolean { return this._inner.contains(point._inner); }
+  crushFactor(): number { return this._inner.crushFactor(); }
 
-  /** Rotate the body about a world-space centre point. */
-  rotate(centre: Vec2, angle: number): void {
-    this._inner.rotate(centre._inner, angle);
-  }
-
-  /** Set the material for all shapes on this body. */
-  setShapeMaterials(material: Material): void {
-    this._inner.setShapeMaterials(material._inner);
-  }
-
-  /** Set the interaction filter for all shapes on this body. */
-  setShapeFilters(filter: InteractionFilter): void {
-    this._inner.setShapeFilters(filter._inner);
-  }
-
-  /** Set the fluid properties for all shapes on this body. */
-  setShapeFluidProperties(fluidProperties: FluidProperties): void {
-    this._inner.setShapeFluidProperties(fluidProperties._inner);
-  }
-
-  /** Check if a world-space point is inside this body. */
-  contains(point: Vec2): boolean {
-    return this._inner.contains(point._inner);
-  }
-
-  /** Crush factor for resolving inter-penetration. */
-  crushFactor(): number {
-    return this._inner.crushFactor();
-  }
-
-  copy(): Body {
-    return Body._wrap(this._inner.copy());
-  }
-
-  toString(): string {
-    return this._inner.toString();
-  }
+  copy(): Body { return Body._wrap(this._inner.copy()); }
+  toString(): string { return this._inner.toString(); }
 }
-
-registerWrapper("Body", Body._wrap);

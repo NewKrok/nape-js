@@ -1,4 +1,5 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
 
 /**
  * 2D vector used for positions, velocities, forces, and other 2D quantities.
@@ -7,19 +8,19 @@ import { getNape } from "../core/engine";
  */
 export class Vec2 {
   /** @internal Raw Haxe nape Vec2 object. */
-  _inner: any;
+  readonly _inner: NapeInner;
 
   constructor(x: number = 0, y: number = 0) {
-    const nape = getNape();
-    this._inner = new nape.geom.Vec2(x, y);
+    this._inner = new (getNape()).geom.Vec2(x, y);
   }
 
-  /** @internal Wrap an existing Haxe Vec2 without calling the constructor. */
-  static _wrap(inner: any): Vec2 {
-    if (!inner) return null as unknown as Vec2;
-    const v = Object.create(Vec2.prototype) as Vec2;
-    v._inner = inner;
-    return v;
+  /** @internal Wrap an existing Haxe Vec2 with caching. */
+  static _wrap(inner: NapeInner): Vec2 {
+    return getOrCreate(inner, (raw) => {
+      const v = Object.create(Vec2.prototype) as Vec2;
+      (v as Writable<Vec2>)._inner = raw;
+      return v;
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -184,3 +185,13 @@ export class Vec2 {
     return Vec2._wrap(getNape().geom.Vec2.fromPolar(length, angle, weak));
   }
 }
+
+// ---------------------------------------------------------------------------
+// Internal type helpers (used across wrapper modules)
+// ---------------------------------------------------------------------------
+
+/** @internal Opaque handle for any Haxe-compiled nape object. */
+export type NapeInner = any;
+
+/** @internal Helper to write to readonly properties during construction. */
+export type Writable<T> = { -readonly [P in keyof T]: T[P] };
