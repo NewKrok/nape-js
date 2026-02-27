@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { Circle } from "../../src/shape/Circle";
-import { Vec2 } from "../../src/geom/Vec2";
 import { Material } from "../../src/phys/Material";
 
 describe("Circle", () => {

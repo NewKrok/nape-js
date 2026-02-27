@@ -11,13 +11,7 @@ describe("WeldJoint", () => {
     const body1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
     const body2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
 
-    const joint = new WeldJoint(
-      body1,
-      body2,
-      new Vec2(10, 0),
-      new Vec2(-10, 0),
-      Math.PI / 2,
-    );
+    const joint = new WeldJoint(body1, body2, new Vec2(10, 0), new Vec2(-10, 0), Math.PI / 2);
 
     expect(joint.body1).toBeDefined();
     expect(joint.body2).toBeDefined();
@@ -25,12 +19,7 @@ describe("WeldJoint", () => {
   });
 
   it("should create a weld joint with null bodies and default phase", () => {
-    const joint = new WeldJoint(
-      null,
-      null,
-      new Vec2(5, 10),
-      new Vec2(15, 20),
-    );
+    const joint = new WeldJoint(null, null, new Vec2(5, 10), new Vec2(15, 20));
 
     expect(joint.anchor1.x).toBeCloseTo(5);
     expect(joint.anchor1.y).toBeCloseTo(10);
@@ -40,25 +29,14 @@ describe("WeldJoint", () => {
   });
 
   it("should get and set anchors and phase", () => {
-    const joint = new WeldJoint(
-      null,
-      null,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      0,
-    );
+    const joint = new WeldJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 0);
 
     joint.phase = 1.5;
     expect(joint.phase).toBeCloseTo(1.5);
   });
 
   it("should support stiff and soft modes", () => {
-    const joint = new WeldJoint(
-      null,
-      null,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new WeldJoint(null, null, new Vec2(0, 0), new Vec2(0, 0));
 
     expect(joint.stiff).toBe(true);
     joint.stiff = false;
@@ -72,12 +50,7 @@ describe("WeldJoint", () => {
   });
 
   it("should support base constraint properties", () => {
-    const joint = new WeldJoint(
-      null,
-      null,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new WeldJoint(null, null, new Vec2(0, 0), new Vec2(0, 0));
 
     expect(joint.active).toBe(true);
     joint.active = false;
@@ -106,13 +79,7 @@ describe("WeldJoint", () => {
     welded.space = space;
 
     // Weld the two bodies at their respective anchors with zero phase
-    const joint = new WeldJoint(
-      fixed,
-      welded,
-      new Vec2(20, 0),
-      new Vec2(0, 0),
-      0,
-    );
+    const joint = new WeldJoint(fixed, welded, new Vec2(20, 0), new Vec2(0, 0), 0);
     joint.space = space;
 
     for (let i = 0; i < 120; i++) {

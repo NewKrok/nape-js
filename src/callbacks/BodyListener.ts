@@ -23,7 +23,7 @@ export class BodyListener extends Listener {
     precedence: number = 0,
   ) {
     super();
-    (this as Writable<BodyListener>)._inner = new (getNape()).callbacks.BodyListener(
+    (this as Writable<BodyListener>)._inner = new (getNape().callbacks.BodyListener)(
       toNativeCbEvent(event),
       options._inner,
       handler,

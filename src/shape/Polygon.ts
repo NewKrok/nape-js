@@ -11,11 +11,7 @@ import { Shape, _bindPolygonWrap } from "./Shape";
  * Use the static helper methods (`box`, `rect`, `regular`) for common shapes.
  */
 export class Polygon extends Shape {
-  constructor(
-    vertices?: Vec2[] | NapeInner,
-    material?: Material,
-    filter?: InteractionFilter,
-  ) {
+  constructor(vertices?: Vec2[] | NapeInner, material?: Material, filter?: InteractionFilter) {
     super();
     const nape = getNape();
 
@@ -49,11 +45,23 @@ export class Polygon extends Shape {
     return getNape().shape.Polygon.box(width, height, weak);
   }
 
-  static rect(x: number, y: number, width: number, height: number, weak: boolean = false): NapeInner {
+  static rect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    weak: boolean = false,
+  ): NapeInner {
     return getNape().shape.Polygon.rect(x, y, width, height, weak);
   }
 
-  static regular(xRadius: number, yRadius: number, sides: number, angle: number = 0, weak: boolean = false): NapeInner {
+  static regular(
+    xRadius: number,
+    yRadius: number,
+    sides: number,
+    angle: number = 0,
+    weak: boolean = false,
+  ): NapeInner {
     return getNape().shape.Polygon.regular(xRadius, yRadius, sides, angle, weak);
   }
 

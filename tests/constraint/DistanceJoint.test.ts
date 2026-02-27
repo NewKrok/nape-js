@@ -11,14 +11,7 @@ describe("DistanceJoint", () => {
     const body1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
     const body2 = new Body(BodyType.DYNAMIC, new Vec2(100, 0));
 
-    const joint = new DistanceJoint(
-      body1,
-      body2,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      50,
-      150,
-    );
+    const joint = new DistanceJoint(body1, body2, new Vec2(0, 0), new Vec2(0, 0), 50, 150);
 
     expect(joint.body1).toBeDefined();
     expect(joint.body2).toBeDefined();
@@ -27,14 +20,7 @@ describe("DistanceJoint", () => {
   });
 
   it("should create a distance joint with null bodies", () => {
-    const joint = new DistanceJoint(
-      null,
-      null,
-      new Vec2(5, 10),
-      new Vec2(15, 20),
-      0,
-      100,
-    );
+    const joint = new DistanceJoint(null, null, new Vec2(5, 10), new Vec2(15, 20), 0, 100);
 
     expect(joint.anchor1.x).toBeCloseTo(5);
     expect(joint.anchor1.y).toBeCloseTo(10);
@@ -45,14 +31,7 @@ describe("DistanceJoint", () => {
   });
 
   it("should get and set joint limits", () => {
-    const joint = new DistanceJoint(
-      null,
-      null,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      10,
-      50,
-    );
+    const joint = new DistanceJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 10, 50);
 
     expect(joint.jointMin).toBeCloseTo(10);
     expect(joint.jointMax).toBeCloseTo(50);
@@ -65,14 +44,7 @@ describe("DistanceJoint", () => {
   });
 
   it("should support stiff and soft modes", () => {
-    const joint = new DistanceJoint(
-      null,
-      null,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      0,
-      100,
-    );
+    const joint = new DistanceJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 0, 100);
 
     expect(joint.stiff).toBe(true);
     joint.stiff = false;
@@ -86,14 +58,7 @@ describe("DistanceJoint", () => {
   });
 
   it("should support base constraint properties", () => {
-    const joint = new DistanceJoint(
-      null,
-      null,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      0,
-      100,
-    );
+    const joint = new DistanceJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 0, 100);
 
     expect(joint.active).toBe(true);
     joint.active = false;
@@ -125,14 +90,7 @@ describe("DistanceJoint", () => {
     bob.space = space;
 
     // Constrain distance between 40 and 60 units
-    const joint = new DistanceJoint(
-      anchor,
-      bob,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      40,
-      60,
-    );
+    const joint = new DistanceJoint(anchor, bob, new Vec2(0, 0), new Vec2(0, 0), 40, 60);
     joint.space = space;
 
     for (let i = 0; i < 120; i++) {

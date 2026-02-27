@@ -11,7 +11,7 @@ export class InteractionGroup {
   readonly _inner: NapeInner;
 
   constructor(ignore: boolean = false) {
-    this._inner = new (getNape()).dynamics.InteractionGroup(ignore);
+    this._inner = new (getNape().dynamics.InteractionGroup)(ignore);
   }
 
   /** @internal */
@@ -30,8 +30,14 @@ export class InteractionGroup {
     this._inner.set_group(value?._inner ?? null);
   }
 
-  get ignore(): boolean { return this._inner.get_ignore(); }
-  set ignore(value: boolean) { this._inner.set_ignore(value); }
+  get ignore(): boolean {
+    return this._inner.get_ignore();
+  }
+  set ignore(value: boolean) {
+    this._inner.set_ignore(value);
+  }
 
-  toString(): string { return this._inner.toString(); }
+  toString(): string {
+    return this._inner.toString();
+  }
 }

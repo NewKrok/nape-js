@@ -31,11 +31,21 @@ export class Listener {
     this._inner.set_space(value?._inner ?? null);
   }
 
-  get precedence(): number { return this._inner.get_precedence(); }
-  set precedence(value: number) { this._inner.set_precedence(value); }
+  get precedence(): number {
+    return this._inner.get_precedence();
+  }
+  set precedence(value: number) {
+    this._inner.set_precedence(value);
+  }
 
-  get enabled(): boolean { return this._inner.get_enabled(); }
-  set enabled(value: boolean) { this._inner.set_enabled(value); }
+  get enabled(): boolean {
+    return this._inner.get_enabled();
+  }
+  set enabled(value: boolean) {
+    this._inner.set_enabled(value);
+  }
 
-  toString(): string { return this._inner.toString(); }
+  toString(): string {
+    return this._inner.toString();
+  }
 }

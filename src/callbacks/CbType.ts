@@ -11,7 +11,7 @@ export class CbType {
   readonly _inner: NapeInner;
 
   constructor() {
-    (this as Writable<CbType>)._inner = new (getNape()).callbacks.CbType();
+    (this as Writable<CbType>)._inner = new (getNape().callbacks.CbType)();
   }
 
   /** @internal */

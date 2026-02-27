@@ -17,7 +17,7 @@ export class WeldJoint extends Constraint {
     phase: number = 0.0,
   ) {
     super();
-    (this as Writable<WeldJoint>)._inner = new (getNape()).constraint.WeldJoint(
+    (this as Writable<WeldJoint>)._inner = new (getNape().constraint.WeldJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,

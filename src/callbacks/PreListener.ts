@@ -31,7 +31,7 @@ export class PreListener extends Listener {
       return result;
     };
 
-    (this as Writable<PreListener>)._inner = new (getNape()).callbacks.PreListener(
+    (this as Writable<PreListener>)._inner = new (getNape().callbacks.PreListener)(
       toNativeInteractionType(interactionType),
       options1._inner,
       options2._inner,
