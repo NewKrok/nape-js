@@ -1,4 +1,6 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
+import { type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -13,8 +15,7 @@ export class MotorJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.MotorJoint(
+    (this as Writable<MotorJoint>)._inner = new (getNape()).constraint.MotorJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       rate,
@@ -23,11 +24,12 @@ export class MotorJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): MotorJoint {
-    if (!inner) return null as unknown as MotorJoint;
-    const j = Object.create(MotorJoint.prototype) as MotorJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): MotorJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(MotorJoint.prototype) as MotorJoint;
+      (j as Writable<MotorJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {

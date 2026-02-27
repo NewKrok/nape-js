@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -14,8 +15,7 @@ export class PivotJoint extends Constraint {
     anchor2: Vec2,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.PivotJoint(
+    (this as Writable<PivotJoint>)._inner = new (getNape()).constraint.PivotJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
@@ -24,11 +24,12 @@ export class PivotJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): PivotJoint {
-    if (!inner) return null as unknown as PivotJoint;
-    const j = Object.create(PivotJoint.prototype) as PivotJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): PivotJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(PivotJoint.prototype) as PivotJoint;
+      (j as Writable<PivotJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {

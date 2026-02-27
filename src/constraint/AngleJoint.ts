@@ -1,4 +1,6 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
+import { type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -14,8 +16,7 @@ export class AngleJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.AngleJoint(
+    (this as Writable<AngleJoint>)._inner = new (getNape()).constraint.AngleJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       jointMin,
@@ -25,11 +26,12 @@ export class AngleJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): AngleJoint {
-    if (!inner) return null as unknown as AngleJoint;
-    const j = Object.create(AngleJoint.prototype) as AngleJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): AngleJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(AngleJoint.prototype) as AngleJoint;
+      (j as Writable<AngleJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {

@@ -1,4 +1,6 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
+import type { NapeInner, Writable } from "../geom/Vec2";
 import { CbType } from "./CbType";
 
 /**
@@ -6,27 +8,28 @@ import { CbType } from "./CbType";
  */
 export class OptionType {
   /** @internal */
-  _inner: any;
+  readonly _inner: NapeInner;
 
   constructor(cbTypes?: CbType | CbType[]) {
     const nape = getNape();
     if (cbTypes instanceof CbType) {
-      this._inner = new nape.callbacks.OptionType(cbTypes._inner);
+      (this as Writable<OptionType>)._inner = new nape.callbacks.OptionType(cbTypes._inner);
     } else if (Array.isArray(cbTypes) && cbTypes.length > 0) {
-      this._inner = new nape.callbacks.OptionType(cbTypes[0]._inner);
+      (this as Writable<OptionType>)._inner = new nape.callbacks.OptionType(cbTypes[0]._inner);
       for (let i = 1; i < cbTypes.length; i++) {
         this._inner.including(cbTypes[i]._inner);
       }
     } else {
-      this._inner = new nape.callbacks.OptionType();
+      (this as Writable<OptionType>)._inner = new nape.callbacks.OptionType();
     }
   }
 
   /** @internal */
-  static _wrap(inner: any): OptionType {
-    if (!inner) return null as unknown as OptionType;
-    const o = Object.create(OptionType.prototype) as OptionType;
-    o._inner = inner;
-    return o;
+  static _wrap(inner: NapeInner): OptionType {
+    return getOrCreate(inner, (raw) => {
+      const o = Object.create(OptionType.prototype) as OptionType;
+      (o as Writable<OptionType>)._inner = raw;
+      return o;
+    });
   }
 }

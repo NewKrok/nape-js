@@ -1,8 +1,9 @@
 import { getNape } from "../core/engine";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
-import { Shape, _registerCircleClass } from "./Shape";
+import { Shape, _bindCircleWrap } from "./Shape";
 
 /**
  * A circular physics shape.
@@ -15,8 +16,7 @@ export class Circle extends Shape {
     filter?: InteractionFilter,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.shape.Circle(
+    (this as Writable<Circle>)._inner = new (getNape()).shape.Circle(
       radius,
       localCOM?._inner,
       material?._inner,
@@ -25,20 +25,17 @@ export class Circle extends Shape {
   }
 
   /** @internal */
-  static _wrap(inner: any): Circle {
-    if (!inner) return null as unknown as Circle;
-    const c = Object.create(Circle.prototype) as Circle;
-    c._inner = inner;
-    return c;
+  static _wrap(inner: NapeInner): Circle {
+    return getOrCreate(inner, (raw) => {
+      const c = Object.create(Circle.prototype) as Circle;
+      (c as Writable<Circle>)._inner = raw;
+      return c;
+    });
   }
 
-  get radius(): number {
-    return this._inner.get_radius();
-  }
-  set radius(value: number) {
-    this._inner.set_radius(value);
-  }
+  get radius(): number { return this._inner.get_radius(); }
+  set radius(value: number) { this._inner.set_radius(value); }
 }
 
-// Register with the base Shape class for castCircle support.
-_registerCircleClass(Circle);
+// Bind Circle._wrap into Shape so Shape._wrap can dispatch without circular import.
+_bindCircleWrap((inner) => Circle._wrap(inner));

@@ -1,4 +1,6 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
+import type { NapeInner, Writable } from "../geom/Vec2";
 
 /**
  * Callback type — used to tag interactors so that listeners
@@ -6,19 +8,19 @@ import { getNape } from "../core/engine";
  */
 export class CbType {
   /** @internal */
-  _inner: any;
+  readonly _inner: NapeInner;
 
   constructor() {
-    const nape = getNape();
-    this._inner = new nape.callbacks.CbType();
+    (this as Writable<CbType>)._inner = new (getNape()).callbacks.CbType();
   }
 
   /** @internal */
-  static _wrap(inner: any): CbType {
-    if (!inner) return null as unknown as CbType;
-    const c = Object.create(CbType.prototype) as CbType;
-    c._inner = inner;
-    return c;
+  static _wrap(inner: NapeInner): CbType {
+    return getOrCreate(inner, (raw) => {
+      const c = Object.create(CbType.prototype) as CbType;
+      (c as Writable<CbType>)._inner = raw;
+      return c;
+    });
   }
 
   /** Built-in type matching any body. */

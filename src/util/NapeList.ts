@@ -1,3 +1,5 @@
+import type { NapeInner } from "../geom/Vec2";
+
 /**
  * Generic typed wrapper around Haxe list objects (BodyList, ShapeList, etc.).
  *
@@ -5,13 +7,13 @@
  */
 export class NapeList<T> implements Iterable<T> {
   /** @internal */
-  _inner: any;
+  readonly _inner: NapeInner;
 
   /** @internal Function that wraps a raw Haxe element into its TS counterpart. */
-  private _wrap: (inner: any) => T;
+  private readonly _wrap: (inner: NapeInner) => T;
 
   /** @internal */
-  constructor(inner: any, wrap: (inner: any) => T) {
+  constructor(inner: NapeInner, wrap: (inner: NapeInner) => T) {
     this._inner = inner;
     this._wrap = wrap;
   }
@@ -27,17 +29,17 @@ export class NapeList<T> implements Iterable<T> {
   }
 
   /** Add an element to the list. */
-  add(item: T & { _inner: any }): void {
+  add(item: T & { _inner: NapeInner }): void {
     this._inner.add(item._inner);
   }
 
   /** Remove an element from the list. */
-  remove(item: T & { _inner: any }): void {
+  remove(item: T & { _inner: NapeInner }): void {
     this._inner.remove(item._inner);
   }
 
   /** Check if the list contains an element. */
-  has(item: T & { _inner: any }): boolean {
+  has(item: T & { _inner: NapeInner }): boolean {
     return this._inner.has(item._inner);
   }
 
@@ -52,7 +54,7 @@ export class NapeList<T> implements Iterable<T> {
   }
 
   /** Push an element to the end. */
-  push(item: T & { _inner: any }): void {
+  push(item: T & { _inner: NapeInner }): void {
     this._inner.push(item._inner);
   }
 
@@ -67,7 +69,7 @@ export class NapeList<T> implements Iterable<T> {
   }
 
   /** Unshift an element to the front. */
-  unshift(item: T & { _inner: any }): void {
+  unshift(item: T & { _inner: NapeInner }): void {
     this._inner.unshift(item._inner);
   }
 

@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -22,8 +23,7 @@ export class PulleyJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.PulleyJoint(
+    (this as Writable<PulleyJoint>)._inner = new (getNape()).constraint.PulleyJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       body3?._inner ?? null,
@@ -39,11 +39,12 @@ export class PulleyJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): PulleyJoint {
-    if (!inner) return null as unknown as PulleyJoint;
-    const j = Object.create(PulleyJoint.prototype) as PulleyJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): PulleyJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(PulleyJoint.prototype) as PulleyJoint;
+      (j as Writable<PulleyJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {

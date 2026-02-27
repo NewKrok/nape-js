@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -16,8 +17,7 @@ export class DistanceJoint extends Constraint {
     jointMax: number,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.DistanceJoint(
+    (this as Writable<DistanceJoint>)._inner = new (getNape()).constraint.DistanceJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
@@ -28,11 +28,12 @@ export class DistanceJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): DistanceJoint {
-    if (!inner) return null as unknown as DistanceJoint;
-    const j = Object.create(DistanceJoint.prototype) as DistanceJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): DistanceJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(DistanceJoint.prototype) as DistanceJoint;
+      (j as Writable<DistanceJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {

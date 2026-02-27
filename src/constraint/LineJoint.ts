@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -18,8 +19,7 @@ export class LineJoint extends Constraint {
     jointMax: number,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.LineJoint(
+    (this as Writable<LineJoint>)._inner = new (getNape()).constraint.LineJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
@@ -31,11 +31,12 @@ export class LineJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): LineJoint {
-    if (!inner) return null as unknown as LineJoint;
-    const j = Object.create(LineJoint.prototype) as LineJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): LineJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(LineJoint.prototype) as LineJoint;
+      (j as Writable<LineJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {

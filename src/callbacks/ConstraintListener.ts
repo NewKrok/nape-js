@@ -1,4 +1,6 @@
 import { getNape } from "../core/engine";
+import { getOrCreate } from "../core/cache";
+import type { NapeInner, Writable } from "../geom/Vec2";
 import { CbEvent, toNativeCbEvent } from "./CbEvent";
 import { CbType } from "./CbType";
 import { OptionType } from "./OptionType";
@@ -15,8 +17,7 @@ export class ConstraintListener extends Listener {
     precedence: number = 0,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.callbacks.ConstraintListener(
+    (this as Writable<ConstraintListener>)._inner = new (getNape()).callbacks.ConstraintListener(
       toNativeCbEvent(event),
       options._inner,
       handler,
@@ -25,12 +26,13 @@ export class ConstraintListener extends Listener {
   }
 
   /** @internal */
-  static _wrap(inner: any): ConstraintListener {
-    if (!inner) return null as unknown as ConstraintListener;
-    const l = Object.create(
-      ConstraintListener.prototype,
-    ) as ConstraintListener;
-    l._inner = inner;
-    return l;
+  static _wrap(inner: NapeInner): ConstraintListener {
+    return getOrCreate(inner, (raw) => {
+      const l = Object.create(
+        ConstraintListener.prototype,
+      ) as ConstraintListener;
+      (l as Writable<ConstraintListener>)._inner = raw;
+      return l;
+    });
   }
 }

@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
-import { Vec2 } from "../geom/Vec2";
+import { getOrCreate } from "../core/cache";
+import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 
@@ -16,8 +17,7 @@ export class WeldJoint extends Constraint {
     phase: number = 0.0,
   ) {
     super();
-    const nape = getNape();
-    this._inner = new nape.constraint.WeldJoint(
+    (this as Writable<WeldJoint>)._inner = new (getNape()).constraint.WeldJoint(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
@@ -27,11 +27,12 @@ export class WeldJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: any): WeldJoint {
-    if (!inner) return null as unknown as WeldJoint;
-    const j = Object.create(WeldJoint.prototype) as WeldJoint;
-    j._inner = inner;
-    return j;
+  static _wrap(inner: NapeInner): WeldJoint {
+    return getOrCreate(inner, (raw) => {
+      const j = Object.create(WeldJoint.prototype) as WeldJoint;
+      (j as Writable<WeldJoint>)._inner = raw;
+      return j;
+    });
   }
 
   get body1(): Body {
