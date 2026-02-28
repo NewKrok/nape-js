@@ -141,4 +141,4 @@ ZPP_InteractionGroup._wrapFn = (zpp: ZPP_InteractionGroup): InteractionGroup => 
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.dynamics.InteractionGroup = InteractionGroup;
-InteractionGroup.prototype.__class__ = InteractionGroup;
+(InteractionGroup.prototype as any).__class__ = InteractionGroup;
