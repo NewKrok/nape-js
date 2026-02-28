@@ -1344,411 +1344,6 @@ function loop() {
 loop();`,
   },
 
-  // ------ Soft Body ------
-  softbody: {
-    label: "Soft Body",
-    desc: 'Soft bodies created with <code>DistanceJoint</code> springs. <b>Click</b> to drop a new soft body.',
-    setup() {
-      space = new Space(new Vec2(0, 400));
-      addWalls();
-      createSoftBody(W / 2 - 80, 100, 6, 6, 22, 0);
-      createSoftBody(W / 2 + 80, 80, 5, 5, 26, 2);
-    },
-    click(x, y) {
-      const cols = 4 + Math.floor(Math.random() * 4);
-      const rows = 4 + Math.floor(Math.random() * 4);
-      createSoftBody(x, y, cols, rows, 20, Math.floor(Math.random() * 6));
-    },
-    code2d: `// Soft bodies using DistanceJoint springs
-const space = new Space(new Vec2(0, 400));
-
-// Static walls
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
-
-function createSoftBody(startX, startY, cols, rows, gap) {
-  const bodies = [];
-  for (let r = 0; r < rows; r++) {
-    bodies[r] = [];
-    for (let c = 0; c < cols; c++) {
-      const b = new Body(BodyType.DYNAMIC, new Vec2(startX + c * gap, startY + r * gap));
-      b.shapes.add(new Circle(4));
-      b.space = space;
-      bodies[r][c] = b;
-    }
-  }
-  function springConnect(b1, b2, restLen) {
-    const dj = new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), restLen * 0.8, restLen * 1.2);
-    dj.stiff = false; dj.frequency = 15; dj.damping = 0.4;
-    dj.space = space;
-  }
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (c < cols - 1) springConnect(bodies[r][c], bodies[r][c + 1], gap);
-      if (r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c], gap);
-      if (c < cols - 1 && r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c + 1], gap * Math.SQRT2);
-    }
-  }
-}
-
-createSoftBody(W / 2 - 60, 100, 6, 6, 22);
-
-// 2D Canvas rendering
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(88,166,255,0.5)";
-      ctx.fill();
-      ctx.strokeStyle = "#58a6ff";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
-function drawConstraintLines() {
-  try {
-    const raw = space._inner.get_constraints();
-    for (let i = 0; i < raw.get_length(); i++) {
-      const c = raw.at(i);
-      if (c.get_body1 && c.get_body2) {
-        const b1 = c.get_body1(), b2 = c.get_body2();
-        if (b1 && b2) {
-          ctx.beginPath();
-          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
-          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
-          ctx.strokeStyle = "#d2992233";
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-    }
-  } catch (_) {}
-}
-
-function loop() {
-  space.step(1 / 60, 8, 3);
-  ctx.clearRect(0, 0, W, H);
-  drawConstraintLines();
-  for (const body of space.bodies) drawBody(body);
-  requestAnimationFrame(loop);
-}
-loop();`,
-
-    code3d: `// Setup Three.js scene
-const container = document.getElementById("container");
-const W = 900, H = 500;
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
-camera.lookAt(W / 2, -H / 2, 0);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(W, H);
-container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
-
-// Physics
-const space = new Space(new Vec2(0, 400));
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
-
-const meshes = [];
-
-function createSoftBody(startX, startY, cols, rows, gap, color) {
-  const bodies = [];
-  for (let r = 0; r < rows; r++) {
-    bodies[r] = [];
-    for (let c = 0; c < cols; c++) {
-      const b = new Body(BodyType.DYNAMIC, new Vec2(startX + c * gap, startY + r * gap));
-      b.shapes.add(new Circle(4));
-      b.space = space;
-      bodies[r][c] = b;
-      const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(4, 8, 8),
-        new THREE.MeshPhongMaterial({ color }),
-      );
-      scene.add(mesh);
-      meshes.push({ mesh, body: b });
-    }
-  }
-  function springConnect(b1, b2, restLen) {
-    const dj = new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), restLen * 0.8, restLen * 1.2);
-    dj.stiff = false; dj.frequency = 15; dj.damping = 0.4;
-    dj.space = space;
-  }
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (c < cols - 1) springConnect(bodies[r][c], bodies[r][c + 1], gap);
-      if (r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c], gap);
-      if (c < cols - 1 && r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c + 1], gap * Math.SQRT2);
-    }
-  }
-}
-
-createSoftBody(W / 2 - 60, 100, 6, 6, 22, 0x58a6ff);
-createSoftBody(W / 2 + 80, 80, 5, 5, 26, 0x3fb950);
-
-function loop() {
-  space.step(1 / 60, 8, 3);
-  for (const { mesh, body } of meshes) {
-    mesh.position.set(body.position.x, -body.position.y, 0);
-  }
-  renderer.render(scene, camera);
-  requestAnimationFrame(loop);
-}
-loop();`,
-  },
-
-  // ------ One-Way Platforms ------
-  oneway: {
-    label: "One-Way Platforms",
-    desc: 'Bodies can pass through platforms from below but rest on them from above, using <code>PreListener</code>. Conveyor belts push shapes sideways. <b>Click</b> to spawn.',
-    setup() {
-      space = new Space(new Vec2(0, 600));
-      addWalls();
-
-      // CbType for one-way platforms
-      const platformType = new CbType();
-      const objectType = new CbType();
-
-      // PreListener: ignore collisions when object is moving upward relative to platform
-      const preListener = new PreListener(
-        InteractionType.COLLISION,
-        platformType,
-        objectType,
-        (cb) => {
-          const arbiter = cb.get_arbiter();
-          if (!arbiter) return PreFlag.ACCEPT;
-          try {
-            const colArb = arbiter.get_collisionArbiter();
-            if (!colArb) return PreFlag.ACCEPT;
-            const ny = colArb.get_normal().get_y();
-            // If normal points upward (platform below), accept; otherwise ignore
-            return ny < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
-          } catch (_) {
-            return PreFlag.ACCEPT;
-          }
-        },
-      );
-      preListener.space = space;
-
-      // Create staggered platforms
-      const platformPositions = [
-        { x: 300, y: 400, w: 200 },
-        { x: 600, y: 320, w: 180 },
-        { x: 250, y: 240, w: 200 },
-        { x: 650, y: 160, w: 180 },
-      ];
-
-      for (const p of platformPositions) {
-        const plat = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
-        plat.shapes.add(new Polygon(Polygon.box(p.w, 10)));
-        plat.shapes.at(0).cbTypes.add(platformType);
-        plat.space = space;
-      }
-
-      // Conveyor belt platform (kinematic)
-      const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
-      conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
-      conveyor.surfaceVel = new Vec2(100, 0);
-      conveyor.space = space;
-
-      // Drop some shapes
-      for (let i = 0; i < 25; i++) {
-        const b = spawnRandomShape(
-          150 + Math.random() * 600,
-          -Math.random() * 300,
-        );
-        for (const s of b.shapes) {
-          s.cbTypes.add(objectType);
-        }
-      }
-
-      this._objectType = objectType;
-    },
-    click(x, y) {
-      for (let i = 0; i < 5; i++) {
-        const b = spawnRandomShape(
-          x + (Math.random() - 0.5) * 40,
-          y + (Math.random() - 0.5) * 40,
-        );
-        if (this._objectType) {
-          for (const s of b.shapes) {
-            s.cbTypes.add(this._objectType);
-          }
-        }
-      }
-    },
-    code2d: `// One-way platforms using PreListener callbacks
-const space = new Space(new Vec2(0, 600));
-
-// Define callback types
-const platformType = new CbType();
-const objectType = new CbType();
-
-// PreListener: decide per-frame whether to accept collision
-const preListener = new PreListener(
-  InteractionType.COLLISION, platformType, objectType,
-  (cb) => {
-    const arbiter = cb.get_arbiter();
-    const colArb = arbiter.get_collisionArbiter();
-    const ny = colArb.get_normal().get_y();
-    return ny < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
-  },
-);
-preListener.space = space;
-
-// Platforms
-const platform = new Body(BodyType.STATIC, new Vec2(300, 350));
-platform.shapes.add(new Polygon(Polygon.box(200, 10)));
-platform.shapes.at(0).cbTypes.add(platformType);
-platform.space = space;
-
-// Conveyor belt
-const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
-conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
-conveyor.surfaceVel = new Vec2(100, 0);
-conveyor.space = space;
-
-// Spawn objects
-for (let i = 0; i < 15; i++) {
-  const obj = new Body(BodyType.DYNAMIC, new Vec2(
-    200 + Math.random() * 400, -Math.random() * 300,
-  ));
-  obj.shapes.add(new Circle(8 + Math.random() * 8));
-  obj.shapes.at(0).cbTypes.add(objectType);
-  obj.space = space;
-}
-
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isDynamic() ? COLORS[Math.abs(Math.round(body.position.x * 0.05)) % COLORS.length]
-    : body.isKinematic() ? "#d29922" : "#607888";
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
-function loop() {
-  space.step(1 / 60, 8, 3);
-  ctx.clearRect(0, 0, W, H);
-  for (const body of space.bodies) drawBody(body);
-  requestAnimationFrame(loop);
-}
-loop();`,
-
-    code3d: `// Setup Three.js scene
-const container = document.getElementById("container");
-const W = 900, H = 500;
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
-camera.lookAt(W / 2, -H / 2, 0);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(W, H);
-container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
-
-// Physics
-const space = new Space(new Vec2(0, 600));
-const platformType = new CbType();
-const objectType = new CbType();
-
-const preListener = new PreListener(
-  InteractionType.COLLISION, platformType, objectType,
-  (cb) => {
-    const colArb = cb.get_arbiter().get_collisionArbiter();
-    return colArb.get_normal().get_y() < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
-  },
-);
-preListener.space = space;
-
-const meshes = [];
-function addMesh(body, color) {
-  const shape = body.shapes.at(0);
-  let geom;
-  if (shape.isCircle()) {
-    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
-  } else {
-    const verts = shape.castPolygon.localVerts;
-    const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
-    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 20, bevelEnabled: false });
-    geom.translate(0, 0, -10);
-  }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
-  scene.add(mesh);
-  meshes.push({ mesh, body });
-}
-
-// Platform
-const platform = new Body(BodyType.STATIC, new Vec2(300, 350));
-platform.shapes.add(new Polygon(Polygon.box(200, 10)));
-platform.shapes.at(0).cbTypes.add(platformType);
-platform.space = space;
-addMesh(platform, 0x607888);
-
-// Conveyor
-const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
-conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
-conveyor.surfaceVel = new Vec2(100, 0);
-conveyor.space = space;
-addMesh(conveyor, 0xd29922);
-
-// Falling objects
-const COLORS = [0x58a6ff, 0x3fb950, 0xf85149, 0xa371f7];
-for (let i = 0; i < 15; i++) {
-  const obj = new Body(BodyType.DYNAMIC, new Vec2(200 + Math.random() * 400, -Math.random() * 300));
-  obj.shapes.add(new Circle(8 + Math.random() * 8));
-  obj.shapes.at(0).cbTypes.add(objectType);
-  obj.space = space;
-  addMesh(obj, COLORS[i % COLORS.length]);
-}
-
-function loop() {
-  space.step(1 / 60, 8, 3);
-  for (const { mesh, body } of meshes) {
-    mesh.position.set(body.position.x, -body.position.y, 0);
-    mesh.rotation.z = -body.rotation;
-  }
-  renderer.render(scene, camera);
-  requestAnimationFrame(loop);
-}
-loop();`,
-  },
-
   // ------ Orbital Gravity (Mario Galaxy style) ------
   gravity: {
     label: "Orbital Gravity",
@@ -1938,187 +1533,6 @@ function applyGravity() {
 
 function loop() {
   applyGravity();
-  space.step(1 / 60, 8, 3);
-  for (const { mesh, body } of meshes) {
-    mesh.position.set(body.position.x, -body.position.y, 0);
-  }
-  renderer.render(scene, camera);
-  requestAnimationFrame(loop);
-}
-loop();`,
-  },
-
-  // ------ Filtering Interactions ------
-  filtering: {
-    label: "Filtering",
-    desc: 'Three groups of shapes that only collide within their own group, using <code>InteractionFilter</code>. <b>Click</b> to spawn in the nearest group.',
-    setup() {
-      space = new Space(new Vec2(0, 500));
-      _colorCounter = 0;
-      addWalls();
-
-      this._groups = [
-        { filter: new InteractionFilter(1, 1), colorIdx: 0 },
-        { filter: new InteractionFilter(2, 2), colorIdx: 1 },
-        { filter: new InteractionFilter(4, 4), colorIdx: 3 },
-      ];
-
-      const regions = [
-        { x: 200, label: "Group 1" },
-        { x: 450, label: "Group 2" },
-        { x: 700, label: "Group 3" },
-      ];
-
-      for (let g = 0; g < 3; g++) {
-        for (let i = 0; i < 20; i++) {
-          const b = new Body(BodyType.DYNAMIC, new Vec2(
-            regions[g].x + (Math.random() - 0.5) * 120,
-            50 + Math.random() * 200,
-          ));
-          if (Math.random() < 0.5) {
-            b.shapes.add(new Circle(8 + Math.random() * 10, undefined, undefined, this._groups[g].filter));
-          } else {
-            const sz = 10 + Math.random() * 18;
-            b.shapes.add(new Polygon(Polygon.box(sz, sz), undefined, this._groups[g].filter));
-          }
-          try { b.userData._colorIdx = this._groups[g].colorIdx; } catch(_) {}
-          b.space = space;
-        }
-      }
-    },
-    click(x, y) {
-      // Find nearest group region
-      const gx = [200, 450, 700];
-      let nearest = 0;
-      let minDist = Math.abs(x - gx[0]);
-      for (let i = 1; i < 3; i++) {
-        const d = Math.abs(x - gx[i]);
-        if (d < minDist) { minDist = d; nearest = i; }
-      }
-      const grp = this._groups[nearest];
-      for (let i = 0; i < 5; i++) {
-        const b = new Body(BodyType.DYNAMIC, new Vec2(
-          x + (Math.random() - 0.5) * 30,
-          y + (Math.random() - 0.5) * 30,
-        ));
-        b.shapes.add(new Circle(8 + Math.random() * 10, undefined, undefined, grp.filter));
-        try { b.userData._colorIdx = grp.colorIdx; } catch(_) {}
-        b.space = space;
-      }
-    },
-    code2d: `// Collision filtering — shapes only collide within their group
-const space = new Space(new Vec2(0, 500));
-
-// Static floor
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
-
-// InteractionFilter(collisionGroup, collisionMask)
-const filterRed   = new InteractionFilter(1, 1);
-const filterGreen = new InteractionFilter(2, 2);
-const filterBlue  = new InteractionFilter(4, 4);
-
-const groups = [
-  { filter: filterRed,   x: 200, color: "#f85149" },
-  { filter: filterGreen, x: 450, color: "#3fb950" },
-  { filter: filterBlue,  x: 700, color: "#58a6ff" },
-];
-
-const bodyColors = new Map();
-for (const g of groups) {
-  for (let i = 0; i < 20; i++) {
-    const b = new Body(BodyType.DYNAMIC, new Vec2(
-      g.x + (Math.random() - 0.5) * 120, 50 + Math.random() * 200,
-    ));
-    b.shapes.add(new Circle(10, undefined, undefined, g.filter));
-    b.space = space;
-    bodyColors.set(b, g.color);
-  }
-}
-
-// 2D Canvas rendering
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  const color = bodyColors.get(body) || "#607888";
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
-function loop() {
-  space.step(1 / 60, 8, 3);
-  ctx.clearRect(0, 0, W, H);
-  for (const body of space.bodies) drawBody(body);
-  requestAnimationFrame(loop);
-}
-loop();`,
-
-    code3d: `// Setup Three.js scene
-const container = document.getElementById("container");
-const W = 900, H = 500;
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
-camera.lookAt(W / 2, -H / 2, 0);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(W, H);
-container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
-
-// Physics
-const space = new Space(new Vec2(0, 500));
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
-
-const filterRed   = new InteractionFilter(1, 1);
-const filterGreen = new InteractionFilter(2, 2);
-const filterBlue  = new InteractionFilter(4, 4);
-
-const groups = [
-  { filter: filterRed,   x: 200, color: 0xf85149 },
-  { filter: filterGreen, x: 450, color: 0x3fb950 },
-  { filter: filterBlue,  x: 700, color: 0x58a6ff },
-];
-
-const meshes = [];
-for (const g of groups) {
-  for (let i = 0; i < 20; i++) {
-    const b = new Body(BodyType.DYNAMIC, new Vec2(
-      g.x + (Math.random() - 0.5) * 120, 50 + Math.random() * 200,
-    ));
-    b.shapes.add(new Circle(10, undefined, undefined, g.filter));
-    b.space = space;
-    const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(10, 16, 16),
-      new THREE.MeshPhongMaterial({ color: g.color }),
-    );
-    scene.add(mesh);
-    meshes.push({ mesh, body: b });
-  }
-}
-
-function loop() {
   space.step(1 / 60, 8, 3);
   for (const { mesh, body } of meshes) {
     mesh.position.set(body.position.x, -body.position.y, 0);
@@ -2611,6 +2025,307 @@ for (let i = 0; i < 10; i++) {
   b.space = space;
   addMesh(b, 0x3fb950);
 }
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
+  },
+
+  // ------ Strand Beast ------
+  strandbeast: {
+    label: "Strand Beast",
+    desc: 'A Theo Jansen-style walking mechanism built from <code>PivotJoint</code> and a <code>MotorJoint</code>-driven crank. <b>Click</b> to apply impulse.',
+    setup() {
+      space = new Space(new Vec2(0, 400));
+      // Floor only
+      const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+      floor.shapes.add(new Polygon(Polygon.box(W + 400, 20)));
+      floor.space = space;
+
+      const cx = W / 2, cy = H - 100;
+
+      // Chassis
+      const chassis = new Body(BodyType.DYNAMIC, new Vec2(cx, cy));
+      chassis.shapes.add(new Polygon(Polygon.box(80, 12)));
+      try { chassis.userData._colorIdx = 0; } catch(_) {}
+      chassis.space = space;
+
+      // Crank (motor-driven wheel)
+      const crank = new Body(BodyType.DYNAMIC, new Vec2(cx, cy));
+      crank.shapes.add(new Circle(8));
+      try { crank.userData._colorIdx = 3; } catch(_) {}
+      crank.space = space;
+
+      const crankPivot = new PivotJoint(chassis, crank, new Vec2(0, 0), new Vec2(0, 0));
+      crankPivot.space = space;
+      const motor = new MotorJoint(chassis, crank, 3.0);
+      motor.space = space;
+
+      function createLeg(side, crankOffset) {
+        const dir = side === "left" ? -1 : 1;
+        const crankR = 20;
+
+        const upper = new Body(BodyType.DYNAMIC, new Vec2(cx + dir * 20, cy - 20));
+        upper.shapes.add(new Polygon(Polygon.box(6, 40)));
+        try { upper.userData._colorIdx = 1; } catch(_) {}
+        upper.space = space;
+
+        const crankAttach = new PivotJoint(
+          crank, upper,
+          new Vec2(Math.cos(crankOffset) * crankR, Math.sin(crankOffset) * crankR),
+          new Vec2(0, -20),
+        );
+        crankAttach.space = space;
+
+        const lower = new Body(BodyType.DYNAMIC, new Vec2(cx + dir * 20, cy + 20));
+        lower.shapes.add(new Polygon(Polygon.box(6, 40)));
+        try { lower.userData._colorIdx = 2; } catch(_) {}
+        lower.space = space;
+
+        const knee = new PivotJoint(upper, lower, new Vec2(0, 20), new Vec2(0, -20));
+        knee.space = space;
+
+        const guide = new DistanceJoint(chassis, lower, new Vec2(dir * 30, 0), new Vec2(0, 20), 30, 70);
+        guide.stiff = false;
+        guide.frequency = 6;
+        guide.damping = 0.5;
+        guide.space = space;
+      }
+
+      createLeg("left", 0);
+      createLeg("right", Math.PI);
+      createLeg("left", Math.PI * 2 / 3);
+      createLeg("right", Math.PI + Math.PI * 2 / 3);
+      createLeg("left", Math.PI * 4 / 3);
+      createLeg("right", Math.PI + Math.PI * 4 / 3);
+    },
+    click(x, y) {
+      for (const body of space.bodies) {
+        if (body.isStatic()) continue;
+        const dx = body.position.x - x;
+        const dy = body.position.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          const force = 800 * (1 - dist / 150);
+          body.applyImpulse(new Vec2(dx / dist * force, dy / dist * force));
+        }
+      }
+    },
+    code2d: `// Strand Beast — Theo Jansen walking mechanism
+const space = new Space(new Vec2(0, 400));
+
+// Floor
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W + 400, 20)));
+floor.space = space;
+
+const cx = W / 2, cy = H - 100;
+
+// Chassis
+const chassis = new Body(BodyType.DYNAMIC, new Vec2(cx, cy));
+chassis.shapes.add(new Polygon(Polygon.box(80, 12)));
+chassis.space = space;
+
+// Motor-driven crank
+const crank = new Body(BodyType.DYNAMIC, new Vec2(cx, cy));
+crank.shapes.add(new Circle(8));
+crank.space = space;
+
+new PivotJoint(chassis, crank, new Vec2(0, 0), new Vec2(0, 0)).space = space;
+new MotorJoint(chassis, crank, 3.0).space = space;
+
+// Create a leg pair connected to the crank
+function createLeg(side, crankOffset) {
+  const dir = side === "left" ? -1 : 1;
+  const crankR = 20;
+
+  // Upper leg
+  const upper = new Body(BodyType.DYNAMIC, new Vec2(cx + dir * 20, cy - 20));
+  upper.shapes.add(new Polygon(Polygon.box(6, 40)));
+  upper.space = space;
+
+  // Attach to crank with phase offset
+  new PivotJoint(crank, upper,
+    new Vec2(Math.cos(crankOffset) * crankR, Math.sin(crankOffset) * crankR),
+    new Vec2(0, -20),
+  ).space = space;
+
+  // Lower leg
+  const lower = new Body(BodyType.DYNAMIC, new Vec2(cx + dir * 20, cy + 20));
+  lower.shapes.add(new Polygon(Polygon.box(6, 40)));
+  lower.space = space;
+
+  // Knee pivot
+  new PivotJoint(upper, lower, new Vec2(0, 20), new Vec2(0, -20)).space = space;
+
+  // Guide spring to chassis
+  const guide = new DistanceJoint(chassis, lower,
+    new Vec2(dir * 30, 0), new Vec2(0, 20), 30, 70);
+  guide.stiff = false;
+  guide.frequency = 6;
+  guide.damping = 0.5;
+  guide.space = space;
+}
+
+// 3 pairs of legs with phase offsets
+createLeg("left", 0);
+createLeg("right", Math.PI);
+createLeg("left", Math.PI * 2 / 3);
+createLeg("right", Math.PI + Math.PI * 2 / 3);
+createLeg("left", Math.PI * 4 / 3);
+createLeg("right", Math.PI + Math.PI * 4 / 3);
+
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.y * 0.05)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawConstraintLines() {
+  try {
+    const raw = space._inner.get_constraints();
+    for (let i = 0; i < raw.get_length(); i++) {
+      const c = raw.at(i);
+      if (c.get_body1 && c.get_body2) {
+        const b1 = c.get_body1(), b2 = c.get_body2();
+        if (b1 && b2) {
+          ctx.beginPath();
+          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
+          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
+          ctx.strokeStyle = "#d2992233";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  } catch (_) {}
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  drawConstraintLines();
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 600);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 400));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W + 400, 20)));
+floor.space = space;
+
+const cx = W / 2, cy = H - 100;
+const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149];
+const meshes = [];
+
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 16, bevelEnabled: false });
+    geom.translate(0, 0, -8);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+// Chassis
+const chassis = new Body(BodyType.DYNAMIC, new Vec2(cx, cy));
+chassis.shapes.add(new Polygon(Polygon.box(80, 12)));
+chassis.space = space;
+addMesh(chassis, COLORS[0]);
+
+// Crank
+const crank = new Body(BodyType.DYNAMIC, new Vec2(cx, cy));
+crank.shapes.add(new Circle(8));
+crank.space = space;
+addMesh(crank, COLORS[3]);
+
+new PivotJoint(chassis, crank, new Vec2(0, 0), new Vec2(0, 0)).space = space;
+new MotorJoint(chassis, crank, 3.0).space = space;
+
+function createLeg(side, crankOffset) {
+  const dir = side === "left" ? -1 : 1;
+  const crankR = 20;
+
+  const upper = new Body(BodyType.DYNAMIC, new Vec2(cx + dir * 20, cy - 20));
+  upper.shapes.add(new Polygon(Polygon.box(6, 40)));
+  upper.space = space;
+  addMesh(upper, COLORS[1]);
+
+  new PivotJoint(crank, upper,
+    new Vec2(Math.cos(crankOffset) * crankR, Math.sin(crankOffset) * crankR),
+    new Vec2(0, -20)).space = space;
+
+  const lower = new Body(BodyType.DYNAMIC, new Vec2(cx + dir * 20, cy + 20));
+  lower.shapes.add(new Polygon(Polygon.box(6, 40)));
+  lower.space = space;
+  addMesh(lower, COLORS[2]);
+
+  new PivotJoint(upper, lower, new Vec2(0, 20), new Vec2(0, -20)).space = space;
+  const guide = new DistanceJoint(chassis, lower, new Vec2(dir * 30, 0), new Vec2(0, 20), 30, 70);
+  guide.stiff = false; guide.frequency = 6; guide.damping = 0.5;
+  guide.space = space;
+}
+
+createLeg("left", 0);
+createLeg("right", Math.PI);
+createLeg("left", Math.PI * 2 / 3);
+createLeg("right", Math.PI + Math.PI * 2 / 3);
+createLeg("left", Math.PI * 4 / 3);
+createLeg("right", Math.PI + Math.PI * 4 / 3);
 
 function loop() {
   space.step(1 / 60, 8, 3);

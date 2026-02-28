@@ -995,7 +995,205 @@ const EXAMPLES = [
       }
     },
   },
+
+  // ------ Soft Body ------
+  {
+    label: "Soft Body",
+    desc: "Soft bodies created with DistanceJoint springs connecting a grid of particles.",
+    tags: ["DistanceJoint", "Springs", "Soft Body"],
+    setup(W, H) {
+      const space = new Space(new Vec2(0, 400));
+      addWalls(space, W, H);
+
+      function createSoftBody(startX, startY, cols, rows, gap, colorIdx) {
+        const bodies = [];
+        for (let r = 0; r < rows; r++) {
+          bodies[r] = [];
+          for (let c = 0; c < cols; c++) {
+            const b = new Body(BodyType.DYNAMIC, new Vec2(startX + c * gap, startY + r * gap));
+            b.shapes.add(new Circle(4));
+            try { b.userData._colorIdx = colorIdx; } catch(_) {}
+            b.space = space;
+            bodies[r][c] = b;
+          }
+        }
+        function springConnect(b1, b2, restLen) {
+          const dj = new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), restLen * 0.8, restLen * 1.2);
+          dj.stiff = false;
+          dj.frequency = 15;
+          dj.damping = 0.4;
+          dj.space = space;
+        }
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (c < cols - 1) springConnect(bodies[r][c], bodies[r][c + 1], gap);
+            if (r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c], gap);
+            if (c < cols - 1 && r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c + 1], gap * Math.SQRT2);
+            if (c > 0 && r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c - 1], gap * Math.SQRT2);
+          }
+        }
+      }
+
+      createSoftBody(W / 2 - 80, 60, 6, 6, 22, 0);
+      createSoftBody(W / 2 + 40, 50, 5, 5, 26, 2);
+
+      space._createSoftBody = createSoftBody;
+      return space;
+    },
+    click(space, x, y) {
+      const cols = 4 + Math.floor(Math.random() * 3);
+      const rows = 4 + Math.floor(Math.random() * 3);
+      if (space._createSoftBody) {
+        space._createSoftBody(x, y, cols, rows, 20, Math.floor(Math.random() * 6));
+      }
+    },
+  },
+
+  // ------ One-Way Platforms ------
+  {
+    label: "One-Way Platforms",
+    desc: "Bodies pass through platforms from below but rest on them from above using PreListener. Conveyors push shapes sideways.",
+    tags: ["PreListener", "CbType", "Kinematic"],
+    setup(W, H) {
+      const space = new Space(new Vec2(0, 600));
+      addWalls(space, W, H);
+
+      const platformType = new CbType();
+      const objectType = new CbType();
+
+      const preListener = new PreListener(
+        InteractionType.COLLISION,
+        platformType,
+        objectType,
+        (cb) => {
+          const arbiter = cb.get_arbiter();
+          if (!arbiter) return PreFlag.ACCEPT;
+          try {
+            const colArb = arbiter.get_collisionArbiter();
+            if (!colArb) return PreFlag.ACCEPT;
+            const ny = colArb.get_normal().get_y();
+            return ny < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
+          } catch (_) {
+            return PreFlag.ACCEPT;
+          }
+        },
+      );
+      preListener.space = space;
+
+      const platformPositions = [
+        { x: W * 0.35, y: H * 0.7, w: W * 0.35 },
+        { x: W * 0.65, y: H * 0.5, w: W * 0.3 },
+        { x: W * 0.3, y: H * 0.35, w: W * 0.35 },
+      ];
+
+      for (const p of platformPositions) {
+        const plat = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
+        plat.shapes.add(new Polygon(Polygon.box(p.w, 10)));
+        plat.shapes.at(0).cbTypes.add(platformType);
+        plat.space = space;
+      }
+
+      const conveyor = new Body(BodyType.KINEMATIC, new Vec2(W / 2, H * 0.85));
+      conveyor.shapes.add(new Polygon(Polygon.box(W * 0.5, 10)));
+      conveyor.surfaceVel = new Vec2(80, 0);
+      conveyor.space = space;
+
+      for (let i = 0; i < 20; i++) {
+        const b = spawnRandomShape(space,
+          40 + Math.random() * (W - 80),
+          -Math.random() * 200,
+        );
+        for (const s of b.shapes) {
+          s.cbTypes.add(objectType);
+        }
+      }
+
+      space._objectType = objectType;
+      return space;
+    },
+    click(space, x, y) {
+      const b = spawnRandomShape(space, x, y);
+      if (space._objectType) {
+        for (const s of b.shapes) {
+          s.cbTypes.add(space._objectType);
+        }
+      }
+    },
+  },
+
+  // ------ Filtering ------
+  {
+    label: "Collision Filtering",
+    desc: "Three groups of shapes that only collide within their own group using InteractionFilter bitmasks.",
+    tags: ["InteractionFilter", "Groups"],
+    setup(W, H) {
+      const space = new Space(new Vec2(0, 500));
+      addWalls(space, W, H);
+
+      const groups = [
+        { filter: new InteractionFilter(1, 1), colorIdx: 0, x: W * 0.25 },
+        { filter: new InteractionFilter(2, 2), colorIdx: 1, x: W * 0.5 },
+        { filter: new InteractionFilter(4, 4), colorIdx: 3, x: W * 0.75 },
+      ];
+
+      for (const g of groups) {
+        for (let i = 0; i < 15; i++) {
+          const b = new Body(BodyType.DYNAMIC, new Vec2(
+            g.x + (Math.random() - 0.5) * (W * 0.2),
+            30 + Math.random() * (H * 0.4),
+          ));
+          if (Math.random() < 0.5) {
+            b.shapes.add(new Circle(6 + Math.random() * 8, undefined, undefined, g.filter));
+          } else {
+            const sz = 8 + Math.random() * 12;
+            b.shapes.add(new Polygon(Polygon.box(sz, sz), undefined, g.filter));
+          }
+          try { b.userData._colorIdx = g.colorIdx; } catch(_) {}
+          b.space = space;
+        }
+      }
+
+      space._groups = groups;
+      return space;
+    },
+    click(space, x, y, W) {
+      const groups = space._groups;
+      if (!groups) return;
+      const gx = groups.map(g => g.x);
+      let nearest = 0;
+      let minDist = Math.abs(x - gx[0]);
+      for (let i = 1; i < gx.length; i++) {
+        const d = Math.abs(x - gx[i]);
+        if (d < minDist) { minDist = d; nearest = i; }
+      }
+      const grp = groups[nearest];
+      for (let i = 0; i < 5; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(
+          x + (Math.random() - 0.5) * 30,
+          y + (Math.random() - 0.5) * 30,
+        ));
+        b.shapes.add(new Circle(6 + Math.random() * 8, undefined, undefined, grp.filter));
+        try { b.userData._colorIdx = grp.colorIdx; } catch(_) {}
+        b.space = space;
+      }
+    },
+  },
 ];
+
+// =========================================================================
+// Render mode state
+// =========================================================================
+
+let renderMode = "2d"; // "2d" or "3d"
+let THREE = null; // loaded on demand
+
+async function loadThree() {
+  if (THREE) return THREE;
+  THREE = await import("https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js");
+  return THREE;
+}
+
+const MESH_COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7, 0xdbabff];
 
 // =========================================================================
 // Card rendering system
@@ -1009,11 +1207,11 @@ const cards = EXAMPLES.map((example, idx) => {
   const card = document.createElement("div");
   card.className = "example-card";
 
-  const canvas = document.createElement("canvas");
-  canvas.className = "example-card-canvas";
-  canvas.width = CW;
-  canvas.height = CH;
-  card.appendChild(canvas);
+  // Container for the rendering area (canvas or WebGL)
+  const renderContainer = document.createElement("div");
+  renderContainer.className = "example-card-canvas";
+  renderContainer.style.position = "relative";
+  card.appendChild(renderContainer);
 
   const info = document.createElement("div");
   info.className = "example-card-info";
@@ -1023,10 +1221,84 @@ const cards = EXAMPLES.map((example, idx) => {
 
   grid.appendChild(card);
 
-  const ctx = canvas.getContext("2d");
   let space = null;
   let animId = null;
   let visible = false;
+  let currentMode = "2d";
+
+  // 2D state
+  let canvas2d = null;
+  let ctx = null;
+
+  // 3D state
+  let renderer3d = null;
+  let scene = null;
+  let camera = null;
+  let meshes = [];
+
+  function setup2d() {
+    renderContainer.innerHTML = "";
+    canvas2d = document.createElement("canvas");
+    canvas2d.width = CW;
+    canvas2d.height = CH;
+    canvas2d.style.width = "100%";
+    canvas2d.style.height = "100%";
+    canvas2d.style.display = "block";
+    renderContainer.appendChild(canvas2d);
+    ctx = canvas2d.getContext("2d");
+    attachClickHandler(canvas2d);
+  }
+
+  function setup3d() {
+    renderContainer.innerHTML = "";
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0e14);
+    camera = new THREE.PerspectiveCamera(45, CW / CH, 1, 2000);
+    camera.position.set(CW / 2, -CH / 2, Math.max(CW, CH) * 1.4);
+    camera.lookAt(CW / 2, -CH / 2, 0);
+    renderer3d = new THREE.WebGLRenderer({ antialias: true });
+    renderer3d.setSize(CW, CH);
+    renderer3d.domElement.style.width = "100%";
+    renderer3d.domElement.style.height = "100%";
+    renderer3d.domElement.style.display = "block";
+    renderContainer.appendChild(renderer3d.domElement);
+    scene.add(new THREE.AmbientLight(0x404050));
+    const dl = new THREE.DirectionalLight(0xffffff, 1);
+    dl.position.set(CW / 2, -CH / 2, 500);
+    scene.add(dl);
+    meshes = [];
+    attachClickHandler(renderer3d.domElement);
+  }
+
+  function buildMeshes() {
+    if (!space || !scene) return;
+    // Remove old meshes
+    for (const { mesh } of meshes) scene.remove(mesh);
+    meshes = [];
+    for (const body of space.bodies) {
+      for (const shape of body.shapes) {
+        let geom;
+        if (shape.isCircle()) {
+          geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+        } else if (shape.isPolygon()) {
+          const verts = shape.castPolygon.localVerts;
+          const len = verts.get_length();
+          if (len < 3) continue;
+          const pts = [];
+          for (let i = 0; i < len; i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+          const s = new THREE.Shape(pts);
+          geom = new THREE.ExtrudeGeometry(s, { depth: 16, bevelEnabled: false });
+          geom.translate(0, 0, -8);
+        }
+        if (!geom) continue;
+        const cIdx = (body.userData?._colorIdx ?? idx) % MESH_COLORS.length;
+        const color = body.isStatic() ? 0x607888 : MESH_COLORS[cIdx];
+        const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+        scene.add(mesh);
+        meshes.push({ mesh, body });
+      }
+    }
+  }
 
   function init() {
     space = example.setup(CW, CH);
@@ -1038,11 +1310,43 @@ const cards = EXAMPLES.map((example, idx) => {
     if (example.step) example.step(space);
     space.step(1 / 60, 8, 3);
 
-    ctx.clearRect(0, 0, CW, CH);
-    drawGrid(ctx, CW, CH);
-    drawConstraints(ctx, space);
-    for (const body of space.bodies) {
-      drawBody(ctx, body);
+    if (currentMode === "2d" && ctx) {
+      ctx.clearRect(0, 0, CW, CH);
+      drawGrid(ctx, CW, CH);
+      drawConstraints(ctx, space);
+      for (const body of space.bodies) drawBody(ctx, body);
+    } else if (currentMode === "3d" && renderer3d && scene && camera) {
+      // Sync new bodies that don't have meshes yet
+      const trackedBodies = new Set(meshes.map(m => m.body));
+      for (const body of space.bodies) {
+        if (!trackedBodies.has(body)) {
+          for (const shape of body.shapes) {
+            let geom;
+            if (shape.isCircle()) {
+              geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+            } else if (shape.isPolygon()) {
+              const verts = shape.castPolygon.localVerts;
+              const len = verts.get_length();
+              if (len < 3) continue;
+              const pts = [];
+              for (let i = 0; i < len; i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+              geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 16, bevelEnabled: false });
+              geom.translate(0, 0, -8);
+            }
+            if (!geom) continue;
+            const cIdx = (body.userData?._colorIdx ?? 0) % MESH_COLORS.length;
+            const color = body.isStatic() ? 0x607888 : MESH_COLORS[cIdx];
+            const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+            scene.add(mesh);
+            meshes.push({ mesh, body });
+          }
+        }
+      }
+      for (const { mesh, body } of meshes) {
+        mesh.position.set(body.position.x, -body.position.y, 0);
+        mesh.rotation.z = -body.rotation;
+      }
+      renderer3d.render(scene, camera);
     }
 
     animId = requestAnimationFrame(render);
@@ -1052,6 +1356,7 @@ const cards = EXAMPLES.map((example, idx) => {
     if (animId) return;
     visible = true;
     if (!space) init();
+    if (currentMode !== renderMode) switchMode(renderMode);
     render();
   }
 
@@ -1063,30 +1368,72 @@ const cards = EXAMPLES.map((example, idx) => {
     }
   }
 
-  // Click interaction
-  canvas.addEventListener("mousedown", (e) => {
-    if (!space) return;
-    const rect = canvas.getBoundingClientRect();
-    const sx = CW / rect.width;
-    const sy = CH / rect.height;
-    const mx = (e.clientX - rect.left) * sx;
-    const my = (e.clientY - rect.top) * sy;
-    if (example.click) example.click(space, mx, my, CW, CH);
+  function switchMode(mode) {
+    stop();
+    currentMode = mode;
+    if (mode === "3d" && THREE) {
+      setup3d();
+      if (!space) init();
+      buildMeshes();
+    } else {
+      setup2d();
+      if (!space) init();
+    }
+    if (visible) {
+      visible = true;
+      render();
+    }
+  }
+
+  function attachClickHandler(el) {
+    el.addEventListener("mousedown", (e) => {
+      if (!space) return;
+      const rect = el.getBoundingClientRect();
+      const sx = CW / rect.width;
+      const sy = CH / rect.height;
+      const mx = (e.clientX - rect.left) * sx;
+      const my = (e.clientY - rect.top) * sy;
+      if (example.click) example.click(space, mx, my, CW, CH);
+    });
+    el.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (!space) return;
+      const touch = e.touches[0];
+      const rect = el.getBoundingClientRect();
+      const sx = CW / rect.width;
+      const sy = CH / rect.height;
+      const mx = (touch.clientX - rect.left) * sx;
+      const my = (touch.clientY - rect.top) * sy;
+      if (example.click) example.click(space, mx, my, CW, CH);
+    }, { passive: false });
+  }
+
+  // Initial setup in 2D mode
+  setup2d();
+
+  return { card, start, stop, init, switchMode };
+});
+
+// =========================================================================
+// Render mode toggle
+// =========================================================================
+
+document.getElementById("renderModeToggle").addEventListener("click", async (e) => {
+  const btn = e.target.closest(".render-mode-btn");
+  if (!btn) return;
+  const mode = btn.dataset.mode;
+  if (mode === renderMode) return;
+
+  if (mode === "3d") await loadThree();
+
+  renderMode = mode;
+  document.querySelectorAll(".render-mode-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.mode === mode);
   });
 
-  canvas.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    if (!space) return;
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const sx = CW / rect.width;
-    const sy = CH / rect.height;
-    const mx = (touch.clientX - rect.left) * sx;
-    const my = (touch.clientY - rect.top) * sy;
-    if (example.click) example.click(space, mx, my, CW, CH);
-  }, { passive: false });
-
-  return { card, canvas, start, stop, init };
+  for (const c of cards) {
+    c.switchMode(mode);
+  }
 });
 
 // =========================================================================
