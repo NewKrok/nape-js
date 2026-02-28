@@ -7,6 +7,8 @@ export { Vec3 } from "./geom/Vec3";
 export { Mat23 } from "./geom/Mat23";
 export { GeomPoly } from "./geom/GeomPoly";
 export { AABB } from "./geom/AABB";
+export { MatMN } from "./geom/MatMN";
+export { MarchingSquares } from "./geom/MarchingSquares";
 
 // Physics
 export { Body } from "./phys/Body";

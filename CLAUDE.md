@@ -49,6 +49,9 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **GeomPoly** | `src/geom/GeomPoly.ts` | 53 | Complex polygon class, vertex ring, decomposition algorithms |
 | **CbType** | `src/callbacks/CbType.ts` | 31 | Callback type tags, ANY_* singletons, stub in compiled code |
 | **OptionType** | `src/callbacks/OptionType.ts` | 30 | Include/exclude CbType filtering, stub in compiled code |
+| **AABB** | `src/geom/AABB.ts` | 31 | Geometry bounds, Vec2 min/max wrappers |
+| **MatMN** | `src/geom/MatMN.ts` | 35 | Variable-sized M×N matrix, transpose/mul |
+| **MarchingSquares** | `src/geom/MarchingSquares.ts` | 23 | Static isosurface extraction, delegates to compiled ZPP_MarchingSquares |
 
 ### Compiled code stubs
 
@@ -67,15 +70,19 @@ initialization code or internal methods reference them before the TS module self
 TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVert`,
 `ZPP_Simple`, `ZPP_Monotone`, `ZPP_Convex`, etc.
 
-### Next candidates for full modernization (public API)
+### Next candidates for modernization
 
-These have their ZPP_* already extracted, making them ready for the same pattern:
+All ZPP_* classes with extracted internals now have modernized public APIs.
+Next candidates require extracting their ZPP_* classes first:
 
-| Candidate | ZPP Class | Complexity | Notes |
-|-----------|-----------|------------|-------|
-| `AABB` | `ZPP_AABB` | Medium | Geometry class, used widely, already has thin wrapper |
+| Candidate | Complexity | Notes |
+|-----------|------------|-------|
+| `Ray` | Medium | Geometry utility, needs ZPP_Ray extraction |
+| `Geom` | High | Static distance/intersection utility, many internal dependencies |
+| `GravMassMode` / `InertiaMode` / `MassMode` | Low | Simple enum-like classes using ZPP_Flags |
+| `ArbiterType` | Low | Simple enum-like class using ZPP_Flags |
 
-### Remaining in compiled code (~85 public API + ~80 internal ZPP classes)
+### Remaining in compiled code (~82 public API + ~80 internal ZPP classes)
 
 Major categories:
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
