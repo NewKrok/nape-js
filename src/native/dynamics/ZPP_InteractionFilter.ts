@@ -20,6 +20,9 @@ export class ZPP_InteractionFilter {
   static _nape: Any = null;
   static _zpp: Any = null;
 
+  // --- Static: wrapper factory callback (set by InteractionFilter.ts) ---
+  static _wrapFn: ((zpp: ZPP_InteractionFilter) => Any) | null = null;
+
   // --- Instance: collision bitmasks ---
   collisionGroup = 1;
   collisionMask = -1;
@@ -55,12 +58,16 @@ export class ZPP_InteractionFilter {
   /** Create/return the public nape.dynamics.InteractionFilter wrapper. */
   wrapper(): Any {
     if (this.outer == null) {
-      this.outer = new ZPP_InteractionFilter._nape.dynamics.InteractionFilter();
-      const o = this.outer.zpp_inner;
-      o.outer = null;
-      o.next = ZPP_InteractionFilter.zpp_pool;
-      ZPP_InteractionFilter.zpp_pool = o;
-      this.outer.zpp_inner = this;
+      if (ZPP_InteractionFilter._wrapFn) {
+        this.outer = ZPP_InteractionFilter._wrapFn(this);
+      } else {
+        this.outer = new ZPP_InteractionFilter._nape.dynamics.InteractionFilter();
+        const o = this.outer.zpp_inner;
+        o.outer = null;
+        o.next = ZPP_InteractionFilter.zpp_pool;
+        ZPP_InteractionFilter.zpp_pool = o;
+        this.outer.zpp_inner = this;
+      }
     }
     return this.outer;
   }

@@ -20,6 +20,9 @@ export class ZPP_InteractionGroup {
   // --- Static: namespace references (set by compiled module) ---
   static _zpp: Any = null;
 
+  // --- Static: wrapper factory callback (set by InteractionGroup.ts) ---
+  static _wrapFn: ((zpp: ZPP_InteractionGroup) => Any) | null = null;
+
   // --- Instance: public API wrapper ---
   outer: Any = null;
 
