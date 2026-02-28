@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — all 700+ tests
+npm test             # vitest — all 1000+ tests
 npm run lint         # eslint + prettier
 ```
 
@@ -37,23 +37,45 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 
 ### Already fully modernized (public API class replaces compiled code)
 
-| Class | File | Pattern |
-|-------|------|---------|
-| **Material** | `src/phys/Material.ts` | Direct ZPP_Material access, self-registers in namespace |
-| **InteractionFilter** | `src/dynamics/InteractionFilter.ts` | 6 bitmask props, shouldCollide/Sense/Flow |
-| **InteractionGroup** | `src/dynamics/InteractionGroup.ts` | 1 boolean prop, group hierarchy |
-| **FluidProperties** | `src/phys/FluidProperties.ts` | 2 props + gravity (Vec2 dependency) |
+| Class | File | Tests | Notes |
+|-------|------|-------|-------|
+| **Material** | `src/phys/Material.ts` | 4 | Direct ZPP_Material access, self-registers in namespace |
+| **InteractionFilter** | `src/dynamics/InteractionFilter.ts` | 26 | 6 bitmask props, shouldCollide/Sense/Flow |
+| **InteractionGroup** | `src/dynamics/InteractionGroup.ts` | 17 | 1 boolean prop, group hierarchy |
+| **FluidProperties** | `src/phys/FluidProperties.ts` | 24 | 2 props + gravity (Vec2 dependency) |
+| **Vec2** | `src/geom/Vec2.ts` | 45 | Core class, pooling, weak references |
+| **Vec3** | `src/geom/Vec3.ts` | 11 | 3D vector (x, y, z) with NaN checks |
+| **Mat23** | `src/geom/Mat23.ts` | 47 | 2x3 affine matrix, factories, inverse/concat/transform |
+| **GeomPoly** | `src/geom/GeomPoly.ts` | 53 | Complex polygon class, vertex ring, decomposition algorithms |
+| **CbType** | `src/callbacks/CbType.ts` | 31 | Callback type tags, ANY_* singletons, stub in compiled code |
+| **OptionType** | `src/callbacks/OptionType.ts` | 30 | Include/exclude CbType filtering, stub in compiled code |
+
+### Compiled code stubs
+
+Some modernized classes require minimal stubs in `nape-compiled.js` because the compiled
+initialization code or internal methods reference them before the TS module self-registers:
+
+- **CbType**: Stub constructor needed for `ANY_BODY/ANY_SHAPE/ANY_COMPOUND/ANY_CONSTRAINT`
+  singleton creation at init time (~line 121055). TS class retroactively fixes prototypes
+  via `Object.setPrototypeOf` after self-registration.
+- **OptionType**: Stub constructor + `including()`/`excluding()` needed for
+  `ZPP_OptionType.argument()` which uses `instanceof nape.callbacks.OptionType`.
+
+### Internal namespace exposure
+
+`nape.__zpp = zpp_nape;` is added at the end of the compiled factory function to allow
+TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVert`,
+`ZPP_Simple`, `ZPP_Monotone`, `ZPP_Convex`, etc.
 
 ### Next candidates for full modernization (public API)
 
-These have their ZPP_* already extracted, making them ready for the same pattern as Material:
+These have their ZPP_* already extracted, making them ready for the same pattern:
 
 | Candidate | ZPP Class | Complexity | Notes |
 |-----------|-----------|------------|-------|
-| `AABB` | `ZPP_AABB` | Medium | Geometry class, used widely |
-| `Vec2` | `ZPP_Vec2` | High | Core class, used everywhere, pooling |
+| `AABB` | `ZPP_AABB` | Medium | Geometry class, used widely, already has thin wrapper |
 
-### Remaining in compiled code (~93 public API + ~80 internal ZPP classes)
+### Remaining in compiled code (~85 public API + ~80 internal ZPP classes)
 
 Major categories:
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
@@ -179,9 +201,21 @@ circular imports because Foo.ts imports engine.ts → nape-compiled.js → Foo.t
 
 - **Circular imports**: Foo.ts imports engine.ts. engine.ts imports nape-compiled.js.
   nape-compiled.js must NOT import Foo.ts. Instead, Foo.ts self-registers at the bottom.
+- **Init-time usage**: If compiled initialization code (lines ~121000+) creates instances
+  of your class (e.g., `new nape.callbacks.CbType()` for singletons), you MUST keep a
+  minimal constructor stub in the compiled code. The TS class replaces the stub at module
+  load time, and existing instances need `Object.setPrototypeOf` fixup.
+- **Runtime `instanceof` checks**: If internal code like `ZPP_OptionType.argument()` uses
+  `val instanceof nape.callbacks.Foo`, you need a stub with the methods it calls
+  (e.g., `including`, `excluding`) so it works before the TS module loads.
+- **Already-modernized class imports**: When your TS class needs another already-modernized
+  class (e.g., GeomPoly needs AABB), import the TS class directly (`import { AABB } from
+  "./AABB"`) rather than using `getNape().geom.AABB`, which may not be registered yet.
 - **Density conversion**: Material stores density internally as `value / 1000`.
   Public API shows `zpp_inner.density * 1000`. Watch for similar conversions.
 - **NaN checks**: Use `value !== value` (the Haxe pattern for NaN detection).
 - **Invalidation flags**: Each property may trigger different invalidation bitmasks.
   Copy the exact flags from the compiled setter code.
 - **Pool management**: Always check `ZPP_Foo.zpp_pool` before `new ZPP_Foo()`.
+- **Compiled list APIs**: Lists still in compiled code (e.g., `CbTypeList`, `GeomPolyList`)
+  use `get_length()` not `.length`, and `CbTypeIterator.get(list)` for iteration.
