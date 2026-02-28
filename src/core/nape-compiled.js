@@ -209,55 +209,24 @@ define(function () {
   nape.Config.__name__ = ["nape", "Config"];
   nape.Config.prototype.__class__ = nape.Config;
   if (!nape.callbacks) nape.callbacks = {};
-  nape.callbacks.Callback = $hxClasses["nape.callbacks.Callback"] =
-    function () {
-      this.zpp_inner = null;
-      if (!zpp_nape.callbacks.ZPP_Callback.internal) {
-        throw new js._Boot.HaxeError(
-          "Error: Callback cannot be instantiated derp!"
-        );
-      }
-    };
+  // nape.callbacks.Callback: converted to TypeScript → src/callbacks/Callback.ts
+  // Minimal stub needed because compiled code (ZPP_Space, ZPP_Callback wrappers) creates instances.
+  // TS classes replace these stubs and fix prototypes via Object.setPrototypeOf at module load time.
+  nape.callbacks.Callback = function () {
+    this.zpp_inner = null;
+    if (!zpp_nape.callbacks.ZPP_Callback.internal) {
+      throw new js._Boot.HaxeError("Error: Callback cannot be instantiated derp!");
+    }
+  };
   nape.callbacks.Callback.__name__ = ["nape", "callbacks", "Callback"];
-  nape.callbacks.Callback.prototype.zpp_inner = null;
-  Object.defineProperty(nape.callbacks.Callback.prototype, "event", {
-    get: nape.callbacks.Callback.prototype.get_event,
-  });
-  nape.callbacks.Callback.prototype.get_event = function () {
-    return zpp_nape.callbacks.ZPP_Listener.events[this.zpp_inner.event];
-  };
-  Object.defineProperty(nape.callbacks.Callback.prototype, "listener", {
-    get: nape.callbacks.Callback.prototype.get_listener,
-  });
-  nape.callbacks.Callback.prototype.get_listener = function () {
-    return this.zpp_inner.listener.outer;
-  };
-  nape.callbacks.Callback.prototype.toString = function () {
-    return "";
-  };
   nape.callbacks.Callback.prototype.__class__ = nape.callbacks.Callback;
-  nape.callbacks.BodyCallback = $hxClasses["nape.callbacks.BodyCallback"] =
-    function () {
-      nape.callbacks.Callback.call(this);
-    };
+  // nape.callbacks.BodyCallback: stub → src/callbacks/BodyCallback.ts
+  nape.callbacks.BodyCallback = function () {
+    nape.callbacks.Callback.call(this);
+  };
   nape.callbacks.BodyCallback.__name__ = ["nape", "callbacks", "BodyCallback"];
   nape.callbacks.BodyCallback.__super__ = nape.callbacks.Callback;
-  for (var k in nape.callbacks.Callback.prototype)
-    nape.callbacks.BodyCallback.prototype[k] =
-      nape.callbacks.Callback.prototype[k];
-  Object.defineProperty(nape.callbacks.BodyCallback.prototype, "body", {
-    get: nape.callbacks.BodyCallback.prototype.get_body,
-  });
-  nape.callbacks.BodyCallback.prototype.get_body = function () {
-    return this.zpp_inner.body.outer;
-  };
-  nape.callbacks.BodyCallback.prototype.toString = function () {
-    var ret = "Cb:";
-    ret += ["WAKE", "SLEEP"][this.zpp_inner.event - 2];
-    ret += ":" + this.zpp_inner.body.outer.toString();
-    ret += " : listener: " + Std.string(this.zpp_inner.listener.outer);
-    return ret;
-  };
+  nape.callbacks.BodyCallback.prototype = Object.create(nape.callbacks.Callback.prototype);
   nape.callbacks.BodyCallback.prototype.__class__ = nape.callbacks.BodyCallback;
   nape.callbacks.Listener = $hxClasses["nape.callbacks.Listener"] =
     function () {
@@ -1259,37 +1228,14 @@ define(function () {
     return this;
   };
   nape.callbacks.CbTypeList.prototype.__class__ = nape.callbacks.CbTypeList;
-  nape.callbacks.ConstraintCallback = $hxClasses[
-    "nape.callbacks.ConstraintCallback"
-  ] = function () {
+  // nape.callbacks.ConstraintCallback: stub → src/callbacks/ConstraintCallback.ts
+  nape.callbacks.ConstraintCallback = function () {
     nape.callbacks.Callback.call(this);
   };
-  nape.callbacks.ConstraintCallback.__name__ = [
-    "nape",
-    "callbacks",
-    "ConstraintCallback",
-  ];
+  nape.callbacks.ConstraintCallback.__name__ = ["nape", "callbacks", "ConstraintCallback"];
   nape.callbacks.ConstraintCallback.__super__ = nape.callbacks.Callback;
-  for (var k in nape.callbacks.Callback.prototype)
-    nape.callbacks.ConstraintCallback.prototype[k] =
-      nape.callbacks.Callback.prototype[k];
-  Object.defineProperty(
-    nape.callbacks.ConstraintCallback.prototype,
-    "constraint",
-    { get: nape.callbacks.ConstraintCallback.prototype.get_constraint }
-  );
-  nape.callbacks.ConstraintCallback.prototype.get_constraint = function () {
-    return this.zpp_inner.constraint.outer;
-  };
-  nape.callbacks.ConstraintCallback.prototype.toString = function () {
-    var ret = "Cb:";
-    ret += ["WAKE", "SLEEP", "BREAK"][this.zpp_inner.event - 2];
-    ret += ":" + this.zpp_inner.constraint.outer.toString();
-    ret += " : listener: " + Std.string(this.zpp_inner.listener.outer);
-    return ret;
-  };
-  nape.callbacks.ConstraintCallback.prototype.__class__ =
-    nape.callbacks.ConstraintCallback;
+  nape.callbacks.ConstraintCallback.prototype = Object.create(nape.callbacks.Callback.prototype);
+  nape.callbacks.ConstraintCallback.prototype.__class__ = nape.callbacks.ConstraintCallback;
   nape.callbacks.ConstraintListener = $hxClasses[
     "nape.callbacks.ConstraintListener"
   ] = function (event, options, handler, precedence) {
@@ -1395,54 +1341,14 @@ define(function () {
   };
   nape.callbacks.ConstraintListener.prototype.__class__ =
     nape.callbacks.ConstraintListener;
-  nape.callbacks.InteractionCallback = $hxClasses[
-    "nape.callbacks.InteractionCallback"
-  ] = function () {
+  // nape.callbacks.InteractionCallback: stub → src/callbacks/InteractionCallback.ts
+  nape.callbacks.InteractionCallback = function () {
     nape.callbacks.Callback.call(this);
   };
-  nape.callbacks.InteractionCallback.__name__ = [
-    "nape",
-    "callbacks",
-    "InteractionCallback",
-  ];
+  nape.callbacks.InteractionCallback.__name__ = ["nape", "callbacks", "InteractionCallback"];
   nape.callbacks.InteractionCallback.__super__ = nape.callbacks.Callback;
-  for (var k in nape.callbacks.Callback.prototype)
-    nape.callbacks.InteractionCallback.prototype[k] =
-      nape.callbacks.Callback.prototype[k];
-  Object.defineProperty(nape.callbacks.InteractionCallback.prototype, "int1", {
-    get: nape.callbacks.InteractionCallback.prototype.get_int1,
-  });
-  nape.callbacks.InteractionCallback.prototype.get_int1 = function () {
-    return this.zpp_inner.int1.outer_i;
-  };
-  Object.defineProperty(nape.callbacks.InteractionCallback.prototype, "int2", {
-    get: nape.callbacks.InteractionCallback.prototype.get_int2,
-  });
-  nape.callbacks.InteractionCallback.prototype.get_int2 = function () {
-    return this.zpp_inner.int2.outer_i;
-  };
-  Object.defineProperty(
-    nape.callbacks.InteractionCallback.prototype,
-    "arbiters",
-    { get: nape.callbacks.InteractionCallback.prototype.get_arbiters }
-  );
-  nape.callbacks.InteractionCallback.prototype.get_arbiters = function () {
-    return this.zpp_inner.wrap_arbiters;
-  };
-  nape.callbacks.InteractionCallback.prototype.toString = function () {
-    var ret = "Cb:";
-    ret += ["BEGIN", "END", "", "", "", "", "ONGOING"][this.zpp_inner.event];
-    ret +=
-      ":" +
-      this.zpp_inner.int1.outer_i.toString() +
-      "/" +
-      this.zpp_inner.int2.outer_i.toString();
-    ret += " : " + this.zpp_inner.wrap_arbiters.toString();
-    ret += " : listener: " + Std.string(this.zpp_inner.listener.outer);
-    return ret;
-  };
-  nape.callbacks.InteractionCallback.prototype.__class__ =
-    nape.callbacks.InteractionCallback;
+  nape.callbacks.InteractionCallback.prototype = Object.create(nape.callbacks.Callback.prototype);
+  nape.callbacks.InteractionCallback.prototype.__class__ = nape.callbacks.InteractionCallback;
   nape.callbacks.InteractionListener = $hxClasses[
     "nape.callbacks.InteractionListener"
   ] = function (
@@ -2551,98 +2457,17 @@ define(function () {
     return this;
   };
   nape.callbacks.ListenerList.prototype.__class__ = nape.callbacks.ListenerList;
-  nape.callbacks.ListenerType = $hxClasses["nape.callbacks.ListenerType"] =
-    function () {
-      if (!zpp_nape.util.ZPP_Flags.internal) {
-        throw new js._Boot.HaxeError(
-          "Error: Cannot instantiate " + "ListenerType" + " derp!"
-        );
-      }
-    };
+  // nape.callbacks.ListenerType: converted to TypeScript → src/callbacks/ListenerType.ts
+  // Minimal stub needed for init-time singleton creation (~line 120354).
+  // ListenerType.ts replaces this class and fixes prototypes via Object.setPrototypeOf.
+  nape.callbacks.ListenerType = function () {
+    if (!zpp_nape.util.ZPP_Flags.internal) {
+      throw new js._Boot.HaxeError(
+        "Error: Cannot instantiate ListenerType derp!"
+      );
+    }
+  };
   nape.callbacks.ListenerType.__name__ = ["nape", "callbacks", "ListenerType"];
-  nape.callbacks.ListenerType.BODY = null;
-  nape.callbacks.ListenerType.get_BODY = function () {
-    if (zpp_nape.util.ZPP_Flags.ListenerType_BODY == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ListenerType_BODY =
-        new nape.callbacks.ListenerType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ListenerType_BODY;
-  };
-  nape.callbacks.ListenerType.CONSTRAINT = null;
-  nape.callbacks.ListenerType.get_CONSTRAINT = function () {
-    if (zpp_nape.util.ZPP_Flags.ListenerType_CONSTRAINT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ListenerType_CONSTRAINT =
-        new nape.callbacks.ListenerType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ListenerType_CONSTRAINT;
-  };
-  nape.callbacks.ListenerType.INTERACTION = null;
-  nape.callbacks.ListenerType.get_INTERACTION = function () {
-    if (zpp_nape.util.ZPP_Flags.ListenerType_INTERACTION == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ListenerType_INTERACTION =
-        new nape.callbacks.ListenerType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ListenerType_INTERACTION;
-  };
-  nape.callbacks.ListenerType.PRE = null;
-  nape.callbacks.ListenerType.get_PRE = function () {
-    if (zpp_nape.util.ZPP_Flags.ListenerType_PRE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ListenerType_PRE =
-        new nape.callbacks.ListenerType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ListenerType_PRE;
-  };
-  nape.callbacks.ListenerType.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.ListenerType_BODY == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ListenerType_BODY =
-        new nape.callbacks.ListenerType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.ListenerType_BODY) {
-      return "BODY";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.ListenerType_CONSTRAINT == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.ListenerType_CONSTRAINT =
-          new nape.callbacks.ListenerType();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.ListenerType_CONSTRAINT) {
-        return "CONSTRAINT";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.ListenerType_INTERACTION == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.ListenerType_INTERACTION =
-            new nape.callbacks.ListenerType();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.ListenerType_INTERACTION) {
-          return "INTERACTION";
-        } else {
-          if (zpp_nape.util.ZPP_Flags.ListenerType_PRE == null) {
-            zpp_nape.util.ZPP_Flags.internal = true;
-            zpp_nape.util.ZPP_Flags.ListenerType_PRE =
-              new nape.callbacks.ListenerType();
-            zpp_nape.util.ZPP_Flags.internal = false;
-          }
-          if (this == zpp_nape.util.ZPP_Flags.ListenerType_PRE) {
-            return "PRE";
-          } else {
-            return "";
-          }
-        }
-      }
-    }
-  };
   nape.callbacks.ListenerType.prototype.__class__ = nape.callbacks.ListenerType;
   // nape.callbacks.OptionType: converted to TypeScript → src/callbacks/OptionType.ts
   // Minimal stub so ZPP_OptionType.argument() works before TS module loads.
@@ -2668,50 +2493,13 @@ define(function () {
     return this;
   };
   nape.callbacks.OptionType.prototype.__class__ = nape.callbacks.OptionType;
-  nape.callbacks.PreCallback = $hxClasses["nape.callbacks.PreCallback"] =
-    function () {
-      nape.callbacks.Callback.call(this);
-    };
+  // nape.callbacks.PreCallback: stub → src/callbacks/PreCallback.ts
+  nape.callbacks.PreCallback = function () {
+    nape.callbacks.Callback.call(this);
+  };
   nape.callbacks.PreCallback.__name__ = ["nape", "callbacks", "PreCallback"];
   nape.callbacks.PreCallback.__super__ = nape.callbacks.Callback;
-  for (var k in nape.callbacks.Callback.prototype)
-    nape.callbacks.PreCallback.prototype[k] =
-      nape.callbacks.Callback.prototype[k];
-  Object.defineProperty(nape.callbacks.PreCallback.prototype, "arbiter", {
-    get: nape.callbacks.PreCallback.prototype.get_arbiter,
-  });
-  nape.callbacks.PreCallback.prototype.get_arbiter = function () {
-    return this.zpp_inner.pre_arbiter.wrapper();
-  };
-  Object.defineProperty(nape.callbacks.PreCallback.prototype, "int1", {
-    get: nape.callbacks.PreCallback.prototype.get_int1,
-  });
-  nape.callbacks.PreCallback.prototype.get_int1 = function () {
-    return this.zpp_inner.int1.outer_i;
-  };
-  Object.defineProperty(nape.callbacks.PreCallback.prototype, "int2", {
-    get: nape.callbacks.PreCallback.prototype.get_int2,
-  });
-  nape.callbacks.PreCallback.prototype.get_int2 = function () {
-    return this.zpp_inner.int2.outer_i;
-  };
-  Object.defineProperty(nape.callbacks.PreCallback.prototype, "swapped", {
-    get: nape.callbacks.PreCallback.prototype.get_swapped,
-  });
-  nape.callbacks.PreCallback.prototype.get_swapped = function () {
-    return this.zpp_inner.pre_swapped;
-  };
-  nape.callbacks.PreCallback.prototype.toString = function () {
-    var ret = "Cb:PRE:";
-    ret +=
-      ":" +
-      this.zpp_inner.int1.outer_i.toString() +
-      "/" +
-      this.zpp_inner.int2.outer_i.toString();
-    ret += " : " + this.zpp_inner.pre_arbiter.wrapper().toString();
-    ret += " : listnener: " + Std.string(this.zpp_inner.listener.outer);
-    return ret;
-  };
+  nape.callbacks.PreCallback.prototype = Object.create(nape.callbacks.Callback.prototype);
   nape.callbacks.PreCallback.prototype.__class__ = nape.callbacks.PreCallback;
   nape.callbacks.PreFlag = $hxClasses["nape.callbacks.PreFlag"] = function () {
     if (!zpp_nape.util.ZPP_Flags.internal) {
@@ -19047,73 +18835,8 @@ define(function () {
   nape.geom.Vec2List.prototype.__class__ = nape.geom.Vec2List;
   // nape.geom.Vec3: converted to TypeScript → src/geom/Vec3.ts
   // Registration handled by Vec3.ts at module load time to avoid circular imports.
-  nape.geom.Winding = $hxClasses["nape.geom.Winding"] = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "Winding" + " derp!"
-      );
-    }
-  };
-  nape.geom.Winding.__name__ = ["nape", "geom", "Winding"];
-  nape.geom.Winding.UNDEFINED = null;
-  nape.geom.Winding.get_UNDEFINED = function () {
-    if (zpp_nape.util.ZPP_Flags.Winding_UNDEFINED == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Winding_UNDEFINED = new nape.geom.Winding();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.Winding_UNDEFINED;
-  };
-  nape.geom.Winding.CLOCKWISE = null;
-  nape.geom.Winding.get_CLOCKWISE = function () {
-    if (zpp_nape.util.ZPP_Flags.Winding_CLOCKWISE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Winding_CLOCKWISE = new nape.geom.Winding();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.Winding_CLOCKWISE;
-  };
-  nape.geom.Winding.ANTICLOCKWISE = null;
-  nape.geom.Winding.get_ANTICLOCKWISE = function () {
-    if (zpp_nape.util.ZPP_Flags.Winding_ANTICLOCKWISE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Winding_ANTICLOCKWISE = new nape.geom.Winding();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.Winding_ANTICLOCKWISE;
-  };
-  nape.geom.Winding.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.Winding_UNDEFINED == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Winding_UNDEFINED = new nape.geom.Winding();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.Winding_UNDEFINED) {
-      return "UNDEFINED";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.Winding_CLOCKWISE == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.Winding_CLOCKWISE = new nape.geom.Winding();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.Winding_CLOCKWISE) {
-        return "CLOCKWISE";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.Winding_ANTICLOCKWISE == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.Winding_ANTICLOCKWISE =
-            new nape.geom.Winding();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.Winding_ANTICLOCKWISE) {
-          return "ANTICLOCKWISE";
-        } else {
-          return "";
-        }
-      }
-    }
-  };
-  nape.geom.Winding.prototype.__class__ = nape.geom.Winding;
+  // nape.geom.Winding: converted to TypeScript → src/geom/Winding.ts
+  // Registration handled by Winding.ts at module load time.
   if (!nape.phys) nape.phys = {};
   nape.phys.Interactor = $hxClasses["nape.phys.Interactor"] = function () {
     this.zpp_inner_i = null;
@@ -30757,155 +30480,24 @@ define(function () {
     }
   };
   nape.shape.ShapeType.prototype.__class__ = nape.shape.ShapeType;
-  nape.shape.ValidationResult = $hxClasses["nape.shape.ValidationResult"] =
-    function () {
-      if (!zpp_nape.util.ZPP_Flags.internal) {
-        throw new js._Boot.HaxeError(
-          "Error: Cannot instantiate " + "ValidationResult" + " derp!"
-        );
-      }
-    };
+  // nape.shape.ValidationResult: stub → src/shape/ValidationResult.ts
+  // Minimal stub needed because compiled shape validation code creates instances.
+  nape.shape.ValidationResult = function () {
+    if (!zpp_nape.util.ZPP_Flags.internal) {
+      throw new js._Boot.HaxeError("Error: Cannot instantiate ValidationResult derp!");
+    }
+  };
   nape.shape.ValidationResult.__name__ = ["nape", "shape", "ValidationResult"];
-  nape.shape.ValidationResult.VALID = null;
-  nape.shape.ValidationResult.get_VALID = function () {
-    if (zpp_nape.util.ZPP_Flags.ValidationResult_VALID == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ValidationResult_VALID =
-        new nape.shape.ValidationResult();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ValidationResult_VALID;
-  };
-  nape.shape.ValidationResult.DEGENERATE = null;
-  nape.shape.ValidationResult.get_DEGENERATE = function () {
-    if (zpp_nape.util.ZPP_Flags.ValidationResult_DEGENERATE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ValidationResult_DEGENERATE =
-        new nape.shape.ValidationResult();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ValidationResult_DEGENERATE;
-  };
-  nape.shape.ValidationResult.CONCAVE = null;
-  nape.shape.ValidationResult.get_CONCAVE = function () {
-    if (zpp_nape.util.ZPP_Flags.ValidationResult_CONCAVE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ValidationResult_CONCAVE =
-        new nape.shape.ValidationResult();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ValidationResult_CONCAVE;
-  };
-  nape.shape.ValidationResult.SELF_INTERSECTING = null;
-  nape.shape.ValidationResult.get_SELF_INTERSECTING = function () {
-    if (zpp_nape.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING =
-        new nape.shape.ValidationResult();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING;
-  };
-  nape.shape.ValidationResult.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.ValidationResult_VALID == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ValidationResult_VALID =
-        new nape.shape.ValidationResult();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.ValidationResult_VALID) {
-      return "VALID";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.ValidationResult_DEGENERATE == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.ValidationResult_DEGENERATE =
-          new nape.shape.ValidationResult();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.ValidationResult_DEGENERATE) {
-        return "DEGENERATE";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.ValidationResult_CONCAVE == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.ValidationResult_CONCAVE =
-            new nape.shape.ValidationResult();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.ValidationResult_CONCAVE) {
-          return "CONCAVE";
-        } else {
-          if (
-            zpp_nape.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING == null
-          ) {
-            zpp_nape.util.ZPP_Flags.internal = true;
-            zpp_nape.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING =
-              new nape.shape.ValidationResult();
-            zpp_nape.util.ZPP_Flags.internal = false;
-          }
-          if (
-            this == zpp_nape.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING
-          ) {
-            return "SELF_INTERSECTING";
-          } else {
-            return "";
-          }
-        }
-      }
-    }
-  };
   nape.shape.ValidationResult.prototype.__class__ = nape.shape.ValidationResult;
   if (!nape.space) nape.space = {};
-  nape.space.Broadphase = $hxClasses["nape.space.Broadphase"] = function () {
+  // nape.space.Broadphase: stub → src/space/Broadphase.ts
+  // Minimal stub needed because compiled Space code creates instances.
+  nape.space.Broadphase = function () {
     if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "Broadphase" + " derp!"
-      );
+      throw new js._Boot.HaxeError("Error: Cannot instantiate Broadphase derp!");
     }
   };
   nape.space.Broadphase.__name__ = ["nape", "space", "Broadphase"];
-  nape.space.Broadphase.DYNAMIC_AABB_TREE = null;
-  nape.space.Broadphase.get_DYNAMIC_AABB_TREE = function () {
-    if (zpp_nape.util.ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE =
-        new nape.space.Broadphase();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE;
-  };
-  nape.space.Broadphase.SWEEP_AND_PRUNE = null;
-  nape.space.Broadphase.get_SWEEP_AND_PRUNE = function () {
-    if (zpp_nape.util.ZPP_Flags.Broadphase_SWEEP_AND_PRUNE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Broadphase_SWEEP_AND_PRUNE =
-        new nape.space.Broadphase();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.Broadphase_SWEEP_AND_PRUNE;
-  };
-  nape.space.Broadphase.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE =
-        new nape.space.Broadphase();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE) {
-      return "DYNAMIC_AABB_TREE";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.Broadphase_SWEEP_AND_PRUNE == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.Broadphase_SWEEP_AND_PRUNE =
-          new nape.space.Broadphase();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.Broadphase_SWEEP_AND_PRUNE) {
-        return "SWEEP_AND_PRUNE";
-      } else {
-        return "";
-      }
-    }
-  };
   nape.space.Broadphase.prototype.__class__ = nape.space.Broadphase;
   nape.space.Space = $hxClasses["nape.space.Space"] = function (
     gravity,

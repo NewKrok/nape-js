@@ -10,6 +10,7 @@ export { AABB } from "./geom/AABB";
 export { MatMN } from "./geom/MatMN";
 export { MarchingSquares } from "./geom/MarchingSquares";
 export { Ray } from "./geom/Ray";
+export { Winding } from "./geom/Winding";
 
 // Physics
 export { Body } from "./phys/Body";
@@ -25,9 +26,11 @@ export { Shape } from "./shape/Shape";
 export { Circle } from "./shape/Circle";
 export { Polygon } from "./shape/Polygon";
 export { ShapeType } from "./shape/ShapeType";
+export { ValidationResult } from "./shape/ValidationResult";
 
 // Space
 export { Space } from "./space/Space";
+export { Broadphase } from "./space/Broadphase";
 
 // Dynamics
 export { InteractionFilter } from "./dynamics/InteractionFilter";
@@ -45,6 +48,12 @@ export { BodyListener } from "./callbacks/BodyListener";
 export { InteractionListener } from "./callbacks/InteractionListener";
 export { ConstraintListener } from "./callbacks/ConstraintListener";
 export { PreListener } from "./callbacks/PreListener";
+export { ListenerType } from "./callbacks/ListenerType";
+export { Callback } from "./callbacks/Callback";
+export { BodyCallback } from "./callbacks/BodyCallback";
+export { ConstraintCallback } from "./callbacks/ConstraintCallback";
+export { InteractionCallback } from "./callbacks/InteractionCallback";
+export { PreCallback } from "./callbacks/PreCallback";
 
 // Constraints
 export { Constraint } from "./constraint/Constraint";

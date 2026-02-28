@@ -4,6 +4,7 @@ import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { Vec2 } from "./Vec2";
 import { AABB } from "./AABB";
+import "./Winding"; // Side-effect: register Winding in namespace before GeomPoly methods use it
 
 type Any = any;
 

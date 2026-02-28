@@ -56,6 +56,15 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **InertiaMode** | `src/phys/InertiaMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
 | **MassMode** | `src/phys/MassMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
 | **ArbiterType** | `src/dynamics/ArbiterType.ts` | 11 | Singleton enum (COLLISION/SENSOR/FLUID), init-time stub + setPrototypeOf |
+| **Winding** | `src/geom/Winding.ts` | 11 | Singleton enum (UNDEFINED/CLOCKWISE/ANTICLOCKWISE), used by GeomPoly |
+| **ListenerType** | `src/callbacks/ListenerType.ts` | 13 | Singleton enum (BODY/CONSTRAINT/INTERACTION/PRE), init-time stub + setPrototypeOf |
+| **Broadphase** | `src/space/Broadphase.ts` | 9 | Singleton enum (DYNAMIC_AABB_TREE/SWEEP_AND_PRUNE), stub in compiled code |
+| **ValidationResult** | `src/shape/ValidationResult.ts` | 13 | Singleton enum (VALID/DEGENERATE/CONCAVE/SELF_INTERSECTING), stub in compiled code |
+| **Callback** | `src/callbacks/Callback.ts` | 5 | Base callback class, stub in compiled code |
+| **BodyCallback** | `src/callbacks/BodyCallback.ts` | 5 | Body event callback (WAKE/SLEEP), extends Callback, stub |
+| **ConstraintCallback** | `src/callbacks/ConstraintCallback.ts` | 4 | Constraint event callback, extends Callback, stub |
+| **InteractionCallback** | `src/callbacks/InteractionCallback.ts` | 4 | Interaction event callback, extends Callback, stub |
+| **PreCallback** | `src/callbacks/PreCallback.ts` | 4 | Pre-interaction callback, extends Callback, stub |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
@@ -75,6 +84,12 @@ initialization code or internal methods reference them before the TS module self
   `ZPP_OptionType.argument()` which uses `instanceof nape.callbacks.OptionType`.
 - **ArbiterType**: Stub constructor needed for COLLISION/SENSOR/FLUID singleton creation
   at init time. TS class retroactively fixes prototypes via `Object.setPrototypeOf`.
+- **ListenerType**: Stub constructor needed for BODY/CONSTRAINT/INTERACTION/PRE singleton
+  creation at init time (ZPP_Listener.types). TS class fixes prototypes via `Object.setPrototypeOf`.
+- **Callback/BodyCallback/ConstraintCallback/InteractionCallback/PreCallback**: Stubs needed
+  because compiled ZPP_Space and ZPP_Callback wrappers create instances at runtime.
+- **ValidationResult**: Stub needed because compiled shape validation code creates instances.
+- **Broadphase**: Stub needed because compiled Space code creates instances.
 
 ### Internal namespace exposure
 
@@ -92,7 +107,7 @@ Next candidates require extracting their ZPP_* classes first:
 | `Geom` | High | Static distance/intersection utility, many internal dependencies |
 | `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms, would enable full Ray modernization |
 
-### Remaining in compiled code (~77 public API + ~80 internal ZPP classes)
+### Remaining in compiled code (~68 public API + ~80 internal ZPP classes)
 
 Major categories:
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
