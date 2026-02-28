@@ -52,6 +52,16 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **AABB** | `src/geom/AABB.ts` | 31 | Geometry bounds, Vec2 min/max wrappers |
 | **MatMN** | `src/geom/MatMN.ts` | 35 | Variable-sized M×N matrix, transpose/mul |
 | **MarchingSquares** | `src/geom/MarchingSquares.ts` | 23 | Static isosurface extraction, delegates to compiled ZPP_MarchingSquares |
+| **GravMassMode** | `src/phys/GravMassMode.ts` | 11 | Singleton enum (DEFAULT/FIXED/SCALED), uses ZPP_Flags |
+| **InertiaMode** | `src/phys/InertiaMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
+| **MassMode** | `src/phys/MassMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
+| **ArbiterType** | `src/dynamics/ArbiterType.ts` | 11 | Singleton enum (COLLISION/SENSOR/FLUID), init-time stub + setPrototypeOf |
+
+### Thin wrappers (TS class delegates to compiled code)
+
+| Class | File | Tests | Notes |
+|-------|------|-------|-------|
+| **Ray** | `src/geom/Ray.ts` | 14 | Raycasting, delegates to compiled nape.geom.Ray (ZPP_Ray not extracted) |
 
 ### Compiled code stubs
 
@@ -63,6 +73,8 @@ initialization code or internal methods reference them before the TS module self
   via `Object.setPrototypeOf` after self-registration.
 - **OptionType**: Stub constructor + `including()`/`excluding()` needed for
   `ZPP_OptionType.argument()` which uses `instanceof nape.callbacks.OptionType`.
+- **ArbiterType**: Stub constructor needed for COLLISION/SENSOR/FLUID singleton creation
+  at init time. TS class retroactively fixes prototypes via `Object.setPrototypeOf`.
 
 ### Internal namespace exposure
 
@@ -77,12 +89,10 @@ Next candidates require extracting their ZPP_* classes first:
 
 | Candidate | Complexity | Notes |
 |-----------|------------|-------|
-| `Ray` | Medium | Geometry utility, needs ZPP_Ray extraction |
 | `Geom` | High | Static distance/intersection utility, many internal dependencies |
-| `GravMassMode` / `InertiaMode` / `MassMode` | Low | Simple enum-like classes using ZPP_Flags |
-| `ArbiterType` | Low | Simple enum-like class using ZPP_Flags |
+| `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms, would enable full Ray modernization |
 
-### Remaining in compiled code (~82 public API + ~80 internal ZPP classes)
+### Remaining in compiled code (~77 public API + ~80 internal ZPP classes)
 
 Major categories:
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection

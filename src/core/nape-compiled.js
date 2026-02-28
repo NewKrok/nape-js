@@ -11650,78 +11650,17 @@ define(function () {
     return this;
   };
   nape.dynamics.ArbiterList.prototype.__class__ = nape.dynamics.ArbiterList;
-  nape.dynamics.ArbiterType = $hxClasses["nape.dynamics.ArbiterType"] =
-    function () {
-      if (!zpp_nape.util.ZPP_Flags.internal) {
-        throw new js._Boot.HaxeError(
-          "Error: Cannot instantiate " + "ArbiterType" + " derp!"
-        );
-      }
-    };
+  // nape.dynamics.ArbiterType: converted to TypeScript → src/dynamics/ArbiterType.ts
+  // Minimal stub needed for init-time singleton creation (~line 120451).
+  // ArbiterType.ts replaces this class and fixes prototypes via Object.setPrototypeOf.
+  nape.dynamics.ArbiterType = function () {
+    if (!zpp_nape.util.ZPP_Flags.internal) {
+      throw new js._Boot.HaxeError(
+        "Error: Cannot instantiate ArbiterType derp!"
+      );
+    }
+  };
   nape.dynamics.ArbiterType.__name__ = ["nape", "dynamics", "ArbiterType"];
-  nape.dynamics.ArbiterType.COLLISION = null;
-  nape.dynamics.ArbiterType.get_COLLISION = function () {
-    if (zpp_nape.util.ZPP_Flags.ArbiterType_COLLISION == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ArbiterType_COLLISION =
-        new nape.dynamics.ArbiterType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ArbiterType_COLLISION;
-  };
-  nape.dynamics.ArbiterType.SENSOR = null;
-  nape.dynamics.ArbiterType.get_SENSOR = function () {
-    if (zpp_nape.util.ZPP_Flags.ArbiterType_SENSOR == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ArbiterType_SENSOR =
-        new nape.dynamics.ArbiterType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ArbiterType_SENSOR;
-  };
-  nape.dynamics.ArbiterType.FLUID = null;
-  nape.dynamics.ArbiterType.get_FLUID = function () {
-    if (zpp_nape.util.ZPP_Flags.ArbiterType_FLUID == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ArbiterType_FLUID =
-        new nape.dynamics.ArbiterType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ArbiterType_FLUID;
-  };
-  nape.dynamics.ArbiterType.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.ArbiterType_COLLISION == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ArbiterType_COLLISION =
-        new nape.dynamics.ArbiterType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.ArbiterType_COLLISION) {
-      return "COLLISION";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.ArbiterType_SENSOR == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.ArbiterType_SENSOR =
-          new nape.dynamics.ArbiterType();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.ArbiterType_SENSOR) {
-        return "SENSOR";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.ArbiterType_FLUID == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.ArbiterType_FLUID =
-            new nape.dynamics.ArbiterType();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.ArbiterType_FLUID) {
-          return "FLUID";
-        } else {
-          return "";
-        }
-      }
-    }
-  };
   nape.dynamics.ArbiterType.prototype.__class__ = nape.dynamics.ArbiterType;
   nape.dynamics.CollisionArbiter = $hxClasses[
     "nape.dynamics.CollisionArbiter"
@@ -26269,125 +26208,10 @@ define(function () {
   nape.phys.CompoundList.prototype.__class__ = nape.phys.CompoundList;
   // nape.phys.FluidProperties: converted to TypeScript → src/phys/FluidProperties.ts
   // Registration handled by FluidProperties.ts at module load time to avoid circular imports.
-  nape.phys.GravMassMode = $hxClasses["nape.phys.GravMassMode"] = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "GravMassMode" + " derp!"
-      );
-    }
-  };
-  nape.phys.GravMassMode.__name__ = ["nape", "phys", "GravMassMode"];
-  nape.phys.GravMassMode.DEFAULT = null;
-  nape.phys.GravMassMode.get_DEFAULT = function () {
-    if (zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT =
-        new nape.phys.GravMassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT;
-  };
-  nape.phys.GravMassMode.FIXED = null;
-  nape.phys.GravMassMode.get_FIXED = function () {
-    if (zpp_nape.util.ZPP_Flags.GravMassMode_FIXED == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.GravMassMode_FIXED = new nape.phys.GravMassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.GravMassMode_FIXED;
-  };
-  nape.phys.GravMassMode.SCALED = null;
-  nape.phys.GravMassMode.get_SCALED = function () {
-    if (zpp_nape.util.ZPP_Flags.GravMassMode_SCALED == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.GravMassMode_SCALED =
-        new nape.phys.GravMassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.GravMassMode_SCALED;
-  };
-  nape.phys.GravMassMode.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT =
-        new nape.phys.GravMassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT) {
-      return "DEFAULT";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.GravMassMode_FIXED == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.GravMassMode_FIXED =
-          new nape.phys.GravMassMode();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.GravMassMode_FIXED) {
-        return "FIXED";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.GravMassMode_SCALED == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.GravMassMode_SCALED =
-            new nape.phys.GravMassMode();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.GravMassMode_SCALED) {
-          return "SCALED";
-        } else {
-          return "";
-        }
-      }
-    }
-  };
-  nape.phys.GravMassMode.prototype.__class__ = nape.phys.GravMassMode;
-  nape.phys.InertiaMode = $hxClasses["nape.phys.InertiaMode"] = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "InertiaMode" + " derp!"
-      );
-    }
-  };
-  nape.phys.InertiaMode.__name__ = ["nape", "phys", "InertiaMode"];
-  nape.phys.InertiaMode.DEFAULT = null;
-  nape.phys.InertiaMode.get_DEFAULT = function () {
-    if (zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT = new nape.phys.InertiaMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT;
-  };
-  nape.phys.InertiaMode.FIXED = null;
-  nape.phys.InertiaMode.get_FIXED = function () {
-    if (zpp_nape.util.ZPP_Flags.InertiaMode_FIXED == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InertiaMode_FIXED = new nape.phys.InertiaMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.InertiaMode_FIXED;
-  };
-  nape.phys.InertiaMode.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT = new nape.phys.InertiaMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT) {
-      return "DEFAULT";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.InertiaMode_FIXED == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.InertiaMode_FIXED = new nape.phys.InertiaMode();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.InertiaMode_FIXED) {
-        return "FIXED";
-      } else {
-        return "";
-      }
-    }
-  };
-  nape.phys.InertiaMode.prototype.__class__ = nape.phys.InertiaMode;
+  // nape.phys.GravMassMode: converted to TypeScript → src/phys/GravMassMode.ts
+  // Registration handled by GravMassMode.ts at module load time to avoid circular imports.
+  // nape.phys.InertiaMode: converted to TypeScript → src/phys/InertiaMode.ts
+  // Registration handled by InertiaMode.ts at module load time to avoid circular imports.
   nape.phys.InteractorIterator = $hxClasses["nape.phys.InteractorIterator"] =
     function () {
       this.zpp_next = null;
@@ -26963,54 +26787,8 @@ define(function () {
     return this;
   };
   nape.phys.InteractorList.prototype.__class__ = nape.phys.InteractorList;
-  nape.phys.MassMode = $hxClasses["nape.phys.MassMode"] = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "MassMode" + " derp!"
-      );
-    }
-  };
-  nape.phys.MassMode.__name__ = ["nape", "phys", "MassMode"];
-  nape.phys.MassMode.DEFAULT = null;
-  nape.phys.MassMode.get_DEFAULT = function () {
-    if (zpp_nape.util.ZPP_Flags.MassMode_DEFAULT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.MassMode_DEFAULT = new nape.phys.MassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.MassMode_DEFAULT;
-  };
-  nape.phys.MassMode.FIXED = null;
-  nape.phys.MassMode.get_FIXED = function () {
-    if (zpp_nape.util.ZPP_Flags.MassMode_FIXED == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.MassMode_FIXED = new nape.phys.MassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.MassMode_FIXED;
-  };
-  nape.phys.MassMode.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.MassMode_DEFAULT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.MassMode_DEFAULT = new nape.phys.MassMode();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.MassMode_DEFAULT) {
-      return "DEFAULT";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.MassMode_FIXED == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.MassMode_FIXED = new nape.phys.MassMode();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.MassMode_FIXED) {
-        return "FIXED";
-      } else {
-        return "";
-      }
-    }
-  };
-  nape.phys.MassMode.prototype.__class__ = nape.phys.MassMode;
+  // nape.phys.MassMode: converted to TypeScript → src/phys/MassMode.ts
+  // Registration handled by MassMode.ts at module load time to avoid circular imports.
   // nape.phys.Material: converted to TypeScript → src/phys/Material.ts
   // Registration happens in Material.ts at module load time to avoid circular imports.
   if (!nape.shape) nape.shape = {};

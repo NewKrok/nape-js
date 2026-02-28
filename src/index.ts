@@ -9,12 +9,16 @@ export { GeomPoly } from "./geom/GeomPoly";
 export { AABB } from "./geom/AABB";
 export { MatMN } from "./geom/MatMN";
 export { MarchingSquares } from "./geom/MarchingSquares";
+export { Ray } from "./geom/Ray";
 
 // Physics
 export { Body } from "./phys/Body";
 export { BodyType } from "./phys/BodyType";
 export { Material } from "./phys/Material";
 export { FluidProperties } from "./phys/FluidProperties";
+export { GravMassMode } from "./phys/GravMassMode";
+export { InertiaMode } from "./phys/InertiaMode";
+export { MassMode } from "./phys/MassMode";
 
 // Shapes
 export { Shape } from "./shape/Shape";
@@ -28,6 +32,7 @@ export { Space } from "./space/Space";
 // Dynamics
 export { InteractionFilter } from "./dynamics/InteractionFilter";
 export { InteractionGroup } from "./dynamics/InteractionGroup";
+export { ArbiterType } from "./dynamics/ArbiterType";
 
 // Callbacks
 export { CbEvent } from "./callbacks/CbEvent";
