@@ -2644,38 +2644,21 @@ define(function () {
     }
   };
   nape.callbacks.ListenerType.prototype.__class__ = nape.callbacks.ListenerType;
-  nape.callbacks.OptionType = $hxClasses["nape.callbacks.OptionType"] =
-    function (includes, excludes) {
-      this.zpp_inner = null;
-      this.zpp_inner = new zpp_nape.callbacks.ZPP_OptionType();
-      this.zpp_inner.outer = this;
-      if (includes != null) {
-        this.including(includes);
-      }
-      if (excludes != null) {
-        this.excluding(excludes);
-      }
-    };
+  // nape.callbacks.OptionType: converted to TypeScript → src/callbacks/OptionType.ts
+  // Minimal stub so ZPP_OptionType.argument() works before TS module loads.
+  // The real OptionType class replaces this at module load time via self-registration.
+  nape.callbacks.OptionType = function (includes, excludes) {
+    this.zpp_inner = null;
+    this.zpp_inner = new zpp_nape.callbacks.ZPP_OptionType();
+    this.zpp_inner.outer = this;
+    if (includes != null) {
+      this.including(includes);
+    }
+    if (excludes != null) {
+      this.excluding(excludes);
+    }
+  };
   nape.callbacks.OptionType.__name__ = ["nape", "callbacks", "OptionType"];
-  nape.callbacks.OptionType.prototype.zpp_inner = null;
-  Object.defineProperty(nape.callbacks.OptionType.prototype, "includes", {
-    get: nape.callbacks.OptionType.prototype.get_includes,
-  });
-  nape.callbacks.OptionType.prototype.get_includes = function () {
-    if (this.zpp_inner.wrap_includes == null) {
-      this.zpp_inner.setup_includes();
-    }
-    return this.zpp_inner.wrap_includes;
-  };
-  Object.defineProperty(nape.callbacks.OptionType.prototype, "excludes", {
-    get: nape.callbacks.OptionType.prototype.get_excludes,
-  });
-  nape.callbacks.OptionType.prototype.get_excludes = function () {
-    if (this.zpp_inner.wrap_excludes == null) {
-      this.zpp_inner.setup_excludes();
-    }
-    return this.zpp_inner.wrap_excludes;
-  };
   nape.callbacks.OptionType.prototype.including = function (includes) {
     this.zpp_inner.append(this.zpp_inner.includes, includes);
     return this;
@@ -2683,17 +2666,6 @@ define(function () {
   nape.callbacks.OptionType.prototype.excluding = function (excludes) {
     this.zpp_inner.append(this.zpp_inner.excludes, excludes);
     return this;
-  };
-  nape.callbacks.OptionType.prototype.toString = function () {
-    if (this.zpp_inner.wrap_includes == null) {
-      this.zpp_inner.setup_includes();
-    }
-    var inc = this.zpp_inner.wrap_includes.toString();
-    if (this.zpp_inner.wrap_excludes == null) {
-      this.zpp_inner.setup_excludes();
-    }
-    var exc = this.zpp_inner.wrap_excludes.toString();
-    return "@{" + inc + " excluding " + exc + "}";
   };
   nape.callbacks.OptionType.prototype.__class__ = nape.callbacks.OptionType;
   nape.callbacks.PreCallback = $hxClasses["nape.callbacks.PreCallback"] =
