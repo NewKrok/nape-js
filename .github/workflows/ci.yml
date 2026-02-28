@@ -18,12 +18,4 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npx vitest run --coverage
-
-      - name: Upload coverage to Codecov
-        if: always()
-        uses: codecov/codecov-action@v5
-        with:
-          files: coverage/lcov.info
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+      - run: npm test
