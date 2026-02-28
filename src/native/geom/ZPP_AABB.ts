@@ -20,6 +20,9 @@ export class ZPP_AABB {
   static _nape: Any = null;
   static _zpp: Any = null;
 
+  // --- Static: wrapper factory callback (set by AABB.ts) ---
+  static _wrapFn: ((zpp: ZPP_AABB) => Any) | null = null;
+
   // --- Instance: callbacks ---
   _invalidate: ((self: ZPP_AABB) => void) | null = null;
   _validate: (() => void) | null = null;
@@ -75,18 +78,22 @@ export class ZPP_AABB {
 
   wrapper(): Any {
     if (this.outer == null) {
-      this.outer = new ZPP_AABB._nape.geom.AABB();
-      const o = this.outer.zpp_inner;
-      if (o.outer != null) {
-        o.outer.zpp_inner = null;
-        o.outer = null;
+      if (ZPP_AABB._wrapFn) {
+        this.outer = ZPP_AABB._wrapFn(this);
+      } else {
+        this.outer = new ZPP_AABB._nape.geom.AABB();
+        const o = this.outer.zpp_inner;
+        if (o.outer != null) {
+          o.outer.zpp_inner = null;
+          o.outer = null;
+        }
+        o.wrap_min = o.wrap_max = null;
+        o._invalidate = null;
+        o._validate = null;
+        o.next = ZPP_AABB.zpp_pool;
+        ZPP_AABB.zpp_pool = o;
+        this.outer.zpp_inner = this;
       }
-      o.wrap_min = o.wrap_max = null;
-      o._invalidate = null;
-      o._validate = null;
-      o.next = ZPP_AABB.zpp_pool;
-      ZPP_AABB.zpp_pool = o;
-      this.outer.zpp_inner = this;
     }
     return this.outer;
   }
