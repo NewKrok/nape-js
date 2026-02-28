@@ -686,87 +686,15 @@ define(function () {
     }
   };
   nape.callbacks.CbEvent.prototype.__class__ = nape.callbacks.CbEvent;
-  nape.callbacks.CbType = $hxClasses["nape.callbacks.CbType"] = function () {
+  // nape.callbacks.CbType: converted to TypeScript → src/callbacks/CbType.ts
+  // Minimal stub so ANY_* singletons can be created during compiled init (line ~121055).
+  // The real CbType class replaces this at module load time via self-registration.
+  nape.callbacks.CbType = function () {
     this.zpp_inner = null;
     this.zpp_inner = new zpp_nape.callbacks.ZPP_CbType();
     this.zpp_inner.outer = this;
   };
   nape.callbacks.CbType.__name__ = ["nape", "callbacks", "CbType"];
-  nape.callbacks.CbType.ANY_BODY = null;
-  nape.callbacks.CbType.get_ANY_BODY = function () {
-    return zpp_nape.callbacks.ZPP_CbType.ANY_BODY;
-  };
-  nape.callbacks.CbType.ANY_CONSTRAINT = null;
-  nape.callbacks.CbType.get_ANY_CONSTRAINT = function () {
-    return zpp_nape.callbacks.ZPP_CbType.ANY_CONSTRAINT;
-  };
-  nape.callbacks.CbType.ANY_SHAPE = null;
-  nape.callbacks.CbType.get_ANY_SHAPE = function () {
-    return zpp_nape.callbacks.ZPP_CbType.ANY_SHAPE;
-  };
-  nape.callbacks.CbType.ANY_COMPOUND = null;
-  nape.callbacks.CbType.get_ANY_COMPOUND = function () {
-    return zpp_nape.callbacks.ZPP_CbType.ANY_COMPOUND;
-  };
-  nape.callbacks.CbType.prototype.zpp_inner = null;
-  Object.defineProperty(nape.callbacks.CbType.prototype, "id", {
-    get: nape.callbacks.CbType.prototype.get_id,
-  });
-  nape.callbacks.CbType.prototype.get_id = function () {
-    return this.zpp_inner.id;
-  };
-  nape.callbacks.CbType.prototype.including = function (includes) {
-    return new nape.callbacks.OptionType(this).including(includes);
-  };
-  nape.callbacks.CbType.prototype.excluding = function (excludes) {
-    return new nape.callbacks.OptionType(this).excluding(excludes);
-  };
-  Object.defineProperty(nape.callbacks.CbType.prototype, "userData", {
-    get: nape.callbacks.CbType.prototype.get_userData,
-  });
-  nape.callbacks.CbType.prototype.get_userData = function () {
-    if (this.zpp_inner.userData == null) {
-      this.zpp_inner.userData = {};
-    }
-    return this.zpp_inner.userData;
-  };
-  Object.defineProperty(nape.callbacks.CbType.prototype, "interactors", {
-    get: nape.callbacks.CbType.prototype.get_interactors,
-  });
-  nape.callbacks.CbType.prototype.get_interactors = function () {
-    if (this.zpp_inner.wrap_interactors == null) {
-      this.zpp_inner.wrap_interactors = zpp_nape.util.ZPP_InteractorList.get(
-        this.zpp_inner.interactors,
-        true
-      );
-    }
-    return this.zpp_inner.wrap_interactors;
-  };
-  Object.defineProperty(nape.callbacks.CbType.prototype, "constraints", {
-    get: nape.callbacks.CbType.prototype.get_constraints,
-  });
-  nape.callbacks.CbType.prototype.get_constraints = function () {
-    if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = zpp_nape.util.ZPP_ConstraintList.get(
-        this.zpp_inner.constraints,
-        true
-      );
-    }
-    return this.zpp_inner.wrap_constraints;
-  };
-  nape.callbacks.CbType.prototype.toString = function () {
-    if (this == zpp_nape.callbacks.ZPP_CbType.ANY_BODY) {
-      return "ANY_BODY";
-    } else if (this == zpp_nape.callbacks.ZPP_CbType.ANY_SHAPE) {
-      return "ANY_SHAPE";
-    } else if (this == zpp_nape.callbacks.ZPP_CbType.ANY_COMPOUND) {
-      return "ANY_COMPOUND";
-    } else if (this == zpp_nape.callbacks.ZPP_CbType.ANY_CONSTRAINT) {
-      return "ANY_CONSTRAINT";
-    } else {
-      return "CbType#" + this.zpp_inner.id;
-    }
-  };
   nape.callbacks.CbType.prototype.__class__ = nape.callbacks.CbType;
   nape.callbacks.CbTypeIterator = $hxClasses["nape.callbacks.CbTypeIterator"] =
     function () {
