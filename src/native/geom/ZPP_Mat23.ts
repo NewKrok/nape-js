@@ -16,6 +16,9 @@ export class ZPP_Mat23 {
   // --- Static: namespace references ---
   static _nape: Any = null;
 
+  // --- Static: wrapper factory callback (set by public Mat23 class) ---
+  static _wrapFn: ((zpp: ZPP_Mat23) => Any) | null = null;
+
   // --- Static: object pool ---
   static zpp_pool: ZPP_Mat23 | null = null;
 
@@ -55,11 +58,15 @@ export class ZPP_Mat23 {
   /** Create a public wrapper, recycling any existing inner. */
   wrapper(): Any {
     if (this.outer == null) {
-      this.outer = new ZPP_Mat23._nape.geom.Mat23();
-      const o = this.outer.zpp_inner;
-      o.next = ZPP_Mat23.zpp_pool;
-      ZPP_Mat23.zpp_pool = o;
-      this.outer.zpp_inner = this;
+      if (ZPP_Mat23._wrapFn) {
+        this.outer = ZPP_Mat23._wrapFn(this);
+      } else {
+        this.outer = new ZPP_Mat23._nape.geom.Mat23();
+        const o = this.outer.zpp_inner;
+        o.next = ZPP_Mat23.zpp_pool;
+        ZPP_Mat23.zpp_pool = o;
+        this.outer.zpp_inner = this;
+      }
     }
     return this.outer;
   }
