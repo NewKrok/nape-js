@@ -22,6 +22,9 @@ export class ZPP_Vec2 {
   static _nape: Any = null;
   static _zpp: Any = null;
 
+  // --- Static: wrapper factory callback (set by public Vec2 class) ---
+  static _wrapFn: ((zpp: ZPP_Vec2) => Any) | null = null;
+
   // --- Instance: vector data ---
   x = 0.0;
   y = 0.0;
@@ -89,18 +92,22 @@ export class ZPP_Vec2 {
 
   wrapper(): Any {
     if (this.outer == null) {
-      this.outer = new ZPP_Vec2._nape.geom.Vec2();
-      const o = this.outer.zpp_inner;
-      if (o.outer != null) {
-        o.outer.zpp_inner = null;
-        o.outer = null;
+      if (ZPP_Vec2._wrapFn) {
+        this.outer = ZPP_Vec2._wrapFn(this);
+      } else {
+        this.outer = new ZPP_Vec2._nape.geom.Vec2();
+        const o = this.outer.zpp_inner;
+        if (o.outer != null) {
+          o.outer.zpp_inner = null;
+          o.outer = null;
+        }
+        o._isimmutable = null;
+        o._validate = null;
+        o._invalidate = null;
+        o.next = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = o;
+        this.outer.zpp_inner = this;
       }
-      o._isimmutable = null;
-      o._validate = null;
-      o._invalidate = null;
-      o.next = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = o;
-      this.outer.zpp_inner = this;
     }
     return this.outer;
   }
