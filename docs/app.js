@@ -127,15 +127,33 @@ function drawBody(body) {
 // Code preview & CodePen
 // =========================================================================
 
-/** Simple syntax highlighter for JS/TS code */
+/** Simple syntax highlighter for JS/TS code (single-pass to avoid mangling) */
 function highlightCode(code) {
-  return code
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/(\/\/.*)/g, '<span class="cm">$1</span>')
-    .replace(/\b(import|from|export|const|let|var|new|for|if|else|return|function|class|extends|of|in|true|false|null|undefined|typeof|this|continue|break)\b/g, '<span class="kw">$1</span>')
-    .replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>')
-    .replace(/(["'`])(?:(?!\1).)*\1/g, '<span class="str">$&</span>')
-    .replace(/\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|Math)\b/g, '<span class="type">$1</span>');
+  code = code
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  const re = new RegExp([
+    '(\\/\\/.*)',                                         // [1] single-line comments
+    '("(?:[^"\\\\]|\\\\.)*")',                            // [2] double-quoted strings
+    "('(?:[^'\\\\]|\\\\.)*')",                            // [3] single-quoted strings
+    '(`(?:[^`\\\\]|\\\\.)*`)',                            // [4] template literals
+    '\\b(import|from|export|const|let|var|new|for|if|else|return|function|class|extends|of|in|true|false|null|undefined|typeof|this|continue|break)\\b', // [5] keywords
+    '\\b(\\d+\\.?\\d*)\\b',                              // [6] numbers
+    '\\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|Math)\\b' // [7] types
+  ].join('|'), 'g');
+
+  return code.replace(re, function(match, comment, dStr, sStr, tStr, kw, num, type) {
+    if (comment !== undefined) return '<span class="cm">' + comment + '</span>';
+    if (dStr !== undefined) return '<span class="str">' + dStr + '</span>';
+    if (sStr !== undefined) return '<span class="str">' + sStr + '</span>';
+    if (tStr !== undefined) return '<span class="str">' + tStr + '</span>';
+    if (kw !== undefined) return '<span class="kw">' + kw + '</span>';
+    if (num !== undefined) return '<span class="num">' + num + '</span>';
+    if (type !== undefined) return '<span class="type">' + type + '</span>';
+    return match;
+  });
 }
 
 function updateCodePreview(demo) {
