@@ -16,6 +16,9 @@ export class ZPP_Vec3 {
   // --- Static: namespace references ---
   static _zpp: Any = null;
 
+  // --- Static: wrapper factory callback (set by public Vec3 class) ---
+  static _wrapFn: ((zpp: ZPP_Vec3) => Any) | null = null;
+
   // --- Instance ---
   outer: Any = null;
   x = 0.0;
@@ -28,5 +31,14 @@ export class ZPP_Vec3 {
 
   validate(): void {
     if (this._validate != null) this._validate();
+  }
+
+  wrapper(): Any {
+    if (this.outer == null) {
+      if (ZPP_Vec3._wrapFn) {
+        this.outer = ZPP_Vec3._wrapFn(this);
+      }
+    }
+    return this.outer;
   }
 }
