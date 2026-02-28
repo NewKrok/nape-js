@@ -39,6 +39,7 @@ let fpsAccum = 0;
 let mouseDown = false;
 let mouseX = 0;
 let mouseY = 0;
+let renderMode = "2d"; // "2d" or "3d"
 
 // =========================================================================
 // Rendering helpers
@@ -141,7 +142,7 @@ function highlightCode(code) {
     '(`(?:[^`\\\\]|\\\\.)*`)',                            // [4] template literals
     '\\b(import|from|export|const|let|var|new|for|if|else|return|function|class|extends|of|in|true|false|null|undefined|typeof|this|continue|break)\\b', // [5] keywords
     '\\b(\\d+\\.?\\d*)\\b',                              // [6] numbers
-    '\\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|Math)\\b' // [7] types
+    '\\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|Math|THREE|Map)\\b' // [7] types
   ].join('|'), 'g');
 
   return code.replace(re, function(match, comment, dStr, sStr, tStr, kw, num, type) {
@@ -156,14 +157,19 @@ function highlightCode(code) {
   });
 }
 
+function getActiveCode(demo) {
+  if (renderMode === "3d" && demo.code3d) return demo.code3d;
+  return demo.code2d || demo.code || "// No source code available for this demo.";
+}
+
 function updateCodePreview(demo) {
-  const code = demo.code || "// No source code available for this demo.";
+  const code = getActiveCode(demo);
   codePreviewEl.innerHTML = highlightCode(code);
 }
 
 function copyCode() {
   const demo = DEMOS[currentDemo];
-  const code = demo.code || "";
+  const code = getActiveCode(demo);
   navigator.clipboard.writeText(code).then(() => {
     showToast("Copied to clipboard!");
   });
@@ -185,14 +191,28 @@ const NAPE_CDN = "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
 
 function openInCodePen() {
   const demo = DEMOS[currentDemo];
-  const code = demo.code || "";
+  const code = getActiveCode(demo);
+  const is3d = renderMode === "3d" && demo.code3d;
 
-  const html = `<canvas id="demoCanvas" width="900" height="500" style="background:#0a0e14;display:block;max-width:100%;border:1px solid #30363d;border-radius:8px"></canvas>`;
+  const html = is3d
+    ? `<div id="container" style="width:900px;max-width:100%;height:500px;border:1px solid #30363d;border-radius:8px;overflow:hidden"></div>`
+    : `<canvas id="demoCanvas" width="900" height="500" style="background:#0a0e14;display:block;max-width:100%;border:1px solid #30363d;border-radius:8px"></canvas>`;
 
   const css = `body { margin: 20px; background: #0d1117; font-family: sans-serif; color: #e6edf3; }`;
 
-  // Wrap the demo code in a module-style setup
-  const js = `import {
+  let js;
+  if (is3d) {
+    js = `import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+import {
+  Space, Body, BodyType, Vec2, Circle, Polygon,
+  PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
+  Material, InteractionFilter, InteractionGroup,
+  CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
+} from "${NAPE_CDN}";
+
+${code}`;
+  } else {
+    js = `import {
   Space, Body, BodyType, Vec2, Circle, Polygon,
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter, InteractionGroup,
@@ -204,10 +224,11 @@ const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
 
 ${code}`;
+  }
 
   // Create a hidden form and submit to CodePen
   const data = {
-    title: `nape-js — ${demo.label || currentDemo}`,
+    title: `nape-js — ${demo.label || currentDemo}${is3d ? " (3D)" : ""}`,
     description: `Interactive physics demo using nape-js TypeScript wrapper.\nhttps://github.com/NewKrok/nape-js`,
     html,
     css,
@@ -231,6 +252,19 @@ ${code}`;
 
 copyCodeBtn.addEventListener("click", copyCode);
 codepenBtn.addEventListener("click", openInCodePen);
+
+// Render mode toggle
+document.getElementById("renderModeToggle").addEventListener("click", (e) => {
+  const btn = e.target.closest(".render-mode-btn");
+  if (!btn) return;
+  const mode = btn.dataset.mode;
+  if (mode === renderMode) return;
+  renderMode = mode;
+  document.querySelectorAll(".render-mode-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.mode === mode);
+  });
+  updateCodePreview(DEMOS[currentDemo]);
+});
 
 // =========================================================================
 // Shared helpers
@@ -290,7 +324,7 @@ const DEMOS = {
         spawnRandomShape(x + (Math.random() - 0.5) * 40, y + (Math.random() - 0.5) * 40);
       }
     },
-    code: `// Create a Space with downward gravity
+    code2d: `// Create a Space with downward gravity
 const space = new Space(new Vec2(0, 600));
 
 // Add static walls (floor, ceiling, left, right)
@@ -316,10 +350,123 @@ for (let i = 0; i < 80; i++) {
   body.space = space;
 }
 
-// Step the simulation each frame
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      const r = shape.castCircle.radius;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      const v0 = verts.at(0);
+      ctx.moveTo(v0.get_x(), v0.get_y());
+      for (let i = 1; i < verts.get_length(); i++) {
+        const v = verts.at(i);
+        ctx.lineTo(v.get_x(), v.get_y());
+      }
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
 function loop() {
   space.step(1 / 60, 8, 3);
-  // ... render bodies ...
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+
+// Lighting
+scene.add(new THREE.AmbientLight(0x404050));
+const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+dirLight.position.set(W / 2, -H / 2, 500);
+scene.add(dirLight);
+
+// Physics
+const space = new Space(new Vec2(0, 600));
+
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
+const meshes = [];
+
+// Create Three.js mesh for a body
+function createMesh(body) {
+  let geom, depth = 20;
+  const shape = body.shapes.at(0);
+  if (shape.isCircle()) {
+    const r = shape.castCircle.radius;
+    geom = new THREE.SphereGeometry(r, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) {
+      pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    }
+    const shape2d = new THREE.Shape(pts);
+    geom = new THREE.ExtrudeGeometry(shape2d, { depth, bevelEnabled: false });
+    geom.translate(0, 0, -depth / 2);
+  }
+  const color = body.isStatic() ? 0x607888 : COLORS[meshes.length % COLORS.length];
+  const mat = new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 });
+  const mesh = new THREE.Mesh(geom, mat);
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+// Spawn shapes
+for (let i = 0; i < 80; i++) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(
+    100 + Math.random() * 700, 50 + Math.random() * 200,
+  ));
+  if (Math.random() < 0.5) {
+    body.shapes.add(new Circle(6 + Math.random() * 14));
+  } else {
+    body.shapes.add(new Polygon(Polygon.box(10 + Math.random() * 24, 10 + Math.random() * 24)));
+  }
+  body.space = space;
+  createMesh(body);
+}
+// Floor mesh
+createMesh(floor);
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
 loop();`,
@@ -359,7 +506,7 @@ loop();`,
       try { ball.userData._colorIdx = 3; } catch(_) {}
       ball.space = space;
     },
-    code: `// Pyramid stress test — stacking many boxes
+    code2d: `// Pyramid stress test — stacking many boxes
 const space = new Space(new Vec2(0, 600));
 
 // Static floor
@@ -386,14 +533,113 @@ for (let row = 0; row < rows; row++) {
   }
 }
 
-// Drop a heavy ball on click
-function dropBall(x, y) {
-  const ball = new Body(BodyType.DYNAMIC, new Vec2(x, y));
-  ball.shapes.add(new Circle(25, undefined,
-    new Material(0.3, 0.2, 0.3, 5) // density = 5
-  ));
-  ball.space = space;
-}`,
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.y * 0.1)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 800);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+dirLight.position.set(W / 2, -H / 2, 500);
+scene.add(dirLight);
+
+// Physics
+const space = new Space(new Vec2(0, 600));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const ROW_COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7, 0xdbabff];
+const meshes = [];
+
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    const s = new THREE.Shape(pts);
+    geom = new THREE.ExtrudeGeometry(s, { depth: 20, bevelEnabled: false });
+    geom.translate(0, 0, -10);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+const boxSize = 28;
+const rows = 14;
+const startX = W / 2;
+const startY = H - 30 - boxSize / 2;
+
+for (let row = 0; row < rows; row++) {
+  const cols = rows - row;
+  const offsetX = startX - (cols * boxSize) / 2 + boxSize / 2;
+  for (let col = 0; col < cols; col++) {
+    const b = new Body(BodyType.DYNAMIC, new Vec2(offsetX + col * boxSize, startY - row * boxSize));
+    b.shapes.add(new Polygon(Polygon.box(boxSize - 2, boxSize - 2)));
+    b.space = space;
+    addMesh(b, ROW_COLORS[row % ROW_COLORS.length]);
+  }
+}
+addMesh(floor, 0x607888);
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Pendulum Chain ------
@@ -459,7 +705,7 @@ function dropBall(x, y) {
         }
       }
     },
-    code: `// Pendulum chain using PivotJoint constraints
+    code2d: `// Pendulum chain using PivotJoint constraints
 const space = new Space(new Vec2(0, 400));
 
 // Static anchor point
@@ -479,7 +725,6 @@ for (let i = 0; i < links; i++) {
   link.shapes.add(new Circle(5));
   link.space = space;
 
-  // PivotJoint: pin two bodies at local anchor points
   const joint = new PivotJoint(
     prev, link,
     new Vec2(i === 0 ? 0 : linkLen / 2, 0),
@@ -499,11 +744,117 @@ bob.shapes.add(new Circle(18, undefined,
 bob.space = space;
 
 const lastJoint = new PivotJoint(
-  prev, bob,
-  new Vec2(linkLen / 2, 0),
-  new Vec2(-18, 0),
+  prev, bob, new Vec2(linkLen / 2, 0), new Vec2(-18, 0),
 );
-lastJoint.space = space;`,
+lastJoint.space = space;
+
+// 2D Canvas rendering
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : "#58a6ff";
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawConstraintLines() {
+  try {
+    const raw = space._inner.get_constraints();
+    for (let i = 0; i < raw.get_length(); i++) {
+      const c = raw.at(i);
+      if (c.get_body1 && c.get_body2) {
+        const b1 = c.get_body1(), b2 = c.get_body2();
+        if (b1 && b2) {
+          ctx.beginPath();
+          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
+          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
+          ctx.strokeStyle = "#d2992244";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  } catch (_) {}
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  drawConstraintLines();
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 400));
+const anchor = new Body(BodyType.STATIC, new Vec2(W / 2, 40));
+anchor.shapes.add(new Circle(6));
+anchor.space = space;
+
+const meshes = [];
+function addSphere(body, r, color) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(r, 16, 16),
+    new THREE.MeshPhongMaterial({ color }),
+  );
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+addSphere(anchor, 6, 0x607888);
+
+const links = 20, linkLen = 18;
+let prev = anchor;
+for (let i = 0; i < links; i++) {
+  const link = new Body(BodyType.DYNAMIC, new Vec2(W / 2 + (i + 1) * linkLen, 40));
+  link.shapes.add(new Circle(5));
+  link.space = space;
+  const joint = new PivotJoint(prev, link,
+    new Vec2(i === 0 ? 0 : linkLen / 2, 0), new Vec2(-linkLen / 2, 0));
+  joint.space = space;
+  prev = link;
+  addSphere(link, 5, i % 2 === 0 ? 0x58a6ff : 0xd29922);
+}
+
+const bob = new Body(BodyType.DYNAMIC, new Vec2(W / 2 + links * linkLen + linkLen, 40));
+bob.shapes.add(new Circle(18, undefined, new Material(0.3, 0.3, 0.5, 8)));
+bob.space = space;
+new PivotJoint(prev, bob, new Vec2(linkLen / 2, 0), new Vec2(-18, 0)).space = space;
+addSphere(bob, 18, 0xf85149);
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Explosion / Impulse Blast ------
@@ -540,8 +891,13 @@ lastJoint.space = space;`,
       ctx.stroke();
       ctx.restore();
     },
-    code: `// Impulse blast — apply radial impulse on click
+    code2d: `// Impulse blast — apply radial impulse on click
 const space = new Space(new Vec2(0, 500));
+
+// Add walls
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
 
 // Fill with mixed shapes
 for (let i = 0; i < 120; i++) {
@@ -560,7 +916,11 @@ for (let i = 0; i < 120; i++) {
 }
 
 // On click: radial impulse blast
-function blast(clickX, clickY) {
+canvas.addEventListener("click", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const sx = W / rect.width, sy = H / rect.height;
+  const clickX = (e.clientX - rect.left) * sx;
+  const clickY = (e.clientY - rect.top) * sy;
   for (const body of space.bodies) {
     if (body.isStatic()) continue;
     const dx = body.position.x - clickX;
@@ -570,12 +930,129 @@ function blast(clickX, clickY) {
     if (distSq < maxDist * maxDist && distSq > 1) {
       const dist = Math.sqrt(distSq);
       const force = 2000 * (1 - dist / maxDist);
-      body.applyImpulse(
-        new Vec2(dx / dist * force, dy / dist * force)
-      );
+      body.applyImpulse(new Vec2(dx / dist * force, dy / dist * force));
     }
   }
-}`,
+});
+
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 800);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -H / 2, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 500));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
+const meshes = [];
+
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    const s = new THREE.Shape(pts);
+    geom = new THREE.ExtrudeGeometry(s, { depth: 20, bevelEnabled: false });
+    geom.translate(0, 0, -10);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+for (let i = 0; i < 120; i++) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(
+    100 + Math.random() * 700, 100 + Math.random() * 350,
+  ));
+  if (Math.random() < 0.5) {
+    body.shapes.add(new Circle(6 + Math.random() * 14));
+  } else {
+    body.shapes.add(new Polygon(Polygon.box(10 + Math.random() * 24, 10 + Math.random() * 24)));
+  }
+  body.space = space;
+  addMesh(body, COLORS[i % COLORS.length]);
+}
+
+// Click to blast
+renderer.domElement.addEventListener("click", (e) => {
+  const rect = renderer.domElement.getBoundingClientRect();
+  const clickX = (e.clientX - rect.left) / rect.width * W;
+  const clickY = (e.clientY - rect.top) / rect.height * H;
+  for (const body of space.bodies) {
+    if (body.isStatic()) continue;
+    const dx = body.position.x - clickX;
+    const dy = body.position.y - clickY;
+    const distSq = dx * dx + dy * dy;
+    if (distSq < 40000 && distSq > 1) {
+      const dist = Math.sqrt(distSq);
+      body.applyImpulse(new Vec2(dx / dist * 2000 * (1 - dist / 200), dy / dist * 2000 * (1 - dist / 200)));
+    }
+  }
+});
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Constraints Showcase ------
@@ -694,7 +1171,7 @@ function blast(clickX, clickY) {
         }
       }
     },
-    code: `// Constraints showcase — all built-in joint types
+    code2d: `// Constraints showcase — all built-in joint types
 const space = new Space(new Vec2(0, 300));
 
 // --- PivotJoint: pin two bodies at a shared point ---
@@ -707,8 +1184,7 @@ bar.shapes.add(new Polygon(Polygon.box(80, 10)));
 bar.space = space;
 
 const pivot = new PivotJoint(
-  pivotAnchor, bar,
-  new Vec2(0, 0), new Vec2(0, 0),
+  pivotAnchor, bar, new Vec2(0, 0), new Vec2(0, 0),
 );
 pivot.space = space;
 
@@ -722,10 +1198,7 @@ ball.shapes.add(new Circle(15));
 ball.space = space;
 
 const spring = new DistanceJoint(
-  dAnchor, ball,
-  new Vec2(0, 0), new Vec2(0, 0),
-  80,  // jointMin
-  120, // jointMax
+  dAnchor, ball, new Vec2(0, 0), new Vec2(0, 0), 80, 120,
 );
 spring.stiff = false;
 spring.frequency = 2;
@@ -733,32 +1206,142 @@ spring.damping = 0.3;
 spring.space = space;
 
 // --- AngleJoint: limit rotation range ---
-const aj = new AngleJoint(
-  pivotAnchor, bar,
-  -Math.PI / 4,  // min angle
-  Math.PI / 4,   // max angle
-);
+const aj = new AngleJoint(pivotAnchor, bar, -Math.PI / 4, Math.PI / 4);
 aj.space = space;
 
-// --- WeldJoint: glue two bodies together ---
-const weld = new WeldJoint(
-  body1, body2,
-  new Vec2(15, 0), new Vec2(-15, 0),
-);
-weld.space = space;
-
 // --- MotorJoint: constant angular velocity ---
-const motor = new MotorJoint(anchor, wheel, 3);
+const mAnchor = new Body(BodyType.STATIC, new Vec2(500, 100));
+mAnchor.shapes.add(new Circle(5));
+mAnchor.space = space;
+
+const wheel = new Body(BodyType.DYNAMIC, new Vec2(500, 100));
+wheel.shapes.add(new Polygon(Polygon.regular(30, 30, 6)));
+wheel.space = space;
+
+new PivotJoint(mAnchor, wheel, new Vec2(0, 0), new Vec2(0, 0)).space = space;
+const motor = new MotorJoint(mAnchor, wheel, 3);
 motor.space = space;
 
-// --- LineJoint: slide along an axis ---
-const line = new LineJoint(
-  anchor, slider,
-  new Vec2(0, 0), new Vec2(0, 0),
-  new Vec2(1, 0), // direction
-  -80, 80,         // min/max range
-);
-line.space = space;`,
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+let colorIdx = 0;
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[(colorIdx++) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  colorIdx = 0;
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+const space = new Space(new Vec2(0, 300));
+const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
+const meshes = [];
+
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 20, bevelEnabled: false });
+    geom.translate(0, 0, -10);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+// PivotJoint: rotating bar
+const pivotAnchor = new Body(BodyType.STATIC, new Vec2(120, 80));
+pivotAnchor.shapes.add(new Circle(5));
+pivotAnchor.space = space;
+const bar = new Body(BodyType.DYNAMIC, new Vec2(120, 80));
+bar.shapes.add(new Polygon(Polygon.box(80, 10)));
+bar.space = space;
+new PivotJoint(pivotAnchor, bar, new Vec2(0, 0), new Vec2(0, 0)).space = space;
+addMesh(pivotAnchor, 0x607888);
+addMesh(bar, COLORS[0]);
+
+// DistanceJoint: spring
+const dAnchor = new Body(BodyType.STATIC, new Vec2(300, 60));
+dAnchor.shapes.add(new Circle(5));
+dAnchor.space = space;
+const ball = new Body(BodyType.DYNAMIC, new Vec2(300, 180));
+ball.shapes.add(new Circle(15));
+ball.space = space;
+const spring = new DistanceJoint(dAnchor, ball, new Vec2(0, 0), new Vec2(0, 0), 80, 120);
+spring.stiff = false; spring.frequency = 2; spring.damping = 0.3;
+spring.space = space;
+addMesh(dAnchor, 0x607888);
+addMesh(ball, COLORS[1]);
+
+// MotorJoint: spinning wheel
+const mAnchor = new Body(BodyType.STATIC, new Vec2(500, 100));
+mAnchor.shapes.add(new Circle(5));
+mAnchor.space = space;
+const wheel = new Body(BodyType.DYNAMIC, new Vec2(500, 100));
+wheel.shapes.add(new Polygon(Polygon.regular(30, 30, 6)));
+wheel.space = space;
+new PivotJoint(mAnchor, wheel, new Vec2(0, 0), new Vec2(0, 0)).space = space;
+new MotorJoint(mAnchor, wheel, 3).space = space;
+addMesh(mAnchor, 0x607888);
+addMesh(wheel, COLORS[3]);
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Soft Body ------
@@ -776,71 +1359,153 @@ line.space = space;`,
       const rows = 4 + Math.floor(Math.random() * 4);
       createSoftBody(x, y, cols, rows, 20, Math.floor(Math.random() * 6));
     },
-    code: `// Soft bodies using DistanceJoint springs
+    code2d: `// Soft bodies using DistanceJoint springs
 const space = new Space(new Vec2(0, 400));
+
+// Static walls
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
 
 function createSoftBody(startX, startY, cols, rows, gap) {
   const bodies = [];
-
-  // Create grid of small circle bodies
   for (let r = 0; r < rows; r++) {
     bodies[r] = [];
     for (let c = 0; c < cols; c++) {
-      const b = new Body(BodyType.DYNAMIC, new Vec2(
-        startX + c * gap,
-        startY + r * gap,
-      ));
+      const b = new Body(BodyType.DYNAMIC, new Vec2(startX + c * gap, startY + r * gap));
       b.shapes.add(new Circle(4));
       b.space = space;
       bodies[r][c] = b;
     }
   }
-
-  // Connect with spring DistanceJoints
+  function springConnect(b1, b2, restLen) {
+    const dj = new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), restLen * 0.8, restLen * 1.2);
+    dj.stiff = false; dj.frequency = 15; dj.damping = 0.4;
+    dj.space = space;
+  }
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      // Horizontal spring
-      if (c < cols - 1) {
-        const dj = new DistanceJoint(
-          bodies[r][c], bodies[r][c + 1],
-          new Vec2(0, 0), new Vec2(0, 0),
-          gap * 0.8, gap * 1.2,
-        );
-        dj.stiff = false;
-        dj.frequency = 15;
-        dj.damping = 0.4;
-        dj.space = space;
-      }
-      // Vertical spring
-      if (r < rows - 1) {
-        const dj = new DistanceJoint(
-          bodies[r][c], bodies[r + 1][c],
-          new Vec2(0, 0), new Vec2(0, 0),
-          gap * 0.8, gap * 1.2,
-        );
-        dj.stiff = false;
-        dj.frequency = 15;
-        dj.damping = 0.4;
-        dj.space = space;
-      }
-      // Diagonal (shear) spring
-      if (c < cols - 1 && r < rows - 1) {
-        const diag = gap * Math.SQRT2;
-        const dj = new DistanceJoint(
-          bodies[r][c], bodies[r + 1][c + 1],
-          new Vec2(0, 0), new Vec2(0, 0),
-          diag * 0.8, diag * 1.2,
-        );
-        dj.stiff = false;
-        dj.frequency = 15;
-        dj.damping = 0.4;
-        dj.space = space;
-      }
+      if (c < cols - 1) springConnect(bodies[r][c], bodies[r][c + 1], gap);
+      if (r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c], gap);
+      if (c < cols - 1 && r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c + 1], gap * Math.SQRT2);
     }
   }
 }
 
-createSoftBody(300, 100, 6, 6, 22);`,
+createSoftBody(W / 2 - 60, 100, 6, 6, 22);
+
+// 2D Canvas rendering
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(88,166,255,0.5)";
+      ctx.fill();
+      ctx.strokeStyle = "#58a6ff";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawConstraintLines() {
+  try {
+    const raw = space._inner.get_constraints();
+    for (let i = 0; i < raw.get_length(); i++) {
+      const c = raw.at(i);
+      if (c.get_body1 && c.get_body2) {
+        const b1 = c.get_body1(), b2 = c.get_body2();
+        if (b1 && b2) {
+          ctx.beginPath();
+          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
+          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
+          ctx.strokeStyle = "#d2992233";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  } catch (_) {}
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  drawConstraintLines();
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 400));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const meshes = [];
+
+function createSoftBody(startX, startY, cols, rows, gap, color) {
+  const bodies = [];
+  for (let r = 0; r < rows; r++) {
+    bodies[r] = [];
+    for (let c = 0; c < cols; c++) {
+      const b = new Body(BodyType.DYNAMIC, new Vec2(startX + c * gap, startY + r * gap));
+      b.shapes.add(new Circle(4));
+      b.space = space;
+      bodies[r][c] = b;
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(4, 8, 8),
+        new THREE.MeshPhongMaterial({ color }),
+      );
+      scene.add(mesh);
+      meshes.push({ mesh, body: b });
+    }
+  }
+  function springConnect(b1, b2, restLen) {
+    const dj = new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), restLen * 0.8, restLen * 1.2);
+    dj.stiff = false; dj.frequency = 15; dj.damping = 0.4;
+    dj.space = space;
+  }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (c < cols - 1) springConnect(bodies[r][c], bodies[r][c + 1], gap);
+      if (r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c], gap);
+      if (c < cols - 1 && r < rows - 1) springConnect(bodies[r][c], bodies[r + 1][c + 1], gap * Math.SQRT2);
+    }
+  }
+}
+
+createSoftBody(W / 2 - 60, 100, 6, 6, 22, 0x58a6ff);
+createSoftBody(W / 2 + 80, 80, 5, 5, 26, 0x3fb950);
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ One-Way Platforms ------
@@ -923,7 +1588,7 @@ createSoftBody(300, 100, 6, 6, 22);`,
         }
       }
     },
-    code: `// One-way platforms using PreListener callbacks
+    code2d: `// One-way platforms using PreListener callbacks
 const space = new Space(new Vec2(0, 600));
 
 // Define callback types
@@ -932,36 +1597,156 @@ const objectType = new CbType();
 
 // PreListener: decide per-frame whether to accept collision
 const preListener = new PreListener(
-  InteractionType.COLLISION,
-  platformType,
-  objectType,
+  InteractionType.COLLISION, platformType, objectType,
   (cb) => {
     const arbiter = cb.get_arbiter();
     const colArb = arbiter.get_collisionArbiter();
     const ny = colArb.get_normal().get_y();
-    // Accept if normal points up (object on top), ignore otherwise
     return ny < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
   },
 );
 preListener.space = space;
 
-// Create a platform and tag it
+// Platforms
 const platform = new Body(BodyType.STATIC, new Vec2(300, 350));
 platform.shapes.add(new Polygon(Polygon.box(200, 10)));
 platform.shapes.at(0).cbTypes.add(platformType);
 platform.space = space;
 
-// Conveyor belt (kinematic body with surface velocity)
+// Conveyor belt
 const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
 conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
-conveyor.surfaceVel = new Vec2(100, 0); // push right
+conveyor.surfaceVel = new Vec2(100, 0);
 conveyor.space = space;
 
-// Spawn objects tagged with objectType
-const obj = new Body(BodyType.DYNAMIC, new Vec2(300, 100));
-obj.shapes.add(new Circle(12));
-obj.shapes.at(0).cbTypes.add(objectType);
-obj.space = space;`,
+// Spawn objects
+for (let i = 0; i < 15; i++) {
+  const obj = new Body(BodyType.DYNAMIC, new Vec2(
+    200 + Math.random() * 400, -Math.random() * 300,
+  ));
+  obj.shapes.add(new Circle(8 + Math.random() * 8));
+  obj.shapes.at(0).cbTypes.add(objectType);
+  obj.space = space;
+}
+
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isDynamic() ? COLORS[Math.abs(Math.round(body.position.x * 0.05)) % COLORS.length]
+    : body.isKinematic() ? "#d29922" : "#607888";
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 600));
+const platformType = new CbType();
+const objectType = new CbType();
+
+const preListener = new PreListener(
+  InteractionType.COLLISION, platformType, objectType,
+  (cb) => {
+    const colArb = cb.get_arbiter().get_collisionArbiter();
+    return colArb.get_normal().get_y() < 0 ? PreFlag.ACCEPT : PreFlag.IGNORE;
+  },
+);
+preListener.space = space;
+
+const meshes = [];
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 20, bevelEnabled: false });
+    geom.translate(0, 0, -10);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+// Platform
+const platform = new Body(BodyType.STATIC, new Vec2(300, 350));
+platform.shapes.add(new Polygon(Polygon.box(200, 10)));
+platform.shapes.at(0).cbTypes.add(platformType);
+platform.space = space;
+addMesh(platform, 0x607888);
+
+// Conveyor
+const conveyor = new Body(BodyType.KINEMATIC, new Vec2(450, 450));
+conveyor.shapes.add(new Polygon(Polygon.box(250, 10)));
+conveyor.surfaceVel = new Vec2(100, 0);
+conveyor.space = space;
+addMesh(conveyor, 0xd29922);
+
+// Falling objects
+const COLORS = [0x58a6ff, 0x3fb950, 0xf85149, 0xa371f7];
+for (let i = 0; i < 15; i++) {
+  const obj = new Body(BodyType.DYNAMIC, new Vec2(200 + Math.random() * 400, -Math.random() * 300));
+  obj.shapes.add(new Circle(8 + Math.random() * 8));
+  obj.shapes.at(0).cbTypes.add(objectType);
+  obj.space = space;
+  addMesh(obj, COLORS[i % COLORS.length]);
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Orbital Gravity (Mario Galaxy style) ------
@@ -1020,7 +1805,7 @@ obj.space = space;`,
       const speed = 100;
       b.velocity = new Vec2(-dy / dist * speed, dx / dist * speed);
     },
-    code: `// Orbital gravity — Mario Galaxy style
+    code2d: `// Orbital gravity — Mario Galaxy style
 const space = new Space(new Vec2(0, 0)); // no global gravity!
 
 // Static "planet" at center
@@ -1032,23 +1817,17 @@ planet.space = space;
 for (let i = 0; i < 50; i++) {
   const angle = Math.random() * Math.PI * 2;
   const dist = 100 + Math.random() * 180;
-
   const body = new Body(BodyType.DYNAMIC, new Vec2(
     W / 2 + Math.cos(angle) * dist,
     H / 2 + Math.sin(angle) * dist,
   ));
   body.shapes.add(new Circle(6 + Math.random() * 10));
   body.space = space;
-
-  // Tangential velocity for orbit
   const speed = 80 + Math.random() * 60;
-  body.velocity = new Vec2(
-    -Math.sin(angle) * speed,
-    Math.cos(angle) * speed,
-  );
+  body.velocity = new Vec2(-Math.sin(angle) * speed, Math.cos(angle) * speed);
 }
 
-// Each frame: apply gravitational force toward center
+// Gravitational pull
 function applyGravity() {
   const G = 800000;
   for (const body of space.bodies) {
@@ -1059,12 +1838,114 @@ function applyGravity() {
     if (distSq < 100) continue;
     const dist = Math.sqrt(distSq);
     const force = G / distSq;
-    body.force = new Vec2(
-      dx / dist * force,
-      dy / dist * force,
-    );
+    body.force = new Vec2(dx / dist * force, dy / dist * force);
   }
-}`,
+}
+
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x * 0.1)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function loop() {
+  applyGravity();
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics — no global gravity
+const space = new Space(new Vec2(0, 0));
+const planet = new Body(BodyType.STATIC, new Vec2(W / 2, H / 2));
+planet.shapes.add(new Circle(40));
+planet.space = space;
+
+const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
+const meshes = [];
+
+// Planet mesh
+const planetMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(40, 32, 32),
+  new THREE.MeshPhongMaterial({ color: 0x607888, emissive: 0x1a2030 }),
+);
+planetMesh.position.set(W / 2, -H / 2, 0);
+scene.add(planetMesh);
+
+// Orbiting bodies
+for (let i = 0; i < 50; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 100 + Math.random() * 180;
+  const r = 6 + Math.random() * 10;
+  const body = new Body(BodyType.DYNAMIC, new Vec2(
+    W / 2 + Math.cos(angle) * dist, H / 2 + Math.sin(angle) * dist,
+  ));
+  body.shapes.add(new Circle(r));
+  body.space = space;
+  const speed = 80 + Math.random() * 60;
+  body.velocity = new Vec2(-Math.sin(angle) * speed, Math.cos(angle) * speed);
+
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(r, 12, 12),
+    new THREE.MeshPhongMaterial({ color: COLORS[i % COLORS.length] }),
+  );
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+function applyGravity() {
+  const G = 800000;
+  for (const body of space.bodies) {
+    if (body.isStatic()) continue;
+    const dx = W / 2 - body.position.x;
+    const dy = H / 2 - body.position.y;
+    const distSq = dx * dx + dy * dy;
+    if (distSq < 100) continue;
+    const dist = Math.sqrt(distSq);
+    const force = G / distSq;
+    body.force = new Vec2(dx / dist * force, dy / dist * force);
+  }
+}
+
+function loop() {
+  applyGravity();
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Filtering Interactions ------
@@ -1125,44 +2006,127 @@ function applyGravity() {
         b.space = space;
       }
     },
-    code: `// Collision filtering — shapes only collide within their group
+    code2d: `// Collision filtering — shapes only collide within their group
 const space = new Space(new Vec2(0, 500));
 
+// Static floor
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
 // InteractionFilter(collisionGroup, collisionMask)
-// Bodies collide when (a.group & b.mask) != 0 && (b.group & a.mask) != 0
-const filterRed   = new InteractionFilter(1, 1); // group=1, mask=1
-const filterGreen = new InteractionFilter(2, 2); // group=2, mask=2
-const filterBlue  = new InteractionFilter(4, 4); // group=4, mask=4
+const filterRed   = new InteractionFilter(1, 1);
+const filterGreen = new InteractionFilter(2, 2);
+const filterBlue  = new InteractionFilter(4, 4);
 
-// Red shapes — only collide with other reds
-for (let i = 0; i < 20; i++) {
-  const b = new Body(BodyType.DYNAMIC, new Vec2(
-    200 + (Math.random() - 0.5) * 120,
-    50 + Math.random() * 200,
-  ));
-  b.shapes.add(new Circle(10, undefined, undefined, filterRed));
-  b.space = space;
+const groups = [
+  { filter: filterRed,   x: 200, color: "#f85149" },
+  { filter: filterGreen, x: 450, color: "#3fb950" },
+  { filter: filterBlue,  x: 700, color: "#58a6ff" },
+];
+
+const bodyColors = new Map();
+for (const g of groups) {
+  for (let i = 0; i < 20; i++) {
+    const b = new Body(BodyType.DYNAMIC, new Vec2(
+      g.x + (Math.random() - 0.5) * 120, 50 + Math.random() * 200,
+    ));
+    b.shapes.add(new Circle(10, undefined, undefined, g.filter));
+    b.space = space;
+    bodyColors.set(b, g.color);
+  }
 }
 
-// Green shapes — only collide with other greens
-for (let i = 0; i < 20; i++) {
-  const b = new Body(BodyType.DYNAMIC, new Vec2(
-    450 + (Math.random() - 0.5) * 120,
-    50 + Math.random() * 200,
-  ));
-  b.shapes.add(new Circle(10, undefined, undefined, filterGreen));
-  b.space = space;
+// 2D Canvas rendering
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  const color = bodyColors.get(body) || "#607888";
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
 }
 
-// Blue shapes — only collide with other blues
-for (let i = 0; i < 20; i++) {
-  const b = new Body(BodyType.DYNAMIC, new Vec2(
-    700 + (Math.random() - 0.5) * 120,
-    50 + Math.random() * 200,
-  ));
-  b.shapes.add(new Circle(10, undefined, undefined, filterBlue));
-  b.space = space;
-}`,
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 700);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 500));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const filterRed   = new InteractionFilter(1, 1);
+const filterGreen = new InteractionFilter(2, 2);
+const filterBlue  = new InteractionFilter(4, 4);
+
+const groups = [
+  { filter: filterRed,   x: 200, color: 0xf85149 },
+  { filter: filterGreen, x: 450, color: 0x3fb950 },
+  { filter: filterBlue,  x: 700, color: 0x58a6ff },
+];
+
+const meshes = [];
+for (const g of groups) {
+  for (let i = 0; i < 20; i++) {
+    const b = new Body(BodyType.DYNAMIC, new Vec2(
+      g.x + (Math.random() - 0.5) * 120, 50 + Math.random() * 200,
+    ));
+    b.shapes.add(new Circle(10, undefined, undefined, g.filter));
+    b.space = space;
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(10, 16, 16),
+      new THREE.MeshPhongMaterial({ color: g.color }),
+    );
+    scene.add(mesh);
+    meshes.push({ mesh, body: b });
+  }
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Ragdoll ------
@@ -1287,7 +2251,7 @@ for (let i = 0; i < 20; i++) {
     click(x, y) {
       this._spawnRagdoll(x, y, Math.floor(Math.random() * 6));
     },
-    code: `// Ragdoll using PivotJoint + AngleJoint constraints
+    code2d: `// Ragdoll using PivotJoint + AngleJoint constraints
 const space = new Space(new Vec2(0, 600));
 
 // Static floor
@@ -1296,62 +2260,175 @@ floor.shapes.add(new Polygon(Polygon.box(W, 20)));
 floor.space = space;
 
 function spawnRagdoll(x, y) {
-  // Torso
   const torso = new Body(BodyType.DYNAMIC, new Vec2(x, y));
   torso.shapes.add(new Polygon(Polygon.box(24, 48)));
   torso.space = space;
 
-  // Head — circle pinned to torso top
   const head = new Body(BodyType.DYNAMIC, new Vec2(x, y - 38));
   head.shapes.add(new Circle(12));
   head.space = space;
 
-  const neckPivot = new PivotJoint(
-    torso, head,
-    new Vec2(0, -24), new Vec2(0, 12),
-  );
-  neckPivot.space = space;
-
-  // Limit head rotation
+  new PivotJoint(torso, head, new Vec2(0, -24), new Vec2(0, 12)).space = space;
   const neckAngle = new AngleJoint(torso, head, -0.4, 0.4);
-  neckAngle.stiff = false;
-  neckAngle.frequency = 8;
-  neckAngle.damping = 0.6;
+  neckAngle.stiff = false; neckAngle.frequency = 8; neckAngle.damping = 0.6;
   neckAngle.space = space;
 
-  // Upper arm
   const arm = new Body(BodyType.DYNAMIC, new Vec2(x - 26, y - 14));
   arm.shapes.add(new Polygon(Polygon.box(28, 8)));
   arm.space = space;
+  new PivotJoint(torso, arm, new Vec2(-12, -20), new Vec2(14, 0)).space = space;
+  new AngleJoint(torso, arm, -Math.PI * 0.75, Math.PI * 0.75).space = space;
 
-  const shoulder = new PivotJoint(
-    torso, arm,
-    new Vec2(-12, -20), new Vec2(14, 0),
-  );
-  shoulder.space = space;
-
-  const shoulderLimit = new AngleJoint(
-    torso, arm,
-    -Math.PI * 0.75, Math.PI * 0.75,
-  );
-  shoulderLimit.space = space;
-
-  // Upper leg
   const leg = new Body(BodyType.DYNAMIC, new Vec2(x - 8, y + 40));
   leg.shapes.add(new Polygon(Polygon.box(10, 32)));
   leg.space = space;
-
-  const hip = new PivotJoint(
-    torso, leg,
-    new Vec2(-8, 24), new Vec2(0, -16),
-  );
-  hip.space = space;
-
-  const hipLimit = new AngleJoint(torso, leg, -0.6, 0.6);
-  hipLimit.space = space;
+  new PivotJoint(torso, leg, new Vec2(-8, 24), new Vec2(0, -16)).space = space;
+  new AngleJoint(torso, leg, -0.6, 0.6).space = space;
 }
 
-spawnRagdoll(W / 2, 120);`,
+spawnRagdoll(W / 2, 120);
+
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.y * 0.05)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawConstraintLines() {
+  try {
+    const raw = space._inner.get_constraints();
+    for (let i = 0; i < raw.get_length(); i++) {
+      const c = raw.at(i);
+      if (c.get_body1 && c.get_body2) {
+        const b1 = c.get_body1(), b2 = c.get_body2();
+        if (b1 && b2) {
+          ctx.beginPath();
+          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
+          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
+          ctx.strokeStyle = "#d2992233";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  } catch (_) {}
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  drawConstraintLines();
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 600);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 600));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const meshes = [];
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 16, bevelEnabled: false });
+    geom.translate(0, 0, -8);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+function spawnRagdoll(x, y, color) {
+  const torso = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+  torso.shapes.add(new Polygon(Polygon.box(24, 48)));
+  torso.space = space;
+  addMesh(torso, color);
+
+  const head = new Body(BodyType.DYNAMIC, new Vec2(x, y - 38));
+  head.shapes.add(new Circle(12));
+  head.space = space;
+  addMesh(head, color);
+
+  new PivotJoint(torso, head, new Vec2(0, -24), new Vec2(0, 12)).space = space;
+  const na = new AngleJoint(torso, head, -0.4, 0.4);
+  na.stiff = false; na.frequency = 8; na.damping = 0.6;
+  na.space = space;
+
+  const arm = new Body(BodyType.DYNAMIC, new Vec2(x - 26, y - 14));
+  arm.shapes.add(new Polygon(Polygon.box(28, 8)));
+  arm.space = space;
+  addMesh(arm, color);
+  new PivotJoint(torso, arm, new Vec2(-12, -20), new Vec2(14, 0)).space = space;
+  new AngleJoint(torso, arm, -Math.PI * 0.75, Math.PI * 0.75).space = space;
+
+  const leg = new Body(BodyType.DYNAMIC, new Vec2(x - 8, y + 40));
+  leg.shapes.add(new Polygon(Polygon.box(10, 32)));
+  leg.space = space;
+  addMesh(leg, color);
+  new PivotJoint(torso, leg, new Vec2(-8, 24), new Vec2(0, -16)).space = space;
+  new AngleJoint(torso, leg, -0.6, 0.6).space = space;
+}
+
+spawnRagdoll(W / 2, 120, 0x58a6ff);
+spawnRagdoll(W / 2 - 150, 80, 0x3fb950);
+spawnRagdoll(W / 2 + 150, 60, 0xf85149);
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 
   // ------ Stacking / Balance ------
@@ -1407,7 +2484,7 @@ spawnRagdoll(W / 2, 120);`,
       try { b.userData._colorIdx = 3; } catch(_) {}
       b.space = space;
     },
-    code: `// Stacking stability test — towers of various shapes
+    code2d: `// Stacking stability test — towers of various shapes
 const space = new Space(new Vec2(0, 600));
 
 // Static floor
@@ -1417,32 +2494,134 @@ floor.space = space;
 
 // Tower of boxes
 for (let i = 0; i < 12; i++) {
-  const b = new Body(BodyType.DYNAMIC, new Vec2(
-    200, H - 30 - 25 * i - 12.5,
-  ));
+  const b = new Body(BodyType.DYNAMIC, new Vec2(200, H - 30 - 25 * i - 12.5));
   b.shapes.add(new Polygon(Polygon.box(40, 25)));
   b.space = space;
 }
 
 // Tower of circles
 for (let i = 0; i < 10; i++) {
-  const b = new Body(BodyType.DYNAMIC, new Vec2(
-    400, H - 30 - 24 * i - 12,
-  ));
+  const b = new Body(BodyType.DYNAMIC, new Vec2(400, H - 30 - 24 * i - 12));
   b.shapes.add(new Circle(12));
   b.space = space;
 }
 
-// Tower of hexagons (regular polygon with 6 sides)
+// Tower of hexagons
 for (let i = 0; i < 10; i++) {
-  const b = new Body(BodyType.DYNAMIC, new Vec2(
-    600, H - 30 - 28 * i - 14,
-  ));
-  b.shapes.add(new Polygon(
-    Polygon.regular(18, 18, 6) // xRadius, yRadius, sides
-  ));
+  const b = new Body(BodyType.DYNAMIC, new Vec2(600, H - 30 - 28 * i - 14));
+  b.shapes.add(new Polygon(Polygon.regular(18, 18, 6)));
   b.space = space;
-}`,
+}
+
+// 2D Canvas rendering
+const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
+
+function drawBody(body) {
+  ctx.save();
+  ctx.translate(body.position.x, body.position.y);
+  ctx.rotate(body.rotation);
+  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x * 0.01)) % COLORS.length];
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      ctx.beginPath();
+      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
+      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
+
+    code3d: `// Setup Three.js scene
+const container = document.getElementById("container");
+const W = 900, H = 500;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
+camera.position.set(W / 2, -H / 2, 800);
+camera.lookAt(W / 2, -H / 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+container.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x404050));
+scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+
+// Physics
+const space = new Space(new Vec2(0, 600));
+const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
+floor.shapes.add(new Polygon(Polygon.box(W, 20)));
+floor.space = space;
+
+const meshes = [];
+function addMesh(body, color) {
+  const shape = body.shapes.at(0);
+  let geom;
+  if (shape.isCircle()) {
+    geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+  } else {
+    const verts = shape.castPolygon.localVerts;
+    const pts = [];
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 20, bevelEnabled: false });
+    geom.translate(0, 0, -10);
+  }
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  scene.add(mesh);
+  meshes.push({ mesh, body });
+}
+
+// Tower of boxes
+for (let i = 0; i < 12; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(200, H - 30 - 25 * i - 12.5));
+  b.shapes.add(new Polygon(Polygon.box(40, 25)));
+  b.space = space;
+  addMesh(b, 0x58a6ff);
+}
+
+// Tower of circles
+for (let i = 0; i < 10; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(400, H - 30 - 24 * i - 12));
+  b.shapes.add(new Circle(12));
+  b.space = space;
+  addMesh(b, 0xd29922);
+}
+
+// Tower of hexagons
+for (let i = 0; i < 10; i++) {
+  const b = new Body(BodyType.DYNAMIC, new Vec2(600, H - 30 - 28 * i - 14));
+  b.shapes.add(new Polygon(Polygon.regular(18, 18, 6)));
+  b.space = space;
+  addMesh(b, 0x3fb950);
+}
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  for (const { mesh, body } of meshes) {
+    mesh.position.set(body.position.x, -body.position.y, 0);
+    mesh.rotation.z = -body.rotation;
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+loop();`,
   },
 };
 

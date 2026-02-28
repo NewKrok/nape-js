@@ -385,6 +385,31 @@ a:hover { text-decoration: underline; }
 .code-panel-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
+}
+.render-mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-right: 4px;
+}
+.render-mode-btn {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.render-mode-btn:hover {
+  color: var(--text);
+}
+.render-mode-btn.active {
+  background: var(--accent-dim);
+  color: #fff;
 }
 .btn-codepen {
   background: var(--surface) !important;
