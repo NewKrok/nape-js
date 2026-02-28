@@ -40,6 +40,9 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | Class | File | Pattern |
 |-------|------|---------|
 | **Material** | `src/phys/Material.ts` | Direct ZPP_Material access, self-registers in namespace |
+| **InteractionFilter** | `src/dynamics/InteractionFilter.ts` | 6 bitmask props, shouldCollide/Sense/Flow |
+| **InteractionGroup** | `src/dynamics/InteractionGroup.ts` | 1 boolean prop, group hierarchy |
+| **FluidProperties** | `src/phys/FluidProperties.ts` | 2 props + gravity (Vec2 dependency) |
 
 ### Next candidates for full modernization (public API)
 
@@ -47,9 +50,6 @@ These have their ZPP_* already extracted, making them ready for the same pattern
 
 | Candidate | ZPP Class | Complexity | Notes |
 |-----------|-----------|------------|-------|
-| `InteractionFilter` | `ZPP_InteractionFilter` | Low | 6 bitmask props, shouldCollide/Sense/Flow |
-| `FluidProperties` | `ZPP_FluidProperties` | Low-Medium | 2 props + gravity (Vec2 dependency) |
-| `InteractionGroup` | `ZPP_InteractionGroup` | Low | 1 boolean prop, group hierarchy |
 | `AABB` | `ZPP_AABB` | Medium | Geometry class, used widely |
 | `Vec2` | `ZPP_Vec2` | High | Core class, used everywhere, pooling |
 
