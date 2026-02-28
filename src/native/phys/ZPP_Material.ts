@@ -30,6 +30,12 @@ export class ZPP_Material {
   static _nape: Any = null;
   static _zpp: Any = null;
 
+  /**
+   * Wrapper factory callback, registered by the modernized Material class.
+   * When set, wrapper() uses this instead of creating a compiled Material.
+   */
+  static _wrapFn: ((zpp: ZPP_Material) => Any) | null = null;
+
   // --- Instance: material properties ---
   elasticity = 0;
   dynamicFriction = 1;
@@ -60,12 +66,16 @@ export class ZPP_Material {
   /** Create/return the public nape.phys.Material wrapper for this internal object. */
   wrapper(): Any {
     if (this.outer == null) {
-      this.outer = new ZPP_Material._nape.phys.Material();
-      const o = this.outer.zpp_inner;
-      o.outer = null;
-      o.next = ZPP_Material.zpp_pool;
-      ZPP_Material.zpp_pool = o;
-      this.outer.zpp_inner = this;
+      if (ZPP_Material._wrapFn) {
+        this.outer = ZPP_Material._wrapFn(this);
+      } else {
+        this.outer = new ZPP_Material._nape.phys.Material();
+        const o = this.outer.zpp_inner;
+        o.outer = null;
+        o.next = ZPP_Material.zpp_pool;
+        ZPP_Material.zpp_pool = o;
+        this.outer.zpp_inner = this;
+      }
     }
     return this.outer;
   }

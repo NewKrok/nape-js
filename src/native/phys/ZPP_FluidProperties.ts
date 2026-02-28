@@ -20,6 +20,9 @@ export class ZPP_FluidProperties {
   static _nape: Any = null;
   static _zpp: Any = null;
 
+  // --- Static: wrapper factory callback (set by FluidProperties.ts) ---
+  static _wrapFn: ((zpp: ZPP_FluidProperties) => Any) | null = null;
+
   // --- Instance: fluid properties ---
   viscosity = 1;
   density = 1;
@@ -50,12 +53,16 @@ export class ZPP_FluidProperties {
   /** Create/return the public nape.phys.FluidProperties wrapper. */
   wrapper(): Any {
     if (this.outer == null) {
-      this.outer = new ZPP_FluidProperties._nape.phys.FluidProperties();
-      const o = this.outer.zpp_inner;
-      o.outer = null;
-      o.next = ZPP_FluidProperties.zpp_pool;
-      ZPP_FluidProperties.zpp_pool = o;
-      this.outer.zpp_inner = this;
+      if (ZPP_FluidProperties._wrapFn) {
+        this.outer = ZPP_FluidProperties._wrapFn(this);
+      } else {
+        this.outer = new ZPP_FluidProperties._nape.phys.FluidProperties();
+        const o = this.outer.zpp_inner;
+        o.outer = null;
+        o.next = ZPP_FluidProperties.zpp_pool;
+        ZPP_FluidProperties.zpp_pool = o;
+        this.outer.zpp_inner = this;
+      }
     }
     return this.outer;
   }
