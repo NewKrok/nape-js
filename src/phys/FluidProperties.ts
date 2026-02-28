@@ -524,4 +524,4 @@ ZPP_FluidProperties._wrapFn = (zpp: ZPP_FluidProperties): FluidProperties => {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.FluidProperties = FluidProperties;
-FluidProperties.prototype.__class__ = FluidProperties;
+(FluidProperties.prototype as any).__class__ = FluidProperties;
