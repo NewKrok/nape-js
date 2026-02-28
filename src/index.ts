@@ -3,6 +3,7 @@ export { getNape } from "./core/engine";
 
 // Geometry
 export { Vec2 } from "./geom/Vec2";
+export { Vec3 } from "./geom/Vec3";
 export { AABB } from "./geom/AABB";
 
 // Physics
