@@ -1,5 +1,6 @@
-// Version (keep in sync with package.json)
-export const VERSION = "3.3.6";
+// Version injected from package.json at build time via tsup define
+declare const __PACKAGE_VERSION__: string;
+export const VERSION: string = __PACKAGE_VERSION__;
 
 // Core
 export { getNape } from "./core/engine";
