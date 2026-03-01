@@ -26,14 +26,14 @@ npm run lint         # eslint + prettier
 
 ## Modernization Status
 
-### Already extracted (ZPP_* to src/native/) — 29 classes
+### Already extracted (ZPP_* to src/native/) — 30 classes
 
 Callbacks:  `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`,
             `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener`
 Dynamics:   `ZPP_InteractionFilter`, `ZPP_InteractionGroup`
 Geometry:   `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`,
             `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult`
-Physics:    `ZPP_Material`, `ZPP_FluidProperties`
+Physics:    `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`
 Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 
 ### Already fully modernized (public API class replaces compiled code)
@@ -78,6 +78,7 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **ConstraintListener** | `src/callbacks/ConstraintListener.ts` | 4 | WAKE/SLEEP/BREAK constraint events, ZPP_ConstraintListener direct access |
 | **InteractionListener** | `src/callbacks/InteractionListener.ts` | 3 | BEGIN/END/ONGOING interaction events, ZPP_InteractionListener direct access |
 | **PreListener** | `src/callbacks/PreListener.ts` | 3 | PRE interaction events, shares ZPP_InteractionListener with InteractionListener |
+| **Compound** | `src/phys/Compound.ts` | 38 | Hierarchical grouping, extends Interactor, direct ZPP_Compound access |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
@@ -103,7 +104,6 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **FluidArbiter** | `src/dynamics/FluidArbiter.ts` | 4 | Extends Arbiter, position/overlap/buoyancy/drag impulse, stub |
 | **Geom** | `src/geom/Geom.ts` | 12 | Static utility (distance/intersects/contains), delegates to compiled methods |
 | **Contact** | `src/dynamics/Contact.ts` | — | Contact point, impulse methods, delegates to compiled ZPP_Contact |
-| **Compound** | `src/phys/Compound.ts` | — | Hierarchical grouping, extends Interactor, delegates to compiled ZPP_Compound |
 
 ### Generic List/Iterator factory (replaces ~7,300 lines of compiled boilerplate)
 
@@ -169,8 +169,8 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 - Every public API class now has a TypeScript wrapper.
 
 **Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
+- ~~`ZPP_Compound` extraction (~400 lines) → Compound full modernization~~ ✅ DONE
 - `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
-- `ZPP_Compound` extraction (~400 lines) → Compound full modernization
 - `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
   - Arbiter (269 lines compiled), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high)
 
