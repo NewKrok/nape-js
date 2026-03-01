@@ -16,6 +16,7 @@ export { Ray } from "./geom/Ray";
 export { ConvexResult } from "./geom/ConvexResult";
 export { RayResult } from "./geom/RayResult";
 export { Winding } from "./geom/Winding";
+export { Geom } from "./geom/Geom";
 
 // Physics
 export { Body } from "./phys/Body";
@@ -43,6 +44,9 @@ export { Broadphase } from "./space/Broadphase";
 export { InteractionFilter } from "./dynamics/InteractionFilter";
 export { InteractionGroup } from "./dynamics/InteractionGroup";
 export { ArbiterType } from "./dynamics/ArbiterType";
+export { Arbiter } from "./dynamics/Arbiter";
+export { CollisionArbiter } from "./dynamics/CollisionArbiter";
+export { FluidArbiter } from "./dynamics/FluidArbiter";
 export { Contact } from "./dynamics/Contact";
 
 // Callbacks

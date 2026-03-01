@@ -98,6 +98,10 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **Ray** | `src/geom/Ray.ts` | 14 | Raycasting, delegates to compiled nape.geom.Ray (ZPP_Ray not extracted) |
 | **ConvexResult** | `src/geom/ConvexResult.ts` | 9 | Convex-cast result, direct ZPP_ConvexRayResult access |
 | **RayResult** | `src/geom/RayResult.ts` | 10 | Raycast result, direct ZPP_ConvexRayResult access |
+| **Arbiter** | `src/dynamics/Arbiter.ts` | 11 | Base arbiter class, shape/body accessors, type checks, stub in compiled code |
+| **CollisionArbiter** | `src/dynamics/CollisionArbiter.ts` | 12 | Extends Arbiter, contacts/normal/friction/elasticity/impulse methods, stub |
+| **FluidArbiter** | `src/dynamics/FluidArbiter.ts` | 4 | Extends Arbiter, position/overlap/buoyancy/drag impulse, stub |
+| **Geom** | `src/geom/Geom.ts` | 12 | Static utility (distance/intersects/contains), delegates to compiled methods |
 | **Contact** | `src/dynamics/Contact.ts` | — | Contact point, impulse methods, delegates to compiled ZPP_Contact |
 | **Compound** | `src/phys/Compound.ts` | — | Hierarchical grouping, extends Interactor, delegates to compiled ZPP_Compound |
 
@@ -144,6 +148,12 @@ initialization code or internal methods reference them before the TS module self
   at init time (~line 120163). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ValidationResult**: Stub needed because compiled shape validation code creates instances.
 - **Broadphase**: Stub needed because compiled Space code creates instances.
+- **Arbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates instances
+  via `new nape.dynamics.Arbiter()` at runtime. TS class replaces at module load time.
+- **CollisionArbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates
+  instances via `new nape.dynamics.CollisionArbiter()`. Extends Arbiter stub.
+- **FluidArbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates
+  instances via `new nape.dynamics.FluidArbiter()`. Extends Arbiter stub.
 - **ArbiterList**: Stub constructor needed because `ZPP_SpaceArbiterList` extends it at
   init time (prototype copy + `.call()`). TS factory replaces with full implementation.
 
@@ -155,10 +165,8 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 ### Next candidates for modernization
 
-**Priority 1: Complete all public API wrappers**
-- `Arbiter`, `CollisionArbiter`, `FluidArbiter` — thin wrappers (same pattern as Contact/Compound)
-- `Geom` — static utility class, thin wrapper delegating to compiled code
-- This would mean **every public API class** has a TypeScript wrapper
+**Priority 1: Complete all public API wrappers** — DONE
+- Every public API class now has a TypeScript wrapper.
 
 **Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
 - `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
@@ -180,9 +188,7 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 - Body, Circle, Polygon, Space, Constraint + 7 joint subclasses (already have TS wrappers above)
 - Ray, ConvexResult, RayResult, Contact, Compound (already have TS wrappers above)
 
-**Public API not yet wrapped:**
-- Arbiter, CollisionArbiter, FluidArbiter
-- Geom (static utility class)
+**Public API:** All classes now have TypeScript wrappers.
 
 **Internal ZPP classes (~79 in compiled code):**
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
