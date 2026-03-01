@@ -1,6 +1,6 @@
 {
   "name": "@newkrok/nape-js",
-  "version": "3.3.10",
+  "version": "3.3.11",
   "description": "Nape Physics Engine - Modern TypeScript wrapper for 2D physics simulation",
   "type": "module",
   "sideEffects": true,
