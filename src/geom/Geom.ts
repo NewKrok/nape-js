@@ -39,12 +39,7 @@ export class Geom {
    * @param out2 - Output Vec2 for closest point on body2.
    * @returns The distance between the two bodies.
    */
-  static distanceBody(
-    body1: Any,
-    body2: Any,
-    out1: Vec2,
-    out2: Vec2,
-  ): number {
+  static distanceBody(body1: Any, body2: Any, out1: Vec2, out2: Vec2): number {
     return _distanceBody(unwrap(body1), unwrap(body2), out1, out2);
   }
 
@@ -56,12 +51,7 @@ export class Geom {
    * @param out2 - Output Vec2 for closest point on shape2.
    * @returns The distance between the two shapes.
    */
-  static distance(
-    shape1: Any,
-    shape2: Any,
-    out1: Vec2,
-    out2: Vec2,
-  ): number {
+  static distance(shape1: Any, shape2: Any, out1: Vec2, out2: Vec2): number {
     return _distance(unwrap(shape1), unwrap(shape2), out1, out2);
   }
 

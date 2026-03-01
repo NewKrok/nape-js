@@ -94,9 +94,7 @@ export class RayResult {
   /** @internal */
   private _disposed(): void {
     if (this.zpp_inner.next != null) {
-      throw new Error(
-        "Error: This object has been disposed of and cannot be used",
-      );
+      throw new Error("Error: This object has been disposed of and cannot be used");
     }
   }
 }

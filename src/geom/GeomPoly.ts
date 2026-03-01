@@ -539,10 +539,7 @@ export class GeomPoly {
     let ret = false;
     this._forEachVert((p: Any) => {
       const q = p.prev;
-      if (
-        ((p.y < py && q.y >= py) || (q.y < py && p.y >= py)) &&
-        (p.x <= px || q.x <= px)
-      ) {
+      if (((p.y < py && q.y >= py) || (q.y < py && p.y >= py)) && (p.x <= px || q.x <= px)) {
         if (p.x + ((py - p.y) / (q.y - p.y)) * (q.x - p.x) < px) {
           ret = !ret;
         }
@@ -637,10 +634,10 @@ export class GeomPoly {
     const nape = getNape();
     const MPs = this.zpp_inner.vertices;
     if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedGVList = new (zpp.util.ZNPList_ZPP_GeomVert)();
+      zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
     }
     const MPs1 = zpp.geom.ZPP_Simple.decompose(MPs, zpp.geom.ZPP_PartitionedPoly.sharedGVList);
-    const ret = output == null ? new (nape.geom.GeomPolyList)() : output;
+    const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs1.head != null) {
       const MP = MPs1.pop_unsafe();
       const x = GeomPoly.get();
@@ -663,14 +660,14 @@ export class GeomPoly {
     const nape = getNape();
     const poly = this.zpp_inner.vertices;
     if (zpp.geom.ZPP_Monotone.sharedPPoly == null) {
-      zpp.geom.ZPP_Monotone.sharedPPoly = new (zpp.geom.ZPP_PartitionedPoly)();
+      zpp.geom.ZPP_Monotone.sharedPPoly = new zpp.geom.ZPP_PartitionedPoly();
     }
     const poly1 = zpp.geom.ZPP_Monotone.decompose(poly, zpp.geom.ZPP_Monotone.sharedPPoly);
     if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedGVList = new (zpp.util.ZNPList_ZPP_GeomVert)();
+      zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
     }
     const MPs = poly1.extract(zpp.geom.ZPP_PartitionedPoly.sharedGVList);
-    const ret = output == null ? new (nape.geom.GeomPolyList)() : output;
+    const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs.head != null) {
       const MP = MPs.pop_unsafe();
       const x = GeomPoly.get();
@@ -693,14 +690,14 @@ export class GeomPoly {
     const nape = getNape();
     const poly = this.zpp_inner.vertices;
     if (zpp.geom.ZPP_Monotone.sharedPPoly == null) {
-      zpp.geom.ZPP_Monotone.sharedPPoly = new (zpp.geom.ZPP_PartitionedPoly)();
+      zpp.geom.ZPP_Monotone.sharedPPoly = new zpp.geom.ZPP_PartitionedPoly();
     }
     const poly1 = zpp.geom.ZPP_Monotone.decompose(poly, zpp.geom.ZPP_Monotone.sharedPPoly);
     if (zpp.geom.ZPP_PartitionedPoly.sharedPPList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedPPList = new (zpp.util.ZNPList_ZPP_PartitionedPoly)();
+      zpp.geom.ZPP_PartitionedPoly.sharedPPList = new zpp.util.ZNPList_ZPP_PartitionedPoly();
     }
     const MPs = poly1.extract_partitions(zpp.geom.ZPP_PartitionedPoly.sharedPPList);
-    const ret = output == null ? new (nape.geom.GeomPolyList)() : output;
+    const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs.head != null) {
       const MP = MPs.pop_unsafe();
       zpp.geom.ZPP_Triangular.triangulate(MP);
@@ -709,7 +706,7 @@ export class GeomPoly {
       }
       zpp.geom.ZPP_Convex.optimise(MP);
       if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-        zpp.geom.ZPP_PartitionedPoly.sharedGVList = new (zpp.util.ZNPList_ZPP_GeomVert)();
+        zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
       }
       const MQs = MP.extract(zpp.geom.ZPP_PartitionedPoly.sharedGVList);
       const o = MP;
@@ -738,14 +735,14 @@ export class GeomPoly {
     const nape = getNape();
     const poly = this.zpp_inner.vertices;
     if (zpp.geom.ZPP_Monotone.sharedPPoly == null) {
-      zpp.geom.ZPP_Monotone.sharedPPoly = new (zpp.geom.ZPP_PartitionedPoly)();
+      zpp.geom.ZPP_Monotone.sharedPPoly = new zpp.geom.ZPP_PartitionedPoly();
     }
     const poly1 = zpp.geom.ZPP_Monotone.decompose(poly, zpp.geom.ZPP_Monotone.sharedPPoly);
     if (zpp.geom.ZPP_PartitionedPoly.sharedPPList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedPPList = new (zpp.util.ZNPList_ZPP_PartitionedPoly)();
+      zpp.geom.ZPP_PartitionedPoly.sharedPPList = new zpp.util.ZNPList_ZPP_PartitionedPoly();
     }
     const MPs = poly1.extract_partitions(zpp.geom.ZPP_PartitionedPoly.sharedPPList);
-    const ret = output == null ? new (nape.geom.GeomPolyList)() : output;
+    const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs.head != null) {
       const MP = MPs.pop_unsafe();
       zpp.geom.ZPP_Triangular.triangulate(MP);
@@ -753,7 +750,7 @@ export class GeomPoly {
         zpp.geom.ZPP_Triangular.optimise(MP);
       }
       if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-        zpp.geom.ZPP_PartitionedPoly.sharedGVList = new (zpp.util.ZNPList_ZPP_GeomVert)();
+        zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
       }
       const MQs = MP.extract(zpp.geom.ZPP_PartitionedPoly.sharedGVList);
       const o = MP;
@@ -790,19 +787,19 @@ export class GeomPoly {
       const next = p.next;
 
       // Edge vectors
-      let ax = p.x - prev.x;
-      let ay = p.y - prev.y;
-      let bx = next.x - p.x;
-      let by = next.y - p.y;
+      const ax = p.x - prev.x;
+      const ay = p.y - prev.y;
+      const bx = next.x - p.x;
+      const by = next.y - p.y;
 
       // Perpendicular normals scaled by inflation
-      let alen = Math.sqrt(ax * ax + ay * ay);
-      let apx = (-ay / alen) * inflation;
-      let apy = (ax / alen) * inflation;
+      const alen = Math.sqrt(ax * ax + ay * ay);
+      const apx = (-ay / alen) * inflation;
+      const apy = (ax / alen) * inflation;
 
-      let blen = Math.sqrt(bx * bx + by * by);
-      let bpx = (-by / blen) * inflation;
-      let bpy = (bx / blen) * inflation;
+      const blen = Math.sqrt(bx * bx + by * by);
+      const bpx = (-by / blen) * inflation;
+      const bpy = (bx / blen) * inflation;
 
       // Intersection of offset lines
       const bapx = bpx - apx;
@@ -869,14 +866,8 @@ export class GeomPoly {
       throw new Error("Error: Cannot transform by null matrix");
     }
     this._forEachVert((v: Any) => {
-      const t =
-        matrix.zpp_inner.a * v.x +
-        matrix.zpp_inner.b * v.y +
-        matrix.zpp_inner.tx;
-      v.y =
-        matrix.zpp_inner.c * v.x +
-        matrix.zpp_inner.d * v.y +
-        matrix.zpp_inner.ty;
+      const t = matrix.zpp_inner.a * v.x + matrix.zpp_inner.b * v.y + matrix.zpp_inner.tx;
+      v.y = matrix.zpp_inner.c * v.x + matrix.zpp_inner.d * v.y + matrix.zpp_inner.ty;
       v.x = t;
     });
     return this;

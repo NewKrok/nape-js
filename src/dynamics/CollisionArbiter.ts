@@ -104,9 +104,7 @@ export class CollisionArbiter extends Arbiter {
       throw new Error("Error: CollisionArbiter::elasticity cannot be NaN");
     }
     if (value < 0) {
-      throw new Error(
-        "Error: CollisionArbiter::elasticity cannot be negative",
-      );
+      throw new Error("Error: CollisionArbiter::elasticity cannot be negative");
     }
     this.zpp_inner.colarb.restitution = value;
     this.zpp_inner.colarb.userdef_restitution = true;
@@ -123,14 +121,10 @@ export class CollisionArbiter extends Arbiter {
   set dynamicFriction(value: number) {
     this._mutableCheck("dynamicFriction");
     if (value !== value) {
-      throw new Error(
-        "Error: CollisionArbiter::dynamicFriction cannot be NaN",
-      );
+      throw new Error("Error: CollisionArbiter::dynamicFriction cannot be NaN");
     }
     if (value < 0) {
-      throw new Error(
-        "Error: CollisionArbiter::dynamicFriction cannot be negative",
-      );
+      throw new Error("Error: CollisionArbiter::dynamicFriction cannot be negative");
     }
     this.zpp_inner.colarb.dyn_fric = value;
     this.zpp_inner.colarb.userdef_dyn_fric = true;
@@ -147,14 +141,10 @@ export class CollisionArbiter extends Arbiter {
   set staticFriction(value: number) {
     this._mutableCheck("staticFriction");
     if (value !== value) {
-      throw new Error(
-        "Error: CollisionArbiter::staticFriction cannot be NaN",
-      );
+      throw new Error("Error: CollisionArbiter::staticFriction cannot be NaN");
     }
     if (value < 0) {
-      throw new Error(
-        "Error: CollisionArbiter::staticFriction cannot be negative",
-      );
+      throw new Error("Error: CollisionArbiter::staticFriction cannot be negative");
     }
     this.zpp_inner.colarb.stat_fric = value;
     this.zpp_inner.colarb.userdef_stat_fric = true;
@@ -171,14 +161,10 @@ export class CollisionArbiter extends Arbiter {
   set rollingFriction(value: number) {
     this._mutableCheck("rollingFriction");
     if (value !== value) {
-      throw new Error(
-        "Error: CollisionArbiter::rollingFriction cannot be NaN",
-      );
+      throw new Error("Error: CollisionArbiter::rollingFriction cannot be NaN");
     }
     if (value < 0) {
-      throw new Error(
-        "Error: CollisionArbiter::rollingFriction cannot be negative",
-      );
+      throw new Error("Error: CollisionArbiter::rollingFriction cannot be negative");
     }
     this.zpp_inner.colarb.rfric = value;
     this.zpp_inner.colarb.userdef_rfric = true;
@@ -194,8 +180,7 @@ export class CollisionArbiter extends Arbiter {
   firstVertex(): boolean {
     this._activeCheck();
     const poly2circle =
-      (this.zpp_inner.colarb.__ref_edge1 != null) !=
-      (this.zpp_inner.colarb.__ref_edge2 != null);
+      (this.zpp_inner.colarb.__ref_edge1 != null) != (this.zpp_inner.colarb.__ref_edge2 != null);
     return poly2circle ? this.zpp_inner.colarb.__ref_vertex == -1 : false;
   }
 
@@ -203,8 +188,7 @@ export class CollisionArbiter extends Arbiter {
   secondVertex(): boolean {
     this._activeCheck();
     const poly2circle =
-      (this.zpp_inner.colarb.__ref_edge1 != null) !=
-      (this.zpp_inner.colarb.__ref_edge2 != null);
+      (this.zpp_inner.colarb.__ref_edge1 != null) != (this.zpp_inner.colarb.__ref_edge2 != null);
     return poly2circle ? this.zpp_inner.colarb.__ref_vertex == 1 : false;
   }
 
@@ -227,10 +211,7 @@ export class CollisionArbiter extends Arbiter {
   }
 
   /** Total impulse (normal + tangent + rolling) accumulated across all contacts. */
-  override totalImpulse(
-    body: Any = null,
-    freshOnly: boolean = false,
-  ): Vec3 {
+  override totalImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     return this._accumulateImpulse("totalImpulse", body, freshOnly);
@@ -269,29 +250,24 @@ export class CollisionArbiter extends Arbiter {
       ) {
         colarb.restitution = 1;
       } else {
-        colarb.restitution =
-          (colarb.s1.material.elasticity + colarb.s2.material.elasticity) /
-          2;
+        colarb.restitution = (colarb.s1.material.elasticity + colarb.s2.material.elasticity) / 2;
       }
       if (colarb.restitution < 0) colarb.restitution = 0;
       if (colarb.restitution > 1) colarb.restitution = 1;
     }
     if (!colarb.userdef_dyn_fric) {
       colarb.dyn_fric = Math.sqrt(
-        colarb.s1.material.dynamicFriction *
-          colarb.s2.material.dynamicFriction,
+        colarb.s1.material.dynamicFriction * colarb.s2.material.dynamicFriction,
       );
     }
     if (!colarb.userdef_stat_fric) {
       colarb.stat_fric = Math.sqrt(
-        colarb.s1.material.staticFriction *
-          colarb.s2.material.staticFriction,
+        colarb.s1.material.staticFriction * colarb.s2.material.staticFriction,
       );
     }
     if (!colarb.userdef_rfric) {
       colarb.rfric = Math.sqrt(
-        colarb.s1.material.rollingFriction *
-          colarb.s2.material.rollingFriction,
+        colarb.s1.material.rollingFriction * colarb.s2.material.rollingFriction,
       );
     }
   }
@@ -299,20 +275,12 @@ export class CollisionArbiter extends Arbiter {
   /** @internal Throw if not in pre-handler mutable window. */
   private _mutableCheck(prop: string): void {
     if (!this.zpp_inner.colarb.mutable) {
-      throw new Error(
-        "Error: CollisionArbiter::" +
-          prop +
-          " is only mutable during a pre-handler",
-      );
+      throw new Error("Error: CollisionArbiter::" + prop + " is only mutable during a pre-handler");
     }
   }
 
   /** @internal Accumulate impulse from contacts. */
-  private _accumulateImpulse(
-    method: string,
-    body: Any,
-    freshOnly: boolean,
-  ): Vec3 {
+  private _accumulateImpulse(method: string, body: Any, freshOnly: boolean): Vec3 {
     let retx = 0;
     let rety = 0;
     let retz = 0;

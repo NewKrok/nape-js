@@ -36,7 +36,7 @@ export class ZPP_CutInt {
     path0: Any,
     path1: Any,
     virtualint = false,
-    vertex = false
+    vertex = false,
   ): ZPP_CutInt {
     let ret: ZPP_CutInt;
     if (ZPP_CutInt.zpp_pool == null) {

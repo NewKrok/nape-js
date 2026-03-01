@@ -16,7 +16,7 @@ import { createListClasses } from "./NapeListFactory";
 const outerWrap = (elt: any) => elt.outer;
 // Handle both compiled objects (have .zpp_inner) and TS wrapper objects (have ._inner)
 const zppUnwrap = (obj: any) =>
-  obj.zpp_inner ?? (obj._inner ? obj._inner.zpp_inner ?? obj._inner : obj);
+  obj.zpp_inner ?? (obj._inner ? (obj._inner.zpp_inner ?? obj._inner) : obj);
 
 // callbacks
 createListClasses({

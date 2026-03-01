@@ -4,7 +4,6 @@ import { Body } from "../../src/phys/Body";
 import { BodyType } from "../../src/phys/BodyType";
 import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
-import { Polygon } from "../../src/shape/Polygon";
 import { Space } from "../../src/space/Space";
 import { Interactor } from "../../src/phys/Interactor";
 import { ZPP_Compound } from "../../src/native/phys/ZPP_Compound";
@@ -266,11 +265,7 @@ describe("Compound", () => {
 
 describe("ZPP_Compound", () => {
   it("should have correct __name__", () => {
-    expect(ZPP_Compound.__name__).toEqual([
-      "zpp_nape",
-      "phys",
-      "ZPP_Compound",
-    ]);
+    expect(ZPP_Compound.__name__).toEqual(["zpp_nape", "phys", "ZPP_Compound"]);
   });
 
   it("should have __super__ set to ZPP_Interactor", () => {

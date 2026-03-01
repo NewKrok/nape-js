@@ -35,9 +35,7 @@ export class FluidArbiter extends Arbiter {
   }
   set position(value: Vec2) {
     if (!this.zpp_inner.fluidarb.mutable) {
-      throw new Error(
-        "Error: Arbiter is mutable only within a pre-handler",
-      );
+      throw new Error("Error: Arbiter is mutable only within a pre-handler");
     }
     if (value == null) {
       throw new Error("Error: FluidArbiter::position cannot be null");
@@ -57,17 +55,13 @@ export class FluidArbiter extends Arbiter {
   }
   set overlap(value: number) {
     if (!this.zpp_inner.fluidarb.mutable) {
-      throw new Error(
-        "Error: Arbiter is mutable only within a pre-handler",
-      );
+      throw new Error("Error: Arbiter is mutable only within a pre-handler");
     }
     if (value !== value) {
       throw new Error("Error: FluidArbiter::overlap cannot be NaN");
     }
     if (value <= 0 || value == Infinity) {
-      throw new Error(
-        "Error: FluidArbiter::overlap must be strictly positive and non infinite",
-      );
+      throw new Error("Error: FluidArbiter::overlap must be strictly positive and non infinite");
     }
     this.zpp_inner.fluidarb.overlap = value;
   }
@@ -84,17 +78,9 @@ export class FluidArbiter extends Arbiter {
     if (body == null) {
       return Vec3.get(farb.buoyx, farb.buoyy, 0);
     } else if (body.zpp_inner == this.zpp_inner.b2) {
-      return Vec3.get(
-        farb.buoyx,
-        farb.buoyy,
-        farb.buoyy * farb.r2x - farb.buoyx * farb.r2y,
-      );
+      return Vec3.get(farb.buoyx, farb.buoyy, farb.buoyy * farb.r2x - farb.buoyx * farb.r2y);
     } else {
-      return Vec3.get(
-        -farb.buoyx,
-        -farb.buoyy,
-        -(farb.buoyy * farb.r1x - farb.buoyx * farb.r1y),
-      );
+      return Vec3.get(-farb.buoyx, -farb.buoyy, -(farb.buoyy * farb.r1x - farb.buoyx * farb.r1y));
     }
   }
 
@@ -103,20 +89,12 @@ export class FluidArbiter extends Arbiter {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const farb = this.zpp_inner.fluidarb;
-    const scale =
-      body == null || body.zpp_inner == this.zpp_inner.b2 ? 1 : -1;
-    return Vec3.get(
-      farb.dampx * scale,
-      farb.dampy * scale,
-      farb.adamp * scale,
-    );
+    const scale = body == null || body.zpp_inner == this.zpp_inner.b2 ? 1 : -1;
+    return Vec3.get(farb.dampx * scale, farb.dampy * scale, farb.adamp * scale);
   }
 
   /** Total impulse (buoyancy + drag). */
-  override totalImpulse(
-    body: Any = null,
-    freshOnly: boolean = false,
-  ): Vec3 {
+  override totalImpulse(body: Any = null, _freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const buoy = this.buoyancyImpulse(body);

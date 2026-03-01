@@ -82,7 +82,9 @@ describe("ZPP_Vec2", () => {
     it("should call _validate when set", () => {
       const v = new ZPP_Vec2();
       let called = false;
-      v._validate = () => { called = true; };
+      v._validate = () => {
+        called = true;
+      };
       v.validate();
       expect(called).toBe(true);
     });
@@ -97,7 +99,9 @@ describe("ZPP_Vec2", () => {
     it("should call _invalidate with self when set", () => {
       const v = new ZPP_Vec2();
       let receivedSelf: any = null;
-      v._invalidate = (self) => { receivedSelf = self; };
+      v._invalidate = (self) => {
+        receivedSelf = self;
+      };
       v.invalidate();
       expect(receivedSelf).toBe(v);
     });
@@ -113,7 +117,9 @@ describe("ZPP_Vec2", () => {
     it("should call _isimmutable when set and not immutable", () => {
       const v = new ZPP_Vec2();
       let called = false;
-      v._isimmutable = () => { called = true; };
+      v._isimmutable = () => {
+        called = true;
+      };
       v.immutable();
       expect(called).toBe(true);
     });

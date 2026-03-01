@@ -99,12 +99,24 @@ describe("Mat23", () => {
 
   it("should throw on NaN property assignments", () => {
     const m = new Mat23();
-    expect(() => { m.a = NaN; }).toThrow(/NaN/);
-    expect(() => { m.b = NaN; }).toThrow(/NaN/);
-    expect(() => { m.c = NaN; }).toThrow(/NaN/);
-    expect(() => { m.d = NaN; }).toThrow(/NaN/);
-    expect(() => { m.tx = NaN; }).toThrow(/NaN/);
-    expect(() => { m.ty = NaN; }).toThrow(/NaN/);
+    expect(() => {
+      m.a = NaN;
+    }).toThrow(/NaN/);
+    expect(() => {
+      m.b = NaN;
+    }).toThrow(/NaN/);
+    expect(() => {
+      m.c = NaN;
+    }).toThrow(/NaN/);
+    expect(() => {
+      m.d = NaN;
+    }).toThrow(/NaN/);
+    expect(() => {
+      m.tx = NaN;
+    }).toThrow(/NaN/);
+    expect(() => {
+      m.ty = NaN;
+    }).toThrow(/NaN/);
   });
 
   // --- Determinant ---

@@ -105,8 +105,7 @@ export class Listener {
   set space(space: Space | Any | null) {
     // Unwrap TS Space wrapper if needed (TS Space has _inner, compiled Space has zpp_inner)
     const compiledSpace = space != null ? (space._inner ?? space) : null;
-    const currentCompiledSpace =
-      this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
+    const currentCompiledSpace = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
     if (currentCompiledSpace != compiledSpace) {
       if (this.zpp_inner.space != null) {
         this.zpp_inner.space.wrap_listeners.remove(this);
@@ -125,33 +124,17 @@ export class Listener {
   }
 
   toString(): string {
-    const eventNames = [
-      "BEGIN",
-      "END",
-      "WAKE",
-      "SLEEP",
-      "BREAK",
-      "PRE",
-      "ONGOING",
-    ];
+    const eventNames = ["BEGIN", "END", "WAKE", "SLEEP", "BREAK", "PRE", "ONGOING"];
     const event = eventNames[this.zpp_inner.event];
     if (this.zpp_inner.type == 0) {
       const body = this.zpp_inner.body;
       return (
-        "BodyListener{" +
-        event +
-        "::" +
-        String(body.outer_zn.zpp_inner_zn.options.outer) +
-        "}"
+        "BodyListener{" + event + "::" + String(body.outer_zn.zpp_inner_zn.options.outer) + "}"
       );
     } else if (this.zpp_inner.type == 1) {
       const con = this.zpp_inner.constraint;
       return (
-        "ConstraintListener{" +
-        event +
-        "::" +
-        String(con.outer_zn.zpp_inner_zn.options.outer) +
-        "}"
+        "ConstraintListener{" + event + "::" + String(con.outer_zn.zpp_inner_zn.options.outer) + "}"
       );
     } else {
       const con1 = this.zpp_inner.interaction;

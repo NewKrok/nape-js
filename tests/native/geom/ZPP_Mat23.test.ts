@@ -100,7 +100,9 @@ describe("ZPP_Mat23", () => {
     it("should call _invalidate when set", () => {
       const m = new ZPP_Mat23();
       let called = false;
-      m._invalidate = () => { called = true; };
+      m._invalidate = () => {
+        called = true;
+      };
       m.invalidate();
       expect(called).toBe(true);
     });

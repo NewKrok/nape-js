@@ -1,12 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { Body } from "../../src/phys/Body";
-import { BodyType } from "../../src/phys/BodyType";
 import { Interactor } from "../../src/phys/Interactor";
 import { InteractionGroup } from "../../src/dynamics/InteractionGroup";
 import { Circle } from "../../src/shape/Circle";
 import { Shape } from "../../src/shape/Shape";
-import { Space } from "../../src/space/Space";
-import { Vec2 } from "../../src/geom/Vec2";
 
 describe("Interactor", () => {
   // ---------------------------------------------------------------------------

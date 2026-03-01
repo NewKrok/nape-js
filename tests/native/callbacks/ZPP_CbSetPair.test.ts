@@ -276,7 +276,7 @@ describe("ZPP_CbSetPair", () => {
 
       let callCount = 0;
       const failFirst = {
-        nonemptyintersection: (xs: any, ys: any) => {
+        nonemptyintersection: (_xs: any, _ys: any) => {
           callCount++;
           return callCount > 2; // fail first 2 calls, succeed later
         },
@@ -386,7 +386,7 @@ describe("ZPP_CbSetPair", () => {
 
       // options1 fails on a (forward path fails at first check)
       const options1fail = {
-        nonemptyintersection: (_xs: any, list: any) => false,
+        nonemptyintersection: (_xs: any, _list: any) => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
       };

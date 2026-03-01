@@ -56,9 +56,7 @@ export class FluidProperties {
         throw new Error("Error: FluidProperties::viscosity cannot be NaN");
       }
       if (viscosity < 0) {
-        throw new Error(
-          "Error: FluidProperties::viscosity (" + viscosity + ") must be >= 0",
-        );
+        throw new Error("Error: FluidProperties::viscosity (" + viscosity + ") must be >= 0");
       }
       zpp.viscosity = viscosity / 1;
       zpp.invalidate();
@@ -114,9 +112,7 @@ export class FluidProperties {
         throw new Error("Error: FluidProperties::viscosity cannot be NaN");
       }
       if (value < 0) {
-        throw new Error(
-          "Error: FluidProperties::viscosity (" + value + ") must be >= 0",
-        );
+        throw new Error("Error: FluidProperties::viscosity (" + value + ") must be >= 0");
       }
       this.zpp_inner.viscosity = value / 1;
       this.zpp_inner.invalidate();
@@ -319,10 +315,7 @@ export class FluidProperties {
     const napeNs = getNape();
     const zpp_nape = napeNs.zpp_nape;
 
-    const ret = new FluidProperties(
-      this.zpp_inner.density * 1000,
-      this.zpp_inner.viscosity,
-    );
+    const ret = new FluidProperties(this.zpp_inner.density * 1000, this.zpp_inner.viscosity);
 
     if (this.zpp_inner.userData != null) {
       ret.zpp_inner.userData = { ...this.zpp_inner.userData };

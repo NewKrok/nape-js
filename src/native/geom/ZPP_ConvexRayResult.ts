@@ -44,12 +44,7 @@ export class ZPP_ConvexRayResult {
   // Static factory: getRay
   // ---------------------------------------------------------------------------
 
-  static getRay(
-    normal: Any,
-    time: number,
-    inner: boolean,
-    shape: Any,
-  ): Any {
+  static getRay(normal: Any, time: number, inner: boolean, shape: Any): Any {
     let ret: Any;
     if (ZPP_ConvexRayResult.rayPool == null) {
       ZPP_ConvexRayResult.internal = true;
@@ -75,12 +70,7 @@ export class ZPP_ConvexRayResult {
   // Static factory: getConvex
   // ---------------------------------------------------------------------------
 
-  static getConvex(
-    normal: Any,
-    position: Any,
-    toiDistance: number,
-    shape: Any,
-  ): Any {
+  static getConvex(normal: Any, position: Any, toiDistance: number, shape: Any): Any {
     let ret: Any;
     if (ZPP_ConvexRayResult.convexPool == null) {
       ZPP_ConvexRayResult.internal = true;
@@ -109,9 +99,7 @@ export class ZPP_ConvexRayResult {
 
   disposed(): void {
     if (this.next != null) {
-      throw new Error(
-        "Error: This object has been disposed of and cannot be used",
-      );
+      throw new Error("Error: This object has been disposed of and cannot be used");
     }
   }
 

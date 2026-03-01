@@ -32,6 +32,7 @@
     "lint": "eslint src/ tests/",
     "format": "prettier --write src/ tests/",
     "format:check": "prettier --check src/ tests/",
+    "check:circular": "madge --circular --extensions ts src/ --json | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));if(d.length>5){console.error('New circular dependencies detected: '+d.length+' (max 5)');process.exit(1)}else{console.log('Circular dependencies: '+d.length+'/5 (OK)')}\"",
     "benchmark": "npm run build && node benchmarks/run.mjs",
     "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js"
   },
@@ -59,6 +60,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
+    "madge": "^8.0.0",
     "prettier": "^3.8.1",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",

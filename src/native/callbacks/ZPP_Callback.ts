@@ -72,10 +72,7 @@ export class ZPP_Callback {
       this.outer_int.zpp_inner = this;
     }
     if (this.wrap_arbiters == null) {
-      this.wrap_arbiters = zpp.util.ZPP_ArbiterList.get(
-        this.set.arbiters,
-        true
-      );
+      this.wrap_arbiters = zpp.util.ZPP_ArbiterList.get(this.set.arbiters, true);
     } else {
       this.wrap_arbiters.zpp_inner.inner = this.set.arbiters;
     }
@@ -213,10 +210,7 @@ export class ZPP_Callback {
   genarbs(): void {
     const zpp = ZPP_Callback._zpp;
     if (this.wrap_arbiters == null) {
-      this.wrap_arbiters = zpp.util.ZPP_ArbiterList.get(
-        this.set.arbiters,
-        true
-      );
+      this.wrap_arbiters = zpp.util.ZPP_ArbiterList.get(this.set.arbiters, true);
     } else {
       this.wrap_arbiters.zpp_inner.inner = this.set.arbiters;
     }

@@ -23,9 +23,15 @@ export class BodyType {
 
   // --- Static getters for convenient access (BodyType.DYNAMIC etc.) ---
 
-  static get STATIC(): BodyType { return BodyType.get_STATIC(); }
-  static get DYNAMIC(): BodyType { return BodyType.get_DYNAMIC(); }
-  static get KINEMATIC(): BodyType { return BodyType.get_KINEMATIC(); }
+  static get STATIC(): BodyType {
+    return BodyType.get_STATIC();
+  }
+  static get DYNAMIC(): BodyType {
+    return BodyType.get_DYNAMIC();
+  }
+  static get KINEMATIC(): BodyType {
+    return BodyType.get_KINEMATIC();
+  }
 
   // --- Lazy singleton accessors (used by compiled code) ---
 

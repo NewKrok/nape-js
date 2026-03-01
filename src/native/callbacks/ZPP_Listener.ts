@@ -58,7 +58,7 @@ export class ZPP_Listener {
   }
 
   // --- Subclass hooks (overridden by ZPP_BodyListener, etc.) ---
-  swapEvent(_event: number): void {}
+  swapEvent(_event?: number): void {}
   invalidate_precedence(): void {}
   addedToSpace(): void {}
   removedFromSpace(): void {}

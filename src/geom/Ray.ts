@@ -3,8 +3,6 @@ import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner, type Writable } from "./Vec2";
 import { AABB } from "./AABB";
 
-type Any = any;
-
 /**
  * A ray for raycasting queries.
  *
@@ -33,9 +31,7 @@ export class Ray {
   // ---------------------------------------------------------------------------
 
   static fromSegment(start: Vec2, end: Vec2): Ray {
-    return Ray._wrap(
-      getNape().geom.Ray.fromSegment(start._inner, end._inner),
-    );
+    return Ray._wrap(getNape().geom.Ray.fromSegment(start._inner, end._inner));
   }
 
   // ---------------------------------------------------------------------------

@@ -30,12 +30,7 @@ describe("RayResult", () => {
     const zpp = nape.__zpp;
     const Vec2C = nape.geom.Vec2;
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getRay(
-      new Vec2C(1, 0),
-      5.0,
-      false,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(1, 0), 5.0, false, null);
 
     expect(result).toBeInstanceOf(RayResult);
     expect(result.distance).toBeCloseTo(5.0);
@@ -50,12 +45,7 @@ describe("RayResult", () => {
     const zpp = nape.__zpp;
     const Vec2C = nape.geom.Vec2;
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getRay(
-      new Vec2C(0, 1),
-      2.0,
-      true,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(0, 1), 2.0, true, null);
 
     expect(result.inner).toBe(true);
     result.dispose();
@@ -68,18 +58,8 @@ describe("RayResult", () => {
 
     // Create two results — dispose the first to seed the pool,
     // then dispose the second so its zpp_inner.next != null.
-    const result1 = zpp.geom.ZPP_ConvexRayResult.getRay(
-      new Vec2C(1, 0),
-      1.0,
-      false,
-      null,
-    );
-    const result2 = zpp.geom.ZPP_ConvexRayResult.getRay(
-      new Vec2C(0, 1),
-      2.0,
-      true,
-      null,
-    );
+    const result1 = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(1, 0), 1.0, false, null);
+    const result2 = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(0, 1), 2.0, true, null);
 
     result1.dispose();
     result2.dispose();
@@ -95,12 +75,7 @@ describe("RayResult", () => {
     const zpp = nape.__zpp;
     const Vec2C = nape.geom.Vec2;
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getRay(
-      new Vec2C(1, 0),
-      7.5,
-      false,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(1, 0), 7.5, false, null);
 
     const str = result.toString();
     expect(str).toContain("shape:");
@@ -134,12 +109,7 @@ describe("RayResult", () => {
     const zpp = nape.__zpp;
     const Vec2C = nape.geom.Vec2;
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getRay(
-      new Vec2C(1, 0),
-      1.0,
-      false,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(1, 0), 1.0, false, null);
 
     expect(result._inner).toBe(result);
     result.dispose();

@@ -27,13 +27,27 @@ export class CbEvent {
 
   // --- Static getters for convenient access (CbEvent.BEGIN etc.) ---
 
-  static get BEGIN(): CbEvent { return CbEvent.get_BEGIN(); }
-  static get ONGOING(): CbEvent { return CbEvent.get_ONGOING(); }
-  static get END(): CbEvent { return CbEvent.get_END(); }
-  static get WAKE(): CbEvent { return CbEvent.get_WAKE(); }
-  static get SLEEP(): CbEvent { return CbEvent.get_SLEEP(); }
-  static get BREAK(): CbEvent { return CbEvent.get_BREAK(); }
-  static get PRE(): CbEvent { return CbEvent.get_PRE(); }
+  static get BEGIN(): CbEvent {
+    return CbEvent.get_BEGIN();
+  }
+  static get ONGOING(): CbEvent {
+    return CbEvent.get_ONGOING();
+  }
+  static get END(): CbEvent {
+    return CbEvent.get_END();
+  }
+  static get WAKE(): CbEvent {
+    return CbEvent.get_WAKE();
+  }
+  static get SLEEP(): CbEvent {
+    return CbEvent.get_SLEEP();
+  }
+  static get BREAK(): CbEvent {
+    return CbEvent.get_BREAK();
+  }
+  static get PRE(): CbEvent {
+    return CbEvent.get_PRE();
+  }
 
   // --- Lazy singleton accessors (used by compiled code) ---
 

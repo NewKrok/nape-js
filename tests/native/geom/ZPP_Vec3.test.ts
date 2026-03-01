@@ -30,7 +30,9 @@ describe("ZPP_Vec3", () => {
     it("should call _validate callback when set", () => {
       const v = new ZPP_Vec3();
       let called = false;
-      v._validate = () => { called = true; };
+      v._validate = () => {
+        called = true;
+      };
       v.validate();
       expect(called).toBe(true);
     });

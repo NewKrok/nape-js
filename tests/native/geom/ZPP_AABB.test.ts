@@ -71,7 +71,9 @@ describe("ZPP_AABB", () => {
     it("should call _validate when set", () => {
       const a = new ZPP_AABB();
       let called = false;
-      a._validate = () => { called = true; };
+      a._validate = () => {
+        called = true;
+      };
       a.validate();
       expect(called).toBe(true);
     });
@@ -86,7 +88,9 @@ describe("ZPP_AABB", () => {
     it("should call _invalidate with self when set", () => {
       const a = new ZPP_AABB();
       let received: any = null;
-      a._invalidate = (self) => { received = self; };
+      a._invalidate = (self) => {
+        received = self;
+      };
       a.invalidate();
       expect(received).toBe(a);
     });
@@ -375,7 +379,19 @@ describe("ZPP_AABB", () => {
           ZPP_PubPool: { poolVec2: null, nextVec2: null },
         },
         geom: {
-          ZPP_Vec2: class { static zpp_pool: any = null; x = 0; y = 0; weak = false; _immutable = false; _isimmutable: any = null; _validate: any = null; _invalidate: any = null; _inuse = false; outer: any = null; next: any = null; },
+          ZPP_Vec2: class {
+            static zpp_pool: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
+          },
         },
       };
       ZPP_AABB._nape = {
@@ -400,7 +416,19 @@ describe("ZPP_AABB", () => {
           ZPP_PubPool: { poolVec2: null, nextVec2: null },
         },
         geom: {
-          ZPP_Vec2: class { static zpp_pool: any = null; x = 0; y = 0; weak = false; _immutable = false; _isimmutable: any = null; _validate: any = null; _invalidate: any = null; _inuse = false; outer: any = null; next: any = null; },
+          ZPP_Vec2: class {
+            static zpp_pool: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
+          },
         },
       };
       ZPP_AABB._nape = {
@@ -438,7 +466,9 @@ describe("ZPP_AABB", () => {
       a.miny = 20;
       a.wrap_min = { zpp_inner: { x: 0, y: 0 } };
       let validateCalled = false;
-      a._validate = () => { validateCalled = true; };
+      a._validate = () => {
+        validateCalled = true;
+      };
       a.dom_min();
       expect(validateCalled).toBe(true);
     });
@@ -448,7 +478,9 @@ describe("ZPP_AABB", () => {
       a.minx = 0;
       a.miny = 0;
       let invalidated = false;
-      a._invalidate = () => { invalidated = true; };
+      a._invalidate = () => {
+        invalidated = true;
+      };
       a.mod_min({ x: 5, y: 6 });
       expect(a.minx).toBe(5);
       expect(a.miny).toBe(6);
@@ -460,7 +492,9 @@ describe("ZPP_AABB", () => {
       a.minx = 5;
       a.miny = 6;
       let invalidated = false;
-      a._invalidate = () => { invalidated = true; };
+      a._invalidate = () => {
+        invalidated = true;
+      };
       a.mod_min({ x: 5, y: 6 });
       expect(invalidated).toBe(false);
     });
@@ -473,7 +507,19 @@ describe("ZPP_AABB", () => {
           ZPP_PubPool: { poolVec2: null, nextVec2: null },
         },
         geom: {
-          ZPP_Vec2: class { static zpp_pool: any = null; x = 0; y = 0; weak = false; _immutable = false; _isimmutable: any = null; _validate: any = null; _invalidate: any = null; _inuse = false; outer: any = null; next: any = null; },
+          ZPP_Vec2: class {
+            static zpp_pool: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
+          },
         },
       };
       ZPP_AABB._nape = {
@@ -498,7 +544,19 @@ describe("ZPP_AABB", () => {
           ZPP_PubPool: { poolVec2: null, nextVec2: null },
         },
         geom: {
-          ZPP_Vec2: class { static zpp_pool: any = null; x = 0; y = 0; weak = false; _immutable = false; _isimmutable: any = null; _validate: any = null; _invalidate: any = null; _inuse = false; outer: any = null; next: any = null; },
+          ZPP_Vec2: class {
+            static zpp_pool: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
+          },
         },
       };
       ZPP_AABB._nape = {
@@ -524,7 +582,19 @@ describe("ZPP_AABB", () => {
           ZPP_PubPool: { poolVec2: null, nextVec2: null },
         },
         geom: {
-          ZPP_Vec2: class { static zpp_pool: any = null; x = 0; y = 0; weak = false; _immutable = false; _isimmutable: any = null; _validate: any = null; _invalidate: any = null; _inuse = false; outer: any = null; next: any = null; },
+          ZPP_Vec2: class {
+            static zpp_pool: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
+          },
         },
       };
       ZPP_AABB._nape = {
@@ -557,7 +627,9 @@ describe("ZPP_AABB", () => {
       const a = new ZPP_AABB();
       a.wrap_max = { zpp_inner: { x: 0, y: 0 } };
       let called = false;
-      a._validate = () => { called = true; };
+      a._validate = () => {
+        called = true;
+      };
       a.dom_max();
       expect(called).toBe(true);
     });
@@ -567,7 +639,9 @@ describe("ZPP_AABB", () => {
       a.maxx = 0;
       a.maxy = 0;
       let invalidated = false;
-      a._invalidate = () => { invalidated = true; };
+      a._invalidate = () => {
+        invalidated = true;
+      };
       a.mod_max({ x: 10, y: 20 });
       expect(a.maxx).toBe(10);
       expect(a.maxy).toBe(20);
@@ -579,7 +653,9 @@ describe("ZPP_AABB", () => {
       a.maxx = 10;
       a.maxy = 20;
       let invalidated = false;
-      a._invalidate = () => { invalidated = true; };
+      a._invalidate = () => {
+        invalidated = true;
+      };
       a.mod_max({ x: 10, y: 20 });
       expect(invalidated).toBe(false);
     });
@@ -592,7 +668,19 @@ describe("ZPP_AABB", () => {
           ZPP_PubPool: { poolVec2: null, nextVec2: null },
         },
         geom: {
-          ZPP_Vec2: class { static zpp_pool: any = null; x = 0; y = 0; weak = false; _immutable = false; _isimmutable: any = null; _validate: any = null; _invalidate: any = null; _inuse = false; outer: any = null; next: any = null; },
+          ZPP_Vec2: class {
+            static zpp_pool: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
+          },
         },
       };
       ZPP_AABB._nape = {
@@ -652,9 +740,16 @@ describe("ZPP_AABB", () => {
         geom: {
           ZPP_Vec2: class {
             static zpp_pool: any = null;
-            x = 0; y = 0; weak = false; _immutable = false;
-            _isimmutable: any = null; _validate: any = null;
-            _invalidate: any = null; _inuse = false; outer: any = null; next: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
           },
         },
       };
@@ -688,9 +783,16 @@ describe("ZPP_AABB", () => {
         geom: {
           ZPP_Vec2: class {
             static zpp_pool: any = null;
-            x = 0; y = 0; weak = false; _immutable = false;
-            _isimmutable: any = null; _validate: any = null;
-            _invalidate: any = null; _inuse = false; outer: any = null; next: any = null;
+            x = 0;
+            y = 0;
+            weak = false;
+            _immutable = false;
+            _isimmutable: any = null;
+            _validate: any = null;
+            _invalidate: any = null;
+            _inuse = false;
+            outer: any = null;
+            next: any = null;
           },
         },
       };
@@ -711,9 +813,16 @@ describe("ZPP_AABB", () => {
 
     it("should reuse inner Vec2 from pool chain", () => {
       const innerPooled: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: null, next: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
+        next: null,
       };
       ZPP_AABB._zpp = {
         util: {
@@ -746,11 +855,21 @@ describe("ZPP_AABB", () => {
       let validateCalled = false;
       let invalidateCalled = false;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: () => { isimmutableCalled = true; },
-        _validate: () => { validateCalled = true; },
-        _invalidate: () => { invalidateCalled = true; },
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: () => {
+          isimmutableCalled = true;
+        },
+        _validate: () => {
+          validateCalled = true;
+        },
+        _invalidate: () => {
+          invalidateCalled = true;
+        },
+        _inuse: false,
+        outer: null,
       };
       const pooledVec2: any = {
         zpp_inner: existingInner,
@@ -788,10 +907,17 @@ describe("ZPP_AABB", () => {
     it("should not invalidate when values unchanged on existing inner", () => {
       let invalidateCalled = false;
       const existingInner: any = {
-        x: 5, y: 6, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null,
-        _invalidate: () => { invalidateCalled = true; },
-        _inuse: false, outer: null,
+        x: 5,
+        y: 6,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: () => {
+          invalidateCalled = true;
+        },
+        _inuse: false,
+        outer: null,
       };
       const pooledVec2: any = {
         zpp_inner: existingInner,
@@ -826,9 +952,15 @@ describe("ZPP_AABB", () => {
 
     it("should throw when existing inner is immutable (via new Vec2 path)", () => {
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: true,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: true,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
       };
       ZPP_AABB._zpp = {
         util: {
@@ -854,9 +986,15 @@ describe("ZPP_AABB", () => {
 
     it("should throw when existing inner is disposed (via new Vec2 path)", () => {
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
       };
       ZPP_AABB._zpp = {
         util: {

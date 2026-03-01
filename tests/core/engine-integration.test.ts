@@ -41,12 +41,9 @@ describe("Engine integration — namespace registrations", () => {
     ["shape", "EdgeIterator"],
   ] as const;
 
-  it.each(listClasses)(
-    "nape.%s.%s should be registered as a constructor",
-    (ns, cls) => {
-      expect(typeof nape[ns][cls]).toBe("function");
-    },
-  );
+  it.each(listClasses)("nape.%s.%s should be registered as a constructor", (ns, cls) => {
+    expect(typeof nape[ns][cls]).toBe("function");
+  });
 });
 
 describe("Engine integration — property accessors on compiled objects", () => {

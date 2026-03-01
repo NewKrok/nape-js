@@ -110,11 +110,7 @@ describe("Arbiter", () => {
 
 describe("CollisionArbiter", () => {
   it("should have correct __name__", () => {
-    expect(CollisionArbiter.__name__).toEqual([
-      "nape",
-      "dynamics",
-      "CollisionArbiter",
-    ]);
+    expect(CollisionArbiter.__name__).toEqual(["nape", "dynamics", "CollisionArbiter"]);
   });
 
   it("should throw on direct instantiation", () => {
@@ -122,9 +118,7 @@ describe("CollisionArbiter", () => {
   });
 
   it("should have __class__ set on prototype", () => {
-    expect((CollisionArbiter.prototype as any).__class__).toBe(
-      CollisionArbiter,
-    );
+    expect((CollisionArbiter.prototype as any).__class__).toBe(CollisionArbiter);
   });
 
   it("should extend Arbiter", () => {
@@ -200,11 +194,7 @@ describe("CollisionArbiter", () => {
 
 describe("FluidArbiter", () => {
   it("should have correct __name__", () => {
-    expect(FluidArbiter.__name__).toEqual([
-      "nape",
-      "dynamics",
-      "FluidArbiter",
-    ]);
+    expect(FluidArbiter.__name__).toEqual(["nape", "dynamics", "FluidArbiter"]);
   });
 
   it("should throw on direct instantiation", () => {

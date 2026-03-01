@@ -9,12 +9,7 @@ describe("GeomPoly", () => {
   }
 
   function square(): GeomPoly {
-    return new GeomPoly([
-      Vec2.get(0, 0),
-      Vec2.get(10, 0),
-      Vec2.get(10, 10),
-      Vec2.get(0, 10),
-    ]);
+    return new GeomPoly([Vec2.get(0, 0), Vec2.get(10, 0), Vec2.get(10, 10), Vec2.get(0, 10)]);
   }
 
   // --- Construction ---
@@ -281,7 +276,7 @@ describe("GeomPoly", () => {
     const m = Mat23.scale(2, 3);
     p.transform(m);
     // After scale(2,3): (2,0), (0,3), (-2,0)
-    const c = p.current();
+    p.current();
     // Just verify size unchanged
     expect(p.size()).toBe(3);
   });

@@ -37,13 +37,7 @@ export function createListClasses(spec: ListSpec): {
   Iterator: Any;
   List: Any;
 } {
-  const {
-    typeName,
-    namespaceParts,
-    zppListClass,
-    wrapElement,
-    unwrapElement,
-  } = spec;
+  const { typeName, namespaceParts, zppListClass, wrapElement, unwrapElement } = spec;
 
   const nape = getNape();
   const zpp = nape.__zpp;
@@ -70,9 +64,7 @@ export function createListClasses(spec: ListSpec): {
     this.zpp_i = 0;
     this.zpp_inner = null;
     if (!getZPPListClass().internal) {
-      throw new Error(
-        "Error: Cannot instantiate " + typeName + "Iterator derp!",
-      );
+      throw new Error("Error: Cannot instantiate " + typeName + "Iterator derp!");
     }
   }
 
@@ -201,8 +193,7 @@ export function createListClasses(spec: ListSpec): {
     }
     this.zpp_inner.modify_test();
     this.zpp_inner.valmod();
-    const cont =
-      this.zpp_inner.adder != null ? this.zpp_inner.adder(obj) : true;
+    const cont = this.zpp_inner.adder != null ? this.zpp_inner.adder(obj) : true;
     if (cont) {
       if (this.zpp_inner.reverse_flag) {
         this.zpp_inner.inner.add(unwrapElement(obj));
@@ -232,8 +223,7 @@ export function createListClasses(spec: ListSpec): {
     }
     this.zpp_inner.modify_test();
     this.zpp_inner.valmod();
-    const cont =
-      this.zpp_inner.adder != null ? this.zpp_inner.adder(obj) : true;
+    const cont = this.zpp_inner.adder != null ? this.zpp_inner.adder(obj) : true;
     if (cont) {
       if (this.zpp_inner.reverse_flag) {
         if (this.zpp_inner.push_ite == null) {
@@ -277,10 +267,7 @@ export function createListClasses(spec: ListSpec): {
         this.zpp_inner.inner.pop();
       }
     } else {
-      if (
-        this.zpp_inner.at_ite != null &&
-        this.zpp_inner.at_ite.next == null
-      ) {
+      if (this.zpp_inner.at_ite != null && this.zpp_inner.at_ite.next == null) {
         this.zpp_inner.at_ite = null;
       }
       let ite: Any;
@@ -313,10 +300,7 @@ export function createListClasses(spec: ListSpec): {
     this.zpp_inner.valmod();
     let ret: Any;
     if (this.zpp_inner.reverse_flag) {
-      if (
-        this.zpp_inner.at_ite != null &&
-        this.zpp_inner.at_ite.next == null
-      ) {
+      if (this.zpp_inner.at_ite != null && this.zpp_inner.at_ite.next == null) {
         this.zpp_inner.at_ite = null;
       }
       let ite: Any;
@@ -411,9 +395,7 @@ export function createListClasses(spec: ListSpec): {
     while (it.hasNext()) {
       const i = it.next();
       if (deep) {
-        throw new Error(
-          "Error: " + typeName + " is not a copyable type",
-        );
+        throw new Error("Error: " + typeName + " is not a copyable type");
       }
       ret.push(i);
     }

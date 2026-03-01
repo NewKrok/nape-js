@@ -3,8 +3,6 @@ import { getOrCreate } from "../core/cache";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
-type Any = any;
-
 /**
  * 2D vector used for positions, velocities, forces, and other 2D quantities.
  *
@@ -609,9 +607,7 @@ export class Vec2 {
     }
     this._validate();
     vector.zpp_inner.validate();
-    const ret =
-      this.zpp_inner.x * vector.zpp_inner.x +
-      this.zpp_inner.y * vector.zpp_inner.y;
+    const ret = this.zpp_inner.x * vector.zpp_inner.x + this.zpp_inner.y * vector.zpp_inner.y;
     Vec2._disposeWeak(vector);
     return ret;
   }
@@ -627,9 +623,7 @@ export class Vec2 {
     }
     this._validate();
     vector.zpp_inner.validate();
-    const ret =
-      this.zpp_inner.x * vector.zpp_inner.y -
-      this.zpp_inner.y * vector.zpp_inner.x;
+    const ret = this.zpp_inner.x * vector.zpp_inner.y - this.zpp_inner.y * vector.zpp_inner.x;
     Vec2._disposeWeak(vector);
     return ret;
   }
