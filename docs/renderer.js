@@ -72,10 +72,10 @@ export function drawBody(ctx, body, showOutlines = true) {
 
       ctx.beginPath();
       const v0 = verts.at(0);
-      ctx.moveTo(v0.get_x(), v0.get_y());
+      ctx.moveTo(v0.x, v0.y);
       for (let i = 1; i < len; i++) {
         const v = verts.at(i);
-        ctx.lineTo(v.get_x(), v.get_y());
+        ctx.lineTo(v.x, v.y);
       }
       ctx.closePath();
       ctx.fillStyle = fill;
