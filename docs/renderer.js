@@ -187,15 +187,46 @@ export function installErrorOverlay(version) {
     "border-top:2px solid #f85149",
     "white-space:pre-wrap",
     "word-break:break-word",
+    "user-select:text",
   ].join(";");
   document.body.appendChild(el);
+
+  // -- Top bar: Copy + Close buttons --
+  const topBar = document.createElement("div");
+  topBar.style.cssText =
+    "display:flex;justify-content:flex-end;gap:8px;margin-bottom:4px";
+  el.appendChild(topBar);
+
+  const copyBtn = document.createElement("button");
+  copyBtn.textContent = "\u2398 Copy";
+  copyBtn.style.cssText =
+    "background:none;border:1px solid #f8514966;border-radius:4px;color:#f85149;font:11px monospace;padding:2px 8px;cursor:pointer";
+  copyBtn.addEventListener("click", () => {
+    const text = log.innerText;
+    navigator.clipboard.writeText(text).then(
+      () => { copyBtn.textContent = "\u2713 Copied!"; setTimeout(() => { copyBtn.textContent = "\u2398 Copy"; }, 1500); },
+      () => {
+        // Fallback for browsers without clipboard API
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.cssText = "position:fixed;opacity:0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        copyBtn.textContent = "\u2713 Copied!";
+        setTimeout(() => { copyBtn.textContent = "\u2398 Copy"; }, 1500);
+      },
+    );
+  });
+  topBar.appendChild(copyBtn);
 
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "\u2715";
   closeBtn.style.cssText =
-    "position:absolute;top:4px;right:8px;background:none;border:none;color:#f85149;font-size:18px;cursor:pointer";
+    "background:none;border:none;color:#f85149;font-size:18px;cursor:pointer;padding:0 2px";
   closeBtn.addEventListener("click", () => { el.style.display = "none"; });
-  el.appendChild(closeBtn);
+  topBar.appendChild(closeBtn);
 
   const log = document.createElement("div");
   el.appendChild(log);
