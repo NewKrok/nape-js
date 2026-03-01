@@ -1,15 +1,14 @@
 /**
  * nape-js Demo Page — interactive demos + live benchmarks + code preview + CodePen export
  *
- * Imports the bundled ESM library from nape-js.esm.js
- * (copied from dist/index.js during build:docs).
+ * Imports the ESM library from jsdelivr CDN (always latest published version).
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon,
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter, InteractionGroup,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
-} from "./nape-js.esm.js";
+} from "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
 
 // =========================================================================
 // Canvas & state
