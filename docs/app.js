@@ -1,14 +1,20 @@
 /**
  * nape-js Demo Page — interactive demos + live benchmarks + code preview + CodePen export
  *
- * Imports the ESM library from jsdelivr CDN (always latest published version).
+ * Imports the bundled ESM library from nape-js.esm.js
+ * (copied from dist/index.js during build:docs).
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon,
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter, InteractionGroup,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
-} from "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
+  VERSION,
+} from "./nape-js.esm.js";
+import {
+  bodyColor, drawBody as _drawBody, drawConstraints, drawGrid,
+  installErrorOverlay,
+} from "./renderer.js";
 
 // =========================================================================
 // Canvas & state
@@ -49,78 +55,9 @@ function getCanvasScale() {
   return { sx: W / rect.width, sy: H / rect.height };
 }
 
-// Color palette for variety
-const COLORS = [
-  { fill: "rgba(88,166,255,0.18)", stroke: "#58a6ff" },
-  { fill: "rgba(210,153,34,0.18)", stroke: "#d29922" },
-  { fill: "rgba(63,185,80,0.18)", stroke: "#3fb950" },
-  { fill: "rgba(248,81,73,0.18)", stroke: "#f85149" },
-  { fill: "rgba(163,113,247,0.18)", stroke: "#a371f7" },
-  { fill: "rgba(219,171,255,0.18)", stroke: "#dbabff" },
-];
-
-function bodyColor(body) {
-  if (body.isStatic()) return { fill: "rgba(120,160,200,0.15)", stroke: "#607888" };
-  if (body.isSleeping) return { fill: "rgba(100,200,100,0.12)", stroke: "#3fb950" };
-  // Use userData for consistent color, or default
-  const idx = (body.userData?._colorIdx ?? 0) % COLORS.length;
-  return COLORS[idx];
-}
-
+/** Wrapper around shared drawBody — passes ctx and debugDraw state. */
 function drawBody(body) {
-  const px = body.position.x;
-  const py = body.position.y;
-  const rot = body.rotation;
-
-  ctx.save();
-  ctx.translate(px, py);
-  ctx.rotate(rot);
-
-  const { fill, stroke } = debugDrawCb.checked
-    ? bodyColor(body)
-    : { fill: body.isStatic() ? "#2a3a48" : body.isSleeping ? "#1a3020" : "#162540", stroke: null };
-
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      const r = shape.castCircle.radius;
-      ctx.beginPath();
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
-      ctx.fillStyle = fill;
-      ctx.fill();
-      if (stroke) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(r, 0);
-        ctx.strokeStyle = stroke + "55";
-        ctx.stroke();
-      }
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      const len = verts.get_length();
-      if (len < 3) continue;
-
-      ctx.beginPath();
-      const v0 = verts.at(0);
-      ctx.moveTo(v0.get_x(), v0.get_y());
-      for (let i = 1; i < len; i++) {
-        const v = verts.at(i);
-        ctx.lineTo(v.get_x(), v.get_y());
-      }
-      ctx.closePath();
-      ctx.fillStyle = fill;
-      ctx.fill();
-      if (stroke) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
-    }
-  }
-
-  ctx.restore();
+  _drawBody(ctx, body, debugDrawCb.checked);
 }
 
 // =========================================================================
@@ -2435,44 +2372,9 @@ function loop() {
 
   // Render
   ctx.clearRect(0, 0, W, H);
-
-  // Background grid
-  ctx.strokeStyle = "#1a2030";
-  ctx.lineWidth = 0.5;
-  for (let x = 0; x < W; x += 50) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-  }
-  for (let y = 0; y < H; y += 50) {
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-  }
-
-  // Draw constraints
-  try {
-    const rawConstraints = space._inner.get_constraints();
-    const cLen = rawConstraints.get_length();
-    for (let i = 0; i < cLen; i++) {
-      const c = rawConstraints.at(i);
-      if (c.get_body1 && c.get_body2) {
-        try {
-          const b1 = c.get_body1();
-          const b2 = c.get_body2();
-          if (b1 && b2) {
-            ctx.beginPath();
-            ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
-            ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
-            ctx.strokeStyle = "#d2992233";
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        } catch (_) {}
-      }
-    }
-  } catch (_) {}
-
-  // Draw bodies
-  for (const body of space.bodies) {
-    drawBody(body);
-  }
+  drawGrid(ctx, W, H);
+  drawConstraints(ctx, space);
+  for (const body of space.bodies) drawBody(body);
 
   animId = requestAnimationFrame(loop);
 }
@@ -2629,5 +2531,6 @@ document.getElementById("runBenchmark").addEventListener("click", runBenchmarkSu
 // Boot
 // =========================================================================
 
+installErrorOverlay(VERSION);
 overlay.classList.add("hidden");
 startDemo("falling");
