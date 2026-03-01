@@ -102,4 +102,4 @@ export class ConvexResult {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.geom.ConvexResult = ConvexResult;
-ConvexResult.prototype.__class__ = ConvexResult;
+(ConvexResult.prototype as any).__class__ = ConvexResult;

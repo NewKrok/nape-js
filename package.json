@@ -3,7 +3,7 @@
   "version": "3.3.6",
   "description": "Nape Physics Engine - Modern TypeScript wrapper for 2D physics simulation",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": true,
   "engines": {
     "node": ">=18"
   },

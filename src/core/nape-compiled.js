@@ -240,14 +240,14 @@ define(function () {
   nape.callbacks.Listener.__name__ = ["nape", "callbacks", "Listener"];
   nape.callbacks.Listener.prototype.zpp_inner = null;
   Object.defineProperty(nape.callbacks.Listener.prototype, "type", {
-    get: nape.callbacks.Listener.prototype.get_type,
+    get: function() { return this.get_type(); },
   });
   nape.callbacks.Listener.prototype.get_type = function () {
     return zpp_nape.callbacks.ZPP_Listener.types[this.zpp_inner.type];
   };
   Object.defineProperty(nape.callbacks.Listener.prototype, "event", {
-    get: nape.callbacks.Listener.prototype.get_event,
-    set: nape.callbacks.Listener.prototype.set_event,
+    get: function() { return this.get_event(); },
+    set: function(v) { this.set_event(v); },
   });
   nape.callbacks.Listener.prototype.get_event = function () {
     return zpp_nape.callbacks.ZPP_Listener.events[this.zpp_inner.event];
@@ -320,8 +320,8 @@ define(function () {
     return zpp_nape.callbacks.ZPP_Listener.events[this.zpp_inner.event];
   };
   Object.defineProperty(nape.callbacks.Listener.prototype, "precedence", {
-    get: nape.callbacks.Listener.prototype.get_precedence,
-    set: nape.callbacks.Listener.prototype.set_precedence,
+    get: function() { return this.get_precedence(); },
+    set: function(v) { this.set_precedence(v); },
   });
   nape.callbacks.Listener.prototype.get_precedence = function () {
     return this.zpp_inner.precedence;
@@ -334,8 +334,8 @@ define(function () {
     return this.zpp_inner.precedence;
   };
   Object.defineProperty(nape.callbacks.Listener.prototype, "space", {
-    get: nape.callbacks.Listener.prototype.get_space,
-    set: nape.callbacks.Listener.prototype.set_space,
+    get: function() { return this.get_space(); },
+    set: function(v) { this.set_space(v); },
   });
   nape.callbacks.Listener.prototype.get_space = function () {
     if (this.zpp_inner.space == null) {
@@ -486,8 +486,8 @@ define(function () {
       nape.callbacks.Listener.prototype[k];
   nape.callbacks.BodyListener.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.callbacks.BodyListener.prototype, "options", {
-    get: nape.callbacks.BodyListener.prototype.get_options,
-    set: nape.callbacks.BodyListener.prototype.set_options,
+    get: function() { return this.get_options(); },
+    set: function(v) { this.set_options(v); },
   });
   nape.callbacks.BodyListener.prototype.get_options = function () {
     return this.zpp_inner_zn.options.outer;
@@ -497,8 +497,8 @@ define(function () {
     return this.zpp_inner_zn.options.outer;
   };
   Object.defineProperty(nape.callbacks.BodyListener.prototype, "handler", {
-    get: nape.callbacks.BodyListener.prototype.get_handler,
-    set: nape.callbacks.BodyListener.prototype.set_handler,
+    get: function() { return this.get_handler(); },
+    set: function(v) { this.set_handler(v); },
   });
   nape.callbacks.BodyListener.prototype.get_handler = function () {
     return this.zpp_inner_zn.handler;
@@ -615,8 +615,8 @@ define(function () {
     nape.callbacks.ConstraintListener.prototype,
     "options",
     {
-      get: nape.callbacks.ConstraintListener.prototype.get_options,
-      set: nape.callbacks.ConstraintListener.prototype.set_options,
+      get: function() { return this.get_options(); },
+      set: function(v) { this.set_options(v); },
     }
   );
   nape.callbacks.ConstraintListener.prototype.get_options = function () {
@@ -630,8 +630,8 @@ define(function () {
     nape.callbacks.ConstraintListener.prototype,
     "handler",
     {
-      get: nape.callbacks.ConstraintListener.prototype.get_handler,
-      set: nape.callbacks.ConstraintListener.prototype.set_handler,
+      get: function() { return this.get_handler(); },
+      set: function(v) { this.set_handler(v); },
     }
   );
   nape.callbacks.ConstraintListener.prototype.get_handler = function () {
@@ -851,8 +851,8 @@ define(function () {
     nape.callbacks.InteractionListener.prototype,
     "options1",
     {
-      get: nape.callbacks.InteractionListener.prototype.get_options1,
-      set: nape.callbacks.InteractionListener.prototype.set_options1,
+      get: function() { return this.get_options1(); },
+      set: function(v) { this.set_options1(v); },
     }
   );
   nape.callbacks.InteractionListener.prototype.get_options1 = function () {
@@ -868,8 +868,8 @@ define(function () {
     nape.callbacks.InteractionListener.prototype,
     "options2",
     {
-      get: nape.callbacks.InteractionListener.prototype.get_options2,
-      set: nape.callbacks.InteractionListener.prototype.set_options2,
+      get: function() { return this.get_options2(); },
+      set: function(v) { this.set_options2(v); },
     }
   );
   nape.callbacks.InteractionListener.prototype.get_options2 = function () {
@@ -885,8 +885,8 @@ define(function () {
     nape.callbacks.InteractionListener.prototype,
     "interactionType",
     {
-      get: nape.callbacks.InteractionListener.prototype.get_interactionType,
-      set: nape.callbacks.InteractionListener.prototype.set_interactionType,
+      get: function() { return this.get_interactionType(); },
+      set: function(v) { this.set_interactionType(v); },
     }
   );
   nape.callbacks.InteractionListener.prototype.get_interactionType =
@@ -1050,8 +1050,8 @@ define(function () {
     nape.callbacks.InteractionListener.prototype,
     "handler",
     {
-      get: nape.callbacks.InteractionListener.prototype.get_handler,
-      set: nape.callbacks.InteractionListener.prototype.set_handler,
+      get: function() { return this.get_handler(); },
+      set: function(v) { this.set_handler(v); },
     }
   );
   nape.callbacks.InteractionListener.prototype.get_handler = function () {
@@ -1284,8 +1284,8 @@ define(function () {
       nape.callbacks.Listener.prototype[k];
   nape.callbacks.PreListener.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.callbacks.PreListener.prototype, "options1", {
-    get: nape.callbacks.PreListener.prototype.get_options1,
-    set: nape.callbacks.PreListener.prototype.set_options1,
+    get: function() { return this.get_options1(); },
+    set: function(v) { this.set_options1(v); },
   });
   nape.callbacks.PreListener.prototype.get_options1 = function () {
     return this.zpp_inner_zn.options1.outer;
@@ -1295,8 +1295,8 @@ define(function () {
     return this.zpp_inner_zn.options1.outer;
   };
   Object.defineProperty(nape.callbacks.PreListener.prototype, "options2", {
-    get: nape.callbacks.PreListener.prototype.get_options2,
-    set: nape.callbacks.PreListener.prototype.set_options2,
+    get: function() { return this.get_options2(); },
+    set: function(v) { this.set_options2(v); },
   });
   nape.callbacks.PreListener.prototype.get_options2 = function () {
     return this.zpp_inner_zn.options2.outer;
@@ -1306,8 +1306,8 @@ define(function () {
     return this.zpp_inner_zn.options2.outer;
   };
   Object.defineProperty(nape.callbacks.PreListener.prototype, "handler", {
-    get: nape.callbacks.PreListener.prototype.get_handler,
-    set: nape.callbacks.PreListener.prototype.set_handler,
+    get: function() { return this.get_handler(); },
+    set: function(v) { this.set_handler(v); },
   });
   nape.callbacks.PreListener.prototype.get_handler = function () {
     return this.zpp_inner_zn.handlerp;
@@ -1323,8 +1323,8 @@ define(function () {
     return this.zpp_inner_zn.handlerp;
   };
   Object.defineProperty(nape.callbacks.PreListener.prototype, "pure", {
-    get: nape.callbacks.PreListener.prototype.get_pure,
-    set: nape.callbacks.PreListener.prototype.set_pure,
+    get: function() { return this.get_pure(); },
+    set: function(v) { this.set_pure(v); },
   });
   nape.callbacks.PreListener.prototype.get_pure = function () {
     return this.zpp_inner_zn.pure;
@@ -1340,8 +1340,8 @@ define(function () {
     nape.callbacks.PreListener.prototype,
     "interactionType",
     {
-      get: nape.callbacks.PreListener.prototype.get_interactionType,
-      set: nape.callbacks.PreListener.prototype.set_interactionType,
+      get: function() { return this.get_interactionType(); },
+      set: function(v) { this.set_interactionType(v); },
     }
   );
   nape.callbacks.PreListener.prototype.get_interactionType = function () {
@@ -1517,7 +1517,7 @@ define(function () {
   nape.constraint.Constraint.__name__ = ["nape", "constraint", "Constraint"];
   nape.constraint.Constraint.prototype.zpp_inner = null;
   Object.defineProperty(nape.constraint.Constraint.prototype, "userData", {
-    get: nape.constraint.Constraint.prototype.get_userData,
+    get: function() { return this.get_userData(); },
   });
   nape.constraint.Constraint.prototype.get_userData = function () {
     if (this.zpp_inner.userData == null) {
@@ -1527,8 +1527,8 @@ define(function () {
   };
   nape.constraint.Constraint.prototype.debugDraw = null;
   Object.defineProperty(nape.constraint.Constraint.prototype, "compound", {
-    get: nape.constraint.Constraint.prototype.get_compound,
-    set: nape.constraint.Constraint.prototype.set_compound,
+    get: function() { return this.get_compound(); },
+    set: function(v) { this.set_compound(v); },
   });
   nape.constraint.Constraint.prototype.get_compound = function () {
     if (this.zpp_inner.compound == null) {
@@ -1569,8 +1569,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "space", {
-    get: nape.constraint.Constraint.prototype.get_space,
-    set: nape.constraint.Constraint.prototype.set_space,
+    get: function() { return this.get_space(); },
+    set: function(v) { this.set_space(v); },
   });
   nape.constraint.Constraint.prototype.get_space = function () {
     if (this.zpp_inner.space == null) {
@@ -1615,7 +1615,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "isSleeping", {
-    get: nape.constraint.Constraint.prototype.get_isSleeping,
+    get: function() { return this.get_isSleeping(); },
   });
   nape.constraint.Constraint.prototype.get_isSleeping = function () {
     if (this.zpp_inner.space == null || !this.zpp_inner.active) {
@@ -1627,8 +1627,8 @@ define(function () {
     return this.zpp_inner.component.sleeping;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "active", {
-    get: nape.constraint.Constraint.prototype.get_active,
-    set: nape.constraint.Constraint.prototype.set_active,
+    get: function() { return this.get_active(); },
+    set: function(v) { this.set_active(v); },
   });
   nape.constraint.Constraint.prototype.get_active = function () {
     return this.zpp_inner.active;
@@ -1660,8 +1660,8 @@ define(function () {
     return this.zpp_inner.active;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "ignore", {
-    get: nape.constraint.Constraint.prototype.get_ignore,
-    set: nape.constraint.Constraint.prototype.set_ignore,
+    get: function() { return this.get_ignore(); },
+    set: function(v) { this.set_ignore(v); },
   });
   nape.constraint.Constraint.prototype.get_ignore = function () {
     return this.zpp_inner.ignore;
@@ -1674,8 +1674,8 @@ define(function () {
     return this.zpp_inner.ignore;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "stiff", {
-    get: nape.constraint.Constraint.prototype.get_stiff,
-    set: nape.constraint.Constraint.prototype.set_stiff,
+    get: function() { return this.get_stiff(); },
+    set: function(v) { this.set_stiff(v); },
   });
   nape.constraint.Constraint.prototype.get_stiff = function () {
     return this.zpp_inner.stiff;
@@ -1688,8 +1688,8 @@ define(function () {
     return this.zpp_inner.stiff;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "frequency", {
-    get: nape.constraint.Constraint.prototype.get_frequency,
-    set: nape.constraint.Constraint.prototype.set_frequency,
+    get: function() { return this.get_frequency(); },
+    set: function(v) { this.set_frequency(v); },
   });
   nape.constraint.Constraint.prototype.get_frequency = function () {
     return this.zpp_inner.frequency;
@@ -1712,8 +1712,8 @@ define(function () {
     return this.zpp_inner.frequency;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "damping", {
-    get: nape.constraint.Constraint.prototype.get_damping,
-    set: nape.constraint.Constraint.prototype.set_damping,
+    get: function() { return this.get_damping(); },
+    set: function(v) { this.set_damping(v); },
   });
   nape.constraint.Constraint.prototype.get_damping = function () {
     return this.zpp_inner.damping;
@@ -1734,8 +1734,8 @@ define(function () {
     return this.zpp_inner.damping;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "maxForce", {
-    get: nape.constraint.Constraint.prototype.get_maxForce,
-    set: nape.constraint.Constraint.prototype.set_maxForce,
+    get: function() { return this.get_maxForce(); },
+    set: function(v) { this.set_maxForce(v); },
   });
   nape.constraint.Constraint.prototype.get_maxForce = function () {
     return this.zpp_inner.maxForce;
@@ -1754,8 +1754,8 @@ define(function () {
     return this.zpp_inner.maxForce;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "maxError", {
-    get: nape.constraint.Constraint.prototype.get_maxError,
-    set: nape.constraint.Constraint.prototype.set_maxError,
+    get: function() { return this.get_maxError(); },
+    set: function(v) { this.set_maxError(v); },
   });
   nape.constraint.Constraint.prototype.get_maxError = function () {
     return this.zpp_inner.maxError;
@@ -1777,8 +1777,8 @@ define(function () {
     nape.constraint.Constraint.prototype,
     "breakUnderForce",
     {
-      get: nape.constraint.Constraint.prototype.get_breakUnderForce,
-      set: nape.constraint.Constraint.prototype.set_breakUnderForce,
+      get: function() { return this.get_breakUnderForce(); },
+      set: function(v) { this.set_breakUnderForce(v); },
     }
   );
   nape.constraint.Constraint.prototype.get_breakUnderForce = function () {
@@ -1797,8 +1797,8 @@ define(function () {
     nape.constraint.Constraint.prototype,
     "breakUnderError",
     {
-      get: nape.constraint.Constraint.prototype.get_breakUnderError,
-      set: nape.constraint.Constraint.prototype.set_breakUnderError,
+      get: function() { return this.get_breakUnderError(); },
+      set: function(v) { this.set_breakUnderError(v); },
     }
   );
   nape.constraint.Constraint.prototype.get_breakUnderError = function () {
@@ -1814,8 +1814,8 @@ define(function () {
     return this.zpp_inner.breakUnderError;
   };
   Object.defineProperty(nape.constraint.Constraint.prototype, "removeOnBreak", {
-    get: nape.constraint.Constraint.prototype.get_removeOnBreak,
-    set: nape.constraint.Constraint.prototype.set_removeOnBreak,
+    get: function() { return this.get_removeOnBreak(); },
+    set: function(v) { this.set_removeOnBreak(v); },
   });
   nape.constraint.Constraint.prototype.get_removeOnBreak = function () {
     return this.zpp_inner.removeOnBreak;
@@ -1834,7 +1834,7 @@ define(function () {
   };
   nape.constraint.Constraint.prototype.visitBodies = function (lambda) {};
   Object.defineProperty(nape.constraint.Constraint.prototype, "cbTypes", {
-    get: nape.constraint.Constraint.prototype.get_cbTypes,
+    get: function() { return this.get_cbTypes(); },
   });
   nape.constraint.Constraint.prototype.get_cbTypes = function () {
     if (this.zpp_inner.wrap_cbTypes == null) {
@@ -1990,8 +1990,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.AngleJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.AngleJoint.prototype, "body1", {
-    get: nape.constraint.AngleJoint.prototype.get_body1,
-    set: nape.constraint.AngleJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.AngleJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -2051,8 +2051,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.AngleJoint.prototype, "body2", {
-    get: nape.constraint.AngleJoint.prototype.get_body2,
-    set: nape.constraint.AngleJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.AngleJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -2112,8 +2112,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.AngleJoint.prototype, "jointMin", {
-    get: nape.constraint.AngleJoint.prototype.get_jointMin,
-    set: nape.constraint.AngleJoint.prototype.set_jointMin,
+    get: function() { return this.get_jointMin(); },
+    set: function(v) { this.set_jointMin(v); },
   });
   nape.constraint.AngleJoint.prototype.get_jointMin = function () {
     return this.zpp_inner_zn.jointMin;
@@ -2130,8 +2130,8 @@ define(function () {
     return this.zpp_inner_zn.jointMin;
   };
   Object.defineProperty(nape.constraint.AngleJoint.prototype, "jointMax", {
-    get: nape.constraint.AngleJoint.prototype.get_jointMax,
-    set: nape.constraint.AngleJoint.prototype.set_jointMax,
+    get: function() { return this.get_jointMax(); },
+    set: function(v) { this.set_jointMax(v); },
   });
   nape.constraint.AngleJoint.prototype.get_jointMax = function () {
     return this.zpp_inner_zn.jointMax;
@@ -2148,8 +2148,8 @@ define(function () {
     return this.zpp_inner_zn.jointMax;
   };
   Object.defineProperty(nape.constraint.AngleJoint.prototype, "ratio", {
-    get: nape.constraint.AngleJoint.prototype.get_ratio,
-    set: nape.constraint.AngleJoint.prototype.set_ratio,
+    get: function() { return this.get_ratio(); },
+    set: function(v) { this.set_ratio(v); },
   });
   nape.constraint.AngleJoint.prototype.get_ratio = function () {
     return this.zpp_inner_zn.ratio;
@@ -2679,8 +2679,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.DistanceJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.DistanceJoint.prototype, "body1", {
-    get: nape.constraint.DistanceJoint.prototype.get_body1,
-    set: nape.constraint.DistanceJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.DistanceJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -2740,8 +2740,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.DistanceJoint.prototype, "body2", {
-    get: nape.constraint.DistanceJoint.prototype.get_body2,
-    set: nape.constraint.DistanceJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.DistanceJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -2801,8 +2801,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.DistanceJoint.prototype, "anchor1", {
-    get: nape.constraint.DistanceJoint.prototype.get_anchor1,
-    set: nape.constraint.DistanceJoint.prototype.set_anchor1,
+    get: function() { return this.get_anchor1(); },
+    set: function(v) { this.set_anchor1(v); },
   });
   nape.constraint.DistanceJoint.prototype.get_anchor1 = function () {
     if (this.zpp_inner_zn.wrap_a1 == null) {
@@ -2958,8 +2958,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a1;
   };
   Object.defineProperty(nape.constraint.DistanceJoint.prototype, "anchor2", {
-    get: nape.constraint.DistanceJoint.prototype.get_anchor2,
-    set: nape.constraint.DistanceJoint.prototype.set_anchor2,
+    get: function() { return this.get_anchor2(); },
+    set: function(v) { this.set_anchor2(v); },
   });
   nape.constraint.DistanceJoint.prototype.get_anchor2 = function () {
     if (this.zpp_inner_zn.wrap_a2 == null) {
@@ -3115,8 +3115,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a2;
   };
   Object.defineProperty(nape.constraint.DistanceJoint.prototype, "jointMin", {
-    get: nape.constraint.DistanceJoint.prototype.get_jointMin,
-    set: nape.constraint.DistanceJoint.prototype.set_jointMin,
+    get: function() { return this.get_jointMin(); },
+    set: function(v) { this.set_jointMin(v); },
   });
   nape.constraint.DistanceJoint.prototype.get_jointMin = function () {
     return this.zpp_inner_zn.jointMin;
@@ -3140,8 +3140,8 @@ define(function () {
     return this.zpp_inner_zn.jointMin;
   };
   Object.defineProperty(nape.constraint.DistanceJoint.prototype, "jointMax", {
-    get: nape.constraint.DistanceJoint.prototype.get_jointMax,
-    set: nape.constraint.DistanceJoint.prototype.set_jointMax,
+    get: function() { return this.get_jointMax(); },
+    set: function(v) { this.set_jointMax(v); },
   });
   nape.constraint.DistanceJoint.prototype.get_jointMax = function () {
     return this.zpp_inner_zn.jointMax;
@@ -3784,8 +3784,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.LineJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.LineJoint.prototype, "body1", {
-    get: nape.constraint.LineJoint.prototype.get_body1,
-    set: nape.constraint.LineJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.LineJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -3845,8 +3845,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.LineJoint.prototype, "body2", {
-    get: nape.constraint.LineJoint.prototype.get_body2,
-    set: nape.constraint.LineJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.LineJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -3906,8 +3906,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.LineJoint.prototype, "anchor1", {
-    get: nape.constraint.LineJoint.prototype.get_anchor1,
-    set: nape.constraint.LineJoint.prototype.set_anchor1,
+    get: function() { return this.get_anchor1(); },
+    set: function(v) { this.set_anchor1(v); },
   });
   nape.constraint.LineJoint.prototype.get_anchor1 = function () {
     if (this.zpp_inner_zn.wrap_a1 == null) {
@@ -4063,8 +4063,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a1;
   };
   Object.defineProperty(nape.constraint.LineJoint.prototype, "anchor2", {
-    get: nape.constraint.LineJoint.prototype.get_anchor2,
-    set: nape.constraint.LineJoint.prototype.set_anchor2,
+    get: function() { return this.get_anchor2(); },
+    set: function(v) { this.set_anchor2(v); },
   });
   nape.constraint.LineJoint.prototype.get_anchor2 = function () {
     if (this.zpp_inner_zn.wrap_a2 == null) {
@@ -4220,8 +4220,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a2;
   };
   Object.defineProperty(nape.constraint.LineJoint.prototype, "direction", {
-    get: nape.constraint.LineJoint.prototype.get_direction,
-    set: nape.constraint.LineJoint.prototype.set_direction,
+    get: function() { return this.get_direction(); },
+    set: function(v) { this.set_direction(v); },
   });
   nape.constraint.LineJoint.prototype.get_direction = function () {
     if (this.zpp_inner_zn.wrap_n == null) {
@@ -4377,8 +4377,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_n;
   };
   Object.defineProperty(nape.constraint.LineJoint.prototype, "jointMin", {
-    get: nape.constraint.LineJoint.prototype.get_jointMin,
-    set: nape.constraint.LineJoint.prototype.set_jointMin,
+    get: function() { return this.get_jointMin(); },
+    set: function(v) { this.set_jointMin(v); },
   });
   nape.constraint.LineJoint.prototype.get_jointMin = function () {
     return this.zpp_inner_zn.jointMin;
@@ -4395,8 +4395,8 @@ define(function () {
     return this.zpp_inner_zn.jointMin;
   };
   Object.defineProperty(nape.constraint.LineJoint.prototype, "jointMax", {
-    get: nape.constraint.LineJoint.prototype.get_jointMax,
-    set: nape.constraint.LineJoint.prototype.set_jointMax,
+    get: function() { return this.get_jointMax(); },
+    set: function(v) { this.set_jointMax(v); },
   });
   nape.constraint.LineJoint.prototype.get_jointMax = function () {
     return this.zpp_inner_zn.jointMax;
@@ -4593,8 +4593,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.MotorJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.MotorJoint.prototype, "body1", {
-    get: nape.constraint.MotorJoint.prototype.get_body1,
-    set: nape.constraint.MotorJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.MotorJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -4654,8 +4654,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.MotorJoint.prototype, "body2", {
-    get: nape.constraint.MotorJoint.prototype.get_body2,
-    set: nape.constraint.MotorJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.MotorJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -4715,8 +4715,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.MotorJoint.prototype, "ratio", {
-    get: nape.constraint.MotorJoint.prototype.get_ratio,
-    set: nape.constraint.MotorJoint.prototype.set_ratio,
+    get: function() { return this.get_ratio(); },
+    set: function(v) { this.set_ratio(v); },
   });
   nape.constraint.MotorJoint.prototype.get_ratio = function () {
     return this.zpp_inner_zn.ratio;
@@ -4733,8 +4733,8 @@ define(function () {
     return this.zpp_inner_zn.ratio;
   };
   Object.defineProperty(nape.constraint.MotorJoint.prototype, "rate", {
-    get: nape.constraint.MotorJoint.prototype.get_rate,
-    set: nape.constraint.MotorJoint.prototype.set_rate,
+    get: function() { return this.get_rate(); },
+    set: function(v) { this.set_rate(v); },
   });
   nape.constraint.MotorJoint.prototype.get_rate = function () {
     return this.zpp_inner_zn.rate;
@@ -5193,8 +5193,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.PivotJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.PivotJoint.prototype, "body1", {
-    get: nape.constraint.PivotJoint.prototype.get_body1,
-    set: nape.constraint.PivotJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.PivotJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -5254,8 +5254,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.PivotJoint.prototype, "body2", {
-    get: nape.constraint.PivotJoint.prototype.get_body2,
-    set: nape.constraint.PivotJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.PivotJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -5315,8 +5315,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.PivotJoint.prototype, "anchor1", {
-    get: nape.constraint.PivotJoint.prototype.get_anchor1,
-    set: nape.constraint.PivotJoint.prototype.set_anchor1,
+    get: function() { return this.get_anchor1(); },
+    set: function(v) { this.set_anchor1(v); },
   });
   nape.constraint.PivotJoint.prototype.get_anchor1 = function () {
     if (this.zpp_inner_zn.wrap_a1 == null) {
@@ -5472,8 +5472,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a1;
   };
   Object.defineProperty(nape.constraint.PivotJoint.prototype, "anchor2", {
-    get: nape.constraint.PivotJoint.prototype.get_anchor2,
-    set: nape.constraint.PivotJoint.prototype.set_anchor2,
+    get: function() { return this.get_anchor2(); },
+    set: function(v) { this.set_anchor2(v); },
   });
   nape.constraint.PivotJoint.prototype.get_anchor2 = function () {
     if (this.zpp_inner_zn.wrap_a2 == null) {
@@ -6524,8 +6524,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.PulleyJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "body1", {
-    get: nape.constraint.PulleyJoint.prototype.get_body1,
-    set: nape.constraint.PulleyJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -6589,8 +6589,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "body2", {
-    get: nape.constraint.PulleyJoint.prototype.get_body2,
-    set: nape.constraint.PulleyJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -6654,8 +6654,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "body3", {
-    get: nape.constraint.PulleyJoint.prototype.get_body3,
-    set: nape.constraint.PulleyJoint.prototype.set_body3,
+    get: function() { return this.get_body3(); },
+    set: function(v) { this.set_body3(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_body3 = function () {
     if (this.zpp_inner_zn.b3 == null) {
@@ -6719,8 +6719,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "body4", {
-    get: nape.constraint.PulleyJoint.prototype.get_body4,
-    set: nape.constraint.PulleyJoint.prototype.set_body4,
+    get: function() { return this.get_body4(); },
+    set: function(v) { this.set_body4(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_body4 = function () {
     if (this.zpp_inner_zn.b4 == null) {
@@ -6784,8 +6784,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "anchor1", {
-    get: nape.constraint.PulleyJoint.prototype.get_anchor1,
-    set: nape.constraint.PulleyJoint.prototype.set_anchor1,
+    get: function() { return this.get_anchor1(); },
+    set: function(v) { this.set_anchor1(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_anchor1 = function () {
     if (this.zpp_inner_zn.wrap_a1 == null) {
@@ -6941,8 +6941,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a1;
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "anchor2", {
-    get: nape.constraint.PulleyJoint.prototype.get_anchor2,
-    set: nape.constraint.PulleyJoint.prototype.set_anchor2,
+    get: function() { return this.get_anchor2(); },
+    set: function(v) { this.set_anchor2(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_anchor2 = function () {
     if (this.zpp_inner_zn.wrap_a2 == null) {
@@ -7098,8 +7098,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a2;
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "anchor3", {
-    get: nape.constraint.PulleyJoint.prototype.get_anchor3,
-    set: nape.constraint.PulleyJoint.prototype.set_anchor3,
+    get: function() { return this.get_anchor3(); },
+    set: function(v) { this.set_anchor3(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_anchor3 = function () {
     if (this.zpp_inner_zn.wrap_a3 == null) {
@@ -7255,8 +7255,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a3;
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "anchor4", {
-    get: nape.constraint.PulleyJoint.prototype.get_anchor4,
-    set: nape.constraint.PulleyJoint.prototype.set_anchor4,
+    get: function() { return this.get_anchor4(); },
+    set: function(v) { this.set_anchor4(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_anchor4 = function () {
     if (this.zpp_inner_zn.wrap_a4 == null) {
@@ -7412,8 +7412,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a4;
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "jointMin", {
-    get: nape.constraint.PulleyJoint.prototype.get_jointMin,
-    set: nape.constraint.PulleyJoint.prototype.set_jointMin,
+    get: function() { return this.get_jointMin(); },
+    set: function(v) { this.set_jointMin(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_jointMin = function () {
     return this.zpp_inner_zn.jointMin;
@@ -7435,8 +7435,8 @@ define(function () {
     return this.zpp_inner_zn.jointMin;
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "jointMax", {
-    get: nape.constraint.PulleyJoint.prototype.get_jointMax,
-    set: nape.constraint.PulleyJoint.prototype.set_jointMax,
+    get: function() { return this.get_jointMax(); },
+    set: function(v) { this.set_jointMax(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_jointMax = function () {
     return this.zpp_inner_zn.jointMax;
@@ -7458,8 +7458,8 @@ define(function () {
     return this.zpp_inner_zn.jointMax;
   };
   Object.defineProperty(nape.constraint.PulleyJoint.prototype, "ratio", {
-    get: nape.constraint.PulleyJoint.prototype.get_ratio,
-    set: nape.constraint.PulleyJoint.prototype.set_ratio,
+    get: function() { return this.get_ratio(); },
+    set: function(v) { this.set_ratio(v); },
   });
   nape.constraint.PulleyJoint.prototype.get_ratio = function () {
     return this.zpp_inner_zn.ratio;
@@ -8151,8 +8151,8 @@ define(function () {
       nape.constraint.Constraint.prototype[k];
   nape.constraint.WeldJoint.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.constraint.WeldJoint.prototype, "body1", {
-    get: nape.constraint.WeldJoint.prototype.get_body1,
-    set: nape.constraint.WeldJoint.prototype.set_body1,
+    get: function() { return this.get_body1(); },
+    set: function(v) { this.set_body1(v); },
   });
   nape.constraint.WeldJoint.prototype.get_body1 = function () {
     if (this.zpp_inner_zn.b1 == null) {
@@ -8212,8 +8212,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.WeldJoint.prototype, "body2", {
-    get: nape.constraint.WeldJoint.prototype.get_body2,
-    set: nape.constraint.WeldJoint.prototype.set_body2,
+    get: function() { return this.get_body2(); },
+    set: function(v) { this.set_body2(v); },
   });
   nape.constraint.WeldJoint.prototype.get_body2 = function () {
     if (this.zpp_inner_zn.b2 == null) {
@@ -8273,8 +8273,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.constraint.WeldJoint.prototype, "anchor1", {
-    get: nape.constraint.WeldJoint.prototype.get_anchor1,
-    set: nape.constraint.WeldJoint.prototype.set_anchor1,
+    get: function() { return this.get_anchor1(); },
+    set: function(v) { this.set_anchor1(v); },
   });
   nape.constraint.WeldJoint.prototype.get_anchor1 = function () {
     if (this.zpp_inner_zn.wrap_a1 == null) {
@@ -8430,8 +8430,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a1;
   };
   Object.defineProperty(nape.constraint.WeldJoint.prototype, "anchor2", {
-    get: nape.constraint.WeldJoint.prototype.get_anchor2,
-    set: nape.constraint.WeldJoint.prototype.set_anchor2,
+    get: function() { return this.get_anchor2(); },
+    set: function(v) { this.set_anchor2(v); },
   });
   nape.constraint.WeldJoint.prototype.get_anchor2 = function () {
     if (this.zpp_inner_zn.wrap_a2 == null) {
@@ -8587,8 +8587,8 @@ define(function () {
     return this.zpp_inner_zn.wrap_a2;
   };
   Object.defineProperty(nape.constraint.WeldJoint.prototype, "phase", {
-    get: nape.constraint.WeldJoint.prototype.get_phase,
-    set: nape.constraint.WeldJoint.prototype.set_phase,
+    get: function() { return this.get_phase(); },
+    set: function(v) { this.set_phase(v); },
   });
   nape.constraint.WeldJoint.prototype.get_phase = function () {
     return this.zpp_inner_zn.phase;
@@ -8667,7 +8667,7 @@ define(function () {
   nape.dynamics.Arbiter.__name__ = ["nape", "dynamics", "Arbiter"];
   nape.dynamics.Arbiter.prototype.zpp_inner = null;
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "isSleeping", {
-    get: nape.dynamics.Arbiter.prototype.get_isSleeping,
+    get: function() { return this.get_isSleeping(); },
   });
   nape.dynamics.Arbiter.prototype.get_isSleeping = function () {
     if (!this.zpp_inner.active) {
@@ -8676,7 +8676,7 @@ define(function () {
     return this.zpp_inner.sleeping;
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "type", {
-    get: nape.dynamics.Arbiter.prototype.get_type,
+    get: function() { return this.get_type(); },
   });
   nape.dynamics.Arbiter.prototype.get_type = function () {
     return zpp_nape.dynamics.ZPP_Arbiter.types[this.zpp_inner.type];
@@ -8691,7 +8691,7 @@ define(function () {
     return this.zpp_inner.type == zpp_nape.dynamics.ZPP_Arbiter.SENSOR;
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "collisionArbiter", {
-    get: nape.dynamics.Arbiter.prototype.get_collisionArbiter,
+    get: function() { return this.get_collisionArbiter(); },
   });
   nape.dynamics.Arbiter.prototype.get_collisionArbiter = function () {
     if (this.zpp_inner.type == zpp_nape.dynamics.ZPP_Arbiter.COL) {
@@ -8701,7 +8701,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "fluidArbiter", {
-    get: nape.dynamics.Arbiter.prototype.get_fluidArbiter,
+    get: function() { return this.get_fluidArbiter(); },
   });
   nape.dynamics.Arbiter.prototype.get_fluidArbiter = function () {
     if (this.zpp_inner.type == zpp_nape.dynamics.ZPP_Arbiter.FLUID) {
@@ -8711,7 +8711,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "shape1", {
-    get: nape.dynamics.Arbiter.prototype.get_shape1,
+    get: function() { return this.get_shape1(); },
   });
   nape.dynamics.Arbiter.prototype.get_shape1 = function () {
     if (!this.zpp_inner.active) {
@@ -8724,7 +8724,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "shape2", {
-    get: nape.dynamics.Arbiter.prototype.get_shape2,
+    get: function() { return this.get_shape2(); },
   });
   nape.dynamics.Arbiter.prototype.get_shape2 = function () {
     if (!this.zpp_inner.active) {
@@ -8737,7 +8737,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "body1", {
-    get: nape.dynamics.Arbiter.prototype.get_body1,
+    get: function() { return this.get_body1(); },
   });
   nape.dynamics.Arbiter.prototype.get_body1 = function () {
     if (!this.zpp_inner.active) {
@@ -8750,7 +8750,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "body2", {
-    get: nape.dynamics.Arbiter.prototype.get_body2,
+    get: function() { return this.get_body2(); },
   });
   nape.dynamics.Arbiter.prototype.get_body2 = function () {
     if (!this.zpp_inner.active) {
@@ -8763,7 +8763,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Arbiter.prototype, "state", {
-    get: nape.dynamics.Arbiter.prototype.get_state,
+    get: function() { return this.get_state(); },
   });
   nape.dynamics.Arbiter.prototype.get_state = function () {
     if (!this.zpp_inner.active) {
@@ -8965,7 +8965,7 @@ define(function () {
     nape.dynamics.CollisionArbiter.prototype[k] =
       nape.dynamics.Arbiter.prototype[k];
   Object.defineProperty(nape.dynamics.CollisionArbiter.prototype, "contacts", {
-    get: nape.dynamics.CollisionArbiter.prototype.get_contacts,
+    get: function() { return this.get_contacts(); },
   });
   nape.dynamics.CollisionArbiter.prototype.get_contacts = function () {
     if (!this.zpp_inner.active) {
@@ -8977,7 +8977,7 @@ define(function () {
     return this.zpp_inner.colarb.wrap_contacts;
   };
   Object.defineProperty(nape.dynamics.CollisionArbiter.prototype, "normal", {
-    get: nape.dynamics.CollisionArbiter.prototype.get_normal,
+    get: function() { return this.get_normal(); },
   });
   nape.dynamics.CollisionArbiter.prototype.get_normal = function () {
     if (!this.zpp_inner.active) {
@@ -8989,7 +8989,7 @@ define(function () {
     return this.zpp_inner.colarb.wrap_normal;
   };
   Object.defineProperty(nape.dynamics.CollisionArbiter.prototype, "radius", {
-    get: nape.dynamics.CollisionArbiter.prototype.get_radius,
+    get: function() { return this.get_radius(); },
   });
   nape.dynamics.CollisionArbiter.prototype.get_radius = function () {
     if (!this.zpp_inner.active) {
@@ -9000,7 +9000,7 @@ define(function () {
   Object.defineProperty(
     nape.dynamics.CollisionArbiter.prototype,
     "referenceEdge1",
-    { get: nape.dynamics.CollisionArbiter.prototype.get_referenceEdge1 }
+    { get: function() { return this.get_referenceEdge1(); } }
   );
   nape.dynamics.CollisionArbiter.prototype.get_referenceEdge1 = function () {
     if (!this.zpp_inner.active) {
@@ -9044,7 +9044,7 @@ define(function () {
   Object.defineProperty(
     nape.dynamics.CollisionArbiter.prototype,
     "referenceEdge2",
-    { get: nape.dynamics.CollisionArbiter.prototype.get_referenceEdge2 }
+    { get: function() { return this.get_referenceEdge2(); } }
   );
   nape.dynamics.CollisionArbiter.prototype.get_referenceEdge2 = function () {
     if (!this.zpp_inner.active) {
@@ -9518,8 +9518,8 @@ define(function () {
     nape.dynamics.CollisionArbiter.prototype,
     "elasticity",
     {
-      get: nape.dynamics.CollisionArbiter.prototype.get_elasticity,
-      set: nape.dynamics.CollisionArbiter.prototype.set_elasticity,
+      get: function() { return this.get_elasticity(); },
+      set: function(v) { this.set_elasticity(v); },
     }
   );
   nape.dynamics.CollisionArbiter.prototype.get_elasticity = function () {
@@ -9648,8 +9648,8 @@ define(function () {
     nape.dynamics.CollisionArbiter.prototype,
     "dynamicFriction",
     {
-      get: nape.dynamics.CollisionArbiter.prototype.get_dynamicFriction,
-      set: nape.dynamics.CollisionArbiter.prototype.set_dynamicFriction,
+      get: function() { return this.get_dynamicFriction(); },
+      set: function(v) { this.set_dynamicFriction(v); },
     }
   );
   nape.dynamics.CollisionArbiter.prototype.get_dynamicFriction = function () {
@@ -9778,8 +9778,8 @@ define(function () {
     nape.dynamics.CollisionArbiter.prototype,
     "staticFriction",
     {
-      get: nape.dynamics.CollisionArbiter.prototype.get_staticFriction,
-      set: nape.dynamics.CollisionArbiter.prototype.set_staticFriction,
+      get: function() { return this.get_staticFriction(); },
+      set: function(v) { this.set_staticFriction(v); },
     }
   );
   nape.dynamics.CollisionArbiter.prototype.get_staticFriction = function () {
@@ -9908,8 +9908,8 @@ define(function () {
     nape.dynamics.CollisionArbiter.prototype,
     "rollingFriction",
     {
-      get: nape.dynamics.CollisionArbiter.prototype.get_rollingFriction,
-      set: nape.dynamics.CollisionArbiter.prototype.set_rollingFriction,
+      get: function() { return this.get_rollingFriction(); },
+      set: function(v) { this.set_rollingFriction(v); },
     }
   );
   nape.dynamics.CollisionArbiter.prototype.get_rollingFriction = function () {
@@ -10045,7 +10045,7 @@ define(function () {
   nape.dynamics.Contact.__name__ = ["nape", "dynamics", "Contact"];
   nape.dynamics.Contact.prototype.zpp_inner = null;
   Object.defineProperty(nape.dynamics.Contact.prototype, "arbiter", {
-    get: nape.dynamics.Contact.prototype.get_arbiter,
+    get: function() { return this.get_arbiter(); },
   });
   nape.dynamics.Contact.prototype.get_arbiter = function () {
     if (this.zpp_inner.arbiter == null) {
@@ -10060,7 +10060,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Contact.prototype, "penetration", {
-    get: nape.dynamics.Contact.prototype.get_penetration,
+    get: function() { return this.get_penetration(); },
   });
   nape.dynamics.Contact.prototype.get_penetration = function () {
     if (this.zpp_inner.inactiveme()) {
@@ -10069,7 +10069,7 @@ define(function () {
     return -this.zpp_inner.dist;
   };
   Object.defineProperty(nape.dynamics.Contact.prototype, "position", {
-    get: nape.dynamics.Contact.prototype.get_position,
+    get: function() { return this.get_position(); },
   });
   nape.dynamics.Contact.prototype.get_position = function () {
     if (this.zpp_inner.inactiveme()) {
@@ -10081,7 +10081,7 @@ define(function () {
     return this.zpp_inner.wrap_position;
   };
   Object.defineProperty(nape.dynamics.Contact.prototype, "fresh", {
-    get: nape.dynamics.Contact.prototype.get_fresh,
+    get: function() { return this.get_fresh(); },
   });
   nape.dynamics.Contact.prototype.get_fresh = function () {
     if (this.zpp_inner.inactiveme()) {
@@ -10205,7 +10205,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.dynamics.Contact.prototype, "friction", {
-    get: nape.dynamics.Contact.prototype.get_friction,
+    get: function() { return this.get_friction(); },
   });
   nape.dynamics.Contact.prototype.get_friction = function () {
     if (this.zpp_inner.inactiveme()) {
@@ -10316,7 +10316,7 @@ define(function () {
   };
   nape.dynamics.ContactList.prototype.zpp_inner = null;
   Object.defineProperty(nape.dynamics.ContactList.prototype, "length", {
-    get: nape.dynamics.ContactList.prototype.get_length,
+    get: function() { return this.get_length(); },
   });
   nape.dynamics.ContactList.prototype.get_length = function () {
     this.zpp_inner.valmod();
@@ -11033,8 +11033,8 @@ define(function () {
     nape.dynamics.FluidArbiter.prototype[k] =
       nape.dynamics.Arbiter.prototype[k];
   Object.defineProperty(nape.dynamics.FluidArbiter.prototype, "position", {
-    get: nape.dynamics.FluidArbiter.prototype.get_position,
-    set: nape.dynamics.FluidArbiter.prototype.set_position,
+    get: function() { return this.get_position(); },
+    set: function(v) { this.set_position(v); },
   });
   nape.dynamics.FluidArbiter.prototype.get_position = function () {
     if (!this.zpp_inner.active) {
@@ -11199,8 +11199,8 @@ define(function () {
     return this.zpp_inner.fluidarb.wrap_position;
   };
   Object.defineProperty(nape.dynamics.FluidArbiter.prototype, "overlap", {
-    get: nape.dynamics.FluidArbiter.prototype.get_overlap,
-    set: nape.dynamics.FluidArbiter.prototype.set_overlap,
+    get: function() { return this.get_overlap(); },
+    set: function(v) { this.set_overlap(v); },
   });
   nape.dynamics.FluidArbiter.prototype.get_overlap = function () {
     if (!this.zpp_inner.active) {
@@ -12734,7 +12734,7 @@ define(function () {
   };
   nape.geom.Ray.prototype.zpp_inner = null;
   Object.defineProperty(nape.geom.Ray.prototype, "userData", {
-    get: nape.geom.Ray.prototype.get_userData,
+    get: function() { return this.get_userData(); },
   });
   nape.geom.Ray.prototype.get_userData = function () {
     if (this.zpp_inner.userData == null) {
@@ -12743,8 +12743,8 @@ define(function () {
     return this.zpp_inner.userData;
   };
   Object.defineProperty(nape.geom.Ray.prototype, "origin", {
-    get: nape.geom.Ray.prototype.get_origin,
-    set: nape.geom.Ray.prototype.set_origin,
+    get: function() { return this.get_origin(); },
+    set: function(v) { this.set_origin(v); },
   });
   nape.geom.Ray.prototype.get_origin = function () {
     return this.zpp_inner.origin;
@@ -12889,8 +12889,8 @@ define(function () {
     return this.zpp_inner.origin;
   };
   Object.defineProperty(nape.geom.Ray.prototype, "direction", {
-    get: nape.geom.Ray.prototype.get_direction,
-    set: nape.geom.Ray.prototype.set_direction,
+    get: function() { return this.get_direction(); },
+    set: function(v) { this.set_direction(v); },
   });
   nape.geom.Ray.prototype.get_direction = function () {
     return this.zpp_inner.direction;
@@ -13036,8 +13036,8 @@ define(function () {
     return this.zpp_inner.direction;
   };
   Object.defineProperty(nape.geom.Ray.prototype, "maxDistance", {
-    get: nape.geom.Ray.prototype.get_maxDistance,
-    set: nape.geom.Ray.prototype.set_maxDistance,
+    get: function() { return this.get_maxDistance(); },
+    set: function(v) { this.set_maxDistance(v); },
   });
   nape.geom.Ray.prototype.get_maxDistance = function () {
     return this.zpp_inner.maxdist;
@@ -13264,7 +13264,7 @@ define(function () {
   };
   nape.geom.Vec2List.prototype.zpp_inner = null;
   Object.defineProperty(nape.geom.Vec2List.prototype, "length", {
-    get: nape.geom.Vec2List.prototype.get_length,
+    get: function() { return this.get_length(); },
   });
   nape.geom.Vec2List.prototype.get_length = function () {
     return this.zpp_gl();
@@ -13876,13 +13876,13 @@ define(function () {
   nape.phys.Interactor.__name__ = ["nape", "phys", "Interactor"];
   nape.phys.Interactor.prototype.zpp_inner_i = null;
   Object.defineProperty(nape.phys.Interactor.prototype, "id", {
-    get: nape.phys.Interactor.prototype.get_id,
+    get: function() { return this.get_id(); },
   });
   nape.phys.Interactor.prototype.get_id = function () {
     return this.zpp_inner_i.id;
   };
   Object.defineProperty(nape.phys.Interactor.prototype, "userData", {
-    get: nape.phys.Interactor.prototype.get_userData,
+    get: function() { return this.get_userData(); },
   });
   nape.phys.Interactor.prototype.get_userData = function () {
     if (this.zpp_inner_i.userData == null) {
@@ -13900,7 +13900,7 @@ define(function () {
     return this.zpp_inner_i.icompound != null;
   };
   Object.defineProperty(nape.phys.Interactor.prototype, "castShape", {
-    get: nape.phys.Interactor.prototype.get_castShape,
+    get: function() { return this.get_castShape(); },
   });
   nape.phys.Interactor.prototype.get_castShape = function () {
     if (this.zpp_inner_i.ishape != null) {
@@ -13910,7 +13910,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Interactor.prototype, "castBody", {
-    get: nape.phys.Interactor.prototype.get_castBody,
+    get: function() { return this.get_castBody(); },
   });
   nape.phys.Interactor.prototype.get_castBody = function () {
     if (this.zpp_inner_i.ibody != null) {
@@ -13920,7 +13920,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Interactor.prototype, "castCompound", {
-    get: nape.phys.Interactor.prototype.get_castCompound,
+    get: function() { return this.get_castCompound(); },
   });
   nape.phys.Interactor.prototype.get_castCompound = function () {
     if (this.zpp_inner_i.icompound != null) {
@@ -13930,8 +13930,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Interactor.prototype, "group", {
-    get: nape.phys.Interactor.prototype.get_group,
-    set: nape.phys.Interactor.prototype.set_group,
+    get: function() { return this.get_group(); },
+    set: function(v) { this.set_group(v); },
   });
   nape.phys.Interactor.prototype.get_group = function () {
     if (this.zpp_inner_i.group == null) {
@@ -13950,7 +13950,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Interactor.prototype, "cbTypes", {
-    get: nape.phys.Interactor.prototype.get_cbTypes,
+    get: function() { return this.get_cbTypes(); },
   });
   nape.phys.Interactor.prototype.get_cbTypes = function () {
     if (this.zpp_inner_i.wrap_cbTypes == null) {
@@ -14101,8 +14101,8 @@ define(function () {
   nape.phys.Body.prototype.zpp_inner = null;
   nape.phys.Body.prototype.debugDraw = null;
   Object.defineProperty(nape.phys.Body.prototype, "type", {
-    get: nape.phys.Body.prototype.get_type,
-    set: nape.phys.Body.prototype.set_type,
+    get: function() { return this.get_type(); },
+    set: function(v) { this.set_type(v); },
   });
   nape.phys.Body.prototype.get_type = function () {
     return zpp_nape.phys.ZPP_Body.types[this.zpp_inner.type];
@@ -14147,8 +14147,8 @@ define(function () {
     return zpp_nape.phys.ZPP_Body.types[this.zpp_inner.type];
   };
   Object.defineProperty(nape.phys.Body.prototype, "isBullet", {
-    get: nape.phys.Body.prototype.get_isBullet,
-    set: nape.phys.Body.prototype.set_isBullet,
+    get: function() { return this.get_isBullet(); },
+    set: function(v) { this.set_isBullet(v); },
   });
   nape.phys.Body.prototype.get_isBullet = function () {
     return this.zpp_inner.bulletEnabled;
@@ -14158,8 +14158,8 @@ define(function () {
     return this.zpp_inner.bulletEnabled;
   };
   Object.defineProperty(nape.phys.Body.prototype, "disableCCD", {
-    get: nape.phys.Body.prototype.get_disableCCD,
-    set: nape.phys.Body.prototype.set_disableCCD,
+    get: function() { return this.get_disableCCD(); },
+    set: function(v) { this.set_disableCCD(v); },
   });
   nape.phys.Body.prototype.get_disableCCD = function () {
     return this.zpp_inner.disableCCD;
@@ -14240,14 +14240,14 @@ define(function () {
     return this.zpp_inner.type == 3;
   };
   Object.defineProperty(nape.phys.Body.prototype, "shapes", {
-    get: nape.phys.Body.prototype.get_shapes,
+    get: function() { return this.get_shapes(); },
   });
   nape.phys.Body.prototype.get_shapes = function () {
     return this.zpp_inner.wrap_shapes;
   };
   Object.defineProperty(nape.phys.Body.prototype, "compound", {
-    get: nape.phys.Body.prototype.get_compound,
-    set: nape.phys.Body.prototype.set_compound,
+    get: function() { return this.get_compound(); },
+    set: function(v) { this.set_compound(v); },
   });
   nape.phys.Body.prototype.get_compound = function () {
     if (this.zpp_inner.compound == null) {
@@ -14288,8 +14288,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Body.prototype, "space", {
-    get: nape.phys.Body.prototype.get_space,
-    set: nape.phys.Body.prototype.set_space,
+    get: function() { return this.get_space(); },
+    set: function(v) { this.set_space(v); },
   });
   nape.phys.Body.prototype.get_space = function () {
     if (this.zpp_inner.space == null) {
@@ -14343,7 +14343,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Body.prototype, "arbiters", {
-    get: nape.phys.Body.prototype.get_arbiters,
+    get: function() { return this.get_arbiters(); },
   });
   nape.phys.Body.prototype.get_arbiters = function () {
     if (this.zpp_inner.wrap_arbiters == null) {
@@ -14355,7 +14355,7 @@ define(function () {
     return this.zpp_inner.wrap_arbiters;
   };
   Object.defineProperty(nape.phys.Body.prototype, "isSleeping", {
-    get: nape.phys.Body.prototype.get_isSleeping,
+    get: function() { return this.get_isSleeping(); },
   });
   nape.phys.Body.prototype.get_isSleeping = function () {
     if (this.zpp_inner.space == null) {
@@ -14366,7 +14366,7 @@ define(function () {
     return this.zpp_inner.component.sleeping;
   };
   Object.defineProperty(nape.phys.Body.prototype, "constraints", {
-    get: nape.phys.Body.prototype.get_constraints,
+    get: function() { return this.get_constraints(); },
   });
   nape.phys.Body.prototype.get_constraints = function () {
     if (this.zpp_inner.wrap_constraints == null) {
@@ -14384,8 +14384,8 @@ define(function () {
     return this.zpp_inner.copy();
   };
   Object.defineProperty(nape.phys.Body.prototype, "position", {
-    get: nape.phys.Body.prototype.get_position,
-    set: nape.phys.Body.prototype.set_position,
+    get: function() { return this.get_position(); },
+    set: function(v) { this.set_position(v); },
   });
   nape.phys.Body.prototype.get_position = function () {
     if (this.zpp_inner.wrap_pos == null) {
@@ -14541,8 +14541,8 @@ define(function () {
     return this.zpp_inner.wrap_pos;
   };
   Object.defineProperty(nape.phys.Body.prototype, "velocity", {
-    get: nape.phys.Body.prototype.get_velocity,
-    set: nape.phys.Body.prototype.set_velocity,
+    get: function() { return this.get_velocity(); },
+    set: function(v) { this.set_velocity(v); },
   });
   nape.phys.Body.prototype.get_velocity = function () {
     if (this.zpp_inner.wrap_vel == null) {
@@ -14911,8 +14911,8 @@ define(function () {
     return this;
   };
   Object.defineProperty(nape.phys.Body.prototype, "kinematicVel", {
-    get: nape.phys.Body.prototype.get_kinematicVel,
-    set: nape.phys.Body.prototype.set_kinematicVel,
+    get: function() { return this.get_kinematicVel(); },
+    set: function(v) { this.set_kinematicVel(v); },
   });
   nape.phys.Body.prototype.get_kinematicVel = function () {
     if (this.zpp_inner.wrap_kinvel == null) {
@@ -15068,8 +15068,8 @@ define(function () {
     return this.zpp_inner.wrap_kinvel;
   };
   Object.defineProperty(nape.phys.Body.prototype, "surfaceVel", {
-    get: nape.phys.Body.prototype.get_surfaceVel,
-    set: nape.phys.Body.prototype.set_surfaceVel,
+    get: function() { return this.get_surfaceVel(); },
+    set: function(v) { this.set_surfaceVel(v); },
   });
   nape.phys.Body.prototype.get_surfaceVel = function () {
     if (this.zpp_inner.wrap_svel == null) {
@@ -15225,8 +15225,8 @@ define(function () {
     return this.zpp_inner.wrap_svel;
   };
   Object.defineProperty(nape.phys.Body.prototype, "force", {
-    get: nape.phys.Body.prototype.get_force,
-    set: nape.phys.Body.prototype.set_force,
+    get: function() { return this.get_force(); },
+    set: function(v) { this.set_force(v); },
   });
   nape.phys.Body.prototype.get_force = function () {
     if (this.zpp_inner.wrap_force == null) {
@@ -15382,7 +15382,7 @@ define(function () {
     return this.zpp_inner.wrap_force;
   };
   Object.defineProperty(nape.phys.Body.prototype, "constraintVelocity", {
-    get: nape.phys.Body.prototype.get_constraintVelocity,
+    get: function() { return this.get_constraintVelocity(); },
   });
   nape.phys.Body.prototype.get_constraintVelocity = function () {
     if (this.zpp_inner.wrapcvel == null) {
@@ -15391,8 +15391,8 @@ define(function () {
     return this.zpp_inner.wrapcvel;
   };
   Object.defineProperty(nape.phys.Body.prototype, "rotation", {
-    get: nape.phys.Body.prototype.get_rotation,
-    set: nape.phys.Body.prototype.set_rotation,
+    get: function() { return this.get_rotation(); },
+    set: function(v) { this.set_rotation(v); },
   });
   nape.phys.Body.prototype.get_rotation = function () {
     return this.zpp_inner.rot;
@@ -15430,8 +15430,8 @@ define(function () {
     return this.zpp_inner.rot;
   };
   Object.defineProperty(nape.phys.Body.prototype, "angularVel", {
-    get: nape.phys.Body.prototype.get_angularVel,
-    set: nape.phys.Body.prototype.set_angularVel,
+    get: function() { return this.get_angularVel(); },
+    set: function(v) { this.set_angularVel(v); },
   });
   nape.phys.Body.prototype.get_angularVel = function () {
     return this.zpp_inner.angvel;
@@ -15455,8 +15455,8 @@ define(function () {
     return this.zpp_inner.angvel;
   };
   Object.defineProperty(nape.phys.Body.prototype, "kinAngVel", {
-    get: nape.phys.Body.prototype.get_kinAngVel,
-    set: nape.phys.Body.prototype.set_kinAngVel,
+    get: function() { return this.get_kinAngVel(); },
+    set: function(v) { this.set_kinAngVel(v); },
   });
   nape.phys.Body.prototype.get_kinAngVel = function () {
     return this.zpp_inner.kinangvel;
@@ -15475,8 +15475,8 @@ define(function () {
     return this.zpp_inner.kinangvel;
   };
   Object.defineProperty(nape.phys.Body.prototype, "torque", {
-    get: nape.phys.Body.prototype.get_torque,
-    set: nape.phys.Body.prototype.set_torque,
+    get: function() { return this.get_torque(); },
+    set: function(v) { this.set_torque(v); },
   });
   nape.phys.Body.prototype.get_torque = function () {
     return this.zpp_inner.torque;
@@ -15500,7 +15500,7 @@ define(function () {
     return this.zpp_inner.torque;
   };
   Object.defineProperty(nape.phys.Body.prototype, "bounds", {
-    get: nape.phys.Body.prototype.get_bounds,
+    get: function() { return this.get_bounds(); },
   });
   nape.phys.Body.prototype.get_bounds = function () {
     if (this.zpp_inner.world) {
@@ -15509,8 +15509,8 @@ define(function () {
     return this.zpp_inner.aabb.wrapper();
   };
   Object.defineProperty(nape.phys.Body.prototype, "allowMovement", {
-    get: nape.phys.Body.prototype.get_allowMovement,
-    set: nape.phys.Body.prototype.set_allowMovement,
+    get: function() { return this.get_allowMovement(); },
+    set: function(v) { this.set_allowMovement(v); },
   });
   nape.phys.Body.prototype.get_allowMovement = function () {
     return !this.zpp_inner.nomove;
@@ -15526,8 +15526,8 @@ define(function () {
     return !this.zpp_inner.nomove;
   };
   Object.defineProperty(nape.phys.Body.prototype, "allowRotation", {
-    get: nape.phys.Body.prototype.get_allowRotation,
-    set: nape.phys.Body.prototype.set_allowRotation,
+    get: function() { return this.get_allowRotation(); },
+    set: function(v) { this.set_allowRotation(v); },
   });
   nape.phys.Body.prototype.get_allowRotation = function () {
     return !this.zpp_inner.norotate;
@@ -15543,8 +15543,8 @@ define(function () {
     return !this.zpp_inner.norotate;
   };
   Object.defineProperty(nape.phys.Body.prototype, "massMode", {
-    get: nape.phys.Body.prototype.get_massMode,
-    set: nape.phys.Body.prototype.set_massMode,
+    get: function() { return this.get_massMode(); },
+    set: function(v) { this.set_massMode(v); },
   });
   nape.phys.Body.prototype.get_massMode = function () {
     if (zpp_nape.util.ZPP_Flags.MassMode_DEFAULT == null) {
@@ -15594,7 +15594,7 @@ define(function () {
     ];
   };
   Object.defineProperty(nape.phys.Body.prototype, "constraintMass", {
-    get: nape.phys.Body.prototype.get_constraintMass,
+    get: function() { return this.get_constraintMass(); },
   });
   nape.phys.Body.prototype.get_constraintMass = function () {
     if (!this.zpp_inner.world) {
@@ -15603,8 +15603,8 @@ define(function () {
     return this.zpp_inner.smass;
   };
   Object.defineProperty(nape.phys.Body.prototype, "mass", {
-    get: nape.phys.Body.prototype.get_mass,
-    set: nape.phys.Body.prototype.set_mass,
+    get: function() { return this.get_mass(); },
+    set: function(v) { this.set_mass(v); },
   });
   nape.phys.Body.prototype.get_mass = function () {
     if (this.zpp_inner.world) {
@@ -15649,8 +15649,8 @@ define(function () {
     return this.zpp_inner.cmass;
   };
   Object.defineProperty(nape.phys.Body.prototype, "gravMassMode", {
-    get: nape.phys.Body.prototype.get_gravMassMode,
-    set: nape.phys.Body.prototype.set_gravMassMode,
+    get: function() { return this.get_gravMassMode(); },
+    set: function(v) { this.set_gravMassMode(v); },
   });
   nape.phys.Body.prototype.get_gravMassMode = function () {
     if (zpp_nape.util.ZPP_Flags.GravMassMode_DEFAULT == null) {
@@ -15729,8 +15729,8 @@ define(function () {
     ];
   };
   Object.defineProperty(nape.phys.Body.prototype, "gravMass", {
-    get: nape.phys.Body.prototype.get_gravMass,
-    set: nape.phys.Body.prototype.set_gravMass,
+    get: function() { return this.get_gravMass(); },
+    set: function(v) { this.set_gravMass(v); },
   });
   nape.phys.Body.prototype.get_gravMass = function () {
     if (this.zpp_inner.world) {
@@ -15771,8 +15771,8 @@ define(function () {
     return this.zpp_inner.gravMass;
   };
   Object.defineProperty(nape.phys.Body.prototype, "gravMassScale", {
-    get: nape.phys.Body.prototype.get_gravMassScale,
-    set: nape.phys.Body.prototype.set_gravMassScale,
+    get: function() { return this.get_gravMassScale(); },
+    set: function(v) { this.set_gravMassScale(v); },
   });
   nape.phys.Body.prototype.get_gravMassScale = function () {
     this.zpp_inner.validate_gravMassScale();
@@ -15807,8 +15807,8 @@ define(function () {
     return this.zpp_inner.gravMassScale;
   };
   Object.defineProperty(nape.phys.Body.prototype, "inertiaMode", {
-    get: nape.phys.Body.prototype.get_inertiaMode,
-    set: nape.phys.Body.prototype.set_inertiaMode,
+    get: function() { return this.get_inertiaMode(); },
+    set: function(v) { this.set_inertiaMode(v); },
   });
   nape.phys.Body.prototype.get_inertiaMode = function () {
     if (zpp_nape.util.ZPP_Flags.InertiaMode_DEFAULT == null) {
@@ -15858,7 +15858,7 @@ define(function () {
     ];
   };
   Object.defineProperty(nape.phys.Body.prototype, "constraintInertia", {
-    get: nape.phys.Body.prototype.get_constraintInertia,
+    get: function() { return this.get_constraintInertia(); },
   });
   nape.phys.Body.prototype.get_constraintInertia = function () {
     if (!this.zpp_inner.world) {
@@ -15867,8 +15867,8 @@ define(function () {
     return this.zpp_inner.sinertia;
   };
   Object.defineProperty(nape.phys.Body.prototype, "inertia", {
-    get: nape.phys.Body.prototype.get_inertia,
-    set: nape.phys.Body.prototype.set_inertia,
+    get: function() { return this.get_inertia(); },
+    set: function(v) { this.set_inertia(v); },
   });
   nape.phys.Body.prototype.get_inertia = function () {
     if (this.zpp_inner.world) {
@@ -18095,7 +18095,7 @@ define(function () {
     return this;
   };
   Object.defineProperty(nape.phys.Body.prototype, "localCOM", {
-    get: nape.phys.Body.prototype.get_localCOM,
+    get: function() { return this.get_localCOM(); },
   });
   nape.phys.Body.prototype.get_localCOM = function () {
     if (this.zpp_inner.world) {
@@ -18199,7 +18199,7 @@ define(function () {
     return this.zpp_inner.wrap_localCOM;
   };
   Object.defineProperty(nape.phys.Body.prototype, "worldCOM", {
-    get: nape.phys.Body.prototype.get_worldCOM,
+    get: function() { return this.get_worldCOM(); },
   });
   nape.phys.Body.prototype.get_worldCOM = function () {
     if (this.zpp_inner.world) {
@@ -19139,26 +19139,26 @@ define(function () {
     nape.phys.Compound.prototype[k] = nape.phys.Interactor.prototype[k];
   nape.phys.Compound.prototype.zpp_inner = null;
   Object.defineProperty(nape.phys.Compound.prototype, "bodies", {
-    get: nape.phys.Compound.prototype.get_bodies,
+    get: function() { return this.get_bodies(); },
   });
   nape.phys.Compound.prototype.get_bodies = function () {
     return this.zpp_inner.wrap_bodies;
   };
   Object.defineProperty(nape.phys.Compound.prototype, "constraints", {
-    get: nape.phys.Compound.prototype.get_constraints,
+    get: function() { return this.get_constraints(); },
   });
   nape.phys.Compound.prototype.get_constraints = function () {
     return this.zpp_inner.wrap_constraints;
   };
   Object.defineProperty(nape.phys.Compound.prototype, "compounds", {
-    get: nape.phys.Compound.prototype.get_compounds,
+    get: function() { return this.get_compounds(); },
   });
   nape.phys.Compound.prototype.get_compounds = function () {
     return this.zpp_inner.wrap_compounds;
   };
   Object.defineProperty(nape.phys.Compound.prototype, "compound", {
-    get: nape.phys.Compound.prototype.get_compound,
-    set: nape.phys.Compound.prototype.set_compound,
+    get: function() { return this.get_compound(); },
+    set: function(v) { this.set_compound(v); },
   });
   nape.phys.Compound.prototype.get_compound = function () {
     if (this.zpp_inner.compound == null) {
@@ -19200,8 +19200,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.phys.Compound.prototype, "space", {
-    get: nape.phys.Compound.prototype.get_space,
-    set: nape.phys.Compound.prototype.set_space,
+    get: function() { return this.get_space(); },
+    set: function(v) { this.set_space(v); },
   });
   nape.phys.Compound.prototype.get_space = function () {
     if (this.zpp_inner.space == null) {
@@ -19807,7 +19807,7 @@ define(function () {
     nape.shape.Shape.prototype[k] = nape.phys.Interactor.prototype[k];
   nape.shape.Shape.prototype.zpp_inner = null;
   Object.defineProperty(nape.shape.Shape.prototype, "type", {
-    get: nape.shape.Shape.prototype.get_type,
+    get: function() { return this.get_type(); },
   });
   nape.shape.Shape.prototype.get_type = function () {
     return zpp_nape.shape.ZPP_Shape.types[this.zpp_inner.type];
@@ -19819,8 +19819,8 @@ define(function () {
     return this.zpp_inner.type == 1;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "body", {
-    get: nape.shape.Shape.prototype.get_body,
-    set: nape.shape.Shape.prototype.set_body,
+    get: function() { return this.get_body(); },
+    set: function(v) { this.set_body(v); },
   });
   nape.shape.Shape.prototype.get_body = function () {
     if (this.zpp_inner.body != null) {
@@ -19856,7 +19856,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.shape.Shape.prototype, "castCircle", {
-    get: nape.shape.Shape.prototype.get_castCircle,
+    get: function() { return this.get_castCircle(); },
   });
   nape.shape.Shape.prototype.get_castCircle = function () {
     if (this.zpp_inner.type == 0) {
@@ -19866,7 +19866,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.shape.Shape.prototype, "castPolygon", {
-    get: nape.shape.Shape.prototype.get_castPolygon,
+    get: function() { return this.get_castPolygon(); },
   });
   nape.shape.Shape.prototype.get_castPolygon = function () {
     if (this.zpp_inner.type == 1) {
@@ -19876,7 +19876,7 @@ define(function () {
     }
   };
   Object.defineProperty(nape.shape.Shape.prototype, "worldCOM", {
-    get: nape.shape.Shape.prototype.get_worldCOM,
+    get: function() { return this.get_worldCOM(); },
   });
   nape.shape.Shape.prototype.get_worldCOM = function () {
     if (this.zpp_inner.wrap_worldCOM == null) {
@@ -19977,8 +19977,8 @@ define(function () {
     return this.zpp_inner.wrap_worldCOM;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "localCOM", {
-    get: nape.shape.Shape.prototype.get_localCOM,
-    set: nape.shape.Shape.prototype.set_localCOM,
+    get: function() { return this.get_localCOM(); },
+    set: function(v) { this.set_localCOM(v); },
   });
   nape.shape.Shape.prototype.get_localCOM = function () {
     if (this.zpp_inner.wrap_localCOM == null) {
@@ -20154,29 +20154,29 @@ define(function () {
     return this.zpp_inner.wrap_localCOM;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "area", {
-    get: nape.shape.Shape.prototype.get_area,
+    get: function() { return this.get_area(); },
   });
   nape.shape.Shape.prototype.get_area = function () {
     this.zpp_inner.validate_area_inertia();
     return this.zpp_inner.area;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "inertia", {
-    get: nape.shape.Shape.prototype.get_inertia,
+    get: function() { return this.get_inertia(); },
   });
   nape.shape.Shape.prototype.get_inertia = function () {
     this.zpp_inner.validate_area_inertia();
     return this.zpp_inner.inertia;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "angDrag", {
-    get: nape.shape.Shape.prototype.get_angDrag,
+    get: function() { return this.get_angDrag(); },
   });
   nape.shape.Shape.prototype.get_angDrag = function () {
     this.zpp_inner.validate_angDrag();
     return this.zpp_inner.angDrag;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "material", {
-    get: nape.shape.Shape.prototype.get_material,
-    set: nape.shape.Shape.prototype.set_material,
+    get: function() { return this.get_material(); },
+    set: function(v) { this.set_material(v); },
   });
   nape.shape.Shape.prototype.get_material = function () {
     return this.zpp_inner.material.wrapper();
@@ -20192,8 +20192,8 @@ define(function () {
     return this.zpp_inner.material.wrapper();
   };
   Object.defineProperty(nape.shape.Shape.prototype, "filter", {
-    get: nape.shape.Shape.prototype.get_filter,
-    set: nape.shape.Shape.prototype.set_filter,
+    get: function() { return this.get_filter(); },
+    set: function(v) { this.set_filter(v); },
   });
   nape.shape.Shape.prototype.get_filter = function () {
     return this.zpp_inner.filter.wrapper();
@@ -20207,8 +20207,8 @@ define(function () {
     return this.zpp_inner.filter.wrapper();
   };
   Object.defineProperty(nape.shape.Shape.prototype, "fluidProperties", {
-    get: nape.shape.Shape.prototype.get_fluidProperties,
-    set: nape.shape.Shape.prototype.set_fluidProperties,
+    get: function() { return this.get_fluidProperties(); },
+    set: function(v) { this.set_fluidProperties(v); },
   });
   nape.shape.Shape.prototype.get_fluidProperties = function () {
     this.zpp_inner.immutable_midstep("Shape::fluidProperties");
@@ -20231,8 +20231,8 @@ define(function () {
     return this.zpp_inner.fluidProperties.wrapper();
   };
   Object.defineProperty(nape.shape.Shape.prototype, "fluidEnabled", {
-    get: nape.shape.Shape.prototype.get_fluidEnabled,
-    set: nape.shape.Shape.prototype.set_fluidEnabled,
+    get: function() { return this.get_fluidEnabled(); },
+    set: function(v) { this.set_fluidEnabled(v); },
   });
   nape.shape.Shape.prototype.get_fluidEnabled = function () {
     return this.zpp_inner.fluidEnabled;
@@ -20258,8 +20258,8 @@ define(function () {
     return this.zpp_inner.fluidEnabled;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "sensorEnabled", {
-    get: nape.shape.Shape.prototype.get_sensorEnabled,
-    set: nape.shape.Shape.prototype.set_sensorEnabled,
+    get: function() { return this.get_sensorEnabled(); },
+    set: function(v) { this.set_sensorEnabled(v); },
   });
   nape.shape.Shape.prototype.get_sensorEnabled = function () {
     return this.zpp_inner.sensorEnabled;
@@ -20271,7 +20271,7 @@ define(function () {
     return this.zpp_inner.sensorEnabled;
   };
   Object.defineProperty(nape.shape.Shape.prototype, "bounds", {
-    get: nape.shape.Shape.prototype.get_bounds,
+    get: function() { return this.get_bounds(); },
   });
   nape.shape.Shape.prototype.get_bounds = function () {
     return this.zpp_inner.aabb.wrapper();
@@ -20710,8 +20710,8 @@ define(function () {
     nape.shape.Circle.prototype[k] = nape.shape.Shape.prototype[k];
   nape.shape.Circle.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.shape.Circle.prototype, "radius", {
-    get: nape.shape.Circle.prototype.get_radius,
-    set: nape.shape.Circle.prototype.set_radius,
+    get: function() { return this.get_radius(); },
+    set: function(v) { this.set_radius(v); },
   });
   nape.shape.Circle.prototype.get_radius = function () {
     return this.zpp_inner_zn.radius;
@@ -20756,7 +20756,7 @@ define(function () {
   nape.shape.Edge.__name__ = ["nape", "shape", "Edge"];
   nape.shape.Edge.prototype.zpp_inner = null;
   Object.defineProperty(nape.shape.Edge.prototype, "polygon", {
-    get: nape.shape.Edge.prototype.get_polygon,
+    get: function() { return this.get_polygon(); },
   });
   nape.shape.Edge.prototype.get_polygon = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20765,7 +20765,7 @@ define(function () {
     return this.zpp_inner.polygon.outer_zn;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "localNormal", {
-    get: nape.shape.Edge.prototype.get_localNormal,
+    get: function() { return this.get_localNormal(); },
   });
   nape.shape.Edge.prototype.get_localNormal = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20777,7 +20777,7 @@ define(function () {
     return this.zpp_inner.wrap_lnorm;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "worldNormal", {
-    get: nape.shape.Edge.prototype.get_worldNormal,
+    get: function() { return this.get_worldNormal(); },
   });
   nape.shape.Edge.prototype.get_worldNormal = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20789,7 +20789,7 @@ define(function () {
     return this.zpp_inner.wrap_gnorm;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "length", {
-    get: nape.shape.Edge.prototype.get_length,
+    get: function() { return this.get_length(); },
   });
   nape.shape.Edge.prototype.get_length = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20799,7 +20799,7 @@ define(function () {
     return this.zpp_inner.length;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "localProjection", {
-    get: nape.shape.Edge.prototype.get_localProjection,
+    get: function() { return this.get_localProjection(); },
   });
   nape.shape.Edge.prototype.get_localProjection = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20809,7 +20809,7 @@ define(function () {
     return this.zpp_inner.lprojection;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "worldProjection", {
-    get: nape.shape.Edge.prototype.get_worldProjection,
+    get: function() { return this.get_worldProjection(); },
   });
   nape.shape.Edge.prototype.get_worldProjection = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20904,7 +20904,7 @@ define(function () {
     return this.zpp_inner.gprojection;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "localVertex1", {
-    get: nape.shape.Edge.prototype.get_localVertex1,
+    get: function() { return this.get_localVertex1(); },
   });
   nape.shape.Edge.prototype.get_localVertex1 = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20929,7 +20929,7 @@ define(function () {
     return _this.outer;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "localVertex2", {
-    get: nape.shape.Edge.prototype.get_localVertex2,
+    get: function() { return this.get_localVertex2(); },
   });
   nape.shape.Edge.prototype.get_localVertex2 = function () {
     if (this.zpp_inner.polygon == null) {
@@ -20954,7 +20954,7 @@ define(function () {
     return _this.outer;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "worldVertex1", {
-    get: nape.shape.Edge.prototype.get_worldVertex1,
+    get: function() { return this.get_worldVertex1(); },
   });
   nape.shape.Edge.prototype.get_worldVertex1 = function () {
     if (this.zpp_inner.polygon == null) {
@@ -21059,7 +21059,7 @@ define(function () {
     return _this3.outer;
   };
   Object.defineProperty(nape.shape.Edge.prototype, "worldVertex2", {
-    get: nape.shape.Edge.prototype.get_worldVertex2,
+    get: function() { return this.get_worldVertex2(); },
   });
   nape.shape.Edge.prototype.get_worldVertex2 = function () {
     if (this.zpp_inner.polygon == null) {
@@ -22558,7 +22558,7 @@ define(function () {
   };
   nape.shape.Polygon.prototype.zpp_inner_zn = null;
   Object.defineProperty(nape.shape.Polygon.prototype, "localVerts", {
-    get: nape.shape.Polygon.prototype.get_localVerts,
+    get: function() { return this.get_localVerts(); },
   });
   nape.shape.Polygon.prototype.get_localVerts = function () {
     if (this.zpp_inner_zn.wrap_lverts == null) {
@@ -22567,7 +22567,7 @@ define(function () {
     return this.zpp_inner_zn.wrap_lverts;
   };
   Object.defineProperty(nape.shape.Polygon.prototype, "worldVerts", {
-    get: nape.shape.Polygon.prototype.get_worldVerts,
+    get: function() { return this.get_worldVerts(); },
   });
   nape.shape.Polygon.prototype.get_worldVerts = function () {
     if (this.zpp_inner_zn.wrap_gverts == null) {
@@ -22576,7 +22576,7 @@ define(function () {
     return this.zpp_inner_zn.wrap_gverts;
   };
   Object.defineProperty(nape.shape.Polygon.prototype, "edges", {
-    get: nape.shape.Polygon.prototype.get_edges,
+    get: function() { return this.get_edges(); },
   });
   nape.shape.Polygon.prototype.get_edges = function () {
     if (this.zpp_inner_zn.wrap_edges == null) {
@@ -22679,7 +22679,7 @@ define(function () {
   nape.space.Space.__name__ = ["nape", "space", "Space"];
   nape.space.Space.prototype.zpp_inner = null;
   Object.defineProperty(nape.space.Space.prototype, "userData", {
-    get: nape.space.Space.prototype.get_userData,
+    get: function() { return this.get_userData(); },
   });
   nape.space.Space.prototype.get_userData = function () {
     if (this.zpp_inner.userData == null) {
@@ -22688,8 +22688,8 @@ define(function () {
     return this.zpp_inner.userData;
   };
   Object.defineProperty(nape.space.Space.prototype, "gravity", {
-    get: nape.space.Space.prototype.get_gravity,
-    set: nape.space.Space.prototype.set_gravity,
+    get: function() { return this.get_gravity(); },
+    set: function(v) { this.set_gravity(v); },
   });
   nape.space.Space.prototype.get_gravity = function () {
     if (this.zpp_inner.wrap_gravity == null) {
@@ -22843,7 +22843,7 @@ define(function () {
     return this.zpp_inner.wrap_gravity;
   };
   Object.defineProperty(nape.space.Space.prototype, "broadphase", {
-    get: nape.space.Space.prototype.get_broadphase,
+    get: function() { return this.get_broadphase(); },
   });
   nape.space.Space.prototype.get_broadphase = function () {
     if (this.zpp_inner.bphase.is_sweep) {
@@ -22865,8 +22865,8 @@ define(function () {
     }
   };
   Object.defineProperty(nape.space.Space.prototype, "sortContacts", {
-    get: nape.space.Space.prototype.get_sortContacts,
-    set: nape.space.Space.prototype.set_sortContacts,
+    get: function() { return this.get_sortContacts(); },
+    set: function(v) { this.set_sortContacts(v); },
   });
   nape.space.Space.prototype.get_sortContacts = function () {
     return this.zpp_inner.sortcontacts;
@@ -22876,8 +22876,8 @@ define(function () {
     return this.zpp_inner.sortcontacts;
   };
   Object.defineProperty(nape.space.Space.prototype, "worldAngularDrag", {
-    get: nape.space.Space.prototype.get_worldAngularDrag,
-    set: nape.space.Space.prototype.set_worldAngularDrag,
+    get: function() { return this.get_worldAngularDrag(); },
+    set: function(v) { this.set_worldAngularDrag(v); },
   });
   nape.space.Space.prototype.get_worldAngularDrag = function () {
     return this.zpp_inner.global_ang_drag;
@@ -22895,8 +22895,8 @@ define(function () {
     return this.zpp_inner.global_ang_drag;
   };
   Object.defineProperty(nape.space.Space.prototype, "worldLinearDrag", {
-    get: nape.space.Space.prototype.get_worldLinearDrag,
-    set: nape.space.Space.prototype.set_worldLinearDrag,
+    get: function() { return this.get_worldLinearDrag(); },
+    set: function(v) { this.set_worldLinearDrag(v); },
   });
   nape.space.Space.prototype.get_worldLinearDrag = function () {
     return this.zpp_inner.global_lin_drag;
@@ -22912,31 +22912,31 @@ define(function () {
     return this.zpp_inner.global_lin_drag;
   };
   Object.defineProperty(nape.space.Space.prototype, "compounds", {
-    get: nape.space.Space.prototype.get_compounds,
+    get: function() { return this.get_compounds(); },
   });
   nape.space.Space.prototype.get_compounds = function () {
     return this.zpp_inner.wrap_compounds;
   };
   Object.defineProperty(nape.space.Space.prototype, "bodies", {
-    get: nape.space.Space.prototype.get_bodies,
+    get: function() { return this.get_bodies(); },
   });
   nape.space.Space.prototype.get_bodies = function () {
     return this.zpp_inner.wrap_bodies;
   };
   Object.defineProperty(nape.space.Space.prototype, "liveBodies", {
-    get: nape.space.Space.prototype.get_liveBodies,
+    get: function() { return this.get_liveBodies(); },
   });
   nape.space.Space.prototype.get_liveBodies = function () {
     return this.zpp_inner.wrap_live;
   };
   Object.defineProperty(nape.space.Space.prototype, "constraints", {
-    get: nape.space.Space.prototype.get_constraints,
+    get: function() { return this.get_constraints(); },
   });
   nape.space.Space.prototype.get_constraints = function () {
     return this.zpp_inner.wrap_constraints;
   };
   Object.defineProperty(nape.space.Space.prototype, "liveConstraints", {
-    get: nape.space.Space.prototype.get_liveConstraints,
+    get: function() { return this.get_liveConstraints(); },
   });
   nape.space.Space.prototype.get_liveConstraints = function () {
     return this.zpp_inner.wrap_livecon;
@@ -23109,13 +23109,13 @@ define(function () {
     }
   };
   Object.defineProperty(nape.space.Space.prototype, "world", {
-    get: nape.space.Space.prototype.get_world,
+    get: function() { return this.get_world(); },
   });
   nape.space.Space.prototype.get_world = function () {
     return this.zpp_inner.__static;
   };
   Object.defineProperty(nape.space.Space.prototype, "arbiters", {
-    get: nape.space.Space.prototype.get_arbiters,
+    get: function() { return this.get_arbiters(); },
   });
   nape.space.Space.prototype.get_arbiters = function () {
     if (this.zpp_inner.wrap_arbiters == null) {
@@ -23126,7 +23126,7 @@ define(function () {
     return this.zpp_inner.wrap_arbiters;
   };
   Object.defineProperty(nape.space.Space.prototype, "listeners", {
-    get: nape.space.Space.prototype.get_listeners,
+    get: function() { return this.get_listeners(); },
   });
   nape.space.Space.prototype.get_listeners = function () {
     return this.zpp_inner.wrap_listeners;
@@ -23171,13 +23171,13 @@ define(function () {
     this.zpp_inner.step(deltaTime, velocityIterations, positionIterations);
   };
   Object.defineProperty(nape.space.Space.prototype, "timeStamp", {
-    get: nape.space.Space.prototype.get_timeStamp,
+    get: function() { return this.get_timeStamp(); },
   });
   nape.space.Space.prototype.get_timeStamp = function () {
     return this.zpp_inner.stamp;
   };
   Object.defineProperty(nape.space.Space.prototype, "elapsedTime", {
-    get: nape.space.Space.prototype.get_elapsedTime,
+    get: function() { return this.get_elapsedTime(); },
   });
   nape.space.Space.prototype.get_elapsedTime = function () {
     return this.zpp_inner.time;
