@@ -155,16 +155,24 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 ### Next candidates for modernization
 
-**Priority 1: Arbiter hierarchy**
-- `ZPP_Arbiter` extraction → `Arbiter`/`CollisionArbiter`/`FluidArbiter` full modernization
-- Arbiter (269 lines), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high complexity)
+**Priority 1: Complete all public API wrappers**
+- `Arbiter`, `CollisionArbiter`, `FluidArbiter` — thin wrappers (same pattern as Contact/Compound)
+- `Geom` — static utility class, thin wrapper delegating to compiled code
+- This would mean **every public API class** has a TypeScript wrapper
 
-**Priority 2: High complexity ZPP extractions**
+**Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
+- `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
+- `ZPP_Compound` extraction (~400 lines) → Compound full modernization
+- `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
+  - Arbiter (269 lines compiled), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high)
+
+**Priority 3: High complexity ZPP extractions**
 
 | Candidate | Complexity | Notes |
 |-----------|------------|-------|
 | `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms |
-| `Geom` | High | Static distance/intersection utility, many internal dependencies |
+| `ZPP_Body` extraction | Very High | ~5000 lines, core engine class |
+| `ZPP_Space` extraction | Very High | Core simulation loop, broadphase, solver |
 
 ### Remaining in compiled code
 
