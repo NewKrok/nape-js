@@ -11,7 +11,7 @@ type Any = any;
  * Provides access to buoyancy/drag impulses, overlap area, and position.
  * Some properties are mutable only in pre-handlers.
  *
- * Thin wrapper — delegates to compiled ZPP_Arbiter/ZPP_FluidArbiter (not yet extracted).
+ * Fully modernized — uses extracted ZPP_FluidArbiter directly.
  */
 export class FluidArbiter extends Arbiter {
   static override __name__ = ["nape", "dynamics", "FluidArbiter"];

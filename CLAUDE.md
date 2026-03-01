@@ -35,12 +35,12 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 33 classes
+### Extracted ZPP_* classes (src/native/) — 37 classes
 
 | Category | Classes |
 |----------|---------|
 | Callbacks | `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`, `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener` |
-| Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact` |
+| Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact`, `ZPP_Arbiter`, `ZPP_SensorArbiter`, `ZPP_FluidArbiter`, `ZPP_ColArbiter` |
 | Geometry | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
 | Physics | `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body` |
 | Utilities | `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool` |
@@ -82,6 +82,9 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | InteractionCallback | `src/callbacks/InteractionCallback.ts` | Interaction event callback |
 | PreCallback | `src/callbacks/PreCallback.ts` | Pre-interaction callback |
 | Contact | `src/dynamics/Contact.ts` | Direct ZPP_Contact access, impulse methods |
+| Arbiter | `src/dynamics/Arbiter.ts` | Direct ZPP_Arbiter access, shape/body accessors |
+| CollisionArbiter | `src/dynamics/CollisionArbiter.ts` | Direct ZPP_ColArbiter access, contacts/normal/friction |
+| FluidArbiter | `src/dynamics/FluidArbiter.ts` | Direct ZPP_FluidArbiter access, position/overlap/buoyancy |
 
 **Singleton enums** (fully modernized, init-time stub + `setPrototypeOf` where needed):
 GravMassMode, InertiaMode, MassMode, BodyType, ShapeType, ArbiterType, Winding,
@@ -105,9 +108,6 @@ ListenerType, Broadphase, ValidationResult, CbEvent, InteractionType, PreFlag
 | Ray | `src/geom/Ray.ts` | Raycasting, ZPP_Ray not extracted |
 | ConvexResult | `src/geom/ConvexResult.ts` | Direct ZPP_ConvexRayResult access |
 | RayResult | `src/geom/RayResult.ts` | Direct ZPP_ConvexRayResult access |
-| Arbiter | `src/dynamics/Arbiter.ts` | Base arbiter, shape/body accessors |
-| CollisionArbiter | `src/dynamics/CollisionArbiter.ts` | Contacts/normal/friction/elasticity |
-| FluidArbiter | `src/dynamics/FluidArbiter.ts` | Position/overlap/buoyancy |
 | Geom | `src/geom/Geom.ts` | Static utility (distance/intersects/contains) |
 
 ### Generic List/Iterator factory
@@ -149,7 +149,7 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 - ~~`ZPP_Compound` extraction → Compound full modernization~~ ✅
 - ~~`ZPP_Body` extraction → Body full modernization~~ ✅
 - ~~`ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization~~ ✅
-- `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
+- ~~`ZPP_Arbiter` extraction (~2,800 lines incl. subclasses) → Arbiter/CollisionArbiter/FluidArbiter full modernization~~ ✅
 
 **Priority 3: High complexity extractions**
 - `ZPP_Ray` (~1900 lines, ray-shape intersection algorithms)
@@ -160,7 +160,7 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 **Internal ZPP classes (~80+ in compiled code):**
 Core engine (`ZPP_Space`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection),
 constraints (`ZPP_PivotJoint`, `ZPP_DistanceJoint`, etc.),
-arbiters/contacts (`ZPP_Arbiter`, `ZPP_ColArbiter`),
+arbiter-related inlined code (narrowphase uses inlined arbiter methods),
 geometry algorithms (`ZPP_Collide`, `ZPP_Convex`, `ZPP_Monotone`, `ZPP_Simple`),
 special lists (`Vec2List`, `ContactList`, `GeomVertexIterator`),
 internal linked lists (`ZNPList_*`, `ZNPNode_*`, `ZPP_Set_*`)
