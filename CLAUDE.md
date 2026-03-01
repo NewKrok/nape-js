@@ -79,12 +79,12 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **InteractionListener** | `src/callbacks/InteractionListener.ts` | 3 | BEGIN/END/ONGOING interaction events, ZPP_InteractionListener direct access |
 | **PreListener** | `src/callbacks/PreListener.ts` | — | PRE interaction events, shares ZPP_InteractionListener with InteractionListener |
 | **Compound** | `src/phys/Compound.ts` | 38 | Hierarchical grouping, extends Interactor, direct ZPP_Compound access |
+| **Body** | `src/phys/Body.ts` | 14 | Direct ZPP_Body access, constructor + getters/setters modernized, complex methods from compiled prototype |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
 | Class | File | Tests | Notes |
 |-------|------|-------|-------|
-| **Body** | `src/phys/Body.ts` | 14 | Full public API, delegates to compiled ZPP_Body |
 | **Circle** | `src/shape/Circle.ts` | 6 | Extends Shape, delegates to compiled ZPP_Circle |
 | **Polygon** | `src/shape/Polygon.ts` | 5 | Extends Shape, delegates to compiled ZPP_Polygon |
 | **Space** | `src/space/Space.ts` | 9 | Simulation container, delegates to compiled ZPP_Space |
@@ -170,7 +170,7 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 **Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
 - ~~`ZPP_Compound` extraction (~400 lines) → Compound full modernization~~ ✅ DONE
-- ~~`ZPP_Body` extraction (~2117 lines) → Body full modernization~~ ✅ DONE (ZPP extracted, Body.ts still thin wrapper)
+- ~~`ZPP_Body` extraction (~2117 lines) → Body full modernization~~ ✅ DONE
 - `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
 - `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
   - Arbiter (269 lines compiled), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high)

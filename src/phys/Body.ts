@@ -10,19 +10,136 @@ import { FluidProperties } from "./FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { BodyType } from "./BodyType";
 import { Interactor, _bindBodyWrapForInteractor } from "./Interactor";
+import { ZPP_Body } from "../native/phys/ZPP_Body";
+
+type Any = any;
 
 /**
  * A rigid body in the physics simulation.
+ *
+ * Fully modernized — uses ZPP_Body directly (extracted to TypeScript).
  */
 export class Body extends Interactor {
-  constructor(type: BodyType = BodyType.get_DYNAMIC(), position?: Vec2) {
+  static __name__ = ["nape", "phys", "Body"];
+  static __super__: Any = Interactor;
+
+  /** Direct access to the extracted internal ZPP_Body. */
+  zpp_inner!: ZPP_Body;
+  debugDraw: boolean = true;
+
+  constructor(type?: BodyType, position?: Vec2) {
     super();
-    (this as Writable<Body>)._inner = new (getNape().phys.Body)(type, position?._inner);
+
+    const zpp = new ZPP_Body();
+    this.zpp_inner = zpp;
+    zpp.outer = this;
+    zpp.outer_i = this;
+    (this as Any).zpp_inner_i = zpp;
+
+    // Override the Interactor's _inner to point at this object (backward compat).
+    (this as Writable<Body>)._inner = this as Any;
+
+    // Set position
+    if (position != null) {
+      if ((position as Any).zpp_disp) {
+        throw new Error("Error: Vec2 has been disposed and cannot be used!");
+      }
+      const pi = position.zpp_inner;
+      if (pi._validate != null) {
+        pi._validate();
+      }
+      zpp.posx = pi.x;
+      if (pi._validate != null) {
+        pi._validate();
+      }
+      zpp.posy = pi.y;
+    } else {
+      zpp.posx = 0;
+      zpp.posy = 0;
+    }
+
+    // Set type (default DYNAMIC)
+    const nape = getNape();
+    const zppNs = nape.__zpp;
+    let type1: BodyType;
+    if (type == null) {
+      if (zppNs.util.ZPP_Flags.BodyType_DYNAMIC == null) {
+        zppNs.util.ZPP_Flags.internal = true;
+        zppNs.util.ZPP_Flags.BodyType_DYNAMIC = new nape.phys.BodyType();
+        zppNs.util.ZPP_Flags.internal = false;
+      }
+      type1 = zppNs.util.ZPP_Flags.BodyType_DYNAMIC;
+    } else {
+      type1 = type;
+    }
+
+    zpp.immutable_midstep("Body::type");
+    if (zpp.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (ZPP_Body.types[zpp.type] !== type1) {
+      if (type1 == null) {
+        throw new Error("Error: Cannot use null BodyType");
+      }
+      let ntype: number;
+      if (zppNs.util.ZPP_Flags.BodyType_DYNAMIC == null) {
+        zppNs.util.ZPP_Flags.internal = true;
+        zppNs.util.ZPP_Flags.BodyType_DYNAMIC = new nape.phys.BodyType();
+        zppNs.util.ZPP_Flags.internal = false;
+      }
+      if (type1 === zppNs.util.ZPP_Flags.BodyType_DYNAMIC) {
+        ntype = 2;
+      } else {
+        if (zppNs.util.ZPP_Flags.BodyType_KINEMATIC == null) {
+          zppNs.util.ZPP_Flags.internal = true;
+          zppNs.util.ZPP_Flags.BodyType_KINEMATIC = new nape.phys.BodyType();
+          zppNs.util.ZPP_Flags.internal = false;
+        }
+        ntype = type1 === zppNs.util.ZPP_Flags.BodyType_KINEMATIC ? 3 : 1;
+      }
+      if (ntype === 1 && zpp.space != null) {
+        zpp.velx = 0;
+        zpp.vely = 0;
+        zpp.angvel = 0;
+      }
+      zpp.invalidate_type();
+      if (zpp.space != null) {
+        zpp.space.transmitType(zpp, ntype);
+      } else {
+        zpp.type = ntype;
+      }
+    }
+
+    // Dispose weak position Vec2
+    if (position != null) {
+      if (position.zpp_inner.weak) {
+        position.dispose();
+      }
+    }
+
+    // Register ANY_BODY callback type
+    zpp.insert_cbtype(zppNs.callbacks.ZPP_CbType.ANY_BODY.zpp_inner);
   }
 
   /** @internal */
   static _wrap(inner: NapeInner): Body {
-    return getOrCreate(inner, (raw) => {
+    if (!inner) return null as unknown as Body;
+    if (inner instanceof Body) return inner;
+    if (inner instanceof ZPP_Body) {
+      return getOrCreate(inner, (zpp: ZPP_Body) => {
+        const b = Object.create(Body.prototype) as Body;
+        b.zpp_inner = zpp;
+        zpp.outer = b;
+        zpp.outer_i = b;
+        (b as Any).zpp_inner_i = zpp;
+        (b as Writable<Body>)._inner = b as Any;
+        b.debugDraw = true;
+        return b;
+      });
+    }
+    // Handle compiled objects with zpp_inner
+    if (inner.zpp_inner) return Body._wrap(inner.zpp_inner);
+    return getOrCreate(inner, (raw: NapeInner) => {
       const b = Object.create(Body.prototype) as Body;
       (b as Writable<Body>)._inner = raw;
       return b;
@@ -34,20 +151,20 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get type(): BodyType {
-    return this._inner.get_type();
+    return ZPP_Body.types[this.zpp_inner.type];
   }
   set type(value: BodyType) {
-    this._inner.set_type(value);
+    this.set_type(value);
   }
 
   isStatic(): boolean {
-    return this._inner.isStatic();
+    return this.zpp_inner.type === 1;
   }
   isDynamic(): boolean {
-    return this._inner.isDynamic();
+    return this.zpp_inner.type === 2;
   }
   isKinematic(): boolean {
-    return this._inner.isKinematic();
+    return this.zpp_inner.type === 3;
   }
 
   // ---------------------------------------------------------------------------
@@ -55,17 +172,20 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get position(): Vec2 {
-    return Vec2._wrap(this._inner.get_position());
+    if (this.zpp_inner.wrap_pos == null) {
+      this.zpp_inner.setupPosition();
+    }
+    return this.zpp_inner.wrap_pos;
   }
   set position(value: Vec2) {
-    this._inner.set_position(value._inner);
+    this.set_position(value);
   }
 
   get rotation(): number {
-    return this._inner.get_rotation();
+    return this.zpp_inner.rot;
   }
   set rotation(value: number) {
-    this._inner.set_rotation(value);
+    this.set_rotation(value);
   }
 
   // ---------------------------------------------------------------------------
@@ -73,38 +193,47 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get velocity(): Vec2 {
-    return Vec2._wrap(this._inner.get_velocity());
+    if (this.zpp_inner.wrap_vel == null) {
+      this.zpp_inner.setupVelocity();
+    }
+    return this.zpp_inner.wrap_vel;
   }
   set velocity(value: Vec2) {
-    this._inner.set_velocity(value._inner);
+    this.set_velocity(value);
   }
 
   get angularVel(): number {
-    return this._inner.get_angularVel();
+    return this.zpp_inner.angvel;
   }
   set angularVel(value: number) {
-    this._inner.set_angularVel(value);
+    this.set_angularVel(value);
   }
 
   get kinematicVel(): Vec2 {
-    return Vec2._wrap(this._inner.get_kinematicVel());
+    if (this.zpp_inner.wrap_kinvel == null) {
+      this.zpp_inner.setupkinvel();
+    }
+    return this.zpp_inner.wrap_kinvel;
   }
   set kinematicVel(value: Vec2) {
-    this._inner.set_kinematicVel(value._inner);
+    this.set_kinematicVel(value);
   }
 
   get kinAngVel(): number {
-    return this._inner.get_kinAngVel();
+    return this.zpp_inner.kinangvel;
   }
   set kinAngVel(value: number) {
-    this._inner.set_kinAngVel(value);
+    this.set_kinAngVel(value);
   }
 
   get surfaceVel(): Vec2 {
-    return Vec2._wrap(this._inner.get_surfaceVel());
+    if (this.zpp_inner.wrap_svel == null) {
+      this.zpp_inner.setupsvel();
+    }
+    return this.zpp_inner.wrap_svel;
   }
   set surfaceVel(value: Vec2) {
-    this._inner.set_surfaceVel(value._inner);
+    this.set_surfaceVel(value);
   }
 
   // ---------------------------------------------------------------------------
@@ -112,17 +241,20 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get force(): Vec2 {
-    return Vec2._wrap(this._inner.get_force());
+    if (this.zpp_inner.wrap_force == null) {
+      this.zpp_inner.setupForce();
+    }
+    return this.zpp_inner.wrap_force;
   }
   set force(value: Vec2) {
-    this._inner.set_force(value._inner);
+    this.set_force(value);
   }
 
   get torque(): number {
-    return this._inner.get_torque();
+    return this.zpp_inner.torque;
   }
   set torque(value: number) {
-    this._inner.set_torque(value);
+    this.set_torque(value);
   }
 
   // ---------------------------------------------------------------------------
@@ -130,38 +262,45 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get mass(): number {
-    return this._inner.get_mass();
+    return this.get_mass();
   }
   set mass(value: number) {
-    this._inner.set_mass(value);
+    this.set_mass(value);
   }
 
   get inertia(): number {
-    return this._inner.get_inertia();
+    return this.get_inertia();
   }
   set inertia(value: number) {
-    this._inner.set_inertia(value);
+    this.set_inertia(value);
   }
 
   get constraintMass(): number {
-    return this._inner.get_constraintMass();
+    if (!this.zpp_inner.world) {
+      this.zpp_inner.validate_mass();
+    }
+    return this.zpp_inner.smass;
   }
+
   get constraintInertia(): number {
-    return this._inner.get_constraintInertia();
+    if (!this.zpp_inner.world) {
+      this.zpp_inner.validate_inertia();
+    }
+    return this.zpp_inner.sinertia;
   }
 
   get gravMass(): number {
-    return this._inner.get_gravMass();
+    return this.get_gravMass();
   }
   set gravMass(value: number) {
-    this._inner.set_gravMass(value);
+    this.set_gravMass(value);
   }
 
   get gravMassScale(): number {
-    return this._inner.get_gravMassScale();
+    return this.get_gravMassScale();
   }
   set gravMassScale(value: number) {
-    this._inner.set_gravMassScale(value);
+    this.set_gravMassScale(value);
   }
 
   // ---------------------------------------------------------------------------
@@ -169,35 +308,40 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get isBullet(): boolean {
-    return this._inner.get_isBullet();
+    return this.zpp_inner.bulletEnabled;
   }
   set isBullet(value: boolean) {
-    this._inner.set_isBullet(value);
+    this.zpp_inner.bulletEnabled = value;
   }
 
   get disableCCD(): boolean {
-    return this._inner.get_disableCCD();
+    return this.zpp_inner.disableCCD;
   }
   set disableCCD(value: boolean) {
-    this._inner.set_disableCCD(value);
+    this.zpp_inner.disableCCD = value;
   }
 
   get allowMovement(): boolean {
-    return this._inner.get_allowMovement();
+    return !this.zpp_inner.nomove;
   }
   set allowMovement(value: boolean) {
-    this._inner.set_allowMovement(value);
+    this.set_allowMovement(value);
   }
 
   get allowRotation(): boolean {
-    return this._inner.get_allowRotation();
+    return !this.zpp_inner.norotate;
   }
   set allowRotation(value: boolean) {
-    this._inner.set_allowRotation(value);
+    this.set_allowRotation(value);
   }
 
   get isSleeping(): boolean {
-    return this._inner.get_isSleeping();
+    if (this.zpp_inner.space == null) {
+      throw new Error(
+        "Error: isSleeping makes no sense if the object is not contained within a Space",
+      );
+    }
+    return this.zpp_inner.component.sleeping;
   }
 
   // ---------------------------------------------------------------------------
@@ -205,112 +349,258 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get shapes(): NapeList<Shape> {
-    return new NapeList(this._inner.get_shapes(), Shape._wrap);
+    return new NapeList(this.zpp_inner.wrap_shapes, Shape._wrap);
   }
 
   get space(): Space {
-    return Space._wrap(this._inner.get_space());
+    if (this.zpp_inner.space == null) return null as unknown as Space;
+    return Space._wrap(this.zpp_inner.space.outer);
   }
   set space(value: Space | null) {
-    this._inner.set_space(value?._inner ?? null);
+    this.set_space(value != null ? (value as Any)._inner ?? value : null);
   }
 
-  get compound(): NapeInner {
-    return this._inner.get_compound();
+  get compound(): Any {
+    if (this.zpp_inner.compound == null) return null;
+    return this.zpp_inner.compound.outer;
   }
-  set compound(value: { _inner: NapeInner } | null) {
-    this._inner.set_compound(value?._inner ?? null);
+  set compound(value: Any) {
+    this.set_compound(value);
   }
 
   get bounds(): AABB {
-    return AABB._wrap(this._inner.get_bounds());
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world has no bounds");
+    }
+    return AABB._wrap(this.zpp_inner.aabb.wrapper());
   }
+
   get constraintVelocity(): Vec2 {
-    return Vec2._wrap(this._inner.get_constraintVelocity());
+    if (this.zpp_inner.wrapcvel == null) {
+      this.zpp_inner.setup_cvel();
+    }
+    return this.zpp_inner.wrapcvel;
   }
+
   get localCOM(): Vec2 {
-    return Vec2._wrap(this._inner.get_localCOM());
+    return this.get_localCOM();
   }
+
   get worldCOM(): Vec2 {
-    return Vec2._wrap(this._inner.get_worldCOM());
+    return this.get_worldCOM();
   }
+
   // ---------------------------------------------------------------------------
-  // Methods
+  // Methods — these delegate to compiled prototype methods copied at init time
   // ---------------------------------------------------------------------------
-
-  integrate(deltaTime: number): void {
-    this._inner.integrate(deltaTime);
-  }
-
-  applyImpulse(impulse: Vec2, pos?: Vec2, sleepable?: boolean): void {
-    this._inner.applyImpulse(impulse._inner, pos?._inner, sleepable);
-  }
-
-  applyAngularImpulse(impulse: number, sleepable?: boolean): void {
-    this._inner.applyAngularImpulse(impulse, sleepable);
-  }
-
-  setVelocityFromTarget(targetPosition: Vec2, targetRotation: number, deltaTime: number): void {
-    this._inner.setVelocityFromTarget(targetPosition._inner, targetRotation, deltaTime);
-  }
-
-  localPointToWorld(point: Vec2, weak: boolean = false): Vec2 {
-    return Vec2._wrap(this._inner.localPointToWorld(point._inner, weak));
-  }
-
-  worldPointToLocal(point: Vec2, weak: boolean = false): Vec2 {
-    return Vec2._wrap(this._inner.worldPointToLocal(point._inner, weak));
-  }
-
-  localVectorToWorld(vector: Vec2, weak: boolean = false): Vec2 {
-    return Vec2._wrap(this._inner.localVectorToWorld(vector._inner, weak));
-  }
-
-  worldVectorToLocal(vector: Vec2, weak: boolean = false): Vec2 {
-    return Vec2._wrap(this._inner.worldVectorToLocal(vector._inner, weak));
-  }
-
-  translateShapes(translation: Vec2): void {
-    this._inner.translateShapes(translation._inner);
-  }
-  rotateShapes(angle: number): void {
-    this._inner.rotateShapes(angle);
-  }
-  scaleShapes(scaleX: number, scaleY: number): void {
-    this._inner.scaleShapes(scaleX, scaleY);
-  }
-  align(): void {
-    this._inner.align();
-  }
-
-  rotate(centre: Vec2, angle: number): void {
-    this._inner.rotate(centre._inner, angle);
-  }
-
-  setShapeMaterials(material: Material): void {
-    this._inner.setShapeMaterials(material._inner);
-  }
-  setShapeFilters(filter: InteractionFilter): void {
-    this._inner.setShapeFilters(filter._inner);
-  }
-  setShapeFluidProperties(fluidProperties: FluidProperties): void {
-    this._inner.setShapeFluidProperties(fluidProperties._inner);
-  }
-
-  contains(point: Vec2): boolean {
-    return this._inner.contains(point._inner);
-  }
-  crushFactor(): number {
-    return this._inner.crushFactor();
-  }
 
   copy(): Body {
-    return Body._wrap(this._inner.copy());
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world cannot be copied");
+    }
+    return this.zpp_inner.copy();
   }
+
   override toString(): string {
-    return this._inner.toString();
+    return this._toString();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Compiled-code compatibility methods
+  // These are called by compiled code and need to exist for backward compat.
+  // Complex methods (integrate, applyImpulse, localPointToWorld, etc.) are
+  // copied from the compiled prototype at module init time (see bottom).
+  // ---------------------------------------------------------------------------
+
+  get_type(): Any {
+    return ZPP_Body.types[this.zpp_inner.type];
+  }
+
+  get_shapes(): Any {
+    return this.zpp_inner.wrap_shapes;
+  }
+
+  get_isBullet(): boolean {
+    return this.zpp_inner.bulletEnabled;
+  }
+  set_isBullet(v: boolean): boolean {
+    this.zpp_inner.bulletEnabled = v;
+    return v;
+  }
+
+  get_disableCCD(): boolean {
+    return this.zpp_inner.disableCCD;
+  }
+  set_disableCCD(v: boolean): boolean {
+    this.zpp_inner.disableCCD = v;
+    return v;
+  }
+
+  get_position(): Any {
+    if (this.zpp_inner.wrap_pos == null) {
+      this.zpp_inner.setupPosition();
+    }
+    return this.zpp_inner.wrap_pos;
+  }
+
+  get_velocity(): Any {
+    if (this.zpp_inner.wrap_vel == null) {
+      this.zpp_inner.setupVelocity();
+    }
+    return this.zpp_inner.wrap_vel;
+  }
+
+  get_rotation(): number {
+    return this.zpp_inner.rot;
+  }
+
+  get_angularVel(): number {
+    return this.zpp_inner.angvel;
+  }
+
+  get_kinematicVel(): Any {
+    if (this.zpp_inner.wrap_kinvel == null) {
+      this.zpp_inner.setupkinvel();
+    }
+    return this.zpp_inner.wrap_kinvel;
+  }
+
+  get_kinAngVel(): number {
+    return this.zpp_inner.kinangvel;
+  }
+
+  get_surfaceVel(): Any {
+    if (this.zpp_inner.wrap_svel == null) {
+      this.zpp_inner.setupsvel();
+    }
+    return this.zpp_inner.wrap_svel;
+  }
+
+  get_force(): Any {
+    if (this.zpp_inner.wrap_force == null) {
+      this.zpp_inner.setupForce();
+    }
+    return this.zpp_inner.wrap_force;
+  }
+
+  get_torque(): number {
+    return this.zpp_inner.torque;
+  }
+
+  get_bounds(): Any {
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world has no bounds");
+    }
+    return this.zpp_inner.aabb.wrapper();
+  }
+
+  get_constraintVelocity(): Any {
+    if (this.zpp_inner.wrapcvel == null) {
+      this.zpp_inner.setup_cvel();
+    }
+    return this.zpp_inner.wrapcvel;
+  }
+
+  get_constraintMass(): number {
+    if (!this.zpp_inner.world) {
+      this.zpp_inner.validate_mass();
+    }
+    return this.zpp_inner.smass;
+  }
+
+  get_constraintInertia(): number {
+    if (!this.zpp_inner.world) {
+      this.zpp_inner.validate_inertia();
+    }
+    return this.zpp_inner.sinertia;
+  }
+
+  get_allowMovement(): boolean {
+    return !this.zpp_inner.nomove;
+  }
+
+  get_allowRotation(): boolean {
+    return !this.zpp_inner.norotate;
+  }
+
+  get_isSleeping(): boolean {
+    if (this.zpp_inner.space == null) {
+      throw new Error(
+        "Error: isSleeping makes no sense if the object is not contained within a Space",
+      );
+    }
+    return this.zpp_inner.component.sleeping;
+  }
+
+  get_compound(): Any {
+    if (this.zpp_inner.compound == null) return null;
+    return this.zpp_inner.compound.outer;
+  }
+
+  get_space(): Any {
+    if (this.zpp_inner.space == null) return null;
+    return this.zpp_inner.space.outer;
+  }
+
+  get_arbiters(): Any {
+    const zppNs = getNape().__zpp;
+    if (this.zpp_inner.wrap_arbiters == null) {
+      this.zpp_inner.wrap_arbiters = zppNs.util.ZPP_ArbiterList.get(
+        this.zpp_inner.arbiters,
+        true,
+      );
+    }
+    return this.zpp_inner.wrap_arbiters;
+  }
+
+  get_constraints(): Any {
+    const zppNs = getNape().__zpp;
+    if (this.zpp_inner.wrap_constraints == null) {
+      this.zpp_inner.wrap_constraints = zppNs.util.ZPP_ConstraintList.get(
+        this.zpp_inner.constraints,
+        true,
+      );
+    }
+    return this.zpp_inner.wrap_constraints;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Self-register in the compiled namespace
+// ---------------------------------------------------------------------------
+const nape = getNape();
+
+// Save compiled Body prototype before we replace the constructor,
+// so we can copy complex methods we don't reimplement.
+const compiledBodyProto = nape.phys.Body.prototype;
+
+// Replace the compiled Body with our TS class
+nape.phys.Body = Body;
+(Body.prototype as Any).__class__ = Body;
+
+// Copy compiled Interactor prototype methods for backward compat
+for (const k in nape.phys.Interactor.prototype) {
+  if (!Object.prototype.hasOwnProperty.call(Body.prototype, k)) {
+    (Body.prototype as Any)[k] = nape.phys.Interactor.prototype[k];
+  }
+}
+
+// Copy compiled Body prototype methods we don't override in TypeScript.
+// This includes complex methods like integrate, applyImpulse, localPointToWorld,
+// worldPointToLocal, localVectorToWorld, worldVectorToLocal, translateShapes,
+// rotateShapes, scaleShapes, align, rotate, setShapeMaterials, setShapeFilters,
+// setShapeFluidProperties, contains, crushFactor, setVelocityFromTarget,
+// connectedBodies, interactingBodies, and all set_* / get_* compat methods.
+for (const k in compiledBodyProto) {
+  if (!Object.prototype.hasOwnProperty.call(Body.prototype, k)) {
+    (Body.prototype as Any)[k] = compiledBodyProto[k];
+  }
+}
+
+// Store a private reference to the compiled toString since we override it
+// but want to delegate to the compiled implementation.
+const compiledToString = compiledBodyProto.toString;
+(Body.prototype as Any)._toString = compiledToString;
 
 // Bind Body._wrap into Interactor so Interactor._wrap can dispatch without circular import.
 _bindBodyWrapForInteractor((inner) => Body._wrap(inner));

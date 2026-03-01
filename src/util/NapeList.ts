@@ -29,18 +29,18 @@ export class NapeList<T> implements Iterable<T> {
   }
 
   /** Add an element to the list. */
-  add(item: T & { _inner: NapeInner }): void {
-    this._inner.add(item._inner);
+  add(item: T & { _inner?: NapeInner }): void {
+    this._inner.add(item._inner ?? item);
   }
 
   /** Remove an element from the list. */
-  remove(item: T & { _inner: NapeInner }): void {
-    this._inner.remove(item._inner);
+  remove(item: T & { _inner?: NapeInner }): void {
+    this._inner.remove(item._inner ?? item);
   }
 
   /** Check if the list contains an element. */
-  has(item: T & { _inner: NapeInner }): boolean {
-    return this._inner.has(item._inner);
+  has(item: T & { _inner?: NapeInner }): boolean {
+    return this._inner.has(item._inner ?? item);
   }
 
   /** Remove all elements. */
@@ -54,8 +54,8 @@ export class NapeList<T> implements Iterable<T> {
   }
 
   /** Push an element to the end. */
-  push(item: T & { _inner: NapeInner }): void {
-    this._inner.push(item._inner);
+  push(item: T & { _inner?: NapeInner }): void {
+    this._inner.push(item._inner ?? item);
   }
 
   /** Pop the last element. */
@@ -69,8 +69,8 @@ export class NapeList<T> implements Iterable<T> {
   }
 
   /** Unshift an element to the front. */
-  unshift(item: T & { _inner: NapeInner }): void {
-    this._inner.unshift(item._inner);
+  unshift(item: T & { _inner?: NapeInner }): void {
+    this._inner.unshift(item._inner ?? item);
   }
 
   /** Iterate over all elements. */
