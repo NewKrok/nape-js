@@ -24,6 +24,15 @@ npm test             # vitest — all 1400+ tests
 npm run lint         # eslint + prettier
 ```
 
+### Pre-push checklist
+
+**Before every `git push`, always run both:**
+1. `npm test` — all tests must pass
+2. `npm run build` — DTS (type declaration) generation must succeed
+
+The build step catches TypeScript type errors that vitest does not (e.g., missing method
+declarations for runtime-copied prototype methods). Never push without a green build.
+
 ## Modernization Status
 
 ### Already extracted (ZPP_* to src/native/) — 31 classes
