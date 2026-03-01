@@ -32,7 +32,8 @@
     "lint": "eslint src/ tests/",
     "format": "prettier --write src/ tests/",
     "format:check": "prettier --check src/ tests/",
-    "benchmark": "npm run build && node benchmarks/run.mjs"
+    "benchmark": "npm run build && node benchmarks/run.mjs",
+    "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js"
   },
   "repository": {
     "type": "git",

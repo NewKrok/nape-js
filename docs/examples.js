@@ -6,7 +6,7 @@ import {
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter,
   CbType, InteractionType, PreListener, PreFlag,
-} from "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
+} from "./nape-js.esm.js";
 
 // =========================================================================
 // Shared helpers
