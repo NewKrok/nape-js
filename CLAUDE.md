@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-~112k lines) into clean, typed TypeScript classes.
+~84k lines) into clean, typed TypeScript classes.
 
 ### Architecture Layers
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — all 1000+ tests
+npm test             # vitest — all 1400+ tests
 npm run lint         # eslint + prettier
 ```
 
@@ -44,17 +44,17 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **InteractionFilter** | `src/dynamics/InteractionFilter.ts` | 26 | 6 bitmask props, shouldCollide/Sense/Flow |
 | **InteractionGroup** | `src/dynamics/InteractionGroup.ts` | 17 | 1 boolean prop, group hierarchy |
 | **FluidProperties** | `src/phys/FluidProperties.ts` | 24 | 2 props + gravity (Vec2 dependency) |
-| **Vec2** | `src/geom/Vec2.ts` | 45 | Core class, pooling, weak references |
-| **Vec3** | `src/geom/Vec3.ts` | 11 | 3D vector (x, y, z) with NaN checks |
+| **Vec2** | `src/geom/Vec2.ts` | 77 | Core class, pooling, weak references |
+| **Vec3** | `src/geom/Vec3.ts` | 24 | 3D vector (x, y, z) with NaN checks |
 | **Mat23** | `src/geom/Mat23.ts` | 47 | 2x3 affine matrix, factories, inverse/concat/transform |
 | **GeomPoly** | `src/geom/GeomPoly.ts` | 53 | Complex polygon class, vertex ring, decomposition algorithms |
-| **CbType** | `src/callbacks/CbType.ts` | 31 | Callback type tags, ANY_* singletons, stub in compiled code |
+| **CbType** | `src/callbacks/CbType.ts` | 35 | Callback type tags, ANY_* singletons, stub in compiled code |
 | **OptionType** | `src/callbacks/OptionType.ts` | 30 | Include/exclude CbType filtering, stub in compiled code |
 | **AABB** | `src/geom/AABB.ts` | 31 | Geometry bounds, Vec2 min/max wrappers |
 | **MatMN** | `src/geom/MatMN.ts` | 35 | Variable-sized M×N matrix, transpose/mul |
 | **MarchingSquares** | `src/geom/MarchingSquares.ts` | 23 | Static isosurface extraction, delegates to compiled ZPP_MarchingSquares |
 | **Interactor** | `src/phys/Interactor.ts` | 21 | Base class for Body/Shape/Compound, polymorphic dispatch |
-| **Shape** | `src/shape/Shape.ts` | 10 | Base shape class, polymorphic dispatch to Circle/Polygon |
+| **Shape** | `src/shape/Shape.ts` | — | Base shape class, polymorphic dispatch to Circle/Polygon |
 | **GravMassMode** | `src/phys/GravMassMode.ts` | 11 | Singleton enum (DEFAULT/FIXED/SCALED), uses ZPP_Flags |
 | **InertiaMode** | `src/phys/InertiaMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
 | **MassMode** | `src/phys/MassMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
@@ -68,23 +68,23 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **ConstraintCallback** | `src/callbacks/ConstraintCallback.ts` | 4 | Constraint event callback, extends Callback, stub |
 | **InteractionCallback** | `src/callbacks/InteractionCallback.ts` | 4 | Interaction event callback, extends Callback, stub |
 | **PreCallback** | `src/callbacks/PreCallback.ts` | 4 | Pre-interaction callback, extends Callback, stub |
-| **CbEvent** | `src/callbacks/CbEvent.ts` | 18 | Singleton enum (BEGIN/ONGOING/END/WAKE/SLEEP/BREAK/PRE), init-time stub + setPrototypeOf |
+| **CbEvent** | `src/callbacks/CbEvent.ts` | 20 | Singleton enum (BEGIN/ONGOING/END/WAKE/SLEEP/BREAK/PRE), init-time stub + setPrototypeOf |
 | **InteractionType** | `src/callbacks/InteractionType.ts` | 14 | Singleton enum (COLLISION/SENSOR/FLUID/ANY), no stub needed |
-| **PreFlag** | `src/callbacks/PreFlag.ts` | 13 | Singleton enum (ACCEPT/IGNORE/ACCEPT_ONCE/IGNORE_ONCE), no stub needed |
+| **PreFlag** | `src/callbacks/PreFlag.ts` | 14 | Singleton enum (ACCEPT/IGNORE/ACCEPT_ONCE/IGNORE_ONCE), no stub needed |
 | **BodyType** | `src/phys/BodyType.ts` | 12 | Singleton enum (STATIC/DYNAMIC/KINEMATIC), init-time stub + setPrototypeOf |
 | **ShapeType** | `src/shape/ShapeType.ts` | 10 | Singleton enum (CIRCLE/POLYGON), init-time stub + setPrototypeOf |
 | **Listener** | `src/callbacks/Listener.ts` | — | Base listener class, space/event/precedence management, ZPP_Listener direct access |
 | **BodyListener** | `src/callbacks/BodyListener.ts` | 4 | WAKE/SLEEP body events, ZPP_BodyListener direct access |
-| **ConstraintListener** | `src/callbacks/ConstraintListener.ts` | 4 | WAKE/SLEEP/BREAK constraint events, ZPP_ConstraintListener direct access |
+| **ConstraintListener** | `src/callbacks/ConstraintListener.ts` | — | WAKE/SLEEP/BREAK constraint events, ZPP_ConstraintListener direct access |
 | **InteractionListener** | `src/callbacks/InteractionListener.ts` | 3 | BEGIN/END/ONGOING interaction events, ZPP_InteractionListener direct access |
-| **PreListener** | `src/callbacks/PreListener.ts` | 3 | PRE interaction events, shares ZPP_InteractionListener with InteractionListener |
+| **PreListener** | `src/callbacks/PreListener.ts` | — | PRE interaction events, shares ZPP_InteractionListener with InteractionListener |
 | **Compound** | `src/phys/Compound.ts` | 38 | Hierarchical grouping, extends Interactor, direct ZPP_Compound access |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
 | Class | File | Tests | Notes |
 |-------|------|-------|-------|
-| **Body** | `src/phys/Body.ts` | 30 | Full public API, delegates to compiled ZPP_Body |
+| **Body** | `src/phys/Body.ts` | 14 | Full public API, delegates to compiled ZPP_Body |
 | **Circle** | `src/shape/Circle.ts` | 6 | Extends Shape, delegates to compiled ZPP_Circle |
 | **Polygon** | `src/shape/Polygon.ts` | 5 | Extends Shape, delegates to compiled ZPP_Polygon |
 | **Space** | `src/space/Space.ts` | 9 | Simulation container, delegates to compiled ZPP_Space |
@@ -97,7 +97,7 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **WeldJoint** | `src/constraint/WeldJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_WeldJoint |
 | **PulleyJoint** | `src/constraint/PulleyJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_PulleyJoint |
 | **Ray** | `src/geom/Ray.ts` | 14 | Raycasting, delegates to compiled nape.geom.Ray (ZPP_Ray not extracted) |
-| **ConvexResult** | `src/geom/ConvexResult.ts` | 9 | Convex-cast result, direct ZPP_ConvexRayResult access |
+| **ConvexResult** | `src/geom/ConvexResult.ts` | 10 | Convex-cast result, direct ZPP_ConvexRayResult access |
 | **RayResult** | `src/geom/RayResult.ts` | 10 | Raycast result, direct ZPP_ConvexRayResult access |
 | **Arbiter** | `src/dynamics/Arbiter.ts` | 11 | Base arbiter class, shape/body accessors, type checks, stub in compiled code |
 | **CollisionArbiter** | `src/dynamics/CollisionArbiter.ts` | 12 | Extends Arbiter, contacts/normal/friction/elasticity/impulse methods, stub |
@@ -110,7 +110,7 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 All typed List + Iterator pairs (e.g., `BodyList`/`BodyIterator`, `CbTypeList`/`CbTypeIterator`)
 are generated by a factory in `src/util/NapeListFactory.ts` and registered in
 `src/util/registerLists.ts`. This replaced 13 identical-structure List/Iterator pairs
-(~7,300 lines) with ~400 lines of generic TypeScript.
+(~7,300 lines) with ~750 lines of generic TypeScript.
 
 **Factory-generated (13 pairs, 26 classes):**
 `CbTypeList`, `ListenerList`, `ConstraintList`, `ArbiterList`, `InteractionGroupList`,
@@ -128,7 +128,7 @@ Some modernized classes require minimal stubs in `nape-compiled.js` because the 
 initialization code or internal methods reference them before the TS module self-registers:
 
 - **CbType**: Stub constructor needed for `ANY_BODY/ANY_SHAPE/ANY_COMPOUND/ANY_CONSTRAINT`
-  singleton creation at init time (~line 121055). TS class retroactively fixes prototypes
+  singleton creation at init time (~line 83571). TS class retroactively fixes prototypes
   via `Object.setPrototypeOf` after self-registration.
 - **OptionType**: Stub constructor + `including()`/`excluding()` needed for
   `ZPP_OptionType.argument()` which uses `instanceof nape.callbacks.OptionType`.
@@ -141,11 +141,11 @@ initialization code or internal methods reference them before the TS module self
 - **Callback/BodyCallback/ConstraintCallback/InteractionCallback/PreCallback**: Stubs needed
   because compiled ZPP_Space and ZPP_Callback wrappers create instances at runtime.
 - **CbEvent**: Stub constructor needed for BEGIN/END/WAKE/SLEEP/BREAK/PRE/ONGOING singleton
-  creation at init time (~line 119982). TS class fixes prototypes via `Object.setPrototypeOf`.
+  creation at init time (~line 83657). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **BodyType**: Stub constructor needed for STATIC/DYNAMIC/KINEMATIC singleton creation
-  at init time (~line 120132). TS class fixes prototypes via `Object.setPrototypeOf`.
+  at init time (~line 83807). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ShapeType**: Stub constructor needed for CIRCLE/POLYGON singleton creation
-  at init time (~line 120163). TS class fixes prototypes via `Object.setPrototypeOf`.
+  at init time (~line 83838). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ValidationResult**: Stub needed because compiled shape validation code creates instances.
 - **Broadphase**: Stub needed because compiled Space code creates instances.
 - **Arbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates instances
@@ -186,11 +186,11 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 **Public API thin wrappers (TS delegates to compiled ZPP):**
 - Body, Circle, Polygon, Space, Constraint + 7 joint subclasses (already have TS wrappers above)
-- Ray, ConvexResult, RayResult, Contact, Compound (already have TS wrappers above)
+- Ray, ConvexResult, RayResult, Contact (already have TS wrappers above)
 
 **Public API:** All classes now have TypeScript wrappers.
 
-**Internal ZPP classes (~79 in compiled code):**
+**Internal ZPP classes (~76 in compiled code):**
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
 - **Constraints**: `ZPP_PivotJoint`, `ZPP_DistanceJoint`, `ZPP_AngleJoint`, etc.
 - **Arbiters/Contacts**: `ZPP_Arbiter`, `ZPP_ColArbiter`, `ZPP_Contact`
@@ -315,7 +315,7 @@ circular imports because Foo.ts imports engine.ts → nape-compiled.js → Foo.t
 
 - **Circular imports**: Foo.ts imports engine.ts. engine.ts imports nape-compiled.js.
   nape-compiled.js must NOT import Foo.ts. Instead, Foo.ts self-registers at the bottom.
-- **Init-time usage**: If compiled initialization code (lines ~121000+) creates instances
+- **Init-time usage**: If compiled initialization code (lines ~83500+) creates instances
   of your class (e.g., `new nape.callbacks.CbType()` for singletons), you MUST keep a
   minimal constructor stub in the compiled code. The TS class replaces the stub at module
   load time, and existing instances need `Object.setPrototypeOf` fixup.
