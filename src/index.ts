@@ -10,6 +10,8 @@ export { AABB } from "./geom/AABB";
 export { MatMN } from "./geom/MatMN";
 export { MarchingSquares } from "./geom/MarchingSquares";
 export { Ray } from "./geom/Ray";
+export { ConvexResult } from "./geom/ConvexResult";
+export { RayResult } from "./geom/RayResult";
 export { Winding } from "./geom/Winding";
 
 // Physics
@@ -67,3 +69,6 @@ export { PulleyJoint } from "./constraint/PulleyJoint";
 
 // Utilities
 export { NapeList } from "./util/NapeList";
+
+// List/Iterator registration (side-effect import — registers all typed list pairs)
+import "./util/registerLists";
