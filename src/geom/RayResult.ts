@@ -103,4 +103,4 @@ export class RayResult {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.geom.RayResult = RayResult;
-RayResult.prototype.__class__ = RayResult;
+(RayResult.prototype as any).__class__ = RayResult;
