@@ -26,9 +26,10 @@ npm run lint         # eslint + prettier
 
 ## Modernization Status
 
-### Already extracted (ZPP_* to src/native/) — 24 classes
+### Already extracted (ZPP_* to src/native/) — 28 classes
 
-Callbacks: `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`
+Callbacks: `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`,
+           `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener`
 Dynamics:  `ZPP_InteractionFilter`, `ZPP_InteractionGroup`
 Geometry:  `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`,
            `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`
@@ -70,6 +71,11 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **PreFlag** | `src/callbacks/PreFlag.ts` | 13 | Singleton enum (ACCEPT/IGNORE/ACCEPT_ONCE/IGNORE_ONCE), no stub needed |
 | **BodyType** | `src/phys/BodyType.ts` | 12 | Singleton enum (STATIC/DYNAMIC/KINEMATIC), init-time stub + setPrototypeOf |
 | **ShapeType** | `src/shape/ShapeType.ts` | 10 | Singleton enum (CIRCLE/POLYGON), init-time stub + setPrototypeOf |
+| **Listener** | `src/callbacks/Listener.ts` | — | Base listener class, space/event/precedence management, ZPP_Listener direct access |
+| **BodyListener** | `src/callbacks/BodyListener.ts` | 4 | WAKE/SLEEP body events, ZPP_BodyListener direct access |
+| **ConstraintListener** | `src/callbacks/ConstraintListener.ts` | 4 | WAKE/SLEEP/BREAK constraint events, ZPP_ConstraintListener direct access |
+| **InteractionListener** | `src/callbacks/InteractionListener.ts` | 3 | BEGIN/END/ONGOING interaction events, ZPP_InteractionListener direct access |
+| **PreListener** | `src/callbacks/PreListener.ts` | 3 | PRE interaction events, shares ZPP_InteractionListener with InteractionListener |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
@@ -110,6 +116,8 @@ initialization code or internal methods reference them before the TS module self
   at init time. TS class retroactively fixes prototypes via `Object.setPrototypeOf`.
 - **ListenerType**: Stub constructor needed for BODY/CONSTRAINT/INTERACTION/PRE singleton
   creation at init time (ZPP_Listener.types). TS class fixes prototypes via `Object.setPrototypeOf`.
+- **Listener**: Stub constructor needed because compiled subclass patterns reference
+  `nape.callbacks.Listener` as `__super__`. TS class replaces at module load time.
 - **Callback/BodyCallback/ConstraintCallback/InteractionCallback/PreCallback**: Stubs needed
   because compiled ZPP_Space and ZPP_Callback wrappers create instances at runtime.
 - **CbEvent**: Stub constructor needed for BEGIN/END/WAKE/SLEEP/BREAK/PRE/ONGOING singleton
@@ -131,20 +139,14 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 ### Next candidates for modernization
 
-**Priority 1: Listener hierarchy** (~1,200 lines of compiled code)
-- Extract `ZPP_Listener` from compiled code to `src/native/`
-- Fully modernize `Listener`, `BodyListener`, `ConstraintListener`, `InteractionListener`, `PreListener`
-- Already have thin TS wrappers — need to replace compiled constructors with direct ZPP access
-
-**Priority 2: Simple data classes**
+**Priority 1: Simple data classes**
 - `Interactor` (~97 lines) — base class for Body/Shape, simple properties
 - `ConvexResult`/`RayResult` full modernization — requires `ZPP_ConvexRayResult` extraction
 
-**Priority 3: Remaining ZPP extractions**
+**Priority 2: Remaining ZPP extractions**
 
 | Candidate | Complexity | Notes |
 |-----------|------------|-------|
-| `ZPP_Listener` | Medium | Unlocks full Listener hierarchy modernization |
 | `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms |
 | `Geom` | High | Static distance/intersection utility, many internal dependencies |
 
