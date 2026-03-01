@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-~84k lines) into clean, typed TypeScript classes.
+~82k lines) into clean, typed TypeScript classes.
 
 ### Architecture Layers
 
@@ -26,14 +26,14 @@ npm run lint         # eslint + prettier
 
 ## Modernization Status
 
-### Already extracted (ZPP_* to src/native/) — 30 classes
+### Already extracted (ZPP_* to src/native/) — 31 classes
 
 Callbacks:  `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`,
             `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener`
 Dynamics:   `ZPP_InteractionFilter`, `ZPP_InteractionGroup`
 Geometry:   `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`,
             `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult`
-Physics:    `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`
+Physics:    `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body`
 Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 
 ### Already fully modernized (public API class replaces compiled code)
@@ -128,7 +128,7 @@ Some modernized classes require minimal stubs in `nape-compiled.js` because the 
 initialization code or internal methods reference them before the TS module self-registers:
 
 - **CbType**: Stub constructor needed for `ANY_BODY/ANY_SHAPE/ANY_COMPOUND/ANY_CONSTRAINT`
-  singleton creation at init time (~line 83571). TS class retroactively fixes prototypes
+  singleton creation at init time (~line 81460). TS class retroactively fixes prototypes
   via `Object.setPrototypeOf` after self-registration.
 - **OptionType**: Stub constructor + `including()`/`excluding()` needed for
   `ZPP_OptionType.argument()` which uses `instanceof nape.callbacks.OptionType`.
@@ -141,11 +141,11 @@ initialization code or internal methods reference them before the TS module self
 - **Callback/BodyCallback/ConstraintCallback/InteractionCallback/PreCallback**: Stubs needed
   because compiled ZPP_Space and ZPP_Callback wrappers create instances at runtime.
 - **CbEvent**: Stub constructor needed for BEGIN/END/WAKE/SLEEP/BREAK/PRE/ONGOING singleton
-  creation at init time (~line 83657). TS class fixes prototypes via `Object.setPrototypeOf`.
+  creation at init time (~line 81547). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **BodyType**: Stub constructor needed for STATIC/DYNAMIC/KINEMATIC singleton creation
-  at init time (~line 83807). TS class fixes prototypes via `Object.setPrototypeOf`.
+  at init time (~line 81695). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ShapeType**: Stub constructor needed for CIRCLE/POLYGON singleton creation
-  at init time (~line 83838). TS class fixes prototypes via `Object.setPrototypeOf`.
+  at init time (~line 81726). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ValidationResult**: Stub needed because compiled shape validation code creates instances.
 - **Broadphase**: Stub needed because compiled Space code creates instances.
 - **Arbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates instances
@@ -170,6 +170,7 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 **Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
 - ~~`ZPP_Compound` extraction (~400 lines) → Compound full modernization~~ ✅ DONE
+- ~~`ZPP_Body` extraction (~2117 lines) → Body full modernization~~ ✅ DONE (ZPP extracted, Body.ts still thin wrapper)
 - `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
 - `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
   - Arbiter (269 lines compiled), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high)
@@ -179,7 +180,6 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 | Candidate | Complexity | Notes |
 |-----------|------------|-------|
 | `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms |
-| `ZPP_Body` extraction | Very High | ~5000 lines, core engine class |
 | `ZPP_Space` extraction | Very High | Core simulation loop, broadphase, solver |
 
 ### Remaining in compiled code
@@ -190,8 +190,8 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 **Public API:** All classes now have TypeScript wrappers.
 
-**Internal ZPP classes (~76 in compiled code):**
-- **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
+**Internal ZPP classes (~75 in compiled code):**
+- **Core engine**: `ZPP_Space`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
 - **Constraints**: `ZPP_PivotJoint`, `ZPP_DistanceJoint`, `ZPP_AngleJoint`, etc.
 - **Arbiters/Contacts**: `ZPP_Arbiter`, `ZPP_ColArbiter`, `ZPP_Contact`
 - **Geometry algorithms**: `ZPP_Collide`, `ZPP_Convex`, `ZPP_Monotone`, `ZPP_Simple`
