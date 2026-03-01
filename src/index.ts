@@ -1,5 +1,6 @@
-// Version (keep in sync with package.json)
-export const VERSION = "3.3.6";
+// Version injected from package.json at build time via tsup define
+declare const __PACKAGE_VERSION__: string;
+export const VERSION: string = __PACKAGE_VERSION__;
 
 // Core
 export { getNape } from "./core/engine";
@@ -16,6 +17,7 @@ export { Ray } from "./geom/Ray";
 export { ConvexResult } from "./geom/ConvexResult";
 export { RayResult } from "./geom/RayResult";
 export { Winding } from "./geom/Winding";
+export { Geom } from "./geom/Geom";
 
 // Physics
 export { Body } from "./phys/Body";
@@ -43,6 +45,9 @@ export { Broadphase } from "./space/Broadphase";
 export { InteractionFilter } from "./dynamics/InteractionFilter";
 export { InteractionGroup } from "./dynamics/InteractionGroup";
 export { ArbiterType } from "./dynamics/ArbiterType";
+export { Arbiter } from "./dynamics/Arbiter";
+export { CollisionArbiter } from "./dynamics/CollisionArbiter";
+export { FluidArbiter } from "./dynamics/FluidArbiter";
 export { Contact } from "./dynamics/Contact";
 
 // Callbacks

@@ -26,14 +26,14 @@ npm run lint         # eslint + prettier
 
 ## Modernization Status
 
-### Already extracted (ZPP_* to src/native/) — 29 classes
+### Already extracted (ZPP_* to src/native/) — 30 classes
 
 Callbacks:  `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`,
             `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener`
 Dynamics:   `ZPP_InteractionFilter`, `ZPP_InteractionGroup`
 Geometry:   `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`,
             `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult`
-Physics:    `ZPP_Material`, `ZPP_FluidProperties`
+Physics:    `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`
 Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 
 ### Already fully modernized (public API class replaces compiled code)
@@ -78,6 +78,7 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **ConstraintListener** | `src/callbacks/ConstraintListener.ts` | 4 | WAKE/SLEEP/BREAK constraint events, ZPP_ConstraintListener direct access |
 | **InteractionListener** | `src/callbacks/InteractionListener.ts` | 3 | BEGIN/END/ONGOING interaction events, ZPP_InteractionListener direct access |
 | **PreListener** | `src/callbacks/PreListener.ts` | 3 | PRE interaction events, shares ZPP_InteractionListener with InteractionListener |
+| **Compound** | `src/phys/Compound.ts` | 38 | Hierarchical grouping, extends Interactor, direct ZPP_Compound access |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
@@ -98,8 +99,11 @@ Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **Ray** | `src/geom/Ray.ts` | 14 | Raycasting, delegates to compiled nape.geom.Ray (ZPP_Ray not extracted) |
 | **ConvexResult** | `src/geom/ConvexResult.ts` | 9 | Convex-cast result, direct ZPP_ConvexRayResult access |
 | **RayResult** | `src/geom/RayResult.ts` | 10 | Raycast result, direct ZPP_ConvexRayResult access |
+| **Arbiter** | `src/dynamics/Arbiter.ts` | 11 | Base arbiter class, shape/body accessors, type checks, stub in compiled code |
+| **CollisionArbiter** | `src/dynamics/CollisionArbiter.ts` | 12 | Extends Arbiter, contacts/normal/friction/elasticity/impulse methods, stub |
+| **FluidArbiter** | `src/dynamics/FluidArbiter.ts` | 4 | Extends Arbiter, position/overlap/buoyancy/drag impulse, stub |
+| **Geom** | `src/geom/Geom.ts` | 12 | Static utility (distance/intersects/contains), delegates to compiled methods |
 | **Contact** | `src/dynamics/Contact.ts` | — | Contact point, impulse methods, delegates to compiled ZPP_Contact |
-| **Compound** | `src/phys/Compound.ts` | — | Hierarchical grouping, extends Interactor, delegates to compiled ZPP_Compound |
 
 ### Generic List/Iterator factory (replaces ~7,300 lines of compiled boilerplate)
 
@@ -144,6 +148,12 @@ initialization code or internal methods reference them before the TS module self
   at init time (~line 120163). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ValidationResult**: Stub needed because compiled shape validation code creates instances.
 - **Broadphase**: Stub needed because compiled Space code creates instances.
+- **Arbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates instances
+  via `new nape.dynamics.Arbiter()` at runtime. TS class replaces at module load time.
+- **CollisionArbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates
+  instances via `new nape.dynamics.CollisionArbiter()`. Extends Arbiter stub.
+- **FluidArbiter**: Stub constructor needed because `ZPP_Arbiter.wrapper()` creates
+  instances via `new nape.dynamics.FluidArbiter()`. Extends Arbiter stub.
 - **ArbiterList**: Stub constructor needed because `ZPP_SpaceArbiterList` extends it at
   init time (prototype copy + `.call()`). TS factory replaces with full implementation.
 
@@ -155,14 +165,12 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 ### Next candidates for modernization
 
-**Priority 1: Complete all public API wrappers**
-- `Arbiter`, `CollisionArbiter`, `FluidArbiter` — thin wrappers (same pattern as Contact/Compound)
-- `Geom` — static utility class, thin wrapper delegating to compiled code
-- This would mean **every public API class** has a TypeScript wrapper
+**Priority 1: Complete all public API wrappers** — DONE
+- Every public API class now has a TypeScript wrapper.
 
 **Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
+- ~~`ZPP_Compound` extraction (~400 lines) → Compound full modernization~~ ✅ DONE
 - `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
-- `ZPP_Compound` extraction (~400 lines) → Compound full modernization
 - `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
   - Arbiter (269 lines compiled), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high)
 
@@ -180,9 +188,7 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 - Body, Circle, Polygon, Space, Constraint + 7 joint subclasses (already have TS wrappers above)
 - Ray, ConvexResult, RayResult, Contact, Compound (already have TS wrappers above)
 
-**Public API not yet wrapped:**
-- Arbiter, CollisionArbiter, FluidArbiter
-- Geom (static utility class)
+**Public API:** All classes now have TypeScript wrappers.
 
 **Internal ZPP classes (~79 in compiled code):**
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection

@@ -7,3 +7,4 @@ export { MatMN } from "./MatMN";
 export { MarchingSquares } from "./MarchingSquares";
 export { Ray } from "./Ray";
 export { Winding } from "./Winding";
+export { Geom } from "./Geom";
