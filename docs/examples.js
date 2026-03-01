@@ -6,6 +6,7 @@ import {
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter,
   CbType, InteractionType, PreListener, PreFlag,
+  VERSION,
 } from "./nape-js.esm.js";
 import {
   drawBody, drawConstraints, drawGrid, installErrorOverlay,
@@ -15,7 +16,7 @@ import {
 // Shared helpers
 // =========================================================================
 
-installErrorOverlay();
+installErrorOverlay(VERSION);
 
 let _colorCounter = 0;
 

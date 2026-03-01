@@ -116057,6 +116057,9 @@ var PulleyJoint = class _PulleyJoint extends Constraint {
     this._inner.set_ratio(value);
   }
 };
+
+// src/index.ts
+var VERSION = "3.3.6";
 export {
   AABB,
   AngleJoint,
@@ -116106,6 +116109,7 @@ export {
   Shape,
   ShapeType,
   Space,
+  VERSION,
   ValidationResult,
   Vec2,
   Vec3,

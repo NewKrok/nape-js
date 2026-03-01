@@ -9,6 +9,7 @@ import {
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter, InteractionGroup,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
+  VERSION,
 } from "./nape-js.esm.js";
 import {
   bodyColor, drawBody as _drawBody, drawConstraints, drawGrid,
@@ -2530,6 +2531,6 @@ document.getElementById("runBenchmark").addEventListener("click", runBenchmarkSu
 // Boot
 // =========================================================================
 
-installErrorOverlay();
+installErrorOverlay(VERSION);
 overlay.classList.add("hidden");
 startDemo("falling");
