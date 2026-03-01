@@ -27,6 +27,68 @@ export class Body extends Interactor {
   zpp_inner!: ZPP_Body;
   debugDraw: boolean = true;
 
+  // ---------------------------------------------------------------------------
+  // Methods copied from compiled Body prototype at module init time.
+  // Declared here so TypeScript knows they exist at runtime.
+  // ---------------------------------------------------------------------------
+
+  /** @internal */ set_type!: (type: Any) => Any;
+  /** @internal */ set_position!: (position: Any) => Any;
+  /** @internal */ set_rotation!: (rotation: number) => number;
+  /** @internal */ set_velocity!: (velocity: Any) => Any;
+  /** @internal */ set_angularVel!: (angularVel: number) => number;
+  /** @internal */ set_kinematicVel!: (kinematicVel: Any) => Any;
+  /** @internal */ set_kinAngVel!: (kinAngVel: number) => number;
+  /** @internal */ set_surfaceVel!: (surfaceVel: Any) => Any;
+  /** @internal */ set_force!: (force: Any) => Any;
+  /** @internal */ set_torque!: (torque: number) => number;
+  /** @internal */ get_mass!: () => number;
+  /** @internal */ set_mass!: (mass: number) => number;
+  /** @internal */ get_inertia!: () => number;
+  /** @internal */ set_inertia!: (inertia: number) => number;
+  /** @internal */ get_gravMass!: () => number;
+  /** @internal */ set_gravMass!: (gravMass: number) => number;
+  /** @internal */ get_gravMassScale!: () => number;
+  /** @internal */ set_gravMassScale!: (gravMassScale: number) => number;
+  /** @internal */ set_allowMovement!: (v: boolean) => boolean;
+  /** @internal */ set_allowRotation!: (v: boolean) => boolean;
+  /** @internal */ set_space!: (space: Any) => Any;
+  /** @internal */ set_compound!: (compound: Any) => Any;
+  /** @internal */ get_localCOM!: () => Any;
+  /** @internal */ get_worldCOM!: () => Any;
+
+  // Complex methods from compiled prototype
+  /** @internal */ integrate!: (deltaTime: number) => Any;
+  /** @internal */ applyImpulse!: (impulse: Any, pos?: Any, sleepable?: boolean) => void;
+  /** @internal */ applyAngularImpulse!: (impulse: number, sleepable?: boolean) => void;
+  /** @internal */ setVelocityFromTarget!: (targetPosition: Any, targetRotation: number, deltaTime: number) => Any;
+  /** @internal */ localPointToWorld!: (point: Any, weak?: boolean) => Any;
+  /** @internal */ worldPointToLocal!: (point: Any, weak?: boolean) => Any;
+  /** @internal */ localVectorToWorld!: (vector: Any, weak?: boolean) => Any;
+  /** @internal */ worldVectorToLocal!: (vector: Any, weak?: boolean) => Any;
+  /** @internal */ translateShapes!: (translation: Any) => void;
+  /** @internal */ rotateShapes!: (angle: number) => void;
+  /** @internal */ scaleShapes!: (scaleX: number, scaleY: number) => void;
+  /** @internal */ align!: () => void;
+  /** @internal */ rotate!: (centre: Any, angle: number) => void;
+  /** @internal */ setShapeMaterials!: (material: Any) => void;
+  /** @internal */ setShapeFilters!: (filter: Any) => void;
+  /** @internal */ setShapeFluidProperties!: (fluidProperties: Any) => void;
+  /** @internal */ contains!: (point: Any) => boolean;
+  /** @internal */ crushFactor!: () => number;
+  /** @internal */ connectedBodies!: (depth?: number, output?: Any) => Any;
+  /** @internal */ interactingBodies!: (type?: Any, depth?: number, output?: Any) => Any;
+
+  // Mode getters/setters from compiled prototype
+  /** @internal */ get_massMode!: () => Any;
+  /** @internal */ set_massMode!: (mode: Any) => Any;
+  /** @internal */ get_inertiaMode!: () => Any;
+  /** @internal */ set_inertiaMode!: (mode: Any) => Any;
+  /** @internal */ get_gravMassMode!: () => Any;
+  /** @internal */ set_gravMassMode!: (mode: Any) => Any;
+
+  /** @internal */ _toString!: () => string;
+
   constructor(type?: BodyType, position?: Vec2) {
     super();
 
