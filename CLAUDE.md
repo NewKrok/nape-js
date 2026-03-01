@@ -35,12 +35,12 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 31 classes
+### Extracted ZPP_* classes (src/native/) — 33 classes
 
 | Category | Classes |
 |----------|---------|
 | Callbacks | `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`, `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener` |
-| Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup` |
+| Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact` |
 | Geometry | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
 | Physics | `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body` |
 | Utilities | `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool` |
@@ -81,6 +81,7 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | ConstraintCallback | `src/callbacks/ConstraintCallback.ts` | Constraint event callback |
 | InteractionCallback | `src/callbacks/InteractionCallback.ts` | Interaction event callback |
 | PreCallback | `src/callbacks/PreCallback.ts` | Pre-interaction callback |
+| Contact | `src/dynamics/Contact.ts` | Direct ZPP_Contact access, impulse methods |
 
 **Singleton enums** (fully modernized, init-time stub + `setPrototypeOf` where needed):
 GravMassMode, InertiaMode, MassMode, BodyType, ShapeType, ArbiterType, Winding,
@@ -108,7 +109,6 @@ ListenerType, Broadphase, ValidationResult, CbEvent, InteractionType, PreFlag
 | CollisionArbiter | `src/dynamics/CollisionArbiter.ts` | Contacts/normal/friction/elasticity |
 | FluidArbiter | `src/dynamics/FluidArbiter.ts` | Position/overlap/buoyancy |
 | Geom | `src/geom/Geom.ts` | Static utility (distance/intersects/contains) |
-| Contact | `src/dynamics/Contact.ts` | Contact point, impulse methods |
 
 ### Generic List/Iterator factory
 
@@ -148,7 +148,7 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 **Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
 - ~~`ZPP_Compound` extraction → Compound full modernization~~ ✅
 - ~~`ZPP_Body` extraction → Body full modernization~~ ✅
-- `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
+- ~~`ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization~~ ✅
 - `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
 
 **Priority 3: High complexity extractions**
@@ -160,7 +160,7 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 **Internal ZPP classes (~80+ in compiled code):**
 Core engine (`ZPP_Space`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection),
 constraints (`ZPP_PivotJoint`, `ZPP_DistanceJoint`, etc.),
-arbiters/contacts (`ZPP_Arbiter`, `ZPP_ColArbiter`, `ZPP_Contact`),
+arbiters/contacts (`ZPP_Arbiter`, `ZPP_ColArbiter`),
 geometry algorithms (`ZPP_Collide`, `ZPP_Convex`, `ZPP_Monotone`, `ZPP_Simple`),
 special lists (`Vec2List`, `ContactList`, `GeomVertexIterator`),
 internal linked lists (`ZNPList_*`, `ZNPNode_*`, `ZPP_Set_*`)
