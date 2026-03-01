@@ -1,5 +1,5 @@
 // Version (keep in sync with package.json)
-export const VERSION = "3.3.6";
+export const VERSION = "3.3.11";
 
 // Core
 export { getNape } from "./core/engine";
