@@ -25,3 +25,8 @@ export function getNape(): any {
   }
   return napeNamespace;
 }
+
+// Register typed List + Iterator classes after the compiled code is loaded.
+// This must happen here (not just in index.ts) so that any module importing
+// getNape() — even without going through the barrel export — gets the lists.
+import "../util/registerLists";
