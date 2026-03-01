@@ -9,16 +9,15 @@ import { Material } from "./Material";
 import { FluidProperties } from "./FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { BodyType } from "./BodyType";
+import { Interactor, _bindBodyWrapForInteractor } from "./Interactor";
 
 /**
  * A rigid body in the physics simulation.
  */
-export class Body {
-  /** @internal */
-  readonly _inner: NapeInner;
-
+export class Body extends Interactor {
   constructor(type: BodyType = BodyType.get_DYNAMIC(), position?: Vec2) {
-    this._inner = new (getNape().phys.Body)(type, position?._inner);
+    super();
+    (this as Writable<Body>)._inner = new (getNape().phys.Body)(type, position?._inner);
   }
 
   /** @internal */
@@ -235,10 +234,6 @@ export class Body {
   get worldCOM(): Vec2 {
     return Vec2._wrap(this._inner.get_worldCOM());
   }
-  get userData(): Record<string, unknown> {
-    return this._inner.get_userData();
-  }
-
   // ---------------------------------------------------------------------------
   // Methods
   // ---------------------------------------------------------------------------
@@ -312,7 +307,10 @@ export class Body {
   copy(): Body {
     return Body._wrap(this._inner.copy());
   }
-  toString(): string {
+  override toString(): string {
     return this._inner.toString();
   }
 }
+
+// Bind Body._wrap into Interactor so Interactor._wrap can dispatch without circular import.
+_bindBodyWrapForInteractor((inner) => Body._wrap(inner));

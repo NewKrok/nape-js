@@ -5,6 +5,7 @@ import { Body } from "../phys/Body";
 import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
+import { Interactor, _bindShapeWrapForInteractor } from "../phys/Interactor";
 import { ShapeType } from "./ShapeType";
 
 // ---------------------------------------------------------------------------
@@ -28,14 +29,10 @@ export function _bindPolygonWrap(fn: SubclassWrapFn): void {
 /**
  * Base class for physics shapes (Circle, Polygon).
  */
-export class Shape {
-  /** @internal */
-  readonly _inner: NapeInner;
-
+export class Shape extends Interactor {
   /** @internal – shapes are created via Circle or Polygon constructors. */
   protected constructor() {
-    // _inner is assigned by subclass constructors
-    (this as Writable<Shape>)._inner = undefined!;
+    super();
   }
 
   /** @internal */
@@ -196,10 +193,13 @@ export class Shape {
   copy(): Shape {
     return Shape._wrap(this._inner.copy());
   }
-  toString(): string {
+  override toString(): string {
     return this._inner.toString();
   }
 }
+
+// Bind Shape._wrap into Interactor so Interactor._wrap can dispatch without circular import.
+_bindShapeWrapForInteractor((inner) => Shape._wrap(inner));
 
 /** Lightweight typed interface for the callback type set on a shape. */
 export interface CbTypeSet {
