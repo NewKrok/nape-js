@@ -20,6 +20,7 @@ export { Winding } from "./geom/Winding";
 // Physics
 export { Body } from "./phys/Body";
 export { BodyType } from "./phys/BodyType";
+export { Interactor } from "./phys/Interactor";
 export { Material } from "./phys/Material";
 export { FluidProperties } from "./phys/FluidProperties";
 export { GravMassMode } from "./phys/GravMassMode";
