@@ -49,6 +49,28 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **GeomPoly** | `src/geom/GeomPoly.ts` | 53 | Complex polygon class, vertex ring, decomposition algorithms |
 | **CbType** | `src/callbacks/CbType.ts` | 31 | Callback type tags, ANY_* singletons, stub in compiled code |
 | **OptionType** | `src/callbacks/OptionType.ts` | 30 | Include/exclude CbType filtering, stub in compiled code |
+| **AABB** | `src/geom/AABB.ts` | 31 | Geometry bounds, Vec2 min/max wrappers |
+| **MatMN** | `src/geom/MatMN.ts` | 35 | Variable-sized M×N matrix, transpose/mul |
+| **MarchingSquares** | `src/geom/MarchingSquares.ts` | 23 | Static isosurface extraction, delegates to compiled ZPP_MarchingSquares |
+| **GravMassMode** | `src/phys/GravMassMode.ts` | 11 | Singleton enum (DEFAULT/FIXED/SCALED), uses ZPP_Flags |
+| **InertiaMode** | `src/phys/InertiaMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
+| **MassMode** | `src/phys/MassMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
+| **ArbiterType** | `src/dynamics/ArbiterType.ts` | 11 | Singleton enum (COLLISION/SENSOR/FLUID), init-time stub + setPrototypeOf |
+| **Winding** | `src/geom/Winding.ts` | 11 | Singleton enum (UNDEFINED/CLOCKWISE/ANTICLOCKWISE), used by GeomPoly |
+| **ListenerType** | `src/callbacks/ListenerType.ts` | 13 | Singleton enum (BODY/CONSTRAINT/INTERACTION/PRE), init-time stub + setPrototypeOf |
+| **Broadphase** | `src/space/Broadphase.ts` | 9 | Singleton enum (DYNAMIC_AABB_TREE/SWEEP_AND_PRUNE), stub in compiled code |
+| **ValidationResult** | `src/shape/ValidationResult.ts` | 13 | Singleton enum (VALID/DEGENERATE/CONCAVE/SELF_INTERSECTING), stub in compiled code |
+| **Callback** | `src/callbacks/Callback.ts` | 5 | Base callback class, stub in compiled code |
+| **BodyCallback** | `src/callbacks/BodyCallback.ts` | 5 | Body event callback (WAKE/SLEEP), extends Callback, stub |
+| **ConstraintCallback** | `src/callbacks/ConstraintCallback.ts` | 4 | Constraint event callback, extends Callback, stub |
+| **InteractionCallback** | `src/callbacks/InteractionCallback.ts` | 4 | Interaction event callback, extends Callback, stub |
+| **PreCallback** | `src/callbacks/PreCallback.ts` | 4 | Pre-interaction callback, extends Callback, stub |
+
+### Thin wrappers (TS class delegates to compiled code)
+
+| Class | File | Tests | Notes |
+|-------|------|-------|-------|
+| **Ray** | `src/geom/Ray.ts` | 14 | Raycasting, delegates to compiled nape.geom.Ray (ZPP_Ray not extracted) |
 
 ### Compiled code stubs
 
@@ -60,6 +82,14 @@ initialization code or internal methods reference them before the TS module self
   via `Object.setPrototypeOf` after self-registration.
 - **OptionType**: Stub constructor + `including()`/`excluding()` needed for
   `ZPP_OptionType.argument()` which uses `instanceof nape.callbacks.OptionType`.
+- **ArbiterType**: Stub constructor needed for COLLISION/SENSOR/FLUID singleton creation
+  at init time. TS class retroactively fixes prototypes via `Object.setPrototypeOf`.
+- **ListenerType**: Stub constructor needed for BODY/CONSTRAINT/INTERACTION/PRE singleton
+  creation at init time (ZPP_Listener.types). TS class fixes prototypes via `Object.setPrototypeOf`.
+- **Callback/BodyCallback/ConstraintCallback/InteractionCallback/PreCallback**: Stubs needed
+  because compiled ZPP_Space and ZPP_Callback wrappers create instances at runtime.
+- **ValidationResult**: Stub needed because compiled shape validation code creates instances.
+- **Broadphase**: Stub needed because compiled Space code creates instances.
 
 ### Internal namespace exposure
 
@@ -67,15 +97,17 @@ initialization code or internal methods reference them before the TS module self
 TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVert`,
 `ZPP_Simple`, `ZPP_Monotone`, `ZPP_Convex`, etc.
 
-### Next candidates for full modernization (public API)
+### Next candidates for modernization
 
-These have their ZPP_* already extracted, making them ready for the same pattern:
+All ZPP_* classes with extracted internals now have modernized public APIs.
+Next candidates require extracting their ZPP_* classes first:
 
-| Candidate | ZPP Class | Complexity | Notes |
-|-----------|-----------|------------|-------|
-| `AABB` | `ZPP_AABB` | Medium | Geometry class, used widely, already has thin wrapper |
+| Candidate | Complexity | Notes |
+|-----------|------------|-------|
+| `Geom` | High | Static distance/intersection utility, many internal dependencies |
+| `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms, would enable full Ray modernization |
 
-### Remaining in compiled code (~85 public API + ~80 internal ZPP classes)
+### Remaining in compiled code (~68 public API + ~80 internal ZPP classes)
 
 Major categories:
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection

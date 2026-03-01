@@ -7,25 +7,35 @@ export { Vec3 } from "./geom/Vec3";
 export { Mat23 } from "./geom/Mat23";
 export { GeomPoly } from "./geom/GeomPoly";
 export { AABB } from "./geom/AABB";
+export { MatMN } from "./geom/MatMN";
+export { MarchingSquares } from "./geom/MarchingSquares";
+export { Ray } from "./geom/Ray";
+export { Winding } from "./geom/Winding";
 
 // Physics
 export { Body } from "./phys/Body";
 export { BodyType } from "./phys/BodyType";
 export { Material } from "./phys/Material";
 export { FluidProperties } from "./phys/FluidProperties";
+export { GravMassMode } from "./phys/GravMassMode";
+export { InertiaMode } from "./phys/InertiaMode";
+export { MassMode } from "./phys/MassMode";
 
 // Shapes
 export { Shape } from "./shape/Shape";
 export { Circle } from "./shape/Circle";
 export { Polygon } from "./shape/Polygon";
 export { ShapeType } from "./shape/ShapeType";
+export { ValidationResult } from "./shape/ValidationResult";
 
 // Space
 export { Space } from "./space/Space";
+export { Broadphase } from "./space/Broadphase";
 
 // Dynamics
 export { InteractionFilter } from "./dynamics/InteractionFilter";
 export { InteractionGroup } from "./dynamics/InteractionGroup";
+export { ArbiterType } from "./dynamics/ArbiterType";
 
 // Callbacks
 export { CbEvent } from "./callbacks/CbEvent";
@@ -38,6 +48,12 @@ export { BodyListener } from "./callbacks/BodyListener";
 export { InteractionListener } from "./callbacks/InteractionListener";
 export { ConstraintListener } from "./callbacks/ConstraintListener";
 export { PreListener } from "./callbacks/PreListener";
+export { ListenerType } from "./callbacks/ListenerType";
+export { Callback } from "./callbacks/Callback";
+export { BodyCallback } from "./callbacks/BodyCallback";
+export { ConstraintCallback } from "./callbacks/ConstraintCallback";
+export { InteractionCallback } from "./callbacks/InteractionCallback";
+export { PreCallback } from "./callbacks/PreCallback";
 
 // Constraints
 export { Constraint } from "./constraint/Constraint";
