@@ -1,19 +1,21 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner } from "./Vec2";
+import { ZPP_ConvexRayResult } from "../native/geom/ZPP_ConvexRayResult";
 
 type Any = any;
 
 /**
  * Result from a convex-cast query.
  *
- * Thin wrapper — delegates to compiled ZPP_ConvexRayResult (not yet extracted).
+ * Provides the contact normal, position, time-of-impact, and shape hit.
+ * Instances are pooled — call `dispose()` when done to return to pool.
  */
 export class ConvexResult {
   static __name__ = ["nape", "geom", "ConvexResult"];
 
   /** @internal */
-  zpp_inner: Any;
+  zpp_inner: ZPP_ConvexRayResult;
 
   /** @internal Backward-compat: compiled code accesses `obj.zpp_inner`. */
   get _inner(): NapeInner {
@@ -21,9 +23,8 @@ export class ConvexResult {
   }
 
   constructor() {
-    this.zpp_inner = null;
-    const zpp = getNape().__zpp;
-    if (!zpp.geom.ZPP_ConvexRayResult.internal) {
+    this.zpp_inner = null!;
+    if (!ZPP_ConvexRayResult.internal) {
       throw new Error("Error: ConvexResult cannot be instantiated derp!");
     }
   }
@@ -98,6 +99,9 @@ export class ConvexResult {
     }
   }
 }
+
+// Register factory callback so ZPP_ConvexRayResult can create ConvexResult without circular import
+ZPP_ConvexRayResult._createConvexResult = () => new ConvexResult();
 
 // Self-register in the compiled namespace
 const nape = getNape();
