@@ -253,11 +253,7 @@ export class Mat23 {
     return ret;
   }
 
-  inverseTransform(
-    point: Vec2,
-    noTranslation: boolean = false,
-    weak: boolean = false,
-  ): Vec2 {
+  inverseTransform(point: Vec2, noTranslation: boolean = false, weak: boolean = false): Vec2 {
     if (point != null && point.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -265,9 +261,7 @@ export class Mat23 {
       throw new Error("Error: Cannot transform null Vec2");
     }
     if (this.singular()) {
-      throw new Error(
-        "Error: Matrix is singular and inverse transformation cannot be performed",
-      );
+      throw new Error("Error: Matrix is singular and inverse transformation cannot be performed");
     }
     const { a, b, c, d, tx: mtx, ty: mty } = this.zpp_inner;
     const idet = 1.0 / (a * d - b * c);

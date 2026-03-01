@@ -243,13 +243,7 @@ export class Vec3 {
     this._checkDisposed();
     this.zpp_inner.validate();
     return (
-      "{ x: " +
-      this.zpp_inner.x +
-      " y: " +
-      this.zpp_inner.y +
-      " z: " +
-      this.zpp_inner.z +
-      " }"
+      "{ x: " + this.zpp_inner.x + " y: " + this.zpp_inner.y + " z: " + this.zpp_inner.z + " }"
     );
   }
 }

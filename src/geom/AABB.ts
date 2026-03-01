@@ -27,12 +27,7 @@ export class AABB {
     return this;
   }
 
-  constructor(
-    x: number = 0,
-    y: number = 0,
-    width: number = 0,
-    height: number = 0,
-  ) {
+  constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
     // NaN checks
     if (x !== x || y !== y) {
       throw new Error("Error: AABB position cannot be NaN");

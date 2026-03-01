@@ -67,9 +67,7 @@ describe("FluidProperties", () => {
   });
 
   it("should throw on NaN viscosity in constructor", () => {
-    expect(() => new FluidProperties(1.0, NaN)).toThrow(
-      "viscosity cannot be NaN",
-    );
+    expect(() => new FluidProperties(1.0, NaN)).toThrow("viscosity cannot be NaN");
   });
 
   it("should throw on NaN viscosity in setter", () => {

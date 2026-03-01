@@ -10,7 +10,7 @@ function circleIso(x: number, y: number): number {
 }
 
 // Iso function: half-plane (negative left of x=50)
-function halfPlaneIso(x: number, y: number): number {
+function halfPlaneIso(x: number, _y: number): number {
   return x - 50;
 }
 
@@ -20,65 +20,59 @@ describe("MarchingSquares", () => {
   it("should throw when iso is null", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, 10);
-    expect(() =>
-      MarchingSquares.run(null as any, bounds, cellsize),
-    ).toThrow("requires an iso function");
+    expect(() => MarchingSquares.run(null as any, bounds, cellsize)).toThrow(
+      "requires an iso function",
+    );
   });
 
   it("should throw when bounds is null", () => {
     const cellsize = new Vec2(10, 10);
-    expect(() =>
-      MarchingSquares.run(circleIso, null as any, cellsize),
-    ).toThrow("requires an AABB");
+    expect(() => MarchingSquares.run(circleIso, null as any, cellsize)).toThrow("requires an AABB");
   });
 
   it("should throw when cellsize is null", () => {
     const bounds = new AABB(0, 0, 100, 100);
-    expect(() =>
-      MarchingSquares.run(circleIso, bounds, null as any),
-    ).toThrow("requires a Vec2");
+    expect(() => MarchingSquares.run(circleIso, bounds, null as any)).toThrow("requires a Vec2");
   });
 
   it("should throw on non-positive cellsize x", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(0, 10);
-    expect(() =>
-      MarchingSquares.run(circleIso, bounds, cellsize),
-    ).toThrow("non-positive cell dimensions");
+    expect(() => MarchingSquares.run(circleIso, bounds, cellsize)).toThrow(
+      "non-positive cell dimensions",
+    );
   });
 
   it("should throw on non-positive cellsize y", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, -1);
-    expect(() =>
-      MarchingSquares.run(circleIso, bounds, cellsize),
-    ).toThrow("non-positive cell dimensions");
+    expect(() => MarchingSquares.run(circleIso, bounds, cellsize)).toThrow(
+      "non-positive cell dimensions",
+    );
   });
 
   it("should throw on negative quality", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, 10);
-    expect(() =>
-      MarchingSquares.run(circleIso, bounds, cellsize, -1),
-    ).toThrow("negative quality");
+    expect(() => MarchingSquares.run(circleIso, bounds, cellsize, -1)).toThrow("negative quality");
   });
 
   it("should throw on non-positive subgrid x", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, 10);
     const subgrid = new Vec2(0, 50);
-    expect(() =>
-      MarchingSquares.run(circleIso, bounds, cellsize, 2, subgrid),
-    ).toThrow("non-positive sub-grid dimensions");
+    expect(() => MarchingSquares.run(circleIso, bounds, cellsize, 2, subgrid)).toThrow(
+      "non-positive sub-grid dimensions",
+    );
   });
 
   it("should throw on non-positive subgrid y", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, 10);
     const subgrid = new Vec2(50, -5);
-    expect(() =>
-      MarchingSquares.run(circleIso, bounds, cellsize, 2, subgrid),
-    ).toThrow("non-positive sub-grid dimensions");
+    expect(() => MarchingSquares.run(circleIso, bounds, cellsize, 2, subgrid)).toThrow(
+      "non-positive sub-grid dimensions",
+    );
   });
 
   // --- Basic functionality ---
@@ -110,11 +104,7 @@ describe("MarchingSquares", () => {
     const bounds = new AABB(0, 0, 10, 10);
     const cellsize = new Vec2(5, 5);
     // Always positive = no surface
-    const result = MarchingSquares.run(
-      () => 100,
-      bounds,
-      cellsize,
-    );
+    const result = MarchingSquares.run(() => 100, bounds, cellsize);
     expect(result.get_length()).toBe(0);
   });
 

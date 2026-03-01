@@ -78,11 +78,7 @@ export class ConvexResult {
   toString(): string {
     this._disposed();
     return (
-      "{ shape: " +
-      String(this.zpp_inner.shape) +
-      " toi: " +
-      this.zpp_inner.toiDistance +
-      " }"
+      "{ shape: " + String(this.zpp_inner.shape) + " toi: " + this.zpp_inner.toiDistance + " }"
     );
   }
 
@@ -93,9 +89,7 @@ export class ConvexResult {
   /** @internal */
   private _disposed(): void {
     if (this.zpp_inner.next != null) {
-      throw new Error(
-        "Error: This object has been disposed of and cannot be used",
-      );
+      throw new Error("Error: This object has been disposed of and cannot be used");
     }
   }
 }

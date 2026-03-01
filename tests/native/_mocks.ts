@@ -108,8 +108,12 @@ export function createMockZpp() {
       ZNPNode_ZPP_ConstraintListener: MockZNPNode,
       ZNPNode_ZPP_CbType: MockZNPNode,
       ZPP_PubPool: { poolVec2: null, nextVec2: null, poolVec3: null, nextVec3: null },
-      ZPP_CbTypeList: { get: (list: any, flag: boolean) => ({ zpp_inner: { inner: list } }) },
-      ZPP_ArbiterList: { get: (list: any, flag: boolean) => ({ zpp_inner: { inner: list, zip_length: false, at_ite: null } }) },
+      ZPP_CbTypeList: { get: (list: any, _flag: boolean) => ({ zpp_inner: { inner: list } }) },
+      ZPP_ArbiterList: {
+        get: (list: any, _flag: boolean) => ({
+          zpp_inner: { inner: list, zip_length: false, at_ite: null },
+        }),
+      },
     },
     geom: {
       ZPP_Vec2: { zpp_pool: null },
@@ -131,28 +135,73 @@ export function createMockZpp() {
 export function createMockNape() {
   return {
     geom: {
-      AABB: class { zpp_inner: any = { outer: null, wrap_min: null, wrap_max: null, _invalidate: null, _validate: null, next: null }; },
-      Vec2: class { zpp_inner: any = { outer: null, _isimmutable: null, _validate: null, _invalidate: null, _inuse: false, weak: false, x: 0, y: 0, next: null }; zpp_pool: any = null; zpp_disp = false; },
-      Mat23: class { zpp_inner: any = { next: null }; },
+      AABB: class {
+        zpp_inner: any = {
+          outer: null,
+          wrap_min: null,
+          wrap_max: null,
+          _invalidate: null,
+          _validate: null,
+          next: null,
+        };
+      },
+      Vec2: class {
+        zpp_inner: any = {
+          outer: null,
+          _isimmutable: null,
+          _validate: null,
+          _invalidate: null,
+          _inuse: false,
+          weak: false,
+          x: 0,
+          y: 0,
+          next: null,
+        };
+        zpp_pool: any = null;
+        zpp_disp = false;
+      },
+      Mat23: class {
+        zpp_inner: any = { next: null };
+      },
     },
     phys: {
-      Material: class { zpp_inner: any = { outer: null, next: null }; },
-      FluidProperties: class { zpp_inner: any = { outer: null, next: null }; },
+      Material: class {
+        zpp_inner: any = { outer: null, next: null };
+      },
+      FluidProperties: class {
+        zpp_inner: any = { outer: null, next: null };
+      },
     },
     dynamics: {
-      InteractionFilter: class { zpp_inner: any = { outer: null, next: null }; },
+      InteractionFilter: class {
+        zpp_inner: any = { outer: null, next: null };
+      },
     },
     callbacks: {
-      BodyCallback: class { zpp_inner: any = null; },
-      ConstraintCallback: class { zpp_inner: any = null; },
-      InteractionCallback: class { zpp_inner: any = null; },
-      CbType: class { zpp_inner: any = null; },
+      BodyCallback: class {
+        zpp_inner: any = null;
+      },
+      ConstraintCallback: class {
+        zpp_inner: any = null;
+      },
+      InteractionCallback: class {
+        zpp_inner: any = null;
+      },
+      CbType: class {
+        zpp_inner: any = null;
+      },
       CbTypeList: class {},
-      CbTypeIterator: class { static zpp_pool: any = null; },
+      CbTypeIterator: class {
+        static zpp_pool: any = null;
+      },
       OptionType: class {
         zpp_inner: any;
-        constructor() { this.zpp_inner = new MockZNPList(); }
-        including(val: any) { return this; }
+        constructor() {
+          this.zpp_inner = new MockZNPList();
+        }
+        including(_val: any) {
+          return this;
+        }
       },
     },
   };

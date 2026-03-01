@@ -50,9 +50,7 @@ export class MarchingSquares {
 
     // --- Validate required parameters ---
     if (iso == null) {
-      throw new Error(
-        "Error: MarchingSquares requires an iso function to operate",
-      );
+      throw new Error("Error: MarchingSquares requires an iso function to operate");
     }
     if (bounds == null) {
       throw new Error(
@@ -71,9 +69,7 @@ export class MarchingSquares {
       cellZpp._validate();
     }
     if (cellZpp.x <= 0 || cellZpp.y <= 0) {
-      throw new Error(
-        "Error: MarchingSquares cannot operate with non-positive cell dimensions",
-      );
+      throw new Error("Error: MarchingSquares cannot operate with non-positive cell dimensions");
     }
 
     // --- Validate quality ---
@@ -90,9 +86,7 @@ export class MarchingSquares {
         subZpp._validate();
       }
       if (subZpp.x <= 0 || subZpp.y <= 0) {
-        throw new Error(
-          "Error: MarchingSquares cannot with non-positive sub-grid dimensions",
-        );
+        throw new Error("Error: MarchingSquares cannot with non-positive sub-grid dimensions");
       }
     }
 
@@ -132,13 +126,11 @@ export class MarchingSquares {
 
       for (let xi = 0; xi < xn; xi++) {
         const x0 = boundsZpp.minx + subZpp.x * xi;
-        const x1 =
-          xi === xn - 1 ? boundsZpp.maxx : x0 + subZpp.x;
+        const x1 = xi === xn - 1 ? boundsZpp.maxx : x0 + subZpp.x;
 
         for (let yi = 0; yi < yn; yi++) {
           const y0 = boundsZpp.miny + subZpp.y * yi;
-          const y1 =
-            yi === yn - 1 ? boundsZpp.maxy : y0 + subZpp.y;
+          const y1 = yi === yn - 1 ? boundsZpp.maxy : y0 + subZpp.y;
           zppMs.run(iso, x0, y0, x1, y1, cellsize, quality, combine, ret);
         }
       }

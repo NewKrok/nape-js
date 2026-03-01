@@ -12,10 +12,7 @@ import { ZPP_InteractionListener } from "../native/callbacks/ZPP_InteractionList
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import { Listener } from "./Listener";
 import { InteractionType } from "./InteractionType";
-import {
-  interactionTypeToNumber,
-  numberToInteractionType,
-} from "./InteractionListener";
+import { interactionTypeToNumber, numberToInteractionType } from "./InteractionListener";
 
 type Any = any;
 
@@ -55,9 +52,7 @@ export class PreListener extends Listener {
 
     // Set interaction type
     if (interactionType == null) {
-      throw new Error(
-        "Error: Cannot set listener interaction type to null",
-      );
+      throw new Error("Error: Cannot set listener interaction type to null");
     }
     const currentType = numberToInteractionType(this.zpp_inner_zn.itype);
     if (currentType != interactionType) {
@@ -110,9 +105,7 @@ export class PreListener extends Listener {
 
   set interactionType(interactionType: InteractionType | null) {
     if (interactionType == null) {
-      throw new Error(
-        "Error: Cannot set listener interaction type to null",
-      );
+      throw new Error("Error: Cannot set listener interaction type to null");
     }
     const currentType = numberToInteractionType(this.zpp_inner_zn.itype);
     if (currentType != interactionType) {

@@ -63,17 +63,11 @@ describe("BodyCallback", () => {
 
 describe("ConstraintCallback", () => {
   it("should have correct __name__", () => {
-    expect(ConstraintCallback.__name__).toEqual([
-      "nape",
-      "callbacks",
-      "ConstraintCallback",
-    ]);
+    expect(ConstraintCallback.__name__).toEqual(["nape", "callbacks", "ConstraintCallback"]);
   });
 
   it("should throw on direct instantiation", () => {
-    expect(() => new ConstraintCallback()).toThrow(
-      "Callback cannot be instantiated"
-    );
+    expect(() => new ConstraintCallback()).toThrow("Callback cannot be instantiated");
   });
 
   it("should extend Callback", () => {
@@ -92,17 +86,11 @@ describe("ConstraintCallback", () => {
 
 describe("InteractionCallback", () => {
   it("should have correct __name__", () => {
-    expect(InteractionCallback.__name__).toEqual([
-      "nape",
-      "callbacks",
-      "InteractionCallback",
-    ]);
+    expect(InteractionCallback.__name__).toEqual(["nape", "callbacks", "InteractionCallback"]);
   });
 
   it("should throw on direct instantiation", () => {
-    expect(() => new InteractionCallback()).toThrow(
-      "Callback cannot be instantiated"
-    );
+    expect(() => new InteractionCallback()).toThrow("Callback cannot be instantiated");
   });
 
   it("should extend Callback", () => {
@@ -121,11 +109,7 @@ describe("InteractionCallback", () => {
 
 describe("PreCallback", () => {
   it("should have correct __name__", () => {
-    expect(PreCallback.__name__).toEqual([
-      "nape",
-      "callbacks",
-      "PreCallback",
-    ]);
+    expect(PreCallback.__name__).toEqual(["nape", "callbacks", "PreCallback"]);
   });
 
   it("should throw on direct instantiation", () => {

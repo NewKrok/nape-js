@@ -18,12 +18,7 @@ export class ConstraintListener extends Listener {
 
   zpp_inner_zn: ZPP_ConstraintListener;
 
-  constructor(
-    event: CbEvent,
-    options: Any,
-    handler: (cb: Any) => void,
-    precedence = 0,
-  ) {
+  constructor(event: CbEvent, options: Any, handler: (cb: Any) => void, precedence = 0) {
     ZPP_Listener.internal = true;
     super();
     ZPP_Listener.internal = false;
@@ -32,7 +27,7 @@ export class ConstraintListener extends Listener {
       throw new Error("Error: ConstraintListener::handler cannot be null");
     }
 
-    let xevent = -1;
+    let xevent: number;
     if (event === CbEvent.WAKE) {
       xevent = 2;
     } else if (event === CbEvent.SLEEP) {

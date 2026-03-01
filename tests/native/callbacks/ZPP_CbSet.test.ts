@@ -715,7 +715,9 @@ describe("ZPP_CbSet", () => {
       existing.a = a;
       existing.b = b;
       existing.zip_listeners = true;
-      existing.__validate = () => { validateCalled = true; };
+      existing.__validate = () => {
+        validateCalled = true;
+      };
       a.cbpairs.add(existing);
       b.cbpairs.add(existing);
 
@@ -910,11 +912,15 @@ describe("ZPP_CbSet", () => {
       MockZNPNode.zpp_pool = null;
 
       const high = {
-        precedence: 10, id: 1, space: "testSpace",
+        precedence: 10,
+        id: 1,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
       const low = {
-        precedence: 1, id: 2, space: "testSpace",
+        precedence: 1,
+        id: 2,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
 
@@ -938,15 +944,21 @@ describe("ZPP_CbSet", () => {
       MockZNPNode.zpp_pool = null;
 
       const listenerA = {
-        precedence: 10, id: 1, space: "testSpace",
+        precedence: 10,
+        id: 1,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
       const listenerB = {
-        precedence: 5, id: 2, space: "testSpace",
+        precedence: 5,
+        id: 2,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
       const listenerC = {
-        precedence: 1, id: 3, space: "testSpace",
+        precedence: 1,
+        id: 3,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
 
@@ -1028,11 +1040,15 @@ describe("ZPP_CbSet", () => {
       MockZNPNode.zpp_pool = null;
 
       const high = {
-        precedence: 10, id: 1, space: "testSpace",
+        precedence: 10,
+        id: 1,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
       const low = {
-        precedence: 1, id: 2, space: "testSpace",
+        precedence: 1,
+        id: 2,
+        space: "testSpace",
         options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
       };
 
@@ -1160,7 +1176,7 @@ describe("ZPP_CbSet", () => {
     });
 
     it("should order pair with setlt (a < b case, lines 168-169)", () => {
-      const MockPair = setupCbSetPairMock2();
+      setupCbSetPairMock2();
       const a = new ZPP_CbSet();
       const b = new ZPP_CbSet();
       // Make a < b by cbTypes ordering
@@ -1178,7 +1194,7 @@ describe("ZPP_CbSet", () => {
     });
 
     it("should reverse pair order when setlt returns false (b < a case)", () => {
-      const MockPair = setupCbSetPairMock2();
+      setupCbSetPairMock2();
       const a = new ZPP_CbSet();
       const b = new ZPP_CbSet();
       // Make b < a by cbTypes ordering

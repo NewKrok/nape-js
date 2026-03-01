@@ -254,7 +254,6 @@ describe("NapeListFactory", () => {
       list.push(ct1);
       list.push(ct2);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       list.filter((_item: any) => false);
       expect(list.get_length()).toBe(0);
     });
@@ -276,9 +275,7 @@ describe("NapeListFactory", () => {
 
     it("should throw on null array", () => {
       const nape = getNape();
-      expect(() => nape.callbacks.CbTypeList.fromArray(null)).toThrow(
-        "null Array",
-      );
+      expect(() => nape.callbacks.CbTypeList.fromArray(null)).toThrow("null Array");
     });
   });
 });

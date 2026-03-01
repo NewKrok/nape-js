@@ -95,10 +95,7 @@ export class Compound extends Interactor {
   }
   set compound(value: Compound | null) {
     this.zpp_inner.immutable_midstep("Compound::compound");
-    const currentOuter =
-      this.zpp_inner.compound == null
-        ? null
-        : this.zpp_inner.compound.outer;
+    const currentOuter = this.zpp_inner.compound == null ? null : this.zpp_inner.compound.outer;
     if (currentOuter !== value) {
       if (currentOuter != null) {
         currentOuter.zpp_inner.wrap_compounds.remove(this);
@@ -126,8 +123,7 @@ export class Compound extends Interactor {
       );
     }
     this.zpp_inner.immutable_midstep("Compound::space");
-    const currentSpaceOuter =
-      this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
+    const currentSpaceOuter = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
     if (currentSpaceOuter !== (value as Any)?._inner) {
       if (currentSpaceOuter != null) {
         currentSpaceOuter.zpp_inner.wrap_compounds.remove(this);
@@ -160,9 +156,7 @@ export class Compound extends Interactor {
   /** Recursively visit all bodies in this compound and its sub-compounds. */
   visitBodies(lambda: (body: Body) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Compound::visitBodies",
-      );
+      throw new Error("Error: lambda cannot be null for Compound::visitBodies");
     }
     const bodies = this.zpp_inner.wrap_bodies;
     const bLen = bodies.get_length();
@@ -179,9 +173,7 @@ export class Compound extends Interactor {
   /** Recursively visit all constraints in this compound and its sub-compounds. */
   visitConstraints(lambda: (constraint: Any) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Compound::visitConstraints",
-      );
+      throw new Error("Error: lambda cannot be null for Compound::visitConstraints");
     }
     const constraints = this.zpp_inner.wrap_constraints;
     const cLen = constraints.get_length();
@@ -198,9 +190,7 @@ export class Compound extends Interactor {
   /** Recursively visit all sub-compounds in this compound. */
   visitCompounds(lambda: (compound: Compound) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Compound::visitConstraints",
-      );
+      throw new Error("Error: lambda cannot be null for Compound::visitConstraints");
     }
     const compounds = this.zpp_inner.wrap_compounds;
     const compLen = compounds.get_length();
@@ -233,10 +223,7 @@ export class Compound extends Interactor {
           throw new Error("Error: Space::world has no mass");
         }
         b.zpp_inner.validate_mass();
-        if (
-          b.zpp_inner.massMode == 0 &&
-          b.zpp_inner.shapes.head == null
-        ) {
+        if (b.zpp_inner.massMode == 0 && b.zpp_inner.shapes.head == null) {
           throw new Error(
             "Error: Given current mass mode, Body::mass only makes sense if it contains shapes",
           );
@@ -261,9 +248,7 @@ export class Compound extends Interactor {
   /** Translate all bodies in this compound by the given vector. */
   translate(translation: Vec2): Compound {
     if (translation != null && (translation as Any).zpp_disp) {
-      throw new Error(
-        'Error: Vec2 has been disposed and cannot be used!',
-      );
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (translation == null) {
       throw new Error("Error: Cannot translate by null Vec2");
@@ -286,9 +271,7 @@ export class Compound extends Interactor {
   /** Rotate all bodies in this compound around the given centre point. */
   rotate(centre: Vec2, angle: number): Compound {
     if (centre != null && (centre as Any).zpp_disp) {
-      throw new Error(
-        'Error: Vec2 has been disposed and cannot be used!',
-      );
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (centre == null) {
       throw new Error("Error: Cannot rotate about a null Vec2");

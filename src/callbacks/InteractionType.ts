@@ -24,10 +24,18 @@ export class InteractionType {
 
   // --- Static getters for convenient access ---
 
-  static get COLLISION(): InteractionType { return InteractionType.get_COLLISION(); }
-  static get SENSOR(): InteractionType { return InteractionType.get_SENSOR(); }
-  static get FLUID(): InteractionType { return InteractionType.get_FLUID(); }
-  static get ANY(): InteractionType { return InteractionType.get_ANY(); }
+  static get COLLISION(): InteractionType {
+    return InteractionType.get_COLLISION();
+  }
+  static get SENSOR(): InteractionType {
+    return InteractionType.get_SENSOR();
+  }
+  static get FLUID(): InteractionType {
+    return InteractionType.get_FLUID();
+  }
+  static get ANY(): InteractionType {
+    return InteractionType.get_ANY();
+  }
 
   // --- Lazy singleton accessors (used by compiled code) ---
 

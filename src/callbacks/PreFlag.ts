@@ -24,10 +24,18 @@ export class PreFlag {
 
   // --- Static getters for convenient access ---
 
-  static get ACCEPT(): PreFlag { return PreFlag.get_ACCEPT(); }
-  static get IGNORE(): PreFlag { return PreFlag.get_IGNORE(); }
-  static get ACCEPT_ONCE(): PreFlag { return PreFlag.get_ACCEPT_ONCE(); }
-  static get IGNORE_ONCE(): PreFlag { return PreFlag.get_IGNORE_ONCE(); }
+  static get ACCEPT(): PreFlag {
+    return PreFlag.get_ACCEPT();
+  }
+  static get IGNORE(): PreFlag {
+    return PreFlag.get_IGNORE();
+  }
+  static get ACCEPT_ONCE(): PreFlag {
+    return PreFlag.get_ACCEPT_ONCE();
+  }
+  static get IGNORE_ONCE(): PreFlag {
+    return PreFlag.get_IGNORE_ONCE();
+  }
 
   // --- Lazy singleton accessors (used by compiled code) ---
 

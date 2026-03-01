@@ -257,8 +257,7 @@ export class ZPP_AABB {
   }
 
   intersect(x: ZPP_AABB): boolean {
-    return x.miny <= this.maxy && this.miny <= x.maxy &&
-      x.minx <= this.maxx && this.minx <= x.maxx;
+    return x.miny <= this.maxy && this.miny <= x.maxy && x.minx <= this.maxx && this.minx <= x.maxx;
   }
 
   combine(x: ZPP_AABB): void {
@@ -269,13 +268,11 @@ export class ZPP_AABB {
   }
 
   contains(x: ZPP_AABB): boolean {
-    return x.minx >= this.minx && x.miny >= this.miny &&
-      x.maxx <= this.maxx && x.maxy <= this.maxy;
+    return x.minx >= this.minx && x.miny >= this.miny && x.maxx <= this.maxx && x.maxy <= this.maxy;
   }
 
   containsPoint(v: { x: number; y: number }): boolean {
-    return v.x >= this.minx && v.x <= this.maxx &&
-      v.y >= this.miny && v.y <= this.maxy;
+    return v.x >= this.minx && v.x <= this.maxx && v.y >= this.miny && v.y <= this.maxy;
   }
 
   setCombine(a: ZPP_AABB, b: ZPP_AABB): void {
@@ -300,7 +297,16 @@ export class ZPP_AABB {
   }
 
   toString(): string {
-    return "{ x: " + this.minx + " y: " + this.miny +
-      " w: " + (this.maxx - this.minx) + " h: " + (this.maxy - this.miny) + " }";
+    return (
+      "{ x: " +
+      this.minx +
+      " y: " +
+      this.miny +
+      " w: " +
+      (this.maxx - this.minx) +
+      " h: " +
+      (this.maxy - this.miny) +
+      " }"
+    );
   }
 }

@@ -108,23 +108,17 @@ describe("InteractionFilter", () => {
 
   it("should throw when shouldCollide receives null", () => {
     const f = new InteractionFilter();
-    expect(() => f.shouldCollide(null as any)).toThrow(
-      "filter argument cannot be null",
-    );
+    expect(() => f.shouldCollide(null as any)).toThrow("filter argument cannot be null");
   });
 
   it("should throw when shouldSense receives null", () => {
     const f = new InteractionFilter();
-    expect(() => f.shouldSense(null as any)).toThrow(
-      "filter argument cannot be null",
-    );
+    expect(() => f.shouldSense(null as any)).toThrow("filter argument cannot be null");
   });
 
   it("should throw when shouldFlow receives null", () => {
     const f = new InteractionFilter();
-    expect(() => f.shouldFlow(null as any)).toThrow(
-      "filter argument cannot be null",
-    );
+    expect(() => f.shouldFlow(null as any)).toThrow("filter argument cannot be null");
   });
 
   // --- copy ---

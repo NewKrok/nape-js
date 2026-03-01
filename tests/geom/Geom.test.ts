@@ -5,7 +5,6 @@ import { Body } from "../../src/phys/Body";
 import { BodyType } from "../../src/phys/BodyType";
 import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
-import { Polygon } from "../../src/shape/Polygon";
 
 describe("Geom", () => {
   it("should have correct __name__", () => {
@@ -30,12 +29,7 @@ describe("Geom", () => {
 
       const out1 = new Vec2(0, 0);
       const out2 = new Vec2(0, 0);
-      const dist = Geom.distance(
-        b1.shapes.at(0),
-        b2.shapes.at(0),
-        out1,
-        out2,
-      );
+      const dist = Geom.distance(b1.shapes.at(0), b2.shapes.at(0), out1, out2);
 
       // Two circles radius 10, centres 30 apart → distance = 10
       expect(dist).toBeCloseTo(10, 1);
@@ -57,12 +51,7 @@ describe("Geom", () => {
 
       const out1 = new Vec2(0, 0);
       const out2 = new Vec2(0, 0);
-      const dist = Geom.distance(
-        b1.shapes.at(0),
-        b2.shapes.at(0),
-        out1,
-        out2,
-      );
+      const dist = Geom.distance(b1.shapes.at(0), b2.shapes.at(0), out1, out2);
 
       // Two circles radius 10, centres 5 apart → overlapping
       expect(dist).toBeLessThan(0);
@@ -78,9 +67,7 @@ describe("Geom", () => {
       const out1 = new Vec2(0, 0);
       const out2 = new Vec2(0, 0);
 
-      expect(() =>
-        Geom.distance(b1.shapes.at(0), orphanShape, out1, out2),
-      ).toThrow();
+      expect(() => Geom.distance(b1.shapes.at(0), orphanShape, out1, out2)).toThrow();
     });
   });
 

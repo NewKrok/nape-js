@@ -280,35 +280,31 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     set.lt = zpp.callbacks.ZPP_CbSetPair.setlt;
 
     // Use CbTypeset on options1/options2 includes, generating CbSetset pairs
-    this.CbTypeset(
-      this.options1.includes,
-      this.options2.includes,
-      (x: Any, y: Any) => {
-        this.CbSetset(x.cbsets, y.cbsets, (a: Any, b: Any) => {
-          a.validate();
-          b.validate();
-          if (zpp.callbacks.ZPP_CbSet.single_intersection(a, b, this)) {
-            let pair: Any;
-            if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
-              pair = new zpp.callbacks.ZPP_CbSetPair();
-            } else {
-              pair = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
-              zpp.callbacks.ZPP_CbSetPair.zpp_pool = pair.next;
-              pair.next = null;
-            }
-            pair.zip_listeners = true;
-            if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
-              pair.a = a;
-              pair.b = b;
-            } else {
-              pair.a = b;
-              pair.b = a;
-            }
-            set.try_insert(pair);
+    this.CbTypeset(this.options1.includes, this.options2.includes, (x: Any, y: Any) => {
+      this.CbSetset(x.cbsets, y.cbsets, (a: Any, b: Any) => {
+        a.validate();
+        b.validate();
+        if (zpp.callbacks.ZPP_CbSet.single_intersection(a, b, this)) {
+          let pair: Any;
+          if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
+            pair = new zpp.callbacks.ZPP_CbSetPair();
+          } else {
+            pair = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
+            zpp.callbacks.ZPP_CbSetPair.zpp_pool = pair.next;
+            pair.next = null;
           }
-        });
-      },
-    );
+          pair.zip_listeners = true;
+          if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
+            pair.a = a;
+            pair.b = b;
+          } else {
+            pair.a = b;
+            pair.b = a;
+          }
+          set.try_insert(pair);
+        }
+      });
+    });
 
     // Walk the set tree and call freshListenerType/nullListenerType
     if (set.parent != null) {
@@ -396,10 +392,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       let cx_ite = cb.listeners.head;
       while (cx_ite != null) {
         const j = cx_ite.elt;
-        if (
-          this.precedence > j.precedence ||
-          (this.precedence == j.precedence && this.id > j.id)
-        ) {
+        if (this.precedence > j.precedence || (this.precedence == j.precedence && this.id > j.id)) {
           break;
         }
         pre1 = cx_ite;
@@ -513,9 +506,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     if (this.type == 3) {
       throw new Error("Error: PreListener event can only be PRE");
     } else if (newev != 0 && newev != 1 && newev != 6) {
-      throw new Error(
-        "Error: InteractionListener event must be either BEGIN, END, ONGOING",
-      );
+      throw new Error("Error: InteractionListener event must be either BEGIN, END, ONGOING");
     }
     this.removedFromSpace();
     this.event = newev;

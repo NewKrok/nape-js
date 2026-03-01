@@ -9,7 +9,11 @@ describe("ZPP_InteractionGroup", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_InteractionGroup.__name__).toEqual(["zpp_nape", "dynamics", "ZPP_InteractionGroup"]);
+      expect(ZPP_InteractionGroup.__name__).toEqual([
+        "zpp_nape",
+        "dynamics",
+        "ZPP_InteractionGroup",
+      ]);
     });
   });
 

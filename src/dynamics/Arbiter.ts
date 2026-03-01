@@ -164,7 +164,7 @@ export class Arbiter {
    * Total impulse of this arbiter. Base implementation returns Vec3(0,0,0).
    * Overridden by CollisionArbiter and FluidArbiter.
    */
-  totalImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  totalImpulse(body: Any = null, _freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) {
       this._checkBody(body);
@@ -195,8 +195,7 @@ export class Arbiter {
         : this.zpp_inner.ws2.outer;
     let result = ret + "(" + s1.toString() + "|" + s2.toString() + ")";
     if (this.zpp_inner.type == ZPP_Arbiter.COL) {
-      result +=
-        "[" + ["SD", "DD"][this.zpp_inner.colarb.stat ? 0 : 1] + "]";
+      result += "[" + ["SD", "DD"][this.zpp_inner.colarb.stat ? 0 : 1] + "]";
     }
     result += "<-" + this.state.toString();
     return result;
@@ -216,10 +215,8 @@ export class Arbiter {
   /** @internal */
   protected _checkBody(body: Any): void {
     const inner = this.zpp_inner;
-    const b1 =
-      inner.ws1.id > inner.ws2.id ? inner.b2.outer : inner.b1.outer;
-    const b2 =
-      inner.ws1.id > inner.ws2.id ? inner.b1.outer : inner.b2.outer;
+    const b1 = inner.ws1.id > inner.ws2.id ? inner.b2.outer : inner.b1.outer;
+    const b2 = inner.ws1.id > inner.ws2.id ? inner.b1.outer : inner.b2.outer;
     if (body != b1 && body != b2) {
       throw new Error("Error: Arbiter does not relate to body");
     }

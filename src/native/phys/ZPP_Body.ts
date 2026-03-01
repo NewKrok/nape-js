@@ -254,8 +254,7 @@ export class ZPP_Body {
     this.wrap_shapes.zpp_inner.adder = this.shapes_adder.bind(this);
     this.wrap_shapes.zpp_inner.subber = this.shapes_subber.bind(this);
     this.wrap_shapes.zpp_inner._invalidate = this.shapes_invalidate.bind(this);
-    this.wrap_shapes.zpp_inner._modifiable =
-      this.shapes_modifiable.bind(this);
+    this.wrap_shapes.zpp_inner._modifiable = this.shapes_modifiable.bind(this);
 
     this.kinematicDelaySleep = false;
   }
@@ -442,8 +441,7 @@ export class ZPP_Body {
       return this.component.sleeping;
     }
 
-    const linSq =
-      nape.Config.linearSleepThreshold * nape.Config.linearSleepThreshold;
+    const linSq = nape.Config.linearSleepThreshold * nape.Config.linearSleepThreshold;
     let cansleep: boolean;
 
     if (this.velx * this.velx + this.vely * this.vely > linSq) {
@@ -457,9 +455,7 @@ export class ZPP_Body {
         const dx1 = this.aabb.maxx - this.aabb.minx;
         const dy1 = this.aabb.maxy - this.aabb.miny;
         const idl = dx1 * dx1 + dy1 * dy1;
-        const angSq =
-          nape.Config.angularSleepThreshold *
-          nape.Config.angularSleepThreshold;
+        const angSq = nape.Config.angularSleepThreshold * nape.Config.angularSleepThreshold;
         if (4 * this.angvel * this.angvel * idl > angSq) {
           cansleep = false;
         } else {
@@ -512,10 +508,8 @@ export class ZPP_Body {
   sweepValidate(s: Any): void {
     if (s.type === 0) {
       // Circle
-      s.worldCOMx =
-        this.posx + (this.axisy * s.localCOMx - this.axisx * s.localCOMy);
-      s.worldCOMy =
-        this.posy + (s.localCOMx * this.axisx + s.localCOMy * this.axisy);
+      s.worldCOMx = this.posx + (this.axisy * s.localCOMx - this.axisx * s.localCOMy);
+      s.worldCOMy = this.posy + (s.localCOMx * this.axisx + s.localCOMy * this.axisy);
     } else {
       // Polygon
       const p = s.polygon;
@@ -539,8 +533,7 @@ export class ZPP_Body {
         ite = ite.next;
         e.gnormx = this.axisy * e.lnormx - this.axisx * e.lnormy;
         e.gnormy = e.lnormx * this.axisx + e.lnormy * this.axisy;
-        e.gprojection =
-          this.posx * e.gnormx + this.posy * e.gnormy + e.lprojection;
+        e.gprojection = this.posx * e.gnormx + this.posy * e.gnormy + e.lprojection;
         e.tp0 = u.y * e.gnormx - u.x * e.gnormy;
         e.tp1 = v.y * e.gnormx - v.x * e.gnormy;
         u = v;
@@ -550,8 +543,7 @@ export class ZPP_Body {
       const e1 = ite.elt;
       e1.gnormx = this.axisy * e1.lnormx - this.axisx * e1.lnormy;
       e1.gnormy = e1.lnormx * this.axisx + e1.lnormy * this.axisy;
-      e1.gprojection =
-        this.posx * e1.gnormx + this.posy * e1.gnormy + e1.lprojection;
+      e1.gprojection = this.posx * e1.gnormx + this.posy * e1.gnormy + e1.lprojection;
       e1.tp0 = u.y * e1.gnormx - u.x * e1.gnormy;
       e1.tp1 = v1.y * e1.gnormx - v1.x * e1.gnormy;
     }
@@ -576,9 +568,7 @@ export class ZPP_Body {
   pos_invalidate(pos: Any): void {
     this.immutable_midstep("Body::position");
     if (this.type === 1 && this.space != null) {
-      throw new Error(
-        "Error: Cannot move a static object once inside a Space"
-      );
+      throw new Error("Error: Cannot move a static object once inside a Space");
     }
     if (!(this.posx === pos.x && this.posy === pos.y)) {
       this.posx = pos.x;
@@ -595,9 +585,7 @@ export class ZPP_Body {
 
   vel_invalidate(vel: Any): void {
     if (this.type === 1) {
-      throw new Error(
-        "Error: Static body cannot have its velocity set."
-      );
+      throw new Error("Error: Static body cannot have its velocity set.");
     }
     this.velx = vel.x;
     this.vely = vel.y;
@@ -633,9 +621,7 @@ export class ZPP_Body {
 
   force_invalidate(force: Any): void {
     if (this.type !== 2) {
-      throw new Error(
-        "Error: Non-dynamic body cannot have force applied."
-      );
+      throw new Error("Error: Non-dynamic body cannot have force applied.");
     }
     this.forcex = force.x;
     this.forcey = force.y;
@@ -652,8 +638,8 @@ export class ZPP_Body {
   private _setupVec2Wrapper(
     x: number,
     y: number,
-    invalidateFn: ((vec: Any) => void) | null,
-    validateFn: (() => void) | null
+    _invalidateFn: ((vec: Any) => void) | null,
+    _validateFn: (() => void) | null,
   ): Any {
     const nape = ZPP_Body._nape;
 
@@ -691,9 +677,7 @@ export class ZPP_Body {
       ret.zpp_inner.outer = ret;
     } else {
       if (ret.zpp_disp) {
-        throw new Error(
-          "Error: Vec2 has been disposed and cannot be used!"
-        );
+        throw new Error("Error: Vec2 has been disposed and cannot be used!");
       }
       const _this = ret.zpp_inner;
       if (_this._immutable) {
@@ -732,12 +716,7 @@ export class ZPP_Body {
   }
 
   setupPosition(): void {
-    this.wrap_pos = this._setupVec2Wrapper(
-      this.posx,
-      this.posy,
-      null,
-      null
-    );
+    this.wrap_pos = this._setupVec2Wrapper(this.posx, this.posy, null, null);
     this.wrap_pos.zpp_inner._inuse = true;
     if (this.world) {
       this.wrap_pos.zpp_inner._immutable = true;
@@ -748,12 +727,7 @@ export class ZPP_Body {
   }
 
   setupVelocity(): void {
-    this.wrap_vel = this._setupVec2Wrapper(
-      this.velx,
-      this.vely,
-      null,
-      null
-    );
+    this.wrap_vel = this._setupVec2Wrapper(this.velx, this.vely, null, null);
     this.wrap_vel.zpp_inner._inuse = true;
     if (this.world) {
       this.wrap_vel.zpp_inner._immutable = true;
@@ -764,12 +738,7 @@ export class ZPP_Body {
   }
 
   setupkinvel(): void {
-    this.wrap_kinvel = this._setupVec2Wrapper(
-      this.kinvelx,
-      this.kinvely,
-      null,
-      null
-    );
+    this.wrap_kinvel = this._setupVec2Wrapper(this.kinvelx, this.kinvely, null, null);
     this.wrap_kinvel.zpp_inner._inuse = true;
     if (this.world) {
       this.wrap_kinvel.zpp_inner._immutable = true;
@@ -780,12 +749,7 @@ export class ZPP_Body {
   }
 
   setupsvel(): void {
-    this.wrap_svel = this._setupVec2Wrapper(
-      this.svelx,
-      this.svely,
-      null,
-      null
-    );
+    this.wrap_svel = this._setupVec2Wrapper(this.svelx, this.svely, null, null);
     this.wrap_svel.zpp_inner._inuse = true;
     if (this.world) {
       this.wrap_svel.zpp_inner._immutable = true;
@@ -796,12 +760,7 @@ export class ZPP_Body {
   }
 
   setupForce(): void {
-    this.wrap_force = this._setupVec2Wrapper(
-      this.forcex,
-      this.forcey,
-      null,
-      null
-    );
+    this.wrap_force = this._setupVec2Wrapper(this.forcex, this.forcey, null, null);
     this.wrap_force.zpp_inner._inuse = true;
     if (this.world) {
       this.wrap_force.zpp_inner._immutable = true;
@@ -823,7 +782,7 @@ export class ZPP_Body {
       this.velx + this.kinvelx,
       this.vely + this.kinvely,
       null,
-      null
+      null,
     );
     this.wrapcvel.zpp_inner._inuse = true;
     this.wrapcvel.zpp_inner._immutable = true;
@@ -1005,9 +964,7 @@ export class ZPP_Body {
 
   validate_aabb(): void {
     if (this.shapes.head == null) {
-      throw new Error(
-        "Error: Body bounds only makes sense if it contains shapes"
-      );
+      throw new Error("Error: Body bounds only makes sense if it contains shapes");
     }
     if (this.zip_aabb) {
       this.zip_aabb = false;
@@ -1055,12 +1012,10 @@ export class ZPP_Body {
         this.validate_axis();
         circle.worldCOMx =
           circle.body.posx +
-          (circle.body.axisy * circle.localCOMx -
-            circle.body.axisx * circle.localCOMy);
+          (circle.body.axisy * circle.localCOMx - circle.body.axisx * circle.localCOMy);
         circle.worldCOMy =
           circle.body.posy +
-          (circle.localCOMx * circle.body.axisx +
-            circle.localCOMy * circle.body.axisy);
+          (circle.localCOMx * circle.body.axisx + circle.localCOMy * circle.body.axisy);
       }
     }
     const r = circle.radius;
@@ -1082,20 +1037,14 @@ export class ZPP_Body {
           const g = cx_ite;
           const l = li;
           li = li.next;
-          g.x =
-            poly.body.posx +
-            (poly.body.axisy * l.x - poly.body.axisx * l.y);
-          g.y =
-            poly.body.posy +
-            (l.x * poly.body.axisx + l.y * poly.body.axisy);
+          g.x = poly.body.posx + (poly.body.axisy * l.x - poly.body.axisx * l.y);
+          g.y = poly.body.posy + (l.x * poly.body.axisx + l.y * poly.body.axisy);
           cx_ite = cx_ite.next;
         }
       }
     }
     if (poly.lverts.next == null) {
-      throw new Error(
-        "Error: An empty polygon has no meaningful bounds"
-      );
+      throw new Error("Error: An empty polygon has no meaningful bounds");
     }
     const p0 = poly.gverts.next;
     poly.aabb.minx = p0.x;
@@ -1115,9 +1064,7 @@ export class ZPP_Body {
 
   aabb_validate(): void {
     if (this.shapes.head == null) {
-      throw new Error(
-        "Error: bounds only makes sense when Body has shapes"
-      );
+      throw new Error("Error: bounds only makes sense when Body has shapes");
     }
     this.validate_aabb();
   }
@@ -1135,9 +1082,7 @@ export class ZPP_Body {
 
   private _computePolygonLocalCOM(poly: Any): void {
     if (poly.lverts.next == null) {
-      throw new Error(
-        "Error: An empty polygon has no meaningful localCOM"
-      );
+      throw new Error("Error: An empty polygon has no meaningful localCOM");
     }
     if (poly.lverts.next.next == null) {
       poly.localCOMx = poly.lverts.next.x;
@@ -1244,12 +1189,8 @@ export class ZPP_Body {
       this.zip_worldCOM = false;
       this.validate_localCOM();
       this.validate_axis();
-      this.worldCOMx =
-        this.posx +
-        (this.axisy * this.localCOMx - this.axisx * this.localCOMy);
-      this.worldCOMy =
-        this.posy +
-        (this.localCOMx * this.axisx + this.localCOMy * this.axisy);
+      this.worldCOMx = this.posx + (this.axisy * this.localCOMx - this.axisx * this.localCOMy);
+      this.worldCOMy = this.posy + (this.localCOMx * this.axisx + this.localCOMy * this.axisy);
     }
     if (this.wrap_worldCOM != null) {
       this.wrap_worldCOM.zpp_inner.x = this.worldCOMx;
@@ -1259,18 +1200,14 @@ export class ZPP_Body {
 
   getlocalCOM(): void {
     if (this.shapes.head == null) {
-      throw new Error(
-        "Error: Body has no shapes so cannot compute its localCOM"
-      );
+      throw new Error("Error: Body has no shapes so cannot compute its localCOM");
     }
     this.validate_localCOM();
   }
 
   getworldCOM(): void {
     if (this.shapes.head == null) {
-      throw new Error(
-        "Error: Body has no shapes so cannot compute its worldCOM"
-      );
+      throw new Error("Error: Body has no shapes so cannot compute its worldCOM");
     }
     this.validate_worldCOM();
   }
@@ -1287,14 +1224,10 @@ export class ZPP_Body {
 
   clear(): void {
     if (this.space != null) {
-      throw new Error(
-        "Error: Cannot clear a Body if it is currently being used by a Space!"
-      );
+      throw new Error("Error: Cannot clear a Body if it is currently being used by a Space!");
     }
     if (this.constraints.head != null) {
-      throw new Error(
-        "Error: Cannot clear a Body if it is currently being used by a constraint!"
-      );
+      throw new Error("Error: Cannot clear a Body if it is currently being used by a constraint!");
     }
     while (this.shapes.head != null) {
       const s = this.shapes.pop_unsafe();
@@ -1398,16 +1331,14 @@ export class ZPP_Body {
     s.zpp_inner.removedFromBody();
   }
 
-  shapes_invalidate(_: Any): void {
+  shapes_invalidate(_param: Any): void {
     this.invalidate_shapes();
   }
 
   shapes_modifiable(): void {
     this.immutable_midstep("Body::shapes");
     if (this.type === 1 && this.space != null) {
-      throw new Error(
-        "Error: Cannot modifiy shapes of static object once added to Space"
-      );
+      throw new Error("Error: Cannot modifiy shapes of static object once added to Space");
     }
   }
 
@@ -1639,8 +1570,7 @@ export class ZPP_Body {
     // Copy ZPP_Interactor prototype methods onto ZPP_Body
     for (const k in zpp.phys.ZPP_Interactor.prototype) {
       if (!(k in ZPP_Body.prototype)) {
-        (ZPP_Body.prototype as Any)[k] =
-          zpp.phys.ZPP_Interactor.prototype[k];
+        (ZPP_Body.prototype as Any)[k] = zpp.phys.ZPP_Interactor.prototype[k];
       }
     }
   }

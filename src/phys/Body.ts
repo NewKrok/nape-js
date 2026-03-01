@@ -5,9 +5,6 @@ import { AABB } from "../geom/AABB";
 import { NapeList } from "../util/NapeList";
 import { Shape } from "../shape/Shape";
 import { Space } from "../space/Space";
-import { Material } from "./Material";
-import { FluidProperties } from "./FluidProperties";
-import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { BodyType } from "./BodyType";
 import { Interactor, _bindBodyWrapForInteractor } from "./Interactor";
 import { ZPP_Body } from "../native/phys/ZPP_Body";
@@ -61,7 +58,11 @@ export class Body extends Interactor {
   /** @internal */ integrate!: (deltaTime: number) => Any;
   /** @internal */ applyImpulse!: (impulse: Any, pos?: Any, sleepable?: boolean) => void;
   /** @internal */ applyAngularImpulse!: (impulse: number, sleepable?: boolean) => void;
-  /** @internal */ setVelocityFromTarget!: (targetPosition: Any, targetRotation: number, deltaTime: number) => Any;
+  /** @internal */ setVelocityFromTarget!: (
+    targetPosition: Any,
+    targetRotation: number,
+    deltaTime: number,
+  ) => Any;
   /** @internal */ localPointToWorld!: (point: Any, weak?: boolean) => Any;
   /** @internal */ worldPointToLocal!: (point: Any, weak?: boolean) => Any;
   /** @internal */ localVectorToWorld!: (vector: Any, weak?: boolean) => Any;
@@ -419,7 +420,7 @@ export class Body extends Interactor {
     return Space._wrap(this.zpp_inner.space.outer);
   }
   set space(value: Space | null) {
-    this.set_space(value != null ? (value as Any)._inner ?? value : null);
+    this.set_space(value != null ? ((value as Any)._inner ?? value) : null);
   }
 
   get compound(): Any {
@@ -607,10 +608,7 @@ export class Body extends Interactor {
   get_arbiters(): Any {
     const zppNs = getNape().__zpp;
     if (this.zpp_inner.wrap_arbiters == null) {
-      this.zpp_inner.wrap_arbiters = zppNs.util.ZPP_ArbiterList.get(
-        this.zpp_inner.arbiters,
-        true,
-      );
+      this.zpp_inner.wrap_arbiters = zppNs.util.ZPP_ArbiterList.get(this.zpp_inner.arbiters, true);
     }
     return this.zpp_inner.wrap_arbiters;
   }

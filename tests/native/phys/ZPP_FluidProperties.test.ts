@@ -199,9 +199,15 @@ describe("ZPP_FluidProperties", () => {
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: mockVec2,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: mockVec2,
       };
       mockVec2.zpp_inner = existingInner;
       zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
@@ -246,9 +252,16 @@ describe("ZPP_FluidProperties", () => {
       zpp.geom.ZPP_Vec2.zpp_pool = null;
       zpp.geom.ZPP_Vec2 = class {
         static zpp_pool: any = null;
-        x = 0; y = 0; weak = false; _immutable = false;
-        _isimmutable: any = null; _validate: any = null; _invalidate: any = null;
-        _inuse = false; outer: any = null; next: any = null;
+        x = 0;
+        y = 0;
+        weak = false;
+        _immutable = false;
+        _isimmutable: any = null;
+        _validate: any = null;
+        _invalidate: any = null;
+        _inuse = false;
+        outer: any = null;
+        next: any = null;
       } as any;
 
       nape.geom.Vec2 = class {
@@ -270,9 +283,16 @@ describe("ZPP_FluidProperties", () => {
       const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       const innerPooled: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: null, next: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
+        next: null,
       };
       zpp.geom.ZPP_Vec2.zpp_pool = innerPooled;
 
@@ -298,10 +318,17 @@ describe("ZPP_FluidProperties", () => {
       const nape = ZPP_FluidProperties._nape;
       let isimmutableCalled = false;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: () => { isimmutableCalled = true; },
-        _validate: null, _invalidate: null,
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: () => {
+          isimmutableCalled = true;
+        },
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
       };
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_inner = existingInner;
@@ -322,11 +349,17 @@ describe("ZPP_FluidProperties", () => {
       const nape = ZPP_FluidProperties._nape;
       let validateCalled = false;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
         _isimmutable: null,
-        _validate: () => { validateCalled = true; },
+        _validate: () => {
+          validateCalled = true;
+        },
         _invalidate: null,
-        _inuse: false, outer: null,
+        _inuse: false,
+        outer: null,
       };
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_inner = existingInner;
@@ -347,10 +380,17 @@ describe("ZPP_FluidProperties", () => {
       const nape = ZPP_FluidProperties._nape;
       let invalidateCalled = false;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null,
-        _invalidate: () => { invalidateCalled = true; },
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: () => {
+          invalidateCalled = true;
+        },
+        _inuse: false,
+        outer: null,
       };
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_inner = existingInner;
@@ -373,10 +413,17 @@ describe("ZPP_FluidProperties", () => {
       const nape = ZPP_FluidProperties._nape;
       let invalidateCalled = false;
       const existingInner: any = {
-        x: 5, y: 6, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null,
-        _invalidate: () => { invalidateCalled = true; },
-        _inuse: false, outer: null,
+        x: 5,
+        y: 6,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: () => {
+          invalidateCalled = true;
+        },
+        _inuse: false,
+        outer: null,
       };
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_inner = existingInner;
@@ -398,9 +445,15 @@ describe("ZPP_FluidProperties", () => {
       // Use non-pool path: poolVec2 = null, Vec2 constructor creates disposed vec with existing inner
       zpp.util.ZPP_PubPool.poolVec2 = null;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: false,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: false,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
       };
       nape.geom.Vec2 = class {
         zpp_inner: any = existingInner;
@@ -418,9 +471,15 @@ describe("ZPP_FluidProperties", () => {
       // Use non-pool path with immutable inner
       zpp.util.ZPP_PubPool.poolVec2 = null;
       const existingInner: any = {
-        x: 0, y: 0, weak: false, _immutable: true,
-        _isimmutable: null, _validate: null, _invalidate: null,
-        _inuse: false, outer: null,
+        x: 0,
+        y: 0,
+        weak: false,
+        _immutable: true,
+        _isimmutable: null,
+        _validate: null,
+        _invalidate: null,
+        _inuse: false,
+        outer: null,
       };
       nape.geom.Vec2 = class {
         zpp_inner: any = existingInner;

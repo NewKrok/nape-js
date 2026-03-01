@@ -111,20 +111,19 @@ export class ZPP_InteractionFilter {
 
   /** Test whether two filters allow collision between their shapes. */
   shouldCollide(x: ZPP_InteractionFilter): boolean {
-    return (this.collisionMask & x.collisionGroup) !== 0 &&
-      (x.collisionMask & this.collisionGroup) !== 0;
+    return (
+      (this.collisionMask & x.collisionGroup) !== 0 && (x.collisionMask & this.collisionGroup) !== 0
+    );
   }
 
   /** Test whether two filters allow sensor interaction. */
   shouldSense(x: ZPP_InteractionFilter): boolean {
-    return (this.sensorMask & x.sensorGroup) !== 0 &&
-      (x.sensorMask & this.sensorGroup) !== 0;
+    return (this.sensorMask & x.sensorGroup) !== 0 && (x.sensorMask & this.sensorGroup) !== 0;
   }
 
   /** Test whether two filters allow fluid interaction. */
   shouldFlow(x: ZPP_InteractionFilter): boolean {
-    return (this.fluidMask & x.fluidGroup) !== 0 &&
-      (x.fluidMask & this.fluidGroup) !== 0;
+    return (this.fluidMask & x.fluidGroup) !== 0 && (x.fluidMask & this.fluidGroup) !== 0;
   }
 
   /** Notify all shapes that the filter changed. */

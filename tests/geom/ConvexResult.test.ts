@@ -17,9 +17,7 @@ describe("ConvexResult", () => {
   });
 
   it("should throw on direct instantiation", () => {
-    expect(() => new ConvexResult()).toThrow(
-      "ConvexResult cannot be instantiated",
-    );
+    expect(() => new ConvexResult()).toThrow("ConvexResult cannot be instantiated");
   });
 
   it("should be created via compiled getConvex factory", () => {
@@ -29,12 +27,7 @@ describe("ConvexResult", () => {
     const normal = new Vec2(1, 0);
     const position = new Vec2(5, 5);
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getConvex(
-      normal,
-      position,
-      3.14,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getConvex(normal, position, 3.14, null);
 
     expect(result).toBeInstanceOf(ConvexResult);
     expect(result.toi).toBeCloseTo(3.14);
@@ -50,12 +43,7 @@ describe("ConvexResult", () => {
     const normal = new Vec2(0, 1);
     const position = new Vec2(10, 20);
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getConvex(
-      normal,
-      position,
-      1.0,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getConvex(normal, position, 1.0, null);
 
     const n = result.normal;
     expect(n).toBeDefined();
@@ -70,12 +58,7 @@ describe("ConvexResult", () => {
     const normal = new Vec2(1, 0);
     const position = new Vec2(42, 7);
 
-    const result = zpp.geom.ZPP_ConvexRayResult.getConvex(
-      normal,
-      position,
-      2.0,
-      null,
-    );
+    const result = zpp.geom.ZPP_ConvexRayResult.getConvex(normal, position, 2.0, null);
 
     const p = result.position;
     expect(p).toBeDefined();

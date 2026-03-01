@@ -103,8 +103,7 @@ export class MatMN {
     const ret = new MatMN(this.zpp_inner.n, this.zpp_inner.m);
     for (let i = 0; i < this.zpp_inner.m; i++) {
       for (let j = 0; j < this.zpp_inner.n; j++) {
-        ret.zpp_inner.x[j * ret.zpp_inner.n + i] =
-          this.zpp_inner.x[i * this.zpp_inner.n + j];
+        ret.zpp_inner.x[j * ret.zpp_inner.n + i] = this.zpp_inner.x[i * this.zpp_inner.n + j];
       }
     }
     return ret;
@@ -120,9 +119,7 @@ export class MatMN {
       for (let j = 0; j < y.zpp_inner.n; j++) {
         let v = 0.0;
         for (let k = 0; k < this.zpp_inner.n; k++) {
-          v +=
-            this.zpp_inner.x[i * this.zpp_inner.n + k] *
-            y.zpp_inner.x[k * y.zpp_inner.n + j];
+          v += this.zpp_inner.x[i * this.zpp_inner.n + k] * y.zpp_inner.x[k * y.zpp_inner.n + j];
         }
         ret.zpp_inner.x[i * ret.zpp_inner.n + j] = v;
       }

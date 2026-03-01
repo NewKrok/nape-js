@@ -174,11 +174,7 @@ export class Contact {
     const jx = colarb.nx * jnAcc - colarb.ny * jtAcc;
     const jy = colarb.ny * jnAcc + colarb.nx * jtAcc;
     if (body == colarb.b1.outer) {
-      return Vec3.get(
-        -jx,
-        -jy,
-        -(jy * cin.r1x - jx * cin.r1y) - jrAcc,
-      );
+      return Vec3.get(-jx, -jy, -(jy * cin.r1x - jx * cin.r1y) - jrAcc);
     }
     return Vec3.get(jx, jy, jy * cin.r2x - jx * cin.r2y + jrAcc);
   }

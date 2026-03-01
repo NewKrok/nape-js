@@ -311,9 +311,7 @@ describe("ZPP_OptionType", () => {
   describe("append", () => {
     it("should throw for null val", () => {
       const ot = new ZPP_OptionType();
-      expect(() => ot.append(ot.includes, null)).toThrow(
-        "Error: Cannot append null"
-      );
+      expect(() => ot.append(ot.includes, null)).toThrow("Error: Cannot append null");
     });
 
     it("should handle CbType instance", () => {
@@ -328,7 +326,7 @@ describe("ZPP_OptionType", () => {
     it("should throw for invalid types", () => {
       const ot = new ZPP_OptionType();
       expect(() => ot.append(ot.includes, 42)).toThrow(
-        "Error: Cannot append non-CbType or CbType list value"
+        "Error: Cannot append non-CbType or CbType list value",
       );
     });
 
@@ -347,13 +345,13 @@ describe("ZPP_OptionType", () => {
     it("should throw for array with non-CbType elements", () => {
       const ot = new ZPP_OptionType();
       expect(() => ot.append(ot.includes, [42])).toThrow(
-        "Error: Cannot append non-CbType or CbType list value"
+        "Error: Cannot append non-CbType or CbType list value",
       );
     });
 
     it("should handle CbTypeList instance by iterating elements", () => {
       const nape = ZPP_OptionType._nape;
-      const zpp = ZPP_OptionType._zpp;
+      void ZPP_OptionType._zpp;
       const ot = new ZPP_OptionType();
 
       // Create mock CbType inner values
@@ -424,7 +422,7 @@ describe("ZPP_OptionType", () => {
       const high = { id: 10 };
       const low = { id: 5 };
       ot.effect_change(high, true, true); // add high to includes
-      ot.effect_change(low, true, true);  // add low to includes, triggers break at val.id < j.id
+      ot.effect_change(low, true, true); // add low to includes, triggers break at val.id < j.id
       expect(ot.includes.has(high)).toBe(true);
       expect(ot.includes.has(low)).toBe(true);
     });
@@ -433,7 +431,7 @@ describe("ZPP_OptionType", () => {
       const ot = new ZPP_OptionType();
       const low = { id: 5 };
       const high = { id: 10 };
-      ot.effect_change(low, true, true);  // add low first
+      ot.effect_change(low, true, true); // add low first
       ot.effect_change(high, true, true); // add high, loop iterates past low (val.id > j.id)
       expect(ot.includes.has(low)).toBe(true);
       expect(ot.includes.has(high)).toBe(true);

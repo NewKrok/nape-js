@@ -48,10 +48,8 @@ export class Interactor {
 
     // Dispatch to concrete subclass wrapper based on runtime type
     if (inner.isBody && inner.isBody() && _bodyWrap) return _bodyWrap(inner);
-    if (inner.isShape && inner.isShape() && _shapeWrap)
-      return _shapeWrap(inner);
-    if (inner.isCompound && inner.isCompound() && _compoundWrap)
-      return _compoundWrap(inner);
+    if (inner.isShape && inner.isShape() && _shapeWrap) return _shapeWrap(inner);
+    if (inner.isCompound && inner.isCompound() && _compoundWrap) return _compoundWrap(inner);
 
     // Fallback: generic Interactor wrapper
     return getOrCreate(inner, (raw: NapeInner) => {

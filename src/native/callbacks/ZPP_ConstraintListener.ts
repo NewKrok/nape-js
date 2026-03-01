@@ -31,9 +31,7 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
 
   immutable_options(): void {
     if (this.space != null && this.space.midstep) {
-      throw new Error(
-        "Error: Cannot change listener type options during space.step()",
-      );
+      throw new Error("Error: Cannot change listener type options during space.step()");
     }
   }
 
@@ -48,10 +46,7 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
       let cx_ite1 = cb.conlisteners.head;
       while (cx_ite1 != null) {
         const j = cx_ite1.elt;
-        if (
-          this.precedence > j.precedence ||
-          (this.precedence == j.precedence && this.id > j.id)
-        ) {
+        if (this.precedence > j.precedence || (this.precedence == j.precedence && this.id > j.id)) {
           break;
         }
         pre = cx_ite1;
@@ -129,9 +124,7 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
 
   swapEvent(newev: number): void {
     if (newev != 2 && newev != 3 && newev != 4) {
-      throw new Error(
-        "Error: ConstraintListener event must be either WAKE or SLEEP only",
-      );
+      throw new Error("Error: ConstraintListener event must be either WAKE or SLEEP only");
     }
     this.removedFromSpace();
     this.event = newev;

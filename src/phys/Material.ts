@@ -65,9 +65,7 @@ export class Material {
         throw new Error("Error: Material::dynamicFriction cannot be negative");
       }
       zpp.dynamicFriction = dynamicFriction;
-      zpp.invalidate(
-        ZPP_Material.WAKE | ZPP_Material.ANGDRAG | ZPP_Material.ARBITERS,
-      );
+      zpp.invalidate(ZPP_Material.WAKE | ZPP_Material.ANGDRAG | ZPP_Material.ARBITERS);
     }
 
     if (staticFriction !== zpp.staticFriction) {
@@ -156,9 +154,7 @@ export class Material {
         throw new Error("Error: Material::dynamicFriction cannot be negative");
       }
       this.zpp_inner.dynamicFriction = value;
-      this.zpp_inner.invalidate(
-        ZPP_Material.WAKE | ZPP_Material.ANGDRAG | ZPP_Material.ARBITERS,
-      );
+      this.zpp_inner.invalidate(ZPP_Material.WAKE | ZPP_Material.ANGDRAG | ZPP_Material.ARBITERS);
     }
   }
 

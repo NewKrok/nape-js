@@ -168,10 +168,8 @@ export class ZPP_OptionType {
 
   set(options: ZPP_OptionType): this {
     if (options != (this as Any)) {
-      while (this.includes.head != null)
-        this.append_type(this.excludes, this.includes.head.elt);
-      while (this.excludes.head != null)
-        this.append_type(this.includes, this.excludes.head.elt);
+      while (this.includes.head != null) this.append_type(this.excludes, this.includes.head.elt);
+      while (this.excludes.head != null) this.append_type(this.includes, this.excludes.head.elt);
       let cx_ite = options.excludes.head;
       while (cx_ite != null) {
         const i = cx_ite.elt;
@@ -191,9 +189,7 @@ export class ZPP_OptionType {
   append(list: Any, val: Any): void {
     const napeNs = ZPP_OptionType._nape;
     if (val == null) {
-      throw new Error(
-        "Error: Cannot append null, only CbType and CbType list values"
-      );
+      throw new Error("Error: Cannot append null, only CbType and CbType list values");
     }
     if (val instanceof napeNs.callbacks.CbType) {
       const cb = val;
@@ -233,17 +229,13 @@ export class ZPP_OptionType {
         const cb2 = cbs1[_g1];
         ++_g1;
         if (!(cb2 instanceof napeNs.callbacks.CbType)) {
-          throw new Error(
-            "Error: Cannot append non-CbType or CbType list value"
-          );
+          throw new Error("Error: Cannot append non-CbType or CbType list value");
         }
         const cbx = cb2;
         this.append_type(list, cbx.zpp_inner);
       }
     } else {
-      throw new Error(
-        "Error: Cannot append non-CbType or CbType list value"
-      );
+      throw new Error("Error: Cannot append non-CbType or CbType list value");
     }
   }
 }

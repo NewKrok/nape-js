@@ -22,8 +22,12 @@ export class ShapeType {
 
   // --- Static getters for convenient access ---
 
-  static get CIRCLE(): ShapeType { return ShapeType.get_CIRCLE(); }
-  static get POLYGON(): ShapeType { return ShapeType.get_POLYGON(); }
+  static get CIRCLE(): ShapeType {
+    return ShapeType.get_CIRCLE();
+  }
+  static get POLYGON(): ShapeType {
+    return ShapeType.get_POLYGON();
+  }
 
   // --- Lazy singleton accessors (used by compiled code) ---
 

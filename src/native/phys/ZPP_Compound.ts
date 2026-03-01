@@ -71,24 +71,19 @@ export class ZPP_Compound {
     this.wrap_bodies = zpp.util.ZPP_BodyList.get(this.bodies);
     this.wrap_bodies.zpp_inner.adder = this.bodies_adder.bind(this);
     this.wrap_bodies.zpp_inner.subber = this.bodies_subber.bind(this);
-    this.wrap_bodies.zpp_inner._modifiable =
-      this.bodies_modifiable.bind(this);
+    this.wrap_bodies.zpp_inner._modifiable = this.bodies_modifiable.bind(this);
 
     this.constraints = new zpp.util.ZNPList_ZPP_Constraint();
     this.wrap_constraints = zpp.util.ZPP_ConstraintList.get(this.constraints);
-    this.wrap_constraints.zpp_inner.adder =
-      this.constraints_adder.bind(this);
-    this.wrap_constraints.zpp_inner.subber =
-      this.constraints_subber.bind(this);
-    this.wrap_constraints.zpp_inner._modifiable =
-      this.constraints_modifiable.bind(this);
+    this.wrap_constraints.zpp_inner.adder = this.constraints_adder.bind(this);
+    this.wrap_constraints.zpp_inner.subber = this.constraints_subber.bind(this);
+    this.wrap_constraints.zpp_inner._modifiable = this.constraints_modifiable.bind(this);
 
     this.compounds = new zpp.util.ZNPList_ZPP_Compound();
     this.wrap_compounds = zpp.util.ZPP_CompoundList.get(this.compounds);
     this.wrap_compounds.zpp_inner.adder = this.compounds_adder.bind(this);
     this.wrap_compounds.zpp_inner.subber = this.compounds_subber.bind(this);
-    this.wrap_compounds.zpp_inner._modifiable =
-      this.compounds_modifiable.bind(this);
+    this.wrap_compounds.zpp_inner._modifiable = this.compounds_modifiable.bind(this);
   }
 
   // --- Mid-step guard (ZPP_Compound-specific) ---
@@ -278,16 +273,8 @@ export class ZPP_Compound {
       const c = cx_ite.elt;
       const cc = c.copy(dict, todo);
       cc.zpp_inner.immutable_midstep("Compound::compound");
-      if (
-        (cc.zpp_inner.compound == null
-          ? null
-          : cc.zpp_inner.compound.outer) !== ret
-      ) {
-        if (
-          (cc.zpp_inner.compound == null
-            ? null
-            : cc.zpp_inner.compound.outer) != null
-        ) {
+      if ((cc.zpp_inner.compound == null ? null : cc.zpp_inner.compound.outer) !== ret) {
+        if ((cc.zpp_inner.compound == null ? null : cc.zpp_inner.compound.outer) != null) {
           (cc.zpp_inner.compound == null
             ? null
             : cc.zpp_inner.compound.outer
@@ -311,16 +298,8 @@ export class ZPP_Compound {
       const b = cx_ite1.elt;
       const bc = b.outer.copy();
       dict!.push(zpp.constraint.ZPP_CopyHelper.dict(b.id, bc));
-      if (
-        (bc.zpp_inner.compound == null
-          ? null
-          : bc.zpp_inner.compound.outer) !== ret
-      ) {
-        if (
-          (bc.zpp_inner.compound == null
-            ? null
-            : bc.zpp_inner.compound.outer) != null
-        ) {
+      if ((bc.zpp_inner.compound == null ? null : bc.zpp_inner.compound.outer) !== ret) {
+        if ((bc.zpp_inner.compound == null ? null : bc.zpp_inner.compound.outer) != null) {
           (bc.zpp_inner.compound == null
             ? null
             : bc.zpp_inner.compound.outer
@@ -343,16 +322,8 @@ export class ZPP_Compound {
     while (cx_ite2 != null) {
       const c1 = cx_ite2.elt;
       const cc1 = c1.copy(dict, todo);
-      if (
-        (cc1.zpp_inner.compound == null
-          ? null
-          : cc1.zpp_inner.compound.outer) !== ret
-      ) {
-        if (
-          (cc1.zpp_inner.compound == null
-            ? null
-            : cc1.zpp_inner.compound.outer) != null
-        ) {
+      if ((cc1.zpp_inner.compound == null ? null : cc1.zpp_inner.compound.outer) !== ret) {
+        if ((cc1.zpp_inner.compound == null ? null : cc1.zpp_inner.compound.outer) != null) {
           (cc1.zpp_inner.compound == null
             ? null
             : cc1.zpp_inner.compound.outer
@@ -419,10 +390,7 @@ export class ZPP_Compound {
 
     // Copy ZPP_Interactor prototype methods (only those not already on ZPP_Compound)
     for (const k in ZPP_Interactor.prototype) {
-      if (
-        k !== "__class__" &&
-        !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)
-      ) {
+      if (k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)) {
         (ZPP_Compound.prototype as Any)[k] = ZPP_Interactor.prototype[k];
       }
     }

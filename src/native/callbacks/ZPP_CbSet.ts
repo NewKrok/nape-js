@@ -261,9 +261,7 @@ export class ZPP_CbSet {
           let tmp: boolean;
           if (nite != null) {
             const b = nite.elt;
-            tmp =
-              cx.precedence > b.precedence ||
-              (cx.precedence == b.precedence && cx.id > b.id);
+            tmp = cx.precedence > b.precedence || (cx.precedence == b.precedence && cx.id > b.id);
           } else {
             tmp = true;
           }
@@ -332,9 +330,7 @@ export class ZPP_CbSet {
           let tmp: boolean;
           if (nite != null) {
             const b = nite.elt;
-            tmp =
-              cx.precedence > b.precedence ||
-              (cx.precedence == b.precedence && cx.id > b.id);
+            tmp = cx.precedence > b.precedence || (cx.precedence == b.precedence && cx.id > b.id);
           } else {
             tmp = true;
           }
@@ -407,9 +403,7 @@ export class ZPP_CbSet {
           let tmp: boolean;
           if (nite != null) {
             const b = nite.elt;
-            tmp =
-              cx.precedence > b.precedence ||
-              (cx.precedence == b.precedence && cx.id > b.id);
+            tmp = cx.precedence > b.precedence || (cx.precedence == b.precedence && cx.id > b.id);
           } else {
             tmp = true;
           }

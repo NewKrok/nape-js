@@ -11,7 +11,11 @@ describe("ZPP_InteractionFilter", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_InteractionFilter.__name__).toEqual(["zpp_nape", "dynamics", "ZPP_InteractionFilter"]);
+      expect(ZPP_InteractionFilter.__name__).toEqual([
+        "zpp_nape",
+        "dynamics",
+        "ZPP_InteractionFilter",
+      ]);
     });
   });
 

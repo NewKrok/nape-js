@@ -8,7 +8,6 @@ import { getNape } from "../core/engine";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import { ZPP_InteractionListener } from "../native/callbacks/ZPP_InteractionListener";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
-import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { Listener } from "./Listener";
 import { CbEvent } from "./CbEvent";
 import { InteractionType } from "./InteractionType";
@@ -57,12 +56,10 @@ export class InteractionListener extends Listener {
       throw new Error("Error: InteractionListener::handler cannot be null");
     }
     if (event == null) {
-      throw new Error(
-        "Error: CbEvent cannot be null for InteractionListener",
-      );
+      throw new Error("Error: CbEvent cannot be null for InteractionListener");
     }
 
-    let xevent = -1;
+    let xevent: number;
     if (event === CbEvent.BEGIN) {
       xevent = 0;
     } else if (event === CbEvent.END) {
@@ -91,9 +88,7 @@ export class InteractionListener extends Listener {
 
     // Set interaction type
     if (interactionType == null) {
-      throw new Error(
-        "Error: Cannot set listener interaction type to null",
-      );
+      throw new Error("Error: Cannot set listener interaction type to null");
     }
     const currentType = numberToInteractionType(this.zpp_inner_zn.itype);
     if (currentType != interactionType) {
@@ -134,9 +129,7 @@ export class InteractionListener extends Listener {
 
   set interactionType(interactionType: InteractionType | null) {
     if (interactionType == null) {
-      throw new Error(
-        "Error: Cannot set listener interaction type to null",
-      );
+      throw new Error("Error: Cannot set listener interaction type to null");
     }
     const currentType = numberToInteractionType(this.zpp_inner_zn.itype);
     if (currentType != interactionType) {
