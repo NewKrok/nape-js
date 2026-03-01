@@ -1,6 +1,8 @@
 import { getNape } from "../core/engine";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
+import { ZPP_Contact } from "../native/dynamics/ZPP_Contact";
+import type { ZPP_IContact } from "../native/dynamics/ZPP_IContact";
 
 type Any = any;
 
@@ -10,13 +12,13 @@ type Any = any;
  * Contacts are pooled internally by the engine — they cannot be created directly.
  * Access contacts via `CollisionArbiter.contacts`.
  *
- * Thin wrapper — delegates to compiled ZPP_Contact (not yet extracted).
+ * Fully modernized — wraps extracted ZPP_Contact directly.
  */
 export class Contact {
   static __name__ = ["nape", "dynamics", "Contact"];
 
-  /** @internal */
-  zpp_inner: Any;
+  /** @internal Direct typed access to the extracted ZPP_Contact. */
+  zpp_inner: ZPP_Contact;
 
   /** @internal Backward-compat: compiled code accesses `obj.zpp_inner`. */
   get _inner(): NapeInner {
@@ -24,9 +26,8 @@ export class Contact {
   }
 
   constructor() {
-    this.zpp_inner = null;
-    const zpp = getNape().__zpp;
-    if (!zpp.dynamics.ZPP_Contact.internal) {
+    this.zpp_inner = null as any;
+    if (!ZPP_Contact.internal) {
       throw new Error("Error: Cannot instantiate Contact derp!");
     }
   }
@@ -87,7 +88,7 @@ export class Contact {
   normalImpulse(body: Any = null): Vec3 {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
-    const cin = this.zpp_inner.inner;
+    const cin: ZPP_IContact = this.zpp_inner.inner;
     const jnAcc = cin.jnAcc;
     if (body == null) {
       return Vec3.get(colarb.nx * jnAcc, colarb.ny * jnAcc);
@@ -115,7 +116,7 @@ export class Contact {
   tangentImpulse(body: Any = null): Vec3 {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
-    const cin = this.zpp_inner.inner;
+    const cin: ZPP_IContact = this.zpp_inner.inner;
     const jtAcc = cin.jtAcc;
     if (body == null) {
       return Vec3.get(-colarb.ny * jtAcc, colarb.nx * jtAcc);
@@ -159,7 +160,7 @@ export class Contact {
   totalImpulse(body: Any = null): Vec3 {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
-    const cin = this.zpp_inner.inner;
+    const cin: ZPP_IContact = this.zpp_inner.inner;
     const jnAcc = cin.jnAcc;
     const jtAcc = cin.jtAcc;
     const jrAcc = colarb.jrAcc;
@@ -208,6 +209,20 @@ export class Contact {
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// Module registration
+// ---------------------------------------------------------------------------
+
+// Set wrapper factory on ZPP_Contact so wrapper() creates typed Contact instances
+ZPP_Contact._wrapFn = (zpp: ZPP_Contact): Contact => {
+  ZPP_Contact.internal = true;
+  const c = new Contact();
+  ZPP_Contact.internal = false;
+  c.zpp_inner = zpp;
+  zpp.outer = c;
+  return c;
+};
 
 // Self-register in the compiled namespace
 const nape = getNape();
