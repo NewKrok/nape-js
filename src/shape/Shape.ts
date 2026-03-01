@@ -5,7 +5,7 @@ import { Body } from "../phys/Body";
 import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
-import { ShapeType, fromNativeShapeType } from "./ShapeType";
+import { ShapeType } from "./ShapeType";
 
 // ---------------------------------------------------------------------------
 // Subclass wrap bindings — Circle and Polygon register their _wrap functions
@@ -59,7 +59,7 @@ export class Shape {
   // ---------------------------------------------------------------------------
 
   get type(): ShapeType {
-    return fromNativeShapeType(this._inner.get_type());
+    return this._inner.get_type();
   }
 
   get body(): Body {

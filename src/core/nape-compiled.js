@@ -513,147 +513,15 @@ define(function () {
     return this.zpp_inner_zn.handler;
   };
   nape.callbacks.BodyListener.prototype.__class__ = nape.callbacks.BodyListener;
-  nape.callbacks.CbEvent = $hxClasses["nape.callbacks.CbEvent"] = function () {
+  // nape.callbacks.CbEvent: converted to TypeScript → src/callbacks/CbEvent.ts
+  // Minimal stub needed because compiled init code (line ~119982) creates singletons.
+  // The real CbEvent class replaces this at module load time via self-registration.
+  nape.callbacks.CbEvent = function () {
     if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "CbEvent" + " derp!"
-      );
+      throw new js._Boot.HaxeError("Error: Cannot instantiate CbEvent derp!");
     }
   };
   nape.callbacks.CbEvent.__name__ = ["nape", "callbacks", "CbEvent"];
-  nape.callbacks.CbEvent.BEGIN = null;
-  nape.callbacks.CbEvent.get_BEGIN = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_BEGIN == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_BEGIN = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_BEGIN;
-  };
-  nape.callbacks.CbEvent.ONGOING = null;
-  nape.callbacks.CbEvent.get_ONGOING = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_ONGOING == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_ONGOING = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_ONGOING;
-  };
-  nape.callbacks.CbEvent.END = null;
-  nape.callbacks.CbEvent.get_END = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_END == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_END = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_END;
-  };
-  nape.callbacks.CbEvent.WAKE = null;
-  nape.callbacks.CbEvent.get_WAKE = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_WAKE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_WAKE = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_WAKE;
-  };
-  nape.callbacks.CbEvent.SLEEP = null;
-  nape.callbacks.CbEvent.get_SLEEP = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_SLEEP == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_SLEEP = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_SLEEP;
-  };
-  nape.callbacks.CbEvent.BREAK = null;
-  nape.callbacks.CbEvent.get_BREAK = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_BREAK == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_BREAK = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_BREAK;
-  };
-  nape.callbacks.CbEvent.PRE = null;
-  nape.callbacks.CbEvent.get_PRE = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_PRE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_PRE = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.CbEvent_PRE;
-  };
-  nape.callbacks.CbEvent.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.CbEvent_PRE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.CbEvent_PRE = new nape.callbacks.CbEvent();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.CbEvent_PRE) {
-      return "PRE";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.CbEvent_BEGIN == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.CbEvent_BEGIN = new nape.callbacks.CbEvent();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.CbEvent_BEGIN) {
-        return "BEGIN";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.CbEvent_ONGOING == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.CbEvent_ONGOING =
-            new nape.callbacks.CbEvent();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.CbEvent_ONGOING) {
-          return "ONGOING";
-        } else {
-          if (zpp_nape.util.ZPP_Flags.CbEvent_END == null) {
-            zpp_nape.util.ZPP_Flags.internal = true;
-            zpp_nape.util.ZPP_Flags.CbEvent_END = new nape.callbacks.CbEvent();
-            zpp_nape.util.ZPP_Flags.internal = false;
-          }
-          if (this == zpp_nape.util.ZPP_Flags.CbEvent_END) {
-            return "END";
-          } else {
-            if (zpp_nape.util.ZPP_Flags.CbEvent_WAKE == null) {
-              zpp_nape.util.ZPP_Flags.internal = true;
-              zpp_nape.util.ZPP_Flags.CbEvent_WAKE =
-                new nape.callbacks.CbEvent();
-              zpp_nape.util.ZPP_Flags.internal = false;
-            }
-            if (this == zpp_nape.util.ZPP_Flags.CbEvent_WAKE) {
-              return "WAKE";
-            } else {
-              if (zpp_nape.util.ZPP_Flags.CbEvent_SLEEP == null) {
-                zpp_nape.util.ZPP_Flags.internal = true;
-                zpp_nape.util.ZPP_Flags.CbEvent_SLEEP =
-                  new nape.callbacks.CbEvent();
-                zpp_nape.util.ZPP_Flags.internal = false;
-              }
-              if (this == zpp_nape.util.ZPP_Flags.CbEvent_SLEEP) {
-                return "SLEEP";
-              } else {
-                if (zpp_nape.util.ZPP_Flags.CbEvent_BREAK == null) {
-                  zpp_nape.util.ZPP_Flags.internal = true;
-                  zpp_nape.util.ZPP_Flags.CbEvent_BREAK =
-                    new nape.callbacks.CbEvent();
-                  zpp_nape.util.ZPP_Flags.internal = false;
-                }
-                if (this == zpp_nape.util.ZPP_Flags.CbEvent_BREAK) {
-                  return "BREAK";
-                } else {
-                  return "";
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  };
   nape.callbacks.CbEvent.prototype.__class__ = nape.callbacks.CbEvent;
   // nape.callbacks.CbType: converted to TypeScript → src/callbacks/CbType.ts
   // Minimal stub so ANY_* singletons can be created during compiled init (line ~121055).
@@ -1782,105 +1650,8 @@ define(function () {
     };
   nape.callbacks.InteractionListener.prototype.__class__ =
     nape.callbacks.InteractionListener;
-  nape.callbacks.InteractionType = $hxClasses[
-    "nape.callbacks.InteractionType"
-  ] = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "InteractionType" + " derp!"
-      );
-    }
-  };
-  nape.callbacks.InteractionType.__name__ = [
-    "nape",
-    "callbacks",
-    "InteractionType",
-  ];
-  nape.callbacks.InteractionType.COLLISION = null;
-  nape.callbacks.InteractionType.get_COLLISION = function () {
-    if (zpp_nape.util.ZPP_Flags.InteractionType_COLLISION == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InteractionType_COLLISION =
-        new nape.callbacks.InteractionType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.InteractionType_COLLISION;
-  };
-  nape.callbacks.InteractionType.SENSOR = null;
-  nape.callbacks.InteractionType.get_SENSOR = function () {
-    if (zpp_nape.util.ZPP_Flags.InteractionType_SENSOR == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InteractionType_SENSOR =
-        new nape.callbacks.InteractionType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.InteractionType_SENSOR;
-  };
-  nape.callbacks.InteractionType.FLUID = null;
-  nape.callbacks.InteractionType.get_FLUID = function () {
-    if (zpp_nape.util.ZPP_Flags.InteractionType_FLUID == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InteractionType_FLUID =
-        new nape.callbacks.InteractionType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.InteractionType_FLUID;
-  };
-  nape.callbacks.InteractionType.ANY = null;
-  nape.callbacks.InteractionType.get_ANY = function () {
-    if (zpp_nape.util.ZPP_Flags.InteractionType_ANY == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InteractionType_ANY =
-        new nape.callbacks.InteractionType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.InteractionType_ANY;
-  };
-  nape.callbacks.InteractionType.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.InteractionType_COLLISION == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.InteractionType_COLLISION =
-        new nape.callbacks.InteractionType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.InteractionType_COLLISION) {
-      return "COLLISION";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.InteractionType_SENSOR == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.InteractionType_SENSOR =
-          new nape.callbacks.InteractionType();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.InteractionType_SENSOR) {
-        return "SENSOR";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.InteractionType_FLUID == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.InteractionType_FLUID =
-            new nape.callbacks.InteractionType();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.InteractionType_FLUID) {
-          return "FLUID";
-        } else {
-          if (zpp_nape.util.ZPP_Flags.InteractionType_ANY == null) {
-            zpp_nape.util.ZPP_Flags.internal = true;
-            zpp_nape.util.ZPP_Flags.InteractionType_ANY =
-              new nape.callbacks.InteractionType();
-            zpp_nape.util.ZPP_Flags.internal = false;
-          }
-          if (this == zpp_nape.util.ZPP_Flags.InteractionType_ANY) {
-            return "ANY";
-          } else {
-            return "";
-          }
-        }
-      }
-    }
-  };
-  nape.callbacks.InteractionType.prototype.__class__ =
-    nape.callbacks.InteractionType;
+  // nape.callbacks.InteractionType: converted to TypeScript → src/callbacks/InteractionType.ts
+  // Registration handled by InteractionType.ts at module load time.
   nape.callbacks.ListenerIterator = $hxClasses[
     "nape.callbacks.ListenerIterator"
   ] = function () {
@@ -2501,94 +2272,8 @@ define(function () {
   nape.callbacks.PreCallback.__super__ = nape.callbacks.Callback;
   nape.callbacks.PreCallback.prototype = Object.create(nape.callbacks.Callback.prototype);
   nape.callbacks.PreCallback.prototype.__class__ = nape.callbacks.PreCallback;
-  nape.callbacks.PreFlag = $hxClasses["nape.callbacks.PreFlag"] = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "PreFlag" + " derp!"
-      );
-    }
-  };
-  nape.callbacks.PreFlag.__name__ = ["nape", "callbacks", "PreFlag"];
-  nape.callbacks.PreFlag.ACCEPT = null;
-  nape.callbacks.PreFlag.get_ACCEPT = function () {
-    if (zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT = new nape.callbacks.PreFlag();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT;
-  };
-  nape.callbacks.PreFlag.IGNORE = null;
-  nape.callbacks.PreFlag.get_IGNORE = function () {
-    if (zpp_nape.util.ZPP_Flags.PreFlag_IGNORE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.PreFlag_IGNORE = new nape.callbacks.PreFlag();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.PreFlag_IGNORE;
-  };
-  nape.callbacks.PreFlag.ACCEPT_ONCE = null;
-  nape.callbacks.PreFlag.get_ACCEPT_ONCE = function () {
-    if (zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT_ONCE =
-        new nape.callbacks.PreFlag();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT_ONCE;
-  };
-  nape.callbacks.PreFlag.IGNORE_ONCE = null;
-  nape.callbacks.PreFlag.get_IGNORE_ONCE = function () {
-    if (zpp_nape.util.ZPP_Flags.PreFlag_IGNORE_ONCE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.PreFlag_IGNORE_ONCE =
-        new nape.callbacks.PreFlag();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.PreFlag_IGNORE_ONCE;
-  };
-  nape.callbacks.PreFlag.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT = new nape.callbacks.PreFlag();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT) {
-      return "ACCEPT";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.PreFlag_IGNORE == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.PreFlag_IGNORE = new nape.callbacks.PreFlag();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.PreFlag_IGNORE) {
-        return "IGNORE";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT_ONCE =
-            new nape.callbacks.PreFlag();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.PreFlag_ACCEPT_ONCE) {
-          return "ACCEPT_ONCE";
-        } else {
-          if (zpp_nape.util.ZPP_Flags.PreFlag_IGNORE_ONCE == null) {
-            zpp_nape.util.ZPP_Flags.internal = true;
-            zpp_nape.util.ZPP_Flags.PreFlag_IGNORE_ONCE =
-              new nape.callbacks.PreFlag();
-            zpp_nape.util.ZPP_Flags.internal = false;
-          }
-          if (this == zpp_nape.util.ZPP_Flags.PreFlag_IGNORE_ONCE) {
-            return "IGNORE_ONCE";
-          } else {
-            return "";
-          }
-        }
-      }
-    }
-  };
-  nape.callbacks.PreFlag.prototype.__class__ = nape.callbacks.PreFlag;
+  // nape.callbacks.PreFlag: converted to TypeScript → src/callbacks/PreFlag.ts
+  // Registration handled by PreFlag.ts at module load time.
   nape.callbacks.PreListener = $hxClasses["nape.callbacks.PreListener"] =
     function (interactionType, options1, options2, handler, precedence, pure) {
       if (pure == null) {
@@ -24637,71 +24322,15 @@ define(function () {
     return this;
   };
   nape.phys.BodyList.prototype.__class__ = nape.phys.BodyList;
-  nape.phys.BodyType = $hxClasses["nape.phys.BodyType"] = function () {
+  // nape.phys.BodyType: converted to TypeScript → src/phys/BodyType.ts
+  // Minimal stub needed because compiled init code (line ~120132) creates singletons.
+  // The real BodyType class replaces this at module load time via self-registration.
+  nape.phys.BodyType = function () {
     if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "BodyType" + " derp!"
-      );
+      throw new js._Boot.HaxeError("Error: Cannot instantiate BodyType derp!");
     }
   };
   nape.phys.BodyType.__name__ = ["nape", "phys", "BodyType"];
-  nape.phys.BodyType.STATIC = null;
-  nape.phys.BodyType.get_STATIC = function () {
-    if (zpp_nape.util.ZPP_Flags.BodyType_STATIC == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.BodyType_STATIC;
-  };
-  nape.phys.BodyType.DYNAMIC = null;
-  nape.phys.BodyType.get_DYNAMIC = function () {
-    if (zpp_nape.util.ZPP_Flags.BodyType_DYNAMIC == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.BodyType_DYNAMIC = new nape.phys.BodyType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.BodyType_DYNAMIC;
-  };
-  nape.phys.BodyType.KINEMATIC = null;
-  nape.phys.BodyType.get_KINEMATIC = function () {
-    if (zpp_nape.util.ZPP_Flags.BodyType_KINEMATIC == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.BodyType_KINEMATIC = new nape.phys.BodyType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.BodyType_KINEMATIC;
-  };
-  nape.phys.BodyType.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.BodyType_STATIC == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.BodyType_STATIC) {
-      return "STATIC";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.BodyType_DYNAMIC == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.BodyType_DYNAMIC = new nape.phys.BodyType();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.BodyType_DYNAMIC) {
-        return "DYNAMIC";
-      } else {
-        if (zpp_nape.util.ZPP_Flags.BodyType_KINEMATIC == null) {
-          zpp_nape.util.ZPP_Flags.internal = true;
-          zpp_nape.util.ZPP_Flags.BodyType_KINEMATIC = new nape.phys.BodyType();
-          zpp_nape.util.ZPP_Flags.internal = false;
-        }
-        if (this == zpp_nape.util.ZPP_Flags.BodyType_KINEMATIC) {
-          return "KINEMATIC";
-        } else {
-          return "";
-        }
-      }
-    }
-  };
   nape.phys.BodyType.prototype.__class__ = nape.phys.BodyType;
   nape.phys.Compound = $hxClasses["nape.phys.Compound"] = function () {
     this.zpp_inner = null;
@@ -30432,53 +30061,15 @@ define(function () {
     return this;
   };
   nape.shape.ShapeList.prototype.__class__ = nape.shape.ShapeList;
-  nape.shape.ShapeType = $hxClasses["nape.shape.ShapeType"] = function () {
+  // nape.shape.ShapeType: converted to TypeScript → src/shape/ShapeType.ts
+  // Minimal stub needed because compiled init code (line ~120163) creates singletons.
+  // The real ShapeType class replaces this at module load time via self-registration.
+  nape.shape.ShapeType = function () {
     if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate " + "ShapeType" + " derp!"
-      );
+      throw new js._Boot.HaxeError("Error: Cannot instantiate ShapeType derp!");
     }
   };
   nape.shape.ShapeType.__name__ = ["nape", "shape", "ShapeType"];
-  nape.shape.ShapeType.CIRCLE = null;
-  nape.shape.ShapeType.get_CIRCLE = function () {
-    if (zpp_nape.util.ZPP_Flags.ShapeType_CIRCLE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ShapeType_CIRCLE = new nape.shape.ShapeType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ShapeType_CIRCLE;
-  };
-  nape.shape.ShapeType.POLYGON = null;
-  nape.shape.ShapeType.get_POLYGON = function () {
-    if (zpp_nape.util.ZPP_Flags.ShapeType_POLYGON == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ShapeType_POLYGON = new nape.shape.ShapeType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    return zpp_nape.util.ZPP_Flags.ShapeType_POLYGON;
-  };
-  nape.shape.ShapeType.prototype.toString = function () {
-    if (zpp_nape.util.ZPP_Flags.ShapeType_CIRCLE == null) {
-      zpp_nape.util.ZPP_Flags.internal = true;
-      zpp_nape.util.ZPP_Flags.ShapeType_CIRCLE = new nape.shape.ShapeType();
-      zpp_nape.util.ZPP_Flags.internal = false;
-    }
-    if (this == zpp_nape.util.ZPP_Flags.ShapeType_CIRCLE) {
-      return "CIRCLE";
-    } else {
-      if (zpp_nape.util.ZPP_Flags.ShapeType_POLYGON == null) {
-        zpp_nape.util.ZPP_Flags.internal = true;
-        zpp_nape.util.ZPP_Flags.ShapeType_POLYGON = new nape.shape.ShapeType();
-        zpp_nape.util.ZPP_Flags.internal = false;
-      }
-      if (this == zpp_nape.util.ZPP_Flags.ShapeType_POLYGON) {
-        return "POLYGON";
-      } else {
-        return "";
-      }
-    }
-  };
   nape.shape.ShapeType.prototype.__class__ = nape.shape.ShapeType;
   // nape.shape.ValidationResult: stub → src/shape/ValidationResult.ts
   // Minimal stub needed because compiled shape validation code creates instances.

@@ -8,7 +8,7 @@ import { Space } from "../space/Space";
 import { Material } from "./Material";
 import { FluidProperties } from "./FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
-import { BodyType, toNativeBodyType, fromNativeBodyType } from "./BodyType";
+import { BodyType } from "./BodyType";
 
 /**
  * A rigid body in the physics simulation.
@@ -17,8 +17,8 @@ export class Body {
   /** @internal */
   readonly _inner: NapeInner;
 
-  constructor(type: BodyType = BodyType.DYNAMIC, position?: Vec2) {
-    this._inner = new (getNape().phys.Body)(toNativeBodyType(type), position?._inner);
+  constructor(type: BodyType = BodyType.get_DYNAMIC(), position?: Vec2) {
+    this._inner = new (getNape().phys.Body)(type, position?._inner);
   }
 
   /** @internal */
@@ -35,10 +35,10 @@ export class Body {
   // ---------------------------------------------------------------------------
 
   get type(): BodyType {
-    return fromNativeBodyType(this._inner.get_type());
+    return this._inner.get_type();
   }
   set type(value: BodyType) {
-    this._inner.set_type(toNativeBodyType(value));
+    this._inner.set_type(value);
   }
 
   isStatic(): boolean {

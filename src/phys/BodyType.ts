@@ -1,4 +1,7 @@
 import { getNape } from "../core/engine";
+import { ZPP_Flags } from "../native/util/ZPP_Flags";
+
+type Any = any;
 
 /**
  * Body type enumeration.
@@ -6,31 +9,76 @@ import { getNape } from "../core/engine";
  * - `STATIC`    — immovable, infinite mass (walls, floors)
  * - `DYNAMIC`   — fully simulated (default)
  * - `KINEMATIC` — moves only via velocity, not affected by forces
+ *
+ * Converted from nape-compiled.js lines 24640–24705.
  */
-export enum BodyType {
-  STATIC = "STATIC",
-  DYNAMIC = "DYNAMIC",
-  KINEMATIC = "KINEMATIC",
-}
+export class BodyType {
+  static __name__ = ["nape", "phys", "BodyType"];
 
-/** @internal Convert a TS BodyType enum to the raw Haxe BodyType object. */
-export function toNativeBodyType(type: BodyType): any {
-  const nape = getNape();
-  switch (type) {
-    case BodyType.STATIC:
-      return nape.phys.BodyType.get_STATIC();
-    case BodyType.DYNAMIC:
-      return nape.phys.BodyType.get_DYNAMIC();
-    case BodyType.KINEMATIC:
-      return nape.phys.BodyType.get_KINEMATIC();
+  constructor() {
+    if (!ZPP_Flags.internal) {
+      throw new Error("Error: Cannot instantiate BodyType derp!");
+    }
+  }
+
+  // --- Static getters for convenient access (BodyType.DYNAMIC etc.) ---
+
+  static get STATIC(): BodyType { return BodyType.get_STATIC(); }
+  static get DYNAMIC(): BodyType { return BodyType.get_DYNAMIC(); }
+  static get KINEMATIC(): BodyType { return BodyType.get_KINEMATIC(); }
+
+  // --- Lazy singleton accessors (used by compiled code) ---
+
+  static get_STATIC(): BodyType {
+    if (ZPP_Flags.BodyType_STATIC == null) {
+      ZPP_Flags.internal = true;
+      ZPP_Flags.BodyType_STATIC = new BodyType();
+      ZPP_Flags.internal = false;
+    }
+    return ZPP_Flags.BodyType_STATIC;
+  }
+
+  static get_DYNAMIC(): BodyType {
+    if (ZPP_Flags.BodyType_DYNAMIC == null) {
+      ZPP_Flags.internal = true;
+      ZPP_Flags.BodyType_DYNAMIC = new BodyType();
+      ZPP_Flags.internal = false;
+    }
+    return ZPP_Flags.BodyType_DYNAMIC;
+  }
+
+  static get_KINEMATIC(): BodyType {
+    if (ZPP_Flags.BodyType_KINEMATIC == null) {
+      ZPP_Flags.internal = true;
+      ZPP_Flags.BodyType_KINEMATIC = new BodyType();
+      ZPP_Flags.internal = false;
+    }
+    return ZPP_Flags.BodyType_KINEMATIC;
+  }
+
+  toString(): string {
+    if (this === BodyType.get_STATIC()) return "STATIC";
+    if (this === BodyType.get_DYNAMIC()) return "DYNAMIC";
+    if (this === BodyType.get_KINEMATIC()) return "KINEMATIC";
+    return "";
   }
 }
 
-/** @internal Convert a raw Haxe BodyType object to the TS enum. */
-export function fromNativeBodyType(native: any): BodyType {
-  const nape = getNape();
-  if (native === nape.phys.BodyType.get_STATIC()) return BodyType.STATIC;
-  if (native === nape.phys.BodyType.get_DYNAMIC()) return BodyType.DYNAMIC;
-  if (native === nape.phys.BodyType.get_KINEMATIC()) return BodyType.KINEMATIC;
-  throw new Error("Unknown BodyType");
+// ---------------------------------------------------------------------------
+// Register this class in the compiled namespace
+// ---------------------------------------------------------------------------
+const nape = getNape();
+
+// Fix prototypes of singletons created by the compiled stub at init time.
+if (ZPP_Flags.BodyType_STATIC != null) {
+  Object.setPrototypeOf(ZPP_Flags.BodyType_STATIC, BodyType.prototype);
 }
+if (ZPP_Flags.BodyType_DYNAMIC != null) {
+  Object.setPrototypeOf(ZPP_Flags.BodyType_DYNAMIC, BodyType.prototype);
+}
+if (ZPP_Flags.BodyType_KINEMATIC != null) {
+  Object.setPrototypeOf(ZPP_Flags.BodyType_KINEMATIC, BodyType.prototype);
+}
+
+nape.phys.BodyType = BodyType;
+(BodyType.prototype as Any).__class__ = BodyType;

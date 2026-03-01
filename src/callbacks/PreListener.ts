@@ -2,8 +2,8 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { CbType } from "./CbType";
 import { OptionType } from "./OptionType";
-import { InteractionType, toNativeInteractionType } from "./InteractionType";
-import { PreFlag, toNativePreFlag } from "./PreFlag";
+import { InteractionType } from "./InteractionType";
+import { PreFlag } from "./PreFlag";
 import { Listener } from "./Listener";
 import type { NapeInner, Writable } from "../geom/Vec2";
 
@@ -22,20 +22,11 @@ export class PreListener extends Listener {
   ) {
     super();
 
-    // Wrap handler to auto-convert PreFlag enum values to native
-    const wrappedHandler = (cb: NapeInner) => {
-      const result = handler(cb);
-      if (typeof result === "string" && result in PreFlag) {
-        return toNativePreFlag(result as PreFlag);
-      }
-      return result;
-    };
-
     (this as Writable<PreListener>)._inner = new (getNape().callbacks.PreListener)(
-      toNativeInteractionType(interactionType),
+      interactionType,
       options1._inner,
       options2._inner,
-      wrappedHandler,
+      handler,
       precedence,
       pure,
     );

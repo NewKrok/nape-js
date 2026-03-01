@@ -1,10 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import type { NapeInner, Writable } from "../geom/Vec2";
-import { CbEvent, toNativeCbEvent } from "./CbEvent";
+import { CbEvent } from "./CbEvent";
 import { CbType } from "./CbType";
 import { OptionType } from "./OptionType";
-import { InteractionType, toNativeInteractionType } from "./InteractionType";
+import { InteractionType } from "./InteractionType";
 import { Listener } from "./Listener";
 
 /**
@@ -29,8 +29,8 @@ export class InteractionListener extends Listener {
   ) {
     super();
     (this as Writable<InteractionListener>)._inner = new (getNape().callbacks.InteractionListener)(
-      toNativeCbEvent(event),
-      toNativeInteractionType(interactionType),
+      event,
+      interactionType,
       options1._inner,
       options2._inner,
       handler,

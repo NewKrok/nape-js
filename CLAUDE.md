@@ -65,6 +65,11 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **ConstraintCallback** | `src/callbacks/ConstraintCallback.ts` | 4 | Constraint event callback, extends Callback, stub |
 | **InteractionCallback** | `src/callbacks/InteractionCallback.ts` | 4 | Interaction event callback, extends Callback, stub |
 | **PreCallback** | `src/callbacks/PreCallback.ts` | 4 | Pre-interaction callback, extends Callback, stub |
+| **CbEvent** | `src/callbacks/CbEvent.ts` | 18 | Singleton enum (BEGIN/ONGOING/END/WAKE/SLEEP/BREAK/PRE), init-time stub + setPrototypeOf |
+| **InteractionType** | `src/callbacks/InteractionType.ts` | 14 | Singleton enum (COLLISION/SENSOR/FLUID/ANY), no stub needed |
+| **PreFlag** | `src/callbacks/PreFlag.ts` | 13 | Singleton enum (ACCEPT/IGNORE/ACCEPT_ONCE/IGNORE_ONCE), no stub needed |
+| **BodyType** | `src/phys/BodyType.ts` | 12 | Singleton enum (STATIC/DYNAMIC/KINEMATIC), init-time stub + setPrototypeOf |
+| **ShapeType** | `src/shape/ShapeType.ts` | 10 | Singleton enum (CIRCLE/POLYGON), init-time stub + setPrototypeOf |
 
 ### Thin wrappers (TS class delegates to compiled code)
 
@@ -88,6 +93,12 @@ initialization code or internal methods reference them before the TS module self
   creation at init time (ZPP_Listener.types). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **Callback/BodyCallback/ConstraintCallback/InteractionCallback/PreCallback**: Stubs needed
   because compiled ZPP_Space and ZPP_Callback wrappers create instances at runtime.
+- **CbEvent**: Stub constructor needed for BEGIN/END/WAKE/SLEEP/BREAK/PRE/ONGOING singleton
+  creation at init time (~line 119982). TS class fixes prototypes via `Object.setPrototypeOf`.
+- **BodyType**: Stub constructor needed for STATIC/DYNAMIC/KINEMATIC singleton creation
+  at init time (~line 120132). TS class fixes prototypes via `Object.setPrototypeOf`.
+- **ShapeType**: Stub constructor needed for CIRCLE/POLYGON singleton creation
+  at init time (~line 120163). TS class fixes prototypes via `Object.setPrototypeOf`.
 - **ValidationResult**: Stub needed because compiled shape validation code creates instances.
 - **Broadphase**: Stub needed because compiled Space code creates instances.
 

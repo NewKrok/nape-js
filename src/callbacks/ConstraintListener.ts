@@ -1,7 +1,7 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import type { NapeInner, Writable } from "../geom/Vec2";
-import { CbEvent, toNativeCbEvent } from "./CbEvent";
+import { CbEvent } from "./CbEvent";
 import { CbType } from "./CbType";
 import { OptionType } from "./OptionType";
 import { Listener } from "./Listener";
@@ -18,7 +18,7 @@ export class ConstraintListener extends Listener {
   ) {
     super();
     (this as Writable<ConstraintListener>)._inner = new (getNape().callbacks.ConstraintListener)(
-      toNativeCbEvent(event),
+      event,
       options._inner,
       handler,
       precedence,
