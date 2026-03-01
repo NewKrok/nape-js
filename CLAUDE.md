@@ -26,15 +26,15 @@ npm run lint         # eslint + prettier
 
 ## Modernization Status
 
-### Already extracted (ZPP_* to src/native/) — 28 classes
+### Already extracted (ZPP_* to src/native/) — 29 classes
 
-Callbacks: `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`,
-           `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener`
-Dynamics:  `ZPP_InteractionFilter`, `ZPP_InteractionGroup`
-Geometry:  `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`,
-           `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`
-Physics:   `ZPP_Material`, `ZPP_FluidProperties`
-Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
+Callbacks:  `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`,
+            `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener`
+Dynamics:   `ZPP_InteractionFilter`, `ZPP_InteractionGroup`
+Geometry:   `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`,
+            `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult`
+Physics:    `ZPP_Material`, `ZPP_FluidProperties`
+Utilities:  `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 
 ### Already fully modernized (public API class replaces compiled code)
 
@@ -53,6 +53,8 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 | **AABB** | `src/geom/AABB.ts` | 31 | Geometry bounds, Vec2 min/max wrappers |
 | **MatMN** | `src/geom/MatMN.ts` | 35 | Variable-sized M×N matrix, transpose/mul |
 | **MarchingSquares** | `src/geom/MarchingSquares.ts` | 23 | Static isosurface extraction, delegates to compiled ZPP_MarchingSquares |
+| **Interactor** | `src/phys/Interactor.ts` | 21 | Base class for Body/Shape/Compound, polymorphic dispatch |
+| **Shape** | `src/shape/Shape.ts` | 10 | Base shape class, polymorphic dispatch to Circle/Polygon |
 | **GravMassMode** | `src/phys/GravMassMode.ts` | 11 | Singleton enum (DEFAULT/FIXED/SCALED), uses ZPP_Flags |
 | **InertiaMode** | `src/phys/InertiaMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
 | **MassMode** | `src/phys/MassMode.ts` | 9 | Singleton enum (DEFAULT/FIXED), uses ZPP_Flags |
@@ -81,9 +83,23 @@ Utilities: `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`
 
 | Class | File | Tests | Notes |
 |-------|------|-------|-------|
+| **Body** | `src/phys/Body.ts` | 30 | Full public API, delegates to compiled ZPP_Body |
+| **Circle** | `src/shape/Circle.ts` | 6 | Extends Shape, delegates to compiled ZPP_Circle |
+| **Polygon** | `src/shape/Polygon.ts` | 5 | Extends Shape, delegates to compiled ZPP_Polygon |
+| **Space** | `src/space/Space.ts` | 9 | Simulation container, delegates to compiled ZPP_Space |
+| **Constraint** | `src/constraint/Constraint.ts` | — | Base constraint class, delegates to compiled ZPP_Constraint |
+| **PivotJoint** | `src/constraint/PivotJoint.ts` | 4 | Extends Constraint, delegates to compiled ZPP_PivotJoint |
+| **MotorJoint** | `src/constraint/MotorJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_MotorJoint |
+| **AngleJoint** | `src/constraint/AngleJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_AngleJoint |
+| **DistanceJoint** | `src/constraint/DistanceJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_DistanceJoint |
+| **LineJoint** | `src/constraint/LineJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_LineJoint |
+| **WeldJoint** | `src/constraint/WeldJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_WeldJoint |
+| **PulleyJoint** | `src/constraint/PulleyJoint.ts` | 6 | Extends Constraint, delegates to compiled ZPP_PulleyJoint |
 | **Ray** | `src/geom/Ray.ts` | 14 | Raycasting, delegates to compiled nape.geom.Ray (ZPP_Ray not extracted) |
-| **ConvexResult** | `src/geom/ConvexResult.ts` | 9 | Convex-cast result, delegates to compiled ZPP_ConvexRayResult |
-| **RayResult** | `src/geom/RayResult.ts` | 10 | Raycast result, delegates to compiled ZPP_ConvexRayResult |
+| **ConvexResult** | `src/geom/ConvexResult.ts` | 9 | Convex-cast result, direct ZPP_ConvexRayResult access |
+| **RayResult** | `src/geom/RayResult.ts` | 10 | Raycast result, direct ZPP_ConvexRayResult access |
+| **Contact** | `src/dynamics/Contact.ts` | — | Contact point, impulse methods, delegates to compiled ZPP_Contact |
+| **Compound** | `src/phys/Compound.ts` | — | Hierarchical grouping, extends Interactor, delegates to compiled ZPP_Compound |
 
 ### Generic List/Iterator factory (replaces ~7,300 lines of compiled boilerplate)
 
@@ -139,20 +155,36 @@ TS classes (e.g., GeomPoly) to access internal compiled classes like `ZPP_GeomVe
 
 ### Next candidates for modernization
 
-**Priority 1: Simple data classes**
-- `Interactor` (~97 lines) — base class for Body/Shape, simple properties
-- `ConvexResult`/`RayResult` full modernization — requires `ZPP_ConvexRayResult` extraction
+**Priority 1: Complete all public API wrappers**
+- `Arbiter`, `CollisionArbiter`, `FluidArbiter` — thin wrappers (same pattern as Contact/Compound)
+- `Geom` — static utility class, thin wrapper delegating to compiled code
+- This would mean **every public API class** has a TypeScript wrapper
 
-**Priority 2: Remaining ZPP extractions**
+**Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
+- `ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization
+- `ZPP_Compound` extraction (~400 lines) → Compound full modernization
+- `ZPP_Arbiter` extraction → Arbiter/CollisionArbiter/FluidArbiter full modernization
+  - Arbiter (269 lines compiled), FluidArbiter (184 lines), CollisionArbiter (2,073 lines — high)
+
+**Priority 3: High complexity ZPP extractions**
 
 | Candidate | Complexity | Notes |
 |-----------|------------|-------|
 | `ZPP_Ray` extraction | High | ~1900 lines, ray-shape intersection algorithms |
-| `Geom` | High | Static distance/intersection utility, many internal dependencies |
+| `ZPP_Body` extraction | Very High | ~5000 lines, core engine class |
+| `ZPP_Space` extraction | Very High | Core simulation loop, broadphase, solver |
 
-### Remaining in compiled code (~31 public API + ~80 internal ZPP classes)
+### Remaining in compiled code
 
-Major categories:
+**Public API thin wrappers (TS delegates to compiled ZPP):**
+- Body, Circle, Polygon, Space, Constraint + 7 joint subclasses (already have TS wrappers above)
+- Ray, ConvexResult, RayResult, Contact, Compound (already have TS wrappers above)
+
+**Public API not yet wrapped:**
+- Arbiter, CollisionArbiter, FluidArbiter
+- Geom (static utility class)
+
+**Internal ZPP classes (~79 in compiled code):**
 - **Core engine**: `ZPP_Space`, `ZPP_Body`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection
 - **Constraints**: `ZPP_PivotJoint`, `ZPP_DistanceJoint`, `ZPP_AngleJoint`, etc.
 - **Arbiters/Contacts**: `ZPP_Arbiter`, `ZPP_ColArbiter`, `ZPP_Contact`

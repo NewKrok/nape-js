@@ -10,6 +10,7 @@ import type { NapeInner, Writable } from "../geom/Vec2";
 type SubclassWrapFn = (inner: NapeInner) => Interactor;
 let _bodyWrap: SubclassWrapFn | undefined;
 let _shapeWrap: SubclassWrapFn | undefined;
+let _compoundWrap: SubclassWrapFn | undefined;
 
 /** @internal Called by Body at module init. */
 export function _bindBodyWrapForInteractor(fn: SubclassWrapFn): void {
@@ -18,6 +19,10 @@ export function _bindBodyWrapForInteractor(fn: SubclassWrapFn): void {
 /** @internal Called by Shape at module init. */
 export function _bindShapeWrapForInteractor(fn: SubclassWrapFn): void {
   _shapeWrap = fn;
+}
+/** @internal Called by Compound at module init. */
+export function _bindCompoundWrapForInteractor(fn: SubclassWrapFn): void {
+  _compoundWrap = fn;
 }
 
 /**
@@ -45,8 +50,10 @@ export class Interactor {
     if (inner.isBody && inner.isBody() && _bodyWrap) return _bodyWrap(inner);
     if (inner.isShape && inner.isShape() && _shapeWrap)
       return _shapeWrap(inner);
+    if (inner.isCompound && inner.isCompound() && _compoundWrap)
+      return _compoundWrap(inner);
 
-    // Fallback: generic Interactor wrapper (e.g., Compound)
+    // Fallback: generic Interactor wrapper
     return getOrCreate(inner, (raw: NapeInner) => {
       const i = Object.create(Interactor.prototype) as Interactor;
       (i as Writable<Interactor>)._inner = raw;
@@ -98,7 +105,9 @@ export class Interactor {
 
   /** Cast to Compound — returns the Compound wrapper if this is a Compound, else null. */
   get castCompound(): any {
-    return this._inner.get_castCompound();
+    const raw = this._inner.get_castCompound();
+    if (!raw) return null;
+    return _compoundWrap ? _compoundWrap(raw) : raw;
   }
 
   // ---------------------------------------------------------------------------

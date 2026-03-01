@@ -20,6 +20,7 @@ export { Winding } from "./geom/Winding";
 // Physics
 export { Body } from "./phys/Body";
 export { BodyType } from "./phys/BodyType";
+export { Compound } from "./phys/Compound";
 export { Interactor } from "./phys/Interactor";
 export { Material } from "./phys/Material";
 export { FluidProperties } from "./phys/FluidProperties";
@@ -42,6 +43,7 @@ export { Broadphase } from "./space/Broadphase";
 export { InteractionFilter } from "./dynamics/InteractionFilter";
 export { InteractionGroup } from "./dynamics/InteractionGroup";
 export { ArbiterType } from "./dynamics/ArbiterType";
+export { Contact } from "./dynamics/Contact";
 
 // Callbacks
 export { CbEvent } from "./callbacks/CbEvent";
