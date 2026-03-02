@@ -151,19 +151,42 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 - ~~`ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization~~ ✅
 - ~~`ZPP_Arbiter` extraction (~2,800 lines incl. subclasses) → Arbiter/CollisionArbiter/FluidArbiter full modernization~~ ✅
 
-**Priority 3: High complexity extractions**
-- `ZPP_Ray` (~1900 lines, ray-shape intersection algorithms)
-- `ZPP_Space` (very high — core simulation loop, broadphase, solver)
+**Priority 3: Constraint classes (~7,600 lines, 11 classes)**
+- `ZPP_Constraint` (base, ~400 lines) + `ZPP_CopyHelper` (~30 lines)
+- `ZPP_AngleJoint` (~470 lines), `ZPP_MotorJoint` (~305 lines)
+- `ZPP_DistanceJoint` (~875 lines), `ZPP_PivotJoint` (~863 lines)
+- `ZPP_LineJoint` (~1,100 lines), `ZPP_PulleyJoint` (~1,890 lines)
+- `ZPP_WeldJoint` (~990 lines), `ZPP_UserConstraint` (~670 lines), `ZPP_UserBody` (~16 lines)
 
-### Remaining in compiled code
+**Priority 4: Shape classes (~3,270 lines, 4 classes)**
+- `ZPP_Shape` (base, ~980 lines) + `ZPP_Circle` (~330 lines) + `ZPP_Polygon` (~1,610 lines) + `ZPP_Edge` (~350 lines)
 
-**Internal ZPP classes (~80+ in compiled code):**
-Core engine (`ZPP_Space`, `ZPP_Shape`, `ZPP_Broadphase`, collision detection),
-constraints (`ZPP_PivotJoint`, `ZPP_DistanceJoint`, etc.),
-arbiter-related inlined code (narrowphase uses inlined arbiter methods),
-geometry algorithms (`ZPP_Collide`, `ZPP_Convex`, `ZPP_Monotone`, `ZPP_Simple`),
-special lists (`Vec2List`, `ContactList`, `GeomVertexIterator`),
-internal linked lists (`ZNPList_*`, `ZNPNode_*`, `ZPP_Set_*`)
+**Priority 5: Isolated geometry algorithms (~8,700 lines)**
+- `ZPP_Ray` (~1,930 lines, ray-shape intersection)
+- `ZPP_Cutter` (~1,760 lines, polygon cutting)
+- `ZPP_Simple` (~1,345 lines) + `ZPP_SimpleSweep` (~330 lines) + `ZPP_Simplify` (~310 lines) + helpers (~160 lines)
+- `ZPP_Monotone` (~450 lines) + `ZPP_PartitionedPoly` (~550 lines) + `ZPP_PartitionPair` (~410 lines) + `ZPP_PartitionVertex` (~280 lines) + `ZPP_Triangular` (~340 lines)
+- Small helpers: `ZPP_Convex` (~80 lines), `ZPP_Geom` (~330 lines), `ZPP_GeomVert` (~184 lines), `ZPP_VecMath` (~18 lines)
+
+**Priority 6: Collision & continuous detection (~6,500 lines)**
+- `ZPP_Collide` (~3,190 lines, narrowphase collision dispatcher)
+- `ZPP_SweepDistance` (~3,310 lines, continuous collision / time-of-impact)
+
+**Priority 7: Space & broadphase (~23,400 lines — largest and most complex)**
+- `ZPP_Space` (~13,450 lines, core simulation loop, integration, solver)
+- `ZPP_DynAABBPhase` (~4,920 lines, dynamic AABB broadphase)
+- `ZPP_Broadphase` (~1,445 lines, base broadphase container)
+- `ZPP_SweepPhase` (~1,210 lines, sweep-and-prune variant)
+- `ZPP_AABBTree` (~1,170 lines) + `ZPP_AABBNode` (~66 lines) + `ZPP_AABBPair` (~26 lines)
+- `ZPP_Island` (~365 lines) + `ZPP_Component` (~45 lines) + `ZPP_SweepData` (~26 lines)
+- `ZPP_CallbackSet` (~567 lines) + `ZPP_CbSetManager` (~145 lines)
+- `ZPP_SpaceArbiterList` (~277 lines)
+
+**Still in compiled (misc):**
+- `ZPP_Interactor` (~377 lines, base class for Body/Compound/Shape)
+- Special lists: `Vec2List`, `ContactList`, `GeomVertexIterator` (~230 lines)
+- `ZPP_MarchingSquares` (~3,820 lines, compiled version still present alongside TS)
+- Internal linked lists (`ZNPList_*`, `ZNPNode_*`, `ZPP_Set_*`)
 
 ## Modernization Pattern
 
