@@ -110,9 +110,7 @@ export class ZPP_Constraint {
   // --- Mid-step guard ---
   immutable_midstep(name: string): void {
     if (this.space != null && this.space.midstep) {
-      throw new Error(
-        "Error: Constraint::" + name + " cannot be set during space step()",
-      );
+      throw new Error("Error: Constraint::" + name + " cannot be set during space step()");
     }
   }
 
@@ -123,8 +121,7 @@ export class ZPP_Constraint {
     this.wrap_cbTypes.zpp_inner.adder = this.wrap_cbTypes_adder.bind(this);
     this.wrap_cbTypes.zpp_inner.subber = this.wrap_cbTypes_subber.bind(this);
     this.wrap_cbTypes.zpp_inner.dontremove = true;
-    this.wrap_cbTypes.zpp_inner._modifiable =
-      this.immutable_cbTypes.bind(this);
+    this.wrap_cbTypes.zpp_inner._modifiable = this.immutable_cbTypes.bind(this);
   }
 
   immutable_cbTypes(): void {

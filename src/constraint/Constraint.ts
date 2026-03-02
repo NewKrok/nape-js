@@ -67,8 +67,7 @@ export class Constraint {
           " a Compound, only the root Compound space can be set",
       );
     }
-    const currentSpace =
-      this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
+    const currentSpace = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
     if (currentSpace != value) {
       if (this.zpp_inner.component != null) {
         this.zpp_inner.component.woken = false;
@@ -79,8 +78,7 @@ export class Constraint {
       }
       if (value != null) {
         // Space may be a TS thin wrapper (_inner.zpp_inner) or compiled (zpp_inner)
-        const spaceZpp =
-          (value as Any)._inner?.zpp_inner ?? (value as Any).zpp_inner;
+        const spaceZpp = (value as Any)._inner?.zpp_inner ?? (value as Any).zpp_inner;
         const _this = spaceZpp.wrap_constraints;
         if (_this.zpp_inner.reverse_flag) {
           _this.push(this);
@@ -98,20 +96,15 @@ export class Constraint {
     return this.zpp_inner.compound.outer;
   }
   set compound(value: Any) {
-    const current =
-      this.zpp_inner.compound == null
-        ? null
-        : this.zpp_inner.compound.outer;
+    const current = this.zpp_inner.compound == null ? null : this.zpp_inner.compound.outer;
     if (current != value) {
       if (current != null) {
         // Access ZPP_Compound's wrap_constraints directly
-        const curZpp =
-          current.zpp_inner ?? current._inner?.zpp_inner;
+        const curZpp = current.zpp_inner ?? current._inner?.zpp_inner;
         curZpp.wrap_constraints.remove(this);
       }
       if (value != null) {
-        const valZpp =
-          value.zpp_inner ?? value._inner?.zpp_inner;
+        const valZpp = value.zpp_inner ?? value._inner?.zpp_inner;
         const _this = valZpp.wrap_constraints;
         if (_this.zpp_inner.reverse_flag) {
           _this.push(this);
@@ -269,8 +262,7 @@ export class Constraint {
   get isSleeping(): boolean {
     if (this.zpp_inner.space == null || !this.zpp_inner.active) {
       throw new Error(
-        "Error: isSleeping only makes sense if constraint is" +
-          " active and inside a space",
+        "Error: isSleeping only makes sense if constraint is" + " active and inside a space",
       );
     }
     return this.zpp_inner.component.sleeping;
