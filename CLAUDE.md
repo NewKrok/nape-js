@@ -35,11 +35,12 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 37 classes
+### Extracted ZPP_* classes (src/native/) — 48 classes
 
 | Category | Classes |
 |----------|---------|
 | Callbacks | `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`, `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener` |
+| Constraints | `ZPP_Constraint`, `ZPP_CopyHelper`, `ZPP_UserBody`, `ZPP_AngleJoint`, `ZPP_MotorJoint`, `ZPP_DistanceJoint`, `ZPP_PivotJoint`, `ZPP_LineJoint`, `ZPP_WeldJoint`, `ZPP_PulleyJoint`, `ZPP_UserConstraint` |
 | Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact`, `ZPP_Arbiter`, `ZPP_SensorArbiter`, `ZPP_FluidArbiter`, `ZPP_ColArbiter` |
 | Geometry | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
 | Physics | `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body` |
@@ -151,12 +152,12 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 - ~~`ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization~~ ✅
 - ~~`ZPP_Arbiter` extraction (~2,800 lines incl. subclasses) → Arbiter/CollisionArbiter/FluidArbiter full modernization~~ ✅
 
-**Priority 3: Constraint classes (~7,600 lines, 11 classes)**
-- `ZPP_Constraint` (base, ~400 lines) + `ZPP_CopyHelper` (~30 lines)
-- `ZPP_AngleJoint` (~470 lines), `ZPP_MotorJoint` (~305 lines)
-- `ZPP_DistanceJoint` (~875 lines), `ZPP_PivotJoint` (~863 lines)
-- `ZPP_LineJoint` (~1,100 lines), `ZPP_PulleyJoint` (~1,890 lines)
-- `ZPP_WeldJoint` (~990 lines), `ZPP_UserConstraint` (~670 lines), `ZPP_UserBody` (~16 lines)
+~~**Priority 3: Constraint classes (~7,600 lines, 11 classes)**~~ ✅
+- ~~`ZPP_Constraint` (base, ~400 lines) + `ZPP_CopyHelper` (~30 lines)~~
+- ~~`ZPP_AngleJoint` (~470 lines), `ZPP_MotorJoint` (~305 lines)~~
+- ~~`ZPP_DistanceJoint` (~875 lines), `ZPP_PivotJoint` (~863 lines)~~
+- ~~`ZPP_LineJoint` (~1,100 lines), `ZPP_PulleyJoint` (~1,890 lines)~~
+- ~~`ZPP_WeldJoint` (~990 lines), `ZPP_UserConstraint` (~670 lines), `ZPP_UserBody` (~16 lines)~~
 
 **Priority 4: Shape classes (~3,270 lines, 4 classes)**
 - `ZPP_Shape` (base, ~980 lines) + `ZPP_Circle` (~330 lines) + `ZPP_Polygon` (~1,610 lines) + `ZPP_Edge` (~350 lines)
