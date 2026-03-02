@@ -114,11 +114,9 @@ const EXAMPLES = [
       const D3W = Math.sqrt(P3X * P3X + P3Y * P3Y) * S;
       const D6W = Math.sqrt(P6X * P6X + P6Y * P6Y) * S;
 
-      function softDJ(b1, b2, a1x, a1y, a2x, a2y, d) {
+      function makeDJ(b1, b2, a1x, a1y, a2x, a2y, d) {
         const dj = new DistanceJoint(b1, b2, new Vec2(a1x, a1y), new Vec2(a2x, a2y), d, d);
-        dj.stiff = false;
-        dj.frequency = 10;
-        dj.damping = 0.5;
+        dj.stiff = true;
         dj.space = space;
       }
 
@@ -155,16 +153,16 @@ const EXAMPLES = [
         try { body2.userData._colorIdx = 2; } catch(_) {}
         body2.space = space;
 
-        // 5 distance joints form the Jansen linkage
+        // 4 distance joints + 1 pivot joint form the Jansen linkage
         // body1↔body2 cross-links
-        softDJ(body1, body2, p2x*S, p2y*S, lp5x, lp5y, D12);
-        softDJ(body1, body2, p3x*S, p3y*S, 0, 0, D34);
+        makeDJ(body1, body2, p2x*S, p2y*S, lp5x, lp5y, D12);
+        makeDJ(body1, body2, p3x*S, p3y*S, 0, 0, D34);
         // body1→wheel crank link
-        softDJ(body1, wheel, p3x*S, p3y*S, wax, way, D3W);
+        makeDJ(body1, wheel, p3x*S, p3y*S, wax, way, D3W);
         // body2→wheel crank link
-        softDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
-        // body2→chassis ground link
-        softDJ(body2, chassis, lp6x, lp6y, 0, PIVOT_Y * S, D6W);
+        makeDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
+        // body2↔chassis revolute joint at P4 (ground pivot)
+        new PivotJoint(body2, chassis, new Vec2(0, 0), new Vec2(p4x*S, (p4y + PIVOT_Y) * S)).space = space;
       }
 
       // 3 pairs of legs with 120° phase offsets
