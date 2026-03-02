@@ -77,29 +77,29 @@ const EXAMPLES = [
       const CHASSIS_HW = 2.5, CHASSIS_HH = 1.0;
       const CRANK_R = PIVOT_Y * S; // crank pin radius from wheel center
 
-      // Leg geometry points (base coords, before side-mirror and scale)
-      const P1X = 5.4, P1Y = -6.1;
-      const P2X = 7.2, P2Y = -1.2;
-      const P3X = 4.3, P3Y = -1.9;
-      const P4X = 3.1, P4Y = 0.8;
-      const P5X = 6.0, P5Y = 1.5;
-      const P6X = 2.5, P6Y = 3.7;
+      // Leg geometry points (Box2D Y-up coords negated for screen Y-down)
+      const P1X = 5.4, P1Y = 6.1;
+      const P2X = 7.2, P2Y = 1.2;
+      const P3X = 4.3, P3Y = 1.9;
+      const P4X = 3.1, P4Y = -0.8;
+      const P5X = 6.0, P5Y = -1.5;
+      const P6X = 2.5, P6Y = -3.7;
 
-      // Position mechanism so feet reach the floor
+      // Position mechanism so feet (P1, lowest point) reach the floor
       const ox = W / 2;
-      const oy = (H - 20) - P6Y * S;
+      const oy = (H - 20) - P1Y * S;
 
       // Filter: mechanism parts don't collide with each other (group 2, only collide with group 1)
       const mf = new InteractionFilter(2, 1);
 
       // Chassis
-      const chassis = new Body(BodyType.DYNAMIC, new Vec2(ox, oy + PIVOT_Y * S));
+      const chassis = new Body(BodyType.DYNAMIC, new Vec2(ox, oy - PIVOT_Y * S));
       chassis.shapes.add(new Polygon(Polygon.box(CHASSIS_HW * 2 * S, CHASSIS_HH * 2 * S), undefined, mf));
       try { chassis.userData._colorIdx = 0; } catch(_) {}
       chassis.space = space;
 
       // Wheel (crank)
-      const wheel = new Body(BodyType.DYNAMIC, new Vec2(ox, oy + PIVOT_Y * S));
+      const wheel = new Body(BodyType.DYNAMIC, new Vec2(ox, oy - PIVOT_Y * S));
       wheel.shapes.add(new Circle(WHEEL_R * S, undefined, undefined, mf));
       try { wheel.userData._colorIdx = 3; } catch(_) {}
       wheel.space = space;
@@ -133,13 +133,13 @@ const EXAMPLES = [
 
         // Crank pin on wheel (rotated by phase)
         const wax = CRANK_R * Math.sin(phase);
-        const way = -CRANK_R * Math.cos(phase);
+        const way = CRANK_R * Math.cos(phase);
 
         // Body 1 (upper triangle) at mechanism origin
         const body1 = new Body(BodyType.DYNAMIC, new Vec2(ox, oy));
         const v1 = side > 0
-          ? [new Vec2(p1x*S, p1y*S), new Vec2(p2x*S, p2y*S), new Vec2(p3x*S, p3y*S)]
-          : [new Vec2(p1x*S, p1y*S), new Vec2(p3x*S, p3y*S), new Vec2(p2x*S, p2y*S)];
+          ? [new Vec2(p1x*S, p1y*S), new Vec2(p3x*S, p3y*S), new Vec2(p2x*S, p2y*S)]
+          : [new Vec2(p1x*S, p1y*S), new Vec2(p2x*S, p2y*S), new Vec2(p3x*S, p3y*S)];
         body1.shapes.add(new Polygon(v1, undefined, mf));
         try { body1.userData._colorIdx = 1; } catch(_) {}
         body1.space = space;
@@ -149,8 +149,8 @@ const EXAMPLES = [
         const lp5x = (p5x - p4x) * S, lp5y = (p5y - p4y) * S;
         const lp6x = (p6x - p4x) * S, lp6y = (p6y - p4y) * S;
         const v2 = side > 0
-          ? [new Vec2(0, 0), new Vec2(lp5x, lp5y), new Vec2(lp6x, lp6y)]
-          : [new Vec2(0, 0), new Vec2(lp6x, lp6y), new Vec2(lp5x, lp5y)];
+          ? [new Vec2(0, 0), new Vec2(lp6x, lp6y), new Vec2(lp5x, lp5y)]
+          : [new Vec2(0, 0), new Vec2(lp5x, lp5y), new Vec2(lp6x, lp6y)];
         body2.shapes.add(new Polygon(v2, undefined, mf));
         try { body2.userData._colorIdx = 2; } catch(_) {}
         body2.space = space;
@@ -164,7 +164,7 @@ const EXAMPLES = [
         // body2→wheel crank link
         softDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
         // body2→chassis ground link
-        softDJ(body2, chassis, lp6x, lp6y, 0, -PIVOT_Y * S, D6W);
+        softDJ(body2, chassis, lp6x, lp6y, 0, PIVOT_Y * S, D6W);
       }
 
       // 3 pairs of legs with 120° phase offsets
