@@ -1,8 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * A pivot (pin) joint that constrains two bodies to share an anchor point.
@@ -10,19 +12,27 @@ import { Constraint } from "./Constraint";
 export class PivotJoint extends Constraint {
   constructor(body1: Body | null, body2: Body | null, anchor1: Vec2, anchor2: Vec2) {
     super();
-    (this as Writable<PivotJoint>)._inner = new (getNape().constraint.PivotJoint)(
+    const compiled = new (getNape().constraint.PivotJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
       anchor2._inner,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): PivotJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): PivotJoint {
+    if (inner == null) return null!;
+    if (inner instanceof PivotJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof PivotJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(PivotJoint.prototype) as PivotJoint;
-      (j as Writable<PivotJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }

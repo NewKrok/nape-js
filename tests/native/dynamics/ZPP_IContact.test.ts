@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { ZPP_IContact } from "../../../src/native/dynamics/ZPP_IContact";
 
 describe("ZPP_IContact", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_IContact.__name__).toEqual([
-        "zpp_nape",
-        "dynamics",
-        "ZPP_IContact",
-      ]);
+      expect(ZPP_IContact.__name__).toEqual(["zpp_nape", "dynamics", "ZPP_IContact"]);
     });
   });
 

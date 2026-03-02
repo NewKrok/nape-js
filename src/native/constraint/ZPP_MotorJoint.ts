@@ -1,30 +1,36 @@
 /**
- * ZPP_MotorJoint — Internal motor constraint between two bodies.
+ * ZPP_MotorJoint — Internal class for motor joint constraints.
  *
- * A velocity-only constraint that drives angular velocity at a target rate.
- * No position correction (applyImpulsePos returns false).
+ * Applies angular velocity to rotate bodies relative to each other.
+ * Velocity-only constraint (no position correction).
  *
- * Converted from nape-compiled.js lines 24305–24610.
+ * Converted from nape-compiled.js lines 23892–24197.
  */
 
+import { getNape } from "../../core/engine";
 import { ZPP_Constraint } from "./ZPP_Constraint";
-import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
+import { ZPP_CopyHelper } from "./ZPP_CopyHelper";
 
 type Any = any;
 
 export class ZPP_MotorJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_MotorJoint"];
-  static __super__ = ZPP_Constraint;
+  static _wrapFn: ((zpp: ZPP_MotorJoint) => Any) | null = null;
 
+  // Joint-specific fields
   outer_zn: Any = null;
-  ratio = 0.0;
-  rate = 0.0;
+  ratio: number = 0.0;
+  rate: number = 0.0;
+
+  // Body references (ZPP_Body instances)
   b1: Any = null;
   b2: Any = null;
-  kMass = 0.0;
-  jAcc = 0.0;
-  jMax = 0.0;
-  stepped = false;
+
+  // Solver fields
+  kMass: number = 0.0;
+  jAcc: number = 0.0;
+  jMax: number = 0.0;
+  stepped: boolean = false;
 
   override __class__: Any = ZPP_MotorJoint;
 
@@ -36,15 +42,15 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
   }
 
   bodyImpulse(b: Any): Any {
-    const napeNs = ZPP_Constraint._nape;
+    const nape = getNape();
     if (this.stepped) {
       if (b == this.b1) {
-        return napeNs.geom.Vec3.get(0, 0, -this.jAcc);
+        return nape.geom.Vec3.get(0, 0, -this.jAcc);
       } else {
-        return napeNs.geom.Vec3.get(0, 0, this.ratio * this.jAcc);
+        return nape.geom.Vec3.get(0, 0, this.ratio * this.jAcc);
       }
     } else {
-      return napeNs.geom.Vec3.get(0, 0, 0);
+      return nape.geom.Vec3.get(0, 0, 0);
     }
   }
 
@@ -70,21 +76,69 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
     }
   }
 
-  override copy(dict: Any, todo: Any): Any {
-    const napeNs = ZPP_Constraint._nape;
-    const ret = new napeNs.constraint.MotorJoint(null, null, this.rate, this.ratio);
+  override copy(dict?: Any, todo?: Any): Any {
+    const nape = getNape();
+    const ret = new nape.constraint.MotorJoint(
+      null,
+      null,
+      this.rate,
+      this.ratio,
+    );
     this.copyto(ret);
-    ZPP_AngleJoint._copyBody(dict, todo, this.b1, ret, "b1");
-    ZPP_AngleJoint._copyBody(dict, todo, this.b2, ret, "b2");
+    if (dict != null && this.b1 != null) {
+      let b = null;
+      let _g = 0;
+      while (_g < dict.length) {
+        const idc = dict[_g];
+        ++_g;
+        if (idc.id == this.b1.id) {
+          b = idc.bc;
+          break;
+        }
+      }
+      if (b != null) {
+        ret.zpp_inner.b1 = b.zpp_inner;
+      } else {
+        todo.push(
+          ZPP_CopyHelper.todo(this.b1.id, (b1: Any) => {
+            ret.zpp_inner.b1 = b1.zpp_inner;
+          }),
+        );
+      }
+    }
+    if (dict != null && this.b2 != null) {
+      let b2 = null;
+      let _g1 = 0;
+      while (_g1 < dict.length) {
+        const idc1 = dict[_g1];
+        ++_g1;
+        if (idc1.id == this.b2.id) {
+          b2 = idc1.bc;
+          break;
+        }
+      }
+      if (b2 != null) {
+        ret.zpp_inner.b2 = b2.zpp_inner;
+      } else {
+        todo.push(
+          ZPP_CopyHelper.todo(this.b2.id, (b3: Any) => {
+            ret.zpp_inner.b2 = b3.zpp_inner;
+          }),
+        );
+      }
+    }
     return ret;
   }
 
   override validate(): void {
+    // Note: "AngleJoint" in the first error message matches the original Haxe source
     if (this.b1 == null || this.b2 == null) {
       throw new Error("Error: AngleJoint cannot be simulated null bodies");
     }
     if (this.b1 == this.b2) {
-      throw new Error("Error: MotorJoint cannot be simulated with body1 == body2");
+      throw new Error(
+        "Error: MotorJoint cannot be simulated with body1 == body2",
+      );
     }
     if (this.b1.space != this.space || this.b2.space != this.space) {
       throw new Error(
@@ -92,7 +146,9 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
       );
     }
     if (this.b1.type != 2 && this.b2.type != 2) {
-      throw new Error("Error: Constraints cannot have both bodies non-dynamic");
+      throw new Error(
+        "Error: Constraints cannot have both bodies non-dynamic",
+      );
     }
   }
 
@@ -107,14 +163,108 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
 
   override forest(): void {
     if (this.b1.type == 2) {
-      ZPP_Constraint._unionComponents(this.b1.component, this.component);
+      let xr;
+      if (this.b1.component == this.b1.component.parent) {
+        xr = this.b1.component;
+      } else {
+        let obj = this.b1.component;
+        let stack: Any = null;
+        while (obj != obj.parent) {
+          const nxt = obj.parent;
+          obj.parent = stack;
+          stack = obj;
+          obj = nxt;
+        }
+        while (stack != null) {
+          const nxt1 = stack.parent;
+          stack.parent = obj;
+          stack = nxt1;
+        }
+        xr = obj;
+      }
+      let yr;
+      if (this.component == this.component.parent) {
+        yr = this.component;
+      } else {
+        let obj1 = this.component;
+        let stack1: Any = null;
+        while (obj1 != obj1.parent) {
+          const nxt2 = obj1.parent;
+          obj1.parent = stack1;
+          stack1 = obj1;
+          obj1 = nxt2;
+        }
+        while (stack1 != null) {
+          const nxt3 = stack1.parent;
+          stack1.parent = obj1;
+          stack1 = nxt3;
+        }
+        yr = obj1;
+      }
+      if (xr != yr) {
+        if (xr.rank < yr.rank) {
+          xr.parent = yr;
+        } else if (xr.rank > yr.rank) {
+          yr.parent = xr;
+        } else {
+          yr.parent = xr;
+          xr.rank++;
+        }
+      }
     }
     if (this.b2.type == 2) {
-      ZPP_Constraint._unionComponents(this.b2.component, this.component);
+      let xr1;
+      if (this.b2.component == this.b2.component.parent) {
+        xr1 = this.b2.component;
+      } else {
+        let obj2 = this.b2.component;
+        let stack2: Any = null;
+        while (obj2 != obj2.parent) {
+          const nxt4 = obj2.parent;
+          obj2.parent = stack2;
+          stack2 = obj2;
+          obj2 = nxt4;
+        }
+        while (stack2 != null) {
+          const nxt5 = stack2.parent;
+          stack2.parent = obj2;
+          stack2 = nxt5;
+        }
+        xr1 = obj2;
+      }
+      let yr1;
+      if (this.component == this.component.parent) {
+        yr1 = this.component;
+      } else {
+        let obj3 = this.component;
+        let stack3: Any = null;
+        while (obj3 != obj3.parent) {
+          const nxt6 = obj3.parent;
+          obj3.parent = stack3;
+          stack3 = obj3;
+          obj3 = nxt6;
+        }
+        while (stack3 != null) {
+          const nxt7 = stack3.parent;
+          stack3.parent = obj3;
+          stack3 = nxt7;
+        }
+        yr1 = obj3;
+      }
+      if (xr1 != yr1) {
+        if (xr1.rank < yr1.rank) {
+          xr1.parent = yr1;
+        } else if (xr1.rank > yr1.rank) {
+          yr1.parent = xr1;
+        } else {
+          yr1.parent = xr1;
+          xr1.rank++;
+        }
+      }
     }
   }
 
-  override pair_exists(id: number, di: number): boolean {
+  override pair_exists(id: Any, di: Any): boolean {
     if (!(this.b1.id == id && this.b2.id == di)) {
       if (this.b1.id == di) {
         return this.b2.id == id;
@@ -177,6 +327,4 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
   override applyImpulsePos(): boolean {
     return false;
   }
-
-  override draw(_g: Any): void {}
 }

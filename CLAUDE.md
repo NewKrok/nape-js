@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 1440 tests across 75 files
+npm test             # vitest — 1575 tests across 80 files
 npm run lint         # eslint + prettier
 ```
 
@@ -86,6 +86,7 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | Arbiter | `src/dynamics/Arbiter.ts` | Direct ZPP_Arbiter access, shape/body accessors |
 | CollisionArbiter | `src/dynamics/CollisionArbiter.ts` | Direct ZPP_ColArbiter access, contacts/normal/friction |
 | FluidArbiter | `src/dynamics/FluidArbiter.ts` | Direct ZPP_FluidArbiter access, position/overlap/buoyancy |
+| Constraint | `src/constraint/Constraint.ts` | Direct ZPP_Constraint access, base props modernized |
 
 **Singleton enums** (fully modernized, init-time stub + `setPrototypeOf` where needed):
 GravMassMode, InertiaMode, MassMode, BodyType, ShapeType, ArbiterType, Winding,
@@ -98,14 +99,13 @@ ListenerType, Broadphase, ValidationResult, CbEvent, InteractionType, PreFlag
 | Circle | `src/shape/Circle.ts` | Extends Shape, delegates to compiled ZPP_Circle |
 | Polygon | `src/shape/Polygon.ts` | Extends Shape, delegates to compiled ZPP_Polygon |
 | Space | `src/space/Space.ts` | Simulation container, delegates to compiled ZPP_Space |
-| Constraint | `src/constraint/Constraint.ts` | Base constraint class |
-| PivotJoint | `src/constraint/PivotJoint.ts` | Extends Constraint |
-| MotorJoint | `src/constraint/MotorJoint.ts` | Extends Constraint |
-| AngleJoint | `src/constraint/AngleJoint.ts` | Extends Constraint |
-| DistanceJoint | `src/constraint/DistanceJoint.ts` | Extends Constraint |
-| LineJoint | `src/constraint/LineJoint.ts` | Extends Constraint |
-| WeldJoint | `src/constraint/WeldJoint.ts` | Extends Constraint |
-| PulleyJoint | `src/constraint/PulleyJoint.ts` | Extends Constraint |
+| PivotJoint | `src/constraint/PivotJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_PivotJoint |
+| MotorJoint | `src/constraint/MotorJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_MotorJoint |
+| AngleJoint | `src/constraint/AngleJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_AngleJoint |
+| DistanceJoint | `src/constraint/DistanceJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_DistanceJoint |
+| LineJoint | `src/constraint/LineJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_LineJoint |
+| WeldJoint | `src/constraint/WeldJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_WeldJoint |
+| PulleyJoint | `src/constraint/PulleyJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_PulleyJoint |
 | Ray | `src/geom/Ray.ts` | Raycasting, ZPP_Ray not extracted |
 | ConvexResult | `src/geom/ConvexResult.ts` | Direct ZPP_ConvexRayResult access |
 | RayResult | `src/geom/RayResult.ts` | Direct ZPP_ConvexRayResult access |
@@ -154,6 +154,7 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 
 ~~**Priority 3: Constraint classes (~7,600 lines, 11 classes)**~~ ✅
 - ~~`ZPP_Constraint` (base, ~400 lines) + `ZPP_CopyHelper` (~30 lines)~~
+- ~~`Constraint.ts` public API fully modernized (direct ZPP_Constraint access)~~
 - ~~`ZPP_AngleJoint` (~470 lines), `ZPP_MotorJoint` (~305 lines)~~
 - ~~`ZPP_DistanceJoint` (~875 lines), `ZPP_PivotJoint` (~863 lines)~~
 - ~~`ZPP_LineJoint` (~1,100 lines), `ZPP_PulleyJoint` (~1,890 lines)~~

@@ -14,11 +14,7 @@ describe("ZPP_Contact", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Contact.__name__).toEqual([
-        "zpp_nape",
-        "dynamics",
-        "ZPP_Contact",
-      ]);
+      expect(ZPP_Contact.__name__).toEqual(["zpp_nape", "dynamics", "ZPP_Contact"]);
     });
   });
 
@@ -208,9 +204,7 @@ describe("ZPP_Contact", () => {
       const c = new ZPP_Contact();
       c.active = false;
       c.wrap_position = { zpp_inner: { x: 0, y: 0 } };
-      expect(() => c.position_validate()).toThrow(
-        "Contact not currently in use",
-      );
+      expect(() => c.position_validate()).toThrow("Contact not currently in use");
     });
 
     it("should update wrap_position coords from px/py", () => {

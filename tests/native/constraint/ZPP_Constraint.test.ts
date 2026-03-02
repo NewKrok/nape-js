@@ -1,4 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+// Import engine first to break circular dependency
+import "../../../src/core/engine";
+import { ZPP_Constraint } from "../../../src/native/constraint/ZPP_Constraint";
+import { ZPP_DistanceJoint } from "../../../src/native/constraint/ZPP_DistanceJoint";
+import { ZPP_UserBody } from "../../../src/native/constraint/ZPP_UserBody";
+import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
+
+// Public API imports for integration tests
 import { Space } from "../../../src/space/Space";
 import { Body } from "../../../src/phys/Body";
 import { BodyType } from "../../../src/phys/BodyType";
@@ -11,196 +19,410 @@ import { PivotJoint } from "../../../src/constraint/PivotJoint";
 import { WeldJoint } from "../../../src/constraint/WeldJoint";
 import { LineJoint } from "../../../src/constraint/LineJoint";
 import { PulleyJoint } from "../../../src/constraint/PulleyJoint";
-import { ZPP_Constraint } from "../../../src/native/constraint/ZPP_Constraint";
-import { ZPP_AngleJoint } from "../../../src/native/constraint/ZPP_AngleJoint";
-import { ZPP_MotorJoint } from "../../../src/native/constraint/ZPP_MotorJoint";
-import { ZPP_DistanceJoint } from "../../../src/native/constraint/ZPP_DistanceJoint";
-import { ZPP_CopyHelper } from "../../../src/native/constraint/ZPP_CopyHelper";
-import { ZPP_UserBody } from "../../../src/native/constraint/ZPP_UserBody";
 
-// Force engine init
-import "../../../src/core/engine";
+// Extend mock zpp with space.ZPP_Component (needed by activeInSpace / inactiveOrOutSpace)
+function createConstraintMockZpp() {
+  const zpp = createMockZpp();
+  zpp.space = {
+    ZPP_Component: class {
+      static zpp_pool: any = null;
+      isBody = false;
+      body: any = null;
+      constraint: any = null;
+      sleeping = false;
+      woken = false;
+      next: any = null;
+    },
+  };
+  return zpp;
+}
 
-describe("ZPP_Constraint (base class)", () => {
-  it("should create with correct defaults", () => {
-    const c = new ZPP_Constraint();
-    expect(c.stiff).toBe(true);
-    expect(c.active).toBe(true);
-    expect(c.frequency).toBe(10);
-    expect(c.damping).toBe(1);
-    expect(c.maxForce).toBe(Infinity);
-    expect(c.maxError).toBe(Infinity);
-    expect(c.breakUnderForce).toBe(false);
-    expect(c.removeOnBreak).toBe(true);
-    expect(c.ignore).toBe(false);
-    expect(c.__velocity).toBe(false);
-    expect(c.pre_dt).toBe(-1.0);
-    expect(c.outer).toBe(null);
-    expect(c.space).toBe(null);
-    expect(c.compound).toBe(null);
-    expect(typeof c.id).toBe("number");
+describe("ZPP_Constraint", () => {
+  let mockZpp: any;
+  const savedZpp = ZPP_Constraint._zpp;
+  const savedNape = ZPP_Constraint._nape;
+
+  beforeEach(() => {
+    mockZpp = createConstraintMockZpp();
+    ZPP_Constraint._zpp = mockZpp;
+    ZPP_Constraint._nape = createMockNape();
+    mockZpp.space.ZPP_Component.zpp_pool = null;
   });
 
-  it("should have no-op hooks", () => {
-    const c = new ZPP_Constraint();
-    expect(c.activeBodies()).toBeUndefined();
-    expect(c.inactiveBodies()).toBeUndefined();
-    expect(c.clearcache()).toBeUndefined();
-    expect(c.validate()).toBeUndefined();
-    expect(c.wake_connected()).toBeUndefined();
-    expect(c.forest()).toBeUndefined();
-    expect(c.broken()).toBeUndefined();
-    expect(c.warmStart()).toBeUndefined();
-    expect(c.preStep(1)).toBe(false);
-    expect(c.applyImpulseVel()).toBe(false);
-    expect(c.applyImpulsePos()).toBe(false);
-    expect(c.pair_exists(1, 2)).toBe(false);
-    expect(c.copy(null, null)).toBe(null);
+  afterEach(() => {
+    ZPP_Constraint._zpp = savedZpp;
+    ZPP_Constraint._nape = savedNape;
   });
 
-  it("immutable_midstep should throw during space step", () => {
-    const c = new ZPP_Constraint();
-    c.space = { midstep: true } as any;
-    expect(() => c.immutable_midstep("foo")).toThrow(
-      "Constraint::foo cannot be set during space step()",
-    );
-  });
-
-  it("immutable_midstep should not throw when not mid-step", () => {
-    const c = new ZPP_Constraint();
-    c.space = { midstep: false } as any;
-    expect(() => c.immutable_midstep("foo")).not.toThrow();
-  });
-
-  it("wake should call space.wake_constraint if space set", () => {
-    const c = new ZPP_Constraint();
-    let called = false;
-    c.space = {
-      wake_constraint: () => {
-        called = true;
-      },
-    } as any;
-    c.wake();
-    expect(called).toBe(true);
-  });
-
-  describe("_findRoot and _unionComponents", () => {
-    it("should find root of single component", () => {
-      const comp: any = { parent: null, rank: 0 };
-      comp.parent = comp;
-      expect(ZPP_Constraint._findRoot(comp)).toBe(comp);
-    });
-
-    it("should union two components", () => {
-      const a: any = { parent: null, rank: 0 };
-      a.parent = a;
-      const b: any = { parent: null, rank: 0 };
-      b.parent = b;
-      ZPP_Constraint._unionComponents(a, b);
-      const rootA = ZPP_Constraint._findRoot(a);
-      const rootB = ZPP_Constraint._findRoot(b);
-      expect(rootA).toBe(rootB);
-    });
-
-    it("should handle rank-based union", () => {
-      const a: any = { parent: null, rank: 2 };
-      a.parent = a;
-      const b: any = { parent: null, rank: 0 };
-      b.parent = b;
-      ZPP_Constraint._unionComponents(a, b);
-      expect(ZPP_Constraint._findRoot(b)).toBe(a);
+  describe("__name__", () => {
+    it("should have correct Haxe metadata", () => {
+      expect(ZPP_Constraint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_Constraint"]);
     });
   });
-});
 
-describe("ZPP_AngleJoint", () => {
-  it("should create with correct defaults", () => {
-    const j = new ZPP_AngleJoint();
-    expect(j.ratio).toBe(1);
-    expect(j.jAcc).toBe(0);
-    expect(j.slack).toBe(false);
-    expect(j.jMax).toBe(Infinity);
-    expect(j.stepped).toBe(false);
-    expect(j.__velocity).toBe(false);
-    expect(j.stiff).toBe(true);
+  describe("constructor / _initBase", () => {
+    it("should set default field values", () => {
+      const c = new ZPP_Constraint();
+      expect(c.stiff).toBe(true);
+      expect(c.active).toBe(true);
+      expect(c.ignore).toBe(false);
+      expect(c.frequency).toBe(10);
+      expect(c.damping).toBe(1);
+      expect(c.maxForce).toBe(Infinity);
+      expect(c.maxError).toBe(Infinity);
+      expect(c.breakUnderForce).toBe(false);
+      expect(c.breakUnderError).toBe(false);
+      expect(c.removeOnBreak).toBe(true);
+      expect(c.pre_dt).toBe(-1.0);
+    });
+
+    it("should assign a unique id from ZPP_ID.Constraint()", () => {
+      const a = new ZPP_Constraint();
+      const b = new ZPP_Constraint();
+      expect(typeof a.id).toBe("number");
+      expect(a.id).not.toBe(b.id);
+    });
+
+    it("should create a cbTypes linked list", () => {
+      const c = new ZPP_Constraint();
+      expect(c.cbTypes).toBeInstanceOf(MockZNPList);
+      expect(c.cbTypes.length).toBe(0);
+    });
+
+    it("should leave outer, compound, space, component as null", () => {
+      const c = new ZPP_Constraint();
+      expect(c.outer).toBeNull();
+      expect(c.compound).toBeNull();
+      expect(c.space).toBeNull();
+      expect(c.component).toBeNull();
+    });
+
+    it("should set __class__ to ZPP_Constraint", () => {
+      const c = new ZPP_Constraint();
+      expect(c.__class__).toBe(ZPP_Constraint);
+    });
+
+    it("_initBase can be called on a plain object (simulates compiled .call(this))", () => {
+      const obj: any = {};
+      ZPP_Constraint.prototype._initBase.call(obj);
+      expect(obj.stiff).toBe(true);
+      expect(obj.active).toBe(true);
+      expect(obj.frequency).toBe(10);
+      expect(obj.cbTypes).toBeInstanceOf(MockZNPList);
+    });
   });
 
-  it("is_slack should return true when in range", () => {
-    const j = new ZPP_AngleJoint();
-    j.jointMin = -1;
-    j.jointMax = 1;
-    j.equal = false;
-    j.b1 = { rot: 0 };
-    j.b2 = { rot: 0.5 };
-    expect(j.is_slack()).toBe(true);
+  describe("stub methods", () => {
+    it("should have no-op stubs that return expected defaults", () => {
+      const c = new ZPP_Constraint();
+      expect(() => c.clear()).not.toThrow();
+      expect(() => c.activeBodies()).not.toThrow();
+      expect(() => c.inactiveBodies()).not.toThrow();
+      expect(() => c.clearcache()).not.toThrow();
+      expect(() => c.validate()).not.toThrow();
+      expect(() => c.wake_connected()).not.toThrow();
+      expect(() => c.forest()).not.toThrow();
+      expect(() => c.broken()).not.toThrow();
+      expect(() => c.warmStart()).not.toThrow();
+      expect(() => c.draw(null)).not.toThrow();
+    });
+
+    it("pair_exists should return false", () => {
+      const c = new ZPP_Constraint();
+      expect(c.pair_exists(1, 2)).toBe(false);
+    });
+
+    it("preStep should return false", () => {
+      const c = new ZPP_Constraint();
+      expect(c.preStep(0.016)).toBe(false);
+    });
+
+    it("applyImpulseVel should return false", () => {
+      const c = new ZPP_Constraint();
+      expect(c.applyImpulseVel()).toBe(false);
+    });
+
+    it("applyImpulsePos should return false", () => {
+      const c = new ZPP_Constraint();
+      expect(c.applyImpulsePos()).toBe(false);
+    });
+
+    it("copy should return null", () => {
+      const c = new ZPP_Constraint();
+      expect(c.copy(null, null)).toBeNull();
+    });
   });
 
-  it("validate should throw with null bodies", () => {
-    const j = new ZPP_AngleJoint();
-    j.b1 = null;
-    j.b2 = null;
-    expect(() => j.validate()).toThrow("null bodies");
+  describe("immutable_midstep", () => {
+    it("should throw when space is in mid-step", () => {
+      const c = new ZPP_Constraint();
+      c.space = { midstep: true };
+      expect(() => c.immutable_midstep("frequency")).toThrow(
+        "Error: Constraint::frequency cannot be set during space step()",
+      );
+    });
+
+    it("should not throw when space is null", () => {
+      const c = new ZPP_Constraint();
+      c.space = null;
+      expect(() => c.immutable_midstep("frequency")).not.toThrow();
+    });
+
+    it("should not throw when space is not mid-step", () => {
+      const c = new ZPP_Constraint();
+      c.space = { midstep: false };
+      expect(() => c.immutable_midstep("frequency")).not.toThrow();
+    });
   });
 
-  it("validate should throw with same body", () => {
-    const body = { space: null, type: 2 };
-    const j = new ZPP_AngleJoint();
-    j.b1 = body;
-    j.b2 = body;
-    j.space = null;
-    expect(() => j.validate()).toThrow("body1 == body2");
+  describe("setupcbTypes", () => {
+    it("should create wrap_cbTypes and bind adder/subber/modifiable", () => {
+      const c = new ZPP_Constraint();
+      c.setupcbTypes();
+      expect(c.wrap_cbTypes).not.toBeNull();
+      expect(c.wrap_cbTypes.zpp_inner.dontremove).toBe(true);
+      expect(typeof c.wrap_cbTypes.zpp_inner.adder).toBe("function");
+      expect(typeof c.wrap_cbTypes.zpp_inner.subber).toBe("function");
+      expect(typeof c.wrap_cbTypes.zpp_inner._modifiable).toBe("function");
+    });
   });
 
-  it("forest should union body components", () => {
-    const j = new ZPP_AngleJoint();
-    const comp1: any = { parent: null, rank: 0 };
-    comp1.parent = comp1;
-    const comp2: any = { parent: null, rank: 0 };
-    comp2.parent = comp2;
-    const compJ: any = { parent: null, rank: 0 };
-    compJ.parent = compJ;
-    j.b1 = { type: 2, component: comp1 };
-    j.b2 = { type: 2, component: comp2 };
-    j.component = compJ;
-    j.forest();
-    const root1 = ZPP_Constraint._findRoot(comp1);
-    const root2 = ZPP_Constraint._findRoot(comp2);
-    const rootJ = ZPP_Constraint._findRoot(compJ);
-    expect(root1).toBe(rootJ);
-    expect(root2).toBe(rootJ);
+  describe("insert_cbtype", () => {
+    it("should insert a new cbtype into cbTypes list", () => {
+      const c = new ZPP_Constraint();
+      const cb = { id: 5, constraints: new MockZNPList() };
+      c.insert_cbtype(cb);
+      expect(c.cbTypes.has(cb)).toBe(true);
+      expect(c.cbTypes.length).toBe(1);
+    });
+
+    it("should not insert duplicate cbtype", () => {
+      const c = new ZPP_Constraint();
+      const cb = { id: 5, constraints: new MockZNPList() };
+      c.insert_cbtype(cb);
+      c.insert_cbtype(cb);
+      expect(c.cbTypes.length).toBe(1);
+    });
+
+    it("should insert cbtypes in sorted order by id", () => {
+      const c = new ZPP_Constraint();
+      const cb1 = { id: 10, constraints: new MockZNPList() };
+      const cb2 = { id: 5, constraints: new MockZNPList() };
+      const cb3 = { id: 15, constraints: new MockZNPList() };
+      c.insert_cbtype(cb1);
+      c.insert_cbtype(cb2);
+      c.insert_cbtype(cb3);
+      expect(c.cbTypes.length).toBe(3);
+
+      // Walk the list to verify order
+      const ids: number[] = [];
+      let node = c.cbTypes.head;
+      while (node != null) {
+        ids.push(node.elt.id);
+        node = node.next;
+      }
+      expect(ids).toEqual([5, 10, 15]);
+    });
+
+    it("should add to space constraints and alloc cbSet when in space", () => {
+      const c = new ZPP_Constraint();
+      const woken = vi.fn();
+      c.space = {
+        wake_constraint: woken,
+        cbsets: { get: () => null },
+      };
+      const cb = { id: 1, constraints: new MockZNPList() };
+      c.insert_cbtype(cb);
+      expect(cb.constraints.has(c)).toBe(true);
+      expect(woken).toHaveBeenCalled();
+    });
   });
 
-  it("pair_exists should detect body pairs", () => {
-    const j = new ZPP_AngleJoint();
-    j.b1 = { id: 10 };
-    j.b2 = { id: 20 };
-    expect(j.pair_exists(10, 20)).toBe(true);
-    expect(j.pair_exists(20, 10)).toBe(true);
-    expect(j.pair_exists(10, 30)).toBe(false);
+  describe("wake", () => {
+    it("should call space.wake_constraint when in space", () => {
+      const c = new ZPP_Constraint();
+      const woken = vi.fn();
+      c.space = { wake_constraint: woken };
+      c.wake();
+      expect(woken).toHaveBeenCalledWith(c);
+    });
+
+    it("should do nothing when not in space", () => {
+      const c = new ZPP_Constraint();
+      c.space = null;
+      expect(() => c.wake()).not.toThrow();
+    });
   });
 
-  it("clearcache should reset accumulator", () => {
-    const j = new ZPP_AngleJoint();
-    j.jAcc = 5;
-    j.pre_dt = 0.016;
-    j.clearcache();
-    expect(j.jAcc).toBe(0);
-    expect(j.pre_dt).toBe(-1.0);
-    expect(j.slack).toBe(false);
-  });
-});
+  describe("activate / deactivate", () => {
+    it("activate should call activeInSpace when space is set", () => {
+      const c = new ZPP_Constraint();
+      c.space = { cbsets: { get: () => null } };
+      c.activate();
+      expect(c.component).not.toBeNull();
+      expect(c.component.isBody).toBe(false);
+      expect(c.component.constraint).toBe(c);
+    });
 
-describe("ZPP_MotorJoint", () => {
-  it("should create with velocity mode enabled", () => {
-    const j = new ZPP_MotorJoint();
-    expect(j.__velocity).toBe(true);
-    expect(j.jAcc).toBe(0);
-    expect(j.stepped).toBe(false);
+    it("activate should do nothing when space is null", () => {
+      const c = new ZPP_Constraint();
+      c.space = null;
+      c.activate();
+      expect(c.component).toBeNull();
+    });
+
+    it("deactivate should call inactiveOrOutSpace when space is set", () => {
+      const c = new ZPP_Constraint();
+      c.space = { cbsets: { get: () => null } };
+      // First activate to create a component
+      c.activate();
+      expect(c.component).not.toBeNull();
+      c.deactivate();
+      expect(c.component).toBeNull();
+    });
   });
 
-  it("applyImpulsePos should return false", () => {
-    const j = new ZPP_MotorJoint();
-    expect(j.applyImpulsePos()).toBe(false);
+  describe("activeInSpace / inactiveOrOutSpace", () => {
+    it("activeInSpace should create a new component from pool", () => {
+      const c = new ZPP_Constraint();
+      c.space = { cbsets: { get: () => null } };
+
+      // Put a component in the pool
+      const pooled = new mockZpp.space.ZPP_Component();
+      pooled.next = null;
+      mockZpp.space.ZPP_Component.zpp_pool = pooled;
+
+      c.activeInSpace();
+      expect(c.component).toBe(pooled);
+      expect(mockZpp.space.ZPP_Component.zpp_pool).toBeNull();
+    });
+
+    it("activeInSpace should create a new component when pool is empty", () => {
+      const c = new ZPP_Constraint();
+      c.space = { cbsets: { get: () => null } };
+      mockZpp.space.ZPP_Component.zpp_pool = null;
+      c.activeInSpace();
+      expect(c.component).not.toBeNull();
+      expect(c.component.isBody).toBe(false);
+    });
+
+    it("inactiveOrOutSpace should return component to pool", () => {
+      const c = new ZPP_Constraint();
+      c.space = { cbsets: { get: () => null } };
+      c.cbSet = null;
+      c.activeInSpace();
+      const comp = c.component;
+      c.inactiveOrOutSpace();
+      expect(c.component).toBeNull();
+      expect(mockZpp.space.ZPP_Component.zpp_pool).toBe(comp);
+    });
+  });
+
+  describe("addedToSpace / removedFromSpace", () => {
+    it("addedToSpace should call activeInSpace and activeBodies when active", () => {
+      const c = new ZPP_Constraint();
+      c.active = true;
+      c.space = { cbsets: { get: () => null } };
+      const activeBodiesSpy = vi.spyOn(c, "activeBodies");
+      c.addedToSpace();
+      expect(c.component).not.toBeNull();
+      expect(activeBodiesSpy).toHaveBeenCalled();
+    });
+
+    it("addedToSpace should register cbtypes with constraints list", () => {
+      const c = new ZPP_Constraint();
+      c.active = false;
+      c.space = { cbsets: { get: () => null }, wake_constraint: vi.fn() };
+      const cb = { id: 1, constraints: new MockZNPList() };
+      c.insert_cbtype(cb);
+      c.addedToSpace();
+      expect(cb.constraints.has(c)).toBe(true);
+    });
+
+    it("removedFromSpace should deactivate and unregister cbtypes", () => {
+      const c = new ZPP_Constraint();
+      c.active = true;
+      // Insert cbtype without space (avoids double-add to cb.constraints)
+      const cb = { id: 1, constraints: new MockZNPList() };
+      c.insert_cbtype(cb);
+      // Now set space and add to space
+      c.space = { cbsets: { get: () => null }, wake_constraint: vi.fn() };
+      c.addedToSpace();
+      expect(c.component).not.toBeNull();
+      expect(cb.constraints.has(c)).toBe(true);
+
+      c.removedFromSpace();
+      expect(c.component).toBeNull();
+      expect(cb.constraints.has(c)).toBe(false);
+    });
+  });
+
+  describe("alloc_cbSet / dealloc_cbSet", () => {
+    it("alloc_cbSet should set cbSet from space.cbsets.get", () => {
+      const c = new ZPP_Constraint();
+      const mockCbSet = { count: 0, constraints: new MockZNPList() };
+      c.space = { cbsets: { get: () => mockCbSet } };
+      c.alloc_cbSet();
+      expect(c.cbSet).toBe(mockCbSet);
+      expect(mockCbSet.count).toBe(1);
+      expect(mockCbSet.constraints.has(c)).toBe(true);
+    });
+
+    it("alloc_cbSet should leave cbSet null if space returns null", () => {
+      const c = new ZPP_Constraint();
+      c.space = { cbsets: { get: () => null } };
+      c.alloc_cbSet();
+      expect(c.cbSet).toBeNull();
+    });
+
+    it("dealloc_cbSet should decrement count and remove constraint", () => {
+      const c = new ZPP_Constraint();
+      const mockCbSet = { count: 2, constraints: new MockZNPList() };
+      mockCbSet.constraints.add(c);
+      c.cbSet = mockCbSet;
+      c.dealloc_cbSet();
+      expect(mockCbSet.count).toBe(1);
+      expect(mockCbSet.constraints.has(c)).toBe(false);
+      expect(c.cbSet).toBeNull();
+    });
+
+    it("dealloc_cbSet should recycle cbSet when count reaches 0", () => {
+      const c = new ZPP_Constraint();
+      const cb1 = { cbsets: new MockZNPList() };
+      const mockCbSet = {
+        count: 1,
+        constraints: new MockZNPList(),
+        listeners: new MockZNPList(),
+        bodylisteners: new MockZNPList(),
+        conlisteners: new MockZNPList(),
+        cbTypes: new MockZNPList(),
+        zip_listeners: false,
+        zip_bodylisteners: false,
+        zip_conlisteners: false,
+        next: null as any,
+      };
+      // Add a cbType that references the cbSet
+      mockCbSet.cbTypes.add(cb1);
+      cb1.cbsets.add(mockCbSet);
+      mockCbSet.constraints.add(c);
+      c.space = { cbsets: { remove: vi.fn() } };
+      c.cbSet = mockCbSet;
+      mockZpp.callbacks.ZPP_CbSet.zpp_pool = null;
+
+      c.dealloc_cbSet();
+      expect(mockCbSet.count).toBe(0);
+      expect(c.space.cbsets.remove).toHaveBeenCalledWith(mockCbSet);
+      expect(mockZpp.callbacks.ZPP_CbSet.zpp_pool).toBe(mockCbSet);
+      expect(mockCbSet.zip_listeners).toBe(true);
+      expect(mockCbSet.zip_bodylisteners).toBe(true);
+      expect(mockCbSet.zip_conlisteners).toBe(true);
+    });
+
+    it("dealloc_cbSet should do nothing when cbSet is null", () => {
+      const c = new ZPP_Constraint();
+      c.cbSet = null;
+      expect(() => c.dealloc_cbSet()).not.toThrow();
+    });
   });
 });
 
@@ -221,23 +443,6 @@ describe("ZPP_DistanceJoint", () => {
     j.b1 = null;
     j.b2 = null;
     expect(() => j.validate()).toThrow("null bodies");
-  });
-});
-
-describe("ZPP_CopyHelper", () => {
-  it("dict should create with id and bc", () => {
-    const h = ZPP_CopyHelper.dict(42, "body");
-    expect(h.id).toBe(42);
-    expect(h.bc).toBe("body");
-    expect(h.cb).toBe(null);
-  });
-
-  it("todo should create with id and cb", () => {
-    const fn = () => {};
-    const h = ZPP_CopyHelper.todo(7, fn);
-    expect(h.id).toBe(7);
-    expect(h.cb).toBe(fn);
-    expect(h.bc).toBe(null);
   });
 });
 

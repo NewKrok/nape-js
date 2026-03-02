@@ -1,8 +1,10 @@
 /**
- * ZPP_CopyHelper — helper for constraint copying.
+ * ZPP_CopyHelper — Helper for constraint copy operations.
  *
- * Used by constraint copy() methods to track body mappings (dict)
- * and deferred body assignments (todo).
+ * Used by Constraint.copy() to map body IDs during deep-copy.
+ * Two static factories:
+ *   - dict(id, bc) — maps a body ID to an already-copied Body
+ *   - todo(id, cb) — maps a body ID to a callback to invoke once copied
  *
  * Converted from nape-compiled.js lines 22300–22328.
  */
@@ -12,7 +14,7 @@ type Any = any;
 export class ZPP_CopyHelper {
   static __name__ = ["zpp_nape", "constraint", "ZPP_CopyHelper"];
 
-  id = 0;
+  id: number = 0;
   bc: Any = null;
   cb: Any = null;
 

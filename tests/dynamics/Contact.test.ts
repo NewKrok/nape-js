@@ -163,7 +163,7 @@ describe("Contact", () => {
     });
 
     it("normalImpulse with body should return body-specific impulse", () => {
-      const { space, floor, ball } = createCollisionScene();
+      const { space } = createCollisionScene();
       const colArb = space.arbiters.at(0).collisionArbiter;
       const contact = colArb.contacts.at(0);
       const arb = space.arbiters.at(0);
