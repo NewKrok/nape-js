@@ -1977,7 +1977,7 @@ loop();`,
   // ------ Strand Beast ------
   strandbeast: {
     label: "Strand Beast",
-    desc: 'A Theo Jansen-style walking mechanism built from <code>DistanceJoint</code> linkages and a <code>MotorJoint</code>-driven crank. <b>Click</b> to apply impulse.',
+    desc: 'A Theo Jansen-style walking mechanism with 6 legs (3 phase-offset pairs) driven by a <code>MotorJoint</code> crank. <b>Click</b> to apply impulse.',
     setup() {
       space = new Space(new Vec2(0, 400));
       // Floor only
@@ -1990,8 +1990,9 @@ loop();`,
       const PIVOT_Y = 0.8;
       const WHEEL_R = 1.6;
       const CHASSIS_HW = 2.5, CHASSIS_HH = 1.0;
+      const CRANK_R = PIVOT_Y * S; // crank pin radius from wheel center
 
-      // Leg geometry points
+      // Leg geometry points (base coords, before side-mirror and scale)
       const P1X = 5.4, P1Y = -6.1;
       const P2X = 7.2, P2Y = -1.2;
       const P3X = 4.3, P3Y = -1.9;
@@ -2022,12 +2023,11 @@ loop();`,
       new PivotJoint(chassis, wheel, new Vec2(0, 0), new Vec2(0, 0)).space = space;
       new MotorJoint(chassis, wheel, 2.0).space = space;
 
-      // Wheel anchor in local coords (offset from wheel center = crank pin)
-      const WAY = -PIVOT_Y * S;
-
-      function _dist(ax, ay, bx, by) {
-        return Math.sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by));
-      }
+      // Pre-computed rest lengths (invariant across all legs/phases)
+      const D12 = Math.sqrt((P2X - P5X) * (P2X - P5X) + (P2Y - P5Y) * (P2Y - P5Y)) * S;
+      const D34 = Math.sqrt((P3X - P4X) * (P3X - P4X) + (P3Y - P4Y) * (P3Y - P4Y)) * S;
+      const D3W = Math.sqrt(P3X * P3X + P3Y * P3Y) * S;
+      const D6W = Math.sqrt(P6X * P6X + P6Y * P6Y) * S;
 
       function softDJ(b1, b2, a1x, a1y, a2x, a2y, d) {
         const dj = new DistanceJoint(b1, b2, new Vec2(a1x, a1y), new Vec2(a2x, a2y), d, d);
@@ -2037,18 +2037,22 @@ loop();`,
         dj.space = space;
       }
 
-      function createLeg(s) {
-        // s = +1 (right) or -1 (left)
-        const p1x = P1X * s, p1y = P1Y;
-        const p2x = P2X * s, p2y = P2Y;
-        const p3x = P3X * s, p3y = P3Y;
-        const p4x = P4X * s, p4y = P4Y;
-        const p5x = P5X * s, p5y = P5Y;
-        const p6x = P6X * s, p6y = P6Y;
+      function createLeg(side, phase) {
+        // side = +1 (right) or -1 (left), phase = crank angle offset
+        const p1x = P1X * side, p1y = P1Y;
+        const p2x = P2X * side, p2y = P2Y;
+        const p3x = P3X * side, p3y = P3Y;
+        const p4x = P4X * side, p4y = P4Y;
+        const p5x = P5X * side, p5y = P5Y;
+        const p6x = P6X * side, p6y = P6Y;
+
+        // Crank pin on wheel (rotated by phase)
+        const wax = CRANK_R * Math.sin(phase);
+        const way = -CRANK_R * Math.cos(phase);
 
         // Body 1 (upper triangle) at mechanism origin
         const body1 = new Body(BodyType.DYNAMIC, new Vec2(ox, oy));
-        const v1 = s > 0
+        const v1 = side > 0
           ? [new Vec2(p1x*S, p1y*S), new Vec2(p2x*S, p2y*S), new Vec2(p3x*S, p3y*S)]
           : [new Vec2(p1x*S, p1y*S), new Vec2(p3x*S, p3y*S), new Vec2(p2x*S, p2y*S)];
         body1.shapes.add(new Polygon(v1, undefined, mf));
@@ -2059,7 +2063,7 @@ loop();`,
         const body2 = new Body(BodyType.DYNAMIC, new Vec2(ox + p4x * S, oy + p4y * S));
         const lp5x = (p5x - p4x) * S, lp5y = (p5y - p4y) * S;
         const lp6x = (p6x - p4x) * S, lp6y = (p6y - p4y) * S;
-        const v2 = s > 0
+        const v2 = side > 0
           ? [new Vec2(0, 0), new Vec2(lp5x, lp5y), new Vec2(lp6x, lp6y)]
           : [new Vec2(0, 0), new Vec2(lp6x, lp6y), new Vec2(lp5x, lp5y)];
         body2.shapes.add(new Polygon(v2, undefined, mf));
@@ -2067,15 +2071,19 @@ loop();`,
         body2.space = space;
 
         // 5 distance joints form the Jansen linkage
-        softDJ(body1, body2, p2x*S, p2y*S, lp5x, lp5y, _dist(p2x, p2y, p5x, p5y) * S);
-        softDJ(body1, body2, p3x*S, p3y*S, 0, 0, _dist(p3x, p3y, p4x, p4y) * S);
-        softDJ(body1, wheel, p3x*S, p3y*S, 0, WAY, _dist(p3x, p3y, 0, 0) * S);
-        softDJ(body2, wheel, lp6x, lp6y, 0, WAY, _dist(p6x, p6y, 0, 0) * S);
-        softDJ(body2, chassis, lp6x, lp6y, 0, WAY, _dist(p6x, p6y, 0, 0) * S);
+        softDJ(body1, body2, p2x*S, p2y*S, lp5x, lp5y, D12);
+        softDJ(body1, body2, p3x*S, p3y*S, 0, 0, D34);
+        softDJ(body1, wheel, p3x*S, p3y*S, wax, way, D3W);
+        softDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
+        softDJ(body2, chassis, lp6x, lp6y, 0, -PIVOT_Y * S, D6W);
       }
 
-      createLeg(1);
-      createLeg(-1);
+      // 3 pairs of legs with 120° phase offsets
+      const phases = [0, Math.PI * 2 / 3, Math.PI * 4 / 3];
+      for (const phase of phases) {
+        createLeg(1, phase);   // right
+        createLeg(-1, phase);  // left
+      }
     },
     click(x, y) {
       for (const body of space.bodies) {
@@ -2089,76 +2097,68 @@ loop();`,
         }
       }
     },
-    code2d: `// Strand Beast — Theo Jansen walking mechanism
+    code2d: `// Strand Beast — Theo Jansen walking mechanism (6 legs)
 const space = new Space(new Vec2(0, 400));
-
-// Floor
 const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
 floor.shapes.add(new Polygon(Polygon.box(W + 400, 20)));
 floor.space = space;
 
-// Theo Jansen mechanism geometry
 const S = Math.min(W, H) * 0.05;
-const PIVOT_Y = 0.8, WHEEL_R = 1.6;
+const PIVOT_Y = 0.8, WHEEL_R = 1.6, CRANK_R = PIVOT_Y * S;
 const CHASSIS_HW = 2.5, CHASSIS_HH = 1.0;
-const P = { // Leg geometry points
+const P = {
   p1x: 5.4, p1y: -6.1, p2x: 7.2, p2y: -1.2,
   p3x: 4.3, p3y: -1.9, p4x: 3.1, p4y: 0.8,
   p5x: 6.0, p5y: 1.5, p6x: 2.5, p6y: 3.7,
 };
 
 const ox = W / 2, oy = (H - 20) - P.p6y * S;
-const mf = new InteractionFilter(2, 1); // no self-collision
+const mf = new InteractionFilter(2, 1);
 
-// Chassis + Wheel
 const chassis = new Body(BodyType.DYNAMIC, new Vec2(ox, oy + PIVOT_Y * S));
 chassis.shapes.add(new Polygon(Polygon.box(CHASSIS_HW*2*S, CHASSIS_HH*2*S), undefined, mf));
 chassis.space = space;
-
 const wheel = new Body(BodyType.DYNAMIC, new Vec2(ox, oy + PIVOT_Y * S));
 wheel.shapes.add(new Circle(WHEEL_R * S, undefined, undefined, mf));
 wheel.space = space;
-
 new PivotJoint(chassis, wheel, new Vec2(0,0), new Vec2(0,0)).space = space;
 new MotorJoint(chassis, wheel, 2.0).space = space;
 
-const WAY = -PIVOT_Y * S; // crank pin offset
+const D12 = Math.sqrt((P.p2x-P.p5x)**2+(P.p2y-P.p5y)**2)*S;
+const D34 = Math.sqrt((P.p3x-P.p4x)**2+(P.p3y-P.p4y)**2)*S;
+const D3W = Math.sqrt(P.p3x**2+P.p3y**2)*S;
+const D6W = Math.sqrt(P.p6x**2+P.p6y**2)*S;
 
-function dist(ax,ay,bx,by) { return Math.sqrt((ax-bx)**2+(ay-by)**2); }
 function softDJ(b1, b2, a1x, a1y, a2x, a2y, d) {
   const dj = new DistanceJoint(b1, b2, new Vec2(a1x,a1y), new Vec2(a2x,a2y), d, d);
   dj.stiff = false; dj.frequency = 10; dj.damping = 0.5;
   dj.space = space;
 }
-
-function createLeg(s) {
-  const p1x=P.p1x*s, p2x=P.p2x*s, p3x=P.p3x*s, p4x=P.p4x*s, p5x=P.p5x*s, p6x=P.p6x*s;
-  const p1y=P.p1y, p2y=P.p2y, p3y=P.p3y, p4y=P.p4y, p5y=P.p5y, p6y=P.p6y;
-
+function createLeg(side, phase) {
+  const p1x=P.p1x*side, p2x=P.p2x*side, p3x=P.p3x*side;
+  const p4x=P.p4x*side, p5x=P.p5x*side, p6x=P.p6x*side;
+  const wax = CRANK_R*Math.sin(phase), way = -CRANK_R*Math.cos(phase);
   const body1 = new Body(BodyType.DYNAMIC, new Vec2(ox, oy));
-  const v1 = s > 0
-    ? [new Vec2(p1x*S,p1y*S), new Vec2(p2x*S,p2y*S), new Vec2(p3x*S,p3y*S)]
-    : [new Vec2(p1x*S,p1y*S), new Vec2(p3x*S,p3y*S), new Vec2(p2x*S,p2y*S)];
+  const v1 = side > 0
+    ? [new Vec2(p1x*S,P.p1y*S), new Vec2(p2x*S,P.p2y*S), new Vec2(p3x*S,P.p3y*S)]
+    : [new Vec2(p1x*S,P.p1y*S), new Vec2(p3x*S,P.p3y*S), new Vec2(p2x*S,P.p2y*S)];
   body1.shapes.add(new Polygon(v1, undefined, mf));
   body1.space = space;
-
-  const body2 = new Body(BodyType.DYNAMIC, new Vec2(ox+p4x*S, oy+p4y*S));
-  const lp5x=(p5x-p4x)*S, lp5y=(p5y-p4y)*S, lp6x=(p6x-p4x)*S, lp6y=(p6y-p4y)*S;
-  const v2 = s > 0
+  const body2 = new Body(BodyType.DYNAMIC, new Vec2(ox+p4x*S, oy+P.p4y*S));
+  const lp5x=(p5x-p4x)*S, lp5y=(P.p5y-P.p4y)*S;
+  const lp6x=(p6x-p4x)*S, lp6y=(P.p6y-P.p4y)*S;
+  const v2 = side > 0
     ? [new Vec2(0,0), new Vec2(lp5x,lp5y), new Vec2(lp6x,lp6y)]
     : [new Vec2(0,0), new Vec2(lp6x,lp6y), new Vec2(lp5x,lp5y)];
   body2.shapes.add(new Polygon(v2, undefined, mf));
   body2.space = space;
-
-  softDJ(body1, body2, p2x*S, p2y*S, lp5x, lp5y, dist(p2x,p2y,p5x,p5y)*S);
-  softDJ(body1, body2, p3x*S, p3y*S, 0, 0, dist(p3x,p3y,p4x,p4y)*S);
-  softDJ(body1, wheel, p3x*S, p3y*S, 0, WAY, dist(p3x,p3y,0,0)*S);
-  softDJ(body2, wheel, lp6x, lp6y, 0, WAY, dist(p6x,p6y,0,0)*S);
-  softDJ(body2, chassis, lp6x, lp6y, 0, WAY, dist(p6x,p6y,0,0)*S);
+  softDJ(body1, body2, p2x*S, P.p2y*S, lp5x, lp5y, D12);
+  softDJ(body1, body2, p3x*S, P.p3y*S, 0, 0, D34);
+  softDJ(body1, wheel, p3x*S, P.p3y*S, wax, way, D3W);
+  softDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
+  softDJ(body2, chassis, lp6x, lp6y, 0, -PIVOT_Y*S, D6W);
 }
-
-createLeg(1);
-createLeg(-1);`,
+[0, Math.PI*2/3, Math.PI*4/3].forEach(ph => { createLeg(1,ph); createLeg(-1,ph); });`,
 
     code3d: `// Setup Three.js scene
 const container = document.getElementById("container");
@@ -2174,14 +2174,13 @@ container.appendChild(renderer.domElement);
 scene.add(new THREE.AmbientLight(0x404050));
 scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
 
-// Physics
 const space = new Space(new Vec2(0, 400));
 const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
 floor.shapes.add(new Polygon(Polygon.box(W + 400, 20)));
 floor.space = space;
 
 const S = Math.min(W, H) * 0.05;
-const PIVOT_Y = 0.8, WHEEL_R = 1.6;
+const PIVOT_Y = 0.8, WHEEL_R = 1.6, CRANK_R = PIVOT_Y * S;
 const CHASSIS_HW = 2.5, CHASSIS_HH = 1.0;
 const P = {
   p1x: 5.4, p1y: -6.1, p2x: 7.2, p2y: -1.2,
@@ -2215,53 +2214,50 @@ const chassis = new Body(BodyType.DYNAMIC, new Vec2(ox, oy + PIVOT_Y * S));
 chassis.shapes.add(new Polygon(Polygon.box(CHASSIS_HW*2*S, CHASSIS_HH*2*S), undefined, mf));
 chassis.space = space;
 addMesh(chassis, COLORS[0]);
-
 const wheel = new Body(BodyType.DYNAMIC, new Vec2(ox, oy + PIVOT_Y * S));
 wheel.shapes.add(new Circle(WHEEL_R * S, undefined, undefined, mf));
 wheel.space = space;
 addMesh(wheel, COLORS[3]);
-
 new PivotJoint(chassis, wheel, new Vec2(0,0), new Vec2(0,0)).space = space;
 new MotorJoint(chassis, wheel, 2.0).space = space;
-const WAY = -PIVOT_Y * S;
 
-function dist(ax,ay,bx,by) { return Math.sqrt((ax-bx)**2+(ay-by)**2); }
+const D12 = Math.sqrt((P.p2x-P.p5x)**2+(P.p2y-P.p5y)**2)*S;
+const D34 = Math.sqrt((P.p3x-P.p4x)**2+(P.p3y-P.p4y)**2)*S;
+const D3W = Math.sqrt(P.p3x**2+P.p3y**2)*S;
+const D6W = Math.sqrt(P.p6x**2+P.p6y**2)*S;
+
 function softDJ(b1, b2, a1x, a1y, a2x, a2y, d) {
   const dj = new DistanceJoint(b1, b2, new Vec2(a1x,a1y), new Vec2(a2x,a2y), d, d);
   dj.stiff = false; dj.frequency = 10; dj.damping = 0.5;
   dj.space = space;
 }
-
-function createLeg(s) {
-  const p1x=P.p1x*s, p2x=P.p2x*s, p3x=P.p3x*s, p4x=P.p4x*s, p5x=P.p5x*s, p6x=P.p6x*s;
-  const p1y=P.p1y, p2y=P.p2y, p3y=P.p3y, p4y=P.p4y, p5y=P.p5y, p6y=P.p6y;
-
+function createLeg(side, phase) {
+  const p1x=P.p1x*side, p2x=P.p2x*side, p3x=P.p3x*side;
+  const p4x=P.p4x*side, p5x=P.p5x*side, p6x=P.p6x*side;
+  const wax = CRANK_R*Math.sin(phase), way = -CRANK_R*Math.cos(phase);
   const body1 = new Body(BodyType.DYNAMIC, new Vec2(ox, oy));
-  const v1 = s > 0
-    ? [new Vec2(p1x*S,p1y*S), new Vec2(p2x*S,p2y*S), new Vec2(p3x*S,p3y*S)]
-    : [new Vec2(p1x*S,p1y*S), new Vec2(p3x*S,p3y*S), new Vec2(p2x*S,p2y*S)];
+  const v1 = side > 0
+    ? [new Vec2(p1x*S,P.p1y*S), new Vec2(p2x*S,P.p2y*S), new Vec2(p3x*S,P.p3y*S)]
+    : [new Vec2(p1x*S,P.p1y*S), new Vec2(p3x*S,P.p3y*S), new Vec2(p2x*S,P.p2y*S)];
   body1.shapes.add(new Polygon(v1, undefined, mf));
   body1.space = space;
   addMesh(body1, COLORS[1]);
-
-  const body2 = new Body(BodyType.DYNAMIC, new Vec2(ox+p4x*S, oy+p4y*S));
-  const lp5x=(p5x-p4x)*S, lp5y=(p5y-p4y)*S, lp6x=(p6x-p4x)*S, lp6y=(p6y-p4y)*S;
-  const v2 = s > 0
+  const body2 = new Body(BodyType.DYNAMIC, new Vec2(ox+p4x*S, oy+P.p4y*S));
+  const lp5x=(p5x-p4x)*S, lp5y=(P.p5y-P.p4y)*S;
+  const lp6x=(p6x-p4x)*S, lp6y=(P.p6y-P.p4y)*S;
+  const v2 = side > 0
     ? [new Vec2(0,0), new Vec2(lp5x,lp5y), new Vec2(lp6x,lp6y)]
     : [new Vec2(0,0), new Vec2(lp6x,lp6y), new Vec2(lp5x,lp5y)];
   body2.shapes.add(new Polygon(v2, undefined, mf));
   body2.space = space;
   addMesh(body2, COLORS[2]);
-
-  softDJ(body1, body2, p2x*S, p2y*S, lp5x, lp5y, dist(p2x,p2y,p5x,p5y)*S);
-  softDJ(body1, body2, p3x*S, p3y*S, 0, 0, dist(p3x,p3y,p4x,p4y)*S);
-  softDJ(body1, wheel, p3x*S, p3y*S, 0, WAY, dist(p3x,p3y,0,0)*S);
-  softDJ(body2, wheel, lp6x, lp6y, 0, WAY, dist(p6x,p6y,0,0)*S);
-  softDJ(body2, chassis, lp6x, lp6y, 0, WAY, dist(p6x,p6y,0,0)*S);
+  softDJ(body1, body2, p2x*S, P.p2y*S, lp5x, lp5y, D12);
+  softDJ(body1, body2, p3x*S, P.p3y*S, 0, 0, D34);
+  softDJ(body1, wheel, p3x*S, P.p3y*S, wax, way, D3W);
+  softDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
+  softDJ(body2, chassis, lp6x, lp6y, 0, -PIVOT_Y*S, D6W);
 }
-
-createLeg(1);
-createLeg(-1);
+[0, Math.PI*2/3, Math.PI*4/3].forEach(ph => { createLeg(1,ph); createLeg(-1,ph); });
 
 function loop() {
   space.step(1 / 60, 8, 3);
