@@ -1,8 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * Pulley joint — constrains the sum of distances between four anchor points
@@ -23,7 +25,7 @@ export class PulleyJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    (this as Writable<PulleyJoint>)._inner = new (getNape().constraint.PulleyJoint)(
+    const compiled = new (getNape().constraint.PulleyJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       body3?._inner ?? null,
@@ -36,13 +38,21 @@ export class PulleyJoint extends Constraint {
       jointMax,
       ratio,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): PulleyJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): PulleyJoint {
+    if (inner == null) return null!;
+    if (inner instanceof PulleyJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof PulleyJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(PulleyJoint.prototype) as PulleyJoint;
-      (j as Writable<PulleyJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }

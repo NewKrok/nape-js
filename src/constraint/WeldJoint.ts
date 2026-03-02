@@ -1,8 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * Weld joint — constrains two bodies to maintain a fixed relative
@@ -17,20 +19,28 @@ export class WeldJoint extends Constraint {
     phase: number = 0.0,
   ) {
     super();
-    (this as Writable<WeldJoint>)._inner = new (getNape().constraint.WeldJoint)(
+    const compiled = new (getNape().constraint.WeldJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
       anchor2._inner,
       phase,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): WeldJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): WeldJoint {
+    if (inner == null) return null!;
+    if (inner instanceof WeldJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof WeldJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(WeldJoint.prototype) as WeldJoint;
-      (j as Writable<WeldJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }

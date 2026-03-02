@@ -103,7 +103,7 @@ export class ZPP_Constraint {
     return false;
   }
 
-  copy(_dict: Any, _todo: Any): Any {
+  copy(_dict?: Any, _todo?: Any): Any {
     return null;
   }
 

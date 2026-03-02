@@ -1,8 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * Line joint — constrains body2's anchor to slide along a line
@@ -19,7 +21,7 @@ export class LineJoint extends Constraint {
     jointMax: number,
   ) {
     super();
-    (this as Writable<LineJoint>)._inner = new (getNape().constraint.LineJoint)(
+    const compiled = new (getNape().constraint.LineJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
@@ -28,13 +30,21 @@ export class LineJoint extends Constraint {
       jointMin,
       jointMax,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): LineJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): LineJoint {
+    if (inner == null) return null!;
+    if (inner instanceof LineJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof LineJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(LineJoint.prototype) as LineJoint;
-      (j as Writable<LineJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }

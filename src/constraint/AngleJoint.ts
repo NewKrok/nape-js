@@ -1,8 +1,9 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * Constrains the relative angle between two bodies.
@@ -16,20 +17,28 @@ export class AngleJoint extends Constraint {
     ratio: number = 1.0,
   ) {
     super();
-    (this as Writable<AngleJoint>)._inner = new (getNape().constraint.AngleJoint)(
+    const compiled = new (getNape().constraint.AngleJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       jointMin,
       jointMax,
       ratio,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): AngleJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): AngleJoint {
+    if (inner == null) return null!;
+    if (inner instanceof AngleJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof AngleJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(AngleJoint.prototype) as AngleJoint;
-      (j as Writable<AngleJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }

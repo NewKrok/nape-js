@@ -1,8 +1,9 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * Motor joint — applies angular velocity to rotate bodies relative to each other.
@@ -10,19 +11,27 @@ import { Constraint } from "./Constraint";
 export class MotorJoint extends Constraint {
   constructor(body1: Body | null, body2: Body | null, rate: number, ratio: number = 1.0) {
     super();
-    (this as Writable<MotorJoint>)._inner = new (getNape().constraint.MotorJoint)(
+    const compiled = new (getNape().constraint.MotorJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       rate,
       ratio,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): MotorJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): MotorJoint {
+    if (inner == null) return null!;
+    if (inner instanceof MotorJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof MotorJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(MotorJoint.prototype) as MotorJoint;
-      (j as Writable<MotorJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }
