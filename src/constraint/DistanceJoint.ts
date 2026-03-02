@@ -1,8 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
+
+type Any = any;
 
 /**
  * Constrains the distance between two anchor points on two bodies.
@@ -17,7 +19,7 @@ export class DistanceJoint extends Constraint {
     jointMax: number,
   ) {
     super();
-    (this as Writable<DistanceJoint>)._inner = new (getNape().constraint.DistanceJoint)(
+    const compiled = new (getNape().constraint.DistanceJoint)(
       body1?._inner ?? null,
       body2?._inner ?? null,
       anchor1._inner,
@@ -25,13 +27,21 @@ export class DistanceJoint extends Constraint {
       jointMin,
       jointMax,
     );
+    this.zpp_inner = compiled.zpp_inner;
+    this.zpp_inner.outer = this;
+    this._inner = compiled;
   }
 
   /** @internal */
-  static _wrap(inner: NapeInner): DistanceJoint {
-    return getOrCreate(inner, (raw) => {
+  static _wrap(inner: Any): DistanceJoint {
+    if (inner == null) return null!;
+    if (inner instanceof DistanceJoint) return inner;
+    if (inner.zpp_inner?.outer instanceof DistanceJoint) return inner.zpp_inner.outer;
+    return getOrCreate(inner, (raw: Any) => {
       const j = Object.create(DistanceJoint.prototype) as DistanceJoint;
-      (j as Writable<DistanceJoint>)._inner = raw;
+      j.zpp_inner = raw.zpp_inner ?? raw;
+      j._inner = raw;
+      j.zpp_inner.outer = j;
       return j;
     });
   }
