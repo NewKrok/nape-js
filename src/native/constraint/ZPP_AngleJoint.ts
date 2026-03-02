@@ -474,4 +474,55 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   }
 
   override draw(_g: Any): void {}
+
+  // ========== Static helpers shared by all joints ==========
+
+  /**
+   * Small-angle-optimized body rotation. Used by all joints' applyImpulsePos.
+   */
+  static _rotateBody(body: Any, dr: number): void {
+    body.rot += dr;
+    if (dr * dr > 0.0001) {
+      body.axisx = Math.sin(body.rot);
+      body.axisy = Math.cos(body.rot);
+    } else {
+      const d2 = dr * dr;
+      const p = 1 - 0.5 * d2;
+      const m = 1 - (d2 * d2) / 8;
+      const nx = (p * body.axisx + dr * body.axisy) * m;
+      body.axisy = (p * body.axisy - dr * body.axisx) * m;
+      body.axisx = nx;
+    }
+  }
+
+  /**
+   * Dict-lookup / deferred-todo body copying. Used by all joints' copy().
+   */
+  static _copyBody(
+    dict: Any,
+    todo: Any,
+    srcBody: Any,
+    ret: Any,
+    field: string,
+  ): void {
+    if (dict != null && srcBody != null) {
+      let b: Any = null;
+      for (let _g = 0; _g < dict.length; _g++) {
+        const idc = dict[_g];
+        if (idc.id == srcBody.id) {
+          b = idc.bc;
+          break;
+        }
+      }
+      if (b != null) {
+        ret.zpp_inner_zn[field] = b.zpp_inner;
+      } else {
+        todo.push(
+          ZPP_CopyHelper.todo(srcBody.id, function (body: Any) {
+            ret.zpp_inner_zn[field] = body.zpp_inner;
+          }),
+        );
+      }
+    }
+  }
 }

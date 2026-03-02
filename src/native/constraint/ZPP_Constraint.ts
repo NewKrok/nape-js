@@ -444,4 +444,41 @@ export class ZPP_Constraint {
       }
     }
   }
+
+  // --- Static helpers for union-find (used by all joint subclasses) ---
+
+  static _findRoot(comp: Any): Any {
+    if (comp == comp.parent) {
+      return comp;
+    }
+    let obj = comp;
+    let stack: Any = null;
+    while (obj != obj.parent) {
+      const nxt = obj.parent;
+      obj.parent = stack;
+      stack = obj;
+      obj = nxt;
+    }
+    while (stack != null) {
+      const nxt = stack.parent;
+      stack.parent = obj;
+      stack = nxt;
+    }
+    return obj;
+  }
+
+  static _unionComponents(a: Any, b: Any): void {
+    const xr = ZPP_Constraint._findRoot(a);
+    const yr = ZPP_Constraint._findRoot(b);
+    if (xr != yr) {
+      if (xr.rank < yr.rank) {
+        xr.parent = yr;
+      } else if (xr.rank > yr.rank) {
+        yr.parent = xr;
+      } else {
+        yr.parent = xr;
+        xr.rank++;
+      }
+    }
+  }
 }

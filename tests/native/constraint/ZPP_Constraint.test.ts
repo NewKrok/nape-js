@@ -1,6 +1,24 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+// Import engine first to break circular dependency
+import "../../../src/core/engine";
 import { ZPP_Constraint } from "../../../src/native/constraint/ZPP_Constraint";
+import { ZPP_DistanceJoint } from "../../../src/native/constraint/ZPP_DistanceJoint";
+import { ZPP_UserBody } from "../../../src/native/constraint/ZPP_UserBody";
 import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
+
+// Public API imports for integration tests
+import { Space } from "../../../src/space/Space";
+import { Body } from "../../../src/phys/Body";
+import { BodyType } from "../../../src/phys/BodyType";
+import { Vec2 } from "../../../src/geom/Vec2";
+import { Circle } from "../../../src/shape/Circle";
+import { AngleJoint } from "../../../src/constraint/AngleJoint";
+import { MotorJoint } from "../../../src/constraint/MotorJoint";
+import { DistanceJoint } from "../../../src/constraint/DistanceJoint";
+import { PivotJoint } from "../../../src/constraint/PivotJoint";
+import { WeldJoint } from "../../../src/constraint/WeldJoint";
+import { LineJoint } from "../../../src/constraint/LineJoint";
+import { PulleyJoint } from "../../../src/constraint/PulleyJoint";
 
 // Extend mock zpp with space.ZPP_Component (needed by activeInSpace / inactiveOrOutSpace)
 function createConstraintMockZpp() {
@@ -21,6 +39,8 @@ function createConstraintMockZpp() {
 
 describe("ZPP_Constraint", () => {
   let mockZpp: any;
+  const savedZpp = ZPP_Constraint._zpp;
+  const savedNape = ZPP_Constraint._nape;
 
   beforeEach(() => {
     mockZpp = createConstraintMockZpp();
@@ -29,13 +49,14 @@ describe("ZPP_Constraint", () => {
     mockZpp.space.ZPP_Component.zpp_pool = null;
   });
 
+  afterEach(() => {
+    ZPP_Constraint._zpp = savedZpp;
+    ZPP_Constraint._nape = savedNape;
+  });
+
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Constraint.__name__).toEqual([
-        "zpp_nape",
-        "constraint",
-        "ZPP_Constraint",
-      ]);
+      expect(ZPP_Constraint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_Constraint"]);
     });
   });
 
@@ -402,5 +423,239 @@ describe("ZPP_Constraint", () => {
       c.cbSet = null;
       expect(() => c.dealloc_cbSet()).not.toThrow();
     });
+  });
+});
+
+describe("ZPP_DistanceJoint", () => {
+  it("should create with correct defaults", () => {
+    const j = new ZPP_DistanceJoint();
+    expect(j.a1localx).toBe(0);
+    expect(j.a1localy).toBe(0);
+    expect(j.a2localx).toBe(0);
+    expect(j.a2localy).toBe(0);
+    expect(j.jAcc).toBe(0);
+    expect(j.jMax).toBe(Infinity);
+    expect(j.stepped).toBe(false);
+  });
+
+  it("validate should throw with null bodies", () => {
+    const j = new ZPP_DistanceJoint();
+    j.b1 = null;
+    j.b2 = null;
+    expect(() => j.validate()).toThrow("null bodies");
+  });
+});
+
+describe("ZPP_UserBody", () => {
+  it("should construct with cnt and body", () => {
+    const body = { id: 1 };
+    const ub = new ZPP_UserBody(3, body);
+    expect(ub.cnt).toBe(3);
+    expect(ub.body).toBe(body);
+  });
+});
+
+describe("Integration: Constraint public API", () => {
+  it("AngleJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const j = new AngleJoint(b1, b2, -Math.PI, Math.PI, 1);
+    expect(j.jointMin).toBeCloseTo(-Math.PI);
+    expect(j.jointMax).toBeCloseTo(Math.PI);
+    expect(j.ratio).toBeCloseTo(1);
+  });
+
+  it("MotorJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const j = new MotorJoint(b1, b2, 2.0, 1.0);
+    expect(j.rate).toBeCloseTo(2.0);
+    expect(j.ratio).toBeCloseTo(1.0);
+  });
+
+  it("DistanceJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const j = new DistanceJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0), 10, 50);
+    expect(j.jointMin).toBeCloseTo(10);
+    expect(j.jointMax).toBeCloseTo(50);
+  });
+
+  it("PivotJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const j = new PivotJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0));
+    expect(j.body1).toBeDefined();
+    expect(j.body2).toBeDefined();
+  });
+
+  it("WeldJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const j = new WeldJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0), 0);
+    expect(j.phase).toBeCloseTo(0);
+  });
+
+  it("LineJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const j = new LineJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0), Vec2.get(0, 1), -10, 10);
+    expect(j.jointMin).toBeCloseTo(-10);
+    expect(j.jointMax).toBeCloseTo(10);
+  });
+
+  it("PulleyJoint should create and configure", () => {
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    const b3 = new Body(BodyType.DYNAMIC, new Vec2(0, 50));
+    const b4 = new Body(BodyType.DYNAMIC, new Vec2(50, 50));
+    const j = new PulleyJoint(
+      b1,
+      b2,
+      b3,
+      b4,
+      Vec2.get(0, 0),
+      Vec2.get(10, 0),
+      Vec2.get(0, 0),
+      Vec2.get(0, 10),
+      10,
+      50,
+      2.0,
+    );
+    expect(j.ratio).toBeCloseTo(2.0);
+    expect(j.jointMin).toBeCloseTo(10);
+    expect(j.jointMax).toBeCloseTo(50);
+  });
+
+  it("AngleJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const j = new AngleJoint(b1, b2, 0, 0, 1);
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
+  });
+
+  it("DistanceJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const j = new DistanceJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0), 40, 60);
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
+  });
+
+  it("PivotJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const j = new PivotJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0));
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
+  });
+
+  it("MotorJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const j = new MotorJoint(b1, b2, 1.0, 1.0);
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
+  });
+
+  it("WeldJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const j = new WeldJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0), 0);
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
+  });
+
+  it("LineJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const j = new LineJoint(b1, b2, Vec2.get(0, 0), Vec2.get(0, 0), Vec2.get(0, 1), -10, 10);
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
+  });
+
+  it("PulleyJoint should work in a space simulation", () => {
+    const space = new Space();
+    const b1 = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
+    b1.shapes.add(new Circle(10));
+    b1.space = space;
+
+    const b2 = new Body(BodyType.DYNAMIC, new Vec2(50, 0));
+    b2.shapes.add(new Circle(10));
+    b2.space = space;
+
+    const b3 = new Body(BodyType.DYNAMIC, new Vec2(0, 50));
+    b3.shapes.add(new Circle(10));
+    b3.space = space;
+
+    const b4 = new Body(BodyType.DYNAMIC, new Vec2(50, 50));
+    b4.shapes.add(new Circle(10));
+    b4.space = space;
+
+    const j = new PulleyJoint(
+      b1,
+      b2,
+      b3,
+      b4,
+      Vec2.get(0, 0),
+      Vec2.get(0, 0),
+      Vec2.get(0, 0),
+      Vec2.get(0, 0),
+      50,
+      150,
+      1.0,
+    );
+    j.space = space;
+
+    expect(() => space.step(1 / 60)).not.toThrow();
   });
 });
