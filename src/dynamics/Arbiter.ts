@@ -1,6 +1,7 @@
 import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
 import type { NapeInner } from "../geom/Vec2";
+import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 
 type Any = any;
 
@@ -10,13 +11,13 @@ type Any = any;
  * Arbiters are pooled internally by the engine — they cannot be created directly.
  * Access arbiters via `Space.arbiters`, `Body.arbiters`, or callback handlers.
  *
- * Thin wrapper — delegates to compiled ZPP_Arbiter (not yet extracted).
+ * Fully modernized — uses extracted ZPP_Arbiter directly.
  */
 export class Arbiter {
   static __name__ = ["nape", "dynamics", "Arbiter"];
 
   /** @internal */
-  zpp_inner: Any;
+  zpp_inner: ZPP_Arbiter;
 
   /** @internal Backward-compat: compiled code accesses `obj.zpp_inner`. */
   get _inner(): NapeInner {
@@ -24,9 +25,8 @@ export class Arbiter {
   }
 
   constructor() {
-    this.zpp_inner = null;
-    const zpp = getNape().__zpp;
-    if (!zpp.dynamics.ZPP_Arbiter.internal) {
+    this.zpp_inner = null as any;
+    if (!ZPP_Arbiter.internal) {
       throw new Error("Error: Cannot instantiate Arbiter derp!");
     }
   }
@@ -43,14 +43,12 @@ export class Arbiter {
 
   /** The type of this arbiter (COLLISION, SENSOR, or FLUID). */
   get type(): Any {
-    const zpp = getNape().__zpp;
-    return zpp.dynamics.ZPP_Arbiter.types[this.zpp_inner.type];
+    return ZPP_Arbiter.types[this.zpp_inner.type];
   }
 
   /** Cast to CollisionArbiter if this is a collision, else null. */
   get collisionArbiter(): Any {
-    const zpp = getNape().__zpp;
-    if (this.zpp_inner.type == zpp.dynamics.ZPP_Arbiter.COL) {
+    if (this.zpp_inner.type == ZPP_Arbiter.COL) {
       return this.zpp_inner.colarb.outer_zn;
     }
     return null;
@@ -58,8 +56,7 @@ export class Arbiter {
 
   /** Cast to FluidArbiter if this is a fluid interaction, else null. */
   get fluidArbiter(): Any {
-    const zpp = getNape().__zpp;
-    if (this.zpp_inner.type == zpp.dynamics.ZPP_Arbiter.FLUID) {
+    if (this.zpp_inner.type == ZPP_Arbiter.FLUID) {
       return this.zpp_inner.fluidarb.outer_zn;
     }
     return null;
@@ -140,20 +137,17 @@ export class Arbiter {
 
   /** Whether this is a collision arbiter. */
   isCollisionArbiter(): boolean {
-    const zpp = getNape().__zpp;
-    return this.zpp_inner.type == zpp.dynamics.ZPP_Arbiter.COL;
+    return this.zpp_inner.type == ZPP_Arbiter.COL;
   }
 
   /** Whether this is a fluid arbiter. */
   isFluidArbiter(): boolean {
-    const zpp = getNape().__zpp;
-    return this.zpp_inner.type == zpp.dynamics.ZPP_Arbiter.FLUID;
+    return this.zpp_inner.type == ZPP_Arbiter.FLUID;
   }
 
   /** Whether this is a sensor arbiter. */
   isSensorArbiter(): boolean {
-    const zpp = getNape().__zpp;
-    return this.zpp_inner.type == zpp.dynamics.ZPP_Arbiter.SENSOR;
+    return this.zpp_inner.type == ZPP_Arbiter.SENSOR;
   }
 
   // ---------------------------------------------------------------------------
@@ -173,8 +167,6 @@ export class Arbiter {
   }
 
   toString(): string {
-    const zpp = getNape().__zpp;
-    const ZPP_Arbiter = zpp.dynamics.ZPP_Arbiter;
     const ret =
       this.zpp_inner.type == ZPP_Arbiter.COL
         ? "CollisionArbiter"

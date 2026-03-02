@@ -1,6 +1,7 @@
 import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
+import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 
 type Any = any;
 
@@ -10,7 +11,7 @@ type Any = any;
  * Provides access to contact points, collision normal, friction, elasticity,
  * and impulse information. Some properties are mutable only in pre-handlers.
  *
- * Thin wrapper — delegates to compiled ZPP_Arbiter/ZPP_ColArbiter (not yet extracted).
+ * Fully modernized — uses extracted ZPP_ColArbiter directly.
  */
 export class CollisionArbiter extends Arbiter {
   static override __name__ = ["nape", "dynamics", "CollisionArbiter"];
@@ -95,7 +96,7 @@ export class CollisionArbiter extends Arbiter {
   /** Coefficient of restitution (elasticity). Mutable in pre-handler only. */
   get elasticity(): number {
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
     return this.zpp_inner.colarb.restitution;
   }
   set elasticity(value: number) {
@@ -109,13 +110,13 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.restitution = value;
     this.zpp_inner.colarb.userdef_restitution = true;
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
   }
 
   /** Dynamic friction coefficient. Mutable in pre-handler only. */
   get dynamicFriction(): number {
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
     return this.zpp_inner.colarb.dyn_fric;
   }
   set dynamicFriction(value: number) {
@@ -129,13 +130,13 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.dyn_fric = value;
     this.zpp_inner.colarb.userdef_dyn_fric = true;
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
   }
 
   /** Static friction coefficient. Mutable in pre-handler only. */
   get staticFriction(): number {
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
     return this.zpp_inner.colarb.stat_fric;
   }
   set staticFriction(value: number) {
@@ -149,13 +150,13 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.stat_fric = value;
     this.zpp_inner.colarb.userdef_stat_fric = true;
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
   }
 
   /** Rolling friction coefficient. Mutable in pre-handler only. */
   get rollingFriction(): number {
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
     return this.zpp_inner.colarb.rfric;
   }
   set rollingFriction(value: number) {
@@ -169,7 +170,7 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.rfric = value;
     this.zpp_inner.colarb.userdef_rfric = true;
     this._activeCheck();
-    this._recalcIfInvalidated();
+    this.zpp_inner.colarb.validate_props();
   }
 
   // ---------------------------------------------------------------------------
@@ -231,46 +232,6 @@ export class CollisionArbiter extends Arbiter {
   // ---------------------------------------------------------------------------
   // Internal
   // ---------------------------------------------------------------------------
-
-  /** @internal Recalculate material properties if invalidated. */
-  private _recalcIfInvalidated(): void {
-    const colarb = this.zpp_inner.colarb;
-    if (!colarb.invalidated) return;
-    colarb.invalidated = false;
-
-    if (!colarb.userdef_restitution) {
-      if (
-        colarb.s1.material.elasticity <= -Infinity ||
-        colarb.s2.material.elasticity <= -Infinity
-      ) {
-        colarb.restitution = 0;
-      } else if (
-        colarb.s1.material.elasticity >= Infinity ||
-        colarb.s2.material.elasticity >= Infinity
-      ) {
-        colarb.restitution = 1;
-      } else {
-        colarb.restitution = (colarb.s1.material.elasticity + colarb.s2.material.elasticity) / 2;
-      }
-      if (colarb.restitution < 0) colarb.restitution = 0;
-      if (colarb.restitution > 1) colarb.restitution = 1;
-    }
-    if (!colarb.userdef_dyn_fric) {
-      colarb.dyn_fric = Math.sqrt(
-        colarb.s1.material.dynamicFriction * colarb.s2.material.dynamicFriction,
-      );
-    }
-    if (!colarb.userdef_stat_fric) {
-      colarb.stat_fric = Math.sqrt(
-        colarb.s1.material.staticFriction * colarb.s2.material.staticFriction,
-      );
-    }
-    if (!colarb.userdef_rfric) {
-      colarb.rfric = Math.sqrt(
-        colarb.s1.material.rollingFriction * colarb.s2.material.rollingFriction,
-      );
-    }
-  }
 
   /** @internal Throw if not in pre-handler mutable window. */
   private _mutableCheck(prop: string): void {
