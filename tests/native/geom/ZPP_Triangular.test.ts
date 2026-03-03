@@ -37,7 +37,6 @@ describe("ZPP_Triangular", () => {
       const a = { x: 0, y: 0 };
       const b = { x: 1, y: 0 };
       const c = { x: 1, y: -1 };
-      // ux=0, uy=-1, vx=1, vy=0 → cross = 0*0 - 1*(-1) = 1
       expect(ZPP_Triangular.right_turn(a, b, c)).toBeGreaterThan(0);
     });
 
@@ -45,7 +44,6 @@ describe("ZPP_Triangular", () => {
       const a = { x: 0, y: 0 };
       const b = { x: 1, y: 0 };
       const c = { x: 1, y: 1 };
-      // ux=0, uy=1, vx=1, vy=0 → cross = 0*0 - 1*1 = -1
       expect(ZPP_Triangular.right_turn(a, b, c)).toBeLessThan(0);
     });
 

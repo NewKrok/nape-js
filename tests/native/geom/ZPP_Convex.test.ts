@@ -14,7 +14,6 @@ describe("ZPP_Convex", () => {
 
   describe("isinner", () => {
     it("should return false for a left turn (counter-clockwise)", () => {
-      // (a-b)=(-1,0), (c-b)=(0,1), cross = 1*(-1) - 0*0 = -1 < 0
       const a = { x: 0, y: 0 };
       const b = { x: 1, y: 0 };
       const c = { x: 1, y: 1 };
@@ -22,7 +21,6 @@ describe("ZPP_Convex", () => {
     });
 
     it("should return true for a right turn (clockwise)", () => {
-      // (a-b)=(-1,0), (c-b)=(0,-1), cross = (-1)*(-1) - 0*0 = 1 >= 0
       const a = { x: 0, y: 0 };
       const b = { x: 1, y: 0 };
       const c = { x: 1, y: -1 };
