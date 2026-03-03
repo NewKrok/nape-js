@@ -662,11 +662,9 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
           nt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / nt;
 
         // Bounce velocity
-        let vrx = 0.0;
-        let vry = 0.0;
         let ang = this.b2.angvel + this.b2.kinangvel;
-        vrx = this.b2.velx + this.b2.kinvelx - ci.r2y * ang;
-        vry = this.b2.vely + this.b2.kinvely + ci.r2x * ang;
+        let vrx = this.b2.velx + this.b2.kinvelx - ci.r2y * ang;
+        let vry = this.b2.vely + this.b2.kinvely + ci.r2x * ang;
         ang = this.b1.angvel + this.b1.kinangvel;
         vrx -= this.b1.velx + this.b1.kinvelx - ci.r1y * ang;
         vry -= this.b1.vely + this.b1.kinvely + ci.r1x * ang;
@@ -862,8 +860,6 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   // ========== Velocity impulse solver ==========
 
   applyImpulseVel(): void {
-    const napeNs = ZPP_Arbiter._nape;
-
     let v1x =
       this.k1x +
       this.b2.velx -

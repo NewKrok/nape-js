@@ -275,8 +275,8 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
     this.r2y = this.centroidy - this.b2.posy;
 
     // Gravity for each shape
-    let g1x = 0.0;
-    let g1y = 0.0;
+    let g1x: number;
+    let g1y: number;
     if (this.ws1.fluidEnabled && this.ws1.fluidProperties.wrap_gravity != null) {
       g1x = this.ws1.fluidProperties.gravityx;
       g1y = this.ws1.fluidProperties.gravityy;
@@ -285,8 +285,8 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
       g1y = s.gravityy;
     }
 
-    let g2x = 0.0;
-    let g2y = 0.0;
+    let g2x: number;
+    let g2y: number;
     if (this.ws2.fluidEnabled && this.ws2.fluidProperties.wrap_gravity != null) {
       g2x = this.ws2.fluidProperties.gravityx;
       g2y = this.ws2.fluidProperties.gravityy;
@@ -310,10 +310,8 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         buoyx += g2x * t;
         buoyy += g2y * t;
       } else {
-        let gx = 0.0;
-        let gy = 0.0;
-        gx = g1x + g2x;
-        gy = g1y + g2y;
+        let gx = g1x + g2x;
+        let gy = g1y + g2y;
         const t = 0.5;
         gx *= t;
         gy *= t;

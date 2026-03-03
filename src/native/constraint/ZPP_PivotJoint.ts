@@ -512,22 +512,18 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
   }
 
   override applyImpulseVel(): boolean {
-    let Ex = 0.0;
-    let Ey = 0.0;
-    Ex =
+    const Ex =
       this.b2.velx +
       this.b2.kinvelx -
       this.a2rely * (this.b2.angvel + this.b2.kinangvel) -
       (this.b1.velx + this.b1.kinvelx - this.a1rely * (this.b1.angvel + this.b1.kinangvel));
-    Ey =
+    const Ey =
       this.b2.vely +
       this.b2.kinvely +
       this.a2relx * (this.b2.angvel + this.b2.kinangvel) -
       (this.b1.vely + this.b1.kinvely + this.a1relx * (this.b1.angvel + this.b1.kinangvel));
-    let Jx = 0.0;
-    let Jy = 0.0;
-    Jx = this.biasx - Ex;
-    Jy = this.biasy - Ey;
+    let Jx = this.biasx - Ex;
+    let Jy = this.biasy - Ey;
     const t = this.kMassa * Jx + this.kMassb * Jy;
     Jy = this.kMassb * Jx + this.kMassc * Jy;
     Jx = t;
@@ -567,18 +563,12 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
 
   override applyImpulsePos(): boolean {
     const napeNs = ZPP_Constraint._nape;
-    let r1x = 0.0;
-    let r1y = 0.0;
-    r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
-    r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
-    let r2x = 0.0;
-    let r2y = 0.0;
-    r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
-    r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
-    let Ex = 0.0;
-    let Ey = 0.0;
-    Ex = this.b2.posx + r2x - (this.b1.posx + r1x);
-    Ey = this.b2.posy + r2y - (this.b1.posy + r1y);
+    const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
+    const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
+    const r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
+    const r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
+    let Ex = this.b2.posx + r2x - (this.b1.posx + r1x);
+    let Ey = this.b2.posy + r2y - (this.b1.posy + r1y);
     if (this.breakUnderError && Ex * Ex + Ey * Ey > this.maxError * this.maxError) {
       return true;
     }
@@ -591,8 +581,8 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
     const t = 0.5;
     Ex *= t;
     Ey *= t;
-    let Jx = 0.0;
-    let Jy = 0.0;
+    let Jx: number;
+    let Jy: number;
     if (Ex * Ex + Ey * Ey > 6) {
       const k = this.b1.smass + this.b2.smass;
       if (k > napeNs.Config.epsilon) {
@@ -619,13 +609,10 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
         Ey *= t5;
       }
     }
-    let Ka = 0.0;
-    let Kb = 0.0;
-    let Kc = 0.0;
     const m = this.b1.smass + this.b2.smass;
-    Ka = m;
-    Kb = 0;
-    Kc = m;
+    let Ka = m;
+    let Kb = 0;
+    let Kc = m;
     if (this.b1.sinertia != 0) {
       const X = r1x * this.b1.sinertia;
       const Y = r1y * this.b1.sinertia;

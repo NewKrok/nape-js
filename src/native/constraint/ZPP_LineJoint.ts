@@ -417,14 +417,10 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     this.a2relx = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
     this.a2rely = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
 
-    let dx = 0.0;
-    let dy = 0.0;
-    let Cx = 0.0;
-    let Cy = 0.0;
-    dx = this.b2.posx + this.a2relx - this.b1.posx - this.a1relx;
-    dy = this.b2.posy + this.a2rely - this.b1.posy - this.a1rely;
-    Cx = dy * this.nrelx - dx * this.nrely;
-    Cy = this.nrelx * dx + this.nrely * dy;
+    const dx = this.b2.posx + this.a2relx - this.b1.posx - this.a1relx;
+    const dy = this.b2.posy + this.a2rely - this.b1.posy - this.a1rely;
+    const Cx = dy * this.nrelx - dx * this.nrely;
+    let Cy = this.nrelx * dx + this.nrely * dy;
 
     if (this.equal) {
       Cy -= this.jointMin;
@@ -555,30 +551,24 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   }
 
   override applyImpulseVel(): boolean {
-    let Ex = 0.0;
-    let Ey = 0.0;
-    let dvx = 0.0;
-    let dvy = 0.0;
-    dvx = this.b2.velx - this.b1.velx;
-    dvy = this.b2.vely - this.b1.vely;
+    let dvx = this.b2.velx - this.b1.velx;
+    let dvy = this.b2.vely - this.b1.vely;
     dvx += this.b2.kinvelx - this.b1.kinvelx;
     dvy += this.b2.kinvely - this.b1.kinvely;
-    Ex =
+    const Ex =
       dvy * this.nrelx -
       dvx * this.nrely +
       (this.b2.angvel + this.b2.kinangvel) * this.dot2 -
       (this.b1.angvel + this.b1.kinangvel) * this.dot1;
-    Ey =
+    const Ey =
       this.scale *
       (this.nrelx * dvx +
         this.nrely * dvy -
         (this.b2.angvel + this.b2.kinangvel) * this.cx2 +
         (this.b1.angvel + this.b1.kinangvel) * this.cx1);
 
-    let Jx = 0.0;
-    let Jy = 0.0;
-    Jx = this.biasx - Ex;
-    Jy = this.biasy - Ey;
+    let Jx = this.biasx - Ex;
+    let Jy = this.biasy - Ey;
     const t = this.kMassa * Jx + this.kMassb * Jy;
     Jy = this.kMassb * Jx + this.kMassc * Jy;
     Jx = t;
@@ -628,30 +618,20 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   override applyImpulsePos(): boolean {
     const napeNs = ZPP_Constraint._nape;
 
-    let nx = 0.0;
-    let ny = 0.0;
-    nx = this.b1.axisy * this.nlocalx - this.b1.axisx * this.nlocaly;
-    ny = this.nlocalx * this.b1.axisx + this.nlocaly * this.b1.axisy;
+    const nx = this.b1.axisy * this.nlocalx - this.b1.axisx * this.nlocaly;
+    const ny = this.nlocalx * this.b1.axisx + this.nlocaly * this.b1.axisy;
 
-    let r1x = 0.0;
-    let r1y = 0.0;
-    r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
-    r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
+    const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
+    const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
 
-    let r2x = 0.0;
-    let r2y = 0.0;
-    r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
-    r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
+    const r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
+    const r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
 
-    let dx = 0.0;
-    let dy = 0.0;
+    let dx = this.b2.posx + r2x - this.b1.posx - r1x;
+    let dy = this.b2.posy + r2y - this.b1.posy - r1y;
     let scale: number;
-    let Ex = 0.0;
-    let Ey = 0.0;
-    dx = this.b2.posx + r2x - this.b1.posx - r1x;
-    dy = this.b2.posy + r2y - this.b1.posy - r1y;
-    Ex = dy * nx - dx * ny;
-    Ey = nx * dx + ny * dy;
+    let Ex = dy * nx - dx * ny;
+    let Ey = nx * dx + ny * dy;
 
     if (this.equal) {
       Ey -= this.jointMin;
