@@ -186,8 +186,14 @@ ${code}`;
   document.body.removeChild(form);
 }
 
-copyCodeBtn.addEventListener("click", copyCode);
-codepenBtn.addEventListener("click", openInCodePen);
+copyCodeBtn.addEventListener("click", () => {
+  gtag("event", "click", { event_category: "code_action", event_label: "copy_code", demo: currentDemo });
+  copyCode();
+});
+codepenBtn.addEventListener("click", () => {
+  gtag("event", "click", { event_category: "code_action", event_label: "open_codepen", demo: currentDemo });
+  openInCodePen();
+});
 
 // Render mode toggle
 document.getElementById("renderModeToggle").addEventListener("click", (e) => {
@@ -195,6 +201,7 @@ document.getElementById("renderModeToggle").addEventListener("click", (e) => {
   if (!btn) return;
   const mode = btn.dataset.mode;
   if (mode === renderMode) return;
+  gtag("event", "click", { event_category: "render_mode", event_label: mode });
   renderMode = mode;
   document.querySelectorAll(".render-mode-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.mode === mode);
@@ -2413,10 +2420,17 @@ canvas.addEventListener("touchstart", (e) => {
 
 document.getElementById("demoTabs").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
-  if (tab) startDemo(tab.dataset.demo);
+  if (tab) {
+    const demo = tab.dataset.demo;
+    if (demo) {
+      gtag("event", "navigation", { event_category: "demo_tab", event_label: demo });
+    }
+    startDemo(demo);
+  }
 });
 
 document.getElementById("resetBtn").addEventListener("click", () => {
+  gtag("event", "click", { event_category: "demo_action", event_label: "reset", demo: currentDemo });
   startDemo(currentDemo);
 });
 
@@ -2520,7 +2534,10 @@ function formatMs(ms) {
   return ms < 1 ? `${(ms * 1000).toFixed(0)}µs` : `${ms.toFixed(2)}ms`;
 }
 
-document.getElementById("runBenchmark").addEventListener("click", runBenchmarkSuite);
+document.getElementById("runBenchmark").addEventListener("click", () => {
+  gtag("event", "click", { event_category: "benchmark", event_label: "run_benchmarks" });
+  runBenchmarkSuite();
+});
 
 // =========================================================================
 // Boot
