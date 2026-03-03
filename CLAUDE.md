@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-~82k lines) into clean, typed TypeScript classes.
+~58k lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 1575 tests across 80 files
+npm test             # vitest — 1878 tests across 103 files
 npm run lint         # eslint + prettier
 ```
 
@@ -35,15 +35,17 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 48 classes
+### Extracted ZPP_* classes (src/native/) — 67 classes
 
 | Category | Classes |
 |----------|---------|
 | Callbacks | `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`, `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener` |
 | Constraints | `ZPP_Constraint`, `ZPP_CopyHelper`, `ZPP_UserBody`, `ZPP_AngleJoint`, `ZPP_MotorJoint`, `ZPP_DistanceJoint`, `ZPP_PivotJoint`, `ZPP_LineJoint`, `ZPP_WeldJoint`, `ZPP_PulleyJoint`, `ZPP_UserConstraint` |
 | Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact`, `ZPP_Arbiter`, `ZPP_SensorArbiter`, `ZPP_FluidArbiter`, `ZPP_ColArbiter` |
-| Geometry | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
+| Geometry (core) | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
+| Geometry (algorithms) | `ZPP_Ray`, `ZPP_Cutter`, `ZPP_Simple`, `ZPP_SimpleSweep`, `ZPP_SimpleVert`, `ZPP_SimpleSeg`, `ZPP_SimpleEvent`, `ZPP_Simplify`, `ZPP_SimplifyV`, `ZPP_SimplifyP`, `ZPP_Monotone`, `ZPP_PartitionedPoly`, `ZPP_PartitionPair`, `ZPP_PartitionVertex`, `ZPP_Triangular`, `ZPP_Convex`, `ZPP_Geom`, `ZPP_GeomVert`, `ZPP_VecMath` |
 | Physics | `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body` |
+| Shapes | `ZPP_Shape`, `ZPP_Circle`, `ZPP_Edge`, `ZPP_Polygon` |
 | Utilities | `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool` |
 
 ### Public API classes — all have TypeScript wrappers
@@ -106,7 +108,7 @@ ListenerType, Broadphase, ValidationResult, CbEvent, InteractionType, PreFlag
 | LineJoint | `src/constraint/LineJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_LineJoint |
 | WeldJoint | `src/constraint/WeldJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_WeldJoint |
 | PulleyJoint | `src/constraint/PulleyJoint.ts` | Base props via ZPP_Constraint, joint-specific via compiled ZPP_PulleyJoint |
-| Ray | `src/geom/Ray.ts` | Raycasting, ZPP_Ray not extracted |
+| Ray | `src/geom/Ray.ts` | Raycasting, ZPP_Ray extracted |
 | ConvexResult | `src/geom/ConvexResult.ts` | Direct ZPP_ConvexRayResult access |
 | RayResult | `src/geom/RayResult.ts` | Direct ZPP_ConvexRayResult access |
 | Geom | `src/geom/Geom.ts` | Static utility (distance/intersects/contains) |
@@ -140,7 +142,7 @@ ArbiterList, Callback, BodyCallback, ConstraintCallback, InteractionCallback, Pr
 ### Internal namespace exposure
 
 `nape.__zpp = zpp_nape;` at the end of the compiled factory function allows TS classes
-to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Monotone`, etc.
+to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`, etc.
 
 ## Next Modernization Candidates
 
@@ -160,15 +162,15 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 - ~~`ZPP_LineJoint` (~1,100 lines), `ZPP_PulleyJoint` (~1,890 lines)~~
 - ~~`ZPP_WeldJoint` (~990 lines), `ZPP_UserConstraint` (~670 lines), `ZPP_UserBody` (~16 lines)~~
 
-**Priority 4: Shape classes (~3,270 lines, 4 classes)**
-- `ZPP_Shape` (base, ~980 lines) + `ZPP_Circle` (~330 lines) + `ZPP_Polygon` (~1,610 lines) + `ZPP_Edge` (~350 lines)
+~~**Priority 4: Shape classes (~3,270 lines, 4 classes)**~~ ✅
+- ~~`ZPP_Shape` (base, ~980 lines) + `ZPP_Circle` (~330 lines) + `ZPP_Polygon` (~1,610 lines) + `ZPP_Edge` (~350 lines)~~
 
-**Priority 5: Isolated geometry algorithms (~8,700 lines)**
-- `ZPP_Ray` (~1,930 lines, ray-shape intersection)
-- `ZPP_Cutter` (~1,760 lines, polygon cutting)
-- `ZPP_Simple` (~1,345 lines) + `ZPP_SimpleSweep` (~330 lines) + `ZPP_Simplify` (~310 lines) + helpers (~160 lines)
-- `ZPP_Monotone` (~450 lines) + `ZPP_PartitionedPoly` (~550 lines) + `ZPP_PartitionPair` (~410 lines) + `ZPP_PartitionVertex` (~280 lines) + `ZPP_Triangular` (~340 lines)
-- Small helpers: `ZPP_Convex` (~80 lines), `ZPP_Geom` (~330 lines), `ZPP_GeomVert` (~184 lines), `ZPP_VecMath` (~18 lines)
+~~**Priority 5: Isolated geometry algorithms (~8,700 lines, 19 classes)**~~ ✅
+- ~~`ZPP_Ray` (~1,930 lines), `ZPP_Cutter` (~1,760 lines)~~
+- ~~`ZPP_Simple` (~1,345 lines), `ZPP_SimpleSweep` (~330 lines), `ZPP_Simplify` (~310 lines), `ZPP_SimplifyV`, `ZPP_SimplifyP`~~
+- ~~`ZPP_SimpleVert`, `ZPP_SimpleSeg`, `ZPP_SimpleEvent` (pool objects)~~
+- ~~`ZPP_Monotone` (~450 lines), `ZPP_PartitionedPoly` (~550 lines), `ZPP_PartitionPair` (~410 lines), `ZPP_PartitionVertex` (~280 lines), `ZPP_Triangular` (~340 lines)~~
+- ~~`ZPP_Convex` (~80 lines), `ZPP_Geom` (~330 lines), `ZPP_GeomVert` (~184 lines), `ZPP_VecMath` (~18 lines)~~
 
 **Priority 6: Collision & continuous detection (~6,500 lines)**
 - `ZPP_Collide` (~3,190 lines, narrowphase collision dispatcher)
@@ -184,11 +186,12 @@ to access internal compiled classes like `ZPP_GeomVert`, `ZPP_Simple`, `ZPP_Mono
 - `ZPP_CallbackSet` (~567 lines) + `ZPP_CbSetManager` (~145 lines)
 - `ZPP_SpaceArbiterList` (~277 lines)
 
-**Still in compiled (misc):**
+**Still in compiled (misc, ~58k lines):**
 - `ZPP_Interactor` (~377 lines, base class for Body/Compound/Shape)
 - Special lists: `Vec2List`, `ContactList`, `GeomVertexIterator` (~230 lines)
 - `ZPP_MarchingSquares` (~3,820 lines, compiled version still present alongside TS)
 - Internal linked lists (`ZNPList_*`, `ZNPNode_*`, `ZPP_Set_*`)
+- Utility hash/array helpers (`FastHash2_*`, `ZNPArray2_*`, `Hashable2_*`)
 
 ## Modernization Pattern
 
@@ -231,6 +234,8 @@ as reference implementations:
 ### Key gotchas
 
 - **Circular imports**: Foo.ts → engine.ts → nape-compiled.js. Never import Foo.ts from compiled code.
+- **Test circular deps**: Tests for ZPP_* classes that import `getNape` must add
+  `import "../../../src/core/engine"` before the class import to break the circular dependency.
 - **Init-time stubs**: If compiled init code creates instances (e.g., singleton enums), keep a
   minimal stub in compiled code. TS class replaces it and fixes prototypes via `setPrototypeOf`.
 - **Runtime `instanceof`**: If compiled code uses `val instanceof nape.xxx.Foo`, the stub
