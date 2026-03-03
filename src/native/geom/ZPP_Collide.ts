@@ -24,10 +24,8 @@ export class ZPP_Collide {
   static flowsegs: Any = null;
 
     static circleContains(c, p) {
-      let dx = 0.0;
-      let dy = 0.0;
-      dx = p.x - c.worldCOMx;
-      dy = p.y - c.worldCOMy;
+      const dx = p.x - c.worldCOMx;
+      const dy = p.y - c.worldCOMy;
       return dx * dx + dy * dy < c.radius * c.radius;
     };
     static polyContains(s, p) {
@@ -79,10 +77,8 @@ export class ZPP_Collide {
         if (s1.type == 0) {
           if (s2.type == 0) {
             const minDist = s1.circle.radius + -s2.circle.radius;
-            let px = 0.0;
-            let py = 0.0;
-            px = s2.circle.worldCOMx - s1.circle.worldCOMx;
-            py = s2.circle.worldCOMy - s1.circle.worldCOMy;
+            const px = s2.circle.worldCOMx - s1.circle.worldCOMx;
+            const py = s2.circle.worldCOMy - s1.circle.worldCOMy;
             const distSqr = px * px + py * py;
             return distSqr <= minDist * minDist;
           } else {
@@ -92,10 +88,8 @@ export class ZPP_Collide {
             while (cx_ite != null) {
               const p = cx_ite;
               const minDist1 = s1.circle.radius;
-              let px1 = 0.0;
-              let py1 = 0.0;
-              px1 = p.x - s1.circle.worldCOMx;
-              py1 = p.y - s1.circle.worldCOMy;
+              const px1 = p.x - s1.circle.worldCOMx;
+              const py1 = p.y - s1.circle.worldCOMy;
               const distSqr1 = px1 * px1 + py1 * py1;
               if (distSqr1 <= minDist1 * minDist1) {
                 cx_ite = cx_ite.next;
@@ -163,7 +157,7 @@ export class ZPP_Collide {
         if (s1.type == 1) {
           let cont = true;
           let max = -1e100;
-          const maxmin = -1e100;
+          const _maxmin = -1e100;
           let maxi = -1;
           let axis1 = null;
           let axis2 = null;
@@ -227,17 +221,17 @@ export class ZPP_Collide {
             if (!cont) {
               return false;
             } else {
-              let q1;
+              let _q1;
               let q2;
               let ax2;
               let scale;
               if (maxi == 1) {
-                q1 = s1.polygon;
+                _q1 = s1.polygon;
                 q2 = s2.polygon;
                 ax2 = axis1;
                 scale = 1.0;
               } else {
-                q1 = s2.polygon;
+                _q1 = s2.polygon;
                 q2 = s1.polygon;
                 ax2 = axis2;
                 scale = -1.0;
@@ -254,18 +248,12 @@ export class ZPP_Collide {
                 }
                 cx_ite4 = cx_ite4.next;
               }
-              let c0x = 0.0;
-              let c0y = 0.0;
-              c0x = ay.gp0.x;
-              c0y = ay.gp0.y;
-              let c1x = 0.0;
-              let c1y = 0.0;
-              c1x = ay.gp1.x;
-              c1y = ay.gp1.y;
-              let dvx = 0.0;
-              let dvy = 0.0;
-              dvx = c1x - c0x;
-              dvy = c1y - c0y;
+              let c0x = ay.gp0.x;
+              let c0y = ay.gp0.y;
+              let c1x = ay.gp1.x;
+              let c1y = ay.gp1.y;
+              const dvx = c1x - c0x;
+              const dvy = c1y - c0y;
               const d0 = ax2.gnormy * c0x - ax2.gnormx * c0y;
               const d1 = ax2.gnormy * c1x - ax2.gnormx * c1y;
               const den = 1 / (d1 - d0);
@@ -281,11 +269,9 @@ export class ZPP_Collide {
                 c1x += dvx * t3;
                 c1y += dvy * t3;
               }
-              let nx = 0.0;
-              let ny = 0.0;
               const t4 = scale;
-              nx = ax2.gnormx * t4;
-              ny = ax2.gnormy * t4;
+              let nx = ax2.gnormx * t4;
+              let ny = ax2.gnormy * t4;
               arb.lnormx = ax2.lnormx;
               arb.lnormy = ax2.lnormy;
               arb.lproj = ax2.lprojection;
@@ -426,7 +412,7 @@ export class ZPP_Collide {
           }
         } else {
           let max1 = -1e100;
-          const minmax = -1e100;
+          const _minmax = -1e100;
           let cont1 = true;
           let a0 = null;
           let vi = null;
@@ -458,10 +444,8 @@ export class ZPP_Collide {
               s1.circle.worldCOMy * a0.gnormx - s1.circle.worldCOMx * a0.gnormy;
             if (dt <= v0.y * a0.gnormx - v0.x * a0.gnormy) {
               const minDist = s1.circle.radius;
-              let px2 = 0.0;
-              let py2 = 0.0;
-              px2 = v0.x - s1.circle.worldCOMx;
-              py2 = v0.y - s1.circle.worldCOMy;
+              const px2 = v0.x - s1.circle.worldCOMx;
+              const py2 = v0.y - s1.circle.worldCOMy;
               const distSqr = px2 * px2 + py2 * py2;
               let co;
               if (distSqr > minDist * minDist) {
@@ -613,10 +597,8 @@ export class ZPP_Collide {
               if (co != null) {
                 const con1 = co.inner;
                 arb.ptype = 2;
-                let vx = 0.0;
-                let vy = 0.0;
-                vx = v0.x - s2.polygon.body.posx;
-                vy = v0.y - s2.polygon.body.posy;
+                const vx = v0.x - s2.polygon.body.posx;
+                const vy = v0.y - s2.polygon.body.posy;
                 arb.__ref_edge1 = a0;
                 arb.__ref_vertex = -1;
                 if (rev) {
@@ -639,10 +621,8 @@ export class ZPP_Collide {
               return co != null;
             } else if (dt >= v11.y * a0.gnormx - v11.x * a0.gnormy) {
               const minDist1 = s1.circle.radius;
-              let px6 = 0.0;
-              let py6 = 0.0;
-              px6 = v11.x - s1.circle.worldCOMx;
-              py6 = v11.y - s1.circle.worldCOMy;
+              const px6 = v11.x - s1.circle.worldCOMx;
+              const py6 = v11.y - s1.circle.worldCOMy;
               const distSqr1 = px6 * px6 + py6 * py6;
               let co1;
               if (distSqr1 > minDist1 * minDist1) {
@@ -795,10 +775,8 @@ export class ZPP_Collide {
               if (co1 != null) {
                 const con2 = co1.inner;
                 arb.ptype = 2;
-                let vx1 = 0.0;
-                let vy1 = 0.0;
-                vx1 = v11.x - s2.polygon.body.posx;
-                vy1 = v11.y - s2.polygon.body.posy;
+                const vx1 = v11.x - s2.polygon.body.posx;
+                const vy1 = v11.y - s2.polygon.body.posy;
                 arb.__ref_edge1 = a0;
                 arb.__ref_vertex = 1;
                 if (rev) {
@@ -820,15 +798,11 @@ export class ZPP_Collide {
               }
               return co1 != null;
             } else {
-              let nx1 = 0.0;
-              let ny1 = 0.0;
               const t7 = s1.circle.radius + max1 * 0.5;
-              nx1 = a0.gnormx * t7;
-              ny1 = a0.gnormy * t7;
-              let px10 = 0.0;
-              let py10 = 0.0;
-              px10 = s1.circle.worldCOMx - nx1;
-              py10 = s1.circle.worldCOMy - ny1;
+              const nx1 = a0.gnormx * t7;
+              const ny1 = a0.gnormy * t7;
+              const px10 = s1.circle.worldCOMx - nx1;
+              const py10 = s1.circle.worldCOMy - ny1;
               let con3;
               if (rev) {
                 const nx2 = a0.gnormx;
@@ -941,10 +915,8 @@ export class ZPP_Collide {
         }
       } else {
         const minDist2 = s1.circle.radius + s2.circle.radius;
-        let px11 = 0.0;
-        let py11 = 0.0;
-        px11 = s2.circle.worldCOMx - s1.circle.worldCOMx;
-        py11 = s2.circle.worldCOMy - s1.circle.worldCOMy;
+        const px11 = s2.circle.worldCOMx - s1.circle.worldCOMx;
+        const py11 = s2.circle.worldCOMy - s1.circle.worldCOMy;
         const distSqr2 = px11 * px11 + py11 * py11;
         let co2;
         if (distSqr2 > minDist2 * minDist2) {
@@ -1115,7 +1087,7 @@ export class ZPP_Collide {
       }
     };
     static testCollide_safe(s1, s2) {
-      const napeNs = getNape();
+      const _napeNs = getNape();
       if (s2.type == 0) {
         const t = s1;
         s1 = s2;
@@ -1124,7 +1096,7 @@ export class ZPP_Collide {
       return ZPP_Collide.testCollide(s1, s2);
     };
     static testCollide(s1, s2) {
-      const napeNs = getNape();
+      const _napeNs = getNape();
       if (s2.type == 1) {
         if (s1.type == 1) {
           let cont = true;
@@ -1206,18 +1178,14 @@ export class ZPP_Collide {
               s1.circle.worldCOMy * a0.gnormx - s1.circle.worldCOMx * a0.gnormy;
             if (dt <= v0.y * a0.gnormx - v0.x * a0.gnormy) {
               const minDist = s1.circle.radius;
-              let px = 0.0;
-              let py = 0.0;
-              px = v0.x - s1.circle.worldCOMx;
-              py = v0.y - s1.circle.worldCOMy;
+              const px = v0.x - s1.circle.worldCOMx;
+              const py = v0.y - s1.circle.worldCOMy;
               const distSqr = px * px + py * py;
               return distSqr <= minDist * minDist;
             } else if (dt >= v11.y * a0.gnormx - v11.x * a0.gnormy) {
               const minDist1 = s1.circle.radius;
-              let px1 = 0.0;
-              let py1 = 0.0;
-              px1 = v11.x - s1.circle.worldCOMx;
-              py1 = v11.y - s1.circle.worldCOMy;
+              const px1 = v11.x - s1.circle.worldCOMx;
+              const py1 = v11.y - s1.circle.worldCOMy;
               const distSqr1 = px1 * px1 + py1 * py1;
               return distSqr1 <= minDist1 * minDist1;
             } else {
@@ -1229,10 +1197,8 @@ export class ZPP_Collide {
         }
       } else {
         const minDist2 = s1.circle.radius + s2.circle.radius;
-        let px2 = 0.0;
-        let py2 = 0.0;
-        px2 = s2.circle.worldCOMx - s1.circle.worldCOMx;
-        py2 = s2.circle.worldCOMy - s1.circle.worldCOMy;
+        const px2 = s2.circle.worldCOMx - s1.circle.worldCOMx;
+        const py2 = s2.circle.worldCOMy - s1.circle.worldCOMy;
         const distSqr2 = px2 * px2 + py2 * py2;
         return distSqr2 <= minDist2 * minDist2;
       }
@@ -1552,20 +1518,14 @@ export class ZPP_Collide {
                   while (cx_itej1 != null) {
                     const b = cx_itej1;
                     let t6 = 0.0;
-                    let _sx = 0.0;
-                    let _sy = 0.0;
-                    _sx = u2.x - a.x;
-                    _sy = u2.y - a.y;
-                    let _vx = 0.0;
-                    let _vy = 0.0;
-                    _vx = v4.x - u2.x;
-                    _vy = v4.y - u2.y;
-                    let _qx = 0.0;
-                    let _qy = 0.0;
-                    _qx = b.x - a.x;
-                    _qy = b.y - a.y;
+                    const _sx = u2.x - a.x;
+                    const _sy = u2.y - a.y;
+                    const _vx = v4.x - u2.x;
+                    const _vy = v4.y - u2.y;
+                    const _qx = b.x - a.x;
+                    const _qy = b.y - a.y;
                     let den = _vy * _qx - _vx * _qy;
-                    var tmp;
+                    let tmp;
                     if (den * den > napeNs.Config.epsilon * napeNs.Config.epsilon) {
                       den = 1 / den;
                       const txx = (_qy * _sx - _qx * _sy) * den;
@@ -1604,20 +1564,14 @@ export class ZPP_Collide {
                       cx_itej1 = s2.polygon.gverts.next;
                       const b1 = cx_itej1;
                       let t7 = 0.0;
-                      let _sx1 = 0.0;
-                      let _sy1 = 0.0;
-                      _sx1 = u2.x - a.x;
-                      _sy1 = u2.y - a.y;
-                      let _vx1 = 0.0;
-                      let _vy1 = 0.0;
-                      _vx1 = v4.x - u2.x;
-                      _vy1 = v4.y - u2.y;
-                      let _qx1 = 0.0;
-                      let _qy1 = 0.0;
-                      _qx1 = b1.x - a.x;
-                      _qy1 = b1.y - a.y;
+                      const _sx1 = u2.x - a.x;
+                      const _sy1 = u2.y - a.y;
+                      const _vx1 = v4.x - u2.x;
+                      const _vy1 = v4.y - u2.y;
+                      const _qx1 = b1.x - a.x;
+                      const _qy1 = b1.y - a.y;
                       let den1 = _vy1 * _qx1 - _vx1 * _qy1;
-                      var tmp1;
+                      let tmp1;
                       if (
                         den1 * den1 >
                         napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -1650,18 +1604,14 @@ export class ZPP_Collide {
                           ite2 = cx_itei1;
                         }
                       }
-                      if (!false) {
-                        break;
-                      }
+                      break;
                     }
                   }
                   if (min2 != 2.0) {
-                    let cx = 0.0;
-                    let cy = 0.0;
                     const T = min2;
-                    cx = u2.x + (v4.x - u2.x) * T;
-                    cy = u2.y + (v4.y - u2.y) * T;
-                    var ret;
+                    const cx = u2.x + (v4.x - u2.x) * T;
+                    const cy = u2.y + (v4.y - u2.y) * T;
+                    let ret;
                     if (ZPP_Vec2.zpp_pool == null) {
                       ret = new ZPP_Vec2();
                     } else {
@@ -1696,20 +1646,14 @@ export class ZPP_Collide {
                     while (cx_itej2 != null) {
                       const b2 = cx_itej2;
                       let t8 = 0.0;
-                      let _sx2 = 0.0;
-                      let _sy2 = 0.0;
-                      _sx2 = u2.x - a1.x;
-                      _sy2 = u2.y - a1.y;
-                      let _vx2 = 0.0;
-                      let _vy2 = 0.0;
-                      _vx2 = v5.x - u2.x;
-                      _vy2 = v5.y - u2.y;
-                      let _qx2 = 0.0;
-                      let _qy2 = 0.0;
-                      _qx2 = b2.x - a1.x;
-                      _qy2 = b2.y - a1.y;
+                      const _sx2 = u2.x - a1.x;
+                      const _sy2 = u2.y - a1.y;
+                      const _vx2 = v5.x - u2.x;
+                      const _vy2 = v5.y - u2.y;
+                      const _qx2 = b2.x - a1.x;
+                      const _qy2 = b2.y - a1.y;
                       let den2 = _vy2 * _qx2 - _vx2 * _qy2;
-                      var tmp2;
+                      let tmp2;
                       if (
                         den2 * den2 >
                         napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -1751,20 +1695,14 @@ export class ZPP_Collide {
                         cx_itej2 = s2.polygon.gverts.next;
                         const b3 = cx_itej2;
                         let t9 = 0.0;
-                        let _sx3 = 0.0;
-                        let _sy3 = 0.0;
-                        _sx3 = u2.x - a1.x;
-                        _sy3 = u2.y - a1.y;
-                        let _vx3 = 0.0;
-                        let _vy3 = 0.0;
-                        _vx3 = v5.x - u2.x;
-                        _vy3 = v5.y - u2.y;
-                        let _qx3 = 0.0;
-                        let _qy3 = 0.0;
-                        _qx3 = b3.x - a1.x;
-                        _qy3 = b3.y - a1.y;
+                        const _sx3 = u2.x - a1.x;
+                        const _sy3 = u2.y - a1.y;
+                        const _vx3 = v5.x - u2.x;
+                        const _vy3 = v5.y - u2.y;
+                        const _qx3 = b3.x - a1.x;
+                        const _qy3 = b3.y - a1.y;
                         let den3 = _vy3 * _qx3 - _vx3 * _qy3;
-                        var tmp3;
+                        let tmp3;
                         if (
                           den3 * den3 >
                           napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -1797,18 +1735,14 @@ export class ZPP_Collide {
                             ite2 = cx_itei2;
                           }
                         }
-                        if (!false) {
-                          break;
-                        }
+                        break;
                       }
                     }
                     if (min3 != 2.0) {
-                      let cx1 = 0.0;
-                      let cy1 = 0.0;
                       const T1 = min3;
-                      cx1 = u2.x + (v5.x - u2.x) * T1;
-                      cy1 = u2.y + (v5.y - u2.y) * T1;
-                      var ret1;
+                      const cx1 = u2.x + (v5.x - u2.x) * T1;
+                      const cy1 = u2.y + (v5.y - u2.y) * T1;
+                      let ret1;
                       if (ZPP_Vec2.zpp_pool == null) {
                         ret1 = new ZPP_Vec2();
                       } else {
@@ -1826,9 +1760,7 @@ export class ZPP_Collide {
                       ite1 = cx_itei;
                       break;
                     }
-                    if (!false) {
-                      break;
-                    }
+                    break;
                   }
                 }
                 cnt = 2;
@@ -1843,12 +1775,10 @@ export class ZPP_Collide {
                   }
                   if (!out1[ind11]) {
                     const ex = ite1;
-                    var tmp4;
+                    let tmp4;
                     if (fst_vert != null) {
-                      let dx = 0.0;
-                      let dy = 0.0;
-                      dx = ex.x - fst_vert.x;
-                      dy = ex.y - fst_vert.y;
+                      const dx = ex.x - fst_vert.x;
+                      const dy = ex.y - fst_vert.y;
                       tmp4 = dx * dx + dy * dy < napeNs.Config.epsilon;
                     } else {
                       tmp4 = false;
@@ -1878,20 +1808,14 @@ export class ZPP_Collide {
                     while (true) {
                       const v6 = cx_ite6;
                       let t10 = 0.0;
-                      let _sx4 = 0.0;
-                      let _sy4 = 0.0;
-                      _sx4 = u3.x - a2.x;
-                      _sy4 = u3.y - a2.y;
-                      let _vx4 = 0.0;
-                      let _vy4 = 0.0;
-                      _vx4 = v6.x - u3.x;
-                      _vy4 = v6.y - u3.y;
-                      let _qx4 = 0.0;
-                      let _qy4 = 0.0;
-                      _qx4 = b4.x - a2.x;
-                      _qy4 = b4.y - a2.y;
+                      const _sx4 = u3.x - a2.x;
+                      const _sy4 = u3.y - a2.y;
+                      const _vx4 = v6.x - u3.x;
+                      const _vy4 = v6.y - u3.y;
+                      const _qx4 = b4.x - a2.x;
+                      const _qy4 = b4.y - a2.y;
                       let den4 = _vy4 * _qx4 - _vx4 * _qy4;
-                      var tmp5;
+                      let tmp5;
                       if (
                         den4 * den4 >
                         napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -1941,27 +1865,19 @@ export class ZPP_Collide {
                       if (cx_ite6 == null) {
                         cx_ite6 = s2.polygon.gverts.next;
                       }
-                      if (!false) {
-                        break;
-                      }
+                      break;
                     }
                     while (cx_ite6 != beg_ite) {
                       const v7 = cx_ite6;
                       let t11 = 0.0;
-                      let _sx5 = 0.0;
-                      let _sy5 = 0.0;
-                      _sx5 = u3.x - a2.x;
-                      _sy5 = u3.y - a2.y;
-                      let _vx5 = 0.0;
-                      let _vy5 = 0.0;
-                      _vx5 = v7.x - u3.x;
-                      _vy5 = v7.y - u3.y;
-                      let _qx5 = 0.0;
-                      let _qy5 = 0.0;
-                      _qx5 = b4.x - a2.x;
-                      _qy5 = b4.y - a2.y;
+                      const _sx5 = u3.x - a2.x;
+                      const _sy5 = u3.y - a2.y;
+                      const _vx5 = v7.x - u3.x;
+                      const _vy5 = v7.y - u3.y;
+                      const _qx5 = b4.x - a2.x;
+                      const _qy5 = b4.y - a2.y;
                       let den5 = _vy5 * _qx5 - _vx5 * _qy5;
-                      var tmp6;
+                      let tmp6;
                       if (
                         den5 * den5 >
                         napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -1994,7 +1910,6 @@ export class ZPP_Collide {
                           indo = ind2;
                           if (++icnt == cnt) {
                             max = t11;
-                            cx_ite6 = beg_ite;
                             break;
                           } else {
                             max = t11;
@@ -2021,17 +1936,13 @@ export class ZPP_Collide {
                       itm2 = s2.polygon.gverts.next;
                     }
                     const v8 = itm2;
-                    let cx2 = 0.0;
-                    let cy2 = 0.0;
                     const T2 = max;
-                    cx2 = u4.x + (v8.x - u4.x) * T2;
-                    cy2 = u4.y + (v8.y - u4.y) * T2;
-                    var tmp7;
+                    const cx2 = u4.x + (v8.x - u4.x) * T2;
+                    const cy2 = u4.y + (v8.y - u4.y) * T2;
+                    let tmp7;
                     if (fst_vert != null) {
-                      let dx1 = 0.0;
-                      let dy1 = 0.0;
-                      dx1 = cx2 - fst_vert.x;
-                      dy1 = cy2 - fst_vert.y;
+                      const dx1 = cx2 - fst_vert.x;
+                      const dy1 = cy2 - fst_vert.y;
                       tmp7 = dx1 * dx1 + dy1 * dy1 < napeNs.Config.epsilon;
                     } else {
                       tmp7 = false;
@@ -2040,7 +1951,7 @@ export class ZPP_Collide {
                       break;
                     }
                     const tmp8 = ZPP_Collide.flowpoly;
-                    var ret2;
+                    let ret2;
                     if (ZPP_Vec2.zpp_pool == null) {
                       ret2 = new ZPP_Vec2();
                     } else {
@@ -2070,12 +1981,10 @@ export class ZPP_Collide {
                   }
                   if (!out2[ind2]) {
                     const ex1 = ite2;
-                    var tmp9;
+                    let tmp9;
                     if (fst_vert != null) {
-                      let dx2 = 0.0;
-                      let dy2 = 0.0;
-                      dx2 = ex1.x - fst_vert.x;
-                      dy2 = ex1.y - fst_vert.y;
+                      const dx2 = ex1.x - fst_vert.x;
+                      const dy2 = ex1.y - fst_vert.y;
                       tmp9 = dx2 * dx2 + dy2 * dy2 < napeNs.Config.epsilon;
                     } else {
                       tmp9 = false;
@@ -2105,20 +2014,14 @@ export class ZPP_Collide {
                     while (true) {
                       const v9 = cx_ite7;
                       let t12 = 0.0;
-                      let _sx6 = 0.0;
-                      let _sy6 = 0.0;
-                      _sx6 = u5.x - a3.x;
-                      _sy6 = u5.y - a3.y;
-                      let _vx6 = 0.0;
-                      let _vy6 = 0.0;
-                      _vx6 = v9.x - u5.x;
-                      _vy6 = v9.y - u5.y;
-                      let _qx6 = 0.0;
-                      let _qy6 = 0.0;
-                      _qx6 = b5.x - a3.x;
-                      _qy6 = b5.y - a3.y;
+                      const _sx6 = u5.x - a3.x;
+                      const _sy6 = u5.y - a3.y;
+                      const _vx6 = v9.x - u5.x;
+                      const _vy6 = v9.y - u5.y;
+                      const _qx6 = b5.x - a3.x;
+                      const _qy6 = b5.y - a3.y;
                       let den6 = _vy6 * _qx6 - _vx6 * _qy6;
-                      var tmp10;
+                      let tmp10;
                       if (
                         den6 * den6 >
                         napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -2168,27 +2071,19 @@ export class ZPP_Collide {
                       if (cx_ite7 == null) {
                         cx_ite7 = s1.polygon.gverts.next;
                       }
-                      if (!false) {
-                        break;
-                      }
+                      break;
                     }
                     while (cx_ite7 != beg_ite1) {
                       const v10 = cx_ite7;
                       let t13 = 0.0;
-                      let _sx7 = 0.0;
-                      let _sy7 = 0.0;
-                      _sx7 = u5.x - a3.x;
-                      _sy7 = u5.y - a3.y;
-                      let _vx7 = 0.0;
-                      let _vy7 = 0.0;
-                      _vx7 = v10.x - u5.x;
-                      _vy7 = v10.y - u5.y;
-                      let _qx7 = 0.0;
-                      let _qy7 = 0.0;
-                      _qx7 = b5.x - a3.x;
-                      _qy7 = b5.y - a3.y;
+                      const _sx7 = u5.x - a3.x;
+                      const _sy7 = u5.y - a3.y;
+                      const _vx7 = v10.x - u5.x;
+                      const _vy7 = v10.y - u5.y;
+                      const _qx7 = b5.x - a3.x;
+                      const _qy7 = b5.y - a3.y;
                       let den7 = _vy7 * _qx7 - _vx7 * _qy7;
-                      var tmp11;
+                      let tmp11;
                       if (
                         den7 * den7 >
                         napeNs.Config.epsilon * napeNs.Config.epsilon
@@ -2221,7 +2116,6 @@ export class ZPP_Collide {
                           indo1 = ind11;
                           if (++icnt1 == cnt) {
                             max1 = t13;
-                            cx_ite7 = beg_ite1;
                             break;
                           } else {
                             max1 = t13;
@@ -2248,17 +2142,13 @@ export class ZPP_Collide {
                       itm21 = s1.polygon.gverts.next;
                     }
                     const v11 = itm21;
-                    let cx3 = 0.0;
-                    let cy3 = 0.0;
                     const T3 = max1;
-                    cx3 = u6.x + (v11.x - u6.x) * T3;
-                    cy3 = u6.y + (v11.y - u6.y) * T3;
-                    var tmp12;
+                    const cx3 = u6.x + (v11.x - u6.x) * T3;
+                    const cy3 = u6.y + (v11.y - u6.y) * T3;
+                    let tmp12;
                     if (fst_vert != null) {
-                      let dx3 = 0.0;
-                      let dy3 = 0.0;
-                      dx3 = cx3 - fst_vert.x;
-                      dy3 = cy3 - fst_vert.y;
+                      const dx3 = cx3 - fst_vert.x;
+                      const dy3 = cy3 - fst_vert.y;
                       tmp12 = dx3 * dx3 + dy3 * dy3 < napeNs.Config.epsilon;
                     } else {
                       tmp12 = false;
@@ -2267,7 +2157,7 @@ export class ZPP_Collide {
                       break;
                     }
                     const tmp13 = ZPP_Collide.flowpoly;
-                    var ret3;
+                    let ret3;
                     if (ZPP_Vec2.zpp_pool == null) {
                       ret3 = new ZPP_Vec2();
                     } else {
@@ -2295,11 +2185,8 @@ export class ZPP_Collide {
                 ZPP_Collide.flowpoly.head.next.next != null
               ) {
                 let area2 = 0.0;
-                let COMx = 0.0;
-                let COMy = 0.0;
-                COMx = 0;
-                COMy = 0;
-                area2 = 0.0;
+                let COMx = 0;
+                let COMy = 0;
                 let cx_ite8 = ZPP_Collide.flowpoly.head;
                 let u7 = cx_ite8.elt;
                 cx_ite8 = cx_ite8.next;
@@ -2395,18 +2282,14 @@ export class ZPP_Collide {
               let tmp14;
               if (dt <= v0.y * a0.gnormx - v0.x * a0.gnormy) {
                 const minDist = s1.circle.radius;
-                let px = 0.0;
-                let py = 0.0;
-                px = v0.x - s1.circle.worldCOMx;
-                py = v0.y - s1.circle.worldCOMy;
+                const px = v0.x - s1.circle.worldCOMx;
+                const py = v0.y - s1.circle.worldCOMy;
                 const distSqr = px * px + py * py;
                 tmp14 = distSqr <= minDist * minDist;
               } else if (dt >= v13.y * a0.gnormx - v13.x * a0.gnormy) {
                 const minDist1 = s1.circle.radius;
-                let px1 = 0.0;
-                let py1 = 0.0;
-                px1 = v13.x - s1.circle.worldCOMx;
-                py1 = v13.y - s1.circle.worldCOMy;
+                const px1 = v13.x - s1.circle.worldCOMx;
+                const py1 = v13.y - s1.circle.worldCOMy;
                 const distSqr1 = px1 * px1 + py1 * py1;
                 tmp14 = distSqr1 <= minDist1 * minDist1;
               } else {
@@ -2421,10 +2304,8 @@ export class ZPP_Collide {
                 let cx_ite10 = s2.polygon.gverts.next;
                 while (cx_ite10 != null) {
                   const v14 = cx_ite10;
-                  let dx4 = 0.0;
-                  let dy4 = 0.0;
-                  dx4 = v14.x - s1.circle.worldCOMx;
-                  dy4 = v14.y - s1.circle.worldCOMy;
+                  const dx4 = v14.x - s1.circle.worldCOMx;
+                  const dy4 = v14.y - s1.circle.worldCOMy;
                   const dist1 = dx4 * dx4 + dy4 * dy4;
                   if (
                     !(ins[ind4] = dist1 <= s1.circle.radius * s1.circle.radius)
@@ -2564,10 +2445,8 @@ export class ZPP_Collide {
                         vind = 0;
                       }
                       if (ins[vind]) {
-                        let dx5 = 0.0;
-                        let dy5 = 0.0;
-                        dx5 = fst_vert1.x - vi1.x;
-                        dy5 = fst_vert1.y - vi1.y;
+                        const dx5 = fst_vert1.x - vi1.x;
+                        const dy5 = fst_vert1.y - vi1.y;
                         if (dx5 * dx5 + dy5 * dy5 < napeNs.Config.epsilon) {
                           break;
                         }
@@ -2575,14 +2454,10 @@ export class ZPP_Collide {
                       } else {
                         const u9 = ZPP_Collide.flowpoly.head.elt;
                         const v16 = vi1;
-                        let vx = 0.0;
-                        let vy = 0.0;
-                        vx = v16.x - u9.x;
-                        vy = v16.y - u9.y;
-                        let qx = 0.0;
-                        let qy = 0.0;
-                        qx = u9.x - s1.circle.worldCOMx;
-                        qy = u9.y - s1.circle.worldCOMy;
+                        const vx = v16.x - u9.x;
+                        const vy = v16.y - u9.y;
+                        const qx = u9.x - s1.circle.worldCOMx;
+                        const qy = u9.y - s1.circle.worldCOMy;
                         let A = vx * vx + vy * vy;
                         const B = 2 * (qx * vx + qy * vy);
                         const C =
@@ -2596,15 +2471,13 @@ export class ZPP_Collide {
                         const T4 = tval;
                         cx4 = u9.x + (v16.x - u9.x) * T4;
                         cy4 = u9.y + (v16.y - u9.y) * T4;
-                        let dx6 = 0.0;
-                        let dy6 = 0.0;
-                        dx6 = fst_vert1.x - cx4;
-                        dy6 = fst_vert1.y - cy4;
+                        const dx6 = fst_vert1.x - cx4;
+                        const dy6 = fst_vert1.y - cy4;
                         if (dx6 * dx6 + dy6 * dy6 < napeNs.Config.epsilon) {
                           break;
                         }
                         const tmp15 = ZPP_Collide.flowpoly;
-                        var ret4;
+                        let ret4;
                         if (ZPP_Vec2.zpp_pool == null) {
                           ret4 = new ZPP_Vec2();
                         } else {
@@ -2636,14 +2509,10 @@ export class ZPP_Collide {
                         }
                         if (inte[vind]) {
                           if (ins[vind2]) {
-                            let vx1 = 0.0;
-                            let vy1 = 0.0;
-                            vx1 = v17.x - u10.x;
-                            vy1 = v17.y - u10.y;
-                            let qx1 = 0.0;
-                            let qy1 = 0.0;
-                            qx1 = u10.x - s1.circle.worldCOMx;
-                            qy1 = u10.y - s1.circle.worldCOMy;
+                            const vx1 = v17.x - u10.x;
+                            const vy1 = v17.y - u10.y;
+                            const qx1 = u10.x - s1.circle.worldCOMx;
+                            const qy1 = u10.y - s1.circle.worldCOMy;
                             let A1 = vx1 * vx1 + vy1 * vy1;
                             const B1 = 2 * (qx1 * vx1 + qy1 * vy1);
                             const C1 =
@@ -2660,16 +2529,14 @@ export class ZPP_Collide {
                             const T5 = tval1;
                             cx5 = u10.x + (v17.x - u10.x) * T5;
                             cy5 = u10.y + (v17.y - u10.y) * T5;
-                            let dx7 = 0.0;
-                            let dy7 = 0.0;
-                            dx7 = fst_vert1.x - cx5;
-                            dy7 = fst_vert1.y - cy5;
+                            const dx7 = fst_vert1.x - cx5;
+                            const dy7 = fst_vert1.y - cy5;
                             if (dx7 * dx7 + dy7 * dy7 < napeNs.Config.epsilon) {
                               state = 0;
                               cx_ite12 = beg_ite2;
                               break;
                             }
-                            var ret5;
+                            let ret5;
                             if (ZPP_Vec2.zpp_pool == null) {
                               ret5 = new ZPP_Vec2();
                             } else {
@@ -2693,14 +2560,10 @@ export class ZPP_Collide {
                           } else {
                             let t0 = 0.0;
                             let t110 = 0.0;
-                            let vx2 = 0.0;
-                            let vy2 = 0.0;
-                            vx2 = v17.x - u10.x;
-                            vy2 = v17.y - u10.y;
-                            let qx2 = 0.0;
-                            let qy2 = 0.0;
-                            qx2 = u10.x - s1.circle.worldCOMx;
-                            qy2 = u10.y - s1.circle.worldCOMy;
+                            const vx2 = v17.x - u10.x;
+                            const vy2 = v17.y - u10.y;
+                            const qx2 = u10.x - s1.circle.worldCOMx;
+                            const qy2 = u10.y - s1.circle.worldCOMy;
                             let A2 = vx2 * vx2 + vy2 * vy2;
                             const B2 = 2 * (qx2 * vx2 + qy2 * vy2);
                             const C2 =
@@ -2708,7 +2571,7 @@ export class ZPP_Collide {
                               qy2 * qy2 -
                               s1.circle.radius * s1.circle.radius;
                             let D2 = B2 * B2 - 4 * A2 * C2;
-                            var two;
+                            let two;
                             if (D2 * D2 < napeNs.Config.epsilon) {
                               if (D2 < 0) {
                                 t0 = 10.0;
@@ -2733,12 +2596,10 @@ export class ZPP_Collide {
                               const T6 = t0;
                               cx6 = u10.x + (v17.x - u10.x) * T6;
                               cy6 = u10.y + (v17.y - u10.y) * T6;
-                              var tmp16;
+                              let tmp16;
                               if (fst_vert1 != null) {
-                                let dx8 = 0.0;
-                                let dy8 = 0.0;
-                                dx8 = fst_vert1.x - cx6;
-                                dy8 = fst_vert1.y - cy6;
+                                const dx8 = fst_vert1.x - cx6;
+                                const dy8 = fst_vert1.y - cy6;
                                 tmp16 =
                                   dx8 * dx8 + dy8 * dy8 < napeNs.Config.epsilon;
                               } else {
@@ -2749,7 +2610,7 @@ export class ZPP_Collide {
                                 cx_ite12 = beg_ite2;
                                 break;
                               }
-                              var ret6;
+                              let ret6;
                               if (ZPP_Vec2.zpp_pool == null) {
                                 ret6 = new ZPP_Vec2();
                               } else {
@@ -2782,7 +2643,7 @@ export class ZPP_Collide {
                                 cx7 = u10.x + (v17.x - u10.x) * T7;
                                 cy7 = u10.y + (v17.y - u10.y) * T7;
                                 const tmp17 = ZPP_Collide.flowpoly;
-                                var ret7;
+                                let ret7;
                                 if (ZPP_Vec2.zpp_pool == null) {
                                   ret7 = new ZPP_Vec2();
                                 } else {
@@ -2806,9 +2667,7 @@ export class ZPP_Collide {
                         if (cx_ite12 == null) {
                           cx_ite12 = s2.polygon.gverts.next;
                         }
-                        if (!false) {
-                          break;
-                        }
+                        break;
                       }
                       while (cx_ite12 != beg_ite2) {
                         const v18 = cx_ite12;
@@ -2818,14 +2677,10 @@ export class ZPP_Collide {
                         }
                         if (inte[vind]) {
                           if (ins[vind21]) {
-                            let vx3 = 0.0;
-                            let vy3 = 0.0;
-                            vx3 = v18.x - u10.x;
-                            vy3 = v18.y - u10.y;
-                            let qx3 = 0.0;
-                            let qy3 = 0.0;
-                            qx3 = u10.x - s1.circle.worldCOMx;
-                            qy3 = u10.y - s1.circle.worldCOMy;
+                            const vx3 = v18.x - u10.x;
+                            const vy3 = v18.y - u10.y;
+                            const qx3 = u10.x - s1.circle.worldCOMx;
+                            const qy3 = u10.y - s1.circle.worldCOMy;
                             let A3 = vx3 * vx3 + vy3 * vy3;
                             const B3 = 2 * (qx3 * vx3 + qy3 * vy3);
                             const C3 =
@@ -2842,16 +2697,14 @@ export class ZPP_Collide {
                             const T8 = tval2;
                             cx8 = u10.x + (v18.x - u10.x) * T8;
                             cy8 = u10.y + (v18.y - u10.y) * T8;
-                            let dx9 = 0.0;
-                            let dy9 = 0.0;
-                            dx9 = fst_vert1.x - cx8;
-                            dy9 = fst_vert1.y - cy8;
+                            const dx9 = fst_vert1.x - cx8;
+                            const dy9 = fst_vert1.y - cy8;
                             if (dx9 * dx9 + dy9 * dy9 < napeNs.Config.epsilon) {
                               state = 0;
                               cx_ite12 = beg_ite2;
                               break;
                             }
-                            var ret8;
+                            let ret8;
                             if (ZPP_Vec2.zpp_pool == null) {
                               ret8 = new ZPP_Vec2();
                             } else {
@@ -2875,14 +2728,10 @@ export class ZPP_Collide {
                           } else {
                             let t01 = 0.0;
                             let t111 = 0.0;
-                            let vx4 = 0.0;
-                            let vy4 = 0.0;
-                            vx4 = v18.x - u10.x;
-                            vy4 = v18.y - u10.y;
-                            let qx4 = 0.0;
-                            let qy4 = 0.0;
-                            qx4 = u10.x - s1.circle.worldCOMx;
-                            qy4 = u10.y - s1.circle.worldCOMy;
+                            const vx4 = v18.x - u10.x;
+                            const vy4 = v18.y - u10.y;
+                            const qx4 = u10.x - s1.circle.worldCOMx;
+                            const qy4 = u10.y - s1.circle.worldCOMy;
                             let A4 = vx4 * vx4 + vy4 * vy4;
                             const B4 = 2 * (qx4 * vx4 + qy4 * vy4);
                             const C4 =
@@ -2890,7 +2739,7 @@ export class ZPP_Collide {
                               qy4 * qy4 -
                               s1.circle.radius * s1.circle.radius;
                             let D4 = B4 * B4 - 4 * A4 * C4;
-                            var two1;
+                            let two1;
                             if (D4 * D4 < napeNs.Config.epsilon) {
                               if (D4 < 0) {
                                 t01 = 10.0;
@@ -2915,12 +2764,10 @@ export class ZPP_Collide {
                               const T9 = t01;
                               cx9 = u10.x + (v18.x - u10.x) * T9;
                               cy9 = u10.y + (v18.y - u10.y) * T9;
-                              var tmp18;
+                              let tmp18;
                               if (fst_vert1 != null) {
-                                let dx10 = 0.0;
-                                let dy10 = 0.0;
-                                dx10 = fst_vert1.x - cx9;
-                                dy10 = fst_vert1.y - cy9;
+                                const dx10 = fst_vert1.x - cx9;
+                                const dy10 = fst_vert1.y - cy9;
                                 tmp18 =
                                   dx10 * dx10 + dy10 * dy10 < napeNs.Config.epsilon;
                               } else {
@@ -2931,7 +2778,7 @@ export class ZPP_Collide {
                                 cx_ite12 = beg_ite2;
                                 break;
                               }
-                              var ret9;
+                              let ret9;
                               if (ZPP_Vec2.zpp_pool == null) {
                                 ret9 = new ZPP_Vec2();
                               } else {
@@ -2964,7 +2811,7 @@ export class ZPP_Collide {
                                 cx10 = u10.x + (v18.x - u10.x) * T10;
                                 cy10 = u10.y + (v18.y - u10.y) * T10;
                                 const tmp19 = ZPP_Collide.flowpoly;
-                                var ret10;
+                                let ret10;
                                 if (ZPP_Vec2.zpp_pool == null) {
                                   ret10 = new ZPP_Vec2();
                                 } else {
@@ -3024,10 +2871,8 @@ export class ZPP_Collide {
                       ZPP_Collide.flowpoly.head.next.next != null
                     ) {
                       let parea = 0.0;
-                      let pCOMx = 0.0;
-                      let pCOMy = 0.0;
-                      pCOMx = 0;
-                      pCOMy = 0;
+                      let pCOMx = 0;
+                      let pCOMy = 0;
                       parea = 0.0;
                       let cx_ite14 = ZPP_Collide.flowpoly.head;
                       let u11 = cx_ite14.elt;
@@ -3078,14 +2923,10 @@ export class ZPP_Collide {
                     while (ZPP_Collide.flowsegs.head != null) {
                       const u12 = ZPP_Collide.flowsegs.pop_unsafe();
                       const v20 = ZPP_Collide.flowsegs.pop_unsafe();
-                      let dx11 = 0.0;
-                      let dy11 = 0.0;
-                      dx11 = v20.x - u12.x;
-                      dy11 = v20.y - u12.y;
-                      let nx = 0.0;
-                      let ny = 0.0;
-                      nx = dx11;
-                      ny = dy11;
+                      const dx11 = v20.x - u12.x;
+                      const dy11 = v20.y - u12.y;
+                      let nx = dx11;
+                      let ny = dy11;
                       const d = nx * nx + ny * ny;
                       const imag = 1.0 / Math.sqrt(d);
                       const t23 = imag;
@@ -3094,10 +2935,8 @@ export class ZPP_Collide {
                       const t24 = nx;
                       nx = -ny;
                       ny = t24;
-                      let cx11 = 0.0;
-                      let cy11 = 0.0;
-                      cx11 = u12.x + v20.x;
-                      cy11 = u12.y + v20.y;
+                      let cx11 = u12.x + v20.x;
+                      let cy11 = u12.y + v20.y;
                       const t25 = 0.5;
                       cx11 *= t25;
                       cy11 *= t25;
@@ -3150,10 +2989,8 @@ export class ZPP_Collide {
       } else {
         const c1 = s1.circle;
         const c2 = s2.circle;
-        let deltax = 0.0;
-        let deltay = 0.0;
-        deltax = c2.worldCOMx - c1.worldCOMx;
-        deltay = c2.worldCOMy - c1.worldCOMy;
+        const deltax = c2.worldCOMx - c1.worldCOMx;
+        const deltay = c2.worldCOMy - c1.worldCOMy;
         const cr = c1.radius + c2.radius;
         const ds = deltax * deltax + deltay * deltay;
         if (ds > cr * cr) {
