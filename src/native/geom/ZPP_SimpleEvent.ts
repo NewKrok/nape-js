@@ -23,7 +23,7 @@ export class ZPP_SimpleEvent {
   __class__: Any = ZPP_SimpleEvent;
 
   static swap_nodes(a: Any, b: Any): void {
-    var t = a.node;
+    const t = a.node;
     a.node = b.node;
     b.node = t;
   }

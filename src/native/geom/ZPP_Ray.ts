@@ -373,10 +373,7 @@ export class ZPP_Ray {
             }
           }
         }
-        // Single-pass loop (Haxe pattern)
-        if (!false) {
-          break;
-        }
+        break;
       }
       return ret;
     }
@@ -729,8 +726,8 @@ export class ZPP_Ray {
     let ei = p.edges.head;
 
     // Iterate edges using paired vertex ring
-    let cx_cont = true;
-    let cx_itei = p.gverts.next;
+    const cx_cont = true;
+    const cx_itei = p.gverts.next;
     let u = cx_itei;
     let cx_itej = cx_itei.next;
 
@@ -759,42 +756,34 @@ export class ZPP_Ray {
         }
       }
       ei = ei.next;
-      cx_itei = cx_itej;
       u = v;
       cx_itej = cx_itej.next;
     }
 
     // Wrap-around: last vertex to first vertex
     if (cx_cont) {
-      while (true) {
-        cx_itej = p.gverts.next;
-        const v1 = cx_itej;
-        const e1 = ei.elt;
-        if (inner || e1.gnormx * this.dirx + e1.gnormy * this.diry < 0) {
-          const _vx1 = v1.x - u.x;
-          const _vy1 = v1.y - u.y;
-          const _sx1 = u.x - this.originx;
-          const _sy1 = u.y - this.originy;
-          let den1 = _vy1 * this.dirx - _vx1 * this.diry;
-          if (den1 * den1 > nape.Config.epsilon) {
-            den1 = 1 / den1;
-            const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
-            if (sxx1 > 0 && sxx1 < min && sxx1 <= this.maxdist) {
-              const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
-              if (
-                txx1 > -nape.Config.epsilon &&
-                txx1 < 1 + nape.Config.epsilon
-              ) {
-                min = sxx1;
-                edge = ei.elt;
-              }
+      cx_itej = p.gverts.next;
+      const v1 = cx_itej;
+      const e1 = ei.elt;
+      if (inner || e1.gnormx * this.dirx + e1.gnormy * this.diry < 0) {
+        const _vx1 = v1.x - u.x;
+        const _vy1 = v1.y - u.y;
+        const _sx1 = u.x - this.originx;
+        const _sy1 = u.y - this.originy;
+        let den1 = _vy1 * this.dirx - _vx1 * this.diry;
+        if (den1 * den1 > nape.Config.epsilon) {
+          den1 = 1 / den1;
+          const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
+          if (sxx1 > 0 && sxx1 < min && sxx1 <= this.maxdist) {
+            const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
+            if (
+              txx1 > -nape.Config.epsilon &&
+              txx1 < 1 + nape.Config.epsilon
+            ) {
+              min = sxx1;
+              edge = ei.elt;
             }
           }
-        }
-        ei = ei.next;
-        // Single-pass (Haxe pattern)
-        if (!false) {
-          break;
         }
       }
     }
@@ -827,8 +816,8 @@ export class ZPP_Ray {
     let ei = p.edges.head;
 
     // Iterate edges using paired vertex ring
-    let cx_cont = true;
-    let cx_itei = p.gverts.next;
+    const cx_cont = true;
+    const cx_itei = p.gverts.next;
     let u = cx_itei;
     let cx_itej = cx_itei.next;
 
@@ -867,52 +856,44 @@ export class ZPP_Ray {
         }
       }
       ei = ei.next;
-      cx_itei = cx_itej;
       u = v;
       cx_itej = cx_itej.next;
     }
 
     // Wrap-around: last vertex to first vertex
     if (cx_cont) {
-      while (true) {
-        cx_itej = p.gverts.next;
-        const v1 = cx_itej;
-        const e1 = ei.elt;
-        if (inner || e1.gnormx * this.dirx + e1.gnormy * this.diry < 0) {
-          const _vx1 = v1.x - u.x;
-          const _vy1 = v1.y - u.y;
-          const _sx1 = u.x - this.originx;
-          const _sy1 = u.y - this.originy;
-          let den1 = _vy1 * this.dirx - _vx1 * this.diry;
-          if (den1 * den1 > nape.Config.epsilon) {
-            den1 = 1 / den1;
-            const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
+      cx_itej = p.gverts.next;
+      const v1 = cx_itej;
+      const e1 = ei.elt;
+      if (inner || e1.gnormx * this.dirx + e1.gnormy * this.diry < 0) {
+        const _vx1 = v1.x - u.x;
+        const _vy1 = v1.y - u.y;
+        const _sx1 = u.x - this.originx;
+        const _sy1 = u.y - this.originy;
+        let den1 = _vy1 * this.dirx - _vx1 * this.diry;
+        if (den1 * den1 > nape.Config.epsilon) {
+          den1 = 1 / den1;
+          const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
+          if (
+            sxx1 > 0 &&
+            sxx1 <= this.maxdist &&
+            (sxx1 < min || sxx1 > max)
+          ) {
+            const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
             if (
-              sxx1 > 0 &&
-              sxx1 <= this.maxdist &&
-              (sxx1 < min || sxx1 > max)
+              txx1 > -nape.Config.epsilon &&
+              txx1 < 1 + nape.Config.epsilon
             ) {
-              const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
-              if (
-                txx1 > -nape.Config.epsilon &&
-                txx1 < 1 + nape.Config.epsilon
-              ) {
-                if (sxx1 < min) {
-                  min = sxx1;
-                  edge = ei.elt;
-                }
-                if (sxx1 > max) {
-                  max = sxx1;
-                  edgemax = ei.elt;
-                }
+              if (sxx1 < min) {
+                min = sxx1;
+                edge = ei.elt;
+              }
+              if (sxx1 > max) {
+                max = sxx1;
+                edgemax = ei.elt;
               }
             }
           }
-        }
-        ei = ei.next;
-        // Single-pass (Haxe pattern)
-        if (!false) {
-          break;
         }
       }
     }

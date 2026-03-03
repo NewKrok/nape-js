@@ -82,7 +82,6 @@ export class ZPP_Geom {
           }
           const v1 = _this.gverts.next;
           const e1 = ite.elt;
-          ite = ite.next;
           e1.gp0 = u;
           e1.gp1 = v1;
           e1.gnormx =

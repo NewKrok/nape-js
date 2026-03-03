@@ -51,7 +51,7 @@ export class ZPP_SimpleVert {
   }
 
   static swap_nodes(p: Any, q: Any): void {
-    var t = p.node;
+    const t = p.node;
     p.node = q.node;
     q.node = t;
   }

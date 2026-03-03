@@ -33,7 +33,7 @@ export class ZPP_PartitionPair {
   // --- Static methods ---
 
   static get(a: Any, b: Any): ZPP_PartitionPair {
-    var ret: ZPP_PartitionPair;
+    let ret: ZPP_PartitionPair;
     if (ZPP_PartitionPair.zpp_pool == null) {
       ret = new ZPP_PartitionPair();
     } else {
@@ -54,7 +54,7 @@ export class ZPP_PartitionPair {
   }
 
   static edge_swap(a: ZPP_PartitionPair, b: ZPP_PartitionPair): void {
-    var t = a.node;
+    const t = a.node;
     a.node = b.node;
     b.node = t;
   }
@@ -89,7 +89,7 @@ export class ZPP_PartitionPair {
 
   add(o: ZPP_PartitionPair): ZPP_PartitionPair {
     o._inuse = true;
-    var temp = o;
+    const temp = o;
     temp.next = this.next;
     this.next = temp;
     this.modified = true;
@@ -99,7 +99,7 @@ export class ZPP_PartitionPair {
 
   inlined_add(o: ZPP_PartitionPair): ZPP_PartitionPair {
     o._inuse = true;
-    var temp = o;
+    const temp = o;
     temp.next = this.next;
     this.next = temp;
     this.modified = true;
@@ -108,9 +108,9 @@ export class ZPP_PartitionPair {
   }
 
   addAll(x: ZPP_PartitionPair): void {
-    var cx_ite: ZPP_PartitionPair | null = x.next;
+    let cx_ite: ZPP_PartitionPair | null = x.next;
     while (cx_ite != null) {
-      var i = cx_ite;
+      const i = cx_ite;
       this.add(i);
       cx_ite = cx_ite.next;
     }
@@ -118,7 +118,7 @@ export class ZPP_PartitionPair {
 
   insert(cur: ZPP_PartitionPair | null, o: ZPP_PartitionPair): ZPP_PartitionPair {
     o._inuse = true;
-    var temp = o;
+    const temp = o;
     if (cur == null) {
       temp.next = this.next;
       this.next = temp;
@@ -133,7 +133,7 @@ export class ZPP_PartitionPair {
 
   inlined_insert(cur: ZPP_PartitionPair | null, o: ZPP_PartitionPair): ZPP_PartitionPair {
     o._inuse = true;
-    var temp = o;
+    const temp = o;
     if (cur == null) {
       temp.next = this.next;
       this.next = temp;
@@ -147,7 +147,7 @@ export class ZPP_PartitionPair {
   }
 
   pop(): void {
-    var ret = this.next!;
+    const ret = this.next!;
     this.next = ret.next;
     ret._inuse = false;
     if (this.next == null) {
@@ -158,7 +158,7 @@ export class ZPP_PartitionPair {
   }
 
   inlined_pop(): void {
-    var ret = this.next!;
+    const ret = this.next!;
     this.next = ret.next;
     ret._inuse = false;
     if (this.next == null) {
@@ -169,25 +169,24 @@ export class ZPP_PartitionPair {
   }
 
   pop_unsafe(): ZPP_PartitionPair {
-    var ret = this.next!;
+    const ret = this.next!;
     this.pop();
     return ret;
   }
 
   inlined_pop_unsafe(): ZPP_PartitionPair {
-    var ret = this.next!;
+    const ret = this.next!;
     this.pop();
     return ret;
   }
 
   remove(obj: ZPP_PartitionPair): void {
-    var pre: ZPP_PartitionPair | null = null;
-    var cur: ZPP_PartitionPair | null = this.next;
-    var ret = false;
+    let pre: ZPP_PartitionPair | null = null;
+    let cur: ZPP_PartitionPair | null = this.next;
     while (cur != null) {
       if (cur == obj) {
-        var old: ZPP_PartitionPair;
-        var ret1: ZPP_PartitionPair | null;
+        let old: ZPP_PartitionPair;
+        let ret1: ZPP_PartitionPair | null;
         if (pre == null) {
           old = this.next!;
           ret1 = old.next;
@@ -207,7 +206,6 @@ export class ZPP_PartitionPair {
         this.modified = true;
         this.length--;
         this.pushmod = true;
-        ret = true;
         break;
       }
       pre = cur;
@@ -216,9 +214,9 @@ export class ZPP_PartitionPair {
   }
 
   try_remove(obj: ZPP_PartitionPair): boolean {
-    var pre: ZPP_PartitionPair | null = null;
-    var cur: ZPP_PartitionPair | null = this.next;
-    var ret = false;
+    let pre: ZPP_PartitionPair | null = null;
+    let cur: ZPP_PartitionPair | null = this.next;
+    let ret = false;
     while (cur != null) {
       if (cur == obj) {
         this.erase(pre);
@@ -232,13 +230,12 @@ export class ZPP_PartitionPair {
   }
 
   inlined_remove(obj: ZPP_PartitionPair): void {
-    var pre: ZPP_PartitionPair | null = null;
-    var cur: ZPP_PartitionPair | null = this.next;
-    var ret = false;
+    let pre: ZPP_PartitionPair | null = null;
+    let cur: ZPP_PartitionPair | null = this.next;
     while (cur != null) {
       if (cur == obj) {
-        var old: ZPP_PartitionPair;
-        var ret1: ZPP_PartitionPair | null;
+        let old: ZPP_PartitionPair;
+        let ret1: ZPP_PartitionPair | null;
         if (pre == null) {
           old = this.next!;
           ret1 = old.next;
@@ -258,7 +255,6 @@ export class ZPP_PartitionPair {
         this.modified = true;
         this.length--;
         this.pushmod = true;
-        ret = true;
         break;
       }
       pre = cur;
@@ -267,13 +263,13 @@ export class ZPP_PartitionPair {
   }
 
   inlined_try_remove(obj: ZPP_PartitionPair): boolean {
-    var pre: ZPP_PartitionPair | null = null;
-    var cur: ZPP_PartitionPair | null = this.next;
-    var ret = false;
+    let pre: ZPP_PartitionPair | null = null;
+    let cur: ZPP_PartitionPair | null = this.next;
+    let ret = false;
     while (cur != null) {
       if (cur == obj) {
-        var old: ZPP_PartitionPair;
-        var ret1: ZPP_PartitionPair | null;
+        let old: ZPP_PartitionPair;
+        let ret1: ZPP_PartitionPair | null;
         if (pre == null) {
           old = this.next!;
           ret1 = old.next;
@@ -303,8 +299,8 @@ export class ZPP_PartitionPair {
   }
 
   erase(pre: ZPP_PartitionPair | null): ZPP_PartitionPair | null {
-    var old: ZPP_PartitionPair;
-    var ret: ZPP_PartitionPair | null;
+    let old: ZPP_PartitionPair;
+    let ret: ZPP_PartitionPair | null;
     if (pre == null) {
       old = this.next!;
       ret = old.next;
@@ -328,8 +324,8 @@ export class ZPP_PartitionPair {
   }
 
   inlined_erase(pre: ZPP_PartitionPair | null): ZPP_PartitionPair | null {
-    var old: ZPP_PartitionPair;
-    var ret: ZPP_PartitionPair | null;
+    let old: ZPP_PartitionPair;
+    let ret: ZPP_PartitionPair | null;
     if (pre == null) {
       old = this.next!;
       ret = old.next;
@@ -362,10 +358,10 @@ export class ZPP_PartitionPair {
   inlined_clear(): void {}
 
   reverse(): void {
-    var cur: ZPP_PartitionPair | null = this.next;
-    var pre: ZPP_PartitionPair | null = null;
+    let cur: ZPP_PartitionPair | null = this.next;
+    let pre: ZPP_PartitionPair | null = null;
     while (cur != null) {
-      var nx = cur.next;
+      const nx = cur.next;
       cur.next = pre;
       this.next = cur;
       pre = cur;
@@ -384,10 +380,10 @@ export class ZPP_PartitionPair {
   }
 
   has(obj: ZPP_PartitionPair): boolean {
-    var ret = false;
-    var cx_ite: ZPP_PartitionPair | null = this.next;
+    let ret = false;
+    let cx_ite: ZPP_PartitionPair | null = this.next;
     while (cx_ite != null) {
-      var npite = cx_ite;
+      const npite = cx_ite;
       if (npite == obj) {
         ret = true;
         break;
@@ -398,10 +394,10 @@ export class ZPP_PartitionPair {
   }
 
   inlined_has(obj: ZPP_PartitionPair): boolean {
-    var ret = false;
-    var cx_ite: ZPP_PartitionPair | null = this.next;
+    let ret = false;
+    let cx_ite: ZPP_PartitionPair | null = this.next;
     while (cx_ite != null) {
-      var npite = cx_ite;
+      const npite = cx_ite;
       if (npite == obj) {
         ret = true;
         break;
@@ -416,8 +412,8 @@ export class ZPP_PartitionPair {
   }
 
   back(): ZPP_PartitionPair | null {
-    var ret: ZPP_PartitionPair | null = this.next;
-    var cur: ZPP_PartitionPair | null = ret;
+    let ret: ZPP_PartitionPair | null = this.next;
+    let cur: ZPP_PartitionPair | null = ret;
     while (cur != null) {
       ret = cur;
       cur = cur.next;
@@ -426,13 +422,13 @@ export class ZPP_PartitionPair {
   }
 
   iterator_at(ind: number): ZPP_PartitionPair | null {
-    var ret: ZPP_PartitionPair | null = this.next;
+    let ret: ZPP_PartitionPair | null = this.next;
     while (ind-- > 0 && ret != null) ret = ret.next;
     return ret;
   }
 
   at(ind: number): ZPP_PartitionPair | null {
-    var it = this.iterator_at(ind);
+    const it = this.iterator_at(ind);
     if (it != null) {
       return it;
     } else {
