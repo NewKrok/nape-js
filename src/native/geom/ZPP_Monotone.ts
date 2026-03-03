@@ -28,17 +28,13 @@ export class ZPP_Monotone {
   // --- Static methods ---
 
   static bisector(b: ZPP_PartitionVertex): ZPP_Vec2 {
-    var a = b.prev!;
-    var c = b.next!;
-    var ux = 0.0;
-    var uy = 0.0;
-    ux = b.x - a.x;
-    uy = b.y - a.y;
-    var vx = 0.0;
-    var vy = 0.0;
-    vx = c.x - b.x;
-    vy = c.y - b.y;
-    var ret: ZPP_Vec2;
+    const a = b.prev!;
+    const c = b.next!;
+    const ux = b.x - a.x;
+    const uy = b.y - a.y;
+    const vx = c.x - b.x;
+    const vy = c.y - b.y;
+    let ret: ZPP_Vec2;
     if (ZPP_Vec2.zpp_pool == null) {
       ret = new ZPP_Vec2();
     } else {
@@ -50,10 +46,10 @@ export class ZPP_Monotone {
     ret._immutable = false;
     ret.x = -uy - vy;
     ret.y = ux + vx;
-    var ret1 = ret;
-    var d = ret1.x * ret1.x + ret1.y * ret1.y;
-    var imag = 1.0 / Math.sqrt(d);
-    var t = imag;
+    const ret1 = ret;
+    const d = ret1.x * ret1.x + ret1.y * ret1.y;
+    const imag = 1.0 / Math.sqrt(d);
+    const t = imag;
     ret1.x *= t;
     ret1.y *= t;
     if (vy * ux - vx * uy < 0) {
@@ -73,16 +69,16 @@ export class ZPP_Monotone {
     } else if (p.x > q.x) {
       return false;
     } else {
-      var po = ZPP_Monotone.bisector(p);
-      var qo = ZPP_Monotone.bisector(q);
-      var t = 1.0;
+      const po = ZPP_Monotone.bisector(p);
+      const qo = ZPP_Monotone.bisector(q);
+      const t = 1.0;
       po.x += p.x * t;
       po.y += p.y * t;
-      var t1 = 1.0;
+      const t1 = 1.0;
       qo.x += q.x * t1;
       qo.y += q.y * t1;
-      var ret = po.x < qo.x || (po.x == qo.x && po.y < qo.y);
-      var o: Any = po;
+      const ret = po.x < qo.x || (po.x == qo.x && po.y < qo.y);
+      const o: Any = po;
       if (o.outer != null) {
         o.outer.zpp_inner = null;
         o.outer = null;
@@ -92,7 +88,7 @@ export class ZPP_Monotone {
       o._invalidate = null;
       o.next = ZPP_Vec2.zpp_pool;
       ZPP_Vec2.zpp_pool = o;
-      var o1: Any = qo;
+      const o1: Any = qo;
       if (o1.outer != null) {
         o1.outer.zpp_inner = null;
         o1.outer = null;
@@ -111,7 +107,7 @@ export class ZPP_Monotone {
   }
 
   static left_vertex(p: ZPP_PartitionVertex): boolean {
-    var pre = p.prev!;
+    const pre = p.prev!;
     if (!(pre.y > p.y)) {
       if (pre.y == p.y) {
         return p.next!.y < p.y;
@@ -124,14 +120,14 @@ export class ZPP_Monotone {
   }
 
   static isMonotone(P: ZPP_PartitionVertex): boolean {
-    var min = P;
-    var max = P;
-    var F = P.next;
-    var L = P;
+    let min = P;
+    let max = P;
+    const F = P.next;
+    const L = P;
     if (F != null) {
-      var nite: ZPP_PartitionVertex | null = F;
+      let nite: ZPP_PartitionVertex | null = F;
       while (true) {
-        var p = nite!;
+        const p = nite!;
         if (p.y < min.y) {
           min = p;
         }
@@ -144,15 +140,15 @@ export class ZPP_Monotone {
         }
       }
     }
-    var ret = true;
-    var pre = min;
+    let ret = true;
+    let pre = min;
     if (max != min.next) {
-      var F1 = min.next;
-      var L1 = max;
+      const F1 = min.next;
+      const L1 = max;
       if (F1 != null) {
-        var nite1: ZPP_PartitionVertex | null = F1;
+        let nite1: ZPP_PartitionVertex | null = F1;
         while (true) {
-          var p1 = nite1!;
+          const p1 = nite1!;
           if (p1.y < pre.y) {
             ret = false;
             break;
@@ -170,12 +166,12 @@ export class ZPP_Monotone {
     }
     pre = min;
     if (max != min.prev) {
-      var F2 = min.prev;
-      var L2 = max;
+      const F2 = min.prev;
+      const L2 = max;
       if (F2 != null) {
-        var nite2: ZPP_PartitionVertex | null = F2;
+        let nite2: ZPP_PartitionVertex | null = F2;
         while (true) {
-          var p2 = nite2!;
+          const p2 = nite2!;
           if (p2.y < pre.y) {
             ret = false;
             break;
@@ -211,22 +207,18 @@ export class ZPP_Monotone {
       ZPP_Monotone.queue =
         new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
     }
-    var F = poly.vertices;
-    var L = poly.vertices;
+    const F = poly.vertices;
+    const L = poly.vertices;
     if (F != null) {
-      var nite: ZPP_PartitionVertex | null = F;
+      let nite: ZPP_PartitionVertex | null = F;
       while (true) {
-        var p = nite!;
+        const p = nite!;
         ZPP_Monotone.queue.add(p);
-        var ux = 0.0;
-        var uy = 0.0;
-        ux = p.next!.x - p.x;
-        uy = p.next!.y - p.y;
-        var vx = 0.0;
-        var vy = 0.0;
-        vx = p.prev!.x - p.x;
-        vy = p.prev!.y - p.y;
-        var cx = vy * ux - vx * uy > 0.0;
+        const ux = p.next!.x - p.x;
+        const uy = p.next!.y - p.y;
+        const vx = p.prev!.x - p.x;
+        const vy = p.prev!.y - p.y;
+        const cx = vy * ux - vx * uy > 0.0;
         p.type = ZPP_Monotone.below(p.prev!, p)
           ? ZPP_Monotone.below(p.next!, p)
             ? cx
@@ -245,17 +237,17 @@ export class ZPP_Monotone {
       }
     }
     // Merge sort the queue by above()
-    var xxlist = ZPP_Monotone.queue;
+    const xxlist = ZPP_Monotone.queue;
     if (xxlist.head != null && xxlist.head.next != null) {
-      var head = xxlist.head;
-      var tail: Any = null;
-      var left: Any = null;
-      var right: Any = null;
-      var nxt: Any = null;
-      var listSize = 1;
-      var numMerges: number;
-      var leftSize: number;
-      var rightSize: number;
+      let head = xxlist.head;
+      let tail: Any;
+      let left: Any;
+      let right: Any;
+      let nxt: Any;
+      let listSize = 1;
+      let numMerges: number;
+      let leftSize: number;
+      let rightSize: number;
       while (true) {
         numMerges = 0;
         left = head;
@@ -308,7 +300,7 @@ export class ZPP_Monotone {
       xxlist.pushmod = true;
     }
     // Initialize BST edge set
-    var zpp = getNape().__zpp;
+    const zpp = getNape().__zpp;
     if (ZPP_Monotone.edges == null) {
       if (zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool == null) {
         ZPP_Monotone.edges =
@@ -327,14 +319,14 @@ export class ZPP_Monotone {
     }
     // Process vertices in sweep order
     while (ZPP_Monotone.queue.head != null) {
-      var v = ZPP_Monotone.queue.pop_unsafe();
+      const v = ZPP_Monotone.queue.pop_unsafe();
       switch (v.type) {
         case 0:
           v.helper = v;
           v.node = ZPP_Monotone.edges.insert(v);
           break;
         case 1: {
-          var e = v.prev;
+          const e = v.prev;
           if (e.helper == null) {
             throw new Error(
               "Fatal error (1): Polygon is not weakly-simple and clockwise"
@@ -348,7 +340,7 @@ export class ZPP_Monotone {
           break;
         }
         case 2: {
-          var e1 = v.prev;
+          const e1 = v.prev;
           if (e1.helper == null) {
             throw new Error(
               "Fatal error (3): Polygon is not weakly-simple and clockwise"
@@ -359,12 +351,12 @@ export class ZPP_Monotone {
           }
           ZPP_Monotone.edges.remove_node(e1.node);
           e1.helper = null;
-          var ret: Any = null;
+          let ret: Any = null;
           if (!ZPP_Monotone.edges.empty()) {
-            var set_ite = ZPP_Monotone.edges.parent;
+            let set_ite = ZPP_Monotone.edges.parent;
             while (set_ite.prev != null) set_ite = set_ite.prev;
             while (set_ite != null) {
-              var elt = set_ite.data;
+              const elt = set_ite.data;
               if (!ZPP_PartitionVertex.vert_lt(elt, v)) {
                 ret = elt;
                 break;
@@ -379,7 +371,7 @@ export class ZPP_Monotone {
               }
             }
           }
-          var e2 = ret;
+          const e2 = ret;
           if (e2 != null) {
             if (e2.helper == null) {
               throw new Error(
@@ -394,12 +386,12 @@ export class ZPP_Monotone {
           break;
         }
         case 3: {
-          var ret1: Any = null;
+          let ret1: Any = null;
           if (!ZPP_Monotone.edges.empty()) {
-            var set_ite1 = ZPP_Monotone.edges.parent;
+            let set_ite1 = ZPP_Monotone.edges.parent;
             while (set_ite1.prev != null) set_ite1 = set_ite1.prev;
             while (set_ite1 != null) {
-              var elt1 = set_ite1.data;
+              const elt1 = set_ite1.data;
               if (!ZPP_PartitionVertex.vert_lt(elt1, v)) {
                 ret1 = elt1;
                 break;
@@ -417,7 +409,7 @@ export class ZPP_Monotone {
               }
             }
           }
-          var e3 = ret1;
+          const e3 = ret1;
           if (e3 != null) {
             if (e3.helper == null) {
               throw new Error(
@@ -432,7 +424,7 @@ export class ZPP_Monotone {
           break;
         }
         case 4: {
-          var pre = v.prev;
+          const pre = v.prev;
           if (ZPP_Monotone.left_vertex(v)) {
             if (pre.helper == null) {
               throw new Error(
@@ -447,12 +439,12 @@ export class ZPP_Monotone {
             v.node = ZPP_Monotone.edges.insert(v);
             v.helper = v;
           } else {
-            var ret2: Any = null;
+            let ret2: Any = null;
             if (!ZPP_Monotone.edges.empty()) {
-              var set_ite2 = ZPP_Monotone.edges.parent;
+              let set_ite2 = ZPP_Monotone.edges.parent;
               while (set_ite2.prev != null) set_ite2 = set_ite2.prev;
               while (set_ite2 != null) {
-                var elt2 = set_ite2.data;
+                const elt2 = set_ite2.data;
                 if (!ZPP_PartitionVertex.vert_lt(elt2, v)) {
                   ret2 = elt2;
                   break;
@@ -470,7 +462,7 @@ export class ZPP_Monotone {
                 }
               }
             }
-            var e4 = ret2;
+            const e4 = ret2;
             if (e4 == null || e4.helper == null) {
               throw new Error(
                 "Fatal error (6): Polygon is not weakly-simple and clockwise"

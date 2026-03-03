@@ -30,29 +30,23 @@ export class ZPP_Simplify {
 
   /** Perpendicular distance squared from vertex v to line segment a-b. */
   static distance(v: Any, a: Any, b: Any): number {
-    var nx = 0.0;
-    var ny = 0.0;
-    nx = b.x - a.x;
-    ny = b.y - a.y;
-    var cx = 0.0;
-    var cy = 0.0;
-    cx = v.x - a.x;
-    cy = v.y - a.y;
-    var den = nx * nx + ny * ny;
+    const nx = b.x - a.x;
+    const ny = b.y - a.y;
+    let cx = v.x - a.x;
+    let cy = v.y - a.y;
+    const den = nx * nx + ny * ny;
     if (den == 0.0) {
       return cx * cx + cy * cy;
     } else {
-      var t = (cx * nx + cy * ny) / (nx * nx + ny * ny);
+      const t = (cx * nx + cy * ny) / (nx * nx + ny * ny);
       if (t <= 0) {
         return cx * cx + cy * cy;
       } else if (t >= 1) {
-        var dx = 0.0;
-        var dy = 0.0;
-        dx = v.x - b.x;
-        dy = v.y - b.y;
+        const dx = v.x - b.x;
+        const dy = v.y - b.y;
         return dx * dx + dy * dy;
       } else {
-        var t1 = t;
+        const t1 = t;
         cx -= nx * t1;
         cy -= ny * t1;
         return cx * cx + cy * cy;
@@ -62,18 +56,18 @@ export class ZPP_Simplify {
 
   /** Simplify a polygon vertex ring using Ramer-Douglas-Peucker. Returns new GeomVert ring. */
   static simplify(P: Any, epsilon: number): Any {
-    var ret: ZPP_SimplifyV | null = null;
-    var min: ZPP_SimplifyV | null = null;
-    var max: ZPP_SimplifyV | null = null;
+    let ret: ZPP_SimplifyV | null = null;
+    let min: ZPP_SimplifyV | null = null;
+    let max: ZPP_SimplifyV | null = null;
     epsilon *= epsilon;
     if (ZPP_Simplify.stack == null) {
       ZPP_Simplify.stack = new (getNape().__zpp.util.ZNPList_ZPP_SimplifyP)();
     }
-    var pre: ZPP_SimplifyV | null = null;
-    var fst: ZPP_SimplifyV | null = null;
-    var cur = P;
+    let pre: ZPP_SimplifyV | null = null;
+    let fst: ZPP_SimplifyV | null = null;
+    let cur = P;
     while (true) {
-      var ret1: ZPP_SimplifyV;
+      let ret1: ZPP_SimplifyV;
       if (ZPP_SimplifyV.zpp_pool == null) {
         ret1 = new ZPP_SimplifyV();
       } else {
@@ -84,13 +78,13 @@ export class ZPP_Simplify {
       ret1.x = cur.x;
       ret1.y = cur.y;
       ret1.flag = false;
-      var v = ret1;
+      const v = ret1;
       v.forced = cur.forced;
       if (v.forced) {
         v.flag = true;
         if (pre != null) {
-          var tmp = ZPP_Simplify.stack;
-          var ret2: ZPP_SimplifyP;
+          const tmp = ZPP_Simplify.stack;
+          let ret2: ZPP_SimplifyP;
           if (ZPP_SimplifyP.zpp_pool == null) {
             ret2 = new ZPP_SimplifyP();
           } else {
@@ -106,9 +100,9 @@ export class ZPP_Simplify {
         }
         pre = v;
       }
-      var obj: Any = v;
+      const obj: Any = v;
       if (ret == null) {
-        ret = obj.prev = obj.next = obj;
+        obj.prev = obj.next = obj;
       } else {
         obj.prev = ret;
         obj.next = ret.next;
@@ -135,8 +129,8 @@ export class ZPP_Simplify {
     if (ZPP_Simplify.stack.head == null) {
       if (fst == null) {
         min!.flag = max!.flag = true;
-        var tmp1 = ZPP_Simplify.stack;
-        var ret3: ZPP_SimplifyP;
+        const tmp1 = ZPP_Simplify.stack;
+        let ret3: ZPP_SimplifyP;
         if (ZPP_SimplifyP.zpp_pool == null) {
           ret3 = new ZPP_SimplifyP();
         } else {
@@ -147,8 +141,8 @@ export class ZPP_Simplify {
         ret3.min = min;
         ret3.max = max;
         tmp1.add(ret3);
-        var tmp2 = ZPP_Simplify.stack;
-        var ret4: ZPP_SimplifyP;
+        const tmp2 = ZPP_Simplify.stack;
+        let ret4: ZPP_SimplifyP;
         if (ZPP_SimplifyP.zpp_pool == null) {
           ret4 = new ZPP_SimplifyP();
         } else {
@@ -160,18 +154,18 @@ export class ZPP_Simplify {
         ret4.max = min;
         tmp2.add(ret4);
       } else {
-        var d1 = min!.x - fst.x + (min!.y - fst.y);
+        let d1 = min!.x - fst.x + (min!.y - fst.y);
         if (d1 < 0) {
           d1 = -d1;
         }
-        var d2 = max!.x - fst.x + (max!.y - fst.y);
+        let d2 = max!.x - fst.x + (max!.y - fst.y);
         if (d2 < 0) {
           d2 = -d2;
         }
         if (d1 > d2) {
           min!.flag = fst.flag = true;
-          var tmp3 = ZPP_Simplify.stack;
-          var ret5: ZPP_SimplifyP;
+          const tmp3 = ZPP_Simplify.stack;
+          let ret5: ZPP_SimplifyP;
           if (ZPP_SimplifyP.zpp_pool == null) {
             ret5 = new ZPP_SimplifyP();
           } else {
@@ -182,8 +176,8 @@ export class ZPP_Simplify {
           ret5.min = min;
           ret5.max = fst;
           tmp3.add(ret5);
-          var tmp4 = ZPP_Simplify.stack;
-          var ret6: ZPP_SimplifyP;
+          const tmp4 = ZPP_Simplify.stack;
+          let ret6: ZPP_SimplifyP;
           if (ZPP_SimplifyP.zpp_pool == null) {
             ret6 = new ZPP_SimplifyP();
           } else {
@@ -196,8 +190,8 @@ export class ZPP_Simplify {
           tmp4.add(ret6);
         } else {
           max!.flag = fst.flag = true;
-          var tmp5 = ZPP_Simplify.stack;
-          var ret7: ZPP_SimplifyP;
+          const tmp5 = ZPP_Simplify.stack;
+          let ret7: ZPP_SimplifyP;
           if (ZPP_SimplifyP.zpp_pool == null) {
             ret7 = new ZPP_SimplifyP();
           } else {
@@ -208,8 +202,8 @@ export class ZPP_Simplify {
           ret7.min = max;
           ret7.max = fst;
           tmp5.add(ret7);
-          var tmp6 = ZPP_Simplify.stack;
-          var ret8: ZPP_SimplifyP;
+          const tmp6 = ZPP_Simplify.stack;
+          let ret8: ZPP_SimplifyP;
           if (ZPP_SimplifyP.zpp_pool == null) {
             ret8 = new ZPP_SimplifyP();
           } else {
@@ -223,8 +217,8 @@ export class ZPP_Simplify {
         }
       }
     } else {
-      var tmp7 = ZPP_Simplify.stack;
-      var ret9: ZPP_SimplifyP;
+      const tmp7 = ZPP_Simplify.stack;
+      let ret9: ZPP_SimplifyP;
       if (ZPP_SimplifyP.zpp_pool == null) {
         ret9 = new ZPP_SimplifyP();
       } else {
@@ -237,18 +231,18 @@ export class ZPP_Simplify {
       tmp7.add(ret9);
     }
     while (ZPP_Simplify.stack.head != null) {
-      var cur1 = ZPP_Simplify.stack.pop_unsafe();
-      var min1 = cur1.min;
-      var max1 = cur1.max;
-      var o: Any = cur1;
+      const cur1 = ZPP_Simplify.stack.pop_unsafe();
+      const min1 = cur1.min;
+      const max1 = cur1.max;
+      const o: Any = cur1;
       o.min = o.max = null;
       o.next = ZPP_SimplifyP.zpp_pool;
       ZPP_SimplifyP.zpp_pool = o;
-      var dmax = epsilon;
-      var dv: Any = null;
-      var ite = min1.next;
+      let dmax = epsilon;
+      let dv: Any = null;
+      let ite = min1.next;
       while (ite != max1) {
-        var dist = ZPP_Simplify.distance(ite, min1, max1);
+        const dist = ZPP_Simplify.distance(ite, min1, max1);
         if (dist > dmax) {
           dmax = dist;
           dv = ite;
@@ -257,8 +251,8 @@ export class ZPP_Simplify {
       }
       if (dv != null) {
         dv.flag = true;
-        var tmp8 = ZPP_Simplify.stack;
-        var ret10: ZPP_SimplifyP;
+        const tmp8 = ZPP_Simplify.stack;
+        let ret10: ZPP_SimplifyP;
         if (ZPP_SimplifyP.zpp_pool == null) {
           ret10 = new ZPP_SimplifyP();
         } else {
@@ -269,8 +263,8 @@ export class ZPP_Simplify {
         ret10.min = min1;
         ret10.max = dv;
         tmp8.add(ret10);
-        var tmp9 = ZPP_Simplify.stack;
-        var ret11: ZPP_SimplifyP;
+        const tmp9 = ZPP_Simplify.stack;
+        let ret11: ZPP_SimplifyP;
         if (ZPP_SimplifyP.zpp_pool == null) {
           ret11 = new ZPP_SimplifyP();
         } else {
@@ -283,12 +277,12 @@ export class ZPP_Simplify {
         tmp9.add(ret11);
       }
     }
-    var retp: Any = null;
+    let retp: Any = null;
     while (ret != null) {
       if (ret.flag) {
-        var x = ret.x;
-        var y = ret.y;
-        var ret12: ZPP_GeomVert;
+        const x = ret.x;
+        const y = ret.y;
+        let ret12: ZPP_GeomVert;
         if (ZPP_GeomVert.zpp_pool == null) {
           ret12 = new ZPP_GeomVert();
         } else {
@@ -299,9 +293,9 @@ export class ZPP_Simplify {
         ret12.forced = false;
         ret12.x = x;
         ret12.y = y;
-        var obj1: Any = ret12;
+        const obj1: Any = ret12;
         if (retp == null) {
-          retp = obj1.prev = obj1.next = obj1;
+          obj1.prev = obj1.next = obj1;
         } else {
           obj1.prev = retp;
           obj1.next = retp.next;
@@ -313,20 +307,18 @@ export class ZPP_Simplify {
       }
       if (ret != null && ret.prev == ret) {
         ret.next = ret.prev = null;
-        var o1: Any = ret;
+        const o1: Any = ret;
         o1.next = ZPP_SimplifyV.zpp_pool;
         ZPP_SimplifyV.zpp_pool = o1;
         ret = null as Any;
-        ret = ret;
       } else {
-        var retnodes = ret!.next;
+        const retnodes = ret!.next;
         ret!.prev!.next = ret!.next;
         ret!.next!.prev = ret!.prev;
         ret!.next = ret!.prev = null;
-        var o2: Any = ret;
+        const o2: Any = ret;
         o2.next = ZPP_SimplifyV.zpp_pool;
         ZPP_SimplifyV.zpp_pool = o2;
-        ret = null as Any;
         ret = retnodes;
       }
     }

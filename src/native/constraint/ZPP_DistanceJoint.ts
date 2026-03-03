@@ -71,8 +71,8 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
     this.a1rely = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
     this.a2relx = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
     this.a2rely = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
-    let nx = this.b2.posx + this.a2relx - (this.b1.posx + this.a1relx);
-    let ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
+    const nx = this.b2.posx + this.a2relx - (this.b1.posx + this.a1relx);
+    const ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
     let C = nx * nx + ny * ny;
     if (C < ZPP_Constraint._nape.Config.epsilon) {
       slack = true;
@@ -385,10 +385,10 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
 
   override applyImpulsePos(): boolean {
     let j: number;
-    let r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
-    let r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
-    let r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
-    let r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
+    const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
+    const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
+    const r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
+    const r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
     let slack: boolean;
     let nx = this.b2.posx + r2x - (this.b1.posx + r1x);
     let ny = this.b2.posy + r2y - (this.b1.posy + r1y);

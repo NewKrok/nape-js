@@ -35,17 +35,17 @@ export class ZPP_SimpleSweep {
   }
 
   swap_nodes(p: Any, q: Any): void {
-    var t = p.node;
+    const t = p.node;
     p.node = q.node;
     q.node = t;
   }
 
   edge_lt(p: Any, q: Any): boolean {
-    var ux = 0.0;
-    var uy = 0.0;
-    var vx = 0.0;
-    var vy = 0.0;
-    var flip: boolean;
+    let ux: number;
+    let uy: number;
+    let vx: number;
+    let vy: number;
+    let flip: boolean;
     if (p.left == q.left && p.right == q.right) {
       return false;
     } else if (p.left == q.right) {
@@ -64,7 +64,7 @@ export class ZPP_SimpleSweep {
         return (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0;
       }
     } else if (p.right == q.left) {
-      var tmp: boolean;
+      let tmp: boolean;
       if (q.left.x == q.right.x) {
         tmp =
           q.left.y < q.right.y
@@ -112,8 +112,8 @@ export class ZPP_SimpleSweep {
     }
     if (p.left.x == p.right.x) {
       if (q.left.x == q.right.x) {
-        var pmax = p.left.y < p.right.y ? p.right : p.left;
-        var qmax = q.left.y < q.right.y ? q.right : q.left;
+        const pmax = p.left.y < p.right.y ? p.right : p.left;
+        const qmax = q.left.y < q.right.y ? q.right : q.left;
         return pmax.y > qmax.y;
       } else {
         flip = q.right.x < q.left.x;
@@ -121,13 +121,13 @@ export class ZPP_SimpleSweep {
         uy = q.right.y - q.left.y;
         vx = p.left.x - q.left.x;
         vy = p.left.y - q.left.y;
-        var plrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
+        const plrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
         flip = q.right.x < q.left.x;
         ux = q.right.x - q.left.x;
         uy = q.right.y - q.left.y;
         vx = p.right.x - q.left.x;
         vy = p.right.y - q.left.y;
-        var aplrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
+        const aplrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
         if (plrg * aplrg >= 0) {
           return plrg >= 0.0;
         } else {
@@ -140,13 +140,13 @@ export class ZPP_SimpleSweep {
       uy = p.right.y - p.left.y;
       vx = q.left.x - p.left.x;
       vy = q.left.y - p.left.y;
-      var qlrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
+      const qlrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
       flip = p.right.x < p.left.x;
       ux = p.right.x - p.left.x;
       uy = p.right.y - p.left.y;
       vx = q.right.x - p.left.x;
       vy = q.right.y - p.left.y;
-      var aqlrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
+      const aqlrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
       if (qlrg * aqlrg >= 0) {
         return qlrg < 0.0;
       } else {
@@ -158,13 +158,13 @@ export class ZPP_SimpleSweep {
       uy = p.right.y - p.left.y;
       vx = q.left.x - p.left.x;
       vy = q.left.y - p.left.y;
-      var qlrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0.0;
+      const qlrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0.0;
       flip = p.right.x < p.left.x;
       ux = p.right.x - p.left.x;
       uy = p.right.y - p.left.y;
       vx = q.right.x - p.left.x;
       vy = q.right.y - p.left.y;
-      var aqlrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0.0;
+      const aqlrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0.0;
       if (qlrg1 == aqlrg1) {
         return qlrg1;
       } else {
@@ -173,22 +173,22 @@ export class ZPP_SimpleSweep {
         uy = q.right.y - q.left.y;
         vx = p.left.x - q.left.x;
         vy = p.left.y - q.left.y;
-        var plrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
+        const plrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
         flip = q.right.x < q.left.x;
         ux = q.right.x - q.left.x;
         uy = q.right.y - q.left.y;
         vx = p.right.x - q.left.x;
         vy = p.right.y - q.left.y;
-        var aplrg1 =
+        const aplrg1 =
           (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
         if (plrg1 == aplrg1) {
           return plrg1;
         }
-        var py =
+        const py =
           ((this.sweepx - p.left.x) / (p.right.x - p.left.x)) *
             (p.right.y - p.left.y) +
           p.left.y;
-        var qy =
+        const qy =
           ((this.sweepx - q.left.x) / (q.right.x - q.left.x)) *
             (q.right.y - q.left.y) +
           q.left.y;
@@ -203,8 +203,8 @@ export class ZPP_SimpleSweep {
 
   add(e: Any): Any {
     e.node = this.tree.insert(e);
-    var nxt = this.tree.successor_node(e.node);
-    var pre = this.tree.predecessor_node(e.node);
+    const nxt = this.tree.successor_node(e.node);
+    const pre = this.tree.predecessor_node(e.node);
     if (nxt != null) {
       e.next = nxt.data;
       nxt.data.prev = e;
@@ -217,8 +217,8 @@ export class ZPP_SimpleSweep {
   }
 
   remove(e: Any): void {
-    var nxt = this.tree.successor_node(e.node);
-    var pre = this.tree.predecessor_node(e.node);
+    const nxt = this.tree.successor_node(e.node);
+    const pre = this.tree.predecessor_node(e.node);
     if (nxt != null) {
       nxt.data.prev = e.prev;
     }
@@ -240,19 +240,19 @@ export class ZPP_SimpleSweep {
     ) {
       return false;
     } else {
-      var lsign =
+      const lsign =
         (q.left.x - p.left.x) * (p.right.y - p.left.y) -
         (p.right.x - p.left.x) * (q.left.y - p.left.y);
-      var rsign =
+      const rsign =
         (q.right.x - p.left.x) * (p.right.y - p.left.y) -
         (p.right.x - p.left.x) * (q.right.y - p.left.y);
       if (lsign * rsign > 0) {
         return false;
       } else {
-        var lsign2 =
+        const lsign2 =
           (p.left.x - q.left.x) * (q.right.y - q.left.y) -
           (q.right.x - q.left.x) * (p.left.y - q.left.y);
-        var rsign2 =
+        const rsign2 =
           (p.right.x - q.left.x) * (q.right.y - q.left.y) -
           (q.right.x - q.left.x) * (p.right.y - q.left.y);
         if (lsign2 * rsign2 > 0) {
@@ -275,34 +275,28 @@ export class ZPP_SimpleSweep {
     ) {
       return null;
     } else {
-      var ux = 0.0;
-      var uy = 0.0;
-      ux = p.right.x - p.left.x;
-      uy = p.right.y - p.left.y;
-      var vx = 0.0;
-      var vy = 0.0;
-      vx = q.right.x - q.left.x;
-      vy = q.right.y - q.left.y;
-      var denom = vy * ux - vx * uy;
+      const ux = p.right.x - p.left.x;
+      const uy = p.right.y - p.left.y;
+      const vx = q.right.x - q.left.x;
+      const vy = q.right.y - q.left.y;
+      let denom = vy * ux - vx * uy;
       if (denom == 0.0) {
         return null;
       }
       denom = 1 / denom;
-      var cx = 0.0;
-      var cy = 0.0;
-      cx = q.left.x - p.left.x;
-      cy = q.left.y - p.left.y;
-      var t = (vy * cx - vx * cy) * denom;
+      const cx = q.left.x - p.left.x;
+      const cy = q.left.y - p.left.y;
+      const t = (vy * cx - vx * cy) * denom;
       if (t < 0 || t > 1) {
         return null;
       }
-      var s = (uy * cx - ux * cy) * denom;
+      const s = (uy * cx - ux * cy) * denom;
       if (s < 0 || s > 1) {
         return null;
       }
-      var vet: Any;
+      let vet: Any;
       if (s == 0 || s == 1 || t == 0 || t == 1) {
-        var cases = s == 0;
+        let cases = s == 0;
         if (s == 1 && cases) {
           throw new Error("corner case 1a");
         } else if (s == 1) {
@@ -325,9 +319,9 @@ export class ZPP_SimpleSweep {
                 ? p.left
                 : p.right;
       } else {
-        var x = 0.5 * (p.left.x + ux * t + q.left.x + vx * s);
-        var y = 0.5 * (p.left.y + uy * t + q.left.y + vy * s);
-        var ret: ZPP_SimpleVert;
+        const x = 0.5 * (p.left.x + ux * t + q.left.x + vx * s);
+        const y = 0.5 * (p.left.y + uy * t + q.left.y + vy * s);
+        let ret: ZPP_SimpleVert;
         if (ZPP_SimpleVert.zpp_pool == null) {
           ret = new ZPP_SimpleVert();
         } else {
@@ -339,7 +333,7 @@ export class ZPP_SimpleSweep {
         ret.y = y;
         vet = ret;
       }
-      var ret1: ZPP_SimpleEvent;
+      let ret1: ZPP_SimpleEvent;
       if (ZPP_SimpleEvent.zpp_pool == null) {
         ret1 = new ZPP_SimpleEvent();
       } else {
@@ -348,7 +342,7 @@ export class ZPP_SimpleSweep {
         ret1.next = null;
       }
       ret1.vertex = vet;
-      var ret2 = ret1;
+      const ret2 = ret1;
       ret2.type = 0;
       ret2.segment = p;
       ret2.segment2 = q;

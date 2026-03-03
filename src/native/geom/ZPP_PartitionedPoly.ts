@@ -56,10 +56,8 @@ export class ZPP_PartitionedPoly {
   // --- Instance methods ---
 
   eq(a: ZPP_PartitionVertex, b: ZPP_PartitionVertex): boolean {
-    var dx = 0.0;
-    var dy = 0.0;
-    dx = a.x - b.x;
-    dy = a.y - b.y;
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
     return dx * dx + dy * dy < getNape().Config.epsilon * getNape().Config.epsilon;
   }
 
@@ -71,13 +69,13 @@ export class ZPP_PartitionedPoly {
     if (P == null) {
       return;
     }
-    var area = 0.0;
-    var F = P;
-    var L = P;
+    let area = 0.0;
+    const F = P;
+    const L = P;
     if (F != null) {
-      var nite = F;
+      let nite = F;
       while (true) {
-        var v = nite;
+        const v = nite;
         area += v.x * (v.next.y - v.prev.y);
         nite = nite.next;
         if (!(nite != L)) {
@@ -85,12 +83,12 @@ export class ZPP_PartitionedPoly {
         }
       }
     }
-    var cw = area * 0.5 > 0.0;
-    var p = P;
+    const cw = area * 0.5 > 0.0;
+    let p = P;
     while (true) {
-      var tmp: ZPP_PartitionVertex;
+      let tmp: ZPP_PartitionVertex;
       if (cw) {
-        var ret: ZPP_PartitionVertex;
+        let ret: ZPP_PartitionVertex;
         if (ZPP_PartitionVertex.zpp_pool == null) {
           ret = new ZPP_PartitionVertex();
         } else {
@@ -100,7 +98,7 @@ export class ZPP_PartitionedPoly {
         }
         ret.x = p.x;
         ret.y = p.y;
-        var obj = ret;
+        const obj = ret;
         if (this.vertices == null) {
           this.vertices = obj.prev = obj.next = obj;
         } else {
@@ -111,7 +109,7 @@ export class ZPP_PartitionedPoly {
         }
         tmp = obj;
       } else {
-        var ret1: ZPP_PartitionVertex;
+        let ret1: ZPP_PartitionVertex;
         if (ZPP_PartitionVertex.zpp_pool == null) {
           ret1 = new ZPP_PartitionVertex();
         } else {
@@ -121,7 +119,7 @@ export class ZPP_PartitionedPoly {
         }
         ret1.x = p.x;
         ret1.y = p.y;
-        var obj1 = ret1;
+        const obj1 = ret1;
         if (this.vertices == null) {
           this.vertices = obj1.prev = obj1.next = obj1;
         } else {
@@ -143,8 +141,8 @@ export class ZPP_PartitionedPoly {
   }
 
   remove_collinear_vertices(): boolean {
-    var p = this.vertices;
-    var skip = true;
+    let p = this.vertices;
+    let skip = true;
     while (skip || p != this.vertices) {
       skip = false;
       if (this.eq(p!, p!.next!)) {
@@ -157,22 +155,21 @@ export class ZPP_PartitionedPoly {
         }
         if (p != null && p.prev == p) {
           p.next = p.prev = null;
-          var o = p;
+          const o = p;
           o.helper = null;
           o.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o;
           p = null;
           p = p as Any;
         } else {
-          var retnodes = p!.next;
+          const retnodes = p!.next;
           p!.prev!.next = p!.next;
           p!.next!.prev = p!.prev;
           p!.next = p!.prev = null;
-          var o1 = p!;
+          const o1 = p!;
           o1.helper = null;
           o1.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o1;
-          p = null;
           p = retnodes;
         }
         if (p == null) {
@@ -186,23 +183,19 @@ export class ZPP_PartitionedPoly {
     if (this.vertices == null) {
       return true;
     }
-    var removed: boolean;
+    let removed: boolean;
     while (true) {
       removed = false;
       p = this.vertices;
       skip = true;
       while (skip || p != this.vertices) {
         skip = false;
-        var pre = p!.prev!;
-        var ux = 0.0;
-        var uy = 0.0;
-        ux = p!.x - pre.x;
-        uy = p!.y - pre.y;
-        var vx = 0.0;
-        var vy = 0.0;
-        vx = p!.next!.x - p!.x;
-        vy = p!.next!.y - p!.y;
-        var crs = vy * ux - vx * uy;
+        const pre = p!.prev!;
+        const ux = p!.x - pre.x;
+        const uy = p!.y - pre.y;
+        const vx = p!.next!.x - p!.x;
+        const vy = p!.next!.y - p!.y;
+        const crs = vy * ux - vx * uy;
         if (crs * crs >= getNape().Config.epsilon * getNape().Config.epsilon) {
           p = p!.next;
         } else {
@@ -212,22 +205,21 @@ export class ZPP_PartitionedPoly {
           }
           if (p != null && p.prev == p) {
             p.next = p.prev = null;
-            var o2 = p;
+            const o2 = p;
             o2.helper = null;
             o2.next = ZPP_PartitionVertex.zpp_pool;
             ZPP_PartitionVertex.zpp_pool = o2;
             p = null;
             p = p as Any;
           } else {
-            var retnodes1 = p!.next;
+            const retnodes1 = p!.next;
             p!.prev!.next = p!.next;
             p!.next!.prev = p!.prev;
             p!.next = p!.prev = null;
-            var o3 = p!;
+            const o3 = p!;
             o3.helper = null;
             o3.next = ZPP_PartitionVertex.zpp_pool;
             ZPP_PartitionVertex.zpp_pool = o3;
-            p = null;
             p = retnodes1;
           }
           removed = true;
@@ -256,12 +248,12 @@ export class ZPP_PartitionedPoly {
       ret = new (getNape().__zpp.util.ZNPList_ZPP_PartitionedPoly)();
     }
     if (this.vertices != null) {
-      var F = this.vertices;
-      var L = this.vertices;
+      const F = this.vertices;
+      const L = this.vertices;
       if (F != null) {
-        var nite: ZPP_PartitionVertex | null = F;
+        let nite: ZPP_PartitionVertex | null = F;
         while (true) {
-          var c = nite!;
+          const c = nite!;
           c.sort();
           nite = nite!.next;
           if (!(nite != L)) {
@@ -271,20 +263,20 @@ export class ZPP_PartitionedPoly {
       }
       this.pull_partitions(this.vertices, ret);
       while (this.vertices != null) {
-        var tmp: ZPP_PartitionVertex | null;
+        let tmp: ZPP_PartitionVertex | null;
         if (this.vertices != null && this.vertices.prev == this.vertices) {
           this.vertices.next = this.vertices.prev = null;
-          var o = this.vertices;
+          const o = this.vertices;
           o.helper = null;
           o.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o;
           tmp = this.vertices = null;
         } else {
-          var retnodes: ZPP_PartitionVertex | null = this.vertices.next;
+          const retnodes: ZPP_PartitionVertex | null = this.vertices.next;
           this.vertices.prev!.next = this.vertices.next;
           this.vertices.next!.prev = this.vertices.prev;
           this.vertices.next = this.vertices.prev = null;
-          var o1 = this.vertices;
+          const o1 = this.vertices;
           o1.helper = null;
           o1.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o1;
@@ -293,10 +285,10 @@ export class ZPP_PartitionedPoly {
         }
         this.vertices = tmp;
       }
-      var pre: Any = null;
-      var cx_ite = ret.head;
+      let pre: Any = null;
+      let cx_ite = ret.head;
       while (cx_ite != null) {
-        var p = cx_ite.elt;
+        const p = cx_ite.elt;
         if (p.remove_collinear_vertices()) {
           ret.erase(pre);
           continue;
@@ -309,7 +301,7 @@ export class ZPP_PartitionedPoly {
   }
 
   pull_partitions(start: ZPP_PartitionVertex, ret: Any): ZPP_PartitionVertex {
-    var poly: ZPP_PartitionedPoly;
+    let poly: ZPP_PartitionedPoly;
     if (ZPP_PartitionedPoly.zpp_pool == null) {
       poly = new ZPP_PartitionedPoly();
     } else {
@@ -317,9 +309,9 @@ export class ZPP_PartitionedPoly {
       ZPP_PartitionedPoly.zpp_pool = poly.next;
       poly.next = null;
     }
-    var next: ZPP_PartitionVertex = start;
+    let next: ZPP_PartitionVertex = start;
     while (true) {
-      var ret1: ZPP_PartitionVertex;
+      let ret1: ZPP_PartitionVertex;
       if (ZPP_PartitionVertex.zpp_pool == null) {
         ret1 = new ZPP_PartitionVertex();
       } else {
@@ -330,7 +322,7 @@ export class ZPP_PartitionedPoly {
       ret1.x = next.x;
       ret1.y = next.y;
       ret1.forced = next.forced;
-      var obj = ret1;
+      const obj = ret1;
       if (poly.vertices == null) {
         poly.vertices = obj.prev = obj.next = obj;
       } else {
@@ -342,10 +334,10 @@ export class ZPP_PartitionedPoly {
       poly.vertices = obj;
       poly.vertices.forced = next.forced;
       if (next.diagonals.head != null) {
-        var _this = next.diagonals;
-        var ret2 = _this.head.elt;
+        const _this = next.diagonals;
+        const ret2 = _this.head.elt;
         _this.pop();
-        var diag = ret2;
+        const diag = ret2;
         if (diag == start) {
           break;
         } else {
@@ -358,13 +350,13 @@ export class ZPP_PartitionedPoly {
         break;
       }
     }
-    var area = 0.0;
-    var F = poly.vertices;
-    var L = poly.vertices;
+    let area = 0.0;
+    const F = poly.vertices;
+    const L = poly.vertices;
     if (F != null) {
-      var nite: ZPP_PartitionVertex | null = F;
+      let nite: ZPP_PartitionVertex | null = F;
       while (true) {
-        var v = nite!;
+        const v = nite!;
         area += v.x * (v.next!.y - v.prev!.y);
         nite = nite!.next;
         if (!(nite != L)) {
@@ -383,12 +375,12 @@ export class ZPP_PartitionedPoly {
       ret = new (getNape().__zpp.util.ZNPList_ZPP_GeomVert)();
     }
     if (this.vertices != null) {
-      var F = this.vertices;
-      var L = this.vertices;
+      const F = this.vertices;
+      const L = this.vertices;
       if (F != null) {
-        var nite: ZPP_PartitionVertex | null = F;
+        let nite: ZPP_PartitionVertex | null = F;
         while (true) {
-          var c = nite!;
+          const c = nite!;
           c.sort();
           nite = nite!.next;
           if (!(nite != L)) {
@@ -398,20 +390,20 @@ export class ZPP_PartitionedPoly {
       }
       this.pull(this.vertices, ret);
       while (this.vertices != null) {
-        var tmp: ZPP_PartitionVertex | null;
+        let tmp: ZPP_PartitionVertex | null;
         if (this.vertices != null && this.vertices.prev == this.vertices) {
           this.vertices.next = this.vertices.prev = null;
-          var o = this.vertices;
+          const o = this.vertices;
           o.helper = null;
           o.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o;
           tmp = this.vertices = null;
         } else {
-          var retnodes: ZPP_PartitionVertex | null = this.vertices.next;
+          const retnodes: ZPP_PartitionVertex | null = this.vertices.next;
           this.vertices.prev!.next = this.vertices.next;
           this.vertices.next!.prev = this.vertices.prev;
           this.vertices.next = this.vertices.prev = null;
-          var o1 = this.vertices;
+          const o1 = this.vertices;
           o1.helper = null;
           o1.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o1;
@@ -425,12 +417,12 @@ export class ZPP_PartitionedPoly {
   }
 
   pull(start: ZPP_PartitionVertex, ret: Any): ZPP_PartitionVertex {
-    var poly: Any = null;
-    var next: ZPP_PartitionVertex = start;
+    let poly: Any = null;
+    let next: ZPP_PartitionVertex = start;
     while (true) {
-      var x = next.x;
-      var y = next.y;
-      var ret1: Any;
+      const x = next.x;
+      const y = next.y;
+      let ret1: Any;
       if (ZPP_GeomVert.zpp_pool == null) {
         ret1 = new ZPP_GeomVert();
       } else {
@@ -441,9 +433,9 @@ export class ZPP_PartitionedPoly {
       ret1.forced = false;
       ret1.x = x;
       ret1.y = y;
-      var obj = ret1;
+      const obj = ret1;
       if (poly == null) {
-        poly = obj.prev = obj.next = obj;
+        obj.prev = obj.next = obj;
       } else {
         obj.prev = poly;
         obj.next = poly.next;
@@ -453,10 +445,10 @@ export class ZPP_PartitionedPoly {
       poly = obj;
       poly.forced = next.forced;
       if (next.diagonals.head != null) {
-        var _this = next.diagonals;
-        var ret2 = _this.head.elt;
+        const _this = next.diagonals;
+        const ret2 = _this.head.elt;
         _this.pop();
-        var diag = ret2;
+        const diag = ret2;
         if (diag == start) {
           break;
         } else {
@@ -469,13 +461,13 @@ export class ZPP_PartitionedPoly {
         break;
       }
     }
-    var area = 0.0;
-    var F = poly;
-    var L = poly;
+    let area = 0.0;
+    const F = poly;
+    const L = poly;
     if (F != null) {
-      var nite = F;
+      let nite = F;
       while (true) {
-        var v = nite;
+        const v = nite;
         area += v.x * (v.next.y - v.prev.y);
         nite = nite.next;
         if (!(nite != L)) {
@@ -483,16 +475,14 @@ export class ZPP_PartitionedPoly {
         }
       }
     }
-    var area1 = area * 0.5;
+    const area1 = area * 0.5;
     if (area1 * area1 >= getNape().Config.epsilon * getNape().Config.epsilon) {
-      var p = poly;
-      var skip = true;
+      let p = poly;
+      let skip = true;
       while (skip || p != poly) {
         skip = false;
-        var dx = 0.0;
-        var dy = 0.0;
-        dx = p.x - p.next.x;
-        dy = p.y - p.next.y;
+        const dx = p.x - p.next.x;
+        const dy = p.y - p.next.y;
         if (dx * dx + dy * dy < getNape().Config.epsilon * getNape().Config.epsilon) {
           if (p == poly) {
             poly = p.next;
@@ -504,13 +494,11 @@ export class ZPP_PartitionedPoly {
           if (p != null && p.prev == p) {
             p.next = p.prev = null;
             p = null;
-            p = p;
           } else {
-            var retnodes = p.next;
+            const retnodes = p.next;
             p.prev.next = p.next;
             p.next.prev = p.prev;
             p.next = p.prev = null;
-            p = null;
             p = retnodes;
           }
           if (p == null) {
@@ -522,23 +510,19 @@ export class ZPP_PartitionedPoly {
         }
       }
       if (poly != null) {
-        var removed: boolean;
+        let removed: boolean;
         while (true) {
           removed = false;
           p = poly;
           skip = true;
           while (skip || p != poly) {
             skip = false;
-            var pre = p.prev;
-            var ux = 0.0;
-            var uy = 0.0;
-            ux = p.x - pre.x;
-            uy = p.y - pre.y;
-            var vx = 0.0;
-            var vy = 0.0;
-            vx = p.next.x - p.x;
-            vy = p.next.y - p.y;
-            var crs = vy * ux - vx * uy;
+            const pre = p.prev;
+            const ux = p.x - pre.x;
+            const uy = p.y - pre.y;
+            const vx = p.next.x - p.x;
+            const vy = p.next.y - p.y;
+            const crs = vy * ux - vx * uy;
             if (crs * crs >= getNape().Config.epsilon * getNape().Config.epsilon) {
               p = p.next;
             } else {
@@ -549,13 +533,11 @@ export class ZPP_PartitionedPoly {
               if (p != null && p.prev == p) {
                 p.next = p.prev = null;
                 p = null;
-                p = p;
               } else {
-                var retnodes1 = p.next;
+                const retnodes1 = p.next;
                 p.prev.next = p.next;
                 p.next.prev = p.prev;
                 p.next = p.prev = null;
-                p = null;
                 p = retnodes1;
               }
               removed = true;

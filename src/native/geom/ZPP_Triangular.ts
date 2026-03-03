@@ -40,29 +40,21 @@ export class ZPP_Triangular {
   }
 
   static right_turn(a: ZPP_PartitionVertex, b: ZPP_PartitionVertex, c: ZPP_PartitionVertex): number {
-    var ux = 0.0;
-    var uy = 0.0;
-    ux = c.x - b.x;
-    uy = c.y - b.y;
-    var vx = 0.0;
-    var vy = 0.0;
-    vx = b.x - a.x;
-    vy = b.y - a.y;
+    const ux = c.x - b.x;
+    const uy = c.y - b.y;
+    const vx = b.x - a.x;
+    const vy = b.y - a.y;
     return vy * ux - vx * uy;
   }
 
   static delaunay(A: ZPP_PartitionVertex, B: ZPP_PartitionVertex, C: ZPP_PartitionVertex, D: ZPP_PartitionVertex): boolean {
-    var ux = 0.0;
-    var uy = 0.0;
-    var vx = 0.0;
-    var vy = 0.0;
-    var tmp: boolean;
-    var tmp1: boolean;
-    var tmp2: boolean;
-    ux = C.x - B.x;
-    uy = C.y - B.y;
-    vx = B.x - A.x;
-    vy = B.y - A.y;
+    let ux = C.x - B.x;
+    let uy = C.y - B.y;
+    let vx = B.x - A.x;
+    let vy = B.y - A.y;
+    let tmp: boolean;
+    let tmp1: boolean;
+    let tmp2: boolean;
     if (!(vy * ux - vx * uy >= 0)) {
       ux = D.x - C.x;
       uy = D.y - C.y;
@@ -111,12 +103,12 @@ export class ZPP_Triangular {
   }
 
   static optimise(P: ZPP_PartitionedPoly): void {
-    var F = P.vertices;
-    var L = P.vertices;
+    const F = P.vertices;
+    const L = P.vertices;
     if (F != null) {
-      var nite: ZPP_PartitionVertex | null = F;
+      let nite: ZPP_PartitionVertex | null = F;
       while (true) {
-        var p = nite!;
+        const p = nite!;
         p.sort();
         p.mag = p.x * p.x + p.y * p.y;
         nite = nite!.next;
@@ -125,7 +117,7 @@ export class ZPP_Triangular {
         }
       }
     }
-    var zpp = getNape().__zpp;
+    const zpp = getNape().__zpp;
     if (ZPP_Triangular.edgeSet == null) {
       if (zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool == null) {
         ZPP_Triangular.edgeSet =
@@ -142,7 +134,7 @@ export class ZPP_Triangular {
       ZPP_Triangular.edgeSet.swapped =
         ZPP_PartitionPair.edge_swap;
     }
-    var edgeStack: ZPP_PartitionPair;
+    let edgeStack: ZPP_PartitionPair;
     if (ZPP_PartitionPair.zpp_pool == null) {
       edgeStack = new ZPP_PartitionPair();
     } else {
@@ -150,25 +142,25 @@ export class ZPP_Triangular {
       ZPP_PartitionPair.zpp_pool = edgeStack.next;
       edgeStack.next = null;
     }
-    var F1 = P.vertices;
-    var L1 = P.vertices;
+    const F1 = P.vertices;
+    const L1 = P.vertices;
     if (F1 != null) {
-      var nite1: ZPP_PartitionVertex | null = F1;
+      let nite1: ZPP_PartitionVertex | null = F1;
       while (true) {
-        var p1 = nite1!;
-        var q0: ZPP_PartitionVertex = p1.next!;
+        const p1 = nite1!;
+        let q0: ZPP_PartitionVertex = p1.next!;
         p1.diagonals.reverse();
-        var cx_ite = p1.diagonals.head;
+        let cx_ite = p1.diagonals.head;
         while (cx_ite != null) {
-          var q: ZPP_PartitionVertex = cx_ite.elt;
+          const q: ZPP_PartitionVertex = cx_ite.elt;
           if (q.id < p1.id) {
             q0 = q;
             cx_ite = cx_ite.next;
             continue;
           }
-          var q1: ZPP_PartitionVertex = cx_ite.next == null ? p1.prev! : cx_ite.next.elt;
+          const q1: ZPP_PartitionVertex = cx_ite.next == null ? p1.prev! : cx_ite.next.elt;
           if (!ZPP_Triangular.delaunay(p1, q0, q, q1)) {
-            var ret: ZPP_PartitionPair;
+            let ret: ZPP_PartitionPair;
             if (ZPP_PartitionPair.zpp_pool == null) {
               ret = new ZPP_PartitionPair();
             } else {
@@ -185,7 +177,7 @@ export class ZPP_Triangular {
               ret.id = q.id;
               ret.di = p1.id;
             }
-            var edge = ret;
+            const edge = ret;
             edgeStack.add(edge);
             edge.node = ZPP_Triangular.edgeSet.insert(edge);
           }
@@ -199,14 +191,14 @@ export class ZPP_Triangular {
       }
     }
     while (edgeStack.next != null) {
-      var edge1 = edgeStack.pop_unsafe();
-      var A = edge1.a;
-      var C = edge1.b;
-      var B: ZPP_PartitionVertex = A.next;
-      var D: ZPP_PartitionVertex | null = null;
-      var cx_ite1 = A.diagonals.head;
+      const edge1 = edgeStack.pop_unsafe();
+      const A = edge1.a;
+      const C = edge1.b;
+      let B: ZPP_PartitionVertex = A.next;
+      let D: ZPP_PartitionVertex | null = null;
+      let cx_ite1 = A.diagonals.head;
       while (cx_ite1 != null) {
-        var p2 = cx_ite1.elt;
+        const p2 = cx_ite1.elt;
         if (p2 == C) {
           cx_ite1 = cx_ite1.next;
           D = cx_ite1 == null ? A.prev : cx_ite1.elt;
@@ -220,9 +212,9 @@ export class ZPP_Triangular {
       if (C == B.next) {
         B.diagonals.add(D);
       } else {
-        var cx_ite2 = B.diagonals.head;
+        let cx_ite2 = B.diagonals.head;
         while (cx_ite2 != null) {
-          var p3 = cx_ite2.elt;
+          const p3 = cx_ite2.elt;
           if (p3 == C) {
             B.diagonals.insert(cx_ite2, D);
             break;
@@ -233,9 +225,9 @@ export class ZPP_Triangular {
       if (A == D!.next) {
         D!.diagonals.add(B);
       } else {
-        var cx_ite3 = D!.diagonals.head;
+        let cx_ite3 = D!.diagonals.head;
         while (cx_ite3 != null) {
-          var p4 = cx_ite3.elt;
+          const p4 = cx_ite3.elt;
           if (p4 == A) {
             D!.diagonals.insert(cx_ite3, B);
             break;
@@ -244,13 +236,13 @@ export class ZPP_Triangular {
         }
       }
       ZPP_Triangular.edgeSet.remove_node(edge1.node);
-      var o: Any = edge1;
+      const o: Any = edge1;
       o.a = o.b = null;
       o.node = null;
       o.next = ZPP_PartitionPair.zpp_pool;
       ZPP_PartitionPair.zpp_pool = o;
     }
-    var o1: Any = edgeStack;
+    const o1: Any = edgeStack;
     o1.a = o1.b = null;
     o1.node = null;
     o1.next = ZPP_PartitionPair.zpp_pool;
@@ -258,14 +250,14 @@ export class ZPP_Triangular {
   }
 
   static triangulate(P: ZPP_PartitionedPoly): ZPP_PartitionedPoly {
-    var min = P.vertices!;
-    var max = P.vertices!;
-    var F = P.vertices!.next;
-    var L = P.vertices;
+    let min = P.vertices!;
+    let max = P.vertices!;
+    const F = P.vertices!.next;
+    const L = P.vertices;
     if (F != null) {
-      var nite: ZPP_PartitionVertex | null = F;
+      let nite: ZPP_PartitionVertex | null = F;
       while (true) {
-        var p = nite!;
+        const p = nite!;
         if (p.y < min.y || (p.y == min.y && p.x < min.x)) {
           min = p;
         }
@@ -282,8 +274,8 @@ export class ZPP_Triangular {
       ZPP_Triangular.queue =
         new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
     }
-    var rp = max.prev!;
-    var lp = max.next!;
+    let rp = max.prev!;
+    let lp = max.next!;
     ZPP_Triangular.queue.add(max);
     while (rp != min || lp != min)
       if (
@@ -306,10 +298,10 @@ export class ZPP_Triangular {
     ZPP_Triangular.stack.add(
       ZPP_Triangular.queue.pop_unsafe()
     );
-    var pre = ZPP_Triangular.queue.pop_unsafe();
+    let pre = ZPP_Triangular.queue.pop_unsafe();
     ZPP_Triangular.stack.add(pre);
     while (true) {
-      var p1 = ZPP_Triangular.queue.pop_unsafe();
+      const p1 = ZPP_Triangular.queue.pop_unsafe();
       if (ZPP_Triangular.queue.head == null) {
         break;
       }
@@ -317,7 +309,7 @@ export class ZPP_Triangular {
         p1.rightchain != ZPP_Triangular.stack.head.elt.rightchain
       ) {
         while (true) {
-          var s = ZPP_Triangular.stack.pop_unsafe();
+          const s = ZPP_Triangular.stack.pop_unsafe();
           if (ZPP_Triangular.stack.head == null) {
             break;
           }
@@ -325,18 +317,14 @@ export class ZPP_Triangular {
         }
         ZPP_Triangular.stack.add(pre);
       } else {
-        var q = ZPP_Triangular.stack.pop_unsafe();
+        let q = ZPP_Triangular.stack.pop_unsafe();
         while (ZPP_Triangular.stack.head != null) {
-          var s1 = ZPP_Triangular.stack.head.elt;
-          var ux = 0.0;
-          var uy = 0.0;
-          ux = p1.x - q.x;
-          uy = p1.y - q.y;
-          var vx = 0.0;
-          var vy = 0.0;
-          vx = q.x - s1.x;
-          vy = q.y - s1.y;
-          var right = vy * ux - vx * uy;
+          const s1 = ZPP_Triangular.stack.head.elt;
+          const ux = p1.x - q.x;
+          const uy = p1.y - q.y;
+          const vx = q.x - s1.x;
+          const vy = q.y - s1.y;
+          const right = vy * ux - vx * uy;
           if ((p1.rightchain && right >= 0) || (!p1.rightchain && right <= 0)) {
             break;
           }
@@ -352,7 +340,7 @@ export class ZPP_Triangular {
     if (ZPP_Triangular.stack.head != null) {
       ZPP_Triangular.stack.pop();
       while (ZPP_Triangular.stack.head != null) {
-        var s2 = ZPP_Triangular.stack.pop_unsafe();
+        const s2 = ZPP_Triangular.stack.pop_unsafe();
         if (ZPP_Triangular.stack.head == null) {
           break;
         }

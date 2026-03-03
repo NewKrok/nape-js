@@ -658,8 +658,8 @@ export class ZPP_LineJoint extends ZPP_Constraint {
       return false;
     }
 
-    let Jx = 0.0;
-    let Jy = 0.0;
+    let Jx;
+    let Jy;
     const t = 0.5;
     Ex *= t;
     Ey *= t;
@@ -699,22 +699,19 @@ export class ZPP_LineJoint extends ZPP_Constraint {
       }
     }
 
-    let Ka = 0.0;
-    let Kb = 0.0;
-    let Kc = 0.0;
     const drx = dx + r1x;
     const dry = dy + r1y;
     const dot1 = nx * drx + ny * dry;
     const cx1 = dry * nx - drx * ny;
     const dot2 = nx * r2x + ny * r2y;
     const cx2 = r2y * nx - r2x * ny;
-    Ka =
+    const Ka =
       this.b1.smass +
       this.b2.smass +
       dot1 * dot1 * this.b1.sinertia +
       dot2 * dot2 * this.b2.sinertia;
-    Kb = -scale * (dot1 * cx1 * this.b1.sinertia + dot2 * cx2 * this.b2.sinertia);
-    Kc =
+    const Kb = -scale * (dot1 * cx1 * this.b1.sinertia + dot2 * cx2 * this.b2.sinertia);
+    const Kc =
       scale *
       scale *
       (this.b1.smass + this.b2.smass + cx1 * cx1 * this.b1.sinertia + cx2 * cx2 * this.b2.sinertia);
