@@ -751,8 +751,8 @@ describe("ZPP_AngleJoint", () => {
         b2Rot: 0.501, // tiny error, small dr
         kMass: 1.0,
       });
-      const origAxisx = aj.b1.axisx;
-      const origAxisy = aj.b1.axisy;
+      const _origAxisx = aj.b1.axisx;
+      const _origAxisy = aj.b1.axisy;
       aj.applyImpulsePos();
       // Small-angle path uses polynomial approximation (not sin/cos)
       // Just verify it didn't throw and rotations changed

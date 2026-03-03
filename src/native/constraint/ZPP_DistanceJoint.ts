@@ -71,36 +71,20 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
     this.a1rely = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
     this.a2relx = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
     this.a2rely = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
-    let nx = 0.0;
-    let ny = 0.0;
-    nx = this.b2.posx + this.a2relx - (this.b1.posx + this.a1relx);
-    ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
+    let nx = this.b2.posx + this.a2relx - (this.b1.posx + this.a1relx);
+    let ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
     let C = nx * nx + ny * ny;
     if (C < ZPP_Constraint._nape.Config.epsilon) {
-      nx = 0;
-      ny = 0;
-      C = 0;
       slack = true;
     } else {
       C = Math.sqrt(C);
-      const t = 1.0 / C;
-      nx *= t;
-      ny *= t;
       if (this.equal) {
-        C -= this.jointMax;
         slack = false;
       } else if (C < this.jointMin) {
-        C = this.jointMin - C;
-        nx = -nx;
-        ny = -ny;
         slack = false;
       } else if (C > this.jointMax) {
-        C -= this.jointMax;
         slack = false;
       } else {
-        nx = 0;
-        ny = 0;
-        C = 0;
         slack = true;
       }
     }
@@ -401,19 +385,13 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
 
   override applyImpulsePos(): boolean {
     let j: number;
-    let r1x = 0.0;
-    let r1y = 0.0;
-    r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
-    r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
-    let r2x = 0.0;
-    let r2y = 0.0;
-    r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
-    r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
+    let r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
+    let r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
+    let r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
+    let r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
     let slack: boolean;
-    let nx = 0.0;
-    let ny = 0.0;
-    nx = this.b2.posx + r2x - (this.b1.posx + r1x);
-    ny = this.b2.posy + r2y - (this.b1.posy + r1y);
+    let nx = this.b2.posx + r2x - (this.b1.posx + r1x);
+    let ny = this.b2.posy + r2y - (this.b1.posy + r1y);
     let C = nx * nx + ny * ny;
     if (C < ZPP_Constraint._nape.Config.epsilon) {
       nx = 0;
@@ -475,7 +453,6 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
               nx = 0;
               ny = 0;
               C1 = 0;
-              slack = true;
             } else {
               C1 = Math.sqrt(C1);
               const t3 = 1.0 / C1;
@@ -483,20 +460,16 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
               ny *= t3;
               if (this.equal) {
                 C1 -= this.jointMax;
-                slack = false;
               } else if (C1 < this.jointMin) {
                 C1 = this.jointMin - C1;
                 nx = -nx;
                 ny = -ny;
-                slack = false;
               } else if (C1 > this.jointMax) {
                 C1 -= this.jointMax;
-                slack = false;
               } else {
                 nx = 0;
                 ny = 0;
                 C1 = 0;
-                slack = true;
               }
             }
             E = C1;

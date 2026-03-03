@@ -567,27 +567,21 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
   }
 
   override applyImpulseVel(): boolean {
-    let Ex = 0.0;
-    let Ey = 0.0;
-    let Ez = 0.0;
-    Ex =
+    const Ex =
       this.b2.velx +
       this.b2.kinvelx -
       this.a2rely * (this.b2.angvel + this.b2.kinangvel) -
       (this.b1.velx + this.b1.kinvelx - this.a1rely * (this.b1.angvel + this.b1.kinangvel));
-    Ey =
+    const Ey =
       this.b2.vely +
       this.b2.kinvely +
       this.a2relx * (this.b2.angvel + this.b2.kinangvel) -
       (this.b1.vely + this.b1.kinvely + this.a1relx * (this.b1.angvel + this.b1.kinangvel));
-    Ez = this.b2.angvel + this.b2.kinangvel - this.b1.angvel - this.b1.kinangvel;
+    const Ez = this.b2.angvel + this.b2.kinangvel - this.b1.angvel - this.b1.kinangvel;
 
-    let Jx = 0.0;
-    let Jy = 0.0;
-    let Jz = 0.0;
-    Jx = this.biasx - Ex;
-    Jy = this.biasy - Ey;
-    Jz = this.biasz - Ez;
+    let Jx = this.biasx - Ex;
+    let Jy = this.biasy - Ey;
+    let Jz = this.biasz - Ez;
 
     const X = this.kMassa * Jx + this.kMassb * Jy + this.kMassc * Jz;
     const Y = this.kMassb * Jx + this.kMassd * Jy + this.kMasse * Jz;
@@ -644,26 +638,19 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
     const napeNs = ZPP_Constraint._nape;
 
     // Re-compute world-space anchors from current rotations
-    let r1x = 0.0;
-    let r1y = 0.0;
-    r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
-    r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
-    let r2x = 0.0;
-    let r2y = 0.0;
-    r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
-    r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
+    const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
+    const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
+    const r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
+    const r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
 
     // Position + angle error
-    let Ex = 0.0;
-    let Ey = 0.0;
-    let Ez = 0.0;
-    Ex = this.b2.posx + r2x - (this.b1.posx + r1x);
-    Ey = this.b2.posy + r2y - (this.b1.posy + r1y);
-    Ez = this.b2.rot - this.b1.rot - this.phase;
+    let Ex = this.b2.posx + r2x - (this.b1.posx + r1x);
+    let Ey = this.b2.posy + r2y - (this.b1.posy + r1y);
+    let Ez = this.b2.rot - this.b1.rot - this.phase;
 
-    let Jx = 0.0;
-    let Jy = 0.0;
-    let Jz = 0.0;
+    let Jx: number;
+    let Jy: number;
+    let Jz: number;
 
     if (this.breakUnderError && Ex * Ex + Ey * Ey + Ez * Ez > this.maxError * this.maxError) {
       return true;
@@ -724,19 +711,13 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
     }
 
     // Build local 3×3 mass matrix for position correction
-    let Ka = 0.0;
-    let Kb = 0.0;
-    let Kd = 0.0;
-    let Kc = 0.0;
-    let Ke = 0.0;
-    let Kf = 0.0;
     const m = this.b1.smass + this.b2.smass;
-    Ka = m;
-    Kb = 0;
-    Kd = m;
-    Kc = 0;
-    Ke = 0;
-    Kf = 0;
+    let Ka = m;
+    let Kb = 0;
+    let Kd = m;
+    let Kc = 0;
+    let Ke = 0;
+    let Kf = 0;
     if (this.b1.sinertia != 0) {
       const X = r1x * this.b1.sinertia;
       const Y = r1y * this.b1.sinertia;

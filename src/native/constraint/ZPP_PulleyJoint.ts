@@ -950,22 +950,14 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   override applyImpulsePos(): boolean {
     const napeNs = ZPP_Constraint._nape;
     let j: number;
-    let r1x = 0.0;
-    let r1y = 0.0;
-    r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
-    r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
-    let r2x = 0.0;
-    let r2y = 0.0;
-    r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
-    r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
-    let r3x = 0.0;
-    let r3y = 0.0;
-    r3x = this.b3.axisy * this.a3localx - this.b3.axisx * this.a3localy;
-    r3y = this.a3localx * this.b3.axisx + this.a3localy * this.b3.axisy;
-    let r4x = 0.0;
-    let r4y = 0.0;
-    r4x = this.b4.axisy * this.a4localx - this.b4.axisx * this.a4localy;
-    r4y = this.a4localx * this.b4.axisx + this.a4localy * this.b4.axisy;
+    const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
+    const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
+    const r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
+    const r2y = this.a2localx * this.b2.axisx + this.a2localy * this.b2.axisy;
+    const r3x = this.b3.axisy * this.a3localx - this.b3.axisx * this.a3localy;
+    const r3y = this.a3localx * this.b3.axisx + this.a3localy * this.b3.axisy;
+    const r4x = this.b4.axisy * this.a4localx - this.b4.axisx * this.a4localy;
+    const r4y = this.a4localx * this.b4.axisx + this.a4localy * this.b4.axisy;
     let slack: boolean;
     let n12x = this.n12x;
     let n12y = this.n12y;
@@ -1070,24 +1062,20 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
             let C1 = C121 + this.ratio * C341;
             if (this.equal) {
               C1 -= this.jointMax;
-              slack = false;
             } else if (C1 < this.jointMin) {
               C1 = this.jointMin - C1;
               n12x = -n12x;
               n12y = -n12y;
               n34x = -n34x;
               n34y = -n34y;
-              slack = false;
             } else if (C1 > this.jointMax) {
               C1 -= this.jointMax;
-              slack = false;
             } else {
               n12x = 0;
               n12y = 0;
               n34x = 0;
               n34y = 0;
               C1 = 0;
-              slack = true;
             }
             E = C1;
             E *= 0.5;
