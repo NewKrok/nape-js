@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>nape-js — 2D Physics Engine for TypeScript</title>
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -17,9 +25,9 @@
         Collision callbacks &bull; Spatial queries &mdash; all with a clean, typed API.
       </p>
       <div class="hero-actions">
-        <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary">GitHub</a>
-        <a href="#demos" class="btn btn-secondary">Try the Demos</a>
-        <a href="#benchmarks" class="btn btn-secondary">Benchmarks</a>
+        <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
+        <a href="#demos" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Try the Demos</a>
+        <a href="#benchmarks" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">Benchmarks</a>
       </div>
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
@@ -43,7 +51,7 @@
         <button class="tab" data-demo="stacking">Stacking</button>
         <button class="tab" data-demo="ragdoll">Ragdoll</button>
         <button class="tab" data-demo="strandbeast">Strand Beast</button>
-        <a href="examples.html" class="tab tab-more">More &rarr;</a>
+        <a href="examples.html" class="tab tab-more" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'more_examples'})">More &rarr;</a>
       </nav>
 
       <div class="canvas-wrap">

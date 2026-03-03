@@ -1331,6 +1331,7 @@ const cards = EXAMPLES.map((example, idx) => {
   function attachClickHandler(el) {
     el.addEventListener("mousedown", (e) => {
       if (!space) return;
+      gtag("event", "click", { event_category: "example_interaction", event_label: example.label });
       const rect = el.getBoundingClientRect();
       const sx = CW / rect.width;
       const sy = CH / rect.height;
@@ -1366,6 +1367,7 @@ document.getElementById("renderModeToggle").addEventListener("click", async (e) 
   if (!btn) return;
   const mode = btn.dataset.mode;
   if (mode === renderMode) return;
+  gtag("event", "click", { event_category: "render_mode", event_label: mode });
 
   if (mode === "3d") await loadThree();
 
