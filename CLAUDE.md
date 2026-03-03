@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 1878 tests across 103 files
+npm test             # vitest — 1910 tests across 105 files
 npm run lint         # eslint + prettier
 ```
 
@@ -35,11 +35,12 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 67 classes
+### Extracted ZPP_* classes (src/native/) — 69 classes
 
 | Category | Classes |
 |----------|---------|
 | Callbacks | `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`, `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener` |
+| Collision | `ZPP_Collide`, `ZPP_SweepDistance` |
 | Constraints | `ZPP_Constraint`, `ZPP_CopyHelper`, `ZPP_UserBody`, `ZPP_AngleJoint`, `ZPP_MotorJoint`, `ZPP_DistanceJoint`, `ZPP_PivotJoint`, `ZPP_LineJoint`, `ZPP_WeldJoint`, `ZPP_PulleyJoint`, `ZPP_UserConstraint` |
 | Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact`, `ZPP_Arbiter`, `ZPP_SensorArbiter`, `ZPP_FluidArbiter`, `ZPP_ColArbiter` |
 | Geometry (core) | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
@@ -172,9 +173,9 @@ to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`
 - ~~`ZPP_Monotone` (~450 lines), `ZPP_PartitionedPoly` (~550 lines), `ZPP_PartitionPair` (~410 lines), `ZPP_PartitionVertex` (~280 lines), `ZPP_Triangular` (~340 lines)~~
 - ~~`ZPP_Convex` (~80 lines), `ZPP_Geom` (~330 lines), `ZPP_GeomVert` (~184 lines), `ZPP_VecMath` (~18 lines)~~
 
-**Priority 6: Collision & continuous detection (~6,500 lines)**
-- `ZPP_Collide` (~3,190 lines, narrowphase collision dispatcher)
-- `ZPP_SweepDistance` (~3,310 lines, continuous collision / time-of-impact)
+~~**Priority 6: Collision & continuous detection (~6,500 lines, 2 classes)**~~ ✅
+- ~~`ZPP_Collide` (~3,190 lines, narrowphase collision dispatcher)~~
+- ~~`ZPP_SweepDistance` (~3,310 lines, continuous collision / time-of-impact)~~
 
 **Priority 7: Space & broadphase (~23,400 lines — largest and most complex)**
 - `ZPP_Space` (~13,450 lines, core simulation loop, integration, solver)
@@ -186,7 +187,7 @@ to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`
 - `ZPP_CallbackSet` (~567 lines) + `ZPP_CbSetManager` (~145 lines)
 - `ZPP_SpaceArbiterList` (~277 lines)
 
-**Still in compiled (misc, ~58k lines):**
+**Still in compiled (misc, ~51.6k lines):**
 - `ZPP_Interactor` (~377 lines, base class for Body/Compound/Shape)
 - Special lists: `Vec2List`, `ContactList`, `GeomVertexIterator` (~230 lines)
 - `ZPP_MarchingSquares` (~3,820 lines, compiled version still present alongside TS)
