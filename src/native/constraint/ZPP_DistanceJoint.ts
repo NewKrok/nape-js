@@ -18,6 +18,7 @@ type Any = any;
 export class ZPP_DistanceJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_DistanceJoint"];
   static __super__ = ZPP_Constraint;
+  static _wrapFn: ((zpp: ZPP_DistanceJoint) => Any) | null = null;
 
   outer_zn: Any = null;
   jointMin = 0.0;

@@ -16,6 +16,7 @@ type Any = any;
 export class ZPP_WeldJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_WeldJoint"];
   static __super__ = ZPP_Constraint;
+  static _wrapFn: ((zpp: ZPP_WeldJoint) => Any) | null = null;
 
   outer_zn: Any = null;
   b1: Any = null;
