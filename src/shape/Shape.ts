@@ -50,9 +50,12 @@ export class Shape extends Interactor {
   static _wrap(inner: NapeInner): Shape {
     if (!inner) return null as unknown as Shape;
 
-    // Dispatch to concrete subclass wrapper based on runtime type
-    if (inner.isCircle?.() && _circleWrap) return _circleWrap(inner);
-    if (inner.isPolygon?.() && _polygonWrap) return _polygonWrap(inner);
+    // Dispatch to concrete subclass wrapper based on runtime type.
+    // Check both TS method (isCircle/isPolygon) and compiled field (zpp_inner.type)
+    // because compiled objects may not have the TS methods on their prototype.
+    const type = inner.isCircle ? (inner.isCircle() ? 0 : inner.isPolygon?.() ? 1 : -1) : inner.zpp_inner?.type ?? -1;
+    if (type === 0 && _circleWrap) return _circleWrap(inner);
+    if (type === 1 && _polygonWrap) return _polygonWrap(inner);
 
     // Handle ZPP inner objects that have an outer
     if (inner.outer) return inner.outer;

@@ -7,10 +7,10 @@ import {
   Material, InteractionFilter,
   CbType, InteractionType, PreListener, PreFlag,
   VERSION,
-} from "./nape-js.esm.js";
+} from "./nape-js.esm.js?v=3.3.42";
 import {
   drawBody, drawConstraints, drawGrid, installErrorOverlay,
-} from "./renderer.js";
+} from "./renderer.js?v=3.3.42";
 
 // =========================================================================
 // Shared helpers
