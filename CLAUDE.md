@@ -72,7 +72,7 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | AABB | `src/geom/AABB.ts` | Geometry bounds, Vec2 min/max wrappers |
 | MatMN | `src/geom/MatMN.ts` | Variable-sized M×N matrix |
 | MarchingSquares | `src/geom/MarchingSquares.ts` | Static isosurface extraction |
-| Interactor | `src/phys/Interactor.ts` | Base class for Body/Shape/Compound |
+| Interactor | `src/phys/Interactor.ts` | Base class for Body/Shape/Compound, direct ZPP_Interactor access |
 | Shape | `src/shape/Shape.ts` | Base shape, dispatch to Circle/Polygon |
 | Compound | `src/phys/Compound.ts` | Hierarchical grouping, extends Interactor |
 | Body | `src/phys/Body.ts` | Fully modernized, all ~58 methods native, direct ZPP_Body access |
@@ -104,7 +104,7 @@ step for each is to rewrite the public wrapper to use the extracted ZPP directly
 
 | Class | File | Notes |
 |-------|------|-------|
-| Circle | `src/shape/Circle.ts` | ZPP_Circle extracted, public wrapper compiled (~197 lines) |
+| Circle | `src/shape/Circle.ts` | Fully modernized, direct ZPP_Circle access |
 | Polygon | `src/shape/Polygon.ts` | ZPP_Polygon extracted, public wrapper compiled (~1,306 lines) |
 | Space | `src/space/Space.ts` | ZPP_Space extracted, public wrapper compiled (~1,394 lines) |
 | PivotJoint | `src/constraint/PivotJoint.ts` | ZPP_PivotJoint extracted, public wrapper compiled (~882 lines) |
@@ -215,9 +215,9 @@ public class still delegates through compiled prototype code):
 - ~~`nape.phys.Body` (~5,146 lines — largest single public API class)~~ ✅
 - `nape.space.Space` (~1,394 lines)
 - `nape.constraint.*Joint` wrappers: DistanceJoint (~975), LineJoint (~1,239), PivotJoint (~882), PulleyJoint (~1,885), WeldJoint (~915), UserConstraint (~179), Constraint base (~347)
-- `nape.shape.*` wrappers: Shape (~758), Circle (~197), Polygon (~1,306), Edge (~534)
+- `nape.shape.*` wrappers: Shape (~758), ~~Circle (~197)~~ ✅, Polygon (~1,306), Edge (~534)
 - `nape.geom.*` wrappers: Ray (~888), Geom (~656)
-- `nape.phys.Interactor` (~97 lines)
+- ~~`nape.phys.Interactor` (~97 lines)~~ ✅
 
 **Still in compiled (infrastructure, not candidates for individual extraction):**
 - Bootstrap: `Reflect`, `Std`, `StringTools`, `js.Boot` (Haxe stdlib shims, ~280 lines)

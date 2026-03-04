@@ -48,11 +48,18 @@ export class ZPP_Circle {
   sweepCoef!: number;
   sweepRadius!: number;
   material: Any;
+  filter: Any;
   wrap_localCOM: Any;
   outer: Any;
+  outer_i: Any;
+  space: Any;
   invalidate_area_inertia!: () => void;
   invalidate_angDrag!: () => void;
   invalidate_localCOM!: () => void;
+  immutable_midstep!: (name: string) => void;
+  setMaterial!: (mat: Any) => void;
+  setFilter!: (filt: Any) => void;
+  insert_cbtype!: (cb: Any) => void;
   constructor() {
     this.radius = 0;
     this.outer_zn = null;
