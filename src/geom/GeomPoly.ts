@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_GeomPoly } from "../native/geom/ZPP_GeomPoly";
+import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { Vec2 } from "./Vec2";
@@ -317,17 +318,17 @@ export class GeomPoly {
 
   iterator(): Any {
     this._checkDisposed();
-    return getNape().__zpp.geom.ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, true);
+    return ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, true);
   }
 
   forwardIterator(): Any {
     this._checkDisposed();
-    return getNape().__zpp.geom.ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, true);
+    return ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, true);
   }
 
   backwardsIterator(): Any {
     this._checkDisposed();
-    return getNape().__zpp.geom.ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, false);
+    return ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, false);
   }
 
   current(): Vec2 {

@@ -83,3 +83,11 @@ export { NapeList } from "./util/NapeList";
 
 // List/Iterator registration (side-effect import — registers all typed list pairs)
 import "./util/registerLists";
+
+// Special-case lists with custom behavior (not handled by NapeListFactory)
+import "./geom/Vec2List";
+import "./dynamics/ContactList";
+import "./geom/GeomVertexIterator";
+import "./native/util/ZPP_Vec2List";
+import "./native/util/ZPP_ContactList";
+import "./native/geom/ZPP_GeomVertexIterator";

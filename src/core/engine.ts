@@ -30,3 +30,13 @@ export function getNape(): any {
 // This must happen here (not just in index.ts) so that any module importing
 // getNape() — even without going through the barrel export — gets the lists.
 import "../util/registerLists";
+
+// Special-case lists (Vec2List, ContactList, GeomVertexIterator) that have
+// custom behavior not handled by the generic NapeListFactory.
+// Public classes must register before ZPP classes reference them.
+import "../geom/Vec2List";
+import "../dynamics/ContactList";
+import "../geom/GeomVertexIterator";
+import "../native/util/ZPP_Vec2List";
+import "../native/util/ZPP_ContactList";
+import "../native/geom/ZPP_GeomVertexIterator";
