@@ -35,7 +35,7 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 82 classes
+### Extracted ZPP_* classes (src/native/) — 85 classes
 
 | Category | Classes |
 |----------|---------|
@@ -43,12 +43,12 @@ declarations for runtime-copied prototype methods). Never push without a green b
 | Collision | `ZPP_Collide`, `ZPP_SweepDistance` |
 | Constraints | `ZPP_Constraint`, `ZPP_CopyHelper`, `ZPP_UserBody`, `ZPP_AngleJoint`, `ZPP_MotorJoint`, `ZPP_DistanceJoint`, `ZPP_PivotJoint`, `ZPP_LineJoint`, `ZPP_WeldJoint`, `ZPP_PulleyJoint`, `ZPP_UserConstraint` |
 | Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact`, `ZPP_Arbiter`, `ZPP_SensorArbiter`, `ZPP_FluidArbiter`, `ZPP_ColArbiter`, `ZPP_SpaceArbiterList` |
-| Geometry (core) | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult` |
+| Geometry (core) | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult`, `ZPP_GeomVertexIterator` |
 | Geometry (algorithms) | `ZPP_Ray`, `ZPP_Cutter`, `ZPP_Simple`, `ZPP_SimpleSweep`, `ZPP_SimpleVert`, `ZPP_SimpleSeg`, `ZPP_SimpleEvent`, `ZPP_Simplify`, `ZPP_SimplifyV`, `ZPP_SimplifyP`, `ZPP_Monotone`, `ZPP_PartitionedPoly`, `ZPP_PartitionPair`, `ZPP_PartitionVertex`, `ZPP_Triangular`, `ZPP_Convex`, `ZPP_Geom`, `ZPP_GeomVert`, `ZPP_VecMath` |
 | Physics | `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body` |
 | Shapes | `ZPP_Shape`, `ZPP_Circle`, `ZPP_Edge`, `ZPP_Polygon` |
 | Space | `ZPP_Space`, `ZPP_DynAABBPhase`, `ZPP_Broadphase`, `ZPP_SweepPhase`, `ZPP_AABBTree`, `ZPP_AABBNode`, `ZPP_AABBPair`, `ZPP_Island`, `ZPP_Component`, `ZPP_SweepData`, `ZPP_CallbackSet`, `ZPP_CbSetManager` |
-| Utilities | `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool` |
+| Utilities | `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`, `ZPP_Vec2List`, `ZPP_ContactList` |
 
 ### Public API classes — all have TypeScript wrappers
 
@@ -129,10 +129,15 @@ CbTypeList, ListenerList, ConstraintList, ArbiterList, InteractionGroupList,
 ConvexResultList, GeomPolyList, RayResultList, BodyList, CompoundList,
 InteractorList, EdgeList, ShapeList (+ matching Iterators)
 
-**Still in compiled code (special behavior):**
-- `Vec2List` + `Vec2Iterator` — complex Vec2 wrapper creation in `at()`
-- `ContactList` + `ContactIterator` — active-contact filtering in iteration
-- `GeomVertexIterator` — vertex ring traversal (no corresponding List)
+**Special-case lists (extracted to TypeScript, stubs in compiled code):**
+- `Vec2List` + `Vec2Iterator` (`src/geom/Vec2List.ts`) — custom Vec2 wrapper creation in `at()`
+- `ContactList` + `ContactIterator` (`src/dynamics/ContactList.ts`) — active-contact filtering
+- `GeomVertexIterator` (`src/geom/GeomVertexIterator.ts`) — vertex ring traversal
+
+**Internal list backing classes (extracted to TypeScript):**
+- `ZPP_Vec2List` (`src/native/util/ZPP_Vec2List.ts`)
+- `ZPP_ContactList` (`src/native/util/ZPP_ContactList.ts`)
+- `ZPP_GeomVertexIterator` (`src/native/geom/ZPP_GeomVertexIterator.ts`)
 
 ### Compiled code stubs
 
@@ -143,7 +148,8 @@ fixup where needed.
 
 **Classes with stubs:** CbType, OptionType, ArbiterType, ListenerType, Listener, CbEvent,
 BodyType, ShapeType, ValidationResult, Broadphase, Arbiter, CollisionArbiter, FluidArbiter,
-ArbiterList, Callback, BodyCallback, ConstraintCallback, InteractionCallback, PreCallback
+ArbiterList, Callback, BodyCallback, ConstraintCallback, InteractionCallback, PreCallback,
+Vec2List, Vec2Iterator, ContactList, ContactIterator, GeomVertexIterator
 
 ### Internal namespace exposure
 
@@ -197,11 +203,11 @@ to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`
 - `ZPP_ToiEvent` (~40 lines, pool object used by ZPP_SweepDistance)
 - `ZPP_MarchingSquares` (~3,824 lines, internal compiled version — public MarchingSquares TS already exists)
 
-**Priority 9: Special lists & internal list wrappers (~1,250 lines)**
-- `Vec2List` + `Vec2Iterator` (~671 lines, complex Vec2 wrapper creation in `at()`)
-- `ContactList` + `ContactIterator` (~798 lines, active-contact filtering in iteration)
-- `GeomVertexIterator` (~136 lines, vertex ring traversal)
-- `ZPP_CbTypeList` (~93 lines), `ZPP_Vec2List` (~89 lines), `ZPP_ContactList` (~94 lines)
+~~**Priority 9: Special lists & internal list wrappers (~1,250 lines)**~~ ✅
+- ~~`Vec2List` + `Vec2Iterator` (~671 lines, complex Vec2 wrapper creation in `at()`)~~
+- ~~`ContactList` + `ContactIterator` (~798 lines, active-contact filtering in iteration)~~
+- ~~`GeomVertexIterator` (~136 lines, vertex ring traversal)~~
+- ~~`ZPP_CbTypeList` (~93 lines), `ZPP_Vec2List` (~89 lines), `ZPP_ContactList` (~94 lines)~~
 
 **Priority 10: Public API wrapper full modernization (~16,600 lines)**
 Public wrappers that still have full compiled implementations (ZPP_* extracted, but

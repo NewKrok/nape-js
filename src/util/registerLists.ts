@@ -3,7 +3,7 @@
  *
  * This replaces ~7,000 lines of repetitive compiled boilerplate with a single
  * factory-driven registration. Special-case lists (Vec2List, ContactList,
- * GeomVertexIterator) remain in compiled code.
+ * GeomVertexIterator) are in separate TypeScript files.
  *
  * @internal — imported by index.ts to trigger registration at module load.
  */
