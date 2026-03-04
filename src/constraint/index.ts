@@ -6,3 +6,4 @@ export { WeldJoint } from "./WeldJoint";
 export { MotorJoint } from "./MotorJoint";
 export { LineJoint } from "./LineJoint";
 export { PulleyJoint } from "./PulleyJoint";
+export { UserConstraint } from "./UserConstraint";
