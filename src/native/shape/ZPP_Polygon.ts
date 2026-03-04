@@ -1198,7 +1198,15 @@ export class ZPP_Polygon {
     if (this.outer_zn.zpp_inner_zn.wrap_lverts == null) {
       this.outer_zn.zpp_inner_zn.getlverts();
     }
-    const ret = new nape.shape.Polygon(this.outer_zn.zpp_inner_zn.wrap_lverts).zpp_inner_zn;
+    // Convert Vec2List to Array<Vec2> since the compiled Polygon constructor's
+    // Vec2List branch was removed during list extraction.
+    const lverts = this.outer_zn.zpp_inner_zn.wrap_lverts;
+    const arr: Any[] = [];
+    const iter = lverts.iterator();
+    while (iter.hasNext()) {
+      arr.push(iter.next());
+    }
+    const ret = new nape.shape.Polygon(arr).zpp_inner_zn;
     return ret;
   }
 }

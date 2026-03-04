@@ -195,12 +195,11 @@ nape.shape.Circle = Circle;
 (Circle.prototype as Any).__class__ = Circle;
 
 // Copy compiled Shape prototype methods for backward compat.
-// Shape-level properties (type, body, area, etc.) delegate through
-// this._inner.get_*() where _inner=this, so these methods must exist
-// on Circle.prototype.
+// Use `in` to check the full prototype chain — methods already defined on
+// Shape.prototype or Interactor.prototype (e.g. toString) must not be overwritten.
 const compiledShapeProto = nape.shape.Shape.prototype;
 for (const k in compiledShapeProto) {
-  if (!Object.prototype.hasOwnProperty.call(Circle.prototype, k)) {
+  if (!(k in Circle.prototype)) {
     (Circle.prototype as Any)[k] = compiledShapeProto[k];
   }
 }
@@ -208,7 +207,7 @@ for (const k in compiledShapeProto) {
 // Also copy compiled Interactor prototype methods
 const compiledInteractorProto = nape.phys.Interactor.prototype;
 for (const k in compiledInteractorProto) {
-  if (!Object.prototype.hasOwnProperty.call(Circle.prototype, k)) {
+  if (!(k in Circle.prototype)) {
     (Circle.prototype as Any)[k] = compiledInteractorProto[k];
   }
 }
