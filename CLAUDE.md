@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-~28k lines, down from ~82k) into clean, typed TypeScript classes.
+~11k lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 1910 tests across 105 files
+npm test             # vitest — 2093 tests across 111 files
 npm run lint         # eslint + prettier
 ```
 
@@ -94,6 +94,10 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | Edge | `src/shape/Edge.ts` | Direct ZPP_Edge access, vertex/normal/projection getters |
 | Shape | `src/shape/Shape.ts` | Direct ZPP_Shape access, base shape dispatch |
 | Circle | `src/shape/Circle.ts` | Direct ZPP_Circle access, radius getter/setter |
+| DistanceJoint | `src/constraint/DistanceJoint.ts` | Direct ZPP_DistanceJoint access, anchor/body/limit setters |
+| PivotJoint | `src/constraint/PivotJoint.ts` | Direct ZPP_PivotJoint access, anchor/body setters, 2-DOF |
+| LineJoint | `src/constraint/LineJoint.ts` | Direct ZPP_LineJoint access, anchor/body/direction/limit setters |
+| WeldJoint | `src/constraint/WeldJoint.ts` | Direct ZPP_WeldJoint access, anchor/body/phase setters, 3-DOF |
 
 **Singleton enums** (fully modernized, init-time stub + `setPrototypeOf` where needed):
 GravMassMode, InertiaMode, MassMode, BodyType, ShapeType, ArbiterType, Winding,
@@ -109,12 +113,6 @@ step for each is to rewrite the public wrapper to use the extracted ZPP directly
 |-------|------|-------|
 | Polygon | `src/shape/Polygon.ts` | ZPP_Polygon extracted, public wrapper compiled (~1,306 lines) |
 | Space | `src/space/Space.ts` | ZPP_Space extracted, public wrapper compiled (~1,394 lines) |
-| PivotJoint | `src/constraint/PivotJoint.ts` | ZPP_PivotJoint extracted, public wrapper compiled (~882 lines) |
-| MotorJoint | `src/constraint/MotorJoint.ts` | ZPP_MotorJoint extracted, public wrapper compiled (stub only) |
-| AngleJoint | `src/constraint/AngleJoint.ts` | ZPP_AngleJoint extracted, public wrapper compiled (stub only) |
-| DistanceJoint | `src/constraint/DistanceJoint.ts` | ZPP_DistanceJoint extracted, public wrapper compiled (~975 lines) |
-| LineJoint | `src/constraint/LineJoint.ts` | ZPP_LineJoint extracted, public wrapper compiled (~1,239 lines) |
-| WeldJoint | `src/constraint/WeldJoint.ts` | ZPP_WeldJoint extracted, public wrapper compiled (~915 lines) |
 | PulleyJoint | `src/constraint/PulleyJoint.ts` | ZPP_PulleyJoint extracted, public wrapper compiled (~1,885 lines) |
 | Ray | `src/geom/Ray.ts` | ZPP_Ray extracted, public wrapper compiled (~888 lines) |
 | ConvexResult | `src/geom/ConvexResult.ts` | Direct ZPP_ConvexRayResult access |
@@ -151,7 +149,8 @@ fixup where needed.
 **Classes with stubs:** CbType, OptionType, ArbiterType, ListenerType, Listener, CbEvent,
 BodyType, ShapeType, ValidationResult, Broadphase, Arbiter, CollisionArbiter, FluidArbiter,
 ArbiterList, Callback, BodyCallback, ConstraintCallback, InteractionCallback, PreCallback,
-Vec2List, Vec2Iterator, ContactList, ContactIterator, GeomVertexIterator
+Vec2List, Vec2Iterator, ContactList, ContactIterator, GeomVertexIterator,
+DistanceJoint, PivotJoint, LineJoint, WeldJoint, AngleJoint, MotorJoint
 
 ### Internal namespace exposure
 
@@ -216,7 +215,7 @@ Public wrappers that still have full compiled implementations (ZPP_* extracted, 
 public class still delegates through compiled prototype code):
 - ~~`nape.phys.Body` (~5,146 lines — largest single public API class)~~ ✅
 - `nape.space.Space` (~1,394 lines)
-- `nape.constraint.*Joint` wrappers: DistanceJoint (~975), LineJoint (~1,239), PivotJoint (~882), PulleyJoint (~1,885), WeldJoint (~915), UserConstraint (~179), Constraint base (~347)
+- `nape.constraint.*Joint` wrappers: ~~DistanceJoint (~975)~~ ✅, ~~LineJoint (~1,239)~~ ✅, ~~PivotJoint (~882)~~ ✅, PulleyJoint (~1,885), ~~WeldJoint (~915)~~ ✅, UserConstraint (~179), ~~Constraint base (~347)~~ ✅
 - `nape.shape.*` wrappers: ~~Shape (~758)~~ ✅, ~~Circle (~197)~~ ✅, Polygon (~1,306), ~~Edge (~534)~~ ✅
 - `nape.geom.*` wrappers: Ray (~888), Geom (~656)
 - ~~`nape.phys.Interactor` (~97 lines)~~ ✅
