@@ -75,7 +75,7 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | Interactor | `src/phys/Interactor.ts` | Base class for Body/Shape/Compound |
 | Shape | `src/shape/Shape.ts` | Base shape, dispatch to Circle/Polygon |
 | Compound | `src/phys/Compound.ts` | Hierarchical grouping, extends Interactor |
-| Body | `src/phys/Body.ts` | Constructor + getters/setters modernized, complex methods from compiled prototype |
+| Body | `src/phys/Body.ts` | Fully modernized, all ~58 methods native, direct ZPP_Body access |
 | Listener | `src/callbacks/Listener.ts` | Base listener, space/event/precedence |
 | BodyListener | `src/callbacks/BodyListener.ts` | WAKE/SLEEP body events |
 | ConstraintListener | `src/callbacks/ConstraintListener.ts` | WAKE/SLEEP/BREAK constraint events |
@@ -198,10 +198,10 @@ to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`
 - ~~`ZPP_CallbackSet` (~567 lines) + `ZPP_CbSetManager` (~145 lines)~~
 - ~~`ZPP_SpaceArbiterList` (~277 lines)~~
 
-**Priority 8: Remaining internal ZPP classes (~4,240 lines, 3 classes)**
-- `ZPP_Interactor` (~378 lines, base class for Body/Compound/Shape — cbType management, callback sets, group logic)
-- `ZPP_ToiEvent` (~40 lines, pool object used by ZPP_SweepDistance)
-- `ZPP_MarchingSquares` (~3,824 lines, internal compiled version — public MarchingSquares TS already exists)
+~~**Priority 8: Remaining internal ZPP classes (~4,240 lines, 3 classes)**~~ ✅
+- ~~`ZPP_Interactor` (~378 lines, base class for Body/Compound/Shape — cbType management, callback sets, group logic)~~
+- ~~`ZPP_ToiEvent` (~40 lines, pool object used by ZPP_SweepDistance)~~
+- ~~`ZPP_MarchingSquares` (~3,824 lines, internal compiled version — public MarchingSquares TS already exists)~~
 
 ~~**Priority 9: Special lists & internal list wrappers (~1,250 lines)**~~ ✅
 - ~~`Vec2List` + `Vec2Iterator` (~671 lines, complex Vec2 wrapper creation in `at()`)~~
@@ -212,7 +212,7 @@ to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`
 **Priority 10: Public API wrapper full modernization (~16,600 lines)**
 Public wrappers that still have full compiled implementations (ZPP_* extracted, but
 public class still delegates through compiled prototype code):
-- `nape.phys.Body` (~5,146 lines — largest single public API class)
+- ~~`nape.phys.Body` (~5,146 lines — largest single public API class)~~ ✅
 - `nape.space.Space` (~1,394 lines)
 - `nape.constraint.*Joint` wrappers: DistanceJoint (~975), LineJoint (~1,239), PivotJoint (~882), PulleyJoint (~1,885), WeldJoint (~915), UserConstraint (~179), Constraint base (~347)
 - `nape.shape.*` wrappers: Shape (~758), Circle (~197), Polygon (~1,306), Edge (~534)
