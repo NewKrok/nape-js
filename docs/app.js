@@ -10,11 +10,11 @@ import {
   Material, InteractionFilter, InteractionGroup,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
   VERSION,
-} from "./nape-js.esm.js";
+} from "./nape-js.esm.js?v=3.3.42";
 import {
   bodyColor, drawBody as _drawBody, drawConstraints, drawGrid,
   installErrorOverlay,
-} from "./renderer.js";
+} from "./renderer.js?v=3.3.42";
 
 // =========================================================================
 // Canvas & state
