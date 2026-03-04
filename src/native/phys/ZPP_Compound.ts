@@ -2,10 +2,12 @@
  * ZPP_Compound — Internal compound representation for the nape physics engine.
  *
  * Hierarchical grouping of bodies, constraints, and other compounds.
- * Extends ZPP_Interactor (still in compiled code — methods copied at init time).
+ * Extends ZPP_Interactor (extracted to ZPP_Interactor.ts — methods copied at init time).
  *
  * Converted from nape-compiled.js lines 55195–55521.
  */
+
+import { ZPP_Interactor } from "./ZPP_Interactor";
 
 type Any = any;
 
@@ -59,9 +61,7 @@ export class ZPP_Compound {
     const zpp = ZPP_Compound._zpp;
 
     // ZPP_Interactor constructor init
-    this.id = zpp.ZPP_ID.Interactor();
-    this.cbsets = new zpp.util.ZNPList_ZPP_CallbackSet();
-    this.cbTypes = new zpp.util.ZNPList_ZPP_CbType();
+    ZPP_Interactor.initFields(this);
 
     // ZPP_Compound-specific init
     this.icompound = this;
@@ -385,13 +385,12 @@ export class ZPP_Compound {
    * Must be called after _zpp is set (during compiled module init).
    */
   static _init(): void {
-    const ZPP_Interactor = ZPP_Compound._zpp.phys.ZPP_Interactor;
     ZPP_Compound.__super__ = ZPP_Interactor;
 
     // Copy ZPP_Interactor prototype methods (only those not already on ZPP_Compound)
-    for (const k in ZPP_Interactor.prototype) {
-      if (k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)) {
-        (ZPP_Compound.prototype as Any)[k] = ZPP_Interactor.prototype[k];
+    for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
+      if (k !== "constructor" && k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)) {
+        (ZPP_Compound.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
       }
     }
   }

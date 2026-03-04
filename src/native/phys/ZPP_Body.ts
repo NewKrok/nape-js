@@ -11,6 +11,7 @@
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
+import { ZPP_Interactor } from "./ZPP_Interactor";
 
 type Any = any;
 
@@ -188,7 +189,7 @@ export class ZPP_Body {
     const zpp = ZPP_Body._zpp;
 
     // ZPP_Interactor constructor init
-    zpp.phys.ZPP_Interactor.call(this);
+    ZPP_Interactor.initFields(this);
 
     // ZPP_Body-specific init
     this.ibody = this;
@@ -1565,12 +1566,12 @@ export class ZPP_Body {
     ZPP_Body._initialized = true;
     ZPP_Body._zpp = zpp;
     ZPP_Body._nape = nape;
-    ZPP_Body.__super__ = zpp.phys.ZPP_Interactor;
+    ZPP_Body.__super__ = ZPP_Interactor;
 
     // Copy ZPP_Interactor prototype methods onto ZPP_Body
-    for (const k in zpp.phys.ZPP_Interactor.prototype) {
-      if (!(k in ZPP_Body.prototype)) {
-        (ZPP_Body.prototype as Any)[k] = zpp.phys.ZPP_Interactor.prototype[k];
+    for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
+      if (k !== "constructor" && k !== "__class__" && !(k in ZPP_Body.prototype)) {
+        (ZPP_Body.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
       }
     }
   }

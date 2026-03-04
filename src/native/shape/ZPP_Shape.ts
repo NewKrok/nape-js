@@ -10,6 +10,7 @@
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Material } from "../phys/ZPP_Material";
+import { ZPP_Interactor } from "../phys/ZPP_Interactor";
 
 type Any = any;
 
@@ -112,8 +113,8 @@ export class ZPP_Shape {
    */
   _initShape(type: number): void {
     const zpp = ZPP_Shape._zpp;
-    // Call ZPP_Interactor constructor
-    zpp.phys.ZPP_Interactor.call(this);
+    // ZPP_Interactor constructor init
+    ZPP_Interactor.initFields(this);
     this.pairs = new zpp.util.ZNPList_ZPP_AABBPair();
     this.ishape = this;
     this.type = type;
@@ -153,12 +154,12 @@ export class ZPP_Shape {
     ZPP_Shape._initialized = true;
 
     const zpp = ZPP_Shape._zpp;
-    ZPP_Shape.__super__ = zpp.phys.ZPP_Interactor;
+    ZPP_Shape.__super__ = ZPP_Interactor;
 
     // Copy ZPP_Interactor prototype methods onto ZPP_Shape prototype
-    for (const k in zpp.phys.ZPP_Interactor.prototype) {
-      if (k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)) {
-        (ZPP_Shape.prototype as Any)[k] = zpp.phys.ZPP_Interactor.prototype[k];
+    for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
+      if (k !== "constructor" && k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)) {
+        (ZPP_Shape.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
       }
     }
   }
