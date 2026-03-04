@@ -8,11 +8,7 @@ describe("ZPP_SimplifyV", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_SimplifyV.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_SimplifyV",
-      ]);
+      expect(ZPP_SimplifyV.__name__).toEqual(["zpp_nape", "geom", "ZPP_SimplifyV"]);
     });
   });
 

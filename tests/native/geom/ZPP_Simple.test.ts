@@ -6,11 +6,7 @@ import { ZPP_Simple } from "../../../src/native/geom/ZPP_Simple";
 describe("ZPP_Simple", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Simple.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_Simple",
-      ]);
+      expect(ZPP_Simple.__name__).toEqual(["zpp_nape", "geom", "ZPP_Simple"]);
     });
   });
 

@@ -280,10 +280,7 @@ export class ZPP_Simple {
                 }
               } else {
                 const x1 = ex.data;
-                if (
-                  x1.segment != intx.segment ||
-                  intx.segment2 != x1.segment2
-                ) {
+                if (x1.segment != intx.segment || intx.segment2 != x1.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o2 = intx.vertex;
@@ -397,10 +394,7 @@ export class ZPP_Simple {
                 }
               } else {
                 const x2 = ex1.data;
-                if (
-                  x2.segment != intx1.segment ||
-                  intx1.segment2 != x2.segment2
-                ) {
+                if (x2.segment != intx1.segment || intx1.segment2 != x2.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o7 = intx1.vertex;
@@ -527,10 +521,7 @@ export class ZPP_Simple {
                   }
                 } else {
                   const x3 = ex2.data;
-                  if (
-                    x3.segment != intx2.segment ||
-                    intx2.segment2 != x3.segment2
-                  ) {
+                  if (x3.segment != intx2.segment || intx2.segment2 != x3.segment2) {
                     throw new Error("corner case 2, shiiiit.");
                   }
                   const o13 = intx2.vertex;
@@ -595,14 +586,8 @@ export class ZPP_Simple {
         const bnew = cur8 == null;
         if (anew) {
           const aint = a.vertices.insert(intx3);
-          const naleft =
-            intx3 == a.left
-              ? intx3
-              : a.vertices.predecessor_node(aint).data;
-          const naright =
-            intx3 == a.right
-              ? intx3
-              : a.vertices.successor_node(aint).data;
+          const naleft = intx3 == a.left ? intx3 : a.vertices.predecessor_node(aint).data;
+          const naright = intx3 == a.right ? intx3 : a.vertices.successor_node(aint).data;
           naleft.links.remove(naright);
           if (intx3 != naleft) {
             naleft.links.insert(intx3);
@@ -620,14 +605,8 @@ export class ZPP_Simple {
         }
         if (bnew) {
           const bint = b.vertices.insert(intx3);
-          const nbleft =
-            intx3 == b.left
-              ? intx3
-              : b.vertices.predecessor_node(bint).data;
-          const nbright =
-            intx3 == b.right
-              ? intx3
-              : b.vertices.successor_node(bint).data;
+          const nbleft = intx3 == b.left ? intx3 : b.vertices.predecessor_node(bint).data;
+          const nbright = intx3 == b.right ? intx3 : b.vertices.successor_node(bint).data;
           nbleft.links.remove(nbright);
           if (intx3 != nbleft) {
             nbleft.links.insert(intx3);
@@ -747,10 +726,7 @@ export class ZPP_Simple {
                 }
               } else {
                 const x4 = ex3.data;
-                if (
-                  x4.segment != intx4.segment ||
-                  intx4.segment2 != x4.segment2
-                ) {
+                if (x4.segment != intx4.segment || intx4.segment2 != x4.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o18 = intx4.vertex;
@@ -864,10 +840,7 @@ export class ZPP_Simple {
                 }
               } else {
                 const x5 = ex4.data;
-                if (
-                  x5.segment != intx5.segment ||
-                  intx5.segment2 != x5.segment2
-                ) {
+                if (x5.segment != intx5.segment || intx5.segment2 != x5.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o23 = intx5.vertex;
@@ -929,8 +902,7 @@ export class ZPP_Simple {
     if (rets == null) {
       rets = new zpp.util.ZNPList_ZPP_GeomVert();
     }
-    while (!ZPP_Simple.vertices.empty())
-      ZPP_Simple.clip_polygon(ZPP_Simple.vertices, rets);
+    while (!ZPP_Simple.vertices.empty()) ZPP_Simple.clip_polygon(ZPP_Simple.vertices, rets);
     return rets;
   }
 
@@ -1064,10 +1036,7 @@ export class ZPP_Simple {
               set_ite = set_ite.next;
               while (set_ite.prev != null) set_ite = set_ite.prev;
             } else {
-              while (
-                set_ite.parent != null &&
-                set_ite == set_ite.parent.next
-              )
+              while (set_ite.parent != null && set_ite == set_ite.parent.next)
                 set_ite = set_ite.parent;
               set_ite = set_ite.parent;
             }
@@ -1104,8 +1073,7 @@ export class ZPP_Simple {
     }
     let vertices = ZPP_Simple.list_vertices;
     if (vertices == null) {
-      vertices = ZPP_Simple.list_vertices =
-        new zpp.util.ZNPList_ZPP_SimpleVert();
+      vertices = ZPP_Simple.list_vertices = new zpp.util.ZNPList_ZPP_SimpleVert();
     }
     const F = poly;
     const L = poly;
@@ -1134,8 +1102,7 @@ export class ZPP_Simple {
     }
     let queue = ZPP_Simple.list_queue;
     if (queue == null) {
-      queue = ZPP_Simple.list_queue =
-        new zpp.util.ZNPList_ZPP_SimpleEvent();
+      queue = ZPP_Simple.list_queue = new zpp.util.ZNPList_ZPP_SimpleEvent();
     }
     let cx_ite = vertices.head;
     let u = cx_ite.elt;
@@ -1243,9 +1210,7 @@ export class ZPP_Simple {
               nxt = left;
               left = left.next;
               --leftSize;
-            } else if (
-              ZPP_SimpleEvent.less_xy(left.elt, right.elt)
-            ) {
+            } else if (ZPP_SimpleEvent.less_xy(left.elt, right.elt)) {
               nxt = left;
               left = left.next;
               --leftSize;
@@ -1337,4 +1302,3 @@ export class ZPP_Simple {
     return ret5;
   }
 }
-

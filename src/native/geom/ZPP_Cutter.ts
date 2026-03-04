@@ -38,21 +38,12 @@ export class ZPP_Cutter {
    * @param output  Optional GeomPolyList to append results to
    * @returns       GeomPolyList of resulting sub-polygons
    */
-  static run(
-    P: Any,
-    _start: Any,
-    _end: Any,
-    bstart: boolean,
-    bend: boolean,
-    output: Any,
-  ): Any {
+  static run(P: Any, _start: Any, _end: Any, bstart: boolean, bend: boolean, output: Any): Any {
     const napeNs = getNape();
     const zpp_nape = napeNs.__zpp;
 
     if (_start != null && _start.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!",
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
     const _this = _start.zpp_inner;
     if (_this._validate != null) {
@@ -60,9 +51,7 @@ export class ZPP_Cutter {
     }
     const px = _start.zpp_inner.x;
     if (_start != null && _start.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!",
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
     const _this1 = _start.zpp_inner;
     if (_this1._validate != null) {
@@ -70,9 +59,7 @@ export class ZPP_Cutter {
     }
     const py = _start.zpp_inner.y;
     if (_end != null && _end.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!",
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
     const _this2 = _end.zpp_inner;
     if (_this2._validate != null) {
@@ -80,9 +67,7 @@ export class ZPP_Cutter {
     }
     const dx = _end.zpp_inner.x - px;
     if (_end != null && _end.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!",
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
     const _this3 = _end.zpp_inner;
     if (_this3._validate != null) {
@@ -201,10 +186,7 @@ export class ZPP_Cutter {
             while (true) {
               const p3 = nite1;
               const q = p3.prev;
-              if (
-                ((p3.y < y && q.y >= y) || (q.y < y && p3.y >= y)) &&
-                (p3.x <= x || q.x <= x)
-              ) {
+              if (((p3.y < y && q.y >= y) || (q.y < y && p3.y >= y)) && (p3.x <= x || q.x <= x)) {
                 if (p3.x + ((y - p3.y) / (q.y - p3.y)) * (q.x - p3.x) < x) {
                   ret = !ret;
                 }
@@ -271,10 +253,7 @@ export class ZPP_Cutter {
                 ((p4.y < y1 && q2.y >= y1) || (q2.y < y1 && p4.y >= y1)) &&
                 (p4.x <= x1 || q2.x <= x1)
               ) {
-                if (
-                  p4.x + ((y1 - p4.y) / (q2.y - p4.y)) * (q2.x - p4.x) <
-                  x1
-                ) {
+                if (p4.x + ((y1 - p4.y) / (q2.y - p4.y)) * (q2.x - p4.x) < x1) {
                   ret1 = !ret1;
                 }
               }
@@ -891,9 +870,7 @@ export class ZPP_Cutter {
             o.wrap.zpp_inner._inuse = false;
             const _this4 = o.wrap;
             if (_this4 != null && _this4.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!",
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
             const _this5 = _this4.zpp_inner;
             if (_this5._immutable) {
@@ -943,9 +920,7 @@ export class ZPP_Cutter {
             o3.wrap.zpp_inner._inuse = false;
             const _this6 = o3.wrap;
             if (_this6 != null && _this6.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!",
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
             const _this7 = _this6.zpp_inner;
             if (_this7._immutable) {
@@ -1000,11 +975,7 @@ export class ZPP_Cutter {
                 o6.wrap.zpp_inner._inuse = false;
                 const _this8 = o6.wrap;
                 if (_this8 != null && _this8.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this9 = _this8.zpp_inner;
                 if (_this9._immutable) {
@@ -1054,11 +1025,7 @@ export class ZPP_Cutter {
                 o9.wrap.zpp_inner._inuse = false;
                 const _this10 = o9.wrap;
                 if (_this10 != null && _this10.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this11 = _this10.zpp_inner;
                 if (_this11._immutable) {
@@ -1112,11 +1079,7 @@ export class ZPP_Cutter {
                 o12.wrap.zpp_inner._inuse = false;
                 const _this12 = o12.wrap;
                 if (_this12 != null && _this12.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this13 = _this12.zpp_inner;
                 if (_this13._immutable) {
@@ -1164,11 +1127,7 @@ export class ZPP_Cutter {
                 o15.wrap.zpp_inner._inuse = false;
                 const _this14 = o15.wrap;
                 if (_this14 != null && _this14.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this15 = _this14.zpp_inner;
                 if (_this15._immutable) {
@@ -1271,9 +1230,7 @@ export class ZPP_Cutter {
             o18.wrap.zpp_inner._inuse = false;
             const _this16 = o18.wrap;
             if (_this16 != null && _this16.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!",
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
             const _this17 = _this16.zpp_inner;
             if (_this17._immutable) {
@@ -1323,9 +1280,7 @@ export class ZPP_Cutter {
             o21.wrap.zpp_inner._inuse = false;
             const _this18 = o21.wrap;
             if (_this18 != null && _this18.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!",
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
             const _this19 = _this18.zpp_inner;
             if (_this19._immutable) {
@@ -1380,11 +1335,7 @@ export class ZPP_Cutter {
                 o24.wrap.zpp_inner._inuse = false;
                 const _this20 = o24.wrap;
                 if (_this20 != null && _this20.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this21 = _this20.zpp_inner;
                 if (_this21._immutable) {
@@ -1434,11 +1385,7 @@ export class ZPP_Cutter {
                 o27.wrap.zpp_inner._inuse = false;
                 const _this22 = o27.wrap;
                 if (_this22 != null && _this22.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this23 = _this22.zpp_inner;
                 if (_this23._immutable) {
@@ -1492,11 +1439,7 @@ export class ZPP_Cutter {
                 o30.wrap.zpp_inner._inuse = false;
                 const _this24 = o30.wrap;
                 if (_this24 != null && _this24.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this25 = _this24.zpp_inner;
                 if (_this25._immutable) {
@@ -1544,11 +1487,7 @@ export class ZPP_Cutter {
                 o33.wrap.zpp_inner._inuse = false;
                 const _this26 = o33.wrap;
                 if (_this26 != null && _this26.zpp_disp) {
-                  throw new Error(
-                    "Error: " +
-                      "Vec2" +
-                      " has been disposed and cannot be used!",
-                  );
+                  throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
                 }
                 const _this27 = _this26.zpp_inner;
                 if (_this27._immutable) {
@@ -1654,8 +1593,7 @@ export class ZPP_Cutter {
       o37.next = ZPP_CutInt.zpp_pool;
       ZPP_CutInt.zpp_pool = o37;
     }
-    const ret16 =
-      output == null ? new napeNs.geom.GeomPolyList() : output;
+    const ret16 = output == null ? new napeNs.geom.GeomPolyList() : output;
     let cx_ite = ZPP_Cutter.paths.head;
     while (cx_ite != null) {
       const p5 = cx_ite.elt;

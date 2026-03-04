@@ -90,10 +90,7 @@ export class MotorJoint extends Constraint {
     const inbody1 = body1 == null ? null : (body1 as Any).zpp_inner;
     if (inbody1 != this.zpp_inner.b1) {
       if (this.zpp_inner.b1 != null) {
-        if (
-          this.zpp_inner.space != null &&
-          this.zpp_inner.b2 != this.zpp_inner.b1
-        ) {
+        if (this.zpp_inner.space != null && this.zpp_inner.b2 != this.zpp_inner.b1) {
           this.zpp_inner.b1.constraints.remove(this.zpp_inner);
         }
         if (this.zpp_inner.active && this.zpp_inner.space != null) {
@@ -101,11 +98,7 @@ export class MotorJoint extends Constraint {
         }
       }
       this.zpp_inner.b1 = inbody1;
-      if (
-        this.zpp_inner.space != null &&
-        inbody1 != null &&
-        this.zpp_inner.b2 != inbody1
-      ) {
+      if (this.zpp_inner.space != null && inbody1 != null && this.zpp_inner.b2 != inbody1) {
         inbody1.constraints.add(this.zpp_inner);
       }
       if (this.zpp_inner.active && this.zpp_inner.space != null) {
@@ -131,10 +124,7 @@ export class MotorJoint extends Constraint {
     const inbody2 = body2 == null ? null : (body2 as Any).zpp_inner;
     if (inbody2 != this.zpp_inner.b2) {
       if (this.zpp_inner.b2 != null) {
-        if (
-          this.zpp_inner.space != null &&
-          this.zpp_inner.b1 != this.zpp_inner.b2
-        ) {
+        if (this.zpp_inner.space != null && this.zpp_inner.b1 != this.zpp_inner.b2) {
           this.zpp_inner.b2.constraints.remove(this.zpp_inner);
         }
         if (this.zpp_inner.active && this.zpp_inner.space != null) {
@@ -142,11 +132,7 @@ export class MotorJoint extends Constraint {
         }
       }
       this.zpp_inner.b2 = inbody2;
-      if (
-        this.zpp_inner.space != null &&
-        inbody2 != null &&
-        this.zpp_inner.b1 != inbody2
-      ) {
+      if (this.zpp_inner.space != null && inbody2 != null && this.zpp_inner.b1 != inbody2) {
         inbody2.constraints.add(this.zpp_inner);
       }
       if (this.zpp_inner.active && this.zpp_inner.space != null) {

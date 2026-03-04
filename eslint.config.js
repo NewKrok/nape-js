@@ -23,4 +23,27 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Haxe-ported internal classes — patterns inherent to code generation
+    files: [
+      "src/native/dynamics/ZPP_SpaceArbiterList.ts",
+      "src/native/geom/ZPP_Collide.ts",
+      "src/native/geom/ZPP_SweepDistance.ts",
+      "src/native/space/ZPP_AABBTree.ts",
+      "src/native/space/ZPP_Broadphase.ts",
+      "src/native/space/ZPP_DynAABBPhase.ts",
+      "src/native/space/ZPP_Space.ts",
+    ],
+    rules: {
+      "no-useless-assignment": "off",
+      "no-self-assign": "off",
+      "no-var": "off",
+      "no-cond-assign": "off",
+      "no-dupe-else-if": "off",
+      "no-constant-condition": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-this-alias": "off",
+      "prefer-const": "off",
+    },
+  },
 );

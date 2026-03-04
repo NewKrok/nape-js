@@ -4,11 +4,7 @@ import { ZPP_Convex } from "../../../src/native/geom/ZPP_Convex";
 describe("ZPP_Convex", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Convex.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_Convex",
-      ]);
+      expect(ZPP_Convex.__name__).toEqual(["zpp_nape", "geom", "ZPP_Convex"]);
     });
   });
 

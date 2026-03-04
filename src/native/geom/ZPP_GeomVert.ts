@@ -51,9 +51,7 @@ export class ZPP_GeomVert {
       this.wrap.zpp_inner._inuse = false;
       const _this = this.wrap;
       if (_this != null && _this.zpp_disp) {
-        throw new Error(
-          "Error: " + "Vec2" + " has been disposed and cannot be used!",
-        );
+        throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
       }
       const _this1 = _this.zpp_inner;
       if (_this1._immutable) {
@@ -136,9 +134,7 @@ export class ZPP_GeomVert {
         ret.zpp_inner.outer = ret;
       } else {
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!",
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
         const _this = ret.zpp_inner;
         if (_this._immutable) {
@@ -152,9 +148,7 @@ export class ZPP_GeomVert {
         }
         let tmp: boolean;
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!",
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
         const _this1 = ret.zpp_inner;
         if (_this1._validate != null) {
@@ -162,9 +156,7 @@ export class ZPP_GeomVert {
         }
         if (ret.zpp_inner.x === x) {
           if (ret != null && ret.zpp_disp) {
-            throw new Error(
-              "Error: " + "Vec2" + " has been disposed and cannot be used!",
-            );
+            throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
           }
           const _this2 = ret.zpp_inner;
           if (_this2._validate != null) {

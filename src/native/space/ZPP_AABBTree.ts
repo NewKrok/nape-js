@@ -96,8 +96,7 @@ export class ZPP_AABBTree {
         _this1.maxx = a.maxx > leafaabb.maxx ? a.maxx : leafaabb.maxx;
         _this1.maxy = a.maxy > leafaabb.maxy ? a.maxy : leafaabb.maxy;
         const _this2 = ZPP_AABBTree.tmpaabb!;
-        const carea =
-          (_this2.maxx - _this2.minx + (_this2.maxy - _this2.miny)) * 2;
+        const carea = (_this2.maxx - _this2.minx + (_this2.maxy - _this2.miny)) * 2;
         const cost = 2 * carea;
         const icost = 2 * (carea - area);
         const _this3 = ZPP_AABBTree.tmpaabb!;
@@ -109,16 +108,12 @@ export class ZPP_AABBTree {
         let cost1: number;
         if (child1.child1 == null) {
           const _this4 = ZPP_AABBTree.tmpaabb!;
-          cost1 =
-            (_this4.maxx - _this4.minx + (_this4.maxy - _this4.miny)) * 2 +
-            icost;
+          cost1 = (_this4.maxx - _this4.minx + (_this4.maxy - _this4.miny)) * 2 + icost;
         } else {
           const _this5 = child1.aabb!;
-          const oarea =
-            (_this5.maxx - _this5.minx + (_this5.maxy - _this5.miny)) * 2;
+          const oarea = (_this5.maxx - _this5.minx + (_this5.maxy - _this5.miny)) * 2;
           const _this6 = ZPP_AABBTree.tmpaabb!;
-          const narea =
-            (_this6.maxx - _this6.minx + (_this6.maxy - _this6.miny)) * 2;
+          const narea = (_this6.maxx - _this6.minx + (_this6.maxy - _this6.miny)) * 2;
           cost1 = narea - oarea + icost;
         }
         const _this7 = ZPP_AABBTree.tmpaabb!;
@@ -130,16 +125,12 @@ export class ZPP_AABBTree {
         let cost2: number;
         if (child2.child1 == null) {
           const _this8 = ZPP_AABBTree.tmpaabb!;
-          cost2 =
-            (_this8.maxx - _this8.minx + (_this8.maxy - _this8.miny)) * 2 +
-            icost;
+          cost2 = (_this8.maxx - _this8.minx + (_this8.maxy - _this8.miny)) * 2 + icost;
         } else {
           const _this9 = child2.aabb!;
-          const oarea1 =
-            (_this9.maxx - _this9.minx + (_this9.maxy - _this9.miny)) * 2;
+          const oarea1 = (_this9.maxx - _this9.minx + (_this9.maxy - _this9.miny)) * 2;
           const _this10 = ZPP_AABBTree.tmpaabb!;
-          const narea1 =
-            (_this10.maxx - _this10.minx + (_this10.maxy - _this10.miny)) * 2;
+          const narea1 = (_this10.maxx - _this10.minx + (_this10.maxy - _this10.miny)) * 2;
           cost2 = narea1 - oarea1 + icost;
         }
         if (cost < cost1 && cost < cost2) {
@@ -373,8 +364,7 @@ export class ZPP_AABBTree {
         _this1.maxx = a.maxx > leafaabb.maxx ? a.maxx : leafaabb.maxx;
         _this1.maxy = a.maxy > leafaabb.maxy ? a.maxy : leafaabb.maxy;
         const _this2 = ZPP_AABBTree.tmpaabb!;
-        const carea =
-          (_this2.maxx - _this2.minx + (_this2.maxy - _this2.miny)) * 2;
+        const carea = (_this2.maxx - _this2.minx + (_this2.maxy - _this2.miny)) * 2;
         const cost = 2 * carea;
         const icost = 2 * (carea - area);
         const _this3 = ZPP_AABBTree.tmpaabb!;
@@ -386,16 +376,12 @@ export class ZPP_AABBTree {
         let cost1: number;
         if (child1.child1 == null) {
           const _this4 = ZPP_AABBTree.tmpaabb!;
-          cost1 =
-            (_this4.maxx - _this4.minx + (_this4.maxy - _this4.miny)) * 2 +
-            icost;
+          cost1 = (_this4.maxx - _this4.minx + (_this4.maxy - _this4.miny)) * 2 + icost;
         } else {
           const _this5 = child1.aabb!;
-          const oarea =
-            (_this5.maxx - _this5.minx + (_this5.maxy - _this5.miny)) * 2;
+          const oarea = (_this5.maxx - _this5.minx + (_this5.maxy - _this5.miny)) * 2;
           const _this6 = ZPP_AABBTree.tmpaabb!;
-          const narea =
-            (_this6.maxx - _this6.minx + (_this6.maxy - _this6.miny)) * 2;
+          const narea = (_this6.maxx - _this6.minx + (_this6.maxy - _this6.miny)) * 2;
           cost1 = narea - oarea + icost;
         }
         const _this7 = ZPP_AABBTree.tmpaabb!;
@@ -407,16 +393,12 @@ export class ZPP_AABBTree {
         let cost2: number;
         if (child2.child1 == null) {
           const _this8 = ZPP_AABBTree.tmpaabb!;
-          cost2 =
-            (_this8.maxx - _this8.minx + (_this8.maxy - _this8.miny)) * 2 +
-            icost;
+          cost2 = (_this8.maxx - _this8.minx + (_this8.maxy - _this8.miny)) * 2 + icost;
         } else {
           const _this9 = child2.aabb!;
-          const oarea1 =
-            (_this9.maxx - _this9.minx + (_this9.maxy - _this9.miny)) * 2;
+          const oarea1 = (_this9.maxx - _this9.minx + (_this9.maxy - _this9.miny)) * 2;
           const _this10 = ZPP_AABBTree.tmpaabb!;
-          const narea1 =
-            (_this10.maxx - _this10.minx + (_this10.maxy - _this10.miny)) * 2;
+          const narea1 = (_this10.maxx - _this10.minx + (_this10.maxy - _this10.miny)) * 2;
           cost2 = narea1 - oarea1 + icost;
         }
         if (cost < cost1 && cost < cost2) {

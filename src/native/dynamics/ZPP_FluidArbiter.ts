@@ -372,14 +372,12 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
       if (this.ws1.fluidEnabled) {
         this.ws2.validate_angDrag();
         tViscosity +=
-          (this.ws1.fluidProperties.viscosity * this.ws2.angDrag * this.overlap) /
-          this.ws2.area;
+          (this.ws1.fluidProperties.viscosity * this.ws2.angDrag * this.overlap) / this.ws2.area;
       }
       if (this.ws2.fluidEnabled) {
         this.ws1.validate_angDrag();
         tViscosity +=
-          (this.ws2.fluidProperties.viscosity * this.ws1.angDrag * this.overlap) /
-          this.ws1.area;
+          (this.ws2.fluidProperties.viscosity * this.ws1.angDrag * this.overlap) / this.ws1.area;
       }
 
       if (tViscosity != 0) {
@@ -405,16 +403,12 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         this.b2.velx +
         this.b2.kinvelx -
         this.r2y * (this.b2.angvel + this.b2.kinangvel) -
-        (this.b1.velx +
-          this.b1.kinvelx -
-          this.r1y * (this.b2.angvel + this.b2.kinangvel));
+        (this.b1.velx + this.b1.kinvelx - this.r1y * (this.b2.angvel + this.b2.kinangvel));
       const vrny =
         this.b2.vely +
         this.b2.kinvely +
         this.r2x * (this.b2.angvel + this.b2.kinangvel) -
-        (this.b1.vely +
-          this.b1.kinvely +
-          this.r1x * (this.b1.angvel + this.b1.kinangvel));
+        (this.b1.vely + this.b1.kinvely + this.r1x * (this.b1.angvel + this.b1.kinangvel));
 
       if (!(vrnx * vrnx + vrny * vrny < napeNs.Config.epsilon * napeNs.Config.epsilon)) {
         const d = vrnx * vrnx + vrny * vrny;
@@ -553,10 +547,8 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
     this.b1.vely -= this.dampy * this.b1.imass;
     this.b2.velx += this.dampx * this.b2.imass;
     this.b2.vely += this.dampy * this.b2.imass;
-    this.b1.angvel -=
-      this.b1.iinertia * (this.dampy * this.r1x - this.dampx * this.r1y);
-    this.b2.angvel +=
-      this.b2.iinertia * (this.dampy * this.r2x - this.dampx * this.r2y);
+    this.b1.angvel -= this.b1.iinertia * (this.dampy * this.r1x - this.dampx * this.r1y);
+    this.b2.angvel += this.b2.iinertia * (this.dampy * this.r2x - this.dampx * this.r2y);
     this.b1.angvel -= this.adamp * this.b1.iinertia;
     this.b2.angvel += this.adamp * this.b2.iinertia;
   }

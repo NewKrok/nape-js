@@ -4,11 +4,7 @@ import { ZPP_CopyHelper } from "../../../src/native/constraint/ZPP_CopyHelper";
 describe("ZPP_CopyHelper", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_CopyHelper.__name__).toEqual([
-        "zpp_nape",
-        "constraint",
-        "ZPP_CopyHelper",
-      ]);
+      expect(ZPP_CopyHelper.__name__).toEqual(["zpp_nape", "constraint", "ZPP_CopyHelper"]);
     });
   });
 

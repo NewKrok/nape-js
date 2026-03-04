@@ -386,10 +386,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
   private _calcFrictionRestitution(): void {
     if (!this.userdef_restitution) {
-      if (
-        this.s1.material.elasticity <= -Infinity ||
-        this.s2.material.elasticity <= -Infinity
-      ) {
+      if (this.s1.material.elasticity <= -Infinity || this.s2.material.elasticity <= -Infinity) {
         this.restitution = 0;
       } else if (
         this.s1.material.elasticity >= Infinity ||
@@ -397,8 +394,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
       ) {
         this.restitution = 1;
       } else {
-        this.restitution =
-          (this.s1.material.elasticity + this.s2.material.elasticity) / 2;
+        this.restitution = (this.s1.material.elasticity + this.s2.material.elasticity) / 2;
       }
       if (this.restitution < 0) this.restitution = 0;
       if (this.restitution > 1) this.restitution = 1;
@@ -409,14 +405,10 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
       );
     }
     if (!this.userdef_stat_fric) {
-      this.stat_fric = Math.sqrt(
-        this.s1.material.staticFriction * this.s2.material.staticFriction,
-      );
+      this.stat_fric = Math.sqrt(this.s1.material.staticFriction * this.s2.material.staticFriction);
     }
     if (!this.userdef_rfric) {
-      this.rfric = Math.sqrt(
-        this.s1.material.rollingFriction * this.s2.material.rollingFriction,
-      );
+      this.rfric = Math.sqrt(this.s1.material.rollingFriction * this.s2.material.rollingFriction);
     }
   }
 
@@ -650,16 +642,14 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
         let kt = mass_sum + this.b2.sinertia * (x * x);
         x = ci.r1x * this.nx + ci.r1y * this.ny;
         kt += this.b1.sinertia * (x * x);
-        ci.tMass =
-          kt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / kt;
+        ci.tMass = kt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / kt;
 
         // Normal effective mass
         x = this.ny * ci.r2x - this.nx * ci.r2y;
         let nt = mass_sum + this.b2.sinertia * (x * x);
         x = this.ny * ci.r1x - this.nx * ci.r1y;
         nt += this.b1.sinertia * (x * x);
-        ci.nMass =
-          nt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / nt;
+        ci.nMass = nt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / nt;
 
         // Bounce velocity
         let ang = this.b2.angvel + this.b2.kinangvel;
@@ -765,9 +755,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
         this.b2.sinertia * this.rn2b * this.rn2b;
 
       const norm =
-        this.kMassa * this.kMassa +
-        2 * this.kMassb * this.kMassb +
-        this.kMassc * this.kMassc;
+        this.kMassa * this.kMassa + 2 * this.kMassb * this.kMassb + this.kMassc * this.kMassc;
 
       if (
         norm <
@@ -1030,9 +1018,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
         (this.b1.vely + this.c1.r1x * this.b1.angvel);
 
       // Normal impulse
-      j =
-        (this.c1.bounce + (this.nx * v1x + this.ny * v1y) + this.surfacey) *
-        this.c1.nMass;
+      j = (this.c1.bounce + (this.nx * v1x + this.ny * v1y) + this.surfacey) * this.c1.nMass;
       jOld = this.c1.jnAcc;
       cjAcc = jOld - j;
       if (cjAcc < 0.0) cjAcc = 0.0;
@@ -1195,12 +1181,9 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
         const rn2a = gnormy * c2r1x - gnormx * c2r1y;
         const rn2b = gnormy * c2r2x - gnormx * c2r2y;
         const mass_sum = this.b1.smass + this.b2.smass;
-        this.kMassa =
-          mass_sum + this.b1.sinertia * rn1a * rn1a + this.b2.sinertia * rn1b * rn1b;
-        this.kMassb =
-          mass_sum + this.b1.sinertia * rn1a * rn2a + this.b2.sinertia * rn1b * rn2b;
-        this.kMassc =
-          mass_sum + this.b1.sinertia * rn2a * rn2a + this.b2.sinertia * rn2b * rn2b;
+        this.kMassa = mass_sum + this.b1.sinertia * rn1a * rn1a + this.b2.sinertia * rn1b * rn1b;
+        this.kMassb = mass_sum + this.b1.sinertia * rn1a * rn2a + this.b2.sinertia * rn1b * rn2b;
+        this.kMassc = mass_sum + this.b1.sinertia * rn2a * rn2a + this.b2.sinertia * rn2b * rn2b;
 
         const Ka = this.kMassa;
         const Kb = this.kMassb;
@@ -1232,7 +1215,16 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
           if (xx >= 0 && xy >= 0) {
             ZPP_ColArbiter._applyPosImpulse2(
-              this.b1, this.b2, gnormx, gnormy, xx, xy, rn1a, rn2a, rn1b, rn2b,
+              this.b1,
+              this.b2,
+              gnormx,
+              gnormy,
+              xx,
+              xy,
+              rn1a,
+              rn2a,
+              rn1b,
+              rn2b,
             );
             break;
           }
@@ -1241,7 +1233,16 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
           xy = 0;
           if (xx >= 0 && Kb * xx + by >= 0) {
             ZPP_ColArbiter._applyPosImpulse2(
-              this.b1, this.b2, gnormx, gnormy, xx, xy, rn1a, rn2a, rn1b, rn2b,
+              this.b1,
+              this.b2,
+              gnormx,
+              gnormy,
+              xx,
+              xy,
+              rn1a,
+              rn2a,
+              rn1b,
+              rn2b,
             );
             break;
           }
@@ -1250,7 +1251,16 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
           xy = -by / Kc;
           if (xy >= 0 && Kb * xy + bx >= 0) {
             ZPP_ColArbiter._applyPosImpulse2(
-              this.b1, this.b2, gnormx, gnormy, xx, xy, rn1a, rn2a, rn1b, rn2b,
+              this.b1,
+              this.b2,
+              gnormx,
+              gnormy,
+              xx,
+              xy,
+              rn1a,
+              rn2a,
+              rn1b,
+              rn2b,
             );
             break;
           }

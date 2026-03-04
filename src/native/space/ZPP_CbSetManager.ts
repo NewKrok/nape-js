@@ -112,8 +112,7 @@ export class ZPP_CbSetManager {
           set_ite = set_ite.next;
           while (set_ite.prev != null) set_ite = set_ite.prev;
         } else {
-          while (set_ite.parent != null && set_ite == set_ite.parent.next)
-            set_ite = set_ite.parent;
+          while (set_ite.parent != null && set_ite == set_ite.parent.next) set_ite = set_ite.parent;
           set_ite = set_ite.parent;
         }
       }

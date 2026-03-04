@@ -6,11 +6,7 @@ import { ZPP_Triangular } from "../../../src/native/geom/ZPP_Triangular";
 describe("ZPP_Triangular", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Triangular.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_Triangular",
-      ]);
+      expect(ZPP_Triangular.__name__).toEqual(["zpp_nape", "geom", "ZPP_Triangular"]);
     });
   });
 

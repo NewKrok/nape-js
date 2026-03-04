@@ -6,11 +6,7 @@ import { ZPP_PartitionedPoly } from "../../../src/native/geom/ZPP_PartitionedPol
 describe("ZPP_PartitionedPoly", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_PartitionedPoly.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_PartitionedPoly",
-      ]);
+      expect(ZPP_PartitionedPoly.__name__).toEqual(["zpp_nape", "geom", "ZPP_PartitionedPoly"]);
     });
   });
 

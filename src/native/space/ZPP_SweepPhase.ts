@@ -114,9 +114,7 @@ export class ZPP_SweepPhase {
                   if (_this.type == 1) {
                     const _this1 = _this.polygon;
                     if (_this1.lverts.next == null) {
-                      throw new Error(
-                        "Error: An empty polygon has no meaningful localCOM"
-                      );
+                      throw new Error("Error: An empty polygon has no meaningful localCOM");
                     }
                     if (_this1.lverts.next.next == null) {
                       _this1.localCOMx = _this1.lverts.next.x;
@@ -182,12 +180,10 @@ export class ZPP_SweepPhase {
                 }
                 _this.worldCOMx =
                   _this.body.posx +
-                  (_this.body.axisy * _this.localCOMx -
-                    _this.body.axisx * _this.localCOMy);
+                  (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
                 _this.worldCOMy =
                   _this.body.posy +
-                  (_this.localCOMx * _this.body.axisx +
-                    _this.localCOMy * _this.body.axisy);
+                  (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
               }
             }
             const rx = _this.radius;
@@ -214,20 +210,14 @@ export class ZPP_SweepPhase {
                   const g = cx_ite1;
                   const l = li;
                   li = li.next;
-                  g.x =
-                    _this3.body.posx +
-                    (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
-                  g.y =
-                    _this3.body.posy +
-                    (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
+                  g.x = _this3.body.posx + (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
+                  g.y = _this3.body.posy + (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
                   cx_ite1 = cx_ite1.next;
                 }
               }
             }
             if (_this3.lverts.next == null) {
-              throw new Error(
-                "Error: An empty polygon has no meaningful bounds"
-              );
+              throw new Error("Error: An empty polygon has no meaningful bounds");
             }
             const p0 = _this3.gverts.next;
             _this3.aabb.minx = p0.x;
@@ -384,21 +374,9 @@ export class ZPP_SweepPhase {
           const x = s2.aabb;
           if (!(x.miny > _this.maxy || _this.miny > x.maxy)) {
             if (discrete) {
-              space.narrowPhase(
-                s1,
-                s2,
-                b1.type != 2 || b2.type != 2,
-                null,
-                false
-              );
+              space.narrowPhase(s1, s2, b1.type != 2 || b2.type != 2, null, false);
             } else {
-              space.continuousEvent(
-                s1,
-                s2,
-                b1.type != 2 || b2.type != 2,
-                null,
-                false
-              );
+              space.continuousEvent(s1, s2, b1.type != 2 || b2.type != 2, null, false);
             }
           }
           d2 = d2.next;
@@ -546,13 +524,7 @@ export class ZPP_SweepPhase {
 
   // ========== Spatial queries: shapes/bodies in AABB ==========
 
-  shapesInAABB(
-    aabb: Any,
-    strict: boolean,
-    containment: boolean,
-    filter: Any,
-    output: Any
-  ): Any {
+  shapesInAABB(aabb: Any, strict: boolean, containment: boolean, filter: Any, output: Any): Any {
     this.sync_broadphase();
     (this as Any).updateAABBShape(aabb);
     const ab = (this as Any).aabbShape.zpp_inner.aabb;
@@ -574,22 +546,12 @@ export class ZPP_SweepPhase {
       if (tmp) {
         if (strict) {
           if (containment) {
-            if (
-              ZPP_Collide.containTest(
-                (this as Any).aabbShape.zpp_inner,
-                shape
-              )
-            ) {
+            if (ZPP_Collide.containTest((this as Any).aabbShape.zpp_inner, shape)) {
               ret.push(shape.outer);
             }
           } else {
             const x = a.aabb;
-            if (
-              x.minx >= ab.minx &&
-              x.miny >= ab.miny &&
-              x.maxx <= ab.maxx &&
-              x.maxy <= ab.maxy
-            ) {
+            if (x.minx >= ab.minx && x.miny >= ab.miny && x.maxx <= ab.maxx && x.maxy <= ab.maxy) {
               ret.push(shape.outer);
             } else {
               const _this1 = a.aabb;
@@ -599,12 +561,7 @@ export class ZPP_SweepPhase {
                 ab.minx <= _this1.maxx &&
                 _this1.minx <= ab.maxx
               ) {
-                if (
-                  ZPP_Collide.testCollide_safe(
-                    shape,
-                    (this as Any).aabbShape.zpp_inner
-                  )
-                ) {
+                if (ZPP_Collide.testCollide_safe(shape, (this as Any).aabbShape.zpp_inner)) {
                   ret.push(shape.outer);
                 }
               }
@@ -615,10 +572,7 @@ export class ZPP_SweepPhase {
           if (containment) {
             const x1 = a.aabb;
             tmp1 =
-              x1.minx >= ab.minx &&
-              x1.miny >= ab.miny &&
-              x1.maxx <= ab.maxx &&
-              x1.maxy <= ab.maxy;
+              x1.minx >= ab.minx && x1.miny >= ab.miny && x1.maxx <= ab.maxx && x1.maxy <= ab.maxy;
           } else {
             const _this2 = a.aabb;
             tmp1 =
@@ -637,13 +591,7 @@ export class ZPP_SweepPhase {
     return ret;
   }
 
-  bodiesInAABB(
-    aabb: Any,
-    strict: boolean,
-    containment: boolean,
-    filter: Any,
-    output: Any
-  ): Any {
+  bodiesInAABB(aabb: Any, strict: boolean, containment: boolean, filter: Any, output: Any): Any {
     this.sync_broadphase();
     (this as Any).updateAABBShape(aabb);
     const ab = (this as Any).aabbShape.zpp_inner.aabb;
@@ -677,10 +625,7 @@ export class ZPP_SweepPhase {
           if (strict) {
             if (containment) {
               if (!this.failed.has(body)) {
-                const col = ZPP_Collide.containTest(
-                  (this as Any).aabbShape.zpp_inner,
-                  shape
-                );
+                const col = ZPP_Collide.containTest((this as Any).aabbShape.zpp_inner, shape);
                 if (!ret.has(body) && col) {
                   ret.push(body);
                 } else if (!col) {
@@ -690,10 +635,7 @@ export class ZPP_SweepPhase {
               }
             } else if (
               !ret.has(body) &&
-              ZPP_Collide.testCollide_safe(
-                shape,
-                (this as Any).aabbShape.zpp_inner
-              )
+              ZPP_Collide.testCollide_safe(shape, (this as Any).aabbShape.zpp_inner)
             ) {
               ret.push(body);
             }
@@ -701,10 +643,7 @@ export class ZPP_SweepPhase {
             if (!this.failed.has(body)) {
               const x = shape.aabb;
               const col1 =
-                x.minx >= ab.minx &&
-                x.miny >= ab.miny &&
-                x.maxx <= ab.maxx &&
-                x.maxy <= ab.maxy;
+                x.minx >= ab.minx && x.miny >= ab.miny && x.maxx <= ab.maxx && x.maxy <= ab.maxy;
               if (!ret.has(body) && col1) {
                 ret.push(body);
               } else if (!col1) {
@@ -744,7 +683,7 @@ export class ZPP_SweepPhase {
     r: number,
     containment: boolean,
     filter: Any,
-    output: Any
+    output: Any,
   ): Any {
     this.sync_broadphase();
     (this as Any).updateCircShape(x, y, r);
@@ -773,20 +712,10 @@ export class ZPP_SweepPhase {
         }
         if (tmp) {
           if (containment) {
-            if (
-              ZPP_Collide.containTest(
-                (this as Any).circShape.zpp_inner,
-                shape
-              )
-            ) {
+            if (ZPP_Collide.containTest((this as Any).circShape.zpp_inner, shape)) {
               ret.push(shape.outer);
             }
-          } else if (
-            ZPP_Collide.testCollide_safe(
-              shape,
-              (this as Any).circShape.zpp_inner
-            )
-          ) {
+          } else if (ZPP_Collide.testCollide_safe(shape, (this as Any).circShape.zpp_inner)) {
             ret.push(shape.outer);
           }
         }
@@ -802,7 +731,7 @@ export class ZPP_SweepPhase {
     r: number,
     containment: boolean,
     filter: Any,
-    output: Any
+    output: Any,
   ): Any {
     this.sync_broadphase();
     (this as Any).updateCircShape(x, y, r);
@@ -836,10 +765,7 @@ export class ZPP_SweepPhase {
         if (tmp) {
           if (containment) {
             if (!this.failed.has(body)) {
-              const col = ZPP_Collide.containTest(
-                (this as Any).circShape.zpp_inner,
-                shape
-              );
+              const col = ZPP_Collide.containTest((this as Any).circShape.zpp_inner, shape);
               if (!ret.has(body) && col) {
                 ret.push(body);
               } else if (!col) {
@@ -849,10 +775,7 @@ export class ZPP_SweepPhase {
             }
           } else if (
             !ret.has(body) &&
-            ZPP_Collide.testCollide_safe(
-              shape,
-              (this as Any).circShape.zpp_inner
-            )
+            ZPP_Collide.testCollide_safe(shape, (this as Any).circShape.zpp_inner)
           ) {
             ret.push(body);
           }
@@ -866,12 +789,7 @@ export class ZPP_SweepPhase {
 
   // ========== Spatial queries: shapes/bodies in shape ==========
 
-  shapesInShape(
-    shape: Any,
-    containment: boolean,
-    filter: Any,
-    output: Any
-  ): Any {
+  shapesInShape(shape: Any, containment: boolean, filter: Any, output: Any): Any {
     this.sync_broadphase();
     (this as Any).validateShape(shape);
     const ab = shape.aabb;
@@ -912,12 +830,7 @@ export class ZPP_SweepPhase {
     return ret;
   }
 
-  bodiesInShape(
-    shape: Any,
-    containment: boolean,
-    filter: Any,
-    output: Any
-  ): Any {
+  bodiesInShape(shape: Any, containment: boolean, filter: Any, output: Any): Any {
     this.sync_broadphase();
     (this as Any).validateShape(shape);
     const ab = shape.aabb;
@@ -958,10 +871,7 @@ export class ZPP_SweepPhase {
                 this.failed.push(body);
               }
             }
-          } else if (
-            !ret.has(body) &&
-            ZPP_Collide.testCollide_safe(shape, shape2)
-          ) {
+          } else if (!ret.has(body) && ZPP_Collide.testCollide_safe(shape, shape2)) {
             ret.push(body);
           }
         }
@@ -1012,16 +922,12 @@ export class ZPP_SweepPhase {
                 : ray.polysect(a.shape.polygon, inner, mint);
             if (result != null) {
               if (result.zpp_inner.next != null) {
-                throw new Error(
-                  "Error: This object has been disposed of and cannot be used"
-                );
+                throw new Error("Error: This object has been disposed of and cannot be used");
               }
               mint = result.zpp_inner.toiDistance;
               if (minres != null) {
                 if (minres.zpp_inner.next != null) {
-                  throw new Error(
-                    "Error: This object has been disposed of and cannot be used"
-                  );
+                  throw new Error("Error: This object has been disposed of and cannot be used");
                 }
                 minres.zpp_inner.free();
               }
@@ -1068,16 +974,12 @@ export class ZPP_SweepPhase {
                 : ray.polysect(a1.shape.polygon, inner, mint);
             if (result1 != null) {
               if (result1.zpp_inner.next != null) {
-                throw new Error(
-                  "Error: This object has been disposed of and cannot be used"
-                );
+                throw new Error("Error: This object has been disposed of and cannot be used");
               }
               mint = result1.zpp_inner.toiDistance;
               if (minres != null) {
                 if (minres.zpp_inner.next != null) {
-                  throw new Error(
-                    "Error: This object has been disposed of and cannot be used"
-                  );
+                  throw new Error("Error: This object has been disposed of and cannot be used");
                 }
                 minres.zpp_inner.free();
               }
@@ -1122,16 +1024,12 @@ export class ZPP_SweepPhase {
                 : ray.polysect(a2.shape.polygon, inner, mint);
             if (result2 != null) {
               if (result2.zpp_inner.next != null) {
-                throw new Error(
-                  "Error: This object has been disposed of and cannot be used"
-                );
+                throw new Error("Error: This object has been disposed of and cannot be used");
               }
               mint = result2.zpp_inner.toiDistance;
               if (minres != null) {
                 if (minres.zpp_inner.next != null) {
-                  throw new Error(
-                    "Error: This object has been disposed of and cannot be used"
-                  );
+                  throw new Error("Error: This object has been disposed of and cannot be used");
                 }
                 minres.zpp_inner.free();
               }

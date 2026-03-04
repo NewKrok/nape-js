@@ -100,19 +100,14 @@ export class ZPP_PartitionVertex {
         const x1 = q.x;
         const y1 = q.next!.x;
         return (x > y ? x : y) > (x1 > y1 ? x1 : y1);
-      } else if (
-        !(ZPP_PartitionVertex.rightdistance(q, p) > 0.0)
-      ) {
+      } else if (!(ZPP_PartitionVertex.rightdistance(q, p) > 0.0)) {
         return ZPP_PartitionVertex.rightdistance(q, p.next!) > 0.0;
       } else {
         return true;
       }
     } else {
       const qRight = ZPP_PartitionVertex.rightdistance(p, q);
-      const qNextRight = ZPP_PartitionVertex.rightdistance(
-        p,
-        q.next!
-      );
+      const qNextRight = ZPP_PartitionVertex.rightdistance(p, q.next!);
       if (qRight == 0 && qNextRight == 0) {
         const x2 = p.x;
         const y2 = p.next!.x;
@@ -128,10 +123,7 @@ export class ZPP_PartitionVertex {
         }
       }
       const pRight = ZPP_PartitionVertex.rightdistance(q, p);
-      const pNextRight = ZPP_PartitionVertex.rightdistance(
-        q,
-        p.next!
-      );
+      const pNextRight = ZPP_PartitionVertex.rightdistance(q, p.next!);
       if (pRight * pNextRight >= 0) {
         if (!(pRight > 0)) {
           return pNextRight > 0;
@@ -247,12 +239,7 @@ export class ZPP_PartitionVertex {
                   vx = right.elt.x - this.x;
                   vy = right.elt.y - this.y;
                   const d21 = ux * vx + uy * vy;
-                  tmp =
-                    d11 < 0 && d21 > 0
-                      ? true
-                      : d21 < 0 && d11 > 0
-                      ? false
-                      : true;
+                  tmp = d11 < 0 && d21 > 0 ? true : d21 < 0 && d11 > 0 ? false : true;
                 } else {
                   tmp = true;
                 }

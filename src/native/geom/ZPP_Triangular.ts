@@ -39,7 +39,11 @@ export class ZPP_Triangular {
     }
   }
 
-  static right_turn(a: ZPP_PartitionVertex, b: ZPP_PartitionVertex, c: ZPP_PartitionVertex): number {
+  static right_turn(
+    a: ZPP_PartitionVertex,
+    b: ZPP_PartitionVertex,
+    c: ZPP_PartitionVertex,
+  ): number {
     const ux = c.x - b.x;
     const uy = c.y - b.y;
     const vx = b.x - a.x;
@@ -47,7 +51,12 @@ export class ZPP_Triangular {
     return vy * ux - vx * uy;
   }
 
-  static delaunay(A: ZPP_PartitionVertex, B: ZPP_PartitionVertex, C: ZPP_PartitionVertex, D: ZPP_PartitionVertex): boolean {
+  static delaunay(
+    A: ZPP_PartitionVertex,
+    B: ZPP_PartitionVertex,
+    C: ZPP_PartitionVertex,
+    D: ZPP_PartitionVertex,
+  ): boolean {
     let ux = C.x - B.x;
     let uy = C.y - B.y;
     let vx = B.x - A.x;
@@ -120,19 +129,14 @@ export class ZPP_Triangular {
     const zpp = getNape().__zpp;
     if (ZPP_Triangular.edgeSet == null) {
       if (zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool == null) {
-        ZPP_Triangular.edgeSet =
-          new zpp.util.ZPP_Set_ZPP_PartitionPair();
+        ZPP_Triangular.edgeSet = new zpp.util.ZPP_Set_ZPP_PartitionPair();
       } else {
-        ZPP_Triangular.edgeSet =
-          zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool =
-          ZPP_Triangular.edgeSet.next;
+        ZPP_Triangular.edgeSet = zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool;
+        zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool = ZPP_Triangular.edgeSet.next;
         ZPP_Triangular.edgeSet.next = null;
       }
-      ZPP_Triangular.edgeSet.lt =
-        ZPP_PartitionPair.edge_lt;
-      ZPP_Triangular.edgeSet.swapped =
-        ZPP_PartitionPair.edge_swap;
+      ZPP_Triangular.edgeSet.lt = ZPP_PartitionPair.edge_lt;
+      ZPP_Triangular.edgeSet.swapped = ZPP_PartitionPair.edge_swap;
     }
     let edgeStack: ZPP_PartitionPair;
     if (ZPP_PartitionPair.zpp_pool == null) {
@@ -271,17 +275,13 @@ export class ZPP_Triangular {
       }
     }
     if (ZPP_Triangular.queue == null) {
-      ZPP_Triangular.queue =
-        new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+      ZPP_Triangular.queue = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
     }
     let rp = max.prev!;
     let lp = max.next!;
     ZPP_Triangular.queue.add(max);
     while (rp != min || lp != min)
-      if (
-        rp == min ||
-        (lp != min && (rp.y < lp.y || (rp.y == lp.y && rp.x < lp.x)))
-      ) {
+      if (rp == min || (lp != min && (rp.y < lp.y || (rp.y == lp.y && rp.x < lp.x)))) {
         ZPP_Triangular.queue.add(lp);
         lp.rightchain = false;
         lp = lp.next!;
@@ -292,12 +292,9 @@ export class ZPP_Triangular {
       }
     ZPP_Triangular.queue.add(min);
     if (ZPP_Triangular.stack == null) {
-      ZPP_Triangular.stack =
-        new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+      ZPP_Triangular.stack = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
     }
-    ZPP_Triangular.stack.add(
-      ZPP_Triangular.queue.pop_unsafe()
-    );
+    ZPP_Triangular.stack.add(ZPP_Triangular.queue.pop_unsafe());
     let pre = ZPP_Triangular.queue.pop_unsafe();
     ZPP_Triangular.stack.add(pre);
     while (true) {
@@ -305,9 +302,7 @@ export class ZPP_Triangular {
       if (ZPP_Triangular.queue.head == null) {
         break;
       }
-      if (
-        p1.rightchain != ZPP_Triangular.stack.head.elt.rightchain
-      ) {
+      if (p1.rightchain != ZPP_Triangular.stack.head.elt.rightchain) {
         while (true) {
           const s = ZPP_Triangular.stack.pop_unsafe();
           if (ZPP_Triangular.stack.head == null) {

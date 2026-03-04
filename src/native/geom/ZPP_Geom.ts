@@ -43,12 +43,8 @@ export class ZPP_Geom {
                 const g = cx_ite;
                 const l = li;
                 li = li.next;
-                g.x =
-                  _this.body.posx +
-                  (_this.body.axisy * l.x - _this.body.axisx * l.y);
-                g.y =
-                  _this.body.posy +
-                  (l.x * _this.body.axisx + l.y * _this.body.axisy);
+                g.x = _this.body.posx + (_this.body.axisy * l.x - _this.body.axisx * l.y);
+                g.y = _this.body.posy + (l.x * _this.body.axisx + l.y * _this.body.axisy);
                 cx_ite = cx_ite.next;
               }
             }
@@ -63,14 +59,9 @@ export class ZPP_Geom {
             ite = ite.next;
             e.gp0 = u;
             e.gp1 = v;
-            e.gnormx =
-              _this.body.axisy * e.lnormx - _this.body.axisx * e.lnormy;
-            e.gnormy =
-              e.lnormx * _this.body.axisx + e.lnormy * _this.body.axisy;
-            e.gprojection =
-              _this.body.posx * e.gnormx +
-              _this.body.posy * e.gnormy +
-              e.lprojection;
+            e.gnormx = _this.body.axisy * e.lnormx - _this.body.axisx * e.lnormy;
+            e.gnormy = e.lnormx * _this.body.axisx + e.lnormy * _this.body.axisy;
+            e.gprojection = _this.body.posx * e.gnormx + _this.body.posy * e.gnormy + e.lprojection;
             if (e.wrap_gnorm != null) {
               e.wrap_gnorm.zpp_inner.x = e.gnormx;
               e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -84,14 +75,10 @@ export class ZPP_Geom {
           const e1 = ite.elt;
           e1.gp0 = u;
           e1.gp1 = v1;
-          e1.gnormx =
-            _this.body.axisy * e1.lnormx - _this.body.axisx * e1.lnormy;
-          e1.gnormy =
-            e1.lnormx * _this.body.axisx + e1.lnormy * _this.body.axisy;
+          e1.gnormx = _this.body.axisy * e1.lnormx - _this.body.axisx * e1.lnormy;
+          e1.gnormy = e1.lnormx * _this.body.axisx + e1.lnormy * _this.body.axisy;
           e1.gprojection =
-            _this.body.posx * e1.gnormx +
-            _this.body.posy * e1.gnormy +
-            e1.lprojection;
+            _this.body.posx * e1.gnormx + _this.body.posy * e1.gnormy + e1.lprojection;
           if (e1.wrap_gnorm != null) {
             e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
             e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -131,20 +118,14 @@ export class ZPP_Geom {
                 const g1 = cx_ite3;
                 const l1 = li1;
                 li1 = li1.next;
-                g1.x =
-                  _this6.body.posx +
-                  (_this6.body.axisy * l1.x - _this6.body.axisx * l1.y);
-                g1.y =
-                  _this6.body.posy +
-                  (l1.x * _this6.body.axisx + l1.y * _this6.body.axisy);
+                g1.x = _this6.body.posx + (_this6.body.axisy * l1.x - _this6.body.axisx * l1.y);
+                g1.y = _this6.body.posy + (l1.x * _this6.body.axisx + l1.y * _this6.body.axisy);
                 cx_ite3 = cx_ite3.next;
               }
             }
           }
           if (_this6.lverts.next == null) {
-            throw new Error(
-              "Error: An empty polygon has no meaningful bounds",
-            );
+            throw new Error("Error: An empty polygon has no meaningful bounds");
           }
           const p0 = _this6.gverts.next;
           _this6.aabb.minx = p0.x;
@@ -190,12 +171,8 @@ export class ZPP_Geom {
           _this9.axisx = Math.sin(_this9.rot);
           _this9.axisy = Math.cos(_this9.rot);
         }
-        s.worldCOMx =
-          s.body.posx +
-          (s.body.axisy * s.localCOMx - s.body.axisx * s.localCOMy);
-        s.worldCOMy =
-          s.body.posy +
-          (s.localCOMx * s.body.axisx + s.localCOMy * s.body.axisy);
+        s.worldCOMx = s.body.posx + (s.body.axisy * s.localCOMx - s.body.axisx * s.localCOMy);
+        s.worldCOMy = s.body.posy + (s.localCOMx * s.body.axisx + s.localCOMy * s.body.axisy);
       }
     }
   }
@@ -223,12 +200,10 @@ export class ZPP_Geom {
         }
         shape.worldCOMx =
           shape.body.posx +
-          (shape.body.axisy * shape.localCOMx -
-            shape.body.axisx * shape.localCOMy);
+          (shape.body.axisy * shape.localCOMx - shape.body.axisx * shape.localCOMy);
         shape.worldCOMy =
           shape.body.posy +
-          (shape.localCOMx * shape.body.axisx +
-            shape.localCOMy * shape.body.axisy);
+          (shape.localCOMx * shape.body.axisx + shape.localCOMy * shape.body.axisy);
       }
     }
   }
@@ -236,9 +211,7 @@ export class ZPP_Geom {
   /** @internal Compute polygon local COM from vertex ring. */
   private static _computePolygonLocalCOM(poly: Any): void {
     if (poly.lverts.next == null) {
-      throw new Error(
-        "Error: An empty polygon has no meaningful localCOM",
-      );
+      throw new Error("Error: An empty polygon has no meaningful localCOM");
     }
     if (poly.lverts.next.next == null) {
       poly.localCOMx = poly.lverts.next.x;

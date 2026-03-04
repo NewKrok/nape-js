@@ -26,9 +26,7 @@ describe("ZPP_VecMath", () => {
     });
 
     it("should be commutative", () => {
-      expect(ZPP_VecMath.vec_dsq(1, 2, 5, 7)).toBe(
-        ZPP_VecMath.vec_dsq(5, 7, 1, 2),
-      );
+      expect(ZPP_VecMath.vec_dsq(1, 2, 5, 7)).toBe(ZPP_VecMath.vec_dsq(5, 7, 1, 2));
     });
 
     it("should handle negative coordinates", () => {
@@ -50,9 +48,7 @@ describe("ZPP_VecMath", () => {
     });
 
     it("should be commutative", () => {
-      expect(ZPP_VecMath.vec_distance(1, 2, 5, 7)).toBe(
-        ZPP_VecMath.vec_distance(5, 7, 1, 2),
-      );
+      expect(ZPP_VecMath.vec_distance(1, 2, 5, 7)).toBe(ZPP_VecMath.vec_distance(5, 7, 1, 2));
     });
 
     it("should equal sqrt of vec_dsq", () => {

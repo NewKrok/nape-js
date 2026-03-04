@@ -21,11 +21,7 @@ function getZppShape(body: Body, space: Space): any {
 describe("ZPP_Collide", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Collide.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_Collide",
-      ]);
+      expect(ZPP_Collide.__name__).toEqual(["zpp_nape", "geom", "ZPP_Collide"]);
     });
   });
 

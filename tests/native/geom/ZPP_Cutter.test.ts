@@ -6,11 +6,7 @@ import { ZPP_Cutter } from "../../../src/native/geom/ZPP_Cutter";
 describe("ZPP_Cutter", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Cutter.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_Cutter",
-      ]);
+      expect(ZPP_Cutter.__name__).toEqual(["zpp_nape", "geom", "ZPP_Cutter"]);
     });
   });
 
