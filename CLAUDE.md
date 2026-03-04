@@ -91,6 +91,9 @@ Every public API class has a TypeScript wrapper. Classes are either **fully mode
 | CollisionArbiter | `src/dynamics/CollisionArbiter.ts` | Direct ZPP_ColArbiter access, contacts/normal/friction |
 | FluidArbiter | `src/dynamics/FluidArbiter.ts` | Direct ZPP_FluidArbiter access, position/overlap/buoyancy |
 | Constraint | `src/constraint/Constraint.ts` | Direct ZPP_Constraint access, base props modernized |
+| Edge | `src/shape/Edge.ts` | Direct ZPP_Edge access, vertex/normal/projection getters |
+| Shape | `src/shape/Shape.ts` | Direct ZPP_Shape access, base shape dispatch |
+| Circle | `src/shape/Circle.ts` | Direct ZPP_Circle access, radius getter/setter |
 
 **Singleton enums** (fully modernized, init-time stub + `setPrototypeOf` where needed):
 GravMassMode, InertiaMode, MassMode, BodyType, ShapeType, ArbiterType, Winding,
@@ -104,7 +107,6 @@ step for each is to rewrite the public wrapper to use the extracted ZPP directly
 
 | Class | File | Notes |
 |-------|------|-------|
-| Circle | `src/shape/Circle.ts` | Fully modernized, direct ZPP_Circle access |
 | Polygon | `src/shape/Polygon.ts` | ZPP_Polygon extracted, public wrapper compiled (~1,306 lines) |
 | Space | `src/space/Space.ts` | ZPP_Space extracted, public wrapper compiled (~1,394 lines) |
 | PivotJoint | `src/constraint/PivotJoint.ts` | ZPP_PivotJoint extracted, public wrapper compiled (~882 lines) |
@@ -215,7 +217,7 @@ public class still delegates through compiled prototype code):
 - ~~`nape.phys.Body` (~5,146 lines — largest single public API class)~~ ✅
 - `nape.space.Space` (~1,394 lines)
 - `nape.constraint.*Joint` wrappers: DistanceJoint (~975), LineJoint (~1,239), PivotJoint (~882), PulleyJoint (~1,885), WeldJoint (~915), UserConstraint (~179), Constraint base (~347)
-- `nape.shape.*` wrappers: Shape (~758), ~~Circle (~197)~~ ✅, Polygon (~1,306), Edge (~534)
+- `nape.shape.*` wrappers: ~~Shape (~758)~~ ✅, ~~Circle (~197)~~ ✅, Polygon (~1,306), ~~Edge (~534)~~ ✅
 - `nape.geom.*` wrappers: Ray (~888), Geom (~656)
 - ~~`nape.phys.Interactor` (~97 lines)~~ ✅
 

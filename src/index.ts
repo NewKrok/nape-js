@@ -34,6 +34,7 @@ export { MassMode } from "./phys/MassMode";
 export { Shape } from "./shape/Shape";
 export { Circle } from "./shape/Circle";
 export { Polygon } from "./shape/Polygon";
+export { Edge } from "./shape/Edge";
 export { ShapeType } from "./shape/ShapeType";
 export { ValidationResult } from "./shape/ValidationResult";
 

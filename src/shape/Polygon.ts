@@ -27,6 +27,7 @@ export class Polygon extends Shape {
       filter?._inner,
     );
     (this as Writable<Polygon>)._inner = compiledInner;
+    (this as any).zpp_inner = compiledInner.zpp_inner;
     this.zpp_inner_i = compiledInner.zpp_inner_i;
   }
 
@@ -35,6 +36,7 @@ export class Polygon extends Shape {
     return getOrCreate(inner, (raw) => {
       const p = Object.create(Polygon.prototype) as Polygon;
       (p as Writable<Polygon>)._inner = raw;
+      (p as any).zpp_inner = raw.zpp_inner;
       p.zpp_inner_i = raw.zpp_inner_i;
       return p;
     });
