@@ -189,8 +189,7 @@ export class ZPP_Ray {
     }
     ret2.zpp_inner.weak = false;
     this.direction = ret2;
-    this.direction.zpp_inner._invalidate = (x: Any) =>
-      this.direction_invalidate(x);
+    this.direction.zpp_inner._invalidate = (x: Any) => this.direction_invalidate(x);
 
     this.originx = 0;
     this.originy = 0;
@@ -226,10 +225,7 @@ export class ZPP_Ray {
     if (this.zip_dir) {
       this.zip_dir = false;
       const nape = getNape();
-      if (
-        this.dirx * this.dirx + this.diry * this.diry <
-        nape.Config.epsilon
-      ) {
+      if (this.dirx * this.dirx + this.diry * this.diry < nape.Config.epsilon) {
         throw new Error("Error: Ray::direction is degenerate");
       }
       const d = this.dirx * this.dirx + this.diry * this.diry;
@@ -308,8 +304,7 @@ export class ZPP_Ray {
       this.normalx * (this.originx - 0.5 * (a.minx + a.maxx)) +
       this.normaly * (this.originy - 0.5 * (a.miny + a.maxy));
     const dot2 =
-      this.absnormalx * 0.5 * (a.maxx - a.minx) +
-      this.absnormaly * 0.5 * (a.maxy - a.miny);
+      this.absnormalx * 0.5 * (a.maxx - a.minx) + this.absnormaly * 0.5 * (a.maxy - a.miny);
     const x = dot1;
     return (x < 0 ? -x : x) < dot2;
   }
@@ -468,9 +463,7 @@ export class ZPP_Ray {
           if (c.type == 1) {
             const _this = c.polygon;
             if (_this.lverts.next == null) {
-              throw new Error(
-                "Error: An empty polygon has no meaningful localCOM",
-              );
+              throw new Error("Error: An empty polygon has no meaningful localCOM");
             }
             if (_this.lverts.next.next == null) {
               _this.localCOMx = _this.lverts.next.x;
@@ -534,12 +527,8 @@ export class ZPP_Ray {
           _this1.axisx = Math.sin(_this1.rot);
           _this1.axisy = Math.cos(_this1.rot);
         }
-        c.worldCOMx =
-          c.body.posx +
-          (c.body.axisy * c.localCOMx - c.body.axisx * c.localCOMy);
-        c.worldCOMy =
-          c.body.posy +
-          (c.localCOMx * c.body.axisx + c.localCOMy * c.body.axisy);
+        c.worldCOMx = c.body.posx + (c.body.axisy * c.localCOMx - c.body.axisx * c.localCOMy);
+        c.worldCOMy = c.body.posy + (c.localCOMx * c.body.axisx + c.localCOMy * c.body.axisy);
       }
     }
   }
@@ -548,11 +537,7 @@ export class ZPP_Ray {
   // Helper: compute circle normal at intersection point
   // ---------------------------------------------------------------------------
 
-  private _circleNormal(
-    t: number,
-    c: Any,
-    insideFlip: boolean,
-  ): { nx: number; ny: number } {
+  private _circleNormal(t: number, c: Any, insideFlip: boolean): { nx: number; ny: number } {
     let nx = this.originx + this.dirx * t;
     let ny = this.originy + this.diry * t;
     nx -= c.worldCOMx;
@@ -580,14 +565,10 @@ export class ZPP_Ray {
     while (cx_ite != null) {
       const j = cx_ite.elt;
       if (res.zpp_inner.next != null) {
-        throw new Error(
-          "Error: This object has been disposed of and cannot be used",
-        );
+        throw new Error("Error: This object has been disposed of and cannot be used");
       }
       if (j.zpp_inner.next != null) {
-        throw new Error(
-          "Error: This object has been disposed of and cannot be used",
-        );
+        throw new Error("Error: This object has been disposed of and cannot be used");
       }
       if (res.zpp_inner.toiDistance < j.zpp_inner.toiDistance) {
         break;
@@ -686,12 +667,7 @@ export class ZPP_Ray {
       if ((!inner || C > 0) && t > 0 && t <= this.maxdist) {
         const n = this._circleNormal(t, c, C <= 0);
         const normalVec = ZPP_Ray._allocVec2(n.nx, n.ny);
-        const res = ZPP_ConvexRayResult.getRay(
-          normalVec,
-          t,
-          C <= 0,
-          c.outer,
-        );
+        const res = ZPP_ConvexRayResult.getRay(normalVec, t, C <= 0, c.outer);
         ZPP_Ray._insertSorted(list, res);
       }
     } else {
@@ -745,10 +721,7 @@ export class ZPP_Ray {
           const sxx = (_vy * _sx - _vx * _sy) * den;
           if (sxx > 0 && sxx < min && sxx <= this.maxdist) {
             const txx = (this.diry * _sx - this.dirx * _sy) * den;
-            if (
-              txx > -nape.Config.epsilon &&
-              txx < 1 + nape.Config.epsilon
-            ) {
+            if (txx > -nape.Config.epsilon && txx < 1 + nape.Config.epsilon) {
               min = sxx;
               edge = ei.elt;
             }
@@ -776,10 +749,7 @@ export class ZPP_Ray {
           const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
           if (sxx1 > 0 && sxx1 < min && sxx1 <= this.maxdist) {
             const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
-            if (
-              txx1 > -nape.Config.epsilon &&
-              txx1 < 1 + nape.Config.epsilon
-            ) {
+            if (txx1 > -nape.Config.epsilon && txx1 < 1 + nape.Config.epsilon) {
               min = sxx1;
               edge = ei.elt;
             }
@@ -833,16 +803,9 @@ export class ZPP_Ray {
         if (den * den > nape.Config.epsilon) {
           den = 1 / den;
           const sxx = (_vy * _sx - _vx * _sy) * den;
-          if (
-            sxx > 0 &&
-            sxx <= this.maxdist &&
-            (sxx < min || sxx > max)
-          ) {
+          if (sxx > 0 && sxx <= this.maxdist && (sxx < min || sxx > max)) {
             const txx = (this.diry * _sx - this.dirx * _sy) * den;
-            if (
-              txx > -nape.Config.epsilon &&
-              txx < 1 + nape.Config.epsilon
-            ) {
+            if (txx > -nape.Config.epsilon && txx < 1 + nape.Config.epsilon) {
               if (sxx < min) {
                 min = sxx;
                 edge = ei.elt;
@@ -874,16 +837,9 @@ export class ZPP_Ray {
         if (den1 * den1 > nape.Config.epsilon) {
           den1 = 1 / den1;
           const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
-          if (
-            sxx1 > 0 &&
-            sxx1 <= this.maxdist &&
-            (sxx1 < min || sxx1 > max)
-          ) {
+          if (sxx1 > 0 && sxx1 <= this.maxdist && (sxx1 < min || sxx1 > max)) {
             const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
-            if (
-              txx1 > -nape.Config.epsilon &&
-              txx1 < 1 + nape.Config.epsilon
-            ) {
+            if (txx1 > -nape.Config.epsilon && txx1 < 1 + nape.Config.epsilon) {
               if (sxx1 < min) {
                 min = sxx1;
                 edge = ei.elt;
@@ -922,12 +878,7 @@ export class ZPP_Ray {
         ny1 = -ny1;
       }
       const normalVec = ZPP_Ray._allocVec2(nx1, ny1);
-      const res = ZPP_ConvexRayResult.getRay(
-        normalVec,
-        max,
-        inner2,
-        p.outer,
-      );
+      const res = ZPP_ConvexRayResult.getRay(normalVec, max, inner2, p.outer);
       ZPP_Ray._insertSorted(list, res);
     }
   }

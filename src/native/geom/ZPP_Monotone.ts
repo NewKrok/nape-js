@@ -204,8 +204,7 @@ export class ZPP_Monotone {
       return poly;
     }
     if (ZPP_Monotone.queue == null) {
-      ZPP_Monotone.queue =
-        new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+      ZPP_Monotone.queue = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
     }
     const F = poly.vertices;
     const L = poly.vertices;
@@ -226,10 +225,10 @@ export class ZPP_Monotone {
               : 3
             : 4
           : ZPP_Monotone.below(p, p.next!)
-          ? cx
-            ? 1
-            : 2
-          : 4;
+            ? cx
+              ? 1
+              : 2
+            : 4;
         nite = nite!.next;
         if (!(nite != L)) {
           break;
@@ -303,19 +302,14 @@ export class ZPP_Monotone {
     const zpp = getNape().__zpp;
     if (ZPP_Monotone.edges == null) {
       if (zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool == null) {
-        ZPP_Monotone.edges =
-          new zpp.util.ZPP_Set_ZPP_PartitionVertex();
+        ZPP_Monotone.edges = new zpp.util.ZPP_Set_ZPP_PartitionVertex();
       } else {
-        ZPP_Monotone.edges =
-          zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool =
-          ZPP_Monotone.edges.next;
+        ZPP_Monotone.edges = zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool;
+        zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool = ZPP_Monotone.edges.next;
         ZPP_Monotone.edges.next = null;
       }
-      ZPP_Monotone.edges.lt =
-        ZPP_PartitionVertex.edge_lt;
-      ZPP_Monotone.edges.swapped =
-        ZPP_PartitionVertex.edge_swap;
+      ZPP_Monotone.edges.lt = ZPP_PartitionVertex.edge_lt;
+      ZPP_Monotone.edges.swapped = ZPP_PartitionVertex.edge_swap;
     }
     // Process vertices in sweep order
     while (ZPP_Monotone.queue.head != null) {
@@ -328,9 +322,7 @@ export class ZPP_Monotone {
         case 1: {
           const e = v.prev;
           if (e.helper == null) {
-            throw new Error(
-              "Fatal error (1): Polygon is not weakly-simple and clockwise"
-            );
+            throw new Error("Fatal error (1): Polygon is not weakly-simple and clockwise");
           }
           if (e.helper.type == 2) {
             poly.add_diagonal(v, e.helper);
@@ -342,9 +334,7 @@ export class ZPP_Monotone {
         case 2: {
           const e1 = v.prev;
           if (e1.helper == null) {
-            throw new Error(
-              "Fatal error (3): Polygon is not weakly-simple and clockwise"
-            );
+            throw new Error("Fatal error (3): Polygon is not weakly-simple and clockwise");
           }
           if (e1.helper.type == 2) {
             poly.add_diagonal(v, e1.helper);
@@ -374,9 +364,7 @@ export class ZPP_Monotone {
           const e2 = ret;
           if (e2 != null) {
             if (e2.helper == null) {
-              throw new Error(
-                "Fatal error (4): Polygon is not weakly-simple and clockwise"
-              );
+              throw new Error("Fatal error (4): Polygon is not weakly-simple and clockwise");
             }
             if (e2.helper.type == 2) {
               poly.add_diagonal(v, e2.helper);
@@ -400,10 +388,7 @@ export class ZPP_Monotone {
                 set_ite1 = set_ite1.next;
                 while (set_ite1.prev != null) set_ite1 = set_ite1.prev;
               } else {
-                while (
-                  set_ite1.parent != null &&
-                  set_ite1 == set_ite1.parent.next
-                )
+                while (set_ite1.parent != null && set_ite1 == set_ite1.parent.next)
                   set_ite1 = set_ite1.parent;
                 set_ite1 = set_ite1.parent;
               }
@@ -412,9 +397,7 @@ export class ZPP_Monotone {
           const e3 = ret1;
           if (e3 != null) {
             if (e3.helper == null) {
-              throw new Error(
-                "Fatal error (2): Polygon is not weakly-simple and clockwise"
-              );
+              throw new Error("Fatal error (2): Polygon is not weakly-simple and clockwise");
             }
             poly.add_diagonal(v, e3.helper);
             e3.helper = v;
@@ -427,9 +410,7 @@ export class ZPP_Monotone {
           const pre = v.prev;
           if (ZPP_Monotone.left_vertex(v)) {
             if (pre.helper == null) {
-              throw new Error(
-                "Fatal error (5): Polygon is not weakly-simple and clockwise"
-              );
+              throw new Error("Fatal error (5): Polygon is not weakly-simple and clockwise");
             }
             if (pre.helper.type == 2) {
               poly.add_diagonal(v, pre.helper);
@@ -453,10 +434,7 @@ export class ZPP_Monotone {
                   set_ite2 = set_ite2.next;
                   while (set_ite2.prev != null) set_ite2 = set_ite2.prev;
                 } else {
-                  while (
-                    set_ite2.parent != null &&
-                    set_ite2 == set_ite2.parent.next
-                  )
+                  while (set_ite2.parent != null && set_ite2 == set_ite2.parent.next)
                     set_ite2 = set_ite2.parent;
                   set_ite2 = set_ite2.parent;
                 }
@@ -464,9 +442,7 @@ export class ZPP_Monotone {
             }
             const e4 = ret2;
             if (e4 == null || e4.helper == null) {
-              throw new Error(
-                "Fatal error (6): Polygon is not weakly-simple and clockwise"
-              );
+              throw new Error("Fatal error (6): Polygon is not weakly-simple and clockwise");
             }
             if (e4.helper.type == 2) {
               poly.add_diagonal(v, e4.helper);

@@ -144,8 +144,7 @@ export class ZPP_Space {
     if (broadphase != null) {
       if (ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE == null) {
         ZPP_Flags.internal = true;
-        ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE =
-          new ZPP_Space._nape.space.Broadphase();
+        ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE = new ZPP_Space._nape.space.Broadphase();
         ZPP_Flags.internal = false;
       }
       tmp = broadphase == ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE;
@@ -157,8 +156,7 @@ export class ZPP_Space {
     } else {
       if (ZPP_Flags.Broadphase_SWEEP_AND_PRUNE == null) {
         ZPP_Flags.internal = true;
-        ZPP_Flags.Broadphase_SWEEP_AND_PRUNE =
-          new ZPP_Space._nape.space.Broadphase();
+        ZPP_Flags.Broadphase_SWEEP_AND_PRUNE = new ZPP_Space._nape.space.Broadphase();
         ZPP_Flags.internal = false;
       }
       if (broadphase == ZPP_Flags.Broadphase_SWEEP_AND_PRUNE) {
@@ -166,7 +164,7 @@ export class ZPP_Space {
       }
     }
     this.time = 0.0;
-    let me = this;
+    const me = this;
     if (gravity != null) {
       this.gravityx = gravity.x;
       this.gravityy = gravity.y;
@@ -176,14 +174,14 @@ export class ZPP_Space {
     }
     this.bodies = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
     this.wrap_bodies = ZPP_Space._zpp.util.ZPP_BodyList.get(this.bodies);
-    this.wrap_bodies.zpp_inner.adder = ((x?: Any) => this.bodies_adder(x));
-    this.wrap_bodies.zpp_inner.subber = ((x?: Any) => this.bodies_subber(x));
-    this.wrap_bodies.zpp_inner._modifiable = (() => this.bodies_modifiable());
+    this.wrap_bodies.zpp_inner.adder = (x?: Any) => this.bodies_adder(x);
+    this.wrap_bodies.zpp_inner.subber = (x?: Any) => this.bodies_subber(x);
+    this.wrap_bodies.zpp_inner._modifiable = () => this.bodies_modifiable();
     this.compounds = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
     this.wrap_compounds = ZPP_Space._zpp.util.ZPP_CompoundList.get(this.compounds);
-    this.wrap_compounds.zpp_inner.adder = ((x?: Any) => this.compounds_adder(x));
-    this.wrap_compounds.zpp_inner.subber = ((x?: Any) => this.compounds_subber(x));
-    this.wrap_compounds.zpp_inner._modifiable = (() => this.compounds_modifiable());
+    this.wrap_compounds.zpp_inner.adder = (x?: Any) => this.compounds_adder(x);
+    this.wrap_compounds.zpp_inner.subber = (x?: Any) => this.compounds_subber(x);
+    this.wrap_compounds.zpp_inner._modifiable = () => this.compounds_modifiable();
     this.kinematics = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
     this.c_arbiters_true = new ZPP_Space._zpp.util.ZNPList_ZPP_ColArbiter();
     this.c_arbiters_false = new ZPP_Space._zpp.util.ZNPList_ZPP_ColArbiter();
@@ -194,26 +192,21 @@ export class ZPP_Space {
     this.wrap_live = ZPP_Space._zpp.util.ZPP_BodyList.get(this.live, true);
     this.staticsleep = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
     this.constraints = new ZPP_Space._zpp.util.ZNPList_ZPP_Constraint();
-    this.wrap_constraints = ZPP_Space._zpp.util.ZPP_ConstraintList.get(
-      this.constraints
-    );
-    this.wrap_constraints.zpp_inner.adder = ((x?: Any) => this.constraints_adder(x));
-    this.wrap_constraints.zpp_inner.subber = ((x?: Any) => this.constraints_subber(x));
-    this.wrap_constraints.zpp_inner._modifiable = (() => this.constraints_modifiable());
+    this.wrap_constraints = ZPP_Space._zpp.util.ZPP_ConstraintList.get(this.constraints);
+    this.wrap_constraints.zpp_inner.adder = (x?: Any) => this.constraints_adder(x);
+    this.wrap_constraints.zpp_inner.subber = (x?: Any) => this.constraints_subber(x);
+    this.wrap_constraints.zpp_inner._modifiable = () => this.constraints_modifiable();
     this.live_constraints = new ZPP_Space._zpp.util.ZNPList_ZPP_Constraint();
-    this.wrap_livecon = ZPP_Space._zpp.util.ZPP_ConstraintList.get(
-      this.live_constraints,
-      true
-    );
+    this.wrap_livecon = ZPP_Space._zpp.util.ZPP_ConstraintList.get(this.live_constraints, true);
     this.__static = ZPP_Body.__static();
     this.__static.zpp_inner.space = this;
     this.callbacks = new ZPP_Callback();
     this.midstep = false;
     this.listeners = new ZPP_Space._zpp.util.ZNPList_ZPP_Listener();
     this.wrap_listeners = ZPP_Space._zpp.util.ZPP_ListenerList.get(this.listeners);
-    this.wrap_listeners.zpp_inner.adder = ((x?: Any) => this.listeners_adder(x));
-    this.wrap_listeners.zpp_inner.subber = ((x?: Any) => this.listeners_subber(x));
-    this.wrap_listeners.zpp_inner._modifiable = (() => this.listeners_modifiable());
+    this.wrap_listeners.zpp_inner.adder = (x?: Any) => this.listeners_adder(x);
+    this.wrap_listeners.zpp_inner.subber = (x?: Any) => this.listeners_subber(x);
+    this.wrap_listeners.zpp_inner._modifiable = () => this.listeners_modifiable();
     this.callbackset_list = new ZPP_CallbackSet();
     this.mrca1 = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
     this.mrca2 = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
@@ -262,11 +255,9 @@ export class ZPP_Space {
       ret.zpp_inner.outer = ret;
     } else {
       if (ret != null && ret.zpp_disp) {
-        throw new Error(
-          "Error: " + "Vec2" + " has been disposed and cannot be used!"
-        );
+        throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
       }
-      let _this = ret.zpp_inner;
+      const _this = ret.zpp_inner;
       if (_this._immutable) {
         throw new Error("Error: Vec2 is immutable");
       }
@@ -278,21 +269,17 @@ export class ZPP_Space {
       }
       let tmp;
       if (ret != null && ret.zpp_disp) {
-        throw new Error(
-          "Error: " + "Vec2" + " has been disposed and cannot be used!"
-        );
+        throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
       }
-      let _this1 = ret.zpp_inner;
+      const _this1 = ret.zpp_inner;
       if (_this1._validate != null) {
         _this1._validate();
       }
       if (ret.zpp_inner.x == x) {
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!"
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
-        let _this2 = ret.zpp_inner;
+        const _this2 = ret.zpp_inner;
         if (_this2._validate != null) {
           _this2._validate();
         }
@@ -303,7 +290,7 @@ export class ZPP_Space {
       if (!tmp) {
         ret.zpp_inner.x = x;
         ret.zpp_inner.y = y;
-        let _this3 = ret.zpp_inner;
+        const _this3 = ret.zpp_inner;
         if (_this3._invalidate != null) {
           _this3._invalidate(_this3);
         }
@@ -312,23 +299,21 @@ export class ZPP_Space {
     ret.zpp_inner.weak = false;
     this.wrap_gravity = ret;
     this.wrap_gravity.zpp_inner._inuse = true;
-    this.wrap_gravity.zpp_inner._invalidate = ((x?: Any) => this.gravity_invalidate(x));
-    this.wrap_gravity.zpp_inner._validate = (() => this.gravity_validate());
+    this.wrap_gravity.zpp_inner._invalidate = (x?: Any) => this.gravity_invalidate(x);
+    this.wrap_gravity.zpp_inner._validate = () => this.gravity_validate();
   }
 
   gravity_invalidate(x) {
     if (this.midstep) {
-      throw new Error(
-        "Error: Space::gravity cannot be set during space step"
-      );
+      throw new Error("Error: Space::gravity cannot be set during space step");
     }
     this.gravityx = x.x;
     this.gravityy = x.y;
-    let stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
+    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
     let cx_ite = this.bodies.head;
     while (cx_ite != null) {
-      let x1 = cx_ite.elt;
-      let o = x1;
+      const x1 = cx_ite.elt;
+      const o = x1;
       if (!o.world) {
         o.component.waket = this.stamp + (this.midstep ? 0 : 1);
         if (o.type == 3) {
@@ -342,16 +327,16 @@ export class ZPP_Space {
     }
     let cx_ite1 = this.compounds.head;
     while (cx_ite1 != null) {
-      let i = cx_ite1.elt;
+      const i = cx_ite1.elt;
       stack.add(i);
       cx_ite1 = cx_ite1.next;
     }
     while (stack.head != null) {
-      let s = stack.pop_unsafe();
+      const s = stack.pop_unsafe();
       let cx_ite2 = s.bodies.head;
       while (cx_ite2 != null) {
-        let x2 = cx_ite2.elt;
-        let o1 = x2;
+        const x2 = cx_ite2.elt;
+        const o1 = x2;
         if (!o1.world) {
           o1.component.waket = this.stamp + (this.midstep ? 0 : 1);
           if (o1.type == 3) {
@@ -365,7 +350,7 @@ export class ZPP_Space {
       }
       let cx_ite3 = s.compounds.head;
       while (cx_ite3 != null) {
-        let i1 = cx_ite3.elt;
+        const i1 = cx_ite3.elt;
         stack.add(i1);
         cx_ite3 = cx_ite3.next;
       }
@@ -379,13 +364,13 @@ export class ZPP_Space {
 
   clear() {
     while (this.listeners.head != null) {
-      let c = this.listeners.pop_unsafe();
+      const c = this.listeners.pop_unsafe();
       this.remListener(c);
     }
     while (this.callbackset_list.next != null) {
-      let c1 = this.callbackset_list.pop_unsafe();
+      const c1 = this.callbackset_list.pop_unsafe();
       c1.arbiters.clear();
-      let o = c1;
+      const o = c1;
       o.int1 = o.int2 = null;
       o.id = o.di = -1;
       o.freed = true;
@@ -393,9 +378,9 @@ export class ZPP_Space {
       ZPP_CallbackSet.zpp_pool = o;
     }
     while (this.c_arbiters_true.head != null) {
-      let arb = this.c_arbiters_true.pop_unsafe();
+      const arb = this.c_arbiters_true.pop_unsafe();
       if (!arb.cleared) {
-        let _this = arb.b1.arbiters;
+        const _this = arb.b1.arbiters;
         let pre = null;
         let cur = _this.head;
         let ret = false;
@@ -418,7 +403,7 @@ export class ZPP_Space {
                 _this.pushmod = true;
               }
             }
-            let o1 = old;
+            const o1 = old;
             o1.elt = null;
             o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o1;
@@ -431,7 +416,7 @@ export class ZPP_Space {
           pre = cur;
           cur = cur.next;
         }
-        let _this1 = arb.b2.arbiters;
+        const _this1 = arb.b2.arbiters;
         let pre1 = null;
         let cur1 = _this1.head;
         let ret2 = false;
@@ -454,7 +439,7 @@ export class ZPP_Space {
                 _this1.pushmod = true;
               }
             }
-            let o2 = old1;
+            const o2 = old1;
             o2.elt = null;
             o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o2;
@@ -476,15 +461,15 @@ export class ZPP_Space {
       arb.active = false;
       arb.intchange = false;
       while (arb.contacts.next != null) {
-        let _this2 = arb.contacts;
-        let ret4 = _this2.next;
+        const _this2 = arb.contacts;
+        const ret4 = _this2.next;
         _this2.pop();
-        let o3 = ret4;
+        const o3 = ret4;
         o3.arbiter = null;
         o3.next = ZPP_Contact.zpp_pool;
         ZPP_Contact.zpp_pool = o3;
-        let _this3 = arb.innards;
-        let ret5 = _this3.next;
+        const _this3 = arb.innards;
+        const ret5 = _this3.next;
         _this3.next = ret5.next;
         ret5._inuse = false;
         if (_this3.next == null) {
@@ -493,7 +478,7 @@ export class ZPP_Space {
         _this3.modified = true;
         _this3.length--;
       }
-      let o4 = arb;
+      const o4 = arb;
       o4.userdef_dyn_fric = false;
       o4.userdef_stat_fric = false;
       o4.userdef_restitution = false;
@@ -504,9 +489,9 @@ export class ZPP_Space {
       arb.pre_dt = -1.0;
     }
     while (this.c_arbiters_false.head != null) {
-      let arb1 = this.c_arbiters_false.pop_unsafe();
+      const arb1 = this.c_arbiters_false.pop_unsafe();
       if (!arb1.cleared) {
-        let _this4 = arb1.b1.arbiters;
+        const _this4 = arb1.b1.arbiters;
         let pre2 = null;
         let cur2 = _this4.head;
         let ret6 = false;
@@ -529,7 +514,7 @@ export class ZPP_Space {
                 _this4.pushmod = true;
               }
             }
-            let o5 = old2;
+            const o5 = old2;
             o5.elt = null;
             o5.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o5;
@@ -542,7 +527,7 @@ export class ZPP_Space {
           pre2 = cur2;
           cur2 = cur2.next;
         }
-        let _this5 = arb1.b2.arbiters;
+        const _this5 = arb1.b2.arbiters;
         let pre3 = null;
         let cur3 = _this5.head;
         let ret8 = false;
@@ -565,7 +550,7 @@ export class ZPP_Space {
                 _this5.pushmod = true;
               }
             }
-            let o6 = old3;
+            const o6 = old3;
             o6.elt = null;
             o6.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o6;
@@ -587,15 +572,15 @@ export class ZPP_Space {
       arb1.active = false;
       arb1.intchange = false;
       while (arb1.contacts.next != null) {
-        let _this6 = arb1.contacts;
-        let ret10 = _this6.next;
+        const _this6 = arb1.contacts;
+        const ret10 = _this6.next;
         _this6.pop();
-        let o7 = ret10;
+        const o7 = ret10;
         o7.arbiter = null;
         o7.next = ZPP_Contact.zpp_pool;
         ZPP_Contact.zpp_pool = o7;
-        let _this7 = arb1.innards;
-        let ret11 = _this7.next;
+        const _this7 = arb1.innards;
+        const ret11 = _this7.next;
         _this7.next = ret11.next;
         ret11._inuse = false;
         if (_this7.next == null) {
@@ -604,7 +589,7 @@ export class ZPP_Space {
         _this7.modified = true;
         _this7.length--;
       }
-      let o8 = arb1;
+      const o8 = arb1;
       o8.userdef_dyn_fric = false;
       o8.userdef_stat_fric = false;
       o8.userdef_restitution = false;
@@ -615,9 +600,9 @@ export class ZPP_Space {
       arb1.pre_dt = -1.0;
     }
     while (this.s_arbiters.head != null) {
-      let arb2 = this.s_arbiters.pop_unsafe();
+      const arb2 = this.s_arbiters.pop_unsafe();
       if (!arb2.cleared) {
-        let _this8 = arb2.b1.arbiters;
+        const _this8 = arb2.b1.arbiters;
         let pre4 = null;
         let cur4 = _this8.head;
         let ret12 = false;
@@ -640,7 +625,7 @@ export class ZPP_Space {
                 _this8.pushmod = true;
               }
             }
-            let o9 = old4;
+            const o9 = old4;
             o9.elt = null;
             o9.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o9;
@@ -653,7 +638,7 @@ export class ZPP_Space {
           pre4 = cur4;
           cur4 = cur4.next;
         }
-        let _this9 = arb2.b2.arbiters;
+        const _this9 = arb2.b2.arbiters;
         let pre5 = null;
         let cur5 = _this9.head;
         let ret14 = false;
@@ -676,7 +661,7 @@ export class ZPP_Space {
                 _this9.pushmod = true;
               }
             }
-            let o10 = old5;
+            const o10 = old5;
             o10.elt = null;
             o10.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o10;
@@ -697,14 +682,14 @@ export class ZPP_Space {
       arb2.b1 = arb2.b2 = null;
       arb2.active = false;
       arb2.intchange = false;
-      let o11 = arb2;
+      const o11 = arb2;
       o11.next = ZPP_SensorArbiter.zpp_pool;
       ZPP_SensorArbiter.zpp_pool = o11;
     }
     while (this.f_arbiters.head != null) {
-      let arb3 = this.f_arbiters.pop_unsafe();
+      const arb3 = this.f_arbiters.pop_unsafe();
       if (!arb3.cleared) {
-        let _this10 = arb3.b1.arbiters;
+        const _this10 = arb3.b1.arbiters;
         let pre6 = null;
         let cur6 = _this10.head;
         let ret16 = false;
@@ -727,7 +712,7 @@ export class ZPP_Space {
                 _this10.pushmod = true;
               }
             }
-            let o12 = old6;
+            const o12 = old6;
             o12.elt = null;
             o12.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o12;
@@ -740,7 +725,7 @@ export class ZPP_Space {
           pre6 = cur6;
           cur6 = cur6.next;
         }
-        let _this11 = arb3.b2.arbiters;
+        const _this11 = arb3.b2.arbiters;
         let pre7 = null;
         let cur7 = _this11.head;
         let ret18 = false;
@@ -763,7 +748,7 @@ export class ZPP_Space {
                 _this11.pushmod = true;
               }
             }
-            let o13 = old7;
+            const o13 = old7;
             o13.elt = null;
             o13.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
             ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o13;
@@ -784,25 +769,25 @@ export class ZPP_Space {
       arb3.b1 = arb3.b2 = null;
       arb3.active = false;
       arb3.intchange = false;
-      let o14 = arb3;
+      const o14 = arb3;
       o14.next = ZPP_FluidArbiter.zpp_pool;
       ZPP_FluidArbiter.zpp_pool = o14;
       arb3.pre_dt = -1.0;
     }
     this.bphase.clear();
     while (this.bodies.head != null) {
-      let b = this.bodies.pop_unsafe();
+      const b = this.bodies.pop_unsafe();
       if (b.component != null) {
-        let i = b.component.island;
+        const i = b.component.island;
         if (i != null) {
           while (i.comps.head != null) {
-            let c2 = i.comps.pop_unsafe();
+            const c2 = i.comps.pop_unsafe();
             c2.sleeping = false;
             c2.island = null;
             c2.parent = c2;
             c2.rank = 0;
           }
-          let o15 = i;
+          const o15 = i;
           o15.next = ZPP_Island.zpp_pool;
           ZPP_Island.zpp_pool = o15;
         }
@@ -811,18 +796,18 @@ export class ZPP_Space {
       b.space = null;
     }
     while (this.constraints.head != null) {
-      let c3 = this.constraints.pop_unsafe();
+      const c3 = this.constraints.pop_unsafe();
       if (c3.component != null) {
-        let i1 = c3.component.island;
+        const i1 = c3.component.island;
         if (i1 != null) {
           while (i1.comps.head != null) {
-            let c4 = i1.comps.pop_unsafe();
+            const c4 = i1.comps.pop_unsafe();
             c4.sleeping = false;
             c4.island = null;
             c4.parent = c4;
             c4.rank = 0;
           }
-          let o16 = i1;
+          const o16 = i1;
           o16.next = ZPP_Island.zpp_pool;
           ZPP_Island.zpp_pool = o16;
         }
@@ -831,29 +816,29 @@ export class ZPP_Space {
       c3.space = null;
     }
     this.kinematics.clear();
-    let stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
+    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
     while (this.compounds.head != null) {
-      let c5 = this.compounds.pop_unsafe();
+      const c5 = this.compounds.pop_unsafe();
       stack.add(c5);
     }
     while (stack.head != null) {
-      let comp = stack.pop_unsafe();
+      const comp = stack.pop_unsafe();
       comp.removedFromSpace();
       comp.space = null;
       let cx_ite = comp.bodies.head;
       while (cx_ite != null) {
-        let b1 = cx_ite.elt;
+        const b1 = cx_ite.elt;
         if (b1.component != null) {
-          let i2 = b1.component.island;
+          const i2 = b1.component.island;
           if (i2 != null) {
             while (i2.comps.head != null) {
-              let c6 = i2.comps.pop_unsafe();
+              const c6 = i2.comps.pop_unsafe();
               c6.sleeping = false;
               c6.island = null;
               c6.parent = c6;
               c6.rank = 0;
             }
-            let o17 = i2;
+            const o17 = i2;
             o17.next = ZPP_Island.zpp_pool;
             ZPP_Island.zpp_pool = o17;
           }
@@ -864,18 +849,18 @@ export class ZPP_Space {
       }
       let cx_ite1 = comp.constraints.head;
       while (cx_ite1 != null) {
-        let c7 = cx_ite1.elt;
+        const c7 = cx_ite1.elt;
         if (c7.component != null) {
-          let i3 = c7.component.island;
+          const i3 = c7.component.island;
           if (i3 != null) {
             while (i3.comps.head != null) {
-              let c8 = i3.comps.pop_unsafe();
+              const c8 = i3.comps.pop_unsafe();
               c8.sleeping = false;
               c8.island = null;
               c8.parent = c8;
               c8.rank = 0;
             }
-            let o18 = i3;
+            const o18 = i3;
             o18.next = ZPP_Island.zpp_pool;
             ZPP_Island.zpp_pool = o18;
           }
@@ -886,7 +871,7 @@ export class ZPP_Space {
       }
       let cx_ite2 = comp.compounds.head;
       while (cx_ite2 != null) {
-        let i4 = cx_ite2.elt;
+        const i4 = cx_ite2.elt;
         stack.add(i4);
         cx_ite2 = cx_ite2.next;
       }
@@ -905,7 +890,7 @@ export class ZPP_Space {
   bodies_adder(x) {
     if (x.zpp_inner.compound != null) {
       throw new Error(
-        "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set"
+        "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set",
       );
     }
     if (x.zpp_inner.space != this) {
@@ -925,16 +910,14 @@ export class ZPP_Space {
 
   bodies_modifiable() {
     if (this.midstep) {
-      throw new Error(
-        "Error: Space::bodies cannot be set during space step()"
-      );
+      throw new Error("Error: Space::bodies cannot be set during space step()");
     }
   }
 
   compounds_adder(x) {
     if (x.zpp_inner.compound != null) {
       throw new Error(
-        "Error: Cannot set the space of an inner Compound, only the root Compound space can be set"
+        "Error: Cannot set the space of an inner Compound, only the root Compound space can be set",
       );
     }
     if (x.zpp_inner.space != this) {
@@ -954,16 +937,14 @@ export class ZPP_Space {
 
   compounds_modifiable() {
     if (this.midstep) {
-      throw new Error(
-        "Error: Space::compounds cannot be set during space step()"
-      );
+      throw new Error("Error: Space::compounds cannot be set during space step()");
     }
   }
 
   constraints_adder(x) {
     if (x.zpp_inner.compound != null) {
       throw new Error(
-        "Error: Cannot set the space of a Constraint belonging to a Compound, only the root Compound space can be set"
+        "Error: Cannot set the space of a Constraint belonging to a Compound, only the root Compound space can be set",
       );
     }
     if (x.zpp_inner.space != this) {
@@ -983,9 +964,7 @@ export class ZPP_Space {
 
   constraints_modifiable() {
     if (this.midstep) {
-      throw new Error(
-        "Error: Space::constraints cannot be set during space step()"
-      );
+      throw new Error("Error: Space::constraints cannot be set during space step()");
     }
   }
 
@@ -1007,32 +986,28 @@ export class ZPP_Space {
 
   listeners_modifiable() {
     if (this.midstep) {
-      throw new Error(
-        "Error: Space::listeners cannot be set during space step()"
-      );
+      throw new Error("Error: Space::listeners cannot be set during space step()");
     }
   }
 
-  revoke_listener(x) {
-  }
+  revoke_listener(x) {}
 
-  unrevoke_listener(x) {
-  }
+  unrevoke_listener(x) {}
 
   addListener(x) {
     x.space = this;
     x.addedToSpace();
-    let tmp = x.interaction != null;
+    const tmp = x.interaction != null;
   }
 
   remListener(x) {
-    let tmp = x.interaction != null;
+    const tmp = x.interaction != null;
     x.removedFromSpace();
     x.space = null;
   }
 
   add_callbackset(cb) {
-    let _this = cb.int1.cbsets;
+    const _this = cb.int1.cbsets;
     let ret;
     if (ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
       ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet();
@@ -1042,12 +1017,12 @@ export class ZPP_Space {
       ret.next = null;
     }
     ret.elt = cb;
-    let temp = ret;
+    const temp = ret;
     temp.next = _this.head;
     _this.head = temp;
     _this.modified = true;
     _this.length++;
-    let _this1 = cb.int2.cbsets;
+    const _this1 = cb.int2.cbsets;
     let ret1;
     if (ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
       ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet();
@@ -1057,14 +1032,14 @@ export class ZPP_Space {
       ret1.next = null;
     }
     ret1.elt = cb;
-    let temp1 = ret1;
+    const temp1 = ret1;
     temp1.next = _this1.head;
     _this1.head = temp1;
     _this1.modified = true;
     _this1.length++;
-    let _this2 = this.callbackset_list;
+    const _this2 = this.callbackset_list;
     cb._inuse = true;
-    let temp2 = cb;
+    const temp2 = cb;
     temp2.next = _this2.next;
     _this2.next = temp2;
     _this2.modified = true;
@@ -1073,7 +1048,7 @@ export class ZPP_Space {
 
   remove_callbackset(cb) {
     cb.lazydel = true;
-    let _this = cb.int1.cbsets;
+    const _this = cb.int1.cbsets;
     let pre = null;
     let cur = _this.head;
     let ret = false;
@@ -1096,7 +1071,7 @@ export class ZPP_Space {
             _this.pushmod = true;
           }
         }
-        let o = old;
+        const o = old;
         o.elt = null;
         o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool = o;
@@ -1109,7 +1084,7 @@ export class ZPP_Space {
       pre = cur;
       cur = cur.next;
     }
-    let _this1 = cb.int2.cbsets;
+    const _this1 = cb.int2.cbsets;
     let pre1 = null;
     let cur1 = _this1.head;
     let ret2 = false;
@@ -1132,7 +1107,7 @@ export class ZPP_Space {
             _this1.pushmod = true;
           }
         }
-        let o1 = old1;
+        const o1 = old1;
         o1.elt = null;
         o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool = o1;
@@ -1148,7 +1123,7 @@ export class ZPP_Space {
   }
 
   transmitType(p, new_type) {
-    let o = p;
+    const o = p;
     if (!o.world) {
       o.component.waket = this.stamp + (this.midstep ? 0 : 1);
       if (o.type == 3) {
@@ -1174,7 +1149,7 @@ export class ZPP_Space {
       this.static_validation(p);
     }
     p.component.sleeping = true;
-    let o1 = p;
+    const o1 = p;
     if (!o1.world) {
       o1.component.waket = this.stamp + (this.midstep ? 0 : 1);
       if (o1.type == 3) {
@@ -1191,7 +1166,7 @@ export class ZPP_Space {
       dontwake = false;
     }
     if (!dontwake) {
-      let o = s.body;
+      const o = s.body;
       if (!o.world) {
         o.component.waket = this.stamp + (this.midstep ? 0 : 1);
         if (o.type == 3) {
@@ -1210,38 +1185,35 @@ export class ZPP_Space {
     if (deleting == null) {
       deleting = false;
     }
-    let _gthis = this;
-    let body = s.body;
+    const _gthis = this;
+    const body = s.body;
     if (!deleting) {
       body.wake();
     }
     let pre = null;
     let cx_ite = body.arbiters.head;
     while (cx_ite != null) {
-      let xarb = cx_ite.elt;
-      let rem = xarb.ws1 == s || xarb.ws2 == s;
+      const xarb = cx_ite.elt;
+      const rem = xarb.ws1 == s || xarb.ws2 == s;
       if (rem) {
         if (xarb.present != 0) {
           this.MRCA_chains(xarb.ws1, xarb.ws2);
           let cx_ite1 = this.mrca1.head;
           while (cx_ite1 != null) {
-            let i1 = cx_ite1.elt;
+            const i1 = cx_ite1.elt;
             let cx_ite2 = this.mrca2.head;
             while (cx_ite2 != null) {
-              let i2 = cx_ite2.elt;
-              let cb1 = i1.cbSet;
-              let cb2 = i2.cbSet;
+              const i2 = cx_ite2.elt;
+              const cb1 = i1.cbSet;
+              const cb2 = i2.cbSet;
               cb1.validate();
               cb2.validate();
-              let _this = cb1.manager;
+              const _this = cb1.manager;
               let ret = null;
-              let pairs =
-                cb1.cbpairs.length < cb2.cbpairs.length
-                  ? cb1.cbpairs
-                  : cb2.cbpairs;
+              const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite3 = pairs.head;
               while (cx_ite3 != null) {
-                let p = cx_ite3.elt;
+                const p = cx_ite3.elt;
                 if ((p.a == cb1 && p.b == cb2) || (p.a == cb2 && p.b == cb1)) {
                   ret = p;
                   break;
@@ -1279,22 +1251,16 @@ export class ZPP_Space {
                 cx_ite2 = cx_ite2.next;
                 continue;
               }
-              let callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+              const callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
               callbackset.remove_arb(xarb);
               xarb.present--;
-              let _this1 = cb1.manager;
+              const _this1 = cb1.manager;
               let ret2 = null;
-              let pairs1 =
-                cb1.cbpairs.length < cb2.cbpairs.length
-                  ? cb1.cbpairs
-                  : cb2.cbpairs;
+              const pairs1 = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite4 = pairs1.head;
               while (cx_ite4 != null) {
-                let p1 = cx_ite4.elt;
-                if (
-                  (p1.a == cb1 && p1.b == cb2) ||
-                  (p1.a == cb2 && p1.b == cb1)
-                ) {
+                const p1 = cx_ite4.elt;
+                if ((p1.a == cb1 && p1.b == cb2) || (p1.a == cb2 && p1.b == cb1)) {
                   ret2 = p1;
                   break;
                 }
@@ -1329,25 +1295,22 @@ export class ZPP_Space {
               }
               let cx_ite5 = ret2.listeners.head;
               while (cx_ite5 != null) {
-                let x = cx_ite5.elt;
+                const x = cx_ite5.elt;
                 if (x.event == 1) {
-                  if (
-                    (x.itype & xarb.type) != 0 &&
-                    callbackset.empty_arb(x.itype)
-                  ) {
-                    let cb = _gthis.push_callback(x);
+                  if ((x.itype & xarb.type) != 0 && callbackset.empty_arb(x.itype)) {
+                    const cb = _gthis.push_callback(x);
                     cb.event = 1;
-                    let o1 = callbackset.int1;
-                    let o2 = callbackset.int2;
+                    const o1 = callbackset.int1;
+                    const o2 = callbackset.int2;
                     let tmp;
-                    let _this2 = x.options1;
-                    let xs = o1.cbTypes;
+                    const _this2 = x.options1;
+                    const xs = o1.cbTypes;
                     if (
                       _this2.nonemptyintersection(xs, _this2.includes) &&
                       !_this2.nonemptyintersection(xs, _this2.excludes)
                     ) {
-                      let _this3 = x.options2;
-                      let xs1 = o2.cbTypes;
+                      const _this3 = x.options2;
+                      const xs1 = o2.cbTypes;
                       tmp =
                         _this3.nonemptyintersection(xs1, _this3.includes) &&
                         !_this3.nonemptyintersection(xs1, _this3.excludes);
@@ -1375,7 +1338,7 @@ export class ZPP_Space {
           }
         }
         if (xarb.b1 != body && xarb.b1.type == 2) {
-          let o = xarb.b1;
+          const o = xarb.b1;
           if (!o.world) {
             o.component.waket = this.stamp + (this.midstep ? 0 : 1);
             if (o.type == 3) {
@@ -1387,7 +1350,7 @@ export class ZPP_Space {
           }
         }
         if (xarb.b2 != body && xarb.b2.type == 2) {
-          let o3 = xarb.b2;
+          const o3 = xarb.b2;
           if (!o3.world) {
             o3.component.waket = this.stamp + (this.midstep ? 0 : 1);
             if (o3.type == 3) {
@@ -1400,7 +1363,7 @@ export class ZPP_Space {
         }
         xarb.cleared = true;
         if (body == null || xarb.b2 == body) {
-          let _this4 = xarb.b1.arbiters;
+          const _this4 = xarb.b1.arbiters;
           let pre1 = null;
           let cur = _this4.head;
           let ret4 = false;
@@ -1423,7 +1386,7 @@ export class ZPP_Space {
                   _this4.pushmod = true;
                 }
               }
-              let o4 = old;
+              const o4 = old;
               o4.elt = null;
               o4.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o4;
@@ -1438,7 +1401,7 @@ export class ZPP_Space {
           }
         }
         if (body == null || xarb.b1 == body) {
-          let _this5 = xarb.b2.arbiters;
+          const _this5 = xarb.b2.arbiters;
           let pre2 = null;
           let cur1 = _this5.head;
           let ret6 = false;
@@ -1461,7 +1424,7 @@ export class ZPP_Space {
                   _this5.pushmod = true;
                 }
               }
-              let o5 = old1;
+              const o5 = old1;
               o5.elt = null;
               o5.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o5;
@@ -1514,19 +1477,19 @@ export class ZPP_Space {
     x.addedToSpace();
     let cx_ite = x.bodies.head;
     while (cx_ite != null) {
-      let i = cx_ite.elt;
+      const i = cx_ite.elt;
       this.addBody(i);
       cx_ite = cx_ite.next;
     }
     let cx_ite1 = x.constraints.head;
     while (cx_ite1 != null) {
-      let i1 = cx_ite1.elt;
+      const i1 = cx_ite1.elt;
       this.addConstraint(i1);
       cx_ite1 = cx_ite1.next;
     }
     let cx_ite2 = x.compounds.head;
     while (cx_ite2 != null) {
-      let i2 = cx_ite2.elt;
+      const i2 = cx_ite2.elt;
       this.addCompound(i2);
       cx_ite2 = cx_ite2.next;
     }
@@ -1535,19 +1498,19 @@ export class ZPP_Space {
   remCompound(x) {
     let cx_ite = x.bodies.head;
     while (cx_ite != null) {
-      let i = cx_ite.elt;
+      const i = cx_ite.elt;
       this.remBody(i);
       cx_ite = cx_ite.next;
     }
     let cx_ite1 = x.constraints.head;
     while (cx_ite1 != null) {
-      let i1 = cx_ite1.elt;
+      const i1 = cx_ite1.elt;
       this.remConstraint(i1);
       cx_ite1 = cx_ite1.next;
     }
     let cx_ite2 = x.compounds.head;
     while (cx_ite2 != null) {
-      let i2 = cx_ite2.elt;
+      const i2 = cx_ite2.elt;
       this.remCompound(i2);
       cx_ite2 = cx_ite2.next;
     }
@@ -1562,7 +1525,7 @@ export class ZPP_Space {
     body.space = this;
     body.addedToSpace();
     body.component.sleeping = true;
-    let o = body;
+    const o = body;
     if (!o.world) {
       o.component.waket = this.stamp + (this.midstep ? 0 : 1);
       if (o.type == 3) {
@@ -1574,13 +1537,13 @@ export class ZPP_Space {
     }
     let cx_ite = body.shapes.head;
     while (cx_ite != null) {
-      let shape = cx_ite.elt;
+      const shape = cx_ite.elt;
       let dontwake = true;
       if (dontwake == null) {
         dontwake = false;
       }
       if (!dontwake) {
-        let o1 = shape.body;
+        const o1 = shape.body;
         if (!o1.world) {
           o1.component.waket = this.stamp + (this.midstep ? 0 : 1);
           if (o1.type == 3) {
@@ -1609,7 +1572,7 @@ export class ZPP_Space {
       flag = -1;
     }
     if (body.type == 1) {
-      let o = body;
+      const o = body;
       if (!o.world) {
         o.component.waket = this.stamp + (this.midstep ? 0 : 1);
         if (o.type == 3) {
@@ -1621,7 +1584,7 @@ export class ZPP_Space {
       }
       this.staticsleep.remove(body);
     } else if (body.type == 2) {
-      let o1 = body;
+      const o1 = body;
       if (!o1.world) {
         o1.component.waket = this.stamp + (this.midstep ? 0 : 1);
         if (o1.type == 3) {
@@ -1636,7 +1599,7 @@ export class ZPP_Space {
       if (flag != 3) {
         this.kinematics.remove(body);
       }
-      let o2 = body;
+      const o2 = body;
       if (!o2.world) {
         o2.component.waket = this.stamp + (this.midstep ? 0 : 1);
         if (o2.type == 3) {
@@ -1650,7 +1613,7 @@ export class ZPP_Space {
     }
     let cx_ite = body.shapes.head;
     while (cx_ite != null) {
-      let shape = cx_ite.elt;
+      const shape = cx_ite.elt;
       this.removed_shape(shape, true);
       cx_ite = cx_ite.next;
     }
@@ -1658,142 +1621,84 @@ export class ZPP_Space {
     body.space = null;
   }
 
-  shapesUnderPoint(x,
-    y,
-    filter,
-    output) {
+  shapesUnderPoint(x, y, filter, output) {
     return this.bphase.shapesUnderPoint(x, y, filter, output);
   }
 
-  bodiesUnderPoint(x,
-    y,
-    filter,
-    output) {
+  bodiesUnderPoint(x, y, filter, output) {
     return this.bphase.bodiesUnderPoint(x, y, filter, output);
   }
 
-  shapesInAABB(aabb,
-    strict,
-    cont,
-    filter,
-    output) {
-    return this.bphase.shapesInAABB(
-      aabb.zpp_inner,
-      strict,
-      cont,
-      filter,
-      output
-    );
+  shapesInAABB(aabb, strict, cont, filter, output) {
+    return this.bphase.shapesInAABB(aabb.zpp_inner, strict, cont, filter, output);
   }
 
-  bodiesInAABB(aabb,
-    strict,
-    cont,
-    filter,
-    output) {
-    return this.bphase.bodiesInAABB(
-      aabb.zpp_inner,
-      strict,
-      cont,
-      filter,
-      output
-    );
+  bodiesInAABB(aabb, strict, cont, filter, output) {
+    return this.bphase.bodiesInAABB(aabb.zpp_inner, strict, cont, filter, output);
   }
 
-  shapesInCircle(pos,
-    rad,
-    cont,
-    filter,
-    output) {
-    let tmp = this.bphase;
+  shapesInCircle(pos, rad, cont, filter, output) {
+    const tmp = this.bphase;
     if (pos != null && pos.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!"
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
-    let _this = pos.zpp_inner;
+    const _this = pos.zpp_inner;
     if (_this._validate != null) {
       _this._validate();
     }
-    let tmp1 = pos.zpp_inner.x;
+    const tmp1 = pos.zpp_inner.x;
     if (pos != null && pos.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!"
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
-    let _this1 = pos.zpp_inner;
+    const _this1 = pos.zpp_inner;
     if (_this1._validate != null) {
       _this1._validate();
     }
     return tmp.shapesInCircle(tmp1, pos.zpp_inner.y, rad, cont, filter, output);
   }
 
-  bodiesInCircle(pos,
-    rad,
-    cont,
-    filter,
-    output) {
-    let tmp = this.bphase;
+  bodiesInCircle(pos, rad, cont, filter, output) {
+    const tmp = this.bphase;
     if (pos != null && pos.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!"
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
-    let _this = pos.zpp_inner;
+    const _this = pos.zpp_inner;
     if (_this._validate != null) {
       _this._validate();
     }
-    let tmp1 = pos.zpp_inner.x;
+    const tmp1 = pos.zpp_inner.x;
     if (pos != null && pos.zpp_disp) {
-      throw new Error(
-        "Error: " + "Vec2" + " has been disposed and cannot be used!"
-      );
+      throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
     }
-    let _this1 = pos.zpp_inner;
+    const _this1 = pos.zpp_inner;
     if (_this1._validate != null) {
       _this1._validate();
     }
     return tmp.bodiesInCircle(tmp1, pos.zpp_inner.y, rad, cont, filter, output);
   }
 
-  shapesInShape(shape,
-    cont,
-    filter,
-    output) {
+  shapesInShape(shape, cont, filter, output) {
     return this.bphase.shapesInShape(shape, cont, filter, output);
   }
 
-  bodiesInShape(shape,
-    cont,
-    filter,
-    output) {
+  bodiesInShape(shape, cont, filter, output) {
     return this.bphase.bodiesInShape(shape, cont, filter, output);
   }
 
   rayCast(ray, inner, filter) {
-    return this.bphase.rayCast(
-      ray.zpp_inner,
-      inner,
-      filter == null ? null : filter.zpp_inner
-    );
+    return this.bphase.rayCast(ray.zpp_inner, inner, filter == null ? null : filter.zpp_inner);
   }
 
-  rayMultiCast(ray,
-    inner,
-    filter,
-    output) {
+  rayMultiCast(ray, inner, filter, output) {
     return this.bphase.rayMultiCast(
       ray.zpp_inner,
       inner,
       filter == null ? null : filter.zpp_inner,
-      output
+      output,
     );
   }
 
-  convexCast(shape,
-    deltaTime,
-    filter,
-    dynamics) {
+  convexCast(shape, deltaTime, filter, dynamics) {
     let toi;
     if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
       toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
@@ -1806,18 +1711,16 @@ export class ZPP_Space {
     toi.s1 = toi.s2 = null;
     toi.arbiter = null;
     if (shape.type == 0) {
-      let _this = shape.circle;
+      const _this = shape.circle;
       if (_this.zip_worldCOM) {
         if (_this.body != null) {
           _this.zip_worldCOM = false;
           if (_this.zip_localCOM) {
             _this.zip_localCOM = false;
             if (_this.type == 1) {
-              let _this1 = _this.polygon;
+              const _this1 = _this.polygon;
               if (_this1.lverts.next == null) {
-                throw new Error(
-                  "Error: An empty polygon has no meaningful localCOM"
-                );
+                throw new Error("Error: An empty polygon has no meaningful localCOM");
               }
               if (_this1.lverts.next.next == null) {
                 _this1.localCOMx = _this1.lverts.next.x;
@@ -1825,10 +1728,10 @@ export class ZPP_Space {
               } else if (_this1.lverts.next.next.next == null) {
                 _this1.localCOMx = _this1.lverts.next.x;
                 _this1.localCOMy = _this1.lverts.next.y;
-                let t = 1.0;
+                const t = 1.0;
                 _this1.localCOMx += _this1.lverts.next.next.x * t;
                 _this1.localCOMy += _this1.lverts.next.next.y * t;
-                let t1 = 0.5;
+                const t1 = 0.5;
                 _this1.localCOMx *= t1;
                 _this1.localCOMy *= t1;
               } else {
@@ -1841,9 +1744,9 @@ export class ZPP_Space {
                 let v = cx_ite;
                 cx_ite = cx_ite.next;
                 while (cx_ite != null) {
-                  let w = cx_ite;
+                  const w = cx_ite;
                   area += v.x * (w.y - u.y);
-                  let cf = w.y * v.x - w.x * v.y;
+                  const cf = w.y * v.x - w.x * v.y;
                   _this1.localCOMx += (v.x + w.x) * cf;
                   _this1.localCOMy += (v.y + w.y) * cf;
                   u = v;
@@ -1851,21 +1754,21 @@ export class ZPP_Space {
                   cx_ite = cx_ite.next;
                 }
                 cx_ite = _this1.lverts.next;
-                let w1 = cx_ite;
+                const w1 = cx_ite;
                 area += v.x * (w1.y - u.y);
-                let cf1 = w1.y * v.x - w1.x * v.y;
+                const cf1 = w1.y * v.x - w1.x * v.y;
                 _this1.localCOMx += (v.x + w1.x) * cf1;
                 _this1.localCOMy += (v.y + w1.y) * cf1;
                 u = v;
                 v = w1;
                 cx_ite = cx_ite.next;
-                let w2 = cx_ite;
+                const w2 = cx_ite;
                 area += v.x * (w2.y - u.y);
-                let cf2 = w2.y * v.x - w2.x * v.y;
+                const cf2 = w2.y * v.x - w2.x * v.y;
                 _this1.localCOMx += (v.x + w2.x) * cf2;
                 _this1.localCOMy += (v.y + w2.y) * cf2;
                 area = 1 / (3 * area);
-                let t2 = area;
+                const t2 = area;
                 _this1.localCOMx *= t2;
                 _this1.localCOMy *= t2;
               }
@@ -1875,7 +1778,7 @@ export class ZPP_Space {
               _this.wrap_localCOM.zpp_inner.y = _this.localCOMy;
             }
           }
-          let _this2 = _this.body;
+          const _this2 = _this.body;
           if (_this2.zip_axis) {
             _this2.zip_axis = false;
             _this2.axisx = Math.sin(_this2.rot);
@@ -1883,21 +1786,19 @@ export class ZPP_Space {
           }
           _this.worldCOMx =
             _this.body.posx +
-            (_this.body.axisy * _this.localCOMx -
-              _this.body.axisx * _this.localCOMy);
+            (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
           _this.worldCOMy =
             _this.body.posy +
-            (_this.localCOMx * _this.body.axisx +
-              _this.localCOMy * _this.body.axisy);
+            (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
         }
       }
     } else {
-      let _this3 = shape.polygon;
+      const _this3 = shape.polygon;
       if (_this3.zip_gaxi) {
         if (_this3.body != null) {
           _this3.zip_gaxi = false;
           _this3.validate_laxi();
-          let _this4 = _this3.body;
+          const _this4 = _this3.body;
           if (_this4.zip_axis) {
             _this4.zip_axis = false;
             _this4.axisx = Math.sin(_this4.rot);
@@ -1907,7 +1808,7 @@ export class ZPP_Space {
             if (_this3.body != null) {
               _this3.zip_gverts = false;
               _this3.validate_lverts();
-              let _this5 = _this3.body;
+              const _this5 = _this3.body;
               if (_this5.zip_axis) {
                 _this5.zip_axis = false;
                 _this5.axisx = Math.sin(_this5.rot);
@@ -1916,15 +1817,11 @@ export class ZPP_Space {
               let li = _this3.lverts.next;
               let cx_ite1 = _this3.gverts.next;
               while (cx_ite1 != null) {
-                let g = cx_ite1;
-                let l = li;
+                const g = cx_ite1;
+                const l = li;
                 li = li.next;
-                g.x =
-                  _this3.body.posx +
-                  (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
-                g.y =
-                  _this3.body.posy +
-                  (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
+                g.x = _this3.body.posx + (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
+                g.y = _this3.body.posy + (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
                 cx_ite1 = cx_ite1.next;
               }
             }
@@ -1934,19 +1831,15 @@ export class ZPP_Space {
           let u1 = cx_ite2;
           cx_ite2 = cx_ite2.next;
           while (cx_ite2 != null) {
-            let v1 = cx_ite2;
-            let e = ite.elt;
+            const v1 = cx_ite2;
+            const e = ite.elt;
             ite = ite.next;
             e.gp0 = u1;
             e.gp1 = v1;
-            e.gnormx =
-              _this3.body.axisy * e.lnormx - _this3.body.axisx * e.lnormy;
-            e.gnormy =
-              e.lnormx * _this3.body.axisx + e.lnormy * _this3.body.axisy;
+            e.gnormx = _this3.body.axisy * e.lnormx - _this3.body.axisx * e.lnormy;
+            e.gnormy = e.lnormx * _this3.body.axisx + e.lnormy * _this3.body.axisy;
             e.gprojection =
-              _this3.body.posx * e.gnormx +
-              _this3.body.posy * e.gnormy +
-              e.lprojection;
+              _this3.body.posx * e.gnormx + _this3.body.posy * e.gnormy + e.lprojection;
             if (e.wrap_gnorm != null) {
               e.wrap_gnorm.zpp_inner.x = e.gnormx;
               e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -1956,19 +1849,15 @@ export class ZPP_Space {
             u1 = v1;
             cx_ite2 = cx_ite2.next;
           }
-          let v2 = _this3.gverts.next;
-          let e1 = ite.elt;
+          const v2 = _this3.gverts.next;
+          const e1 = ite.elt;
           ite = ite.next;
           e1.gp0 = u1;
           e1.gp1 = v2;
-          e1.gnormx =
-            _this3.body.axisy * e1.lnormx - _this3.body.axisx * e1.lnormy;
-          e1.gnormy =
-            e1.lnormx * _this3.body.axisx + e1.lnormy * _this3.body.axisy;
+          e1.gnormx = _this3.body.axisy * e1.lnormx - _this3.body.axisx * e1.lnormy;
+          e1.gnormy = e1.lnormx * _this3.body.axisx + e1.lnormy * _this3.body.axisy;
           e1.gprojection =
-            _this3.body.posx * e1.gnormx +
-            _this3.body.posy * e1.gnormy +
-            e1.lprojection;
+            _this3.body.posx * e1.gnormx + _this3.body.posy * e1.gnormy + e1.lprojection;
           if (e1.wrap_gnorm != null) {
             e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
             e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -1978,37 +1867,37 @@ export class ZPP_Space {
         }
       }
     }
-    let body = shape.body;
-    let prex = body.posx;
-    let prey = body.posy;
+    const body = shape.body;
+    const prex = body.posx;
+    const prey = body.posy;
     body.sweepTime = 0;
     body.sweep_angvel = body.angvel;
-    let delta = deltaTime - body.sweepTime;
+    const delta = deltaTime - body.sweepTime;
     if (delta != 0) {
       body.sweepTime = deltaTime;
-      let t3 = delta;
+      const t3 = delta;
       body.posx += body.velx * t3;
       body.posy += body.vely * t3;
       if (body.angvel != 0) {
-        let dr = body.sweep_angvel * delta;
+        const dr = body.sweep_angvel * delta;
         body.rot += dr;
         if (dr * dr > 0.0001) {
           body.axisx = Math.sin(body.rot);
           body.axisy = Math.cos(body.rot);
         } else {
-          let d2 = dr * dr;
-          let p = 1 - 0.5 * d2;
-          let m = 1 - (d2 * d2) / 8;
-          let nx = (p * body.axisx + dr * body.axisy) * m;
+          const d2 = dr * dr;
+          const p = 1 - 0.5 * d2;
+          const m = 1 - (d2 * d2) / 8;
+          const nx = (p * body.axisx + dr * body.axisy) * m;
           body.axisy = (p * body.axisy - dr * body.axisx) * m;
           body.axisx = nx;
         }
       }
     }
-    let postx = body.posx;
-    let posty = body.posy;
+    const postx = body.posx;
+    const posty = body.posy;
     shape.validate_sweepRadius();
-    let rad = shape.sweepRadius;
+    const rad = shape.sweepRadius;
     let aabb;
     if (ZPP_AABB.zpp_pool == null) {
       aabb = new ZPP_AABB();
@@ -2017,26 +1906,26 @@ export class ZPP_Space {
       ZPP_AABB.zpp_pool = aabb.next;
       aabb.next = null;
     }
-    let x = prex;
-    let y = postx;
+    const x = prex;
+    const y = postx;
     aabb.minx = (x < y ? x : y) - rad;
-    let x1 = prex;
-    let y1 = postx;
+    const x1 = prex;
+    const y1 = postx;
     aabb.maxx = (x1 > y1 ? x1 : y1) + rad;
-    let x2 = prey;
-    let y2 = posty;
+    const x2 = prey;
+    const y2 = posty;
     aabb.miny = (x2 < y2 ? x2 : y2) - rad;
-    let x3 = prey;
-    let y3 = posty;
+    const x3 = prey;
+    const y3 = posty;
     aabb.maxy = (x3 > y3 ? x3 : y3) + rad;
-    let list = (this.convexShapeList = this.bphase.shapesInAABB(
+    const list = (this.convexShapeList = this.bphase.shapesInAABB(
       aabb,
       false,
       false,
       filter == null ? null : filter.zpp_inner,
-      this.convexShapeList
+      this.convexShapeList,
     ));
-    let o = aabb;
+    const o = aabb;
     if (o.outer != null) {
       o.outer.zpp_inner = null;
       o.outer = null;
@@ -2057,16 +1946,16 @@ export class ZPP_Space {
     let mins = null;
     let mint = deltaTime + 1;
     list.zpp_inner.valmod();
-    let _g = ZPP_Space._nape.shape.ShapeIterator.get(list);
+    const _g = ZPP_Space._nape.shape.ShapeIterator.get(list);
     while (true) {
       _g.zpp_inner.zpp_inner.valmod();
-      let _this6 = _g.zpp_inner;
+      const _this6 = _g.zpp_inner;
       _this6.zpp_inner.valmod();
       if (_this6.zpp_inner.zip_length) {
         _this6.zpp_inner.zip_length = false;
         _this6.zpp_inner.user_length = _this6.zpp_inner.inner.length;
       }
-      let length = _this6.zpp_inner.user_length;
+      const length = _this6.zpp_inner.user_length;
       _g.zpp_critical = true;
       let tmp;
       if (_g.zpp_i < length) {
@@ -2081,7 +1970,7 @@ export class ZPP_Space {
         break;
       }
       _g.zpp_critical = false;
-      let s = _g.zpp_inner.at(_g.zpp_i++);
+      const s = _g.zpp_inner.at(_g.zpp_i++);
       if (
         s != shape.outer &&
         (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null) != body.outer
@@ -2090,66 +1979,48 @@ export class ZPP_Space {
         toi.s2 = s.zpp_inner;
         if (dynamics) {
           s.zpp_inner.validate_sweepRadius();
-          (s.zpp_inner.body != null
-            ? s.zpp_inner.body.outer
-            : null
-          ).zpp_inner.sweep_angvel = (
+          (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner.sweep_angvel = (
             s.zpp_inner.body != null ? s.zpp_inner.body.outer : null
           ).zpp_inner.angvel;
-          (s.zpp_inner.body != null
-            ? s.zpp_inner.body.outer
-            : null
-          ).zpp_inner.sweepTime = 0;
-          ZPP_SweepDistance.dynamicSweep(
-            toi,
-            deltaTime,
-            0,
-            0,
-            true
-          );
-          let _this7 = (
-            s.zpp_inner.body != null ? s.zpp_inner.body.outer : null
-          ).zpp_inner;
-          let delta1 = 0 - _this7.sweepTime;
+          (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner.sweepTime = 0;
+          ZPP_SweepDistance.dynamicSweep(toi, deltaTime, 0, 0, true);
+          const _this7 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
+          const delta1 = 0 - _this7.sweepTime;
           if (delta1 != 0) {
             _this7.sweepTime = 0;
-            let t4 = delta1;
+            const t4 = delta1;
             _this7.posx += _this7.velx * t4;
             _this7.posy += _this7.vely * t4;
             if (_this7.angvel != 0) {
-              let dr1 = _this7.sweep_angvel * delta1;
+              const dr1 = _this7.sweep_angvel * delta1;
               _this7.rot += dr1;
               if (dr1 * dr1 > 0.0001) {
                 _this7.axisx = Math.sin(_this7.rot);
                 _this7.axisy = Math.cos(_this7.rot);
               } else {
-                let d21 = dr1 * dr1;
-                let p1 = 1 - 0.5 * d21;
-                let m1 = 1 - (d21 * d21) / 8;
-                let nx1 = (p1 * _this7.axisx + dr1 * _this7.axisy) * m1;
+                const d21 = dr1 * dr1;
+                const p1 = 1 - 0.5 * d21;
+                const m1 = 1 - (d21 * d21) / 8;
+                const nx1 = (p1 * _this7.axisx + dr1 * _this7.axisy) * m1;
                 _this7.axisy = (p1 * _this7.axisy - dr1 * _this7.axisx) * m1;
                 _this7.axisx = nx1;
               }
             }
           }
-          let _this8 = (
-            s.zpp_inner.body != null ? s.zpp_inner.body.outer : null
-          ).zpp_inner;
-          let s1 = s.zpp_inner;
+          const _this8 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
+          const s1 = s.zpp_inner;
           if (s1.type == 0) {
             s1.worldCOMx =
-              _this8.posx +
-              (_this8.axisy * s1.localCOMx - _this8.axisx * s1.localCOMy);
+              _this8.posx + (_this8.axisy * s1.localCOMx - _this8.axisx * s1.localCOMy);
             s1.worldCOMy =
-              _this8.posy +
-              (s1.localCOMx * _this8.axisx + s1.localCOMy * _this8.axisy);
+              _this8.posy + (s1.localCOMx * _this8.axisx + s1.localCOMy * _this8.axisy);
           } else {
-            let p2 = s1.polygon;
+            const p2 = s1.polygon;
             let li1 = p2.lverts.next;
             let cx_ite3 = p2.gverts.next;
             while (cx_ite3 != null) {
-              let g1 = cx_ite3;
-              let l1 = li1;
+              const g1 = cx_ite3;
+              const l1 = li1;
               li1 = li1.next;
               g1.x = _this8.posx + (_this8.axisy * l1.x - _this8.axisx * l1.y);
               g1.y = _this8.posy + (l1.x * _this8.axisx + l1.y * _this8.axisy);
@@ -2160,29 +2031,23 @@ export class ZPP_Space {
             let u2 = cx_ite4;
             cx_ite4 = cx_ite4.next;
             while (cx_ite4 != null) {
-              let v3 = cx_ite4;
-              let e2 = ite1.elt;
+              const v3 = cx_ite4;
+              const e2 = ite1.elt;
               ite1 = ite1.next;
               e2.gnormx = _this8.axisy * e2.lnormx - _this8.axisx * e2.lnormy;
               e2.gnormy = e2.lnormx * _this8.axisx + e2.lnormy * _this8.axisy;
-              e2.gprojection =
-                _this8.posx * e2.gnormx +
-                _this8.posy * e2.gnormy +
-                e2.lprojection;
+              e2.gprojection = _this8.posx * e2.gnormx + _this8.posy * e2.gnormy + e2.lprojection;
               e2.tp0 = u2.y * e2.gnormx - u2.x * e2.gnormy;
               e2.tp1 = v3.y * e2.gnormx - v3.x * e2.gnormy;
               u2 = v3;
               cx_ite4 = cx_ite4.next;
             }
-            let v4 = p2.gverts.next;
-            let e3 = ite1.elt;
+            const v4 = p2.gverts.next;
+            const e3 = ite1.elt;
             ite1 = ite1.next;
             e3.gnormx = _this8.axisy * e3.lnormx - _this8.axisx * e3.lnormy;
             e3.gnormy = e3.lnormx * _this8.axisx + e3.lnormy * _this8.axisy;
-            e3.gprojection =
-              _this8.posx * e3.gnormx +
-              _this8.posy * e3.gnormy +
-              e3.lprojection;
+            e3.gprojection = _this8.posx * e3.gnormx + _this8.posy * e3.gnormy + e3.lprojection;
             e3.tp0 = u2.y * e3.gnormx - u2.x * e3.gnormy;
             e3.tp1 = v4.y * e3.gnormx - v4.x * e3.gnormy;
           }
@@ -2201,45 +2066,41 @@ export class ZPP_Space {
       }
     }
     list.clear();
-    let o1 = toi;
+    const o1 = toi;
     o1.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
     ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o1;
-    let delta2 = 0 - body.sweepTime;
+    const delta2 = 0 - body.sweepTime;
     if (delta2 != 0) {
       body.sweepTime = 0;
-      let t5 = delta2;
+      const t5 = delta2;
       body.posx += body.velx * t5;
       body.posy += body.vely * t5;
       if (body.angvel != 0) {
-        let dr2 = body.sweep_angvel * delta2;
+        const dr2 = body.sweep_angvel * delta2;
         body.rot += dr2;
         if (dr2 * dr2 > 0.0001) {
           body.axisx = Math.sin(body.rot);
           body.axisy = Math.cos(body.rot);
         } else {
-          let d22 = dr2 * dr2;
-          let p3 = 1 - 0.5 * d22;
-          let m2 = 1 - (d22 * d22) / 8;
-          let nx2 = (p3 * body.axisx + dr2 * body.axisy) * m2;
+          const d22 = dr2 * dr2;
+          const p3 = 1 - 0.5 * d22;
+          const m2 = 1 - (d22 * d22) / 8;
+          const nx2 = (p3 * body.axisx + dr2 * body.axisy) * m2;
           body.axisy = (p3 * body.axisy - dr2 * body.axisx) * m2;
           body.axisx = nx2;
         }
       }
     }
     if (shape.type == 0) {
-      shape.worldCOMx =
-        body.posx +
-        (body.axisy * shape.localCOMx - body.axisx * shape.localCOMy);
-      shape.worldCOMy =
-        body.posy +
-        (shape.localCOMx * body.axisx + shape.localCOMy * body.axisy);
+      shape.worldCOMx = body.posx + (body.axisy * shape.localCOMx - body.axisx * shape.localCOMy);
+      shape.worldCOMy = body.posy + (shape.localCOMx * body.axisx + shape.localCOMy * body.axisy);
     } else {
-      let p4 = shape.polygon;
+      const p4 = shape.polygon;
       let li2 = p4.lverts.next;
       let cx_ite5 = p4.gverts.next;
       while (cx_ite5 != null) {
-        let g2 = cx_ite5;
-        let l2 = li2;
+        const g2 = cx_ite5;
+        const l2 = li2;
         li2 = li2.next;
         g2.x = body.posx + (body.axisy * l2.x - body.axisx * l2.y);
         g2.y = body.posy + (l2.x * body.axisx + l2.y * body.axisy);
@@ -2250,25 +2111,23 @@ export class ZPP_Space {
       let u3 = cx_ite6;
       cx_ite6 = cx_ite6.next;
       while (cx_ite6 != null) {
-        let v5 = cx_ite6;
-        let e4 = ite2.elt;
+        const v5 = cx_ite6;
+        const e4 = ite2.elt;
         ite2 = ite2.next;
         e4.gnormx = body.axisy * e4.lnormx - body.axisx * e4.lnormy;
         e4.gnormy = e4.lnormx * body.axisx + e4.lnormy * body.axisy;
-        e4.gprojection =
-          body.posx * e4.gnormx + body.posy * e4.gnormy + e4.lprojection;
+        e4.gprojection = body.posx * e4.gnormx + body.posy * e4.gnormy + e4.lprojection;
         e4.tp0 = u3.y * e4.gnormx - u3.x * e4.gnormy;
         e4.tp1 = v5.y * e4.gnormx - v5.x * e4.gnormy;
         u3 = v5;
         cx_ite6 = cx_ite6.next;
       }
-      let v6 = p4.gverts.next;
-      let e5 = ite2.elt;
+      const v6 = p4.gverts.next;
+      const e5 = ite2.elt;
       ite2 = ite2.next;
       e5.gnormx = body.axisy * e5.lnormx - body.axisx * e5.lnormy;
       e5.gnormy = e5.lnormx * body.axisx + e5.lnormy * body.axisy;
-      e5.gprojection =
-        body.posx * e5.gnormx + body.posy * e5.gnormy + e5.lprojection;
+      e5.gprojection = body.posx * e5.gnormx + body.posy * e5.gnormy + e5.lprojection;
       e5.tp0 = u3.y * e5.gnormx - u3.x * e5.gnormy;
       e5.tp1 = v6.y * e5.gnormx - v6.x * e5.gnormy;
     }
@@ -2313,11 +2172,9 @@ export class ZPP_Space {
         ret.zpp_inner.outer = ret;
       } else {
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!"
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
-        let _this9 = ret.zpp_inner;
+        const _this9 = ret.zpp_inner;
         if (_this9._immutable) {
           throw new Error("Error: Vec2 is immutable");
         }
@@ -2329,21 +2186,17 @@ export class ZPP_Space {
         }
         let tmp1;
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!"
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
-        let _this10 = ret.zpp_inner;
+        const _this10 = ret.zpp_inner;
         if (_this10._validate != null) {
           _this10._validate();
         }
         if (ret.zpp_inner.x == x4) {
           if (ret != null && ret.zpp_disp) {
-            throw new Error(
-              "Error: " + "Vec2" + " has been disposed and cannot be used!"
-            );
+            throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
           }
-          let _this11 = ret.zpp_inner;
+          const _this11 = ret.zpp_inner;
           if (_this11._validate != null) {
             _this11._validate();
           }
@@ -2354,7 +2207,7 @@ export class ZPP_Space {
         if (!tmp1) {
           ret.zpp_inner.x = x4;
           ret.zpp_inner.y = y4;
-          let _this12 = ret.zpp_inner;
+          const _this12 = ret.zpp_inner;
           if (_this12._invalidate != null) {
             _this12._invalidate(_this12);
           }
@@ -2401,11 +2254,9 @@ export class ZPP_Space {
         ret2.zpp_inner.outer = ret2;
       } else {
         if (ret2 != null && ret2.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!"
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
-        let _this13 = ret2.zpp_inner;
+        const _this13 = ret2.zpp_inner;
         if (_this13._immutable) {
           throw new Error("Error: Vec2 is immutable");
         }
@@ -2417,21 +2268,17 @@ export class ZPP_Space {
         }
         let tmp2;
         if (ret2 != null && ret2.zpp_disp) {
-          throw new Error(
-            "Error: " + "Vec2" + " has been disposed and cannot be used!"
-          );
+          throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
         }
-        let _this14 = ret2.zpp_inner;
+        const _this14 = ret2.zpp_inner;
         if (_this14._validate != null) {
           _this14._validate();
         }
         if (ret2.zpp_inner.x == x5) {
           if (ret2 != null && ret2.zpp_disp) {
-            throw new Error(
-              "Error: " + "Vec2" + " has been disposed and cannot be used!"
-            );
+            throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
           }
-          let _this15 = ret2.zpp_inner;
+          const _this15 = ret2.zpp_inner;
           if (_this15._validate != null) {
             _this15._validate();
           }
@@ -2442,7 +2289,7 @@ export class ZPP_Space {
         if (!tmp2) {
           ret2.zpp_inner.x = x5;
           ret2.zpp_inner.y = y5;
-          let _this16 = ret2.zpp_inner;
+          const _this16 = ret2.zpp_inner;
           if (_this16._invalidate != null) {
             _this16._invalidate(_this16);
           }
@@ -2457,18 +2304,16 @@ export class ZPP_Space {
 
   prepareCast(s) {
     if (s.type == 0) {
-      let _this = s.circle;
+      const _this = s.circle;
       if (_this.zip_worldCOM) {
         if (_this.body != null) {
           _this.zip_worldCOM = false;
           if (_this.zip_localCOM) {
             _this.zip_localCOM = false;
             if (_this.type == 1) {
-              let _this1 = _this.polygon;
+              const _this1 = _this.polygon;
               if (_this1.lverts.next == null) {
-                throw new Error(
-                  "Error: An empty polygon has no meaningful localCOM"
-                );
+                throw new Error("Error: An empty polygon has no meaningful localCOM");
               }
               if (_this1.lverts.next.next == null) {
                 _this1.localCOMx = _this1.lverts.next.x;
@@ -2476,10 +2321,10 @@ export class ZPP_Space {
               } else if (_this1.lverts.next.next.next == null) {
                 _this1.localCOMx = _this1.lverts.next.x;
                 _this1.localCOMy = _this1.lverts.next.y;
-                let t = 1.0;
+                const t = 1.0;
                 _this1.localCOMx += _this1.lverts.next.next.x * t;
                 _this1.localCOMy += _this1.lverts.next.next.y * t;
-                let t1 = 0.5;
+                const t1 = 0.5;
                 _this1.localCOMx *= t1;
                 _this1.localCOMy *= t1;
               } else {
@@ -2492,9 +2337,9 @@ export class ZPP_Space {
                 let v = cx_ite;
                 cx_ite = cx_ite.next;
                 while (cx_ite != null) {
-                  let w = cx_ite;
+                  const w = cx_ite;
                   area += v.x * (w.y - u.y);
-                  let cf = w.y * v.x - w.x * v.y;
+                  const cf = w.y * v.x - w.x * v.y;
                   _this1.localCOMx += (v.x + w.x) * cf;
                   _this1.localCOMy += (v.y + w.y) * cf;
                   u = v;
@@ -2502,21 +2347,21 @@ export class ZPP_Space {
                   cx_ite = cx_ite.next;
                 }
                 cx_ite = _this1.lverts.next;
-                let w1 = cx_ite;
+                const w1 = cx_ite;
                 area += v.x * (w1.y - u.y);
-                let cf1 = w1.y * v.x - w1.x * v.y;
+                const cf1 = w1.y * v.x - w1.x * v.y;
                 _this1.localCOMx += (v.x + w1.x) * cf1;
                 _this1.localCOMy += (v.y + w1.y) * cf1;
                 u = v;
                 v = w1;
                 cx_ite = cx_ite.next;
-                let w2 = cx_ite;
+                const w2 = cx_ite;
                 area += v.x * (w2.y - u.y);
-                let cf2 = w2.y * v.x - w2.x * v.y;
+                const cf2 = w2.y * v.x - w2.x * v.y;
                 _this1.localCOMx += (v.x + w2.x) * cf2;
                 _this1.localCOMy += (v.y + w2.y) * cf2;
                 area = 1 / (3 * area);
-                let t2 = area;
+                const t2 = area;
                 _this1.localCOMx *= t2;
                 _this1.localCOMy *= t2;
               }
@@ -2526,7 +2371,7 @@ export class ZPP_Space {
               _this.wrap_localCOM.zpp_inner.y = _this.localCOMy;
             }
           }
-          let _this2 = _this.body;
+          const _this2 = _this.body;
           if (_this2.zip_axis) {
             _this2.zip_axis = false;
             _this2.axisx = Math.sin(_this2.rot);
@@ -2534,21 +2379,19 @@ export class ZPP_Space {
           }
           _this.worldCOMx =
             _this.body.posx +
-            (_this.body.axisy * _this.localCOMx -
-              _this.body.axisx * _this.localCOMy);
+            (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
           _this.worldCOMy =
             _this.body.posy +
-            (_this.localCOMx * _this.body.axisx +
-              _this.localCOMy * _this.body.axisy);
+            (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
         }
       }
     } else {
-      let _this3 = s.polygon;
+      const _this3 = s.polygon;
       if (_this3.zip_gaxi) {
         if (_this3.body != null) {
           _this3.zip_gaxi = false;
           _this3.validate_laxi();
-          let _this4 = _this3.body;
+          const _this4 = _this3.body;
           if (_this4.zip_axis) {
             _this4.zip_axis = false;
             _this4.axisx = Math.sin(_this4.rot);
@@ -2558,7 +2401,7 @@ export class ZPP_Space {
             if (_this3.body != null) {
               _this3.zip_gverts = false;
               _this3.validate_lverts();
-              let _this5 = _this3.body;
+              const _this5 = _this3.body;
               if (_this5.zip_axis) {
                 _this5.zip_axis = false;
                 _this5.axisx = Math.sin(_this5.rot);
@@ -2567,15 +2410,11 @@ export class ZPP_Space {
               let li = _this3.lverts.next;
               let cx_ite1 = _this3.gverts.next;
               while (cx_ite1 != null) {
-                let g = cx_ite1;
-                let l = li;
+                const g = cx_ite1;
+                const l = li;
                 li = li.next;
-                g.x =
-                  _this3.body.posx +
-                  (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
-                g.y =
-                  _this3.body.posy +
-                  (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
+                g.x = _this3.body.posx + (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
+                g.y = _this3.body.posy + (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
                 cx_ite1 = cx_ite1.next;
               }
             }
@@ -2585,19 +2424,15 @@ export class ZPP_Space {
           let u1 = cx_ite2;
           cx_ite2 = cx_ite2.next;
           while (cx_ite2 != null) {
-            let v1 = cx_ite2;
-            let e = ite.elt;
+            const v1 = cx_ite2;
+            const e = ite.elt;
             ite = ite.next;
             e.gp0 = u1;
             e.gp1 = v1;
-            e.gnormx =
-              _this3.body.axisy * e.lnormx - _this3.body.axisx * e.lnormy;
-            e.gnormy =
-              e.lnormx * _this3.body.axisx + e.lnormy * _this3.body.axisy;
+            e.gnormx = _this3.body.axisy * e.lnormx - _this3.body.axisx * e.lnormy;
+            e.gnormy = e.lnormx * _this3.body.axisx + e.lnormy * _this3.body.axisy;
             e.gprojection =
-              _this3.body.posx * e.gnormx +
-              _this3.body.posy * e.gnormy +
-              e.lprojection;
+              _this3.body.posx * e.gnormx + _this3.body.posy * e.gnormy + e.lprojection;
             if (e.wrap_gnorm != null) {
               e.wrap_gnorm.zpp_inner.x = e.gnormx;
               e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -2607,19 +2442,15 @@ export class ZPP_Space {
             u1 = v1;
             cx_ite2 = cx_ite2.next;
           }
-          let v2 = _this3.gverts.next;
-          let e1 = ite.elt;
+          const v2 = _this3.gverts.next;
+          const e1 = ite.elt;
           ite = ite.next;
           e1.gp0 = u1;
           e1.gp1 = v2;
-          e1.gnormx =
-            _this3.body.axisy * e1.lnormx - _this3.body.axisx * e1.lnormy;
-          e1.gnormy =
-            e1.lnormx * _this3.body.axisx + e1.lnormy * _this3.body.axisy;
+          e1.gnormx = _this3.body.axisy * e1.lnormx - _this3.body.axisx * e1.lnormy;
+          e1.gnormy = e1.lnormx * _this3.body.axisx + e1.lnormy * _this3.body.axisy;
           e1.gprojection =
-            _this3.body.posx * e1.gnormx +
-            _this3.body.posy * e1.gnormy +
-            e1.lprojection;
+            _this3.body.posx * e1.gnormx + _this3.body.posy * e1.gnormy + e1.lprojection;
           if (e1.wrap_gnorm != null) {
             e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
             e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -2631,11 +2462,7 @@ export class ZPP_Space {
     }
   }
 
-  convexMultiCast(shape,
-    deltaTime,
-    filter,
-    dynamics,
-    output) {
+  convexMultiCast(shape, deltaTime, filter, dynamics, output) {
     let toi;
     if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
       toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
@@ -2648,18 +2475,16 @@ export class ZPP_Space {
     toi.s1 = toi.s2 = null;
     toi.arbiter = null;
     if (shape.type == 0) {
-      let _this = shape.circle;
+      const _this = shape.circle;
       if (_this.zip_worldCOM) {
         if (_this.body != null) {
           _this.zip_worldCOM = false;
           if (_this.zip_localCOM) {
             _this.zip_localCOM = false;
             if (_this.type == 1) {
-              let _this1 = _this.polygon;
+              const _this1 = _this.polygon;
               if (_this1.lverts.next == null) {
-                throw new Error(
-                  "Error: An empty polygon has no meaningful localCOM"
-                );
+                throw new Error("Error: An empty polygon has no meaningful localCOM");
               }
               if (_this1.lverts.next.next == null) {
                 _this1.localCOMx = _this1.lverts.next.x;
@@ -2667,10 +2492,10 @@ export class ZPP_Space {
               } else if (_this1.lverts.next.next.next == null) {
                 _this1.localCOMx = _this1.lverts.next.x;
                 _this1.localCOMy = _this1.lverts.next.y;
-                let t = 1.0;
+                const t = 1.0;
                 _this1.localCOMx += _this1.lverts.next.next.x * t;
                 _this1.localCOMy += _this1.lverts.next.next.y * t;
-                let t1 = 0.5;
+                const t1 = 0.5;
                 _this1.localCOMx *= t1;
                 _this1.localCOMy *= t1;
               } else {
@@ -2683,9 +2508,9 @@ export class ZPP_Space {
                 let v = cx_ite;
                 cx_ite = cx_ite.next;
                 while (cx_ite != null) {
-                  let w = cx_ite;
+                  const w = cx_ite;
                   area += v.x * (w.y - u.y);
-                  let cf = w.y * v.x - w.x * v.y;
+                  const cf = w.y * v.x - w.x * v.y;
                   _this1.localCOMx += (v.x + w.x) * cf;
                   _this1.localCOMy += (v.y + w.y) * cf;
                   u = v;
@@ -2693,21 +2518,21 @@ export class ZPP_Space {
                   cx_ite = cx_ite.next;
                 }
                 cx_ite = _this1.lverts.next;
-                let w1 = cx_ite;
+                const w1 = cx_ite;
                 area += v.x * (w1.y - u.y);
-                let cf1 = w1.y * v.x - w1.x * v.y;
+                const cf1 = w1.y * v.x - w1.x * v.y;
                 _this1.localCOMx += (v.x + w1.x) * cf1;
                 _this1.localCOMy += (v.y + w1.y) * cf1;
                 u = v;
                 v = w1;
                 cx_ite = cx_ite.next;
-                let w2 = cx_ite;
+                const w2 = cx_ite;
                 area += v.x * (w2.y - u.y);
-                let cf2 = w2.y * v.x - w2.x * v.y;
+                const cf2 = w2.y * v.x - w2.x * v.y;
                 _this1.localCOMx += (v.x + w2.x) * cf2;
                 _this1.localCOMy += (v.y + w2.y) * cf2;
                 area = 1 / (3 * area);
-                let t2 = area;
+                const t2 = area;
                 _this1.localCOMx *= t2;
                 _this1.localCOMy *= t2;
               }
@@ -2717,7 +2542,7 @@ export class ZPP_Space {
               _this.wrap_localCOM.zpp_inner.y = _this.localCOMy;
             }
           }
-          let _this2 = _this.body;
+          const _this2 = _this.body;
           if (_this2.zip_axis) {
             _this2.zip_axis = false;
             _this2.axisx = Math.sin(_this2.rot);
@@ -2725,21 +2550,19 @@ export class ZPP_Space {
           }
           _this.worldCOMx =
             _this.body.posx +
-            (_this.body.axisy * _this.localCOMx -
-              _this.body.axisx * _this.localCOMy);
+            (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
           _this.worldCOMy =
             _this.body.posy +
-            (_this.localCOMx * _this.body.axisx +
-              _this.localCOMy * _this.body.axisy);
+            (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
         }
       }
     } else {
-      let _this3 = shape.polygon;
+      const _this3 = shape.polygon;
       if (_this3.zip_gaxi) {
         if (_this3.body != null) {
           _this3.zip_gaxi = false;
           _this3.validate_laxi();
-          let _this4 = _this3.body;
+          const _this4 = _this3.body;
           if (_this4.zip_axis) {
             _this4.zip_axis = false;
             _this4.axisx = Math.sin(_this4.rot);
@@ -2749,7 +2572,7 @@ export class ZPP_Space {
             if (_this3.body != null) {
               _this3.zip_gverts = false;
               _this3.validate_lverts();
-              let _this5 = _this3.body;
+              const _this5 = _this3.body;
               if (_this5.zip_axis) {
                 _this5.zip_axis = false;
                 _this5.axisx = Math.sin(_this5.rot);
@@ -2758,15 +2581,11 @@ export class ZPP_Space {
               let li = _this3.lverts.next;
               let cx_ite1 = _this3.gverts.next;
               while (cx_ite1 != null) {
-                let g = cx_ite1;
-                let l = li;
+                const g = cx_ite1;
+                const l = li;
                 li = li.next;
-                g.x =
-                  _this3.body.posx +
-                  (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
-                g.y =
-                  _this3.body.posy +
-                  (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
+                g.x = _this3.body.posx + (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
+                g.y = _this3.body.posy + (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
                 cx_ite1 = cx_ite1.next;
               }
             }
@@ -2776,19 +2595,15 @@ export class ZPP_Space {
           let u1 = cx_ite2;
           cx_ite2 = cx_ite2.next;
           while (cx_ite2 != null) {
-            let v1 = cx_ite2;
-            let e = ite.elt;
+            const v1 = cx_ite2;
+            const e = ite.elt;
             ite = ite.next;
             e.gp0 = u1;
             e.gp1 = v1;
-            e.gnormx =
-              _this3.body.axisy * e.lnormx - _this3.body.axisx * e.lnormy;
-            e.gnormy =
-              e.lnormx * _this3.body.axisx + e.lnormy * _this3.body.axisy;
+            e.gnormx = _this3.body.axisy * e.lnormx - _this3.body.axisx * e.lnormy;
+            e.gnormy = e.lnormx * _this3.body.axisx + e.lnormy * _this3.body.axisy;
             e.gprojection =
-              _this3.body.posx * e.gnormx +
-              _this3.body.posy * e.gnormy +
-              e.lprojection;
+              _this3.body.posx * e.gnormx + _this3.body.posy * e.gnormy + e.lprojection;
             if (e.wrap_gnorm != null) {
               e.wrap_gnorm.zpp_inner.x = e.gnormx;
               e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -2798,19 +2613,15 @@ export class ZPP_Space {
             u1 = v1;
             cx_ite2 = cx_ite2.next;
           }
-          let v2 = _this3.gverts.next;
-          let e1 = ite.elt;
+          const v2 = _this3.gverts.next;
+          const e1 = ite.elt;
           ite = ite.next;
           e1.gp0 = u1;
           e1.gp1 = v2;
-          e1.gnormx =
-            _this3.body.axisy * e1.lnormx - _this3.body.axisx * e1.lnormy;
-          e1.gnormy =
-            e1.lnormx * _this3.body.axisx + e1.lnormy * _this3.body.axisy;
+          e1.gnormx = _this3.body.axisy * e1.lnormx - _this3.body.axisx * e1.lnormy;
+          e1.gnormy = e1.lnormx * _this3.body.axisx + e1.lnormy * _this3.body.axisy;
           e1.gprojection =
-            _this3.body.posx * e1.gnormx +
-            _this3.body.posy * e1.gnormy +
-            e1.lprojection;
+            _this3.body.posx * e1.gnormx + _this3.body.posy * e1.gnormy + e1.lprojection;
           if (e1.wrap_gnorm != null) {
             e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
             e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -2820,37 +2631,37 @@ export class ZPP_Space {
         }
       }
     }
-    let body = shape.body;
-    let prex = body.posx;
-    let prey = body.posy;
+    const body = shape.body;
+    const prex = body.posx;
+    const prey = body.posy;
     body.sweepTime = 0;
     body.sweep_angvel = body.angvel;
-    let delta = deltaTime - body.sweepTime;
+    const delta = deltaTime - body.sweepTime;
     if (delta != 0) {
       body.sweepTime = deltaTime;
-      let t3 = delta;
+      const t3 = delta;
       body.posx += body.velx * t3;
       body.posy += body.vely * t3;
       if (body.angvel != 0) {
-        let dr = body.sweep_angvel * delta;
+        const dr = body.sweep_angvel * delta;
         body.rot += dr;
         if (dr * dr > 0.0001) {
           body.axisx = Math.sin(body.rot);
           body.axisy = Math.cos(body.rot);
         } else {
-          let d2 = dr * dr;
-          let p = 1 - 0.5 * d2;
-          let m = 1 - (d2 * d2) / 8;
-          let nx = (p * body.axisx + dr * body.axisy) * m;
+          const d2 = dr * dr;
+          const p = 1 - 0.5 * d2;
+          const m = 1 - (d2 * d2) / 8;
+          const nx = (p * body.axisx + dr * body.axisy) * m;
           body.axisy = (p * body.axisy - dr * body.axisx) * m;
           body.axisx = nx;
         }
       }
     }
-    let postx = body.posx;
-    let posty = body.posy;
+    const postx = body.posx;
+    const posty = body.posy;
     shape.validate_sweepRadius();
-    let rad = shape.sweepRadius;
+    const rad = shape.sweepRadius;
     let aabb;
     if (ZPP_AABB.zpp_pool == null) {
       aabb = new ZPP_AABB();
@@ -2859,26 +2670,26 @@ export class ZPP_Space {
       ZPP_AABB.zpp_pool = aabb.next;
       aabb.next = null;
     }
-    let x = prex;
-    let y = postx;
+    const x = prex;
+    const y = postx;
     aabb.minx = (x < y ? x : y) - rad;
-    let x1 = prex;
-    let y1 = postx;
+    const x1 = prex;
+    const y1 = postx;
     aabb.maxx = (x1 > y1 ? x1 : y1) + rad;
-    let x2 = prey;
-    let y2 = posty;
+    const x2 = prey;
+    const y2 = posty;
     aabb.miny = (x2 < y2 ? x2 : y2) - rad;
-    let x3 = prey;
-    let y3 = posty;
+    const x3 = prey;
+    const y3 = posty;
     aabb.maxy = (x3 > y3 ? x3 : y3) + rad;
-    let list = (this.convexShapeList = this.bphase.shapesInAABB(
+    const list = (this.convexShapeList = this.bphase.shapesInAABB(
       aabb,
       false,
       false,
       filter == null ? null : filter.zpp_inner,
-      this.convexShapeList
+      this.convexShapeList,
     ));
-    let o = aabb;
+    const o = aabb;
     if (o.outer != null) {
       o.outer.zpp_inner = null;
       o.outer = null;
@@ -2888,18 +2699,18 @@ export class ZPP_Space {
     o._validate = null;
     o.next = ZPP_AABB.zpp_pool;
     ZPP_AABB.zpp_pool = o;
-    let ret = output == null ? new ZPP_Space._nape.geom.ConvexResultList() : output;
+    const ret = output == null ? new ZPP_Space._nape.geom.ConvexResultList() : output;
     list.zpp_inner.valmod();
-    let _g = ZPP_Space._nape.shape.ShapeIterator.get(list);
+    const _g = ZPP_Space._nape.shape.ShapeIterator.get(list);
     while (true) {
       _g.zpp_inner.zpp_inner.valmod();
-      let _this6 = _g.zpp_inner;
+      const _this6 = _g.zpp_inner;
       _this6.zpp_inner.valmod();
       if (_this6.zpp_inner.zip_length) {
         _this6.zpp_inner.zip_length = false;
         _this6.zpp_inner.user_length = _this6.zpp_inner.inner.length;
       }
-      let length = _this6.zpp_inner.user_length;
+      const length = _this6.zpp_inner.user_length;
       _g.zpp_critical = true;
       let tmp;
       if (_g.zpp_i < length) {
@@ -2914,7 +2725,7 @@ export class ZPP_Space {
         break;
       }
       _g.zpp_critical = false;
-      let s = _g.zpp_inner.at(_g.zpp_i++);
+      const s = _g.zpp_inner.at(_g.zpp_i++);
       if (
         s != shape.outer &&
         (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null) != body.outer
@@ -2923,66 +2734,48 @@ export class ZPP_Space {
         toi.s2 = s.zpp_inner;
         if (dynamics) {
           s.zpp_inner.validate_sweepRadius();
-          (s.zpp_inner.body != null
-            ? s.zpp_inner.body.outer
-            : null
-          ).zpp_inner.sweep_angvel = (
+          (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner.sweep_angvel = (
             s.zpp_inner.body != null ? s.zpp_inner.body.outer : null
           ).zpp_inner.angvel;
-          (s.zpp_inner.body != null
-            ? s.zpp_inner.body.outer
-            : null
-          ).zpp_inner.sweepTime = 0;
-          ZPP_SweepDistance.dynamicSweep(
-            toi,
-            deltaTime,
-            0,
-            0,
-            true
-          );
-          let _this7 = (
-            s.zpp_inner.body != null ? s.zpp_inner.body.outer : null
-          ).zpp_inner;
-          let delta1 = 0 - _this7.sweepTime;
+          (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner.sweepTime = 0;
+          ZPP_SweepDistance.dynamicSweep(toi, deltaTime, 0, 0, true);
+          const _this7 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
+          const delta1 = 0 - _this7.sweepTime;
           if (delta1 != 0) {
             _this7.sweepTime = 0;
-            let t4 = delta1;
+            const t4 = delta1;
             _this7.posx += _this7.velx * t4;
             _this7.posy += _this7.vely * t4;
             if (_this7.angvel != 0) {
-              let dr1 = _this7.sweep_angvel * delta1;
+              const dr1 = _this7.sweep_angvel * delta1;
               _this7.rot += dr1;
               if (dr1 * dr1 > 0.0001) {
                 _this7.axisx = Math.sin(_this7.rot);
                 _this7.axisy = Math.cos(_this7.rot);
               } else {
-                let d21 = dr1 * dr1;
-                let p1 = 1 - 0.5 * d21;
-                let m1 = 1 - (d21 * d21) / 8;
-                let nx1 = (p1 * _this7.axisx + dr1 * _this7.axisy) * m1;
+                const d21 = dr1 * dr1;
+                const p1 = 1 - 0.5 * d21;
+                const m1 = 1 - (d21 * d21) / 8;
+                const nx1 = (p1 * _this7.axisx + dr1 * _this7.axisy) * m1;
                 _this7.axisy = (p1 * _this7.axisy - dr1 * _this7.axisx) * m1;
                 _this7.axisx = nx1;
               }
             }
           }
-          let _this8 = (
-            s.zpp_inner.body != null ? s.zpp_inner.body.outer : null
-          ).zpp_inner;
-          let s1 = s.zpp_inner;
+          const _this8 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
+          const s1 = s.zpp_inner;
           if (s1.type == 0) {
             s1.worldCOMx =
-              _this8.posx +
-              (_this8.axisy * s1.localCOMx - _this8.axisx * s1.localCOMy);
+              _this8.posx + (_this8.axisy * s1.localCOMx - _this8.axisx * s1.localCOMy);
             s1.worldCOMy =
-              _this8.posy +
-              (s1.localCOMx * _this8.axisx + s1.localCOMy * _this8.axisy);
+              _this8.posy + (s1.localCOMx * _this8.axisx + s1.localCOMy * _this8.axisy);
           } else {
-            let p2 = s1.polygon;
+            const p2 = s1.polygon;
             let li1 = p2.lverts.next;
             let cx_ite3 = p2.gverts.next;
             while (cx_ite3 != null) {
-              let g1 = cx_ite3;
-              let l1 = li1;
+              const g1 = cx_ite3;
+              const l1 = li1;
               li1 = li1.next;
               g1.x = _this8.posx + (_this8.axisy * l1.x - _this8.axisx * l1.y);
               g1.y = _this8.posy + (l1.x * _this8.axisx + l1.y * _this8.axisy);
@@ -2993,29 +2786,23 @@ export class ZPP_Space {
             let u2 = cx_ite4;
             cx_ite4 = cx_ite4.next;
             while (cx_ite4 != null) {
-              let v3 = cx_ite4;
-              let e2 = ite1.elt;
+              const v3 = cx_ite4;
+              const e2 = ite1.elt;
               ite1 = ite1.next;
               e2.gnormx = _this8.axisy * e2.lnormx - _this8.axisx * e2.lnormy;
               e2.gnormy = e2.lnormx * _this8.axisx + e2.lnormy * _this8.axisy;
-              e2.gprojection =
-                _this8.posx * e2.gnormx +
-                _this8.posy * e2.gnormy +
-                e2.lprojection;
+              e2.gprojection = _this8.posx * e2.gnormx + _this8.posy * e2.gnormy + e2.lprojection;
               e2.tp0 = u2.y * e2.gnormx - u2.x * e2.gnormy;
               e2.tp1 = v3.y * e2.gnormx - v3.x * e2.gnormy;
               u2 = v3;
               cx_ite4 = cx_ite4.next;
             }
-            let v4 = p2.gverts.next;
-            let e3 = ite1.elt;
+            const v4 = p2.gverts.next;
+            const e3 = ite1.elt;
             ite1 = ite1.next;
             e3.gnormx = _this8.axisy * e3.lnormx - _this8.axisx * e3.lnormy;
             e3.gnormy = e3.lnormx * _this8.axisx + e3.lnormy * _this8.axisy;
-            e3.gprojection =
-              _this8.posx * e3.gnormx +
-              _this8.posy * e3.gnormy +
-              e3.lprojection;
+            e3.gprojection = _this8.posx * e3.gnormx + _this8.posy * e3.gnormy + e3.lprojection;
             e3.tp0 = u2.y * e3.gnormx - u2.x * e3.gnormy;
             e3.tp1 = v4.y * e3.gnormx - v4.x * e3.gnormy;
           }
@@ -3033,9 +2820,7 @@ export class ZPP_Space {
             x4 = 0;
           }
           if (x4 != x4 || y4 != y4) {
-            throw new Error(
-              "Error: Vec2 components cannot be NaN"
-            );
+            throw new Error("Error: Vec2 components cannot be NaN");
           }
           let ret1;
           if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
@@ -3066,11 +2851,9 @@ export class ZPP_Space {
             ret1.zpp_inner.outer = ret1;
           } else {
             if (ret1 != null && ret1.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!"
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
-            let _this9 = ret1.zpp_inner;
+            const _this9 = ret1.zpp_inner;
             if (_this9._immutable) {
               throw new Error("Error: Vec2 is immutable");
             }
@@ -3078,27 +2861,21 @@ export class ZPP_Space {
               _this9._isimmutable();
             }
             if (x4 != x4 || y4 != y4) {
-              throw new Error(
-                "Error: Vec2 components cannot be NaN"
-              );
+              throw new Error("Error: Vec2 components cannot be NaN");
             }
             let res;
             if (ret1 != null && ret1.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!"
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
-            let _this10 = ret1.zpp_inner;
+            const _this10 = ret1.zpp_inner;
             if (_this10._validate != null) {
               _this10._validate();
             }
             if (ret1.zpp_inner.x == x4) {
               if (ret1 != null && ret1.zpp_disp) {
-                throw new Error(
-                  "Error: " + "Vec2" + " has been disposed and cannot be used!"
-                );
+                throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
               }
-              let _this11 = ret1.zpp_inner;
+              const _this11 = ret1.zpp_inner;
               if (_this11._validate != null) {
                 _this11._validate();
               }
@@ -3109,7 +2886,7 @@ export class ZPP_Space {
             if (!res) {
               ret1.zpp_inner.x = x4;
               ret1.zpp_inner.y = y4;
-              let _this12 = ret1.zpp_inner;
+              const _this12 = ret1.zpp_inner;
               if (_this12._invalidate != null) {
                 _this12._invalidate(_this12);
               }
@@ -3125,9 +2902,7 @@ export class ZPP_Space {
             x5 = 0;
           }
           if (x5 != x5 || y5 != y5) {
-            throw new Error(
-              "Error: Vec2 components cannot be NaN"
-            );
+            throw new Error("Error: Vec2 components cannot be NaN");
           }
           let ret3;
           if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
@@ -3158,11 +2933,9 @@ export class ZPP_Space {
             ret3.zpp_inner.outer = ret3;
           } else {
             if (ret3 != null && ret3.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!"
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
-            let _this13 = ret3.zpp_inner;
+            const _this13 = ret3.zpp_inner;
             if (_this13._immutable) {
               throw new Error("Error: Vec2 is immutable");
             }
@@ -3170,27 +2943,21 @@ export class ZPP_Space {
               _this13._isimmutable();
             }
             if (x5 != x5 || y5 != y5) {
-              throw new Error(
-                "Error: Vec2 components cannot be NaN"
-              );
+              throw new Error("Error: Vec2 components cannot be NaN");
             }
             let res1;
             if (ret3 != null && ret3.zpp_disp) {
-              throw new Error(
-                "Error: " + "Vec2" + " has been disposed and cannot be used!"
-              );
+              throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
             }
-            let _this14 = ret3.zpp_inner;
+            const _this14 = ret3.zpp_inner;
             if (_this14._validate != null) {
               _this14._validate();
             }
             if (ret3.zpp_inner.x == x5) {
               if (ret3 != null && ret3.zpp_disp) {
-                throw new Error(
-                  "Error: " + "Vec2" + " has been disposed and cannot be used!"
-                );
+                throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
               }
-              let _this15 = ret3.zpp_inner;
+              const _this15 = ret3.zpp_inner;
               if (_this15._validate != null) {
                 _this15._validate();
               }
@@ -3201,32 +2968,23 @@ export class ZPP_Space {
             if (!res1) {
               ret3.zpp_inner.x = x5;
               ret3.zpp_inner.y = y5;
-              let _this16 = ret3.zpp_inner;
+              const _this16 = ret3.zpp_inner;
               if (_this16._invalidate != null) {
                 _this16._invalidate(_this16);
               }
             }
           }
           ret3.zpp_inner.weak = false;
-          let res2 = ZPP_Space._zpp.geom.ZPP_ConvexRayResult.getConvex(
-            ret1,
-            ret3,
-            toi.toi,
-            s
-          );
+          const res2 = ZPP_Space._zpp.geom.ZPP_ConvexRayResult.getConvex(ret1, ret3, toi.toi, s);
           let pre = null;
           let cx_ite5 = ret.zpp_inner.inner.head;
           while (cx_ite5 != null) {
-            let j = cx_ite5.elt;
+            const j = cx_ite5.elt;
             if (res2.zpp_inner.next != null) {
-              throw new Error(
-                "Error: This object has been disposed of and cannot be used"
-              );
+              throw new Error("Error: This object has been disposed of and cannot be used");
             }
             if (j.zpp_inner.next != null) {
-              throw new Error(
-                "Error: This object has been disposed of and cannot be used"
-              );
+              throw new Error("Error: This object has been disposed of and cannot be used");
             }
             if (res2.zpp_inner.toiDistance < j.zpp_inner.toiDistance) {
               break;
@@ -3234,7 +2992,7 @@ export class ZPP_Space {
             pre = cx_ite5;
             cx_ite5 = cx_ite5.next;
           }
-          let _this17 = ret.zpp_inner.inner;
+          const _this17 = ret.zpp_inner.inner;
           let ret5;
           if (ZPP_Space._zpp.util.ZNPNode_ConvexResult.zpp_pool == null) {
             ret5 = new ZPP_Space._zpp.util.ZNPNode_ConvexResult();
@@ -3244,7 +3002,7 @@ export class ZPP_Space {
             ret5.next = null;
           }
           ret5.elt = res2;
-          let temp = ret5;
+          const temp = ret5;
           if (pre == null) {
             temp.next = _this17.head;
             _this17.head = temp;
@@ -3258,45 +3016,41 @@ export class ZPP_Space {
       }
     }
     list.clear();
-    let o1 = toi;
+    const o1 = toi;
     o1.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
     ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o1;
-    let delta2 = 0 - body.sweepTime;
+    const delta2 = 0 - body.sweepTime;
     if (delta2 != 0) {
       body.sweepTime = 0;
-      let t5 = delta2;
+      const t5 = delta2;
       body.posx += body.velx * t5;
       body.posy += body.vely * t5;
       if (body.angvel != 0) {
-        let dr2 = body.sweep_angvel * delta2;
+        const dr2 = body.sweep_angvel * delta2;
         body.rot += dr2;
         if (dr2 * dr2 > 0.0001) {
           body.axisx = Math.sin(body.rot);
           body.axisy = Math.cos(body.rot);
         } else {
-          let d22 = dr2 * dr2;
-          let p3 = 1 - 0.5 * d22;
-          let m2 = 1 - (d22 * d22) / 8;
-          let nx2 = (p3 * body.axisx + dr2 * body.axisy) * m2;
+          const d22 = dr2 * dr2;
+          const p3 = 1 - 0.5 * d22;
+          const m2 = 1 - (d22 * d22) / 8;
+          const nx2 = (p3 * body.axisx + dr2 * body.axisy) * m2;
           body.axisy = (p3 * body.axisy - dr2 * body.axisx) * m2;
           body.axisx = nx2;
         }
       }
     }
     if (shape.type == 0) {
-      shape.worldCOMx =
-        body.posx +
-        (body.axisy * shape.localCOMx - body.axisx * shape.localCOMy);
-      shape.worldCOMy =
-        body.posy +
-        (shape.localCOMx * body.axisx + shape.localCOMy * body.axisy);
+      shape.worldCOMx = body.posx + (body.axisy * shape.localCOMx - body.axisx * shape.localCOMy);
+      shape.worldCOMy = body.posy + (shape.localCOMx * body.axisx + shape.localCOMy * body.axisy);
     } else {
-      let p4 = shape.polygon;
+      const p4 = shape.polygon;
       let li2 = p4.lverts.next;
       let cx_ite6 = p4.gverts.next;
       while (cx_ite6 != null) {
-        let g2 = cx_ite6;
-        let l2 = li2;
+        const g2 = cx_ite6;
+        const l2 = li2;
         li2 = li2.next;
         g2.x = body.posx + (body.axisy * l2.x - body.axisx * l2.y);
         g2.y = body.posy + (l2.x * body.axisx + l2.y * body.axisy);
@@ -3307,25 +3061,23 @@ export class ZPP_Space {
       let u3 = cx_ite7;
       cx_ite7 = cx_ite7.next;
       while (cx_ite7 != null) {
-        let v5 = cx_ite7;
-        let e4 = ite2.elt;
+        const v5 = cx_ite7;
+        const e4 = ite2.elt;
         ite2 = ite2.next;
         e4.gnormx = body.axisy * e4.lnormx - body.axisx * e4.lnormy;
         e4.gnormy = e4.lnormx * body.axisx + e4.lnormy * body.axisy;
-        e4.gprojection =
-          body.posx * e4.gnormx + body.posy * e4.gnormy + e4.lprojection;
+        e4.gprojection = body.posx * e4.gnormx + body.posy * e4.gnormy + e4.lprojection;
         e4.tp0 = u3.y * e4.gnormx - u3.x * e4.gnormy;
         e4.tp1 = v5.y * e4.gnormx - v5.x * e4.gnormy;
         u3 = v5;
         cx_ite7 = cx_ite7.next;
       }
-      let v6 = p4.gverts.next;
-      let e5 = ite2.elt;
+      const v6 = p4.gverts.next;
+      const e5 = ite2.elt;
       ite2 = ite2.next;
       e5.gnormx = body.axisy * e5.lnormx - body.axisx * e5.lnormy;
       e5.gnormy = e5.lnormx * body.axisx + e5.lnormy * body.axisy;
-      e5.gprojection =
-        body.posx * e5.gnormx + body.posy * e5.gnormy + e5.lprojection;
+      e5.gprojection = body.posx * e5.gnormx + body.posy * e5.gnormy + e5.lprojection;
       e5.tp0 = u3.y * e5.gnormx - u3.x * e5.gnormy;
       e5.tp1 = v6.y * e5.gnormx - v6.x * e5.gnormy;
     }
@@ -3346,13 +3098,11 @@ export class ZPP_Space {
     return cb;
   }
 
-  step(deltaTime,
-    velocityIterations,
-    positionIterations) {
-    let _gthis = this;
+  step(deltaTime, velocityIterations, positionIterations) {
+    const _gthis = this;
     if (this.midstep) {
       throw new Error(
-        "Error: ... REALLY?? you're going to call space.step() inside of space.step()? COME ON!!"
+        "Error: ... REALLY?? you're going to call space.step() inside of space.step()? COME ON!!",
       );
     }
     this.time += deltaTime;
@@ -3363,7 +3113,7 @@ export class ZPP_Space {
     this.bphase.broadphase(this, true);
     this.prestep(deltaTime);
     if (this.sortcontacts) {
-      let xxlist = this.c_arbiters_false;
+      const xxlist = this.c_arbiters_false;
       if (xxlist.head != null && xxlist.head.next != null) {
         let head = xxlist.head;
         let tail = null;
@@ -3398,9 +3148,7 @@ export class ZPP_Space {
                 left = left.next;
                 --leftSize;
               } else if (
-                left.elt.active && right.elt.active
-                  ? left.elt.oc1.dist < right.elt.oc1.dist
-                  : true
+                left.elt.active && right.elt.active ? left.elt.oc1.dist < right.elt.oc1.dist : true
               ) {
                 nxt = left;
                 left = left.next;
@@ -3435,7 +3183,7 @@ export class ZPP_Space {
     this.iterateVel(velocityIterations);
     let cx_ite = this.kinematics.head;
     while (cx_ite != null) {
-      let cur = cx_ite.elt;
+      const cur = cx_ite.elt;
       cur.pre_posx = cur.posx;
       cur.pre_posy = cur.posy;
       cur.pre_rot = cur.rot;
@@ -3443,7 +3191,7 @@ export class ZPP_Space {
     }
     let cx_ite1 = this.live.head;
     while (cx_ite1 != null) {
-      let cur1 = cx_ite1.elt;
+      const cur1 = cx_ite1.elt;
       cur1.pre_posx = cur1.posx;
       cur1.pre_posy = cur1.posy;
       cur1.pre_rot = cur1.rot;
@@ -3456,13 +3204,13 @@ export class ZPP_Space {
     this.iteratePos(positionIterations);
     let cx_ite2 = this.kinematics.head;
     while (cx_ite2 != null) {
-      let cur2 = cx_ite2.elt;
-      let upos = !(cur2.posx == cur2.pre_posx && cur2.posy == cur2.pre_posy);
-      let urot = cur2.pre_rot != cur2.rot;
+      const cur2 = cx_ite2.elt;
+      const upos = !(cur2.posx == cur2.pre_posx && cur2.posy == cur2.pre_posy);
+      const urot = cur2.pre_rot != cur2.rot;
       if (upos) {
         let cx_ite3 = cur2.shapes.head;
         while (cx_ite3 != null) {
-          let s = cx_ite3.elt;
+          const s = cx_ite3.elt;
           if (s.type == 1) {
             s.polygon.invalidate_gverts();
             s.polygon.invalidate_gaxi();
@@ -3476,7 +3224,7 @@ export class ZPP_Space {
         cur2.zip_axis = true;
         let cx_ite4 = cur2.shapes.head;
         while (cx_ite4 != null) {
-          let s1 = cx_ite4.elt;
+          const s1 = cx_ite4.elt;
           if (s1.type == 1) {
             s1.polygon.invalidate_gverts();
             s1.polygon.invalidate_gaxi();
@@ -3490,13 +3238,13 @@ export class ZPP_Space {
     }
     let cx_ite5 = this.live.head;
     while (cx_ite5 != null) {
-      let cur3 = cx_ite5.elt;
-      let upos1 = !(cur3.posx == cur3.pre_posx && cur3.posy == cur3.pre_posy);
-      let urot1 = cur3.pre_rot != cur3.rot;
+      const cur3 = cx_ite5.elt;
+      const upos1 = !(cur3.posx == cur3.pre_posx && cur3.posy == cur3.pre_posy);
+      const urot1 = cur3.pre_rot != cur3.rot;
       if (upos1) {
         let cx_ite6 = cur3.shapes.head;
         while (cx_ite6 != null) {
-          let s2 = cx_ite6.elt;
+          const s2 = cx_ite6.elt;
           if (s2.type == 1) {
             s2.polygon.invalidate_gverts();
             s2.polygon.invalidate_gaxi();
@@ -3510,7 +3258,7 @@ export class ZPP_Space {
         cur3.zip_axis = true;
         let cx_ite7 = cur3.shapes.head;
         while (cx_ite7 != null) {
-          let s3 = cx_ite7.elt;
+          const s3 = cx_ite7.elt;
           if (s3.type == 1) {
             s3.polygon.invalidate_gverts();
             s3.polygon.invalidate_gaxi();
@@ -3525,7 +3273,7 @@ export class ZPP_Space {
     let pre = null;
     let cx_ite8 = this.staticsleep.head;
     while (cx_ite8 != null) {
-      let b = cx_ite8.elt;
+      const b = cx_ite8.elt;
       if (b.type != 3 || (b.velx == 0 && b.vely == 0 && b.angvel == 0)) {
         if (b.kinematicDelaySleep) {
           b.kinematicDelaySleep = false;
@@ -3533,7 +3281,7 @@ export class ZPP_Space {
           continue;
         }
         b.component.sleeping = true;
-        let _this = this.staticsleep;
+        const _this = this.staticsleep;
         let old;
         let ret;
         if (pre == null) {
@@ -3551,7 +3299,7 @@ export class ZPP_Space {
             _this.pushmod = true;
           }
         }
-        let o = old;
+        const o = old;
         o.elt = null;
         o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = o;
@@ -3570,9 +3318,9 @@ export class ZPP_Space {
     let pre1 = null;
     let cx_ite9 = this.callbackset_list.next;
     while (cx_ite9 != null) {
-      let set = cx_ite9;
+      const set = cx_ite9;
       if (set.arbiters.head == null) {
-        let _this1 = this.callbackset_list;
+        const _this1 = this.callbackset_list;
         let old1;
         let ret1;
         if (pre1 == null) {
@@ -3595,7 +3343,7 @@ export class ZPP_Space {
         _this1.length--;
         _this1.pushmod = true;
         cx_ite9 = ret1;
-        let o1 = set;
+        const o1 = set;
         o1.int1 = o1.int2 = null;
         o1.id = o1.di = -1;
         o1.freed = true;
@@ -3607,7 +3355,7 @@ export class ZPP_Space {
       ret2 = true;
       let cx_ite10 = set.arbiters.head;
       while (cx_ite10 != null) {
-        let x = cx_ite10.elt;
+        const x = cx_ite10.elt;
         if (x.sleeping) {
           cx_ite10 = cx_ite10.next;
           continue;
@@ -3616,15 +3364,15 @@ export class ZPP_Space {
           break;
         }
       }
-      let sleeping = ret2;
-      let a = set.int1.cbSet;
-      let b1 = set.int2.cbSet;
-      let _this2 = a.manager;
+      const sleeping = ret2;
+      const a = set.int1.cbSet;
+      const b1 = set.int2.cbSet;
+      const _this2 = a.manager;
       let ret3 = null;
-      let pairs = a.cbpairs.length < b1.cbpairs.length ? a.cbpairs : b1.cbpairs;
+      const pairs = a.cbpairs.length < b1.cbpairs.length ? a.cbpairs : b1.cbpairs;
       let cx_ite11 = pairs.head;
       while (cx_ite11 != null) {
-        let p = cx_ite11.elt;
+        const p = cx_ite11.elt;
         if ((p.a == a && p.b == b1) || (p.a == b1 && p.b == a)) {
           ret3 = p;
           break;
@@ -3660,25 +3408,22 @@ export class ZPP_Space {
       }
       let cx_ite12 = ret3.listeners.head;
       while (cx_ite12 != null) {
-        let x1 = cx_ite12.elt;
+        const x1 = cx_ite12.elt;
         if (x1.event == 6) {
-          if (
-            (!sleeping || x1.allowSleepingCallbacks) &&
-            !set.empty_arb(x1.itype)
-          ) {
-            let cb = _gthis.push_callback(x1);
+          if ((!sleeping || x1.allowSleepingCallbacks) && !set.empty_arb(x1.itype)) {
+            const cb = _gthis.push_callback(x1);
             cb.event = 6;
-            let o11 = set.int1;
-            let o2 = set.int2;
+            const o11 = set.int1;
+            const o2 = set.int2;
             let tmp;
-            let _this3 = x1.options1;
-            let xs = o11.cbTypes;
+            const _this3 = x1.options1;
+            const xs = o11.cbTypes;
             if (
               _this3.nonemptyintersection(xs, _this3.includes) &&
               !_this3.nonemptyintersection(xs, _this3.excludes)
             ) {
-              let _this4 = x1.options2;
-              let xs1 = o2.cbTypes;
+              const _this4 = x1.options2;
+              const xs1 = o2.cbTypes;
               tmp =
                 _this4.nonemptyintersection(xs1, _this4.includes) &&
                 !_this4.nonemptyintersection(xs1, _this4.excludes);
@@ -3701,18 +3446,18 @@ export class ZPP_Space {
       cx_ite9 = cx_ite9.next;
     }
     while (!this.callbacks.empty()) {
-      let cb1 = this.callbacks.pop();
+      const cb1 = this.callbacks.pop();
       if (cb1.listener.type == 0) {
-        let o3 = cb1.listener.body;
+        const o3 = cb1.listener.body;
         o3.handler(cb1.wrapper_body());
       } else if (cb1.listener.type == 1) {
-        let o4 = cb1.listener.constraint;
+        const o4 = cb1.listener.constraint;
         o4.handler(cb1.wrapper_con());
       } else if (cb1.listener.type == 2) {
-        let o5 = cb1.listener.interaction;
+        const o5 = cb1.listener.interaction;
         o5.handleri(cb1.wrapper_int());
       }
-      let o6 = cb1;
+      const o6 = cb1;
       o6.int1 = o6.int2 = null;
       o6.body = null;
       o6.constraint = null;
@@ -3727,7 +3472,7 @@ export class ZPP_Space {
   }
 
   continuousCollisions(deltaTime) {
-    let MAX_VEL = (2 * Math.PI) / deltaTime;
+    const MAX_VEL = (2 * Math.PI) / deltaTime;
     this.bphase.broadphase(this, false);
     let curTimeAlpha = 0.0;
     while (curTimeAlpha < 1 && this.toiEvents.head != null) {
@@ -3738,18 +3483,15 @@ export class ZPP_Space {
       let pre = null;
       let cx_ite = this.toiEvents.head;
       while (cx_ite != null) {
-        let toi = cx_ite.elt;
-        let b1 = toi.s1.body;
-        let b2 = toi.s2.body;
+        const toi = cx_ite.elt;
+        const b1 = toi.s1.body;
+        const b2 = toi.s2.body;
         if (b1.sweepFrozen && b2.sweepFrozen) {
-          if (
-            toi.toi != 0 &&
-            ZPP_Collide.testCollide_safe(toi.s1, toi.s2)
-          ) {
+          if (toi.toi != 0 && ZPP_Collide.testCollide_safe(toi.s1, toi.s2)) {
             toi.toi = 0;
           } else {
             cx_ite = this.toiEvents.erase(pre);
-            let o = toi;
+            const o = toi;
             o.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
             ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o;
             continue;
@@ -3760,7 +3502,7 @@ export class ZPP_Space {
             toi.frozen1 = b1.sweepFrozen;
             toi.frozen2 = b2.sweepFrozen;
             if (toi.frozen1) {
-              let tmp = toi.s1;
+              const tmp = toi.s1;
               toi.s1 = toi.s2;
               toi.s2 = tmp;
               toi.frozen1 = false;
@@ -3770,27 +3512,24 @@ export class ZPP_Space {
               toi,
               deltaTime,
               0,
-              ZPP_Space._nape.Config.collisionSlopCCD
+              ZPP_Space._nape.Config.collisionSlopCCD,
             );
             if (toi.toi < 0) {
               cx_ite = this.toiEvents.erase(pre);
-              let o1 = toi;
+              const o1 = toi;
               o1.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
               ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o1;
               continue;
             }
           } else {
             cx_ite = this.toiEvents.erase(pre);
-            let o2 = toi;
+            const o2 = toi;
             o2.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
             ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o2;
             continue;
           }
         }
-        if (
-          toi.toi >= 0 &&
-          (toi.toi < minTime || (!minKinematic && toi.kinematic))
-        ) {
+        if (toi.toi >= 0 && (toi.toi < minTime || (!minKinematic && toi.kinematic))) {
           minTOI = toi;
           minTime = toi.toi;
           minKinematic = toi.kinematic;
@@ -3804,45 +3543,43 @@ export class ZPP_Space {
       }
       this.toiEvents.erase(preMin);
       curTimeAlpha = minTOI.toi;
-      let b11 = minTOI.s1.body;
-      let b21 = minTOI.s2.body;
+      const b11 = minTOI.s1.body;
+      const b21 = minTOI.s2.body;
       if (!b11.sweepFrozen) {
-        let dt = curTimeAlpha * deltaTime;
-        let delta = dt - b11.sweepTime;
+        const dt = curTimeAlpha * deltaTime;
+        const delta = dt - b11.sweepTime;
         if (delta != 0) {
           b11.sweepTime = dt;
-          let t = delta;
+          const t = delta;
           b11.posx += b11.velx * t;
           b11.posy += b11.vely * t;
           if (b11.angvel != 0) {
-            let dr = b11.sweep_angvel * delta;
+            const dr = b11.sweep_angvel * delta;
             b11.rot += dr;
             if (dr * dr > 0.0001) {
               b11.axisx = Math.sin(b11.rot);
               b11.axisy = Math.cos(b11.rot);
             } else {
-              let d2 = dr * dr;
-              let p = 1 - 0.5 * d2;
-              let m = 1 - (d2 * d2) / 8;
-              let nx = (p * b11.axisx + dr * b11.axisy) * m;
+              const d2 = dr * dr;
+              const p = 1 - 0.5 * d2;
+              const m = 1 - (d2 * d2) / 8;
+              const nx = (p * b11.axisx + dr * b11.axisy) * m;
               b11.axisy = (p * b11.axisy - dr * b11.axisx) * m;
               b11.axisx = nx;
             }
           }
         }
-        let s = minTOI.s1;
+        const s = minTOI.s1;
         if (s.type == 0) {
-          s.worldCOMx =
-            b11.posx + (b11.axisy * s.localCOMx - b11.axisx * s.localCOMy);
-          s.worldCOMy =
-            b11.posy + (s.localCOMx * b11.axisx + s.localCOMy * b11.axisy);
+          s.worldCOMx = b11.posx + (b11.axisy * s.localCOMx - b11.axisx * s.localCOMy);
+          s.worldCOMy = b11.posy + (s.localCOMx * b11.axisx + s.localCOMy * b11.axisy);
         } else {
-          let p1 = s.polygon;
+          const p1 = s.polygon;
           let li = p1.lverts.next;
           let cx_ite1 = p1.gverts.next;
           while (cx_ite1 != null) {
-            let g = cx_ite1;
-            let l = li;
+            const g = cx_ite1;
+            const l = li;
             li = li.next;
             g.x = b11.posx + (b11.axisy * l.x - b11.axisx * l.y);
             g.y = b11.posy + (l.x * b11.axisx + l.y * b11.axisy);
@@ -3853,66 +3590,62 @@ export class ZPP_Space {
           let u = cx_ite2;
           cx_ite2 = cx_ite2.next;
           while (cx_ite2 != null) {
-            let v = cx_ite2;
-            let e = ite.elt;
+            const v = cx_ite2;
+            const e = ite.elt;
             ite = ite.next;
             e.gnormx = b11.axisy * e.lnormx - b11.axisx * e.lnormy;
             e.gnormy = e.lnormx * b11.axisx + e.lnormy * b11.axisy;
-            e.gprojection =
-              b11.posx * e.gnormx + b11.posy * e.gnormy + e.lprojection;
+            e.gprojection = b11.posx * e.gnormx + b11.posy * e.gnormy + e.lprojection;
             e.tp0 = u.y * e.gnormx - u.x * e.gnormy;
             e.tp1 = v.y * e.gnormx - v.x * e.gnormy;
             u = v;
             cx_ite2 = cx_ite2.next;
           }
-          let v1 = p1.gverts.next;
-          let e1 = ite.elt;
+          const v1 = p1.gverts.next;
+          const e1 = ite.elt;
           ite = ite.next;
           e1.gnormx = b11.axisy * e1.lnormx - b11.axisx * e1.lnormy;
           e1.gnormy = e1.lnormx * b11.axisx + e1.lnormy * b11.axisy;
-          e1.gprojection =
-            b11.posx * e1.gnormx + b11.posy * e1.gnormy + e1.lprojection;
+          e1.gprojection = b11.posx * e1.gnormx + b11.posy * e1.gnormy + e1.lprojection;
           e1.tp0 = u.y * e1.gnormx - u.x * e1.gnormy;
           e1.tp1 = v1.y * e1.gnormx - v1.x * e1.gnormy;
         }
       }
       if (!b21.sweepFrozen) {
-        let dt1 = curTimeAlpha * deltaTime;
-        let delta1 = dt1 - b21.sweepTime;
+        const dt1 = curTimeAlpha * deltaTime;
+        const delta1 = dt1 - b21.sweepTime;
         if (delta1 != 0) {
           b21.sweepTime = dt1;
-          let t1 = delta1;
+          const t1 = delta1;
           b21.posx += b21.velx * t1;
           b21.posy += b21.vely * t1;
           if (b21.angvel != 0) {
-            let dr1 = b21.sweep_angvel * delta1;
+            const dr1 = b21.sweep_angvel * delta1;
             b21.rot += dr1;
             if (dr1 * dr1 > 0.0001) {
               b21.axisx = Math.sin(b21.rot);
               b21.axisy = Math.cos(b21.rot);
             } else {
-              let d21 = dr1 * dr1;
-              let p2 = 1 - 0.5 * d21;
-              let m1 = 1 - (d21 * d21) / 8;
-              let nx1 = (p2 * b21.axisx + dr1 * b21.axisy) * m1;
+              const d21 = dr1 * dr1;
+              const p2 = 1 - 0.5 * d21;
+              const m1 = 1 - (d21 * d21) / 8;
+              const nx1 = (p2 * b21.axisx + dr1 * b21.axisy) * m1;
               b21.axisy = (p2 * b21.axisy - dr1 * b21.axisx) * m1;
               b21.axisx = nx1;
             }
           }
         }
-        let s1 = minTOI.s2;
+        const s1 = minTOI.s2;
         if (s1.type == 0) {
-          s1.worldCOMx =
-            b21.posx + (b21.axisy * s1.localCOMx - b21.axisx * s1.localCOMy);
-          s1.worldCOMy =
-            b21.posy + (s1.localCOMx * b21.axisx + s1.localCOMy * b21.axisy);
+          s1.worldCOMx = b21.posx + (b21.axisy * s1.localCOMx - b21.axisx * s1.localCOMy);
+          s1.worldCOMy = b21.posy + (s1.localCOMx * b21.axisx + s1.localCOMy * b21.axisy);
         } else {
-          let p3 = s1.polygon;
+          const p3 = s1.polygon;
           let li1 = p3.lverts.next;
           let cx_ite3 = p3.gverts.next;
           while (cx_ite3 != null) {
-            let g1 = cx_ite3;
-            let l1 = li1;
+            const g1 = cx_ite3;
+            const l1 = li1;
             li1 = li1.next;
             g1.x = b21.posx + (b21.axisy * l1.x - b21.axisx * l1.y);
             g1.y = b21.posy + (l1.x * b21.axisx + l1.y * b21.axisy);
@@ -3923,78 +3656,62 @@ export class ZPP_Space {
           let u1 = cx_ite4;
           cx_ite4 = cx_ite4.next;
           while (cx_ite4 != null) {
-            let v2 = cx_ite4;
-            let e2 = ite1.elt;
+            const v2 = cx_ite4;
+            const e2 = ite1.elt;
             ite1 = ite1.next;
             e2.gnormx = b21.axisy * e2.lnormx - b21.axisx * e2.lnormy;
             e2.gnormy = e2.lnormx * b21.axisx + e2.lnormy * b21.axisy;
-            e2.gprojection =
-              b21.posx * e2.gnormx + b21.posy * e2.gnormy + e2.lprojection;
+            e2.gprojection = b21.posx * e2.gnormx + b21.posy * e2.gnormy + e2.lprojection;
             e2.tp0 = u1.y * e2.gnormx - u1.x * e2.gnormy;
             e2.tp1 = v2.y * e2.gnormx - v2.x * e2.gnormy;
             u1 = v2;
             cx_ite4 = cx_ite4.next;
           }
-          let v3 = p3.gverts.next;
-          let e3 = ite1.elt;
+          const v3 = p3.gverts.next;
+          const e3 = ite1.elt;
           ite1 = ite1.next;
           e3.gnormx = b21.axisy * e3.lnormx - b21.axisx * e3.lnormy;
           e3.gnormy = e3.lnormx * b21.axisx + e3.lnormy * b21.axisy;
-          e3.gprojection =
-            b21.posx * e3.gnormx + b21.posy * e3.gnormy + e3.lprojection;
+          e3.gprojection = b21.posx * e3.gnormx + b21.posy * e3.gnormy + e3.lprojection;
           e3.tp0 = u1.y * e3.gnormx - u1.x * e3.gnormy;
           e3.tp1 = v3.y * e3.gnormx - v3.x * e3.gnormy;
         }
       }
-      let wasnull = minTOI.arbiter == null;
-      let arb = this.narrowPhase(
-        minTOI.s1,
-        minTOI.s2,
-        true,
-        minTOI.arbiter,
-        true
-      );
+      const wasnull = minTOI.arbiter == null;
+      const arb = this.narrowPhase(minTOI.s1, minTOI.s2, true, minTOI.arbiter, true);
       if (arb == null) {
         if (minTOI.arbiter != null && minTOI.arbiter.pair != null) {
           minTOI.arbiter.pair.arb = null;
           minTOI.arbiter.pair = null;
         }
       } else if (!this.presteparb(arb, deltaTime, true)) {
-        if (
-          arb.type == ZPP_Arbiter.COL &&
-          arb.active &&
-          (arb.immState & 1) != 0
-        ) {
-          let _this = arb.colarb;
-          let jx = _this.nx * _this.c1.jnAcc - _this.ny * _this.c1.jtAcc;
-          let jy = _this.ny * _this.c1.jnAcc + _this.nx * _this.c1.jtAcc;
-          let t2 = _this.b1.imass;
+        if (arb.type == ZPP_Arbiter.COL && arb.active && (arb.immState & 1) != 0) {
+          const _this = arb.colarb;
+          const jx = _this.nx * _this.c1.jnAcc - _this.ny * _this.c1.jtAcc;
+          const jy = _this.ny * _this.c1.jnAcc + _this.nx * _this.c1.jtAcc;
+          const t2 = _this.b1.imass;
           _this.b1.velx -= jx * t2;
           _this.b1.vely -= jy * t2;
-          _this.b1.angvel -=
-            _this.b1.iinertia * (jy * _this.c1.r1x - jx * _this.c1.r1y);
-          let t3 = _this.b2.imass;
+          _this.b1.angvel -= _this.b1.iinertia * (jy * _this.c1.r1x - jx * _this.c1.r1y);
+          const t3 = _this.b2.imass;
           _this.b2.velx += jx * t3;
           _this.b2.vely += jy * t3;
-          _this.b2.angvel +=
-            _this.b2.iinertia * (jy * _this.c1.r2x - jx * _this.c1.r2y);
+          _this.b2.angvel += _this.b2.iinertia * (jy * _this.c1.r2x - jx * _this.c1.r2y);
           if (_this.hc2) {
-            let jx1 = _this.nx * _this.c2.jnAcc - _this.ny * _this.c2.jtAcc;
-            let jy1 = _this.ny * _this.c2.jnAcc + _this.nx * _this.c2.jtAcc;
-            let t4 = _this.b1.imass;
+            const jx1 = _this.nx * _this.c2.jnAcc - _this.ny * _this.c2.jtAcc;
+            const jy1 = _this.ny * _this.c2.jnAcc + _this.nx * _this.c2.jtAcc;
+            const t4 = _this.b1.imass;
             _this.b1.velx -= jx1 * t4;
             _this.b1.vely -= jy1 * t4;
-            _this.b1.angvel -=
-              _this.b1.iinertia * (jy1 * _this.c2.r1x - jx1 * _this.c2.r1y);
-            let t5 = _this.b2.imass;
+            _this.b1.angvel -= _this.b1.iinertia * (jy1 * _this.c2.r1x - jx1 * _this.c2.r1y);
+            const t5 = _this.b2.imass;
             _this.b2.velx += jx1 * t5;
             _this.b2.vely += jy1 * t5;
-            _this.b2.angvel +=
-              _this.b2.iinertia * (jy1 * _this.c2.r2x - jx1 * _this.c2.r2y);
+            _this.b2.angvel += _this.b2.iinertia * (jy1 * _this.c2.r2x - jx1 * _this.c2.r2y);
           }
           _this.b2.angvel += _this.jrAcc * _this.b2.iinertia;
           _this.b1.angvel -= _this.jrAcc * _this.b1.iinertia;
-          let _this1 = arb.colarb;
+          const _this1 = arb.colarb;
           let v1x =
             _this1.k1x +
             _this1.b2.velx -
@@ -4005,9 +3722,7 @@ export class ZPP_Space {
             _this1.b2.vely +
             _this1.c1.r2x * _this1.b2.angvel -
             (_this1.b1.vely + _this1.c1.r1x * _this1.b1.angvel);
-          let j =
-            (v1y * _this1.nx - v1x * _this1.ny + _this1.surfacex) *
-            _this1.c1.tMass;
+          let j = (v1y * _this1.nx - v1x * _this1.ny + _this1.surfacex) * _this1.c1.tMass;
           let jMax = _this1.c1.friction * _this1.c1.jnAcc;
           let jOld = _this1.c1.jtAcc;
           let cjAcc = jOld - j;
@@ -4037,9 +3752,7 @@ export class ZPP_Space {
               _this1.b2.vely +
               _this1.c2.r2x * _this1.b2.angvel -
               (_this1.b1.vely + _this1.c2.r1x * _this1.b1.angvel);
-            j =
-              (v2y * _this1.nx - v2x * _this1.ny + _this1.surfacex) *
-              _this1.c2.tMass;
+            j = (v2y * _this1.nx - v2x * _this1.ny + _this1.surfacex) * _this1.c2.tMass;
             jMax = _this1.c2.friction * _this1.c2.jnAcc;
             jOld = _this1.c2.jtAcc;
             cjAcc = jOld - j;
@@ -4078,8 +3791,8 @@ export class ZPP_Space {
               _this1.b2.vely +
               _this1.c2.r2x * _this1.b2.angvel -
               (_this1.b1.vely + _this1.c2.r1x * _this1.b1.angvel);
-            let ax = _this1.c1.jnAcc;
-            let ay = _this1.c2.jnAcc;
+            const ax = _this1.c1.jnAcc;
+            const ay = _this1.c2.jnAcc;
             let jnx =
               v1x * _this1.nx +
               v1y * _this1.ny +
@@ -4130,13 +3843,11 @@ export class ZPP_Space {
             _this1.b2.vely += jy2 * _this1.b2.imass;
             _this1.b1.velx -= jx2 * _this1.b1.imass;
             _this1.b1.vely -= jy2 * _this1.b1.imass;
-            _this1.b2.angvel +=
-              (_this1.rn1b * jnx + _this1.rn2b * jny) * _this1.b2.iinertia;
-            _this1.b1.angvel -=
-              (_this1.rn1a * jnx + _this1.rn2a * jny) * _this1.b1.iinertia;
+            _this1.b2.angvel += (_this1.rn1b * jnx + _this1.rn2b * jny) * _this1.b2.iinertia;
+            _this1.b1.angvel -= (_this1.rn1a * jnx + _this1.rn2a * jny) * _this1.b1.iinertia;
           } else {
             if (_this1.radius != 0.0) {
-              let dw = _this1.b2.angvel - _this1.b1.angvel;
+              const dw = _this1.b2.angvel - _this1.b1.angvel;
               j = dw * _this1.rMass;
               jMax = _this1.rfric * _this1.c1.jnAcc;
               jOld = _this1.jrAcc;
@@ -4161,9 +3872,7 @@ export class ZPP_Space {
               _this1.c1.r2x * _this1.b2.angvel -
               (_this1.b1.vely + _this1.c1.r1x * _this1.b1.angvel);
             j =
-              (_this1.c1.bounce +
-                (_this1.nx * v1x + _this1.ny * v1y) +
-                _this1.surfacey) *
+              (_this1.c1.bounce + (_this1.nx * v1x + _this1.ny * v1y) + _this1.surfacey) *
               _this1.c1.nMass;
             jOld = _this1.c1.jnAcc;
             cjAcc = jOld - j;
@@ -4181,7 +3890,7 @@ export class ZPP_Space {
             _this1.b2.angvel += _this1.rn1b * j * _this1.b2.iinertia;
             _this1.b1.angvel -= _this1.rn1a * j * _this1.b1.iinertia;
           }
-          let _this2 = arb.colarb;
+          const _this2 = arb.colarb;
           let v1x1 =
             _this2.k1x +
             _this2.b2.velx -
@@ -4192,9 +3901,7 @@ export class ZPP_Space {
             _this2.b2.vely +
             _this2.c1.r2x * _this2.b2.angvel -
             (_this2.b1.vely + _this2.c1.r1x * _this2.b1.angvel);
-          let j1 =
-            (v1y1 * _this2.nx - v1x1 * _this2.ny + _this2.surfacex) *
-            _this2.c1.tMass;
+          let j1 = (v1y1 * _this2.nx - v1x1 * _this2.ny + _this2.surfacex) * _this2.c1.tMass;
           let jMax1 = _this2.c1.friction * _this2.c1.jnAcc;
           let jOld1 = _this2.c1.jtAcc;
           let cjAcc1 = jOld1 - j1;
@@ -4224,9 +3931,7 @@ export class ZPP_Space {
               _this2.b2.vely +
               _this2.c2.r2x * _this2.b2.angvel -
               (_this2.b1.vely + _this2.c2.r1x * _this2.b1.angvel);
-            j1 =
-              (v2y1 * _this2.nx - v2x1 * _this2.ny + _this2.surfacex) *
-              _this2.c2.tMass;
+            j1 = (v2y1 * _this2.nx - v2x1 * _this2.ny + _this2.surfacex) * _this2.c2.tMass;
             jMax1 = _this2.c2.friction * _this2.c2.jnAcc;
             jOld1 = _this2.c2.jtAcc;
             cjAcc1 = jOld1 - j1;
@@ -4265,8 +3970,8 @@ export class ZPP_Space {
               _this2.b2.vely +
               _this2.c2.r2x * _this2.b2.angvel -
               (_this2.b1.vely + _this2.c2.r1x * _this2.b1.angvel);
-            let ax1 = _this2.c1.jnAcc;
-            let ay1 = _this2.c2.jnAcc;
+            const ax1 = _this2.c1.jnAcc;
+            const ay1 = _this2.c2.jnAcc;
             let jnx1 =
               v1x1 * _this2.nx +
               v1y1 * _this2.ny +
@@ -4317,13 +4022,11 @@ export class ZPP_Space {
             _this2.b2.vely += jy3 * _this2.b2.imass;
             _this2.b1.velx -= jx3 * _this2.b1.imass;
             _this2.b1.vely -= jy3 * _this2.b1.imass;
-            _this2.b2.angvel +=
-              (_this2.rn1b * jnx1 + _this2.rn2b * jny1) * _this2.b2.iinertia;
-            _this2.b1.angvel -=
-              (_this2.rn1a * jnx1 + _this2.rn2a * jny1) * _this2.b1.iinertia;
+            _this2.b2.angvel += (_this2.rn1b * jnx1 + _this2.rn2b * jny1) * _this2.b2.iinertia;
+            _this2.b1.angvel -= (_this2.rn1a * jnx1 + _this2.rn2a * jny1) * _this2.b1.iinertia;
           } else {
             if (_this2.radius != 0.0) {
-              let dw1 = _this2.b2.angvel - _this2.b1.angvel;
+              const dw1 = _this2.b2.angvel - _this2.b1.angvel;
               j1 = dw1 * _this2.rMass;
               jMax1 = _this2.rfric * _this2.c1.jnAcc;
               jOld1 = _this2.jrAcc;
@@ -4348,9 +4051,7 @@ export class ZPP_Space {
               _this2.c1.r2x * _this2.b2.angvel -
               (_this2.b1.vely + _this2.c1.r1x * _this2.b1.angvel);
             j1 =
-              (_this2.c1.bounce +
-                (_this2.nx * v1x1 + _this2.ny * v1y1) +
-                _this2.surfacey) *
+              (_this2.c1.bounce + (_this2.nx * v1x1 + _this2.ny * v1y1) + _this2.surfacey) *
               _this2.c1.nMass;
             jOld1 = _this2.c1.jnAcc;
             cjAcc1 = jOld1 - j1;
@@ -4368,7 +4069,7 @@ export class ZPP_Space {
             _this2.b2.angvel += _this2.rn1b * j1 * _this2.b2.iinertia;
             _this2.b1.angvel -= _this2.rn1a * j1 * _this2.b1.iinertia;
           }
-          let _this3 = arb.colarb;
+          const _this3 = arb.colarb;
           let v1x2 =
             _this3.k1x +
             _this3.b2.velx -
@@ -4379,9 +4080,7 @@ export class ZPP_Space {
             _this3.b2.vely +
             _this3.c1.r2x * _this3.b2.angvel -
             (_this3.b1.vely + _this3.c1.r1x * _this3.b1.angvel);
-          let j2 =
-            (v1y2 * _this3.nx - v1x2 * _this3.ny + _this3.surfacex) *
-            _this3.c1.tMass;
+          let j2 = (v1y2 * _this3.nx - v1x2 * _this3.ny + _this3.surfacex) * _this3.c1.tMass;
           let jMax2 = _this3.c1.friction * _this3.c1.jnAcc;
           let jOld2 = _this3.c1.jtAcc;
           let cjAcc2 = jOld2 - j2;
@@ -4411,9 +4110,7 @@ export class ZPP_Space {
               _this3.b2.vely +
               _this3.c2.r2x * _this3.b2.angvel -
               (_this3.b1.vely + _this3.c2.r1x * _this3.b1.angvel);
-            j2 =
-              (v2y2 * _this3.nx - v2x2 * _this3.ny + _this3.surfacex) *
-              _this3.c2.tMass;
+            j2 = (v2y2 * _this3.nx - v2x2 * _this3.ny + _this3.surfacex) * _this3.c2.tMass;
             jMax2 = _this3.c2.friction * _this3.c2.jnAcc;
             jOld2 = _this3.c2.jtAcc;
             cjAcc2 = jOld2 - j2;
@@ -4452,8 +4149,8 @@ export class ZPP_Space {
               _this3.b2.vely +
               _this3.c2.r2x * _this3.b2.angvel -
               (_this3.b1.vely + _this3.c2.r1x * _this3.b1.angvel);
-            let ax2 = _this3.c1.jnAcc;
-            let ay2 = _this3.c2.jnAcc;
+            const ax2 = _this3.c1.jnAcc;
+            const ay2 = _this3.c2.jnAcc;
             let jnx2 =
               v1x2 * _this3.nx +
               v1y2 * _this3.ny +
@@ -4504,13 +4201,11 @@ export class ZPP_Space {
             _this3.b2.vely += jy4 * _this3.b2.imass;
             _this3.b1.velx -= jx4 * _this3.b1.imass;
             _this3.b1.vely -= jy4 * _this3.b1.imass;
-            _this3.b2.angvel +=
-              (_this3.rn1b * jnx2 + _this3.rn2b * jny2) * _this3.b2.iinertia;
-            _this3.b1.angvel -=
-              (_this3.rn1a * jnx2 + _this3.rn2a * jny2) * _this3.b1.iinertia;
+            _this3.b2.angvel += (_this3.rn1b * jnx2 + _this3.rn2b * jny2) * _this3.b2.iinertia;
+            _this3.b1.angvel -= (_this3.rn1a * jnx2 + _this3.rn2a * jny2) * _this3.b1.iinertia;
           } else {
             if (_this3.radius != 0.0) {
-              let dw2 = _this3.b2.angvel - _this3.b1.angvel;
+              const dw2 = _this3.b2.angvel - _this3.b1.angvel;
               j2 = dw2 * _this3.rMass;
               jMax2 = _this3.rfric * _this3.c1.jnAcc;
               jOld2 = _this3.jrAcc;
@@ -4535,9 +4230,7 @@ export class ZPP_Space {
               _this3.c1.r2x * _this3.b2.angvel -
               (_this3.b1.vely + _this3.c1.r1x * _this3.b1.angvel);
             j2 =
-              (_this3.c1.bounce +
-                (_this3.nx * v1x2 + _this3.ny * v1y2) +
-                _this3.surfacey) *
+              (_this3.c1.bounce + (_this3.nx * v1x2 + _this3.ny * v1y2) + _this3.surfacey) *
               _this3.c1.nMass;
             jOld2 = _this3.c1.jnAcc;
             cjAcc2 = jOld2 - j2;
@@ -4555,7 +4248,7 @@ export class ZPP_Space {
             _this3.b2.angvel += _this3.rn1b * j2 * _this3.b2.iinertia;
             _this3.b1.angvel -= _this3.rn1a * j2 * _this3.b1.iinertia;
           }
-          let _this4 = arb.colarb;
+          const _this4 = arb.colarb;
           let v1x3 =
             _this4.k1x +
             _this4.b2.velx -
@@ -4566,9 +4259,7 @@ export class ZPP_Space {
             _this4.b2.vely +
             _this4.c1.r2x * _this4.b2.angvel -
             (_this4.b1.vely + _this4.c1.r1x * _this4.b1.angvel);
-          let j3 =
-            (v1y3 * _this4.nx - v1x3 * _this4.ny + _this4.surfacex) *
-            _this4.c1.tMass;
+          let j3 = (v1y3 * _this4.nx - v1x3 * _this4.ny + _this4.surfacex) * _this4.c1.tMass;
           let jMax3 = _this4.c1.friction * _this4.c1.jnAcc;
           let jOld3 = _this4.c1.jtAcc;
           let cjAcc3 = jOld3 - j3;
@@ -4598,9 +4289,7 @@ export class ZPP_Space {
               _this4.b2.vely +
               _this4.c2.r2x * _this4.b2.angvel -
               (_this4.b1.vely + _this4.c2.r1x * _this4.b1.angvel);
-            j3 =
-              (v2y3 * _this4.nx - v2x3 * _this4.ny + _this4.surfacex) *
-              _this4.c2.tMass;
+            j3 = (v2y3 * _this4.nx - v2x3 * _this4.ny + _this4.surfacex) * _this4.c2.tMass;
             jMax3 = _this4.c2.friction * _this4.c2.jnAcc;
             jOld3 = _this4.c2.jtAcc;
             cjAcc3 = jOld3 - j3;
@@ -4639,8 +4328,8 @@ export class ZPP_Space {
               _this4.b2.vely +
               _this4.c2.r2x * _this4.b2.angvel -
               (_this4.b1.vely + _this4.c2.r1x * _this4.b1.angvel);
-            let ax3 = _this4.c1.jnAcc;
-            let ay3 = _this4.c2.jnAcc;
+            const ax3 = _this4.c1.jnAcc;
+            const ay3 = _this4.c2.jnAcc;
             let jnx3 =
               v1x3 * _this4.nx +
               v1y3 * _this4.ny +
@@ -4691,13 +4380,11 @@ export class ZPP_Space {
             _this4.b2.vely += jy5 * _this4.b2.imass;
             _this4.b1.velx -= jx5 * _this4.b1.imass;
             _this4.b1.vely -= jy5 * _this4.b1.imass;
-            _this4.b2.angvel +=
-              (_this4.rn1b * jnx3 + _this4.rn2b * jny3) * _this4.b2.iinertia;
-            _this4.b1.angvel -=
-              (_this4.rn1a * jnx3 + _this4.rn2a * jny3) * _this4.b1.iinertia;
+            _this4.b2.angvel += (_this4.rn1b * jnx3 + _this4.rn2b * jny3) * _this4.b2.iinertia;
+            _this4.b1.angvel -= (_this4.rn1a * jnx3 + _this4.rn2a * jny3) * _this4.b1.iinertia;
           } else {
             if (_this4.radius != 0.0) {
-              let dw3 = _this4.b2.angvel - _this4.b1.angvel;
+              const dw3 = _this4.b2.angvel - _this4.b1.angvel;
               j3 = dw3 * _this4.rMass;
               jMax3 = _this4.rfric * _this4.c1.jnAcc;
               jOld3 = _this4.jrAcc;
@@ -4722,9 +4409,7 @@ export class ZPP_Space {
               _this4.c1.r2x * _this4.b2.angvel -
               (_this4.b1.vely + _this4.c1.r1x * _this4.b1.angvel);
             j3 =
-              (_this4.c1.bounce +
-                (_this4.nx * v1x3 + _this4.ny * v1y3) +
-                _this4.surfacey) *
+              (_this4.c1.bounce + (_this4.nx * v1x3 + _this4.ny * v1y3) + _this4.surfacey) *
               _this4.c1.nMass;
             jOld3 = _this4.c1.jnAcc;
             cjAcc3 = jOld3 - j3;
@@ -4746,18 +4431,13 @@ export class ZPP_Space {
           b21.sweep_angvel = b21.angvel % MAX_VEL;
         }
       }
-      if (
-        arb != null &&
-        arb.active &&
-        (arb.immState & 1) != 0 &&
-        arb.type == ZPP_Arbiter.COL
-      ) {
+      if (arb != null && arb.active && (arb.immState & 1) != 0 && arb.type == ZPP_Arbiter.COL) {
         if (!b11.sweepFrozen && b11.type != 3) {
           b11.sweepFrozen = true;
           if (minTOI.failed) {
             b11.angvel = b11.sweep_angvel = 0;
           } else if (minTOI.slipped) {
-            let b12 = b11;
+            const b12 = b11;
             b12.sweep_angvel *= ZPP_Space._nape.Config.angularCCDSlipScale;
             b11.angvel = b12.sweep_angvel;
           } else {
@@ -4769,7 +4449,7 @@ export class ZPP_Space {
           if (minTOI.failed) {
             b21.angvel = b21.sweep_angvel = 0;
           } else if (minTOI.slipped) {
-            let b22 = b21;
+            const b22 = b21;
             b22.sweep_angvel *= ZPP_Space._nape.Config.angularCCDSlipScale;
             b21.angvel = b22.sweep_angvel;
           } else {
@@ -4777,36 +4457,36 @@ export class ZPP_Space {
           }
         }
       }
-      let o3 = minTOI;
+      const o3 = minTOI;
       o3.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
       ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o3;
     }
     while (this.toiEvents.head != null) {
-      let toi1 = this.toiEvents.pop_unsafe();
-      let o4 = toi1;
+      const toi1 = this.toiEvents.pop_unsafe();
+      const o4 = toi1;
       o4.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
       ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o4;
     }
     let cx_ite5 = this.kinematics.head;
     while (cx_ite5 != null) {
-      let cur = cx_ite5.elt;
-      let delta2 = deltaTime - cur.sweepTime;
+      const cur = cx_ite5.elt;
+      const delta2 = deltaTime - cur.sweepTime;
       if (delta2 != 0) {
         cur.sweepTime = deltaTime;
-        let t6 = delta2;
+        const t6 = delta2;
         cur.posx += cur.velx * t6;
         cur.posy += cur.vely * t6;
         if (cur.angvel != 0) {
-          let dr2 = cur.sweep_angvel * delta2;
+          const dr2 = cur.sweep_angvel * delta2;
           cur.rot += dr2;
           if (dr2 * dr2 > 0.0001) {
             cur.axisx = Math.sin(cur.rot);
             cur.axisy = Math.cos(cur.rot);
           } else {
-            let d22 = dr2 * dr2;
-            let p4 = 1 - 0.5 * d22;
-            let m2 = 1 - (d22 * d22) / 8;
-            let nx2 = (p4 * cur.axisx + dr2 * cur.axisy) * m2;
+            const d22 = dr2 * dr2;
+            const p4 = 1 - 0.5 * d22;
+            const m2 = 1 - (d22 * d22) / 8;
+            const nx2 = (p4 * cur.axisx + dr2 * cur.axisy) * m2;
             cur.axisy = (p4 * cur.axisy - dr2 * cur.axisx) * m2;
             cur.axisx = nx2;
           }
@@ -4817,25 +4497,25 @@ export class ZPP_Space {
     }
     let cx_ite6 = this.live.head;
     while (cx_ite6 != null) {
-      let cur1 = cx_ite6.elt;
+      const cur1 = cx_ite6.elt;
       if (!cur1.sweepFrozen) {
-        let delta3 = deltaTime - cur1.sweepTime;
+        const delta3 = deltaTime - cur1.sweepTime;
         if (delta3 != 0) {
           cur1.sweepTime = deltaTime;
-          let t7 = delta3;
+          const t7 = delta3;
           cur1.posx += cur1.velx * t7;
           cur1.posy += cur1.vely * t7;
           if (cur1.angvel != 0) {
-            let dr3 = cur1.sweep_angvel * delta3;
+            const dr3 = cur1.sweep_angvel * delta3;
             cur1.rot += dr3;
             if (dr3 * dr3 > 0.0001) {
               cur1.axisx = Math.sin(cur1.rot);
               cur1.axisy = Math.cos(cur1.rot);
             } else {
-              let d23 = dr3 * dr3;
-              let p5 = 1 - 0.5 * d23;
-              let m3 = 1 - (d23 * d23) / 8;
-              let nx3 = (p5 * cur1.axisx + dr3 * cur1.axisy) * m3;
+              const d23 = dr3 * dr3;
+              const p5 = 1 - 0.5 * d23;
+              const m3 = 1 - (d23 * d23) / 8;
+              const nx3 = (p5 * cur1.axisx + dr3 * cur1.axisy) * m3;
               cur1.axisy = (p5 * cur1.axisy - dr3 * cur1.axisx) * m3;
               cur1.axisx = nx3;
             }
@@ -4847,11 +4527,7 @@ export class ZPP_Space {
     }
   }
 
-  continuousEvent(s1,
-    s2,
-    stat,
-    in_arb,
-    _) {
+  continuousEvent(s1, s2, stat, in_arb, _) {
     if (s1.body.sweepFrozen && s2.body.sweepFrozen) {
       return in_arb;
     }
@@ -4860,13 +4536,13 @@ export class ZPP_Space {
     }
     let tmp;
     if (!(in_arb != null && in_arb.colarb == null)) {
-      let b1 = s1.body;
-      let b2 = s2.body;
+      const b1 = s1.body;
+      const b2 = s2.body;
       let con_ignore;
       con_ignore = false;
       let cx_ite = b1.constraints.head;
       while (cx_ite != null) {
-        let con = cx_ite.elt;
+        const con = cx_ite.elt;
         if (con.ignore && con.pair_exists(b1.id, b2.id)) {
           con_ignore = true;
           break;
@@ -4925,11 +4601,9 @@ export class ZPP_Space {
       if (tmp2) {
         let tmp4;
         if (s1.sensorEnabled || s2.sensorEnabled) {
-          let _this = s1.filter;
-          let x = s2.filter;
-          tmp4 =
-            (_this.sensorMask & x.sensorGroup) != 0 &&
-            (x.sensorMask & _this.sensorGroup) != 0;
+          const _this = s1.filter;
+          const x = s2.filter;
+          tmp4 = (_this.sensorMask & x.sensorGroup) != 0 && (x.sensorMask & _this.sensorGroup) != 0;
         } else {
           tmp4 = false;
         }
@@ -4938,36 +4612,22 @@ export class ZPP_Space {
         } else {
           let tmp5;
           if (s1.fluidEnabled || s2.fluidEnabled) {
-            let _this1 = s1.filter;
-            let x1 = s2.filter;
+            const _this1 = s1.filter;
+            const x1 = s2.filter;
             tmp5 =
-              (_this1.fluidMask & x1.fluidGroup) != 0 &&
-              (x1.fluidMask & _this1.fluidGroup) != 0;
+              (_this1.fluidMask & x1.fluidGroup) != 0 && (x1.fluidMask & _this1.fluidGroup) != 0;
           } else {
             tmp5 = false;
           }
-          if (
-            tmp5 &&
-            !(
-              b1.imass == 0 &&
-              b2.imass == 0 &&
-              b1.iinertia == 0 &&
-              b2.iinertia == 0
-            )
-          ) {
+          if (tmp5 && !(b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0)) {
             tmp1 = 0;
           } else {
-            let _this2 = s1.filter;
-            let x2 = s2.filter;
+            const _this2 = s1.filter;
+            const x2 = s2.filter;
             tmp1 =
               (_this2.collisionMask & x2.collisionGroup) != 0 &&
               (x2.collisionMask & _this2.collisionGroup) != 0 &&
-              !(
-                b1.imass == 0 &&
-                b2.imass == 0 &&
-                b1.iinertia == 0 &&
-                b2.iinertia == 0
-              )
+              !(b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0)
                 ? 1
                 : -1;
           }
@@ -4982,8 +4642,8 @@ export class ZPP_Space {
     if (tmp) {
       return in_arb;
     }
-    let b11 = s1.body;
-    let b21 = s2.body;
+    const b11 = s1.body;
+    const b21 = s2.body;
     if (stat || b11.bullet || b21.bullet) {
       let toi;
       if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
@@ -4996,7 +4656,7 @@ export class ZPP_Space {
       toi.failed = false;
       toi.s1 = toi.s2 = null;
       toi.arbiter = null;
-      let kin = b11.type == 3 || b21.type == 3;
+      const kin = b11.type == 3 || b21.type == 3;
       if (stat && !kin) {
         if (s1.body.type != 2) {
           toi.s2 = s1;
@@ -5006,19 +4666,14 @@ export class ZPP_Space {
           toi.s2 = s2;
         }
         toi.kinematic = false;
-        ZPP_SweepDistance.staticSweep(
-          toi,
-          this.pre_dt,
-          0,
-          ZPP_Space._nape.Config.collisionSlopCCD
-        );
+        ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, ZPP_Space._nape.Config.collisionSlopCCD);
       } else {
         toi.s1 = s1;
         toi.s2 = s2;
         toi.kinematic = kin;
         if (toi.s1.body.sweepFrozen || toi.s2.body.sweepFrozen) {
           if (toi.s1.body.sweepFrozen) {
-            let tmp6 = toi.s1;
+            const tmp6 = toi.s1;
             toi.s1 = toi.s2;
             toi.s2 = tmp6;
             toi.frozen1 = false;
@@ -5028,7 +4683,7 @@ export class ZPP_Space {
             toi,
             this.pre_dt,
             0,
-            ZPP_Space._nape.Config.collisionSlopCCD
+            ZPP_Space._nape.Config.collisionSlopCCD,
           );
         } else {
           ZPP_SweepDistance.dynamicSweep(
@@ -5036,12 +4691,12 @@ export class ZPP_Space {
             this.pre_dt,
             0,
             ZPP_Space._nape.Config.collisionSlopCCD,
-            undefined
+            undefined,
           );
         }
       }
       if ((stat && toi.toi < 0) || toi.failed) {
-        let o = toi;
+        const o = toi;
         o.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
         ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o;
       } else {
@@ -5059,12 +4714,12 @@ export class ZPP_Space {
       if (this.midstep) {
         let cx_ite = b.cbSet.bodylisteners.head;
         while (cx_ite != null) {
-          let i = cx_ite.elt;
+          const i = cx_ite.elt;
           if (i.event != 2) {
             cx_ite = cx_ite.next;
             continue;
           }
-          let cb = this.push_callback(i);
+          const cb = this.push_callback(i);
           cb.event = 2;
           cb.body = b;
           cx_ite = cx_ite.next;
@@ -5079,12 +4734,12 @@ export class ZPP_Space {
     if (b.type == 2 && b.cbSet != null) {
       let cx_ite = b.cbSet.bodylisteners.head;
       while (cx_ite != null) {
-        let i = cx_ite.elt;
+        const i = cx_ite.elt;
         if (i.event != 3) {
           cx_ite = cx_ite.next;
           continue;
         }
-        let cb = this.push_callback(i);
+        const cb = this.push_callback(i);
         cb.event = 3;
         cb.body = b;
         cx_ite = cx_ite.next;
@@ -5097,12 +4752,12 @@ export class ZPP_Space {
       if (this.midstep) {
         let cx_ite = con.cbSet.conlisteners.head;
         while (cx_ite != null) {
-          let i = cx_ite.elt;
+          const i = cx_ite.elt;
           if (i.event != 2) {
             cx_ite = cx_ite.next;
             continue;
           }
-          let cb = this.push_callback(i);
+          const cb = this.push_callback(i);
           cb.event = 2;
           cb.constraint = con;
           cx_ite = cx_ite.next;
@@ -5117,12 +4772,12 @@ export class ZPP_Space {
     if (con.cbSet != null) {
       let cx_ite = con.cbSet.conlisteners.head;
       while (cx_ite != null) {
-        let i = cx_ite.elt;
+        const i = cx_ite.elt;
         if (i.event != 3) {
           cx_ite = cx_ite.next;
           continue;
         }
-        let cb = this.push_callback(i);
+        const cb = this.push_callback(i);
         cb.event = 3;
         cb.constraint = con;
         cx_ite = cx_ite.next;
@@ -5134,12 +4789,12 @@ export class ZPP_Space {
     if (con.cbSet != null) {
       let cx_ite = con.cbSet.conlisteners.head;
       while (cx_ite != null) {
-        let i = cx_ite.elt;
+        const i = cx_ite.elt;
         if (i.event != 4) {
           cx_ite = cx_ite.next;
           continue;
         }
-        let cb = this.push_callback(i);
+        const cb = this.push_callback(i);
         cb.event = 4;
         cb.constraint = con;
         cx_ite = cx_ite.next;
@@ -5148,43 +4803,43 @@ export class ZPP_Space {
   }
 
   nullListenerType(cb1, cb2) {
-    let stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
+    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
     let cx_ite = cb1.interactors.head;
     while (cx_ite != null) {
-      let i = cx_ite.elt;
+      const i = cx_ite.elt;
       stack.add(i);
       cx_ite = cx_ite.next;
     }
     if (cb1 != cb2) {
       let cx_ite1 = cb2.interactors.head;
       while (cx_ite1 != null) {
-        let i1 = cx_ite1.elt;
+        const i1 = cx_ite1.elt;
         stack.add(i1);
         cx_ite1 = cx_ite1.next;
       }
     }
     while (stack.head != null) {
-      let intx = stack.pop_unsafe();
+      const intx = stack.pop_unsafe();
       if (intx.icompound != null) {
-        let comp = intx.icompound;
+        const comp = intx.icompound;
         let cx_ite2 = comp.bodies.head;
         while (cx_ite2 != null) {
-          let i2 = cx_ite2.elt;
+          const i2 = cx_ite2.elt;
           stack.add(i2);
           cx_ite2 = cx_ite2.next;
         }
         let cx_ite3 = comp.compounds.head;
         while (cx_ite3 != null) {
-          let i3 = cx_ite3.elt;
+          const i3 = cx_ite3.elt;
           stack.add(i3);
           cx_ite3 = cx_ite3.next;
         }
       } else {
-        let xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
-        let xshp = intx.ishape != null ? intx.ishape : null;
+        const xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
+        const xshp = intx.ishape != null ? intx.ishape : null;
         let cx_ite4 = xbody.arbiters.head;
         while (cx_ite4 != null) {
-          let xarb = cx_ite4.elt;
+          const xarb = cx_ite4.elt;
           if (xarb.present == 0) {
             cx_ite4 = cx_ite4.next;
             continue;
@@ -5196,14 +4851,14 @@ export class ZPP_Space {
           this.MRCA_chains(xarb.ws1, xarb.ws2);
           let cx_ite5 = this.mrca1.head;
           while (cx_ite5 != null) {
-            let i11 = cx_ite5.elt;
+            const i11 = cx_ite5.elt;
             if (i11.cbSet != cb1 && i11.cbSet != cb2) {
               cx_ite5 = cx_ite5.next;
               continue;
             }
             let cx_ite6 = this.mrca2.head;
             while (cx_ite6 != null) {
-              let i21 = cx_ite6.elt;
+              const i21 = cx_ite6.elt;
               if (
                 (i11.cbSet == cb1 && i21.cbSet != cb2) ||
                 (i11.cbSet == cb2 && i21.cbSet != cb1)
@@ -5211,10 +4866,10 @@ export class ZPP_Space {
                 cx_ite6 = cx_ite6.next;
                 continue;
               }
-              let callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i11, i21);
+              const callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i11, i21);
               if (callbackset != null) {
                 while (callbackset.arbiters.head != null) {
-                  let arb = callbackset.arbiters.pop_unsafe();
+                  const arb = callbackset.arbiters.pop_unsafe();
                   arb.present--;
                 }
                 this.remove_callbackset(callbackset);
@@ -5234,25 +4889,25 @@ export class ZPP_Space {
       me = intx;
     }
     if (intx.icompound != null) {
-      let comp = intx.icompound;
+      const comp = intx.icompound;
       let cx_ite = comp.bodies.head;
       while (cx_ite != null) {
-        let body = cx_ite.elt;
+        const body = cx_ite.elt;
         this.nullInteractorType(body, me);
         cx_ite = cx_ite.next;
       }
       let cx_ite1 = comp.compounds.head;
       while (cx_ite1 != null) {
-        let comp1 = cx_ite1.elt;
+        const comp1 = cx_ite1.elt;
         this.nullInteractorType(comp1, me);
         cx_ite1 = cx_ite1.next;
       }
     } else {
-      let xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
-      let xshp = intx.ishape != null ? intx.ishape : null;
+      const xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
+      const xshp = intx.ishape != null ? intx.ishape : null;
       let cx_ite2 = xbody.arbiters.head;
       while (cx_ite2 != null) {
-        let xarb = cx_ite2.elt;
+        const xarb = cx_ite2.elt;
         if (xarb.present == 0) {
           cx_ite2 = cx_ite2.next;
           continue;
@@ -5264,15 +4919,15 @@ export class ZPP_Space {
         this.MRCA_chains(xarb.ws1, xarb.ws2);
         let cx_ite3 = this.mrca1.head;
         while (cx_ite3 != null) {
-          let i1 = cx_ite3.elt;
+          const i1 = cx_ite3.elt;
           let cx_ite4 = this.mrca2.head;
           while (cx_ite4 != null) {
-            let i2 = cx_ite4.elt;
+            const i2 = cx_ite4.elt;
             if (i1 != me && i2 != me) {
               cx_ite4 = cx_ite4.next;
               continue;
             }
-            let callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+            const callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
             if (callbackset != null) {
               xarb.present--;
               callbackset.remove_arb(xarb);
@@ -5290,43 +4945,43 @@ export class ZPP_Space {
   }
 
   freshListenerType(cb1, cb2) {
-    let stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
+    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
     let cx_ite = cb1.interactors.head;
     while (cx_ite != null) {
-      let i = cx_ite.elt;
+      const i = cx_ite.elt;
       stack.add(i);
       cx_ite = cx_ite.next;
     }
     if (cb1 != cb2) {
       let cx_ite1 = cb2.interactors.head;
       while (cx_ite1 != null) {
-        let i1 = cx_ite1.elt;
+        const i1 = cx_ite1.elt;
         stack.add(i1);
         cx_ite1 = cx_ite1.next;
       }
     }
     while (stack.head != null) {
-      let intx = stack.pop_unsafe();
+      const intx = stack.pop_unsafe();
       if (intx.icompound != null) {
-        let comp = intx.icompound;
+        const comp = intx.icompound;
         let cx_ite2 = comp.bodies.head;
         while (cx_ite2 != null) {
-          let i2 = cx_ite2.elt;
+          const i2 = cx_ite2.elt;
           stack.add(i2);
           cx_ite2 = cx_ite2.next;
         }
         let cx_ite3 = comp.compounds.head;
         while (cx_ite3 != null) {
-          let i3 = cx_ite3.elt;
+          const i3 = cx_ite3.elt;
           stack.add(i3);
           cx_ite3 = cx_ite3.next;
         }
       } else {
-        let xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
-        let xshp = intx.ishape != null ? intx.ishape : null;
+        const xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
+        const xshp = intx.ishape != null ? intx.ishape : null;
         let cx_ite4 = xbody.arbiters.head;
         while (cx_ite4 != null) {
-          let xarb = cx_ite4.elt;
+          const xarb = cx_ite4.elt;
           if (!xarb.presentable) {
             cx_ite4 = cx_ite4.next;
             continue;
@@ -5338,14 +4993,14 @@ export class ZPP_Space {
           this.MRCA_chains(xarb.ws1, xarb.ws2);
           let cx_ite5 = this.mrca1.head;
           while (cx_ite5 != null) {
-            let i11 = cx_ite5.elt;
+            const i11 = cx_ite5.elt;
             if (i11.cbSet != cb1 && i11.cbSet != cb2) {
               cx_ite5 = cx_ite5.next;
               continue;
             }
             let cx_ite6 = this.mrca2.head;
             while (cx_ite6 != null) {
-              let i21 = cx_ite6.elt;
+              const i21 = cx_ite6.elt;
               if (
                 (i11.cbSet == cb1 && i21.cbSet != cb2) ||
                 (i11.cbSet == cb2 && i21.cbSet != cb1)
@@ -5363,7 +5018,7 @@ export class ZPP_Space {
               ret = false;
               let cx_ite7 = callbackset.arbiters.head;
               while (cx_ite7 != null) {
-                let npite = cx_ite7.elt;
+                const npite = cx_ite7.elt;
                 if (npite == xarb) {
                   ret = true;
                   break;
@@ -5371,7 +5026,7 @@ export class ZPP_Space {
                 cx_ite7 = cx_ite7.next;
               }
               if (!ret) {
-                let _this = callbackset.arbiters;
+                const _this = callbackset.arbiters;
                 let ret1;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                   ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -5381,7 +5036,7 @@ export class ZPP_Space {
                   ret1.next = null;
                 }
                 ret1.elt = xarb;
-                let temp = ret1;
+                const temp = ret1;
                 temp.next = _this.head;
                 _this.head = temp;
                 _this.modified = true;
@@ -5408,25 +5063,25 @@ export class ZPP_Space {
       me = intx;
     }
     if (intx.icompound != null) {
-      let comp = intx.icompound;
+      const comp = intx.icompound;
       let cx_ite = comp.bodies.head;
       while (cx_ite != null) {
-        let body = cx_ite.elt;
+        const body = cx_ite.elt;
         this.freshInteractorType(body, me);
         cx_ite = cx_ite.next;
       }
       let cx_ite1 = comp.compounds.head;
       while (cx_ite1 != null) {
-        let comp1 = cx_ite1.elt;
+        const comp1 = cx_ite1.elt;
         this.freshInteractorType(comp1, me);
         cx_ite1 = cx_ite1.next;
       }
     } else {
-      let xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
-      let xshp = intx.ishape != null ? intx.ishape : null;
+      const xbody = intx.ibody != null ? intx.ibody : intx.ishape.body;
+      const xshp = intx.ishape != null ? intx.ishape : null;
       let cx_ite2 = xbody.arbiters.head;
       while (cx_ite2 != null) {
-        let xarb = cx_ite2.elt;
+        const xarb = cx_ite2.elt;
         if (!xarb.presentable) {
           cx_ite2 = cx_ite2.next;
           continue;
@@ -5438,27 +5093,24 @@ export class ZPP_Space {
         this.MRCA_chains(xarb.ws1, xarb.ws2);
         let cx_ite3 = this.mrca1.head;
         while (cx_ite3 != null) {
-          let i1 = cx_ite3.elt;
+          const i1 = cx_ite3.elt;
           let cx_ite4 = this.mrca2.head;
           while (cx_ite4 != null) {
-            let i2 = cx_ite4.elt;
+            const i2 = cx_ite4.elt;
             if (i1 != me && i2 != me) {
               cx_ite4 = cx_ite4.next;
               continue;
             }
-            let cb1 = i1.cbSet;
-            let cb2 = i2.cbSet;
+            const cb1 = i1.cbSet;
+            const cb2 = i2.cbSet;
             cb1.validate();
             cb2.validate();
-            let _this = cb1.manager;
+            const _this = cb1.manager;
             let ret = null;
-            let pairs =
-              cb1.cbpairs.length < cb2.cbpairs.length
-                ? cb1.cbpairs
-                : cb2.cbpairs;
+            const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
             let cx_ite5 = pairs.head;
             while (cx_ite5 != null) {
-              let p = cx_ite5.elt;
+              const p = cx_ite5.elt;
               if ((p.a == cb1 && p.b == cb2) || (p.a == cb2 && p.b == cb1)) {
                 ret = p;
                 break;
@@ -5503,7 +5155,7 @@ export class ZPP_Space {
               ret2 = false;
               let cx_ite6 = callbackset.arbiters.head;
               while (cx_ite6 != null) {
-                let npite = cx_ite6.elt;
+                const npite = cx_ite6.elt;
                 if (npite == xarb) {
                   ret2 = true;
                   break;
@@ -5511,7 +5163,7 @@ export class ZPP_Space {
                 cx_ite6 = cx_ite6.next;
               }
               if (!ret2) {
-                let _this1 = callbackset.arbiters;
+                const _this1 = callbackset.arbiters;
                 let ret3;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                   ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -5521,7 +5173,7 @@ export class ZPP_Space {
                   ret3.next = null;
                 }
                 ret3.elt = xarb;
-                let temp = ret3;
+                const temp = ret3;
                 temp.next = _this1.head;
                 _this1.head = temp;
                 _this1.modified = true;
@@ -5546,8 +5198,8 @@ export class ZPP_Space {
   wakeCompound(x) {
     let cx_ite = x.bodies.head;
     while (cx_ite != null) {
-      let y = cx_ite.elt;
-      let o = y;
+      const y = cx_ite.elt;
+      const o = y;
       if (!o.world) {
         o.component.waket = this.stamp + (this.midstep ? 0 : 1);
         if (o.type == 3) {
@@ -5561,13 +5213,13 @@ export class ZPP_Space {
     }
     let cx_ite1 = x.constraints.head;
     while (cx_ite1 != null) {
-      let i = cx_ite1.elt;
+      const i = cx_ite1.elt;
       this.wake_constraint(i);
       cx_ite1 = cx_ite1.next;
     }
     let cx_ite2 = x.compounds.head;
     while (cx_ite2 != null) {
-      let i1 = cx_ite2.elt;
+      const i1 = cx_ite2.elt;
       this.wakeCompound(i1);
       cx_ite2 = cx_ite2.next;
     }
@@ -5575,21 +5227,21 @@ export class ZPP_Space {
 
   wakeIsland(i) {
     while (i.comps.head != null) {
-      let c = i.comps.pop_unsafe();
+      const c = i.comps.pop_unsafe();
       c.waket = this.stamp + (this.midstep ? 0 : 1);
       if (c.isBody) {
-        let b = c.body;
+        const b = c.body;
         this.live.add(b);
         let cx_ite = b.arbiters.head;
         while (cx_ite != null) {
-          let arb = cx_ite.elt;
+          const arb = cx_ite.elt;
           if (arb.sleeping) {
             arb.sleeping = false;
             arb.up_stamp += this.stamp - arb.sleep_stamp;
             if (arb.type == ZPP_Arbiter.COL) {
-              let carb = arb.colarb;
+              const carb = arb.colarb;
               if (carb.stat) {
-                let _this = this.c_arbiters_true;
+                const _this = this.c_arbiters_true;
                 let ret;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
                   ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
@@ -5599,13 +5251,13 @@ export class ZPP_Space {
                   ret.next = null;
                 }
                 ret.elt = carb;
-                let temp = ret;
+                const temp = ret;
                 temp.next = _this.head;
                 _this.head = temp;
                 _this.modified = true;
                 _this.length++;
               } else {
-                let _this1 = this.c_arbiters_false;
+                const _this1 = this.c_arbiters_false;
                 let ret1;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
                   ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
@@ -5615,15 +5267,15 @@ export class ZPP_Space {
                   ret1.next = null;
                 }
                 ret1.elt = carb;
-                let temp1 = ret1;
+                const temp1 = ret1;
                 temp1.next = _this1.head;
                 _this1.head = temp1;
                 _this1.modified = true;
                 _this1.length++;
               }
             } else if (arb.type == ZPP_Arbiter.FLUID) {
-              let _this2 = this.f_arbiters;
-              let o = arb.fluidarb;
+              const _this2 = this.f_arbiters;
+              const o = arb.fluidarb;
               let ret2;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
                 ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
@@ -5633,14 +5285,14 @@ export class ZPP_Space {
                 ret2.next = null;
               }
               ret2.elt = o;
-              let temp2 = ret2;
+              const temp2 = ret2;
               temp2.next = _this2.head;
               _this2.head = temp2;
               _this2.modified = true;
               _this2.length++;
             } else {
-              let _this3 = this.s_arbiters;
-              let o1 = arb.sensorarb;
+              const _this3 = this.s_arbiters;
+              const o1 = arb.sensorarb;
               let ret3;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
                 ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
@@ -5650,7 +5302,7 @@ export class ZPP_Space {
                 ret3.next = null;
               }
               ret3.elt = o1;
-              let temp3 = ret3;
+              const temp3 = ret3;
               temp3.next = _this3.head;
               _this3.head = temp3;
               _this3.modified = true;
@@ -5667,7 +5319,7 @@ export class ZPP_Space {
         if (b.type != 1) {
           let cx_ite1 = b.shapes.head;
           while (cx_ite1 != null) {
-            let shape = cx_ite1.elt;
+            const shape = cx_ite1.elt;
             if (shape.node != null) {
               this.bphase.sync(shape);
             }
@@ -5675,8 +5327,8 @@ export class ZPP_Space {
           }
         }
       } else {
-        let con = c.constraint;
-        let _this4 = this.live_constraints;
+        const con = c.constraint;
+        const _this4 = this.live_constraints;
         let ret4;
         if (ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool == null) {
           ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint();
@@ -5686,7 +5338,7 @@ export class ZPP_Space {
           ret4.next = null;
         }
         ret4.elt = con;
-        let temp4 = ret4;
+        const temp4 = ret4;
         temp4.next = _this4.head;
         _this4.head = temp4;
         _this4.modified = true;
@@ -5698,7 +5350,7 @@ export class ZPP_Space {
         c.rank = 0;
       }
     }
-    let o2 = i;
+    const o2 = i;
     o2.next = ZPP_Island.zpp_pool;
     ZPP_Island.zpp_pool = o2;
   }
@@ -5707,7 +5359,7 @@ export class ZPP_Space {
     if (fst == null) {
       fst = false;
     }
-    let o1 = o;
+    const o1 = o;
     if (!o1.world) {
       o1.component.waket = this.stamp + (this.midstep ? 0 : 1);
       if (o1.type == 3) {
@@ -5726,7 +5378,7 @@ export class ZPP_Space {
     if (o.component.island == null) {
       o.component.sleeping = false;
       if (o.type == 3 || o.type == 1) {
-        let _this = this.staticsleep;
+        const _this = this.staticsleep;
         let ret;
         if (ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool == null) {
           ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_Body();
@@ -5736,13 +5388,13 @@ export class ZPP_Space {
           ret.next = null;
         }
         ret.elt = o;
-        let temp = ret;
+        const temp = ret;
         temp.next = _this.head;
         _this.head = temp;
         _this.modified = true;
         _this.length++;
       } else {
-        let _this1 = this.live;
+        const _this1 = this.live;
         let ret1;
         if (ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool == null) {
           ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Body();
@@ -5752,7 +5404,7 @@ export class ZPP_Space {
           ret1.next = null;
         }
         ret1.elt = o;
-        let temp1 = ret1;
+        const temp1 = ret1;
         temp1.next = _this1.head;
         _this1.head = temp1;
         _this1.modified = true;
@@ -5760,7 +5412,7 @@ export class ZPP_Space {
       }
       let cx_ite = o.constraints.head;
       while (cx_ite != null) {
-        let con = cx_ite.elt;
+        const con = cx_ite.elt;
         if (con.space == this) {
           this.wake_constraint(con);
         }
@@ -5768,14 +5420,14 @@ export class ZPP_Space {
       }
       let cx_ite1 = o.arbiters.head;
       while (cx_ite1 != null) {
-        let arb = cx_ite1.elt;
+        const arb = cx_ite1.elt;
         if (arb.sleeping) {
           arb.sleeping = false;
           arb.up_stamp += this.stamp + (this.midstep ? 0 : 1) - arb.sleep_stamp;
           if (arb.type == ZPP_Arbiter.COL) {
-            let carb = arb.colarb;
+            const carb = arb.colarb;
             if (carb.stat) {
-              let _this2 = this.c_arbiters_true;
+              const _this2 = this.c_arbiters_true;
               let ret2;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
                 ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
@@ -5785,13 +5437,13 @@ export class ZPP_Space {
                 ret2.next = null;
               }
               ret2.elt = carb;
-              let temp2 = ret2;
+              const temp2 = ret2;
               temp2.next = _this2.head;
               _this2.head = temp2;
               _this2.modified = true;
               _this2.length++;
             } else {
-              let _this3 = this.c_arbiters_false;
+              const _this3 = this.c_arbiters_false;
               let ret3;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
                 ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
@@ -5801,15 +5453,15 @@ export class ZPP_Space {
                 ret3.next = null;
               }
               ret3.elt = carb;
-              let temp3 = ret3;
+              const temp3 = ret3;
               temp3.next = _this3.head;
               _this3.head = temp3;
               _this3.modified = true;
               _this3.length++;
             }
           } else if (arb.type == ZPP_Arbiter.FLUID) {
-            let _this4 = this.f_arbiters;
-            let o1 = arb.fluidarb;
+            const _this4 = this.f_arbiters;
+            const o1 = arb.fluidarb;
             let ret4;
             if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
               ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
@@ -5819,14 +5471,14 @@ export class ZPP_Space {
               ret4.next = null;
             }
             ret4.elt = o1;
-            let temp4 = ret4;
+            const temp4 = ret4;
             temp4.next = _this4.head;
             _this4.head = temp4;
             _this4.modified = true;
             _this4.length++;
           } else {
-            let _this5 = this.s_arbiters;
-            let o2 = arb.sensorarb;
+            const _this5 = this.s_arbiters;
+            const o2 = arb.sensorarb;
             let ret5;
             if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
               ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
@@ -5836,7 +5488,7 @@ export class ZPP_Space {
               ret5.next = null;
             }
             ret5.elt = o2;
-            let temp5 = ret5;
+            const temp5 = ret5;
             temp5.next = _this5.head;
             _this5.head = temp5;
             _this5.modified = true;
@@ -5850,7 +5502,7 @@ export class ZPP_Space {
           (arb.immState & 1) != 0
         ) {
           if (arb.b1.type == 2 && arb.b1.component.sleeping) {
-            let o3 = arb.b1;
+            const o3 = arb.b1;
             if (!o3.world) {
               o3.component.waket = this.stamp + (this.midstep ? 0 : 1);
               if (o3.type == 3) {
@@ -5862,7 +5514,7 @@ export class ZPP_Space {
             }
           }
           if (arb.b2.type == 2 && arb.b2.component.sleeping) {
-            let o4 = arb.b2;
+            const o4 = arb.b2;
             if (!o4.world) {
               o4.component.waket = this.stamp + (this.midstep ? 0 : 1);
               if (o4.type == 3) {
@@ -5882,7 +5534,7 @@ export class ZPP_Space {
       if (!fst && !this.bphase.is_sweep && o.type != 1) {
         let cx_ite2 = o.shapes.head;
         while (cx_ite2 != null) {
-          let shape = cx_ite2.elt;
+          const shape = cx_ite2.elt;
           if (shape.node != null) {
             this.bphase.sync(shape);
           }
@@ -5903,7 +5555,7 @@ export class ZPP_Space {
       if (con.component.sleeping) {
         if (con.component.island == null) {
           con.component.sleeping = false;
-          let _this = this.live_constraints;
+          const _this = this.live_constraints;
           let ret;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool == null) {
             ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint();
@@ -5913,7 +5565,7 @@ export class ZPP_Space {
             ret.next = null;
           }
           ret.elt = con;
-          let temp = ret;
+          const temp = ret;
           temp.next = _this.head;
           _this.head = temp;
           _this.modified = true;
@@ -5937,12 +5589,8 @@ export class ZPP_Space {
   doForests(dt) {
     let cx_ite = this.c_arbiters_false.head;
     while (cx_ite != null) {
-      let arb = cx_ite.elt;
-      if (
-        !arb.cleared &&
-        arb.up_stamp == this.stamp &&
-        (arb.immState & 1) != 0
-      ) {
+      const arb = cx_ite.elt;
+      if (!arb.cleared && arb.up_stamp == this.stamp && (arb.immState & 1) != 0) {
         if (arb.b1.type == 2 && arb.b2.type == 2) {
           let xr;
           if (arb.b1.component == arb.b1.component.parent) {
@@ -5951,13 +5599,13 @@ export class ZPP_Space {
             let obj = arb.b1.component;
             let stack = null;
             while (obj != obj.parent) {
-              let nxt = obj.parent;
+              const nxt = obj.parent;
               obj.parent = stack;
               stack = obj;
               obj = nxt;
             }
             while (stack != null) {
-              let nxt1 = stack.parent;
+              const nxt1 = stack.parent;
               stack.parent = obj;
               stack = nxt1;
             }
@@ -5970,13 +5618,13 @@ export class ZPP_Space {
             let obj1 = arb.b2.component;
             let stack1 = null;
             while (obj1 != obj1.parent) {
-              let nxt2 = obj1.parent;
+              const nxt2 = obj1.parent;
               obj1.parent = stack1;
               stack1 = obj1;
               obj1 = nxt2;
             }
             while (stack1 != null) {
-              let nxt3 = stack1.parent;
+              const nxt3 = stack1.parent;
               stack1.parent = obj1;
               stack1 = nxt3;
             }
@@ -5998,12 +5646,8 @@ export class ZPP_Space {
     }
     let cx_ite1 = this.f_arbiters.head;
     while (cx_ite1 != null) {
-      let arb1 = cx_ite1.elt;
-      if (
-        !arb1.cleared &&
-        arb1.up_stamp == this.stamp &&
-        (arb1.immState & 1) != 0
-      ) {
+      const arb1 = cx_ite1.elt;
+      if (!arb1.cleared && arb1.up_stamp == this.stamp && (arb1.immState & 1) != 0) {
         if (arb1.b1.type == 2 && arb1.b2.type == 2) {
           let xr1;
           if (arb1.b1.component == arb1.b1.component.parent) {
@@ -6012,13 +5656,13 @@ export class ZPP_Space {
             let obj2 = arb1.b1.component;
             let stack2 = null;
             while (obj2 != obj2.parent) {
-              let nxt4 = obj2.parent;
+              const nxt4 = obj2.parent;
               obj2.parent = stack2;
               stack2 = obj2;
               obj2 = nxt4;
             }
             while (stack2 != null) {
-              let nxt5 = stack2.parent;
+              const nxt5 = stack2.parent;
               stack2.parent = obj2;
               stack2 = nxt5;
             }
@@ -6031,13 +5675,13 @@ export class ZPP_Space {
             let obj3 = arb1.b2.component;
             let stack3 = null;
             while (obj3 != obj3.parent) {
-              let nxt6 = obj3.parent;
+              const nxt6 = obj3.parent;
               obj3.parent = stack3;
               stack3 = obj3;
               obj3 = nxt6;
             }
             while (stack3 != null) {
-              let nxt7 = stack3.parent;
+              const nxt7 = stack3.parent;
               stack3.parent = obj3;
               stack3 = nxt7;
             }
@@ -6059,16 +5703,16 @@ export class ZPP_Space {
     }
     let cx_ite2 = this.live_constraints.head;
     while (cx_ite2 != null) {
-      let con = cx_ite2.elt;
+      const con = cx_ite2.elt;
       con.forest();
       cx_ite2 = cx_ite2.next;
     }
     while (this.live.head != null) {
-      let _this = this.live;
-      let ret = _this.head.elt;
+      const _this = this.live;
+      const ret = _this.head.elt;
       _this.pop();
-      let o = ret;
-      let oc = o.component;
+      const o = ret;
+      const oc = o.component;
       let root;
       if (oc == oc.parent) {
         root = oc;
@@ -6076,13 +5720,13 @@ export class ZPP_Space {
         let obj4 = oc;
         let stack4 = null;
         while (obj4 != obj4.parent) {
-          let nxt8 = obj4.parent;
+          const nxt8 = obj4.parent;
           obj4.parent = stack4;
           stack4 = obj4;
           obj4 = nxt8;
         }
         while (stack4 != null) {
-          let nxt9 = stack4.parent;
+          const nxt9 = stack4.parent;
           stack4.parent = obj4;
           stack4 = nxt9;
         }
@@ -6097,10 +5741,10 @@ export class ZPP_Space {
           root.island.next = null;
         }
         root.island.waket = 0;
-        let _this1 = this.islands;
-        let o1 = root.island;
+        const _this1 = this.islands;
+        const o1 = root.island;
         o1._inuse = true;
-        let temp = o1;
+        const temp = o1;
         temp.next = _this1.next;
         _this1.next = temp;
         _this1.modified = true;
@@ -6108,7 +5752,7 @@ export class ZPP_Space {
         root.island.sleep = true;
       }
       oc.island = root.island;
-      let _this2 = oc.island.comps;
+      const _this2 = oc.island.comps;
       let ret1;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool == null) {
         ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Component();
@@ -6118,23 +5762,23 @@ export class ZPP_Space {
         ret1.next = null;
       }
       ret1.elt = oc;
-      let temp1 = ret1;
+      const temp1 = ret1;
       temp1.next = _this2.head;
       _this2.head = temp1;
       _this2.modified = true;
       _this2.length++;
-      let rest = o.atRest(dt);
+      const rest = o.atRest(dt);
       oc.island.sleep = oc.island.sleep && rest;
       if (oc.waket > oc.island.waket) {
         oc.island.waket = oc.waket;
       }
     }
     while (this.live_constraints.head != null) {
-      let _this3 = this.live_constraints;
-      let ret2 = _this3.head.elt;
+      const _this3 = this.live_constraints;
+      const ret2 = _this3.head.elt;
       _this3.pop();
-      let o2 = ret2;
-      let oc1 = o2.component;
+      const o2 = ret2;
+      const oc1 = o2.component;
       let root1;
       if (oc1 == oc1.parent) {
         root1 = oc1;
@@ -6142,20 +5786,20 @@ export class ZPP_Space {
         let obj5 = oc1;
         let stack5 = null;
         while (obj5 != obj5.parent) {
-          let nxt10 = obj5.parent;
+          const nxt10 = obj5.parent;
           obj5.parent = stack5;
           stack5 = obj5;
           obj5 = nxt10;
         }
         while (stack5 != null) {
-          let nxt11 = stack5.parent;
+          const nxt11 = stack5.parent;
           stack5.parent = obj5;
           stack5 = nxt11;
         }
         root1 = obj5;
       }
       oc1.island = root1.island;
-      let _this4 = oc1.island.comps;
+      const _this4 = oc1.island.comps;
       let ret3;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool == null) {
         ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Component();
@@ -6165,7 +5809,7 @@ export class ZPP_Space {
         ret3.next = null;
       }
       ret3.elt = oc1;
-      let temp2 = ret3;
+      const temp2 = ret3;
       temp2.next = _this4.head;
       _this4.head = temp2;
       _this4.modified = true;
@@ -6175,29 +5819,29 @@ export class ZPP_Space {
       }
     }
     while (this.islands.next != null) {
-      let _this5 = this.islands;
-      let ret4 = _this5.next;
+      const _this5 = this.islands;
+      const ret4 = _this5.next;
       _this5.pop();
-      let i = ret4;
+      const i = ret4;
       if (i.sleep) {
         let cx_ite3 = i.comps.head;
         while (cx_ite3 != null) {
-          let c = cx_ite3.elt;
+          const c = cx_ite3.elt;
           if (c.isBody) {
-            let b = c.body;
+            const b = c.body;
             b.velx = 0;
             b.vely = 0;
             b.angvel = 0;
             c.sleeping = true;
             let cx_ite4 = b.shapes.head;
             while (cx_ite4 != null) {
-              let shape = cx_ite4.elt;
+              const shape = cx_ite4.elt;
               this.bphase.sync(shape);
               cx_ite4 = cx_ite4.next;
             }
             this.bodyCbSleep(b);
           } else {
-            let con1 = c.constraint;
+            const con1 = c.constraint;
             this.constraintCbSleep(con1);
             c.sleeping = true;
           }
@@ -6205,14 +5849,14 @@ export class ZPP_Space {
         }
       } else {
         while (i.comps.head != null) {
-          let _this6 = i.comps;
-          let ret5 = _this6.head.elt;
+          const _this6 = i.comps;
+          const ret5 = _this6.head.elt;
           _this6.pop();
-          let c1 = ret5;
+          const c1 = ret5;
           c1.waket = i.waket;
           if (c1.isBody) {
-            let _this7 = this.live;
-            let o3 = c1.body;
+            const _this7 = this.live;
+            const o3 = c1.body;
             let ret6;
             if (ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool == null) {
               ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Body();
@@ -6222,14 +5866,14 @@ export class ZPP_Space {
               ret6.next = null;
             }
             ret6.elt = o3;
-            let temp3 = ret6;
+            const temp3 = ret6;
             temp3.next = _this7.head;
             _this7.head = temp3;
             _this7.modified = true;
             _this7.length++;
           } else {
-            let _this8 = this.live_constraints;
-            let o4 = c1.constraint;
+            const _this8 = this.live_constraints;
+            const o4 = c1.constraint;
             let ret7;
             if (ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool == null) {
               ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint();
@@ -6239,7 +5883,7 @@ export class ZPP_Space {
               ret7.next = null;
             }
             ret7.elt = o4;
-            let temp4 = ret7;
+            const temp4 = ret7;
             temp4.next = _this8.head;
             _this8.head = temp4;
             _this8.modified = true;
@@ -6250,7 +5894,7 @@ export class ZPP_Space {
           c1.parent = c1;
           c1.rank = 0;
         }
-        let o5 = i;
+        const o5 = i;
         o5.next = ZPP_Island.zpp_pool;
         ZPP_Island.zpp_pool = o5;
       }
@@ -6269,7 +5913,7 @@ export class ZPP_Space {
       pre = null;
     }
     while (arbite != null) {
-      let arb = arbite.elt;
+      const arb = arbite.elt;
       if (arb.b1.component.sleeping && arb.b2.component.sleeping) {
         arb.sleep_stamp = this.stamp;
         arb.sleeping = true;
@@ -6290,7 +5934,7 @@ export class ZPP_Space {
             arbs.pushmod = true;
           }
         }
-        let o = old;
+        const o = old;
         o.elt = null;
         o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = o;
@@ -6325,7 +5969,7 @@ export class ZPP_Space {
       pre1 = null;
     }
     while (arbite1 != null) {
-      let arb1 = arbite1.elt;
+      const arb1 = arbite1.elt;
       if (arb1.b1.component.sleeping && arb1.b2.component.sleeping) {
         arb1.sleep_stamp = this.stamp;
         arb1.sleeping = true;
@@ -6346,7 +5990,7 @@ export class ZPP_Space {
             arbs1.pushmod = true;
           }
         }
-        let o1 = old1;
+        const o1 = old1;
         o1.elt = null;
         o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = o1;
@@ -6379,7 +6023,7 @@ export class ZPP_Space {
       pre2 = null;
     }
     while (arbite2 != null) {
-      let arb2 = arbite2.elt;
+      const arb2 = arbite2.elt;
       if (arb2.b1.component.sleeping && arb2.b2.component.sleeping) {
         arb2.sleep_stamp = this.stamp;
         arb2.sleeping = true;
@@ -6400,7 +6044,7 @@ export class ZPP_Space {
             arbs2.pushmod = true;
           }
         }
-        let o2 = old2;
+        const o2 = old2;
         o2.elt = null;
         o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = o2;
@@ -6428,9 +6072,7 @@ export class ZPP_Space {
   static_validation(body) {
     if (body.shapes.head != null) {
       if (body.shapes.head == null) {
-        throw new Error(
-          "Error: Body bounds only makes sense if it contains shapes"
-        );
+        throw new Error("Error: Body bounds only makes sense if it contains shapes");
       }
       if (body.zip_aabb) {
         body.zip_aabb = false;
@@ -6440,23 +6082,21 @@ export class ZPP_Space {
         body.aabb.maxy = -Infinity;
         let cx_ite = body.shapes.head;
         while (cx_ite != null) {
-          let s = cx_ite.elt;
+          const s = cx_ite.elt;
           if (s.zip_aabb) {
             if (s.body != null) {
               s.zip_aabb = false;
               if (s.type == 0) {
-                let _this = s.circle;
+                const _this = s.circle;
                 if (_this.zip_worldCOM) {
                   if (_this.body != null) {
                     _this.zip_worldCOM = false;
                     if (_this.zip_localCOM) {
                       _this.zip_localCOM = false;
                       if (_this.type == 1) {
-                        let _this1 = _this.polygon;
+                        const _this1 = _this.polygon;
                         if (_this1.lverts.next == null) {
-                          throw new Error(
-                            "Error: An empty polygon has no meaningful localCOM"
-                          );
+                          throw new Error("Error: An empty polygon has no meaningful localCOM");
                         }
                         if (_this1.lverts.next.next == null) {
                           _this1.localCOMx = _this1.lverts.next.x;
@@ -6464,10 +6104,10 @@ export class ZPP_Space {
                         } else if (_this1.lverts.next.next.next == null) {
                           _this1.localCOMx = _this1.lverts.next.x;
                           _this1.localCOMy = _this1.lverts.next.y;
-                          let t = 1.0;
+                          const t = 1.0;
                           _this1.localCOMx += _this1.lverts.next.next.x * t;
                           _this1.localCOMy += _this1.lverts.next.next.y * t;
-                          let t1 = 0.5;
+                          const t1 = 0.5;
                           _this1.localCOMx *= t1;
                           _this1.localCOMy *= t1;
                         } else {
@@ -6480,9 +6120,9 @@ export class ZPP_Space {
                           let v = cx_ite1;
                           cx_ite1 = cx_ite1.next;
                           while (cx_ite1 != null) {
-                            let w = cx_ite1;
+                            const w = cx_ite1;
                             area += v.x * (w.y - u.y);
-                            let cf = w.y * v.x - w.x * v.y;
+                            const cf = w.y * v.x - w.x * v.y;
                             _this1.localCOMx += (v.x + w.x) * cf;
                             _this1.localCOMy += (v.y + w.y) * cf;
                             u = v;
@@ -6490,21 +6130,21 @@ export class ZPP_Space {
                             cx_ite1 = cx_ite1.next;
                           }
                           cx_ite1 = _this1.lverts.next;
-                          let w1 = cx_ite1;
+                          const w1 = cx_ite1;
                           area += v.x * (w1.y - u.y);
-                          let cf1 = w1.y * v.x - w1.x * v.y;
+                          const cf1 = w1.y * v.x - w1.x * v.y;
                           _this1.localCOMx += (v.x + w1.x) * cf1;
                           _this1.localCOMy += (v.y + w1.y) * cf1;
                           u = v;
                           v = w1;
                           cx_ite1 = cx_ite1.next;
-                          let w2 = cx_ite1;
+                          const w2 = cx_ite1;
                           area += v.x * (w2.y - u.y);
-                          let cf2 = w2.y * v.x - w2.x * v.y;
+                          const cf2 = w2.y * v.x - w2.x * v.y;
                           _this1.localCOMx += (v.x + w2.x) * cf2;
                           _this1.localCOMy += (v.y + w2.y) * cf2;
                           area = 1 / (3 * area);
-                          let t2 = area;
+                          const t2 = area;
                           _this1.localCOMx *= t2;
                           _this1.localCOMy *= t2;
                         }
@@ -6514,7 +6154,7 @@ export class ZPP_Space {
                         _this.wrap_localCOM.zpp_inner.y = _this.localCOMy;
                       }
                     }
-                    let _this2 = _this.body;
+                    const _this2 = _this.body;
                     if (_this2.zip_axis) {
                       _this2.zip_axis = false;
                       _this2.axisx = Math.sin(_this2.rot);
@@ -6522,27 +6162,25 @@ export class ZPP_Space {
                     }
                     _this.worldCOMx =
                       _this.body.posx +
-                      (_this.body.axisy * _this.localCOMx -
-                        _this.body.axisx * _this.localCOMy);
+                      (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
                     _this.worldCOMy =
                       _this.body.posy +
-                      (_this.localCOMx * _this.body.axisx +
-                        _this.localCOMy * _this.body.axisy);
+                      (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
                   }
                 }
-                let rx = _this.radius;
-                let ry = _this.radius;
+                const rx = _this.radius;
+                const ry = _this.radius;
                 _this.aabb.minx = _this.worldCOMx - rx;
                 _this.aabb.miny = _this.worldCOMy - ry;
                 _this.aabb.maxx = _this.worldCOMx + rx;
                 _this.aabb.maxy = _this.worldCOMy + ry;
               } else {
-                let _this3 = s.polygon;
+                const _this3 = s.polygon;
                 if (_this3.zip_gverts) {
                   if (_this3.body != null) {
                     _this3.zip_gverts = false;
                     _this3.validate_lverts();
-                    let _this4 = _this3.body;
+                    const _this4 = _this3.body;
                     if (_this4.zip_axis) {
                       _this4.zip_axis = false;
                       _this4.axisx = Math.sin(_this4.rot);
@@ -6551,32 +6189,26 @@ export class ZPP_Space {
                     let li = _this3.lverts.next;
                     let cx_ite2 = _this3.gverts.next;
                     while (cx_ite2 != null) {
-                      let g = cx_ite2;
-                      let l = li;
+                      const g = cx_ite2;
+                      const l = li;
                       li = li.next;
-                      g.x =
-                        _this3.body.posx +
-                        (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
-                      g.y =
-                        _this3.body.posy +
-                        (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
+                      g.x = _this3.body.posx + (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
+                      g.y = _this3.body.posy + (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
                       cx_ite2 = cx_ite2.next;
                     }
                   }
                 }
                 if (_this3.lverts.next == null) {
-                  throw new Error(
-                    "Error: An empty polygon has no meaningful bounds"
-                  );
+                  throw new Error("Error: An empty polygon has no meaningful bounds");
                 }
-                let p0 = _this3.gverts.next;
+                const p0 = _this3.gverts.next;
                 _this3.aabb.minx = p0.x;
                 _this3.aabb.miny = p0.y;
                 _this3.aabb.maxx = p0.x;
                 _this3.aabb.maxy = p0.y;
                 let cx_ite3 = _this3.gverts.next.next;
                 while (cx_ite3 != null) {
-                  let p = cx_ite3;
+                  const p = cx_ite3;
                   if (p.x < _this3.aabb.minx) {
                     _this3.aabb.minx = p.x;
                   }
@@ -6594,8 +6226,8 @@ export class ZPP_Space {
               }
             }
           }
-          let _this5 = body.aabb;
-          let x = s.aabb;
+          const _this5 = body.aabb;
+          const x = s.aabb;
           if (x.minx < _this5.minx) {
             _this5.minx = x.minx;
           }
@@ -6616,23 +6248,22 @@ export class ZPP_Space {
     body.validate_inertia();
     if (body.velx != 0 || body.vely != 0 || body.angvel != 0) {
       throw new Error(
-        "Error: Static body cannot have any real velocity, only kinematic or surface velocities"
+        "Error: Static body cannot have any real velocity, only kinematic or surface velocities",
       );
     }
     let cx_ite4 = body.shapes.head;
     while (cx_ite4 != null) {
-      let s1 = cx_ite4.elt;
+      const s1 = cx_ite4.elt;
       if (s1.type == 1) {
-        let _this6 = s1.polygon;
+        const _this6 = s1.polygon;
         if (_this6.zip_sanitation) {
           _this6.zip_sanitation = false;
           _this6.splice_collinear_real();
         }
-        let res = s1.polygon.valid();
+        const res = s1.polygon.valid();
         if (ZPP_Flags.ValidationResult_VALID == null) {
           ZPP_Flags.internal = true;
-          ZPP_Flags.ValidationResult_VALID =
-            new ZPP_Space._nape.shape.ValidationResult();
+          ZPP_Flags.ValidationResult_VALID = new ZPP_Space._nape.shape.ValidationResult();
           ZPP_Flags.internal = false;
         }
         if (res != ZPP_Flags.ValidationResult_VALID) {
@@ -6640,15 +6271,15 @@ export class ZPP_Space {
             "Error: Cannot simulate with an invalid Polygon : " +
               s1.polygon.outer.toString() +
               " is invalid : " +
-              res.toString()
+              res.toString(),
           );
         }
-        let _this7 = s1.polygon;
+        const _this7 = s1.polygon;
         if (_this7.zip_gaxi) {
           if (_this7.body != null) {
             _this7.zip_gaxi = false;
             _this7.validate_laxi();
-            let _this8 = _this7.body;
+            const _this8 = _this7.body;
             if (_this8.zip_axis) {
               _this8.zip_axis = false;
               _this8.axisx = Math.sin(_this8.rot);
@@ -6658,7 +6289,7 @@ export class ZPP_Space {
               if (_this7.body != null) {
                 _this7.zip_gverts = false;
                 _this7.validate_lverts();
-                let _this9 = _this7.body;
+                const _this9 = _this7.body;
                 if (_this9.zip_axis) {
                   _this9.zip_axis = false;
                   _this9.axisx = Math.sin(_this9.rot);
@@ -6667,15 +6298,11 @@ export class ZPP_Space {
                 let li1 = _this7.lverts.next;
                 let cx_ite5 = _this7.gverts.next;
                 while (cx_ite5 != null) {
-                  let g1 = cx_ite5;
-                  let l1 = li1;
+                  const g1 = cx_ite5;
+                  const l1 = li1;
                   li1 = li1.next;
-                  g1.x =
-                    _this7.body.posx +
-                    (_this7.body.axisy * l1.x - _this7.body.axisx * l1.y);
-                  g1.y =
-                    _this7.body.posy +
-                    (l1.x * _this7.body.axisx + l1.y * _this7.body.axisy);
+                  g1.x = _this7.body.posx + (_this7.body.axisy * l1.x - _this7.body.axisx * l1.y);
+                  g1.y = _this7.body.posy + (l1.x * _this7.body.axisx + l1.y * _this7.body.axisy);
                   cx_ite5 = cx_ite5.next;
                 }
               }
@@ -6685,19 +6312,15 @@ export class ZPP_Space {
             let u1 = cx_ite6;
             cx_ite6 = cx_ite6.next;
             while (cx_ite6 != null) {
-              let v1 = cx_ite6;
-              let e = ite.elt;
+              const v1 = cx_ite6;
+              const e = ite.elt;
               ite = ite.next;
               e.gp0 = u1;
               e.gp1 = v1;
-              e.gnormx =
-                _this7.body.axisy * e.lnormx - _this7.body.axisx * e.lnormy;
-              e.gnormy =
-                e.lnormx * _this7.body.axisx + e.lnormy * _this7.body.axisy;
+              e.gnormx = _this7.body.axisy * e.lnormx - _this7.body.axisx * e.lnormy;
+              e.gnormy = e.lnormx * _this7.body.axisx + e.lnormy * _this7.body.axisy;
               e.gprojection =
-                _this7.body.posx * e.gnormx +
-                _this7.body.posy * e.gnormy +
-                e.lprojection;
+                _this7.body.posx * e.gnormx + _this7.body.posy * e.gnormy + e.lprojection;
               if (e.wrap_gnorm != null) {
                 e.wrap_gnorm.zpp_inner.x = e.gnormx;
                 e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -6707,19 +6330,15 @@ export class ZPP_Space {
               u1 = v1;
               cx_ite6 = cx_ite6.next;
             }
-            let v2 = _this7.gverts.next;
-            let e1 = ite.elt;
+            const v2 = _this7.gverts.next;
+            const e1 = ite.elt;
             ite = ite.next;
             e1.gp0 = u1;
             e1.gp1 = v2;
-            e1.gnormx =
-              _this7.body.axisy * e1.lnormx - _this7.body.axisx * e1.lnormy;
-            e1.gnormy =
-              e1.lnormx * _this7.body.axisx + e1.lnormy * _this7.body.axisy;
+            e1.gnormx = _this7.body.axisy * e1.lnormx - _this7.body.axisx * e1.lnormy;
+            e1.gnormy = e1.lnormx * _this7.body.axisx + e1.lnormy * _this7.body.axisy;
             e1.gprojection =
-              _this7.body.posx * e1.gnormx +
-              _this7.body.posy * e1.gnormy +
-              e1.lprojection;
+              _this7.body.posx * e1.gnormx + _this7.body.posy * e1.gnormy + e1.lprojection;
             if (e1.wrap_gnorm != null) {
               e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
               e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -6735,41 +6354,39 @@ export class ZPP_Space {
   }
 
   validation() {
-    let _this = this.cbsets;
+    const _this = this.cbsets;
     if (!_this.cbsets.empty()) {
       let set_ite = _this.cbsets.parent;
       while (set_ite.prev != null) set_ite = set_ite.prev;
       while (set_ite != null) {
-        let cb = set_ite.data;
+        const cb = set_ite.data;
         cb.validate();
         if (set_ite.next != null) {
           set_ite = set_ite.next;
           while (set_ite.prev != null) set_ite = set_ite.prev;
         } else {
-          while (set_ite.parent != null && set_ite == set_ite.parent.next)
-            set_ite = set_ite.parent;
+          while (set_ite.parent != null && set_ite == set_ite.parent.next) set_ite = set_ite.parent;
           set_ite = set_ite.parent;
         }
       }
     }
     let cx_ite = this.live.head;
     while (cx_ite != null) {
-      let cur = cx_ite.elt;
+      const cur = cx_ite.elt;
       cur.sweepRadius = 0;
       let cx_ite1 = cur.shapes.head;
       while (cx_ite1 != null) {
-        let s = cx_ite1.elt;
+        const s = cx_ite1.elt;
         if (s.type == 1) {
-          let _this1 = s.polygon;
+          const _this1 = s.polygon;
           if (_this1.zip_sanitation) {
             _this1.zip_sanitation = false;
             _this1.splice_collinear_real();
           }
-          let res = s.polygon.valid();
+          const res = s.polygon.valid();
           if (ZPP_Flags.ValidationResult_VALID == null) {
             ZPP_Flags.internal = true;
-            ZPP_Flags.ValidationResult_VALID =
-              new ZPP_Space._nape.shape.ValidationResult();
+            ZPP_Flags.ValidationResult_VALID = new ZPP_Space._nape.shape.ValidationResult();
             ZPP_Flags.internal = false;
           }
           if (res != ZPP_Flags.ValidationResult_VALID) {
@@ -6777,15 +6394,15 @@ export class ZPP_Space {
               "Error: Cannot simulate with an invalid Polygon : " +
                 s.polygon.outer.toString() +
                 " is invalid : " +
-                res.toString()
+                res.toString(),
             );
           }
-          let _this2 = s.polygon;
+          const _this2 = s.polygon;
           if (_this2.zip_gaxi) {
             if (_this2.body != null) {
               _this2.zip_gaxi = false;
               _this2.validate_laxi();
-              let _this3 = _this2.body;
+              const _this3 = _this2.body;
               if (_this3.zip_axis) {
                 _this3.zip_axis = false;
                 _this3.axisx = Math.sin(_this3.rot);
@@ -6795,7 +6412,7 @@ export class ZPP_Space {
                 if (_this2.body != null) {
                   _this2.zip_gverts = false;
                   _this2.validate_lverts();
-                  let _this4 = _this2.body;
+                  const _this4 = _this2.body;
                   if (_this4.zip_axis) {
                     _this4.zip_axis = false;
                     _this4.axisx = Math.sin(_this4.rot);
@@ -6804,15 +6421,11 @@ export class ZPP_Space {
                   let li = _this2.lverts.next;
                   let cx_ite2 = _this2.gverts.next;
                   while (cx_ite2 != null) {
-                    let g = cx_ite2;
-                    let l = li;
+                    const g = cx_ite2;
+                    const l = li;
                     li = li.next;
-                    g.x =
-                      _this2.body.posx +
-                      (_this2.body.axisy * l.x - _this2.body.axisx * l.y);
-                    g.y =
-                      _this2.body.posy +
-                      (l.x * _this2.body.axisx + l.y * _this2.body.axisy);
+                    g.x = _this2.body.posx + (_this2.body.axisy * l.x - _this2.body.axisx * l.y);
+                    g.y = _this2.body.posy + (l.x * _this2.body.axisx + l.y * _this2.body.axisy);
                     cx_ite2 = cx_ite2.next;
                   }
                 }
@@ -6822,19 +6435,15 @@ export class ZPP_Space {
               let u = cx_ite3;
               cx_ite3 = cx_ite3.next;
               while (cx_ite3 != null) {
-                let v = cx_ite3;
-                let e = ite.elt;
+                const v = cx_ite3;
+                const e = ite.elt;
                 ite = ite.next;
                 e.gp0 = u;
                 e.gp1 = v;
-                e.gnormx =
-                  _this2.body.axisy * e.lnormx - _this2.body.axisx * e.lnormy;
-                e.gnormy =
-                  e.lnormx * _this2.body.axisx + e.lnormy * _this2.body.axisy;
+                e.gnormx = _this2.body.axisy * e.lnormx - _this2.body.axisx * e.lnormy;
+                e.gnormy = e.lnormx * _this2.body.axisx + e.lnormy * _this2.body.axisy;
                 e.gprojection =
-                  _this2.body.posx * e.gnormx +
-                  _this2.body.posy * e.gnormy +
-                  e.lprojection;
+                  _this2.body.posx * e.gnormx + _this2.body.posy * e.gnormy + e.lprojection;
                 if (e.wrap_gnorm != null) {
                   e.wrap_gnorm.zpp_inner.x = e.gnormx;
                   e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -6844,19 +6453,15 @@ export class ZPP_Space {
                 u = v;
                 cx_ite3 = cx_ite3.next;
               }
-              let v1 = _this2.gverts.next;
-              let e1 = ite.elt;
+              const v1 = _this2.gverts.next;
+              const e1 = ite.elt;
               ite = ite.next;
               e1.gp0 = u;
               e1.gp1 = v1;
-              e1.gnormx =
-                _this2.body.axisy * e1.lnormx - _this2.body.axisx * e1.lnormy;
-              e1.gnormy =
-                e1.lnormx * _this2.body.axisx + e1.lnormy * _this2.body.axisy;
+              e1.gnormx = _this2.body.axisy * e1.lnormx - _this2.body.axisx * e1.lnormy;
+              e1.gnormy = e1.lnormx * _this2.body.axisx + e1.lnormy * _this2.body.axisy;
               e1.gprojection =
-                _this2.body.posx * e1.gnormx +
-                _this2.body.posy * e1.gnormy +
-                e1.lprojection;
+                _this2.body.posx * e1.gnormx + _this2.body.posy * e1.gnormy + e1.lprojection;
               if (e1.wrap_gnorm != null) {
                 e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
                 e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -6876,9 +6481,7 @@ export class ZPP_Space {
       cur.validate_inertia();
       if (cur.shapes.head != null) {
         if (cur.shapes.head == null) {
-          throw new Error(
-            "Error: Body bounds only makes sense if it contains shapes"
-          );
+          throw new Error("Error: Body bounds only makes sense if it contains shapes");
         }
         if (cur.zip_aabb) {
           cur.zip_aabb = false;
@@ -6888,23 +6491,21 @@ export class ZPP_Space {
           cur.aabb.maxy = -Infinity;
           let cx_ite4 = cur.shapes.head;
           while (cx_ite4 != null) {
-            let s1 = cx_ite4.elt;
+            const s1 = cx_ite4.elt;
             if (s1.zip_aabb) {
               if (s1.body != null) {
                 s1.zip_aabb = false;
                 if (s1.type == 0) {
-                  let _this5 = s1.circle;
+                  const _this5 = s1.circle;
                   if (_this5.zip_worldCOM) {
                     if (_this5.body != null) {
                       _this5.zip_worldCOM = false;
                       if (_this5.zip_localCOM) {
                         _this5.zip_localCOM = false;
                         if (_this5.type == 1) {
-                          let _this6 = _this5.polygon;
+                          const _this6 = _this5.polygon;
                           if (_this6.lverts.next == null) {
-                            throw new Error(
-                              "Error: An empty polygon has no meaningful localCOM"
-                            );
+                            throw new Error("Error: An empty polygon has no meaningful localCOM");
                           }
                           if (_this6.lverts.next.next == null) {
                             _this6.localCOMx = _this6.lverts.next.x;
@@ -6912,10 +6513,10 @@ export class ZPP_Space {
                           } else if (_this6.lverts.next.next.next == null) {
                             _this6.localCOMx = _this6.lverts.next.x;
                             _this6.localCOMy = _this6.lverts.next.y;
-                            let t = 1.0;
+                            const t = 1.0;
                             _this6.localCOMx += _this6.lverts.next.next.x * t;
                             _this6.localCOMy += _this6.lverts.next.next.y * t;
-                            let t1 = 0.5;
+                            const t1 = 0.5;
                             _this6.localCOMx *= t1;
                             _this6.localCOMy *= t1;
                           } else {
@@ -6928,9 +6529,9 @@ export class ZPP_Space {
                             let v2 = cx_ite5;
                             cx_ite5 = cx_ite5.next;
                             while (cx_ite5 != null) {
-                              let w = cx_ite5;
+                              const w = cx_ite5;
                               area += v2.x * (w.y - u1.y);
-                              let cf = w.y * v2.x - w.x * v2.y;
+                              const cf = w.y * v2.x - w.x * v2.y;
                               _this6.localCOMx += (v2.x + w.x) * cf;
                               _this6.localCOMy += (v2.y + w.y) * cf;
                               u1 = v2;
@@ -6938,21 +6539,21 @@ export class ZPP_Space {
                               cx_ite5 = cx_ite5.next;
                             }
                             cx_ite5 = _this6.lverts.next;
-                            let w1 = cx_ite5;
+                            const w1 = cx_ite5;
                             area += v2.x * (w1.y - u1.y);
-                            let cf1 = w1.y * v2.x - w1.x * v2.y;
+                            const cf1 = w1.y * v2.x - w1.x * v2.y;
                             _this6.localCOMx += (v2.x + w1.x) * cf1;
                             _this6.localCOMy += (v2.y + w1.y) * cf1;
                             u1 = v2;
                             v2 = w1;
                             cx_ite5 = cx_ite5.next;
-                            let w2 = cx_ite5;
+                            const w2 = cx_ite5;
                             area += v2.x * (w2.y - u1.y);
-                            let cf2 = w2.y * v2.x - w2.x * v2.y;
+                            const cf2 = w2.y * v2.x - w2.x * v2.y;
                             _this6.localCOMx += (v2.x + w2.x) * cf2;
                             _this6.localCOMy += (v2.y + w2.y) * cf2;
                             area = 1 / (3 * area);
-                            let t2 = area;
+                            const t2 = area;
                             _this6.localCOMx *= t2;
                             _this6.localCOMy *= t2;
                           }
@@ -6962,7 +6563,7 @@ export class ZPP_Space {
                           _this5.wrap_localCOM.zpp_inner.y = _this5.localCOMy;
                         }
                       }
-                      let _this7 = _this5.body;
+                      const _this7 = _this5.body;
                       if (_this7.zip_axis) {
                         _this7.zip_axis = false;
                         _this7.axisx = Math.sin(_this7.rot);
@@ -6978,19 +6579,19 @@ export class ZPP_Space {
                           _this5.localCOMy * _this5.body.axisy);
                     }
                   }
-                  let rx = _this5.radius;
-                  let ry = _this5.radius;
+                  const rx = _this5.radius;
+                  const ry = _this5.radius;
                   _this5.aabb.minx = _this5.worldCOMx - rx;
                   _this5.aabb.miny = _this5.worldCOMy - ry;
                   _this5.aabb.maxx = _this5.worldCOMx + rx;
                   _this5.aabb.maxy = _this5.worldCOMy + ry;
                 } else {
-                  let _this8 = s1.polygon;
+                  const _this8 = s1.polygon;
                   if (_this8.zip_gverts) {
                     if (_this8.body != null) {
                       _this8.zip_gverts = false;
                       _this8.validate_lverts();
-                      let _this9 = _this8.body;
+                      const _this9 = _this8.body;
                       if (_this9.zip_axis) {
                         _this9.zip_axis = false;
                         _this9.axisx = Math.sin(_this9.rot);
@@ -6999,32 +6600,28 @@ export class ZPP_Space {
                       let li1 = _this8.lverts.next;
                       let cx_ite6 = _this8.gverts.next;
                       while (cx_ite6 != null) {
-                        let g1 = cx_ite6;
-                        let l1 = li1;
+                        const g1 = cx_ite6;
+                        const l1 = li1;
                         li1 = li1.next;
                         g1.x =
-                          _this8.body.posx +
-                          (_this8.body.axisy * l1.x - _this8.body.axisx * l1.y);
+                          _this8.body.posx + (_this8.body.axisy * l1.x - _this8.body.axisx * l1.y);
                         g1.y =
-                          _this8.body.posy +
-                          (l1.x * _this8.body.axisx + l1.y * _this8.body.axisy);
+                          _this8.body.posy + (l1.x * _this8.body.axisx + l1.y * _this8.body.axisy);
                         cx_ite6 = cx_ite6.next;
                       }
                     }
                   }
                   if (_this8.lverts.next == null) {
-                    throw new Error(
-                      "Error: An empty polygon has no meaningful bounds"
-                    );
+                    throw new Error("Error: An empty polygon has no meaningful bounds");
                   }
-                  let p0 = _this8.gverts.next;
+                  const p0 = _this8.gverts.next;
                   _this8.aabb.minx = p0.x;
                   _this8.aabb.miny = p0.y;
                   _this8.aabb.maxx = p0.x;
                   _this8.aabb.maxy = p0.y;
                   let cx_ite7 = _this8.gverts.next.next;
                   while (cx_ite7 != null) {
-                    let p = cx_ite7;
+                    const p = cx_ite7;
                     if (p.x < _this8.aabb.minx) {
                       _this8.aabb.minx = p.x;
                     }
@@ -7042,8 +6639,8 @@ export class ZPP_Space {
                 }
               }
             }
-            let _this10 = cur.aabb;
-            let x = s1.aabb;
+            const _this10 = cur.aabb;
+            const x = s1.aabb;
             if (x.minx < _this10.minx) {
               _this10.minx = x.minx;
             }
@@ -7069,23 +6666,23 @@ export class ZPP_Space {
       }
       if (!cur.nomove && cur.type == 2 && cur.mass == 0) {
         throw new Error(
-          "Error: Dynamic Body cannot be simulated with 0 mass unless allowMovement is false"
+          "Error: Dynamic Body cannot be simulated with 0 mass unless allowMovement is false",
         );
       }
       if (!cur.norotate && cur.type == 2 && cur.inertia == 0) {
         throw new Error(
-          "Error: Dynamic Body cannot be simulated with 0 inertia unless allowRotation is false"
+          "Error: Dynamic Body cannot be simulated with 0 inertia unless allowRotation is false",
         );
       }
       if (cur.component.woken && cur.cbSet != null) {
         let cx_ite8 = cur.cbSet.bodylisteners.head;
         while (cx_ite8 != null) {
-          let i = cx_ite8.elt;
+          const i = cx_ite8.elt;
           if (i.event != 2) {
             cx_ite8 = cx_ite8.next;
             continue;
           }
-          let cb1 = this.push_callback(i);
+          const cb1 = this.push_callback(i);
           cb1.event = 2;
           cb1.body = cur;
           cx_ite8 = cx_ite8.next;
@@ -7094,7 +6691,7 @@ export class ZPP_Space {
       cur.component.woken = false;
       let cx_ite9 = cur.shapes.head;
       while (cx_ite9 != null) {
-        let shape = cx_ite9.elt;
+        const shape = cx_ite9.elt;
         this.bphase.sync(shape);
         cx_ite9 = cx_ite9.next;
       }
@@ -7102,22 +6699,21 @@ export class ZPP_Space {
     }
     let cx_ite10 = this.kinematics.head;
     while (cx_ite10 != null) {
-      let cur1 = cx_ite10.elt;
+      const cur1 = cx_ite10.elt;
       cur1.sweepRadius = 0;
       let cx_ite11 = cur1.shapes.head;
       while (cx_ite11 != null) {
-        let s2 = cx_ite11.elt;
+        const s2 = cx_ite11.elt;
         if (s2.type == 1) {
-          let _this11 = s2.polygon;
+          const _this11 = s2.polygon;
           if (_this11.zip_sanitation) {
             _this11.zip_sanitation = false;
             _this11.splice_collinear_real();
           }
-          let res1 = s2.polygon.valid();
+          const res1 = s2.polygon.valid();
           if (ZPP_Flags.ValidationResult_VALID == null) {
             ZPP_Flags.internal = true;
-            ZPP_Flags.ValidationResult_VALID =
-              new ZPP_Space._nape.shape.ValidationResult();
+            ZPP_Flags.ValidationResult_VALID = new ZPP_Space._nape.shape.ValidationResult();
             ZPP_Flags.internal = false;
           }
           if (res1 != ZPP_Flags.ValidationResult_VALID) {
@@ -7125,15 +6721,15 @@ export class ZPP_Space {
               "Error: Cannot simulate with an invalid Polygon : " +
                 s2.polygon.outer.toString() +
                 " is invalid : " +
-                res1.toString()
+                res1.toString(),
             );
           }
-          let _this12 = s2.polygon;
+          const _this12 = s2.polygon;
           if (_this12.zip_gaxi) {
             if (_this12.body != null) {
               _this12.zip_gaxi = false;
               _this12.validate_laxi();
-              let _this13 = _this12.body;
+              const _this13 = _this12.body;
               if (_this13.zip_axis) {
                 _this13.zip_axis = false;
                 _this13.axisx = Math.sin(_this13.rot);
@@ -7143,7 +6739,7 @@ export class ZPP_Space {
                 if (_this12.body != null) {
                   _this12.zip_gverts = false;
                   _this12.validate_lverts();
-                  let _this14 = _this12.body;
+                  const _this14 = _this12.body;
                   if (_this14.zip_axis) {
                     _this14.zip_axis = false;
                     _this14.axisx = Math.sin(_this14.rot);
@@ -7152,15 +6748,13 @@ export class ZPP_Space {
                   let li2 = _this12.lverts.next;
                   let cx_ite12 = _this12.gverts.next;
                   while (cx_ite12 != null) {
-                    let g2 = cx_ite12;
-                    let l2 = li2;
+                    const g2 = cx_ite12;
+                    const l2 = li2;
                     li2 = li2.next;
                     g2.x =
-                      _this12.body.posx +
-                      (_this12.body.axisy * l2.x - _this12.body.axisx * l2.y);
+                      _this12.body.posx + (_this12.body.axisy * l2.x - _this12.body.axisx * l2.y);
                     g2.y =
-                      _this12.body.posy +
-                      (l2.x * _this12.body.axisx + l2.y * _this12.body.axisy);
+                      _this12.body.posy + (l2.x * _this12.body.axisx + l2.y * _this12.body.axisy);
                     cx_ite12 = cx_ite12.next;
                   }
                 }
@@ -7170,21 +6764,15 @@ export class ZPP_Space {
               let u2 = cx_ite13;
               cx_ite13 = cx_ite13.next;
               while (cx_ite13 != null) {
-                let v3 = cx_ite13;
-                let e2 = ite1.elt;
+                const v3 = cx_ite13;
+                const e2 = ite1.elt;
                 ite1 = ite1.next;
                 e2.gp0 = u2;
                 e2.gp1 = v3;
-                e2.gnormx =
-                  _this12.body.axisy * e2.lnormx -
-                  _this12.body.axisx * e2.lnormy;
-                e2.gnormy =
-                  e2.lnormx * _this12.body.axisx +
-                  e2.lnormy * _this12.body.axisy;
+                e2.gnormx = _this12.body.axisy * e2.lnormx - _this12.body.axisx * e2.lnormy;
+                e2.gnormy = e2.lnormx * _this12.body.axisx + e2.lnormy * _this12.body.axisy;
                 e2.gprojection =
-                  _this12.body.posx * e2.gnormx +
-                  _this12.body.posy * e2.gnormy +
-                  e2.lprojection;
+                  _this12.body.posx * e2.gnormx + _this12.body.posy * e2.gnormy + e2.lprojection;
                 if (e2.wrap_gnorm != null) {
                   e2.wrap_gnorm.zpp_inner.x = e2.gnormx;
                   e2.wrap_gnorm.zpp_inner.y = e2.gnormy;
@@ -7194,19 +6782,15 @@ export class ZPP_Space {
                 u2 = v3;
                 cx_ite13 = cx_ite13.next;
               }
-              let v4 = _this12.gverts.next;
-              let e3 = ite1.elt;
+              const v4 = _this12.gverts.next;
+              const e3 = ite1.elt;
               ite1 = ite1.next;
               e3.gp0 = u2;
               e3.gp1 = v4;
-              e3.gnormx =
-                _this12.body.axisy * e3.lnormx - _this12.body.axisx * e3.lnormy;
-              e3.gnormy =
-                e3.lnormx * _this12.body.axisx + e3.lnormy * _this12.body.axisy;
+              e3.gnormx = _this12.body.axisy * e3.lnormx - _this12.body.axisx * e3.lnormy;
+              e3.gnormy = e3.lnormx * _this12.body.axisx + e3.lnormy * _this12.body.axisy;
               e3.gprojection =
-                _this12.body.posx * e3.gnormx +
-                _this12.body.posy * e3.gnormy +
-                e3.lprojection;
+                _this12.body.posx * e3.gnormx + _this12.body.posy * e3.gnormy + e3.lprojection;
               if (e3.wrap_gnorm != null) {
                 e3.wrap_gnorm.zpp_inner.x = e3.gnormx;
                 e3.wrap_gnorm.zpp_inner.y = e3.gnormy;
@@ -7226,9 +6810,7 @@ export class ZPP_Space {
       cur1.validate_inertia();
       if (cur1.shapes.head != null) {
         if (cur1.shapes.head == null) {
-          throw new Error(
-            "Error: Body bounds only makes sense if it contains shapes"
-          );
+          throw new Error("Error: Body bounds only makes sense if it contains shapes");
         }
         if (cur1.zip_aabb) {
           cur1.zip_aabb = false;
@@ -7238,23 +6820,21 @@ export class ZPP_Space {
           cur1.aabb.maxy = -Infinity;
           let cx_ite14 = cur1.shapes.head;
           while (cx_ite14 != null) {
-            let s3 = cx_ite14.elt;
+            const s3 = cx_ite14.elt;
             if (s3.zip_aabb) {
               if (s3.body != null) {
                 s3.zip_aabb = false;
                 if (s3.type == 0) {
-                  let _this15 = s3.circle;
+                  const _this15 = s3.circle;
                   if (_this15.zip_worldCOM) {
                     if (_this15.body != null) {
                       _this15.zip_worldCOM = false;
                       if (_this15.zip_localCOM) {
                         _this15.zip_localCOM = false;
                         if (_this15.type == 1) {
-                          let _this16 = _this15.polygon;
+                          const _this16 = _this15.polygon;
                           if (_this16.lverts.next == null) {
-                            throw new Error(
-                              "Error: An empty polygon has no meaningful localCOM"
-                            );
+                            throw new Error("Error: An empty polygon has no meaningful localCOM");
                           }
                           if (_this16.lverts.next.next == null) {
                             _this16.localCOMx = _this16.lverts.next.x;
@@ -7262,12 +6842,10 @@ export class ZPP_Space {
                           } else if (_this16.lverts.next.next.next == null) {
                             _this16.localCOMx = _this16.lverts.next.x;
                             _this16.localCOMy = _this16.lverts.next.y;
-                            let t3 = 1.0;
-                            _this16.localCOMx +=
-                              _this16.lverts.next.next.x * t3;
-                            _this16.localCOMy +=
-                              _this16.lverts.next.next.y * t3;
-                            let t4 = 0.5;
+                            const t3 = 1.0;
+                            _this16.localCOMx += _this16.lverts.next.next.x * t3;
+                            _this16.localCOMy += _this16.lverts.next.next.y * t3;
+                            const t4 = 0.5;
                             _this16.localCOMx *= t4;
                             _this16.localCOMy *= t4;
                           } else {
@@ -7280,9 +6858,9 @@ export class ZPP_Space {
                             let v5 = cx_ite15;
                             cx_ite15 = cx_ite15.next;
                             while (cx_ite15 != null) {
-                              let w3 = cx_ite15;
+                              const w3 = cx_ite15;
                               area1 += v5.x * (w3.y - u3.y);
-                              let cf3 = w3.y * v5.x - w3.x * v5.y;
+                              const cf3 = w3.y * v5.x - w3.x * v5.y;
                               _this16.localCOMx += (v5.x + w3.x) * cf3;
                               _this16.localCOMy += (v5.y + w3.y) * cf3;
                               u3 = v5;
@@ -7290,21 +6868,21 @@ export class ZPP_Space {
                               cx_ite15 = cx_ite15.next;
                             }
                             cx_ite15 = _this16.lverts.next;
-                            let w4 = cx_ite15;
+                            const w4 = cx_ite15;
                             area1 += v5.x * (w4.y - u3.y);
-                            let cf4 = w4.y * v5.x - w4.x * v5.y;
+                            const cf4 = w4.y * v5.x - w4.x * v5.y;
                             _this16.localCOMx += (v5.x + w4.x) * cf4;
                             _this16.localCOMy += (v5.y + w4.y) * cf4;
                             u3 = v5;
                             v5 = w4;
                             cx_ite15 = cx_ite15.next;
-                            let w5 = cx_ite15;
+                            const w5 = cx_ite15;
                             area1 += v5.x * (w5.y - u3.y);
-                            let cf5 = w5.y * v5.x - w5.x * v5.y;
+                            const cf5 = w5.y * v5.x - w5.x * v5.y;
                             _this16.localCOMx += (v5.x + w5.x) * cf5;
                             _this16.localCOMy += (v5.y + w5.y) * cf5;
                             area1 = 1 / (3 * area1);
-                            let t5 = area1;
+                            const t5 = area1;
                             _this16.localCOMx *= t5;
                             _this16.localCOMy *= t5;
                           }
@@ -7314,7 +6892,7 @@ export class ZPP_Space {
                           _this15.wrap_localCOM.zpp_inner.y = _this15.localCOMy;
                         }
                       }
-                      let _this17 = _this15.body;
+                      const _this17 = _this15.body;
                       if (_this17.zip_axis) {
                         _this17.zip_axis = false;
                         _this17.axisx = Math.sin(_this17.rot);
@@ -7330,19 +6908,19 @@ export class ZPP_Space {
                           _this15.localCOMy * _this15.body.axisy);
                     }
                   }
-                  let rx1 = _this15.radius;
-                  let ry1 = _this15.radius;
+                  const rx1 = _this15.radius;
+                  const ry1 = _this15.radius;
                   _this15.aabb.minx = _this15.worldCOMx - rx1;
                   _this15.aabb.miny = _this15.worldCOMy - ry1;
                   _this15.aabb.maxx = _this15.worldCOMx + rx1;
                   _this15.aabb.maxy = _this15.worldCOMy + ry1;
                 } else {
-                  let _this18 = s3.polygon;
+                  const _this18 = s3.polygon;
                   if (_this18.zip_gverts) {
                     if (_this18.body != null) {
                       _this18.zip_gverts = false;
                       _this18.validate_lverts();
-                      let _this19 = _this18.body;
+                      const _this19 = _this18.body;
                       if (_this19.zip_axis) {
                         _this19.zip_axis = false;
                         _this19.axisx = Math.sin(_this19.rot);
@@ -7351,34 +6929,30 @@ export class ZPP_Space {
                       let li3 = _this18.lverts.next;
                       let cx_ite16 = _this18.gverts.next;
                       while (cx_ite16 != null) {
-                        let g3 = cx_ite16;
-                        let l3 = li3;
+                        const g3 = cx_ite16;
+                        const l3 = li3;
                         li3 = li3.next;
                         g3.x =
                           _this18.body.posx +
-                          (_this18.body.axisy * l3.x -
-                            _this18.body.axisx * l3.y);
+                          (_this18.body.axisy * l3.x - _this18.body.axisx * l3.y);
                         g3.y =
                           _this18.body.posy +
-                          (l3.x * _this18.body.axisx +
-                            l3.y * _this18.body.axisy);
+                          (l3.x * _this18.body.axisx + l3.y * _this18.body.axisy);
                         cx_ite16 = cx_ite16.next;
                       }
                     }
                   }
                   if (_this18.lverts.next == null) {
-                    throw new Error(
-                      "Error: An empty polygon has no meaningful bounds"
-                    );
+                    throw new Error("Error: An empty polygon has no meaningful bounds");
                   }
-                  let p01 = _this18.gverts.next;
+                  const p01 = _this18.gverts.next;
                   _this18.aabb.minx = p01.x;
                   _this18.aabb.miny = p01.y;
                   _this18.aabb.maxx = p01.x;
                   _this18.aabb.maxy = p01.y;
                   let cx_ite17 = _this18.gverts.next.next;
                   while (cx_ite17 != null) {
-                    let p1 = cx_ite17;
+                    const p1 = cx_ite17;
                     if (p1.x < _this18.aabb.minx) {
                       _this18.aabb.minx = p1.x;
                     }
@@ -7396,8 +6970,8 @@ export class ZPP_Space {
                 }
               }
             }
-            let _this20 = cur1.aabb;
-            let x1 = s3.aabb;
+            const _this20 = cur1.aabb;
+            const x1 = s3.aabb;
             if (x1.minx < _this20.minx) {
               _this20.minx = x1.minx;
             }
@@ -7423,17 +6997,17 @@ export class ZPP_Space {
       }
       if (!cur1.nomove && cur1.type == 2 && cur1.mass == 0) {
         throw new Error(
-          "Error: Dynamic Body cannot be simulated with 0 mass unless allowMovement is false"
+          "Error: Dynamic Body cannot be simulated with 0 mass unless allowMovement is false",
         );
       }
       if (!cur1.norotate && cur1.type == 2 && cur1.inertia == 0) {
         throw new Error(
-          "Error: Dynamic Body cannot be simulated with 0 inertia unless allowRotation is false"
+          "Error: Dynamic Body cannot be simulated with 0 inertia unless allowRotation is false",
         );
       }
       let cx_ite18 = cur1.shapes.head;
       while (cx_ite18 != null) {
-        let shape1 = cx_ite18.elt;
+        const shape1 = cx_ite18.elt;
         this.bphase.sync(shape1);
         cx_ite18 = cx_ite18.next;
       }
@@ -7441,18 +7015,18 @@ export class ZPP_Space {
     }
     let cx_ite19 = this.live_constraints.head;
     while (cx_ite19 != null) {
-      let con = cx_ite19.elt;
+      const con = cx_ite19.elt;
       if (con.active) {
         con.validate();
         if (con.component.woken && con.cbSet != null) {
           let cx_ite20 = con.cbSet.conlisteners.head;
           while (cx_ite20 != null) {
-            let i1 = cx_ite20.elt;
+            const i1 = cx_ite20.elt;
             if (i1.event != 2) {
               cx_ite20 = cx_ite20.next;
               continue;
             }
-            let cb2 = this.push_callback(i1);
+            const cb2 = this.push_callback(i1);
             cb2.event = 2;
             cb2.constraint = con;
             cx_ite20 = cx_ite20.next;
@@ -7466,28 +7040,22 @@ export class ZPP_Space {
 
   updateVel(dt) {
     let pre = null;
-    let linDrag = 1 - dt * this.global_lin_drag;
-    let angDrag = 1 - dt * this.global_ang_drag;
+    const linDrag = 1 - dt * this.global_lin_drag;
+    const angDrag = 1 - dt * this.global_ang_drag;
     let cx_ite = this.live.head;
     while (cx_ite != null) {
-      let cur = cx_ite.elt;
+      const cur = cx_ite.elt;
       if (cur.smass != 0.0) {
-        let time = dt * cur.imass;
-        cur.velx =
-          linDrag * cur.velx +
-          (cur.forcex + this.gravityx * cur.gravMass) * time;
-        cur.vely =
-          linDrag * cur.vely +
-          (cur.forcey + this.gravityy * cur.gravMass) * time;
+        const time = dt * cur.imass;
+        cur.velx = linDrag * cur.velx + (cur.forcex + this.gravityx * cur.gravMass) * time;
+        cur.vely = linDrag * cur.vely + (cur.forcey + this.gravityy * cur.gravMass) * time;
       }
       if (cur.sinertia != 0.0) {
         let dpx = 0.0;
         let dpy = 0.0;
         dpx = cur.worldCOMx - cur.posx;
         dpy = cur.worldCOMy - cur.posy;
-        let torque =
-          cur.torque +
-          (this.gravityy * dpx - this.gravityx * dpy) * cur.gravMass;
+        const torque = cur.torque + (this.gravityy * dpx - this.gravityx * dpy) * cur.gravMass;
         cur.angvel = angDrag * cur.angvel + torque * dt * cur.iinertia;
       }
       pre = cx_ite;
@@ -7496,44 +7064,42 @@ export class ZPP_Space {
   }
 
   updatePos(dt) {
-    let MAX_VEL = (2 * Math.PI) / dt;
+    const MAX_VEL = (2 * Math.PI) / dt;
     let cx_ite = this.live.head;
     while (cx_ite != null) {
-      let cur = cx_ite.elt;
+      const cur = cx_ite.elt;
       cur.pre_posx = cur.posx;
       cur.pre_posy = cur.posy;
       cur.pre_rot = cur.rot;
       cur.sweepTime = 0;
       cur.sweep_angvel = cur.angvel % MAX_VEL;
-      let delta = dt - cur.sweepTime;
+      const delta = dt - cur.sweepTime;
       if (delta != 0) {
         cur.sweepTime = dt;
-        let t = delta;
+        const t = delta;
         cur.posx += cur.velx * t;
         cur.posy += cur.vely * t;
         if (cur.angvel != 0) {
-          let dr = cur.sweep_angvel * delta;
+          const dr = cur.sweep_angvel * delta;
           cur.rot += dr;
           if (dr * dr > 0.0001) {
             cur.axisx = Math.sin(cur.rot);
             cur.axisy = Math.cos(cur.rot);
           } else {
-            let d2 = dr * dr;
-            let p = 1 - 0.5 * d2;
-            let m = 1 - (d2 * d2) / 8;
-            let nx = (p * cur.axisx + dr * cur.axisy) * m;
+            const d2 = dr * dr;
+            const p = 1 - 0.5 * d2;
+            const m = 1 - (d2 * d2) / 8;
+            const nx = (p * cur.axisx + dr * cur.axisy) * m;
             cur.axisy = (p * cur.axisy - dr * cur.axisx) * m;
             cur.axisx = nx;
           }
         }
       }
       if (!cur.disableCCD) {
-        let linThreshold =
-          ZPP_Space._nape.Config.staticCCDLinearThreshold * cur.sweepRadius;
-        let angThreshold = ZPP_Space._nape.Config.staticCCDAngularThreshold;
+        const linThreshold = ZPP_Space._nape.Config.staticCCDLinearThreshold * cur.sweepRadius;
+        const angThreshold = ZPP_Space._nape.Config.staticCCDAngularThreshold;
         if (
-          (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt >
-            linThreshold * linThreshold ||
+          (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt > linThreshold * linThreshold ||
           cur.angvel * cur.angvel * dt * dt > angThreshold * angThreshold ||
           cur.type == 3
         ) {
@@ -7541,11 +7107,11 @@ export class ZPP_Space {
           if (angvel < 0) {
             angvel = -angvel;
           }
-          let iangvel = 1 / angvel;
+          const iangvel = 1 / angvel;
           let cx_ite1 = cur.shapes.head;
           while (cx_ite1 != null) {
-            let s = cx_ite1.elt;
-            let aabb = s.aabb;
+            const s = cx_ite1.elt;
+            const aabb = s.aabb;
             let minx = aabb.minx;
             let miny = aabb.miny;
             let maxx = aabb.maxx;
@@ -7554,70 +7120,60 @@ export class ZPP_Space {
             if (count > 8) {
               count = 8;
             }
-            let anginc = (angvel * dt) / count;
-            let delta1 = dt - cur.sweepTime;
+            const anginc = (angvel * dt) / count;
+            const delta1 = dt - cur.sweepTime;
             if (delta1 != 0) {
               cur.sweepTime = dt;
-              let t1 = delta1;
+              const t1 = delta1;
               cur.posx += cur.velx * t1;
               cur.posy += cur.vely * t1;
               if (cur.angvel != 0) {
-                let dr1 = cur.sweep_angvel * delta1;
+                const dr1 = cur.sweep_angvel * delta1;
                 cur.rot += dr1;
                 if (dr1 * dr1 > 0.0001) {
                   cur.axisx = Math.sin(cur.rot);
                   cur.axisy = Math.cos(cur.rot);
                 } else {
-                  let d21 = dr1 * dr1;
-                  let p1 = 1 - 0.5 * d21;
-                  let m1 = 1 - (d21 * d21) / 8;
-                  let nx1 = (p1 * cur.axisx + dr1 * cur.axisy) * m1;
+                  const d21 = dr1 * dr1;
+                  const p1 = 1 - 0.5 * d21;
+                  const m1 = 1 - (d21 * d21) / 8;
+                  const nx1 = (p1 * cur.axisx + dr1 * cur.axisy) * m1;
                   cur.axisy = (p1 * cur.axisy - dr1 * cur.axisx) * m1;
                   cur.axisx = nx1;
                 }
               }
             }
             if (s.type == 0) {
-              let _this = s.circle;
+              const _this = s.circle;
               _this.worldCOMx =
                 _this.body.posx +
-                (_this.body.axisy * _this.localCOMx -
-                  _this.body.axisx * _this.localCOMy);
+                (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
               _this.worldCOMy =
                 _this.body.posy +
-                (_this.localCOMx * _this.body.axisx +
-                  _this.localCOMy * _this.body.axisy);
+                (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
               _this.aabb.minx = _this.worldCOMx - _this.radius;
               _this.aabb.miny = _this.worldCOMy - _this.radius;
               _this.aabb.maxx = _this.worldCOMx + _this.radius;
               _this.aabb.maxy = _this.worldCOMy + _this.radius;
             } else {
-              let _this1 = s.polygon;
+              const _this1 = s.polygon;
               let li = _this1.lverts.next;
-              let p0 = _this1.gverts.next;
-              let l = li;
+              const p0 = _this1.gverts.next;
+              const l = li;
               li = li.next;
-              p0.x =
-                _this1.body.posx +
-                (_this1.body.axisy * l.x - _this1.body.axisx * l.y);
-              p0.y =
-                _this1.body.posy +
-                (l.x * _this1.body.axisx + l.y * _this1.body.axisy);
+              p0.x = _this1.body.posx + (_this1.body.axisy * l.x - _this1.body.axisx * l.y);
+              p0.y = _this1.body.posy + (l.x * _this1.body.axisx + l.y * _this1.body.axisy);
               _this1.aabb.minx = p0.x;
               _this1.aabb.miny = p0.y;
               _this1.aabb.maxx = p0.x;
               _this1.aabb.maxy = p0.y;
               let cx_ite2 = _this1.gverts.next.next;
               while (cx_ite2 != null) {
-                let p2 = cx_ite2;
-                let l1 = li;
+                const p2 = cx_ite2;
+                const l1 = li;
                 li = li.next;
-                p2.x =
-                  _this1.body.posx +
-                  (_this1.body.axisy * l1.x - _this1.body.axisx * l1.y);
-                p2.y =
-                  _this1.body.posy +
-                  (l1.x * _this1.body.axisx + l1.y * _this1.body.axisy);
+                p2.x = _this1.body.posx + (_this1.body.axisy * l1.x - _this1.body.axisx * l1.y);
+                p2.y = _this1.body.posy + (l1.x * _this1.body.axisx + l1.y * _this1.body.axisy);
                 if (p2.x < _this1.aabb.minx) {
                   _this1.aabb.minx = p2.x;
                 }
@@ -7654,73 +7210,63 @@ export class ZPP_Space {
               maxy = aabb.maxy;
             }
             let _g = 1;
-            let _g1 = count;
+            const _g1 = count;
             while (_g < _g1) {
-              let i = _g++;
-              let dt1 = anginc * i * iangvel;
-              let delta2 = dt1 - cur.sweepTime;
+              const i = _g++;
+              const dt1 = anginc * i * iangvel;
+              const delta2 = dt1 - cur.sweepTime;
               if (delta2 != 0) {
                 cur.sweepTime = dt1;
-                let t2 = delta2;
+                const t2 = delta2;
                 cur.posx += cur.velx * t2;
                 cur.posy += cur.vely * t2;
                 if (cur.angvel != 0) {
-                  let dr2 = cur.sweep_angvel * delta2;
+                  const dr2 = cur.sweep_angvel * delta2;
                   cur.rot += dr2;
                   if (dr2 * dr2 > 0.0001) {
                     cur.axisx = Math.sin(cur.rot);
                     cur.axisy = Math.cos(cur.rot);
                   } else {
-                    let d22 = dr2 * dr2;
-                    let p3 = 1 - 0.5 * d22;
-                    let m2 = 1 - (d22 * d22) / 8;
-                    let nx2 = (p3 * cur.axisx + dr2 * cur.axisy) * m2;
+                    const d22 = dr2 * dr2;
+                    const p3 = 1 - 0.5 * d22;
+                    const m2 = 1 - (d22 * d22) / 8;
+                    const nx2 = (p3 * cur.axisx + dr2 * cur.axisy) * m2;
                     cur.axisy = (p3 * cur.axisy - dr2 * cur.axisx) * m2;
                     cur.axisx = nx2;
                   }
                 }
               }
               if (s.type == 0) {
-                let _this2 = s.circle;
+                const _this2 = s.circle;
                 _this2.worldCOMx =
                   _this2.body.posx +
-                  (_this2.body.axisy * _this2.localCOMx -
-                    _this2.body.axisx * _this2.localCOMy);
+                  (_this2.body.axisy * _this2.localCOMx - _this2.body.axisx * _this2.localCOMy);
                 _this2.worldCOMy =
                   _this2.body.posy +
-                  (_this2.localCOMx * _this2.body.axisx +
-                    _this2.localCOMy * _this2.body.axisy);
+                  (_this2.localCOMx * _this2.body.axisx + _this2.localCOMy * _this2.body.axisy);
                 _this2.aabb.minx = _this2.worldCOMx - _this2.radius;
                 _this2.aabb.miny = _this2.worldCOMy - _this2.radius;
                 _this2.aabb.maxx = _this2.worldCOMx + _this2.radius;
                 _this2.aabb.maxy = _this2.worldCOMy + _this2.radius;
               } else {
-                let _this3 = s.polygon;
+                const _this3 = s.polygon;
                 let li1 = _this3.lverts.next;
-                let p01 = _this3.gverts.next;
-                let l2 = li1;
+                const p01 = _this3.gverts.next;
+                const l2 = li1;
                 li1 = li1.next;
-                p01.x =
-                  _this3.body.posx +
-                  (_this3.body.axisy * l2.x - _this3.body.axisx * l2.y);
-                p01.y =
-                  _this3.body.posy +
-                  (l2.x * _this3.body.axisx + l2.y * _this3.body.axisy);
+                p01.x = _this3.body.posx + (_this3.body.axisy * l2.x - _this3.body.axisx * l2.y);
+                p01.y = _this3.body.posy + (l2.x * _this3.body.axisx + l2.y * _this3.body.axisy);
                 _this3.aabb.minx = p01.x;
                 _this3.aabb.miny = p01.y;
                 _this3.aabb.maxx = p01.x;
                 _this3.aabb.maxy = p01.y;
                 let cx_ite3 = _this3.gverts.next.next;
                 while (cx_ite3 != null) {
-                  let p4 = cx_ite3;
-                  let l3 = li1;
+                  const p4 = cx_ite3;
+                  const l3 = li1;
                   li1 = li1.next;
-                  p4.x =
-                    _this3.body.posx +
-                    (_this3.body.axisy * l3.x - _this3.body.axisx * l3.y);
-                  p4.y =
-                    _this3.body.posy +
-                    (l3.x * _this3.body.axisx + l3.y * _this3.body.axisy);
+                  p4.x = _this3.body.posx + (_this3.body.axisy * l3.x - _this3.body.axisx * l3.y);
+                  p4.y = _this3.body.posy + (l3.x * _this3.body.axisx + l3.y * _this3.body.axisy);
                   if (p4.x < _this3.aabb.minx) {
                     _this3.aabb.minx = p4.x;
                   }
@@ -7762,9 +7308,8 @@ export class ZPP_Space {
           }
           cur.sweepFrozen = false;
           if (cur.type == 2 && cur.bulletEnabled) {
-            let linThreshold2 =
-              ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur.sweepRadius;
-            let angThreshold2 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
+            const linThreshold2 = ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur.sweepRadius;
+            const angThreshold2 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
             if (
               (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt >
                 linThreshold2 * linThreshold2 ||
@@ -7785,38 +7330,37 @@ export class ZPP_Space {
     }
     let cx_ite4 = this.kinematics.head;
     while (cx_ite4 != null) {
-      let cur1 = cx_ite4.elt;
+      const cur1 = cx_ite4.elt;
       cur1.pre_posx = cur1.posx;
       cur1.pre_posy = cur1.posy;
       cur1.pre_rot = cur1.rot;
       cur1.sweepTime = 0;
       cur1.sweep_angvel = cur1.angvel % MAX_VEL;
-      let delta3 = dt - cur1.sweepTime;
+      const delta3 = dt - cur1.sweepTime;
       if (delta3 != 0) {
         cur1.sweepTime = dt;
-        let t3 = delta3;
+        const t3 = delta3;
         cur1.posx += cur1.velx * t3;
         cur1.posy += cur1.vely * t3;
         if (cur1.angvel != 0) {
-          let dr3 = cur1.sweep_angvel * delta3;
+          const dr3 = cur1.sweep_angvel * delta3;
           cur1.rot += dr3;
           if (dr3 * dr3 > 0.0001) {
             cur1.axisx = Math.sin(cur1.rot);
             cur1.axisy = Math.cos(cur1.rot);
           } else {
-            let d23 = dr3 * dr3;
-            let p5 = 1 - 0.5 * d23;
-            let m3 = 1 - (d23 * d23) / 8;
-            let nx3 = (p5 * cur1.axisx + dr3 * cur1.axisy) * m3;
+            const d23 = dr3 * dr3;
+            const p5 = 1 - 0.5 * d23;
+            const m3 = 1 - (d23 * d23) / 8;
+            const nx3 = (p5 * cur1.axisx + dr3 * cur1.axisy) * m3;
             cur1.axisy = (p5 * cur1.axisy - dr3 * cur1.axisx) * m3;
             cur1.axisx = nx3;
           }
         }
       }
       if (!cur1.disableCCD) {
-        let linThreshold1 =
-          ZPP_Space._nape.Config.staticCCDLinearThreshold * cur1.sweepRadius;
-        let angThreshold1 = ZPP_Space._nape.Config.staticCCDAngularThreshold;
+        const linThreshold1 = ZPP_Space._nape.Config.staticCCDLinearThreshold * cur1.sweepRadius;
+        const angThreshold1 = ZPP_Space._nape.Config.staticCCDAngularThreshold;
         if (
           (cur1.velx * cur1.velx + cur1.vely * cur1.vely) * dt * dt >
             linThreshold1 * linThreshold1 ||
@@ -7827,84 +7371,73 @@ export class ZPP_Space {
           if (angvel1 < 0) {
             angvel1 = -angvel1;
           }
-          let iangvel1 = 1 / angvel1;
+          const iangvel1 = 1 / angvel1;
           let cx_ite5 = cur1.shapes.head;
           while (cx_ite5 != null) {
-            let s1 = cx_ite5.elt;
-            let aabb1 = s1.aabb;
+            const s1 = cx_ite5.elt;
+            const aabb1 = s1.aabb;
             let minx1 = aabb1.minx;
             let miny1 = aabb1.miny;
             let maxx1 = aabb1.maxx;
             let maxy1 = aabb1.maxy;
-            let count1 =
-              (angvel1 * dt * s1.sweepCoef * 0.0083333333333333332) | 0;
+            let count1 = (angvel1 * dt * s1.sweepCoef * 0.0083333333333333332) | 0;
             if (count1 > 8) {
               count1 = 8;
             }
-            let anginc1 = (angvel1 * dt) / count1;
-            let delta4 = dt - cur1.sweepTime;
+            const anginc1 = (angvel1 * dt) / count1;
+            const delta4 = dt - cur1.sweepTime;
             if (delta4 != 0) {
               cur1.sweepTime = dt;
-              let t4 = delta4;
+              const t4 = delta4;
               cur1.posx += cur1.velx * t4;
               cur1.posy += cur1.vely * t4;
               if (cur1.angvel != 0) {
-                let dr4 = cur1.sweep_angvel * delta4;
+                const dr4 = cur1.sweep_angvel * delta4;
                 cur1.rot += dr4;
                 if (dr4 * dr4 > 0.0001) {
                   cur1.axisx = Math.sin(cur1.rot);
                   cur1.axisy = Math.cos(cur1.rot);
                 } else {
-                  let d24 = dr4 * dr4;
-                  let p6 = 1 - 0.5 * d24;
-                  let m4 = 1 - (d24 * d24) / 8;
-                  let nx4 = (p6 * cur1.axisx + dr4 * cur1.axisy) * m4;
+                  const d24 = dr4 * dr4;
+                  const p6 = 1 - 0.5 * d24;
+                  const m4 = 1 - (d24 * d24) / 8;
+                  const nx4 = (p6 * cur1.axisx + dr4 * cur1.axisy) * m4;
                   cur1.axisy = (p6 * cur1.axisy - dr4 * cur1.axisx) * m4;
                   cur1.axisx = nx4;
                 }
               }
             }
             if (s1.type == 0) {
-              let _this4 = s1.circle;
+              const _this4 = s1.circle;
               _this4.worldCOMx =
                 _this4.body.posx +
-                (_this4.body.axisy * _this4.localCOMx -
-                  _this4.body.axisx * _this4.localCOMy);
+                (_this4.body.axisy * _this4.localCOMx - _this4.body.axisx * _this4.localCOMy);
               _this4.worldCOMy =
                 _this4.body.posy +
-                (_this4.localCOMx * _this4.body.axisx +
-                  _this4.localCOMy * _this4.body.axisy);
+                (_this4.localCOMx * _this4.body.axisx + _this4.localCOMy * _this4.body.axisy);
               _this4.aabb.minx = _this4.worldCOMx - _this4.radius;
               _this4.aabb.miny = _this4.worldCOMy - _this4.radius;
               _this4.aabb.maxx = _this4.worldCOMx + _this4.radius;
               _this4.aabb.maxy = _this4.worldCOMy + _this4.radius;
             } else {
-              let _this5 = s1.polygon;
+              const _this5 = s1.polygon;
               let li2 = _this5.lverts.next;
-              let p02 = _this5.gverts.next;
-              let l4 = li2;
+              const p02 = _this5.gverts.next;
+              const l4 = li2;
               li2 = li2.next;
-              p02.x =
-                _this5.body.posx +
-                (_this5.body.axisy * l4.x - _this5.body.axisx * l4.y);
-              p02.y =
-                _this5.body.posy +
-                (l4.x * _this5.body.axisx + l4.y * _this5.body.axisy);
+              p02.x = _this5.body.posx + (_this5.body.axisy * l4.x - _this5.body.axisx * l4.y);
+              p02.y = _this5.body.posy + (l4.x * _this5.body.axisx + l4.y * _this5.body.axisy);
               _this5.aabb.minx = p02.x;
               _this5.aabb.miny = p02.y;
               _this5.aabb.maxx = p02.x;
               _this5.aabb.maxy = p02.y;
               let cx_ite6 = _this5.gverts.next.next;
               while (cx_ite6 != null) {
-                let p7 = cx_ite6;
-                let l5 = li2;
+                const p7 = cx_ite6;
+                const l5 = li2;
                 li2 = li2.next;
-                p7.x =
-                  _this5.body.posx +
-                  (_this5.body.axisy * l5.x - _this5.body.axisx * l5.y);
-                p7.y =
-                  _this5.body.posy +
-                  (l5.x * _this5.body.axisx + l5.y * _this5.body.axisy);
+                p7.x = _this5.body.posx + (_this5.body.axisy * l5.x - _this5.body.axisx * l5.y);
+                p7.y = _this5.body.posy + (l5.x * _this5.body.axisx + l5.y * _this5.body.axisy);
                 if (p7.x < _this5.aabb.minx) {
                   _this5.aabb.minx = p7.x;
                 }
@@ -7941,73 +7474,63 @@ export class ZPP_Space {
               maxy1 = aabb1.maxy;
             }
             let _g2 = 1;
-            let _g11 = count1;
+            const _g11 = count1;
             while (_g2 < _g11) {
-              let i1 = _g2++;
-              let dt2 = anginc1 * i1 * iangvel1;
-              let delta5 = dt2 - cur1.sweepTime;
+              const i1 = _g2++;
+              const dt2 = anginc1 * i1 * iangvel1;
+              const delta5 = dt2 - cur1.sweepTime;
               if (delta5 != 0) {
                 cur1.sweepTime = dt2;
-                let t5 = delta5;
+                const t5 = delta5;
                 cur1.posx += cur1.velx * t5;
                 cur1.posy += cur1.vely * t5;
                 if (cur1.angvel != 0) {
-                  let dr5 = cur1.sweep_angvel * delta5;
+                  const dr5 = cur1.sweep_angvel * delta5;
                   cur1.rot += dr5;
                   if (dr5 * dr5 > 0.0001) {
                     cur1.axisx = Math.sin(cur1.rot);
                     cur1.axisy = Math.cos(cur1.rot);
                   } else {
-                    let d25 = dr5 * dr5;
-                    let p8 = 1 - 0.5 * d25;
-                    let m5 = 1 - (d25 * d25) / 8;
-                    let nx5 = (p8 * cur1.axisx + dr5 * cur1.axisy) * m5;
+                    const d25 = dr5 * dr5;
+                    const p8 = 1 - 0.5 * d25;
+                    const m5 = 1 - (d25 * d25) / 8;
+                    const nx5 = (p8 * cur1.axisx + dr5 * cur1.axisy) * m5;
                     cur1.axisy = (p8 * cur1.axisy - dr5 * cur1.axisx) * m5;
                     cur1.axisx = nx5;
                   }
                 }
               }
               if (s1.type == 0) {
-                let _this6 = s1.circle;
+                const _this6 = s1.circle;
                 _this6.worldCOMx =
                   _this6.body.posx +
-                  (_this6.body.axisy * _this6.localCOMx -
-                    _this6.body.axisx * _this6.localCOMy);
+                  (_this6.body.axisy * _this6.localCOMx - _this6.body.axisx * _this6.localCOMy);
                 _this6.worldCOMy =
                   _this6.body.posy +
-                  (_this6.localCOMx * _this6.body.axisx +
-                    _this6.localCOMy * _this6.body.axisy);
+                  (_this6.localCOMx * _this6.body.axisx + _this6.localCOMy * _this6.body.axisy);
                 _this6.aabb.minx = _this6.worldCOMx - _this6.radius;
                 _this6.aabb.miny = _this6.worldCOMy - _this6.radius;
                 _this6.aabb.maxx = _this6.worldCOMx + _this6.radius;
                 _this6.aabb.maxy = _this6.worldCOMy + _this6.radius;
               } else {
-                let _this7 = s1.polygon;
+                const _this7 = s1.polygon;
                 let li3 = _this7.lverts.next;
-                let p03 = _this7.gverts.next;
-                let l6 = li3;
+                const p03 = _this7.gverts.next;
+                const l6 = li3;
                 li3 = li3.next;
-                p03.x =
-                  _this7.body.posx +
-                  (_this7.body.axisy * l6.x - _this7.body.axisx * l6.y);
-                p03.y =
-                  _this7.body.posy +
-                  (l6.x * _this7.body.axisx + l6.y * _this7.body.axisy);
+                p03.x = _this7.body.posx + (_this7.body.axisy * l6.x - _this7.body.axisx * l6.y);
+                p03.y = _this7.body.posy + (l6.x * _this7.body.axisx + l6.y * _this7.body.axisy);
                 _this7.aabb.minx = p03.x;
                 _this7.aabb.miny = p03.y;
                 _this7.aabb.maxx = p03.x;
                 _this7.aabb.maxy = p03.y;
                 let cx_ite7 = _this7.gverts.next.next;
                 while (cx_ite7 != null) {
-                  let p9 = cx_ite7;
-                  let l7 = li3;
+                  const p9 = cx_ite7;
+                  const l7 = li3;
                   li3 = li3.next;
-                  p9.x =
-                    _this7.body.posx +
-                    (_this7.body.axisy * l7.x - _this7.body.axisx * l7.y);
-                  p9.y =
-                    _this7.body.posy +
-                    (l7.x * _this7.body.axisx + l7.y * _this7.body.axisy);
+                  p9.x = _this7.body.posx + (_this7.body.axisy * l7.x - _this7.body.axisx * l7.y);
+                  p9.y = _this7.body.posy + (l7.x * _this7.body.axisx + l7.y * _this7.body.axisy);
                   if (p9.x < _this7.aabb.minx) {
                     _this7.aabb.minx = p9.x;
                   }
@@ -8049,14 +7572,13 @@ export class ZPP_Space {
           }
           cur1.sweepFrozen = false;
           if (cur1.type == 2 && cur1.bulletEnabled) {
-            let linThreshold21 =
+            const linThreshold21 =
               ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur1.sweepRadius;
-            let angThreshold21 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
+            const angThreshold21 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
             if (
               (cur1.velx * cur1.velx + cur1.vely * cur1.vely) * dt * dt >
                 linThreshold21 * linThreshold21 ||
-              cur1.angvel * cur1.angvel * dt * dt >
-                angThreshold21 * angThreshold21
+              cur1.angvel * cur1.angvel * dt * dt > angThreshold21 * angThreshold21
             ) {
               cur1.bullet = true;
             }
@@ -8077,34 +7599,26 @@ export class ZPP_Space {
     if (cont == null) {
       cont = false;
     }
-    let _gthis = this;
-    if (
-      !arb.cleared &&
-      arb.b1.component.sleeping &&
-      arb.b2.component.sleeping
-    ) {
+    const _gthis = this;
+    if (!arb.cleared && arb.b1.component.sleeping && arb.b2.component.sleeping) {
       arb.sleep_stamp = this.stamp;
       arb.sleeping = true;
       return true;
     }
     if (!arb.cleared || arb.present != 0 || arb.intchange) {
-      let endcb =
-        !cont &&
-        arb.up_stamp == this.stamp - 1 &&
-        !arb.cleared &&
-        !arb.intchange;
-      let begcb = arb.fresh && !arb.cleared && !arb.intchange;
+      const endcb = !cont && arb.up_stamp == this.stamp - 1 && !arb.cleared && !arb.intchange;
+      const begcb = arb.fresh && !arb.cleared && !arb.intchange;
       if (endcb) {
         arb.endGenerated = this.stamp;
       }
       if (begcb || endcb || arb.cleared || arb.intchange) {
-        let s1 = arb.ws1;
-        let s2 = arb.ws2;
-        let _this = this.mrca1;
+        const s1 = arb.ws1;
+        const s2 = arb.ws2;
+        const _this = this.mrca1;
         while (_this.head != null) {
-          let ret = _this.head;
+          const ret = _this.head;
           _this.head = ret.next;
-          let o = ret;
+          const o = ret;
           o.elt = null;
           o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
           ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o;
@@ -8115,11 +7629,11 @@ export class ZPP_Space {
           _this.length--;
         }
         _this.pushmod = true;
-        let _this1 = this.mrca2;
+        const _this1 = this.mrca2;
         while (_this1.head != null) {
-          let ret1 = _this1.head;
+          const ret1 = _this1.head;
           _this1.head = ret1.next;
-          let o1 = ret1;
+          const o1 = ret1;
           o1.elt = null;
           o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
           ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o1;
@@ -8131,7 +7645,7 @@ export class ZPP_Space {
         }
         _this1.pushmod = true;
         if (s1.cbSet != null) {
-          let _this2 = this.mrca1;
+          const _this2 = this.mrca1;
           let ret2;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -8141,15 +7655,15 @@ export class ZPP_Space {
             ret2.next = null;
           }
           ret2.elt = s1;
-          let temp = ret2;
+          const temp = ret2;
           temp.next = _this2.head;
           _this2.head = temp;
           _this2.modified = true;
           _this2.length++;
         }
         if (s1.body.cbSet != null) {
-          let _this3 = this.mrca1;
-          let o2 = s1.body;
+          const _this3 = this.mrca1;
+          const o2 = s1.body;
           let ret3;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -8159,14 +7673,14 @@ export class ZPP_Space {
             ret3.next = null;
           }
           ret3.elt = o2;
-          let temp1 = ret3;
+          const temp1 = ret3;
           temp1.next = _this3.head;
           _this3.head = temp1;
           _this3.modified = true;
           _this3.length++;
         }
         if (s2.cbSet != null) {
-          let _this4 = this.mrca2;
+          const _this4 = this.mrca2;
           let ret4;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -8176,15 +7690,15 @@ export class ZPP_Space {
             ret4.next = null;
           }
           ret4.elt = s2;
-          let temp2 = ret4;
+          const temp2 = ret4;
           temp2.next = _this4.head;
           _this4.head = temp2;
           _this4.modified = true;
           _this4.length++;
         }
         if (s2.body.cbSet != null) {
-          let _this5 = this.mrca2;
-          let o3 = s2.body;
+          const _this5 = this.mrca2;
+          const o3 = s2.body;
           let ret5;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -8194,7 +7708,7 @@ export class ZPP_Space {
             ret5.next = null;
           }
           ret5.elt = o3;
-          let temp3 = ret5;
+          const temp3 = ret5;
           temp3.next = _this5.head;
           _this5.head = temp3;
           _this5.modified = true;
@@ -8203,11 +7717,11 @@ export class ZPP_Space {
         let c1 = s1.body.compound;
         let c2 = s2.body.compound;
         while (c1 != c2) {
-          let d1 = c1 == null ? 0 : c1.depth;
-          let d2 = c2 == null ? 0 : c2.depth;
+          const d1 = c1 == null ? 0 : c1.depth;
+          const d2 = c2 == null ? 0 : c2.depth;
           if (d1 < d2) {
             if (c2.cbSet != null) {
-              let _this6 = this.mrca2;
+              const _this6 = this.mrca2;
               let ret6;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                 ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -8217,7 +7731,7 @@ export class ZPP_Space {
                 ret6.next = null;
               }
               ret6.elt = c2;
-              let temp4 = ret6;
+              const temp4 = ret6;
               temp4.next = _this6.head;
               _this6.head = temp4;
               _this6.modified = true;
@@ -8226,7 +7740,7 @@ export class ZPP_Space {
             c2 = c2.compound;
           } else {
             if (c1.cbSet != null) {
-              let _this7 = this.mrca1;
+              const _this7 = this.mrca1;
               let ret7;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                 ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -8236,7 +7750,7 @@ export class ZPP_Space {
                 ret7.next = null;
               }
               ret7.elt = c1;
-              let temp5 = ret7;
+              const temp5 = ret7;
               temp5.next = _this7.head;
               _this7.head = temp5;
               _this7.modified = true;
@@ -8247,21 +7761,18 @@ export class ZPP_Space {
         }
         let cx_ite = this.mrca1.head;
         while (cx_ite != null) {
-          let i1 = cx_ite.elt;
+          const i1 = cx_ite.elt;
           let cx_ite1 = this.mrca2.head;
           while (cx_ite1 != null) {
-            let i2 = cx_ite1.elt;
-            let cb1 = i1.cbSet;
-            let cb2 = i2.cbSet;
-            let _this8 = cb1.manager;
+            const i2 = cx_ite1.elt;
+            const cb1 = i1.cbSet;
+            const cb2 = i2.cbSet;
+            const _this8 = cb1.manager;
             let ret8 = null;
-            let pairs =
-              cb1.cbpairs.length < cb2.cbpairs.length
-                ? cb1.cbpairs
-                : cb2.cbpairs;
+            const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
             let cx_ite2 = pairs.head;
             while (cx_ite2 != null) {
-              let p = cx_ite2.elt;
+              const p = cx_ite2.elt;
               if ((p.a == cb1 && p.b == cb2) || (p.a == cb2 && p.b == cb1)) {
                 ret8 = p;
                 break;
@@ -8305,19 +7816,13 @@ export class ZPP_Space {
                 callbackset = ZPP_CallbackSet.get(i1, i2);
                 this.add_callbackset(callbackset);
               }
-              let _this9 = cb1.manager;
+              const _this9 = cb1.manager;
               let ret10 = null;
-              let pairs1 =
-                cb1.cbpairs.length < cb2.cbpairs.length
-                  ? cb1.cbpairs
-                  : cb2.cbpairs;
+              const pairs1 = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite3 = pairs1.head;
               while (cx_ite3 != null) {
-                let p1 = cx_ite3.elt;
-                if (
-                  (p1.a == cb1 && p1.b == cb2) ||
-                  (p1.a == cb2 && p1.b == cb1)
-                ) {
+                const p1 = cx_ite3.elt;
+                if ((p1.a == cb1 && p1.b == cb2) || (p1.a == cb2 && p1.b == cb1)) {
                   ret10 = p1;
                   break;
                 }
@@ -8352,25 +7857,22 @@ export class ZPP_Space {
               }
               let cx_ite4 = ret10.listeners.head;
               while (cx_ite4 != null) {
-                let x = cx_ite4.elt;
+                const x = cx_ite4.elt;
                 if (x.event == 0) {
-                  if (
-                    (x.itype & arb.type) != 0 &&
-                    callbackset.empty_arb(x.itype)
-                  ) {
-                    let cb = _gthis.push_callback(x);
+                  if ((x.itype & arb.type) != 0 && callbackset.empty_arb(x.itype)) {
+                    const cb = _gthis.push_callback(x);
                     cb.event = 0;
-                    let o11 = callbackset.int1;
-                    let o21 = callbackset.int2;
+                    const o11 = callbackset.int1;
+                    const o21 = callbackset.int2;
                     let tmp;
-                    let _this10 = x.options1;
-                    let xs = o11.cbTypes;
+                    const _this10 = x.options1;
+                    const xs = o11.cbTypes;
                     if (
                       _this10.nonemptyintersection(xs, _this10.includes) &&
                       !_this10.nonemptyintersection(xs, _this10.excludes)
                     ) {
-                      let _this11 = x.options2;
-                      let xs1 = o21.cbTypes;
+                      const _this11 = x.options2;
+                      const xs1 = o21.cbTypes;
                       tmp =
                         _this11.nonemptyintersection(xs1, _this11.includes) &&
                         !_this11.nonemptyintersection(xs1, _this11.excludes);
@@ -8394,7 +7896,7 @@ export class ZPP_Space {
               ret12 = false;
               let cx_ite5 = callbackset.arbiters.head;
               while (cx_ite5 != null) {
-                let npite = cx_ite5.elt;
+                const npite = cx_ite5.elt;
                 if (npite == arb) {
                   ret12 = true;
                   break;
@@ -8402,7 +7904,7 @@ export class ZPP_Space {
                 cx_ite5 = cx_ite5.next;
               }
               if (!ret12) {
-                let _this12 = callbackset.arbiters;
+                const _this12 = callbackset.arbiters;
                 let ret13;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                   ret13 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -8412,7 +7914,7 @@ export class ZPP_Space {
                   ret13.next = null;
                 }
                 ret13.elt = arb;
-                let temp6 = ret13;
+                const temp6 = ret13;
                 temp6.next = _this12.head;
                 _this12.head = temp6;
                 _this12.modified = true;
@@ -8427,19 +7929,13 @@ export class ZPP_Space {
             } else {
               arb.present--;
               callbackset.remove_arb(arb);
-              let _this13 = cb1.manager;
+              const _this13 = cb1.manager;
               let ret14 = null;
-              let pairs2 =
-                cb1.cbpairs.length < cb2.cbpairs.length
-                  ? cb1.cbpairs
-                  : cb2.cbpairs;
+              const pairs2 = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite6 = pairs2.head;
               while (cx_ite6 != null) {
-                let p2 = cx_ite6.elt;
-                if (
-                  (p2.a == cb1 && p2.b == cb2) ||
-                  (p2.a == cb2 && p2.b == cb1)
-                ) {
+                const p2 = cx_ite6.elt;
+                if ((p2.a == cb1 && p2.b == cb2) || (p2.a == cb2 && p2.b == cb1)) {
                   ret14 = p2;
                   break;
                 }
@@ -8474,25 +7970,22 @@ export class ZPP_Space {
               }
               let cx_ite7 = ret14.listeners.head;
               while (cx_ite7 != null) {
-                let x1 = cx_ite7.elt;
+                const x1 = cx_ite7.elt;
                 if (x1.event == 1) {
-                  if (
-                    (x1.itype & arb.type) != 0 &&
-                    callbackset.empty_arb(x1.itype)
-                  ) {
-                    let cb3 = _gthis.push_callback(x1);
+                  if ((x1.itype & arb.type) != 0 && callbackset.empty_arb(x1.itype)) {
+                    const cb3 = _gthis.push_callback(x1);
                     cb3.event = 1;
-                    let o12 = callbackset.int1;
-                    let o22 = callbackset.int2;
+                    const o12 = callbackset.int1;
+                    const o22 = callbackset.int2;
                     let tmp2;
-                    let _this14 = x1.options1;
-                    let xs2 = o12.cbTypes;
+                    const _this14 = x1.options1;
+                    const xs2 = o12.cbTypes;
                     if (
                       _this14.nonemptyintersection(xs2, _this14.includes) &&
                       !_this14.nonemptyintersection(xs2, _this14.excludes)
                     ) {
-                      let _this15 = x1.options2;
-                      let xs3 = o22.cbTypes;
+                      const _this15 = x1.options2;
+                      const xs3 = o22.cbTypes;
                       tmp2 =
                         _this15.nonemptyintersection(xs3, _this15.includes) &&
                         !_this15.nonemptyintersection(xs3, _this15.excludes);
@@ -8526,15 +8019,13 @@ export class ZPP_Space {
     if (
       arb.cleared ||
       arb.up_stamp +
-        (arb.type == ZPP_Arbiter.COL
-          ? ZPP_Space._nape.Config.arbiterExpirationDelay
-          : 0) <
+        (arb.type == ZPP_Arbiter.COL ? ZPP_Space._nape.Config.arbiterExpirationDelay : 0) <
         this.stamp
     ) {
       if (arb.type == ZPP_Arbiter.SENSOR) {
-        let _this16 = arb.sensorarb;
+        const _this16 = arb.sensorarb;
         if (!_this16.cleared) {
-          let _this17 = _this16.b1.arbiters;
+          const _this17 = _this16.b1.arbiters;
           let pre = null;
           let cur = _this17.head;
           let ret16 = false;
@@ -8557,7 +8048,7 @@ export class ZPP_Space {
                   _this17.pushmod = true;
                 }
               }
-              let o4 = old;
+              const o4 = old;
               o4.elt = null;
               o4.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o4;
@@ -8570,7 +8061,7 @@ export class ZPP_Space {
             pre = cur;
             cur = cur.next;
           }
-          let _this18 = _this16.b2.arbiters;
+          const _this18 = _this16.b2.arbiters;
           let pre1 = null;
           let cur1 = _this18.head;
           let ret18 = false;
@@ -8593,7 +8084,7 @@ export class ZPP_Space {
                   _this18.pushmod = true;
                 }
               }
-              let o5 = old1;
+              const o5 = old1;
               o5.elt = null;
               o5.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o5;
@@ -8614,13 +8105,13 @@ export class ZPP_Space {
         _this16.b1 = _this16.b2 = null;
         _this16.active = false;
         _this16.intchange = false;
-        let o6 = _this16;
+        const o6 = _this16;
         o6.next = ZPP_SensorArbiter.zpp_pool;
         ZPP_SensorArbiter.zpp_pool = o6;
       } else if (arb.type == ZPP_Arbiter.FLUID) {
-        let _this19 = arb.fluidarb;
+        const _this19 = arb.fluidarb;
         if (!_this19.cleared) {
-          let _this20 = _this19.b1.arbiters;
+          const _this20 = _this19.b1.arbiters;
           let pre2 = null;
           let cur2 = _this20.head;
           let ret20 = false;
@@ -8643,7 +8134,7 @@ export class ZPP_Space {
                   _this20.pushmod = true;
                 }
               }
-              let o7 = old2;
+              const o7 = old2;
               o7.elt = null;
               o7.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o7;
@@ -8656,7 +8147,7 @@ export class ZPP_Space {
             pre2 = cur2;
             cur2 = cur2.next;
           }
-          let _this21 = _this19.b2.arbiters;
+          const _this21 = _this19.b2.arbiters;
           let pre3 = null;
           let cur3 = _this21.head;
           let ret22 = false;
@@ -8679,7 +8170,7 @@ export class ZPP_Space {
                   _this21.pushmod = true;
                 }
               }
-              let o8 = old3;
+              const o8 = old3;
               o8.elt = null;
               o8.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o8;
@@ -8700,14 +8191,14 @@ export class ZPP_Space {
         _this19.b1 = _this19.b2 = null;
         _this19.active = false;
         _this19.intchange = false;
-        let o9 = _this19;
+        const o9 = _this19;
         o9.next = ZPP_FluidArbiter.zpp_pool;
         ZPP_FluidArbiter.zpp_pool = o9;
         _this19.pre_dt = -1.0;
       } else {
-        let _this22 = arb.colarb;
+        const _this22 = arb.colarb;
         if (!_this22.cleared) {
-          let _this23 = _this22.b1.arbiters;
+          const _this23 = _this22.b1.arbiters;
           let pre4 = null;
           let cur4 = _this23.head;
           let ret24 = false;
@@ -8730,7 +8221,7 @@ export class ZPP_Space {
                   _this23.pushmod = true;
                 }
               }
-              let o10 = old4;
+              const o10 = old4;
               o10.elt = null;
               o10.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o10;
@@ -8743,7 +8234,7 @@ export class ZPP_Space {
             pre4 = cur4;
             cur4 = cur4.next;
           }
-          let _this24 = _this22.b2.arbiters;
+          const _this24 = _this22.b2.arbiters;
           let pre5 = null;
           let cur5 = _this24.head;
           let ret26 = false;
@@ -8766,7 +8257,7 @@ export class ZPP_Space {
                   _this24.pushmod = true;
                 }
               }
-              let o13 = old5;
+              const o13 = old5;
               o13.elt = null;
               o13.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
               ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o13;
@@ -8788,15 +8279,15 @@ export class ZPP_Space {
         _this22.active = false;
         _this22.intchange = false;
         while (_this22.contacts.next != null) {
-          let _this25 = _this22.contacts;
-          let ret28 = _this25.next;
+          const _this25 = _this22.contacts;
+          const ret28 = _this25.next;
           _this25.pop();
-          let o14 = ret28;
+          const o14 = ret28;
           o14.arbiter = null;
           o14.next = ZPP_Contact.zpp_pool;
           ZPP_Contact.zpp_pool = o14;
-          let _this26 = _this22.innards;
-          let ret29 = _this26.next;
+          const _this26 = _this22.innards;
+          const ret29 = _this26.next;
           _this26.next = ret29.next;
           ret29._inuse = false;
           if (_this26.next == null) {
@@ -8805,7 +8296,7 @@ export class ZPP_Space {
           _this26.modified = true;
           _this26.length--;
         }
-        let o15 = _this22;
+        const o15 = _this22;
         o15.userdef_dyn_fric = false;
         o15.userdef_stat_fric = false;
         o15.userdef_restitution = false;
@@ -8817,12 +8308,12 @@ export class ZPP_Space {
       }
       return true;
     }
-    let pact = arb.active;
+    const pact = arb.active;
     arb.active = arb.presentable = arb.up_stamp == this.stamp;
     if ((arb.immState & 1) != 0) {
       if (arb.active && arb.type != ZPP_Arbiter.SENSOR) {
         if (arb.colarb != null) {
-          let _this27 = arb.colarb;
+          const _this27 = arb.colarb;
           if (_this27.invalidated) {
             _this27.invalidated = false;
             if (!_this27.userdef_restitution) {
@@ -8838,9 +8329,7 @@ export class ZPP_Space {
                 _this27.restitution = 1;
               } else {
                 _this27.restitution =
-                  (_this27.s1.material.elasticity +
-                    _this27.s2.material.elasticity) /
-                  2;
+                  (_this27.s1.material.elasticity + _this27.s2.material.elasticity) / 2;
               }
               if (_this27.restitution < 0) {
                 _this27.restitution = 0;
@@ -8851,39 +8340,36 @@ export class ZPP_Space {
             }
             if (!_this27.userdef_dyn_fric) {
               _this27.dyn_fric = Math.sqrt(
-                _this27.s1.material.dynamicFriction *
-                  _this27.s2.material.dynamicFriction
+                _this27.s1.material.dynamicFriction * _this27.s2.material.dynamicFriction,
               );
             }
             if (!_this27.userdef_stat_fric) {
               _this27.stat_fric = Math.sqrt(
-                _this27.s1.material.staticFriction *
-                  _this27.s2.material.staticFriction
+                _this27.s1.material.staticFriction * _this27.s2.material.staticFriction,
               );
             }
             if (!_this27.userdef_rfric) {
               _this27.rfric = Math.sqrt(
-                _this27.s1.material.rollingFriction *
-                  _this27.s2.material.rollingFriction
+                _this27.s1.material.rollingFriction * _this27.s2.material.rollingFriction,
               );
             }
           }
           if (_this27.pre_dt == -1.0) {
             _this27.pre_dt = dt;
           }
-          let dtratio = dt / _this27.pre_dt;
+          const dtratio = dt / _this27.pre_dt;
           _this27.pre_dt = dt;
-          let mass_sum = _this27.b1.smass + _this27.b2.smass;
+          const mass_sum = _this27.b1.smass + _this27.b2.smass;
           _this27.hc2 = false;
           let fst = true;
-          let statType = _this27.b1.type != 2 || _this27.b2.type != 2;
-          let bias = statType
+          const statType = _this27.b1.type != 2 || _this27.b2.type != 2;
+          const bias = statType
             ? _this27.continuous
               ? ZPP_Space._nape.Config.contactContinuousStaticBiasCoef
               : ZPP_Space._nape.Config.contactStaticBiasCoef
             : _this27.continuous
-            ? ZPP_Space._nape.Config.contactContinuousBiasCoef
-            : ZPP_Space._nape.Config.contactBiasCoef;
+              ? ZPP_Space._nape.Config.contactContinuousBiasCoef
+              : ZPP_Space._nape.Config.contactBiasCoef;
           _this27.biasCoef = bias;
           _this27.continuous = false;
           let pre6 = null;
@@ -8891,9 +8377,9 @@ export class ZPP_Space {
           let cx_itei = _this27.innards.next;
           let cx_ite8 = _this27.contacts.next;
           while (cx_ite8 != null) {
-            let c = cx_ite8;
+            const c = cx_ite8;
             if (c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < _this27.stamp) {
-              let _this28 = _this27.contacts;
+              const _this28 = _this27.contacts;
               let old6;
               let ret30;
               if (pre6 == null) {
@@ -8916,7 +8402,7 @@ export class ZPP_Space {
               _this28.length--;
               _this28.pushmod = true;
               cx_ite8 = ret30;
-              let _this29 = _this27.innards;
+              const _this29 = _this27.innards;
               let old7;
               let ret31;
               if (prei == null) {
@@ -8939,14 +8425,14 @@ export class ZPP_Space {
               _this29.length--;
               _this29.pushmod = true;
               cx_itei = ret31;
-              let o16 = c;
+              const o16 = c;
               o16.arbiter = null;
               o16.next = ZPP_Contact.zpp_pool;
               ZPP_Contact.zpp_pool = o16;
               continue;
             }
-            let ci = c.inner;
-            let pact1 = c.active;
+            const ci = c.inner;
+            const pact1 = c.active;
             c.active = c.stamp == _this27.stamp;
             if (c.active) {
               if (fst) {
@@ -8962,15 +8448,15 @@ export class ZPP_Space {
               ci.r2y = c.py - _this27.b2.posy;
               ci.r1x = c.px - _this27.b1.posx;
               ci.r1y = c.py - _this27.b1.posy;
-              let x2 = ci.r2x * _this27.nx + ci.r2y * _this27.ny;
+              const x2 = ci.r2x * _this27.nx + ci.r2y * _this27.ny;
               let kt = mass_sum + _this27.b2.sinertia * (x2 * x2);
-              let x3 = ci.r1x * _this27.nx + ci.r1y * _this27.ny;
+              const x3 = ci.r1x * _this27.nx + ci.r1y * _this27.ny;
               kt += _this27.b1.sinertia * (x3 * x3);
               ci.tMass =
                 kt < ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon ? 0 : 1.0 / kt;
-              let x4 = _this27.ny * ci.r2x - _this27.nx * ci.r2y;
+              const x4 = _this27.ny * ci.r2x - _this27.nx * ci.r2y;
               let nt = mass_sum + _this27.b2.sinertia * (x4 * x4);
-              let x5 = _this27.ny * ci.r1x - _this27.nx * ci.r1y;
+              const x5 = _this27.ny * ci.r1x - _this27.nx * ci.r1y;
               nt += _this27.b1.sinertia * (x5 * x5);
               ci.nMass =
                 nt < ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon ? 0 : 1.0 / nt;
@@ -8989,7 +8475,7 @@ export class ZPP_Space {
                 ci.bounce = 0;
               }
               vdot = vry * _this27.nx - vrx * _this27.ny;
-              let thr = ZPP_Space._nape.Config.staticFrictionThreshold;
+              const thr = ZPP_Space._nape.Config.staticFrictionThreshold;
               if (vdot * vdot > thr * thr) {
                 ci.friction = _this27.dyn_fric;
               } else {
@@ -9009,10 +8495,10 @@ export class ZPP_Space {
           if (_this27.hc2) {
             _this27.hpc2 = true;
             if (_this27.oc1.posOnly) {
-              let tmp3 = _this27.c1;
+              const tmp3 = _this27.c1;
               _this27.c1 = _this27.c2;
               _this27.c2 = tmp3;
-              let tmp21 = _this27.oc1;
+              const tmp21 = _this27.oc1;
               _this27.oc1 = _this27.oc2;
               _this27.oc2 = tmp21;
               _this27.hc2 = false;
@@ -9027,14 +8513,10 @@ export class ZPP_Space {
           }
           _this27.jrAcc *= dtratio;
           if (!fst) {
-            _this27.rn1a =
-              _this27.ny * _this27.c1.r1x - _this27.nx * _this27.c1.r1y;
-            _this27.rt1a =
-              _this27.c1.r1x * _this27.nx + _this27.c1.r1y * _this27.ny;
-            _this27.rn1b =
-              _this27.ny * _this27.c1.r2x - _this27.nx * _this27.c1.r2y;
-            _this27.rt1b =
-              _this27.c1.r2x * _this27.nx + _this27.c1.r2y * _this27.ny;
+            _this27.rn1a = _this27.ny * _this27.c1.r1x - _this27.nx * _this27.c1.r1y;
+            _this27.rt1a = _this27.c1.r1x * _this27.nx + _this27.c1.r1y * _this27.ny;
+            _this27.rn1b = _this27.ny * _this27.c1.r2x - _this27.nx * _this27.c1.r2y;
+            _this27.rt1b = _this27.c1.r2x * _this27.nx + _this27.c1.r2y * _this27.ny;
             _this27.k1x =
               _this27.b2.kinvelx -
               _this27.c1.r2y * _this27.b2.kinangvel -
@@ -9045,14 +8527,10 @@ export class ZPP_Space {
               (_this27.b1.kinvely + _this27.c1.r1x * _this27.b1.kinangvel);
           }
           if (_this27.hc2) {
-            _this27.rn2a =
-              _this27.ny * _this27.c2.r1x - _this27.nx * _this27.c2.r1y;
-            _this27.rt2a =
-              _this27.c2.r1x * _this27.nx + _this27.c2.r1y * _this27.ny;
-            _this27.rn2b =
-              _this27.ny * _this27.c2.r2x - _this27.nx * _this27.c2.r2y;
-            _this27.rt2b =
-              _this27.c2.r2x * _this27.nx + _this27.c2.r2y * _this27.ny;
+            _this27.rn2a = _this27.ny * _this27.c2.r1x - _this27.nx * _this27.c2.r1y;
+            _this27.rt2a = _this27.c2.r1x * _this27.nx + _this27.c2.r1y * _this27.ny;
+            _this27.rn2b = _this27.ny * _this27.c2.r2x - _this27.nx * _this27.c2.r2y;
+            _this27.rt2b = _this27.c2.r2x * _this27.nx + _this27.c2.r2y * _this27.ny;
             _this27.k2x =
               _this27.b2.kinvelx -
               _this27.c2.r2y * _this27.b2.kinangvel -
@@ -9073,22 +8551,19 @@ export class ZPP_Space {
               mass_sum +
               _this27.b1.sinertia * _this27.rn2a * _this27.rn2a +
               _this27.b2.sinertia * _this27.rn2b * _this27.rn2b;
-            let norm =
+            const norm =
               _this27.kMassa * _this27.kMassa +
               2 * _this27.kMassb * _this27.kMassb +
               _this27.kMassc * _this27.kMassc;
             if (
               norm <
               ZPP_Space._nape.Config.illConditionedThreshold *
-                (_this27.kMassa * _this27.kMassc -
-                  _this27.kMassb * _this27.kMassb)
+                (_this27.kMassa * _this27.kMassc - _this27.kMassb * _this27.kMassb)
             ) {
               _this27.Ka = _this27.kMassa;
               _this27.Kb = _this27.kMassb;
               _this27.Kc = _this27.kMassc;
-              let det =
-                _this27.kMassa * _this27.kMassc -
-                _this27.kMassb * _this27.kMassb;
+              let det = _this27.kMassa * _this27.kMassc - _this27.kMassb * _this27.kMassb;
               if (det != det) {
                 _this27.kMassa = _this27.kMassb = _this27.kMassc = 0;
               } else if (det == 0) {
@@ -9108,7 +8583,7 @@ export class ZPP_Space {
                 _this27.kMassb = 0;
               } else {
                 det = 1 / det;
-                let t = _this27.kMassc * det;
+                const t = _this27.kMassc * det;
                 _this27.kMassc = _this27.kMassa * det;
                 _this27.kMassa = t;
                 _this27.kMassb *= -det;
@@ -9116,7 +8591,7 @@ export class ZPP_Space {
             } else {
               _this27.hc2 = false;
               if (_this27.oc2.dist < _this27.oc1.dist) {
-                let t1 = _this27.c1;
+                const t1 = _this27.c1;
                 _this27.c1 = _this27.c2;
                 _this27.c2 = t1;
               }
@@ -9126,7 +8601,7 @@ export class ZPP_Space {
           }
           _this27.surfacex = _this27.b2.svelx;
           _this27.surfacey = _this27.b2.svely;
-          let t2 = 1.0;
+          const t2 = 1.0;
           _this27.surfacex += _this27.b1.svelx * t2;
           _this27.surfacey += _this27.b1.svely * t2;
           _this27.surfacex = -_this27.surfacex;
@@ -9139,11 +8614,11 @@ export class ZPP_Space {
             arb.active = false;
           }
         } else {
-          let _this30 = arb.fluidarb;
+          const _this30 = arb.fluidarb;
           if (_this30.pre_dt == -1.0) {
             _this30.pre_dt = dt;
           }
-          let dtratio1 = dt / _this30.pre_dt;
+          const dtratio1 = dt / _this30.pre_dt;
           _this30.pre_dt = dt;
           _this30.r1x = _this30.centroidx - _this30.b1.posx;
           _this30.r1y = _this30.centroidy - _this30.b1.posy;
@@ -9151,10 +8626,7 @@ export class ZPP_Space {
           _this30.r2y = _this30.centroidy - _this30.b2.posy;
           let g1x = 0.0;
           let g1y = 0.0;
-          if (
-            _this30.ws1.fluidEnabled &&
-            _this30.ws1.fluidProperties.wrap_gravity != null
-          ) {
+          if (_this30.ws1.fluidEnabled && _this30.ws1.fluidProperties.wrap_gravity != null) {
             g1x = _this30.ws1.fluidProperties.gravityx;
             g1y = _this30.ws1.fluidProperties.gravityy;
           } else {
@@ -9163,10 +8635,7 @@ export class ZPP_Space {
           }
           let g2x = 0.0;
           let g2y = 0.0;
-          if (
-            _this30.ws2.fluidEnabled &&
-            _this30.ws2.fluidProperties.wrap_gravity != null
-          ) {
+          if (_this30.ws2.fluidEnabled && _this30.ws2.fluidProperties.wrap_gravity != null) {
             g2x = _this30.ws2.fluidProperties.gravityx;
             g2y = _this30.ws2.fluidProperties.gravityy;
           } else {
@@ -9176,14 +8645,14 @@ export class ZPP_Space {
           let buoyx = 0;
           let buoyy = 0;
           if (_this30.ws1.fluidEnabled && _this30.ws2.fluidEnabled) {
-            let mass1 = _this30.overlap * _this30.ws1.fluidProperties.density;
-            let mass2 = _this30.overlap * _this30.ws2.fluidProperties.density;
+            const mass1 = _this30.overlap * _this30.ws1.fluidProperties.density;
+            const mass2 = _this30.overlap * _this30.ws2.fluidProperties.density;
             if (mass1 > mass2) {
-              let t3 = mass1 + mass2;
+              const t3 = mass1 + mass2;
               buoyx -= g1x * t3;
               buoyy -= g1y * t3;
             } else if (mass1 < mass2) {
-              let t4 = mass1 + mass2;
+              const t4 = mass1 + mass2;
               buoyx += g2x * t4;
               buoyy += g2y * t4;
             } else {
@@ -9191,57 +8660,53 @@ export class ZPP_Space {
               let gy = 0.0;
               gx = g1x + g2x;
               gy = g1y + g2y;
-              let t5 = 0.5;
+              const t5 = 0.5;
               gx *= t5;
               gy *= t5;
               if (
                 _this30.ws1.worldCOMx * gx + _this30.ws1.worldCOMy * gy >
                 _this30.ws2.worldCOMx * gx + _this30.ws2.worldCOMy * gy
               ) {
-                let t6 = mass1 + mass2;
+                const t6 = mass1 + mass2;
                 buoyx -= gx * t6;
                 buoyy -= gy * t6;
               } else {
-                let t7 = mass1 + mass2;
+                const t7 = mass1 + mass2;
                 buoyx += gx * t7;
                 buoyy += gy * t7;
               }
             }
           } else if (_this30.ws1.fluidEnabled) {
-            let mass = _this30.overlap * _this30.ws1.fluidProperties.density;
-            let t8 = mass;
+            const mass = _this30.overlap * _this30.ws1.fluidProperties.density;
+            const t8 = mass;
             buoyx -= g1x * t8;
             buoyy -= g1y * t8;
           } else if (_this30.ws2.fluidEnabled) {
-            let mass3 = _this30.overlap * _this30.ws2.fluidProperties.density;
-            let t9 = mass3;
+            const mass3 = _this30.overlap * _this30.ws2.fluidProperties.density;
+            const t9 = mass3;
             buoyx += g2x * t9;
             buoyy += g2y * t9;
           }
-          let t10 = dt;
+          const t10 = dt;
           buoyx *= t10;
           buoyy *= t10;
           _this30.buoyx = buoyx;
           _this30.buoyy = buoyy;
           if (_this30.b1.type == 2) {
-            let t11 = _this30.b1.imass;
+            const t11 = _this30.b1.imass;
             _this30.b1.velx -= buoyx * t11;
             _this30.b1.vely -= buoyy * t11;
-            _this30.b1.angvel -=
-              (buoyy * _this30.r1x - buoyx * _this30.r1y) * _this30.b1.iinertia;
+            _this30.b1.angvel -= (buoyy * _this30.r1x - buoyx * _this30.r1y) * _this30.b1.iinertia;
           }
           if (_this30.b2.type == 2) {
-            let t12 = _this30.b2.imass;
+            const t12 = _this30.b2.imass;
             _this30.b2.velx += buoyx * t12;
             _this30.b2.vely += buoyy * t12;
-            _this30.b2.angvel +=
-              (buoyy * _this30.r2x - buoyx * _this30.r2y) * _this30.b2.iinertia;
+            _this30.b2.angvel += (buoyy * _this30.r2x - buoyx * _this30.r2y) * _this30.b2.iinertia;
           }
           if (
-            (!_this30.ws1.fluidEnabled ||
-              _this30.ws1.fluidProperties.viscosity == 0) &&
-            (!_this30.ws2.fluidEnabled ||
-              _this30.ws2.fluidProperties.viscosity == 0)
+            (!_this30.ws1.fluidEnabled || _this30.ws1.fluidProperties.viscosity == 0) &&
+            (!_this30.ws2.fluidEnabled || _this30.ws2.fluidProperties.viscosity == 0)
           ) {
             _this30.nodrag = true;
             _this30.dampx = 0;
@@ -9253,31 +8718,27 @@ export class ZPP_Space {
             if (_this30.ws1.fluidEnabled) {
               _this30.ws2.validate_angDrag();
               tViscosity +=
-                (_this30.ws1.fluidProperties.viscosity *
-                  _this30.ws2.angDrag *
-                  _this30.overlap) /
+                (_this30.ws1.fluidProperties.viscosity * _this30.ws2.angDrag * _this30.overlap) /
                 _this30.ws2.area;
             }
             if (_this30.ws2.fluidEnabled) {
               _this30.ws1.validate_angDrag();
               tViscosity +=
-                (_this30.ws2.fluidProperties.viscosity *
-                  _this30.ws1.angDrag *
-                  _this30.overlap) /
+                (_this30.ws2.fluidProperties.viscosity * _this30.ws1.angDrag * _this30.overlap) /
                 _this30.ws1.area;
             }
             if (tViscosity != 0) {
-              let iSum = _this30.b1.sinertia + _this30.b2.sinertia;
+              const iSum = _this30.b1.sinertia + _this30.b2.sinertia;
               if (iSum != 0) {
                 _this30.wMass = 1 / iSum;
               } else {
                 _this30.wMass = 0.0;
               }
               tViscosity *= 0.0004;
-              let omega = 2 * Math.PI * tViscosity;
+              const omega = 2 * Math.PI * tViscosity;
               _this30.agamma = 1 / (dt * omega * (2 + omega * dt));
-              let ig = 1 / (1 + _this30.agamma);
-              let biasCoef = dt * omega * omega * _this30.agamma;
+              const ig = 1 / (1 + _this30.agamma);
+              const biasCoef = dt * omega * omega * _this30.agamma;
               _this30.agamma *= ig;
               _this30.wMass *= ig;
             } else {
@@ -9304,9 +8765,9 @@ export class ZPP_Space {
                 ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon
               )
             ) {
-              let d = vrnx * vrnx + vrny * vrny;
-              let imag = 1.0 / Math.sqrt(d);
-              let t13 = imag;
+              const d = vrnx * vrnx + vrny * vrny;
+              const imag = 1.0 / Math.sqrt(d);
+              const t13 = imag;
               vrnx *= t13;
               vrny *= t13;
               _this30.nx = vrnx;
@@ -9314,27 +8775,21 @@ export class ZPP_Space {
             }
             let tViscosity1 = 0.0;
             if (_this30.ws1.fluidEnabled) {
-              let f =
-                (-_this30.ws1.fluidProperties.viscosity * _this30.overlap) /
-                _this30.ws2.area;
+              const f =
+                (-_this30.ws1.fluidProperties.viscosity * _this30.overlap) / _this30.ws2.area;
               if (_this30.ws2.type == 0) {
                 tViscosity1 -=
-                  (f *
-                    _this30.ws2.circle.radius *
-                    ZPP_Space._nape.Config.fluidLinearDrag) /
+                  (f * _this30.ws2.circle.radius * ZPP_Space._nape.Config.fluidLinearDrag) /
                   (2 * _this30.ws2.circle.radius * Math.PI);
               } else {
-                let poly = _this30.ws2.polygon;
+                const poly = _this30.ws2.polygon;
                 let bord = 0.0;
                 let acc = 0.0;
                 let cx_ite9 = poly.edges.head;
                 while (cx_ite9 != null) {
-                  let ex = cx_ite9.elt;
+                  const ex = cx_ite9.elt;
                   bord += ex.length;
-                  let fact =
-                    f *
-                    ex.length *
-                    (ex.gnormx * _this30.nx + ex.gnormy * _this30.ny);
+                  let fact = f * ex.length * (ex.gnormx * _this30.nx + ex.gnormy * _this30.ny);
                   if (fact > 0) {
                     fact *= -ZPP_Space._nape.Config.fluidVacuumDrag;
                     fact = fact;
@@ -9346,27 +8801,21 @@ export class ZPP_Space {
               }
             }
             if (_this30.ws2.fluidEnabled) {
-              let f1 =
-                (-_this30.ws2.fluidProperties.viscosity * _this30.overlap) /
-                _this30.ws1.area;
+              const f1 =
+                (-_this30.ws2.fluidProperties.viscosity * _this30.overlap) / _this30.ws1.area;
               if (_this30.ws1.type == 0) {
                 tViscosity1 -=
-                  (f1 *
-                    _this30.ws1.circle.radius *
-                    ZPP_Space._nape.Config.fluidLinearDrag) /
+                  (f1 * _this30.ws1.circle.radius * ZPP_Space._nape.Config.fluidLinearDrag) /
                   (2 * _this30.ws1.circle.radius * Math.PI);
               } else {
-                let poly1 = _this30.ws1.polygon;
+                const poly1 = _this30.ws1.polygon;
                 let bord1 = 0.0;
                 let acc1 = 0.0;
                 let cx_ite10 = poly1.edges.head;
                 while (cx_ite10 != null) {
-                  let ex1 = cx_ite10.elt;
+                  const ex1 = cx_ite10.elt;
                   bord1 += ex1.length;
-                  let fact1 =
-                    f1 *
-                    ex1.length *
-                    (ex1.gnormx * _this30.nx + ex1.gnormy * _this30.ny);
+                  let fact1 = f1 * ex1.length * (ex1.gnormx * _this30.nx + ex1.gnormy * _this30.ny);
                   if (fact1 > 0) {
                     fact1 *= -ZPP_Space._nape.Config.fluidVacuumDrag;
                     fact1 = fact1;
@@ -9378,7 +8827,7 @@ export class ZPP_Space {
               }
             }
             if (tViscosity1 != 0) {
-              let m = _this30.b1.smass + _this30.b2.smass;
+              const m = _this30.b1.smass + _this30.b2.smass;
               let Ka = 0.0;
               let Kb = 0.0;
               let Kc = 0.0;
@@ -9386,15 +8835,15 @@ export class ZPP_Space {
               Kb = 0;
               Kc = m;
               if (_this30.b1.sinertia != 0) {
-                let X = _this30.r1x * _this30.b1.sinertia;
-                let Y = _this30.r1y * _this30.b1.sinertia;
+                const X = _this30.r1x * _this30.b1.sinertia;
+                const Y = _this30.r1y * _this30.b1.sinertia;
                 Ka += Y * _this30.r1y;
                 Kb += -Y * _this30.r1x;
                 Kc += X * _this30.r1x;
               }
               if (_this30.b2.sinertia != 0) {
-                let X1 = _this30.r2x * _this30.b2.sinertia;
-                let Y1 = _this30.r2y * _this30.b2.sinertia;
+                const X1 = _this30.r2x * _this30.b2.sinertia;
+                const Y1 = _this30.r2y * _this30.b2.sinertia;
                 Ka += Y1 * _this30.r2y;
                 Kb += -Y1 * _this30.r2x;
                 Kc += X1 * _this30.r2x;
@@ -9421,7 +8870,7 @@ export class ZPP_Space {
                 Kb = 0;
               } else {
                 det1 = 1 / det1;
-                let t14 = Kc * det1;
+                const t14 = Kc * det1;
                 Kc = Ka * det1;
                 Ka = t14;
                 Kb *= -det1;
@@ -9430,12 +8879,12 @@ export class ZPP_Space {
               _this30.vMassb = Kb;
               _this30.vMassc = Kc;
               let biasCoef1;
-              let omega1 = 2 * Math.PI * tViscosity1;
+              const omega1 = 2 * Math.PI * tViscosity1;
               _this30.lgamma = 1 / (dt * omega1 * (2 + omega1 * dt));
-              let ig1 = 1 / (1 + _this30.lgamma);
+              const ig1 = 1 / (1 + _this30.lgamma);
               biasCoef1 = dt * omega1 * omega1 * _this30.lgamma;
               _this30.lgamma *= ig1;
-              let X2 = ig1;
+              const X2 = ig1;
               _this30.vMassa *= X2;
               _this30.vMassb *= X2;
               _this30.vMassc *= X2;
@@ -9446,14 +8895,14 @@ export class ZPP_Space {
               _this30.lgamma = 0.0;
             }
           }
-          let t15 = dtratio1;
+          const t15 = dtratio1;
           _this30.dampx *= t15;
           _this30.dampy *= t15;
           _this30.adamp *= dtratio1;
         }
       }
     } else if (arb.colarb != null) {
-      let _this31 = arb.colarb;
+      const _this31 = arb.colarb;
       let fst1 = true;
       let pre7 = null;
       let prei1 = null;
@@ -9461,9 +8910,9 @@ export class ZPP_Space {
       _this31.hc2 = false;
       let cx_ite11 = _this31.contacts.next;
       while (cx_ite11 != null) {
-        let c3 = cx_ite11;
+        const c3 = cx_ite11;
         if (c3.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < _this31.stamp) {
-          let _this32 = _this31.contacts;
+          const _this32 = _this31.contacts;
           let old8;
           let ret32;
           if (pre7 == null) {
@@ -9486,7 +8935,7 @@ export class ZPP_Space {
           _this32.length--;
           _this32.pushmod = true;
           cx_ite11 = ret32;
-          let _this33 = _this31.innards;
+          const _this33 = _this31.innards;
           let old9;
           let ret33;
           if (prei1 == null) {
@@ -9509,14 +8958,14 @@ export class ZPP_Space {
           _this33.length--;
           _this33.pushmod = true;
           cx_itei1 = ret33;
-          let o17 = c3;
+          const o17 = c3;
           o17.arbiter = null;
           o17.next = ZPP_Contact.zpp_pool;
           ZPP_Contact.zpp_pool = o17;
           continue;
         }
-        let ci1 = c3.inner;
-        let pact2 = c3.active;
+        const ci1 = c3.inner;
+        const pact2 = c3.active;
         c3.active = c3.stamp == _this31.stamp;
         if (c3.active) {
           if (fst1) {
@@ -9540,10 +8989,10 @@ export class ZPP_Space {
       if (_this31.hc2) {
         _this31.hpc2 = true;
         if (_this31.oc1.posOnly) {
-          let tmp4 = _this31.c1;
+          const tmp4 = _this31.c1;
           _this31.c1 = _this31.c2;
           _this31.c2 = tmp4;
-          let tmp22 = _this31.oc1;
+          const tmp22 = _this31.oc1;
           _this31.oc1 = _this31.oc2;
           _this31.oc2 = tmp22;
           _this31.hc2 = false;
@@ -9573,7 +9022,7 @@ export class ZPP_Space {
     let pre = null;
     let cx_ite = this.live_constraints.head;
     while (cx_ite != null) {
-      let con = cx_ite.elt;
+      const con = cx_ite.elt;
       if (con.preStep(dt)) {
         cx_ite = this.live_constraints.erase(pre);
         con.broken();
@@ -9607,7 +9056,7 @@ export class ZPP_Space {
       pre1 = null;
     }
     while (arbite != null) {
-      let arb = arbite.elt;
+      const arb = arbite.elt;
       if (this.presteparb(arb, dt)) {
         let old;
         let ret;
@@ -9626,7 +9075,7 @@ export class ZPP_Space {
             arbs.pushmod = true;
           }
         }
-        let o = old;
+        const o = old;
         o.elt = null;
         o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = o;
@@ -9661,7 +9110,7 @@ export class ZPP_Space {
       pre2 = null;
     }
     while (arbite1 != null) {
-      let arb1 = arbite1.elt;
+      const arb1 = arbite1.elt;
       if (this.presteparb(arb1, dt)) {
         let old1;
         let ret1;
@@ -9680,7 +9129,7 @@ export class ZPP_Space {
             arbs1.pushmod = true;
           }
         }
-        let o1 = old1;
+        const o1 = old1;
         o1.elt = null;
         o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = o1;
@@ -9713,7 +9162,7 @@ export class ZPP_Space {
       pre3 = null;
     }
     while (arbite2 != null) {
-      let arb2 = arbite2.elt;
+      const arb2 = arbite2.elt;
       if (this.presteparb(arb2, dt)) {
         let old2;
         let ret2;
@@ -9732,7 +9181,7 @@ export class ZPP_Space {
             arbs2.pushmod = true;
           }
         }
-        let o2 = old2;
+        const o2 = old2;
         o2.elt = null;
         o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
         ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = o2;
@@ -9760,18 +9209,16 @@ export class ZPP_Space {
   warmStart() {
     let cx_ite = this.f_arbiters.head;
     while (cx_ite != null) {
-      let arb = cx_ite.elt;
+      const arb = cx_ite.elt;
       if (arb.active && (arb.immState & 1) != 0) {
-        let t = arb.b1.imass;
+        const t = arb.b1.imass;
         arb.b1.velx -= arb.dampx * t;
         arb.b1.vely -= arb.dampy * t;
-        let t1 = arb.b2.imass;
+        const t1 = arb.b2.imass;
         arb.b2.velx += arb.dampx * t1;
         arb.b2.vely += arb.dampy * t1;
-        arb.b1.angvel -=
-          arb.b1.iinertia * (arb.dampy * arb.r1x - arb.dampx * arb.r1y);
-        arb.b2.angvel +=
-          arb.b2.iinertia * (arb.dampy * arb.r2x - arb.dampx * arb.r2y);
+        arb.b1.angvel -= arb.b1.iinertia * (arb.dampy * arb.r1x - arb.dampx * arb.r1y);
+        arb.b2.angvel += arb.b2.iinertia * (arb.dampy * arb.r2x - arb.dampx * arb.r2y);
         arb.b1.angvel -= arb.adamp * arb.b1.iinertia;
         arb.b2.angvel += arb.adamp * arb.b2.iinertia;
       }
@@ -9784,33 +9231,29 @@ export class ZPP_Space {
       fst = false;
     }
     while (arbi != null) {
-      let arb1 = arbi.elt;
+      const arb1 = arbi.elt;
       if (arb1.active && (arb1.immState & 1) != 0) {
-        let jx = arb1.nx * arb1.c1.jnAcc - arb1.ny * arb1.c1.jtAcc;
-        let jy = arb1.ny * arb1.c1.jnAcc + arb1.nx * arb1.c1.jtAcc;
-        let t2 = arb1.b1.imass;
+        const jx = arb1.nx * arb1.c1.jnAcc - arb1.ny * arb1.c1.jtAcc;
+        const jy = arb1.ny * arb1.c1.jnAcc + arb1.nx * arb1.c1.jtAcc;
+        const t2 = arb1.b1.imass;
         arb1.b1.velx -= jx * t2;
         arb1.b1.vely -= jy * t2;
-        arb1.b1.angvel -=
-          arb1.b1.iinertia * (jy * arb1.c1.r1x - jx * arb1.c1.r1y);
-        let t3 = arb1.b2.imass;
+        arb1.b1.angvel -= arb1.b1.iinertia * (jy * arb1.c1.r1x - jx * arb1.c1.r1y);
+        const t3 = arb1.b2.imass;
         arb1.b2.velx += jx * t3;
         arb1.b2.vely += jy * t3;
-        arb1.b2.angvel +=
-          arb1.b2.iinertia * (jy * arb1.c1.r2x - jx * arb1.c1.r2y);
+        arb1.b2.angvel += arb1.b2.iinertia * (jy * arb1.c1.r2x - jx * arb1.c1.r2y);
         if (arb1.hc2) {
-          let jx1 = arb1.nx * arb1.c2.jnAcc - arb1.ny * arb1.c2.jtAcc;
-          let jy1 = arb1.ny * arb1.c2.jnAcc + arb1.nx * arb1.c2.jtAcc;
-          let t4 = arb1.b1.imass;
+          const jx1 = arb1.nx * arb1.c2.jnAcc - arb1.ny * arb1.c2.jtAcc;
+          const jy1 = arb1.ny * arb1.c2.jnAcc + arb1.nx * arb1.c2.jtAcc;
+          const t4 = arb1.b1.imass;
           arb1.b1.velx -= jx1 * t4;
           arb1.b1.vely -= jy1 * t4;
-          arb1.b1.angvel -=
-            arb1.b1.iinertia * (jy1 * arb1.c2.r1x - jx1 * arb1.c2.r1y);
-          let t5 = arb1.b2.imass;
+          arb1.b1.angvel -= arb1.b1.iinertia * (jy1 * arb1.c2.r1x - jx1 * arb1.c2.r1y);
+          const t5 = arb1.b2.imass;
           arb1.b2.velx += jx1 * t5;
           arb1.b2.vely += jy1 * t5;
-          arb1.b2.angvel +=
-            arb1.b2.iinertia * (jy1 * arb1.c2.r2x - jx1 * arb1.c2.r2y);
+          arb1.b2.angvel += arb1.b2.iinertia * (jy1 * arb1.c2.r2x - jx1 * arb1.c2.r2y);
         }
         arb1.b2.angvel += arb1.jrAcc * arb1.b2.iinertia;
         arb1.b1.angvel -= arb1.jrAcc * arb1.b1.iinertia;
@@ -9823,7 +9266,7 @@ export class ZPP_Space {
     }
     let cx_ite1 = this.live_constraints.head;
     while (cx_ite1 != null) {
-      let con = cx_ite1.elt;
+      const con = cx_ite1.elt;
       con.warmStart();
       cx_ite1 = cx_ite1.next;
     }
@@ -9831,16 +9274,16 @@ export class ZPP_Space {
 
   iterateVel(times) {
     let _g = 0;
-    let _g1 = times;
+    const _g1 = times;
     while (_g < _g1) {
-      let i = _g++;
+      const i = _g++;
       let cx_ite = this.f_arbiters.head;
       while (cx_ite != null) {
-        let arb = cx_ite.elt;
+        const arb = cx_ite.elt;
         if (arb.active && (arb.immState & 1) != 0) {
           if (!arb.nodrag) {
-            let w1 = arb.b1.angvel + arb.b1.kinangvel;
-            let w2 = arb.b2.angvel + arb.b2.kinangvel;
+            const w1 = arb.b1.angvel + arb.b1.kinangvel;
+            const w2 = arb.b2.angvel + arb.b2.kinangvel;
             let jx =
               arb.b1.velx +
               arb.b1.kinvelx -
@@ -9851,24 +9294,24 @@ export class ZPP_Space {
               arb.b1.kinvely +
               arb.r1x * w1 -
               (arb.b2.vely + arb.b2.kinvely + arb.r2x * w2);
-            let t = arb.vMassa * jx + arb.vMassb * jy;
+            const t = arb.vMassa * jx + arb.vMassb * jy;
             jy = arb.vMassb * jx + arb.vMassc * jy;
             jx = t;
-            let t1 = arb.lgamma;
+            const t1 = arb.lgamma;
             jx -= arb.dampx * t1;
             jy -= arb.dampy * t1;
-            let t2 = 1.0;
+            const t2 = 1.0;
             arb.dampx += jx * t2;
             arb.dampy += jy * t2;
-            let t3 = arb.b1.imass;
+            const t3 = arb.b1.imass;
             arb.b1.velx -= jx * t3;
             arb.b1.vely -= jy * t3;
-            let t4 = arb.b2.imass;
+            const t4 = arb.b2.imass;
             arb.b2.velx += jx * t4;
             arb.b2.vely += jy * t4;
             arb.b1.angvel -= arb.b1.iinertia * (jy * arb.r1x - jx * arb.r1y);
             arb.b2.angvel += arb.b2.iinertia * (jy * arb.r2x - jx * arb.r2y);
-            let j_damp = (w1 - w2) * arb.wMass - arb.adamp * arb.agamma;
+            const j_damp = (w1 - w2) * arb.wMass - arb.adamp * arb.agamma;
             arb.adamp += j_damp;
             arb.b1.angvel -= j_damp * arb.b1.iinertia;
             arb.b2.angvel += j_damp * arb.b2.iinertia;
@@ -9879,7 +9322,7 @@ export class ZPP_Space {
       let pre = null;
       let cx_ite1 = this.live_constraints.head;
       while (cx_ite1 != null) {
-        let con = cx_ite1.elt;
+        const con = cx_ite1.elt;
         if (con.applyImpulseVel()) {
           cx_ite1 = this.live_constraints.erase(pre);
           con.broken();
@@ -9909,7 +9352,7 @@ export class ZPP_Space {
         fst = false;
       }
       while (arbi != null) {
-        let arb1 = arbi.elt;
+        const arb1 = arbi.elt;
         if (arb1.active && (arb1.immState & 1) != 0) {
           let v1x =
             arb1.k1x +
@@ -9921,8 +9364,7 @@ export class ZPP_Space {
             arb1.b2.vely +
             arb1.c1.r2x * arb1.b2.angvel -
             (arb1.b1.vely + arb1.c1.r1x * arb1.b1.angvel);
-          let j =
-            (v1y * arb1.nx - v1x * arb1.ny + arb1.surfacex) * arb1.c1.tMass;
+          let j = (v1y * arb1.nx - v1x * arb1.ny + arb1.surfacex) * arb1.c1.tMass;
           let jMax = arb1.c1.friction * arb1.c1.jnAcc;
           let jOld = arb1.c1.jtAcc;
           let cjAcc = jOld - j;
@@ -9991,8 +9433,8 @@ export class ZPP_Space {
               arb1.b2.vely +
               arb1.c2.r2x * arb1.b2.angvel -
               (arb1.b1.vely + arb1.c2.r1x * arb1.b1.angvel);
-            let ax = arb1.c1.jnAcc;
-            let ay = arb1.c2.jnAcc;
+            const ax = arb1.c1.jnAcc;
+            const ay = arb1.c2.jnAcc;
             let jnx =
               v1x * arb1.nx +
               v1y * arb1.ny +
@@ -10043,13 +9485,11 @@ export class ZPP_Space {
             arb1.b2.vely += jy1 * arb1.b2.imass;
             arb1.b1.velx -= jx1 * arb1.b1.imass;
             arb1.b1.vely -= jy1 * arb1.b1.imass;
-            arb1.b2.angvel +=
-              (arb1.rn1b * jnx + arb1.rn2b * jny) * arb1.b2.iinertia;
-            arb1.b1.angvel -=
-              (arb1.rn1a * jnx + arb1.rn2a * jny) * arb1.b1.iinertia;
+            arb1.b2.angvel += (arb1.rn1b * jnx + arb1.rn2b * jny) * arb1.b2.iinertia;
+            arb1.b1.angvel -= (arb1.rn1a * jnx + arb1.rn2a * jny) * arb1.b1.iinertia;
           } else {
             if (arb1.radius != 0.0) {
-              let dw = arb1.b2.angvel - arb1.b1.angvel;
+              const dw = arb1.b2.angvel - arb1.b1.angvel;
               j = dw * arb1.rMass;
               jMax = arb1.rfric * arb1.c1.jnAcc;
               jOld = arb1.jrAcc;
@@ -10073,11 +9513,7 @@ export class ZPP_Space {
               arb1.b2.vely +
               arb1.c1.r2x * arb1.b2.angvel -
               (arb1.b1.vely + arb1.c1.r1x * arb1.b1.angvel);
-            j =
-              (arb1.c1.bounce +
-                (arb1.nx * v1x + arb1.ny * v1y) +
-                arb1.surfacey) *
-              arb1.c1.nMass;
+            j = (arb1.c1.bounce + (arb1.nx * v1x + arb1.ny * v1y) + arb1.surfacey) * arb1.c1.nMass;
             jOld = arb1.c1.jnAcc;
             cjAcc = jOld - j;
             if (cjAcc < 0.0) {
@@ -10106,13 +9542,13 @@ export class ZPP_Space {
 
   iteratePos(times) {
     let _g = 0;
-    let _g1 = times;
+    const _g1 = times;
     while (_g < _g1) {
-      let i = _g++;
+      const i = _g++;
       let pre = null;
       let cx_ite = this.live_constraints.head;
       while (cx_ite != null) {
-        let con = cx_ite.elt;
+        const con = cx_ite.elt;
         if (!con.__velocity && con.stiff) {
           if (con.applyImpulsePos()) {
             cx_ite = this.live_constraints.erase(pre);
@@ -10144,30 +9580,30 @@ export class ZPP_Space {
         fst = false;
       }
       while (arbi != null) {
-        let arb = arbi.elt;
+        const arb = arbi.elt;
         if (arb.active && (arb.immState & 1) != 0) {
           if (arb.ptype == 2) {
-            let c = arb.c1;
+            const c = arb.c1;
             let r2x = 0.0;
             let r2y = 0.0;
             r2x = arb.b2.axisy * c.lr2x - arb.b2.axisx * c.lr2y;
             r2y = c.lr2x * arb.b2.axisx + c.lr2y * arb.b2.axisy;
-            let t = 1.0;
+            const t = 1.0;
             r2x += arb.b2.posx * t;
             r2y += arb.b2.posy * t;
             let r1x = 0.0;
             let r1y = 0.0;
             r1x = arb.b1.axisy * c.lr1x - arb.b1.axisx * c.lr1y;
             r1y = c.lr1x * arb.b1.axisx + c.lr1y * arb.b1.axisy;
-            let t1 = 1.0;
+            const t1 = 1.0;
             r1x += arb.b1.posx * t1;
             r1y += arb.b1.posy * t1;
             let dx = 0.0;
             let dy = 0.0;
             dx = r2x - r1x;
             dy = r2y - r1y;
-            let dl = Math.sqrt(dx * dx + dy * dy);
-            let r = arb.radius - ZPP_Space._nape.Config.collisionSlop;
+            const dl = Math.sqrt(dx * dx + dy * dy);
+            const r = arb.radius - ZPP_Space._nape.Config.collisionSlop;
             let err = dl - r;
             if (dx * arb.nx + dy * arb.ny < 0) {
               dx = -dx;
@@ -10182,63 +9618,62 @@ export class ZPP_Space {
                   arb.b2.posx += ZPP_Space._nape.Config.epsilon * 10;
                 }
               } else {
-                let t2 = 1.0 / dl;
+                const t2 = 1.0 / dl;
                 dx *= t2;
                 dy *= t2;
-                let px = 0.5 * (r1x + r2x);
-                let py = 0.5 * (r1y + r2y);
-                let pen = dl - r;
+                const px = 0.5 * (r1x + r2x);
+                const py = 0.5 * (r1y + r2y);
+                const pen = dl - r;
                 r1x = px - arb.b1.posx;
                 r1y = py - arb.b1.posy;
                 r2x = px - arb.b2.posx;
                 r2y = py - arb.b2.posy;
-                let rn1 = dy * r1x - dx * r1y;
-                let rn2 = dy * r2x - dx * r2y;
-                let K =
+                const rn1 = dy * r1x - dx * r1y;
+                const rn2 = dy * r2x - dx * r2y;
+                const K =
                   arb.b2.smass +
                   rn2 * rn2 * arb.b2.sinertia +
                   arb.b1.smass +
                   rn1 * rn1 * arb.b1.sinertia;
                 if (K != 0) {
-                  let jn = (-arb.biasCoef * pen) / K;
+                  const jn = (-arb.biasCoef * pen) / K;
                   let Jx = 0.0;
                   let Jy = 0.0;
-                  let t3 = jn;
+                  const t3 = jn;
                   Jx = dx * t3;
                   Jy = dy * t3;
-                  let t4 = arb.b1.imass;
+                  const t4 = arb.b1.imass;
                   arb.b1.posx -= Jx * t4;
                   arb.b1.posy -= Jy * t4;
-                  let _this = arb.b1;
-                  let dr = -rn1 * arb.b1.iinertia * jn;
+                  const _this = arb.b1;
+                  const dr = -rn1 * arb.b1.iinertia * jn;
                   _this.rot += dr;
                   if (dr * dr > 0.0001) {
                     _this.axisx = Math.sin(_this.rot);
                     _this.axisy = Math.cos(_this.rot);
                   } else {
-                    let d2 = dr * dr;
-                    let p = 1 - 0.5 * d2;
-                    let m = 1 - (d2 * d2) / 8;
-                    let nx = (p * _this.axisx + dr * _this.axisy) * m;
+                    const d2 = dr * dr;
+                    const p = 1 - 0.5 * d2;
+                    const m = 1 - (d2 * d2) / 8;
+                    const nx = (p * _this.axisx + dr * _this.axisy) * m;
                     _this.axisy = (p * _this.axisy - dr * _this.axisx) * m;
                     _this.axisx = nx;
                   }
-                  let t5 = arb.b2.imass;
+                  const t5 = arb.b2.imass;
                   arb.b2.posx += Jx * t5;
                   arb.b2.posy += Jy * t5;
-                  let _this1 = arb.b2;
-                  let dr1 = rn2 * arb.b2.iinertia * jn;
+                  const _this1 = arb.b2;
+                  const dr1 = rn2 * arb.b2.iinertia * jn;
                   _this1.rot += dr1;
                   if (dr1 * dr1 > 0.0001) {
                     _this1.axisx = Math.sin(_this1.rot);
                     _this1.axisy = Math.cos(_this1.rot);
                   } else {
-                    let d21 = dr1 * dr1;
-                    let p1 = 1 - 0.5 * d21;
-                    let m1 = 1 - (d21 * d21) / 8;
-                    let nx1 = (p1 * _this1.axisx + dr1 * _this1.axisy) * m1;
-                    _this1.axisy =
-                      (p1 * _this1.axisy - dr1 * _this1.axisx) * m1;
+                    const d21 = dr1 * dr1;
+                    const p1 = 1 - 0.5 * d21;
+                    const m1 = 1 - (d21 * d21) / 8;
+                    const nx1 = (p1 * _this1.axisx + dr1 * _this1.axisy) * m1;
+                    _this1.axisy = (p1 * _this1.axisy - dr1 * _this1.axisx) * m1;
                     _this1.axisx = nx1;
                   }
                 }
@@ -10258,15 +9693,13 @@ export class ZPP_Space {
               gproj = arb.lproj + (gnormx * arb.b1.posx + gnormy * arb.b1.posy);
               clip1x = arb.b2.axisy * arb.c1.lr1x - arb.b2.axisx * arb.c1.lr1y;
               clip1y = arb.c1.lr1x * arb.b2.axisx + arb.c1.lr1y * arb.b2.axisy;
-              let t6 = 1.0;
+              const t6 = 1.0;
               clip1x += arb.b2.posx * t6;
               clip1y += arb.b2.posy * t6;
               if (arb.hpc2) {
-                clip2x =
-                  arb.b2.axisy * arb.c2.lr1x - arb.b2.axisx * arb.c2.lr1y;
-                clip2y =
-                  arb.c2.lr1x * arb.b2.axisx + arb.c2.lr1y * arb.b2.axisy;
-                let t7 = 1.0;
+                clip2x = arb.b2.axisy * arb.c2.lr1x - arb.b2.axisx * arb.c2.lr1y;
+                clip2y = arb.c2.lr1x * arb.b2.axisx + arb.c2.lr1y * arb.b2.axisy;
+                const t7 = 1.0;
                 clip2x += arb.b2.posx * t7;
                 clip2y += arb.b2.posy * t7;
               }
@@ -10276,15 +9709,13 @@ export class ZPP_Space {
               gproj = arb.lproj + (gnormx * arb.b2.posx + gnormy * arb.b2.posy);
               clip1x = arb.b1.axisy * arb.c1.lr1x - arb.b1.axisx * arb.c1.lr1y;
               clip1y = arb.c1.lr1x * arb.b1.axisx + arb.c1.lr1y * arb.b1.axisy;
-              let t8 = 1.0;
+              const t8 = 1.0;
               clip1x += arb.b1.posx * t8;
               clip1y += arb.b1.posy * t8;
               if (arb.hpc2) {
-                clip2x =
-                  arb.b1.axisy * arb.c2.lr1x - arb.b1.axisx * arb.c2.lr1y;
-                clip2y =
-                  arb.c2.lr1x * arb.b1.axisx + arb.c2.lr1y * arb.b1.axisy;
-                let t9 = 1.0;
+                clip2x = arb.b1.axisy * arb.c2.lr1x - arb.b1.axisx * arb.c2.lr1y;
+                clip2y = arb.c2.lr1x * arb.b1.axisx + arb.c2.lr1y * arb.b1.axisy;
+                const t9 = 1.0;
                 clip2x += arb.b1.posx * t9;
                 clip2y += arb.b1.posy * t9;
               }
@@ -10318,31 +9749,25 @@ export class ZPP_Space {
                 c2r1y = clip2y - arb.b1.posy;
                 c2r2x = clip2x - arb.b2.posx;
                 c2r2y = clip2y - arb.b2.posy;
-                let rn1a = gnormy * c1r1x - gnormx * c1r1y;
-                let rn1b = gnormy * c1r2x - gnormx * c1r2y;
-                let rn2a = gnormy * c2r1x - gnormx * c2r1y;
-                let rn2b = gnormy * c2r2x - gnormx * c2r2y;
-                let mass_sum = arb.b1.smass + arb.b2.smass;
+                const rn1a = gnormy * c1r1x - gnormx * c1r1y;
+                const rn1b = gnormy * c1r2x - gnormx * c1r2y;
+                const rn2a = gnormy * c2r1x - gnormx * c2r1y;
+                const rn2b = gnormy * c2r2x - gnormx * c2r2y;
+                const mass_sum = arb.b1.smass + arb.b2.smass;
                 arb.kMassa =
-                  mass_sum +
-                  arb.b1.sinertia * rn1a * rn1a +
-                  arb.b2.sinertia * rn1b * rn1b;
+                  mass_sum + arb.b1.sinertia * rn1a * rn1a + arb.b2.sinertia * rn1b * rn1b;
                 arb.kMassb =
-                  mass_sum +
-                  arb.b1.sinertia * rn1a * rn2a +
-                  arb.b2.sinertia * rn1b * rn2b;
+                  mass_sum + arb.b1.sinertia * rn1a * rn2a + arb.b2.sinertia * rn1b * rn2b;
                 arb.kMassc =
-                  mass_sum +
-                  arb.b1.sinertia * rn2a * rn2a +
-                  arb.b2.sinertia * rn2b * rn2b;
+                  mass_sum + arb.b1.sinertia * rn2a * rn2a + arb.b2.sinertia * rn2b * rn2b;
                 let Ka = 0.0;
                 let Kb = 0.0;
                 let Kc = 0.0;
                 Ka = arb.kMassa;
                 Kb = arb.kMassb;
                 Kc = arb.kMassc;
-                let bx = err1 * arb.biasCoef;
-                let by = err2 * arb.biasCoef;
+                const bx = err1 * arb.biasCoef;
+                const by = err2 * arb.biasCoef;
                 while (true) {
                   let xx = 0.0;
                   let xy = 0.0;
@@ -10367,129 +9792,123 @@ export class ZPP_Space {
                     }
                   } else {
                     det = 1 / det;
-                    let t10 = det * (arb.kMassc * xx - arb.kMassb * xy);
+                    const t10 = det * (arb.kMassc * xx - arb.kMassb * xy);
                     xy = det * (arb.kMassa * xy - arb.kMassb * xx);
                     xx = t10;
                   }
                   if (xx >= 0 && xy >= 0) {
-                    let t11 = (xx + xy) * arb.b1.imass;
+                    const t11 = (xx + xy) * arb.b1.imass;
                     arb.b1.posx -= gnormx * t11;
                     arb.b1.posy -= gnormy * t11;
-                    let _this2 = arb.b1;
-                    let dr2 = -arb.b1.iinertia * (rn1a * xx + rn2a * xy);
+                    const _this2 = arb.b1;
+                    const dr2 = -arb.b1.iinertia * (rn1a * xx + rn2a * xy);
                     _this2.rot += dr2;
                     if (dr2 * dr2 > 0.0001) {
                       _this2.axisx = Math.sin(_this2.rot);
                       _this2.axisy = Math.cos(_this2.rot);
                     } else {
-                      let d22 = dr2 * dr2;
-                      let p2 = 1 - 0.5 * d22;
-                      let m2 = 1 - (d22 * d22) / 8;
-                      let nx2 = (p2 * _this2.axisx + dr2 * _this2.axisy) * m2;
-                      _this2.axisy =
-                        (p2 * _this2.axisy - dr2 * _this2.axisx) * m2;
+                      const d22 = dr2 * dr2;
+                      const p2 = 1 - 0.5 * d22;
+                      const m2 = 1 - (d22 * d22) / 8;
+                      const nx2 = (p2 * _this2.axisx + dr2 * _this2.axisy) * m2;
+                      _this2.axisy = (p2 * _this2.axisy - dr2 * _this2.axisx) * m2;
                       _this2.axisx = nx2;
                     }
-                    let t12 = (xx + xy) * arb.b2.imass;
+                    const t12 = (xx + xy) * arb.b2.imass;
                     arb.b2.posx += gnormx * t12;
                     arb.b2.posy += gnormy * t12;
-                    let _this3 = arb.b2;
-                    let dr3 = arb.b2.iinertia * (rn1b * xx + rn2b * xy);
+                    const _this3 = arb.b2;
+                    const dr3 = arb.b2.iinertia * (rn1b * xx + rn2b * xy);
                     _this3.rot += dr3;
                     if (dr3 * dr3 > 0.0001) {
                       _this3.axisx = Math.sin(_this3.rot);
                       _this3.axisy = Math.cos(_this3.rot);
                     } else {
-                      let d23 = dr3 * dr3;
-                      let p3 = 1 - 0.5 * d23;
-                      let m3 = 1 - (d23 * d23) / 8;
-                      let nx3 = (p3 * _this3.axisx + dr3 * _this3.axisy) * m3;
-                      _this3.axisy =
-                        (p3 * _this3.axisy - dr3 * _this3.axisx) * m3;
+                      const d23 = dr3 * dr3;
+                      const p3 = 1 - 0.5 * d23;
+                      const m3 = 1 - (d23 * d23) / 8;
+                      const nx3 = (p3 * _this3.axisx + dr3 * _this3.axisy) * m3;
+                      _this3.axisy = (p3 * _this3.axisy - dr3 * _this3.axisx) * m3;
                       _this3.axisx = nx3;
                     }
                     break;
                   }
                   xx = -bx / Ka;
                   xy = 0;
-                  let vn2 = Kb * xx + by;
+                  const vn2 = Kb * xx + by;
                   if (xx >= 0 && vn2 >= 0) {
-                    let t13 = (xx + xy) * arb.b1.imass;
+                    const t13 = (xx + xy) * arb.b1.imass;
                     arb.b1.posx -= gnormx * t13;
                     arb.b1.posy -= gnormy * t13;
-                    let _this4 = arb.b1;
-                    let dr4 = -arb.b1.iinertia * (rn1a * xx + rn2a * xy);
+                    const _this4 = arb.b1;
+                    const dr4 = -arb.b1.iinertia * (rn1a * xx + rn2a * xy);
                     _this4.rot += dr4;
                     if (dr4 * dr4 > 0.0001) {
                       _this4.axisx = Math.sin(_this4.rot);
                       _this4.axisy = Math.cos(_this4.rot);
                     } else {
-                      let d24 = dr4 * dr4;
-                      let p4 = 1 - 0.5 * d24;
-                      let m4 = 1 - (d24 * d24) / 8;
-                      let nx4 = (p4 * _this4.axisx + dr4 * _this4.axisy) * m4;
-                      _this4.axisy =
-                        (p4 * _this4.axisy - dr4 * _this4.axisx) * m4;
+                      const d24 = dr4 * dr4;
+                      const p4 = 1 - 0.5 * d24;
+                      const m4 = 1 - (d24 * d24) / 8;
+                      const nx4 = (p4 * _this4.axisx + dr4 * _this4.axisy) * m4;
+                      _this4.axisy = (p4 * _this4.axisy - dr4 * _this4.axisx) * m4;
                       _this4.axisx = nx4;
                     }
-                    let t14 = (xx + xy) * arb.b2.imass;
+                    const t14 = (xx + xy) * arb.b2.imass;
                     arb.b2.posx += gnormx * t14;
                     arb.b2.posy += gnormy * t14;
-                    let _this5 = arb.b2;
-                    let dr5 = arb.b2.iinertia * (rn1b * xx + rn2b * xy);
+                    const _this5 = arb.b2;
+                    const dr5 = arb.b2.iinertia * (rn1b * xx + rn2b * xy);
                     _this5.rot += dr5;
                     if (dr5 * dr5 > 0.0001) {
                       _this5.axisx = Math.sin(_this5.rot);
                       _this5.axisy = Math.cos(_this5.rot);
                     } else {
-                      let d25 = dr5 * dr5;
-                      let p5 = 1 - 0.5 * d25;
-                      let m5 = 1 - (d25 * d25) / 8;
-                      let nx5 = (p5 * _this5.axisx + dr5 * _this5.axisy) * m5;
-                      _this5.axisy =
-                        (p5 * _this5.axisy - dr5 * _this5.axisx) * m5;
+                      const d25 = dr5 * dr5;
+                      const p5 = 1 - 0.5 * d25;
+                      const m5 = 1 - (d25 * d25) / 8;
+                      const nx5 = (p5 * _this5.axisx + dr5 * _this5.axisy) * m5;
+                      _this5.axisy = (p5 * _this5.axisy - dr5 * _this5.axisx) * m5;
                       _this5.axisx = nx5;
                     }
                     break;
                   }
                   xx = 0;
                   xy = -by / Kc;
-                  let vn1 = Kb * xy + bx;
+                  const vn1 = Kb * xy + bx;
                   if (xy >= 0 && vn1 >= 0) {
-                    let t15 = (xx + xy) * arb.b1.imass;
+                    const t15 = (xx + xy) * arb.b1.imass;
                     arb.b1.posx -= gnormx * t15;
                     arb.b1.posy -= gnormy * t15;
-                    let _this6 = arb.b1;
-                    let dr6 = -arb.b1.iinertia * (rn1a * xx + rn2a * xy);
+                    const _this6 = arb.b1;
+                    const dr6 = -arb.b1.iinertia * (rn1a * xx + rn2a * xy);
                     _this6.rot += dr6;
                     if (dr6 * dr6 > 0.0001) {
                       _this6.axisx = Math.sin(_this6.rot);
                       _this6.axisy = Math.cos(_this6.rot);
                     } else {
-                      let d26 = dr6 * dr6;
-                      let p6 = 1 - 0.5 * d26;
-                      let m6 = 1 - (d26 * d26) / 8;
-                      let nx6 = (p6 * _this6.axisx + dr6 * _this6.axisy) * m6;
-                      _this6.axisy =
-                        (p6 * _this6.axisy - dr6 * _this6.axisx) * m6;
+                      const d26 = dr6 * dr6;
+                      const p6 = 1 - 0.5 * d26;
+                      const m6 = 1 - (d26 * d26) / 8;
+                      const nx6 = (p6 * _this6.axisx + dr6 * _this6.axisy) * m6;
+                      _this6.axisy = (p6 * _this6.axisy - dr6 * _this6.axisx) * m6;
                       _this6.axisx = nx6;
                     }
-                    let t16 = (xx + xy) * arb.b2.imass;
+                    const t16 = (xx + xy) * arb.b2.imass;
                     arb.b2.posx += gnormx * t16;
                     arb.b2.posy += gnormy * t16;
-                    let _this7 = arb.b2;
-                    let dr7 = arb.b2.iinertia * (rn1b * xx + rn2b * xy);
+                    const _this7 = arb.b2;
+                    const dr7 = arb.b2.iinertia * (rn1b * xx + rn2b * xy);
                     _this7.rot += dr7;
                     if (dr7 * dr7 > 0.0001) {
                       _this7.axisx = Math.sin(_this7.rot);
                       _this7.axisy = Math.cos(_this7.rot);
                     } else {
-                      let d27 = dr7 * dr7;
-                      let p7 = 1 - 0.5 * d27;
-                      let m7 = 1 - (d27 * d27) / 8;
-                      let nx7 = (p7 * _this7.axisx + dr7 * _this7.axisy) * m7;
-                      _this7.axisy =
-                        (p7 * _this7.axisy - dr7 * _this7.axisx) * m7;
+                      const d27 = dr7 * dr7;
+                      const p7 = 1 - 0.5 * d27;
+                      const m7 = 1 - (d27 * d27) / 8;
+                      const nx7 = (p7 * _this7.axisx + dr7 * _this7.axisy) * m7;
+                      _this7.axisy = (p7 * _this7.axisy - dr7 * _this7.axisx) * m7;
                       _this7.axisx = nx7;
                     }
                     break;
@@ -10499,54 +9918,52 @@ export class ZPP_Space {
                   }
                 }
               } else {
-                let rn11 = gnormy * c1r1x - gnormx * c1r1y;
-                let rn21 = gnormy * c1r2x - gnormx * c1r2y;
-                let K1 =
+                const rn11 = gnormy * c1r1x - gnormx * c1r1y;
+                const rn21 = gnormy * c1r2x - gnormx * c1r2y;
+                const K1 =
                   arb.b2.smass +
                   rn21 * rn21 * arb.b2.sinertia +
                   arb.b1.smass +
                   rn11 * rn11 * arb.b1.sinertia;
                 if (K1 != 0) {
-                  let jn1 = (-arb.biasCoef * err1) / K1;
+                  const jn1 = (-arb.biasCoef * err1) / K1;
                   let Jx1 = 0.0;
                   let Jy1 = 0.0;
-                  let t17 = jn1;
+                  const t17 = jn1;
                   Jx1 = gnormx * t17;
                   Jy1 = gnormy * t17;
-                  let t18 = arb.b1.imass;
+                  const t18 = arb.b1.imass;
                   arb.b1.posx -= Jx1 * t18;
                   arb.b1.posy -= Jy1 * t18;
-                  let _this8 = arb.b1;
-                  let dr8 = -rn11 * arb.b1.iinertia * jn1;
+                  const _this8 = arb.b1;
+                  const dr8 = -rn11 * arb.b1.iinertia * jn1;
                   _this8.rot += dr8;
                   if (dr8 * dr8 > 0.0001) {
                     _this8.axisx = Math.sin(_this8.rot);
                     _this8.axisy = Math.cos(_this8.rot);
                   } else {
-                    let d28 = dr8 * dr8;
-                    let p8 = 1 - 0.5 * d28;
-                    let m8 = 1 - (d28 * d28) / 8;
-                    let nx8 = (p8 * _this8.axisx + dr8 * _this8.axisy) * m8;
-                    _this8.axisy =
-                      (p8 * _this8.axisy - dr8 * _this8.axisx) * m8;
+                    const d28 = dr8 * dr8;
+                    const p8 = 1 - 0.5 * d28;
+                    const m8 = 1 - (d28 * d28) / 8;
+                    const nx8 = (p8 * _this8.axisx + dr8 * _this8.axisy) * m8;
+                    _this8.axisy = (p8 * _this8.axisy - dr8 * _this8.axisx) * m8;
                     _this8.axisx = nx8;
                   }
-                  let t19 = arb.b2.imass;
+                  const t19 = arb.b2.imass;
                   arb.b2.posx += Jx1 * t19;
                   arb.b2.posy += Jy1 * t19;
-                  let _this9 = arb.b2;
-                  let dr9 = rn21 * arb.b2.iinertia * jn1;
+                  const _this9 = arb.b2;
+                  const dr9 = rn21 * arb.b2.iinertia * jn1;
                   _this9.rot += dr9;
                   if (dr9 * dr9 > 0.0001) {
                     _this9.axisx = Math.sin(_this9.rot);
                     _this9.axisy = Math.cos(_this9.rot);
                   } else {
-                    let d29 = dr9 * dr9;
-                    let p9 = 1 - 0.5 * d29;
-                    let m9 = 1 - (d29 * d29) / 8;
-                    let nx9 = (p9 * _this9.axisx + dr9 * _this9.axisy) * m9;
-                    _this9.axisy =
-                      (p9 * _this9.axisy - dr9 * _this9.axisx) * m9;
+                    const d29 = dr9 * dr9;
+                    const p9 = 1 - 0.5 * d29;
+                    const m9 = 1 - (d29 * d29) / 8;
+                    const nx9 = (p9 * _this9.axisx + dr9 * _this9.axisy) * m9;
+                    _this9.axisy = (p9 * _this9.axisy - dr9 * _this9.axisx) * m9;
                     _this9.axisx = nx9;
                   }
                 }
@@ -10607,15 +10024,12 @@ export class ZPP_Space {
     }
   }
 
-  interactionType(s1,
-    s2,
-    b1,
-    b2) {
+  interactionType(s1, s2, b1, b2) {
     let con_ignore;
     con_ignore = false;
     let cx_ite = b1.constraints.head;
     while (cx_ite != null) {
-      let con = cx_ite.elt;
+      const con = cx_ite.elt;
       if (con.ignore && con.pair_exists(b1.id, b2.id)) {
         con_ignore = true;
         break;
@@ -10673,11 +10087,9 @@ export class ZPP_Space {
     if (tmp) {
       let tmp2;
       if (s1.sensorEnabled || s2.sensorEnabled) {
-        let _this = s1.filter;
-        let x = s2.filter;
-        tmp2 =
-          (_this.sensorMask & x.sensorGroup) != 0 &&
-          (x.sensorMask & _this.sensorGroup) != 0;
+        const _this = s1.filter;
+        const x = s2.filter;
+        tmp2 = (_this.sensorMask & x.sensorGroup) != 0 && (x.sensorMask & _this.sensorGroup) != 0;
       } else {
         tmp2 = false;
       }
@@ -10686,36 +10098,21 @@ export class ZPP_Space {
       } else {
         let tmp3;
         if (s1.fluidEnabled || s2.fluidEnabled) {
-          let _this1 = s1.filter;
-          let x1 = s2.filter;
-          tmp3 =
-            (_this1.fluidMask & x1.fluidGroup) != 0 &&
-            (x1.fluidMask & _this1.fluidGroup) != 0;
+          const _this1 = s1.filter;
+          const x1 = s2.filter;
+          tmp3 = (_this1.fluidMask & x1.fluidGroup) != 0 && (x1.fluidMask & _this1.fluidGroup) != 0;
         } else {
           tmp3 = false;
         }
-        if (
-          tmp3 &&
-          !(
-            b1.imass == 0 &&
-            b2.imass == 0 &&
-            b1.iinertia == 0 &&
-            b2.iinertia == 0
-          )
-        ) {
+        if (tmp3 && !(b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0)) {
           return 0;
         } else {
-          let _this2 = s1.filter;
-          let x2 = s2.filter;
+          const _this2 = s1.filter;
+          const x2 = s2.filter;
           if (
             (_this2.collisionMask & x2.collisionGroup) != 0 &&
             (x2.collisionMask & _this2.collisionGroup) != 0 &&
-            !(
-              b1.imass == 0 &&
-              b2.imass == 0 &&
-              b1.iinertia == 0 &&
-              b2.iinertia == 0
-            )
+            !(b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0)
           ) {
             return 1;
           } else {
@@ -10728,20 +10125,16 @@ export class ZPP_Space {
     }
   }
 
-  narrowPhase(s1,
-    s2,
-    stat,
-    in_arb,
-    continuous) {
-    let _gthis = this;
+  narrowPhase(s1, s2, stat, in_arb, continuous) {
+    const _gthis = this;
     let ret = null;
-    let b1 = s1.body;
-    let b2 = s2.body;
+    const b1 = s1.body;
+    const b2 = s2.body;
     let con_ignore;
     con_ignore = false;
     let cx_ite = b1.constraints.head;
     while (cx_ite != null) {
-      let con = cx_ite.elt;
+      const con = cx_ite.elt;
       if (con.ignore && con.pair_exists(b1.id, b2.id)) {
         con_ignore = true;
         break;
@@ -10800,11 +10193,9 @@ export class ZPP_Space {
     if (itype1) {
       let itype3;
       if (s1.sensorEnabled || s2.sensorEnabled) {
-        let _this = s1.filter;
-        let x = s2.filter;
-        itype3 =
-          (_this.sensorMask & x.sensorGroup) != 0 &&
-          (x.sensorMask & _this.sensorGroup) != 0;
+        const _this = s1.filter;
+        const x = s2.filter;
+        itype3 = (_this.sensorMask & x.sensorGroup) != 0 && (x.sensorMask & _this.sensorGroup) != 0;
       } else {
         itype3 = false;
       }
@@ -10813,36 +10204,22 @@ export class ZPP_Space {
       } else {
         let itype4;
         if (s1.fluidEnabled || s2.fluidEnabled) {
-          let _this1 = s1.filter;
-          let x1 = s2.filter;
+          const _this1 = s1.filter;
+          const x1 = s2.filter;
           itype4 =
-            (_this1.fluidMask & x1.fluidGroup) != 0 &&
-            (x1.fluidMask & _this1.fluidGroup) != 0;
+            (_this1.fluidMask & x1.fluidGroup) != 0 && (x1.fluidMask & _this1.fluidGroup) != 0;
         } else {
           itype4 = false;
         }
-        if (
-          itype4 &&
-          !(
-            b1.imass == 0 &&
-            b2.imass == 0 &&
-            b1.iinertia == 0 &&
-            b2.iinertia == 0
-          )
-        ) {
+        if (itype4 && !(b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0)) {
           itype = 0;
         } else {
-          let _this2 = s1.filter;
-          let x2 = s2.filter;
+          const _this2 = s1.filter;
+          const x2 = s2.filter;
           itype =
             (_this2.collisionMask & x2.collisionGroup) != 0 &&
             (x2.collisionMask & _this2.collisionGroup) != 0 &&
-            !(
-              b1.imass == 0 &&
-              b2.imass == 0 &&
-              b1.iinertia == 0 &&
-              b2.iinertia == 0
-            )
+            !(b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0)
               ? 1
               : -1;
         }
@@ -10873,10 +10250,10 @@ export class ZPP_Space {
         let xarb;
         if (in_arb == null) {
           let ret2 = null;
-          let b = b1.arbiters.length < b2.arbiters.length ? b1 : b2;
+          const b = b1.arbiters.length < b2.arbiters.length ? b1 : b2;
           let cx_ite1 = b.arbiters.head;
           while (cx_ite1 != null) {
-            let arb = cx_ite1.elt;
+            const arb = cx_ite1.elt;
             if (arb.id == sa.id && arb.di == sb.id) {
               ret2 = arb;
               break;
@@ -10899,10 +10276,10 @@ export class ZPP_Space {
             arb1.next = null;
           }
         } else if (xarb.fluidarb == null) {
-          let b3 = null;
+          const b3 = null;
           xarb.cleared = true;
           if (b3 == null || xarb.b2 == b3) {
-            let _this3 = xarb.b1.arbiters;
+            const _this3 = xarb.b1.arbiters;
             let pre = null;
             let cur2 = _this3.head;
             let ret3 = false;
@@ -10925,7 +10302,7 @@ export class ZPP_Space {
                     _this3.pushmod = true;
                   }
                 }
-                let o = old;
+                const o = old;
                 o.elt = null;
                 o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o;
@@ -10940,7 +10317,7 @@ export class ZPP_Space {
             }
           }
           if (b3 == null || xarb.b1 == b3) {
-            let _this4 = xarb.b2.arbiters;
+            const _this4 = xarb.b2.arbiters;
             let pre1 = null;
             let cur3 = _this4.head;
             let ret5 = false;
@@ -10963,7 +10340,7 @@ export class ZPP_Space {
                     _this4.pushmod = true;
                   }
                 }
-                let o1 = old1;
+                const o1 = old1;
                 o1.elt = null;
                 o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o1;
@@ -10996,19 +10373,19 @@ export class ZPP_Space {
         } else {
           arb1 = xarb.fluidarb;
         }
-        let inttype = 4;
+        const inttype = 4;
         if (first || arb1.stamp != this.stamp || continuous) {
           arb1.stamp = this.stamp;
           if (ZPP_Collide.flowCollide(sa, sb, arb1)) {
             if (first) {
-              let di = sb.id;
+              const di = sb.id;
               arb1.b1 = s1.body;
               arb1.ws1 = s1;
               arb1.b2 = s2.body;
               arb1.ws2 = s2;
               arb1.id = sa.id;
               arb1.di = di;
-              let _this5 = arb1.b1.arbiters;
+              const _this5 = arb1.b1.arbiters;
               let ret7;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                 ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -11018,12 +10395,12 @@ export class ZPP_Space {
                 ret7.next = null;
               }
               ret7.elt = arb1;
-              let temp = ret7;
+              const temp = ret7;
               temp.next = _this5.head;
               _this5.head = temp;
               _this5.modified = true;
               _this5.length++;
-              let _this6 = arb1.b2.arbiters;
+              const _this6 = arb1.b2.arbiters;
               let ret8;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                 ret8 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -11033,7 +10410,7 @@ export class ZPP_Space {
                 ret8.next = null;
               }
               ret8.elt = arb1;
-              let temp1 = ret8;
+              const temp1 = ret8;
               temp1.next = _this6.head;
               _this6.head = temp1;
               _this6.modified = true;
@@ -11049,7 +10426,7 @@ export class ZPP_Space {
               arb1.dampx = 0;
               arb1.dampy = 0;
               arb1.adamp = 0.0;
-              let _this7 = this.f_arbiters;
+              const _this7 = this.f_arbiters;
               let ret9;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
                 ret9 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
@@ -11059,7 +10436,7 @@ export class ZPP_Space {
                 ret9.next = null;
               }
               ret9.elt = arb1;
-              let temp2 = ret9;
+              const temp2 = ret9;
               temp2.next = _this7.head;
               _this7.head = temp2;
               _this7.modified = true;
@@ -11067,20 +10444,19 @@ export class ZPP_Space {
               arb1.fresh = !swapped;
             } else {
               arb1.fresh =
-                arb1.up_stamp < this.stamp - 1 ||
-                (arb1.endGenerated == this.stamp && continuous);
+                arb1.up_stamp < this.stamp - 1 || (arb1.endGenerated == this.stamp && continuous);
             }
             arb1.up_stamp = arb1.stamp;
             if (arb1.fresh || (arb1.immState & 4) == 0) {
               arb1.immState = 1;
               let anyimpure = false;
-              let arbs1 = arb1.ws1.id > arb1.ws2.id ? arb1.ws2 : arb1.ws1;
-              let arbs2 = arb1.ws1.id > arb1.ws2.id ? arb1.ws1 : arb1.ws2;
-              let _this8 = this.mrca1;
+              const arbs1 = arb1.ws1.id > arb1.ws2.id ? arb1.ws2 : arb1.ws1;
+              const arbs2 = arb1.ws1.id > arb1.ws2.id ? arb1.ws1 : arb1.ws2;
+              const _this8 = this.mrca1;
               while (_this8.head != null) {
-                let ret10 = _this8.head;
+                const ret10 = _this8.head;
                 _this8.head = ret10.next;
-                let o2 = ret10;
+                const o2 = ret10;
                 o2.elt = null;
                 o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o2;
@@ -11091,11 +10467,11 @@ export class ZPP_Space {
                 _this8.length--;
               }
               _this8.pushmod = true;
-              let _this9 = this.mrca2;
+              const _this9 = this.mrca2;
               while (_this9.head != null) {
-                let ret11 = _this9.head;
+                const ret11 = _this9.head;
                 _this9.head = ret11.next;
-                let o3 = ret11;
+                const o3 = ret11;
                 o3.elt = null;
                 o3.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o3;
@@ -11107,7 +10483,7 @@ export class ZPP_Space {
               }
               _this9.pushmod = true;
               if (arbs1.cbSet != null) {
-                let _this10 = this.mrca1;
+                const _this10 = this.mrca1;
                 let ret12;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret12 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11117,15 +10493,15 @@ export class ZPP_Space {
                   ret12.next = null;
                 }
                 ret12.elt = arbs1;
-                let temp3 = ret12;
+                const temp3 = ret12;
                 temp3.next = _this10.head;
                 _this10.head = temp3;
                 _this10.modified = true;
                 _this10.length++;
               }
               if (arbs1.body.cbSet != null) {
-                let _this11 = this.mrca1;
-                let o4 = arbs1.body;
+                const _this11 = this.mrca1;
+                const o4 = arbs1.body;
                 let ret13;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret13 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11135,14 +10511,14 @@ export class ZPP_Space {
                   ret13.next = null;
                 }
                 ret13.elt = o4;
-                let temp4 = ret13;
+                const temp4 = ret13;
                 temp4.next = _this11.head;
                 _this11.head = temp4;
                 _this11.modified = true;
                 _this11.length++;
               }
               if (arbs2.cbSet != null) {
-                let _this12 = this.mrca2;
+                const _this12 = this.mrca2;
                 let ret14;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret14 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11152,15 +10528,15 @@ export class ZPP_Space {
                   ret14.next = null;
                 }
                 ret14.elt = arbs2;
-                let temp5 = ret14;
+                const temp5 = ret14;
                 temp5.next = _this12.head;
                 _this12.head = temp5;
                 _this12.modified = true;
                 _this12.length++;
               }
               if (arbs2.body.cbSet != null) {
-                let _this13 = this.mrca2;
-                let o5 = arbs2.body;
+                const _this13 = this.mrca2;
+                const o5 = arbs2.body;
                 let ret15;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret15 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11170,7 +10546,7 @@ export class ZPP_Space {
                   ret15.next = null;
                 }
                 ret15.elt = o5;
-                let temp6 = ret15;
+                const temp6 = ret15;
                 temp6.next = _this13.head;
                 _this13.head = temp6;
                 _this13.modified = true;
@@ -11179,22 +10555,21 @@ export class ZPP_Space {
               let c1 = arbs1.body.compound;
               let c2 = arbs2.body.compound;
               while (c1 != c2) {
-                let d1 = c1 == null ? 0 : c1.depth;
-                let d2 = c2 == null ? 0 : c2.depth;
+                const d1 = c1 == null ? 0 : c1.depth;
+                const d2 = c2 == null ? 0 : c2.depth;
                 if (d1 < d2) {
                   if (c2.cbSet != null) {
-                    let _this14 = this.mrca2;
+                    const _this14 = this.mrca2;
                     let ret16;
                     if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                       ret16 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
                     } else {
                       ret16 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool =
-                        ret16.next;
+                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret16.next;
                       ret16.next = null;
                     }
                     ret16.elt = c2;
-                    let temp7 = ret16;
+                    const temp7 = ret16;
                     temp7.next = _this14.head;
                     _this14.head = temp7;
                     _this14.modified = true;
@@ -11203,18 +10578,17 @@ export class ZPP_Space {
                   c2 = c2.compound;
                 } else {
                   if (c1.cbSet != null) {
-                    let _this15 = this.mrca1;
+                    const _this15 = this.mrca1;
                     let ret17;
                     if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                       ret17 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
                     } else {
                       ret17 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool =
-                        ret17.next;
+                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret17.next;
                       ret17.next = null;
                     }
                     ret17.elt = c1;
-                    let temp8 = ret17;
+                    const temp8 = ret17;
                     temp8.next = _this15.head;
                     _this15.head = temp8;
                     _this15.modified = true;
@@ -11225,25 +10599,19 @@ export class ZPP_Space {
               }
               let cx_ite2 = this.mrca1.head;
               while (cx_ite2 != null) {
-                let i1 = cx_ite2.elt;
+                const i1 = cx_ite2.elt;
                 let cx_ite3 = this.mrca2.head;
                 while (cx_ite3 != null) {
-                  let i2 = cx_ite3.elt;
-                  let cb1 = i1.cbSet;
-                  let cb2 = i2.cbSet;
-                  let _this16 = cb1.manager;
+                  const i2 = cx_ite3.elt;
+                  const cb1 = i1.cbSet;
+                  const cb2 = i2.cbSet;
+                  const _this16 = cb1.manager;
                   let ret18 = null;
-                  let pairs =
-                    cb1.cbpairs.length < cb2.cbpairs.length
-                      ? cb1.cbpairs
-                      : cb2.cbpairs;
+                  const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
                   let cx_ite4 = pairs.head;
                   while (cx_ite4 != null) {
-                    let p = cx_ite4.elt;
-                    if (
-                      (p.a == cb1 && p.b == cb2) ||
-                      (p.a == cb2 && p.b == cb1)
-                    ) {
+                    const p = cx_ite4.elt;
+                    if ((p.a == cb1 && p.b == cb2) || (p.a == cb2 && p.b == cb1)) {
                       ret18 = p;
                       break;
                     }
@@ -11282,14 +10650,13 @@ export class ZPP_Space {
                   }
                   let callbackset = null;
                   let ncallbackset = null;
-                  let _this17 = this.prelisteners;
+                  const _this17 = this.prelisteners;
                   while (_this17.head != null) {
-                    let ret20 = _this17.head;
+                    const ret20 = _this17.head;
                     _this17.head = ret20.next;
-                    let o6 = ret20;
+                    const o6 = ret20;
                     o6.elt = null;
-                    o6.next =
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
+                    o6.next = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
                     ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = o6;
                     if (_this17.head == null) {
                       _this17.pushmod = true;
@@ -11299,19 +10666,14 @@ export class ZPP_Space {
                   }
                   _this17.pushmod = true;
                   let lite = null;
-                  let _this18 = cb1.manager;
+                  const _this18 = cb1.manager;
                   let ret21 = null;
-                  let pairs1 =
-                    cb1.cbpairs.length < cb2.cbpairs.length
-                      ? cb1.cbpairs
-                      : cb2.cbpairs;
+                  const pairs1 =
+                    cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
                   let cx_ite5 = pairs1.head;
                   while (cx_ite5 != null) {
-                    let p1 = cx_ite5.elt;
-                    if (
-                      (p1.a == cb1 && p1.b == cb2) ||
-                      (p1.a == cb2 && p1.b == cb1)
-                    ) {
+                    const p1 = cx_ite5.elt;
+                    if ((p1.a == cb1 && p1.b == cb2) || (p1.a == cb2 && p1.b == cb1)) {
                       ret21 = p1;
                       break;
                     }
@@ -11346,27 +10708,20 @@ export class ZPP_Space {
                   }
                   let cx_ite6 = ret21.listeners.head;
                   while (cx_ite6 != null) {
-                    let x3 = cx_ite6.elt;
+                    const x3 = cx_ite6.elt;
                     if (x3.event == 5) {
                       if ((x3.itype & inttype) != 0) {
-                        let _this19 = _gthis.prelisteners;
+                        const _this19 = _gthis.prelisteners;
                         let ret23;
-                        if (
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener
-                            .zpp_pool == null
-                        ) {
-                          ret23 =
-                            new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
+                        if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                          ret23 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
                         } else {
-                          ret23 =
-                            ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener
-                              .zpp_pool;
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool =
-                            ret23.next;
+                          ret23 = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
+                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret23.next;
                           ret23.next = null;
                         }
                         ret23.elt = x3;
-                        let temp9 = ret23;
+                        const temp9 = ret23;
                         if (lite == null) {
                           temp9.next = _this19.head;
                           _this19.head = temp9;
@@ -11402,7 +10757,7 @@ export class ZPP_Space {
                     if (callbackset != null) {
                       let cx_ite7 = this.prelisteners.head;
                       while (cx_ite7 != null) {
-                        let listener = cx_ite7.elt;
+                        const listener = cx_ite7.elt;
                         if (listener.itype == 7) {
                           callbackset.COLLISIONstamp = this.stamp;
                           callbackset.SENSORstamp = this.stamp;
@@ -11417,27 +10772,27 @@ export class ZPP_Space {
                     if (arb1.wrap_position != null) {
                       arb1.wrap_position.zpp_inner._immutable = false;
                     }
-                    let pact = arb1.active;
+                    const pact = arb1.active;
                     arb1.active = true;
-                    let emptycontacts = false;
+                    const emptycontacts = false;
                     this.precb.zpp_inner.pre_arbiter = arb1;
                     this.precb.zpp_inner.set = callbackset;
                     let cx_ite8 = this.prelisteners.head;
                     while (cx_ite8 != null) {
-                      let listener1 = cx_ite8.elt;
+                      const listener1 = cx_ite8.elt;
                       this.precb.zpp_inner.listener = listener1;
-                      let cb = this.precb.zpp_inner;
-                      let o11 = callbackset.int1;
-                      let o21 = callbackset.int2;
+                      const cb = this.precb.zpp_inner;
+                      const o11 = callbackset.int1;
+                      const o21 = callbackset.int2;
                       let ret24;
-                      let _this20 = listener1.options1;
-                      let xs = o11.cbTypes;
+                      const _this20 = listener1.options1;
+                      const xs = o11.cbTypes;
                       if (
                         _this20.nonemptyintersection(xs, _this20.includes) &&
                         !_this20.nonemptyintersection(xs, _this20.excludes)
                       ) {
-                        let _this21 = listener1.options2;
-                        let xs1 = o21.cbTypes;
+                        const _this21 = listener1.options2;
+                        const xs1 = o21.cbTypes;
                         ret24 =
                           _this21.nonemptyintersection(xs1, _this21.includes) &&
                           !_this21.nonemptyintersection(xs1, _this21.excludes);
@@ -11451,45 +10806,32 @@ export class ZPP_Space {
                         cb.int1 = o21;
                         cb.int2 = o11;
                       }
-                      this.precb.zpp_inner.pre_swapped =
-                        i1 != this.precb.zpp_inner.int1;
-                      let ret25 = listener1.handlerp(this.precb);
+                      this.precb.zpp_inner.pre_swapped = i1 != this.precb.zpp_inner.int1;
+                      const ret25 = listener1.handlerp(this.precb);
                       if (ret25 != null) {
                         let ret26;
                         if (ZPP_Flags.PreFlag_ACCEPT == null) {
                           ZPP_Flags.internal = true;
-                          ZPP_Flags.PreFlag_ACCEPT =
-                            new ZPP_Space._nape.callbacks.PreFlag();
+                          ZPP_Flags.PreFlag_ACCEPT = new ZPP_Space._nape.callbacks.PreFlag();
                           ZPP_Flags.internal = false;
                         }
                         if (ret25 == ZPP_Flags.PreFlag_ACCEPT) {
                           ret26 = 5;
                         } else {
-                          if (
-                            ZPP_Flags.PreFlag_ACCEPT_ONCE == null
-                          ) {
+                          if (ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
                             ZPP_Flags.internal = true;
-                            ZPP_Flags.PreFlag_ACCEPT_ONCE =
-                              new ZPP_Space._nape.callbacks.PreFlag();
+                            ZPP_Flags.PreFlag_ACCEPT_ONCE = new ZPP_Space._nape.callbacks.PreFlag();
                             ZPP_Flags.internal = false;
                           }
-                          if (
-                            ret25 == ZPP_Flags.PreFlag_ACCEPT_ONCE
-                          ) {
+                          if (ret25 == ZPP_Flags.PreFlag_ACCEPT_ONCE) {
                             ret26 = 1;
                           } else {
-                            if (
-                              ZPP_Flags.PreFlag_IGNORE == null
-                            ) {
+                            if (ZPP_Flags.PreFlag_IGNORE == null) {
                               ZPP_Flags.internal = true;
-                              ZPP_Flags.PreFlag_IGNORE =
-                                new ZPP_Space._nape.callbacks.PreFlag();
+                              ZPP_Flags.PreFlag_IGNORE = new ZPP_Space._nape.callbacks.PreFlag();
                               ZPP_Flags.internal = false;
                             }
-                            ret26 =
-                              ret25 == ZPP_Flags.PreFlag_IGNORE
-                                ? 6
-                                : 2;
+                            ret26 = ret25 == ZPP_Flags.PreFlag_IGNORE ? 6 : 2;
                           }
                         }
                         arb1.immState = ret26;
@@ -11504,7 +10846,7 @@ export class ZPP_Space {
                     if (callbackset != null) {
                       let cx_ite9 = this.prelisteners.head;
                       while (cx_ite9 != null) {
-                        let listener2 = cx_ite9.elt;
+                        const listener2 = cx_ite9.elt;
                         if (listener2.itype == 7) {
                           callbackset.COLLISIONstate = arb1.immState;
                           callbackset.SENSORstate = arb1.immState;
@@ -11528,7 +10870,7 @@ export class ZPP_Space {
               }
               if (anyimpure && (arb1.immState & 4) == 0) {
                 if (arb1.b1.type == 2) {
-                  let o7 = arb1.b1;
+                  const o7 = arb1.b1;
                   if (!o7.world) {
                     o7.component.waket = this.stamp + (this.midstep ? 0 : 1);
                     if (o7.type == 3) {
@@ -11540,7 +10882,7 @@ export class ZPP_Space {
                   }
                 }
                 if (arb1.b1.type == 2) {
-                  let o8 = arb1.b2;
+                  const o8 = arb1.b2;
                   if (!o8.world) {
                     o8.component.waket = this.stamp + (this.midstep ? 0 : 1);
                     if (o8.type == 3) {
@@ -11555,7 +10897,7 @@ export class ZPP_Space {
             }
             if ((arb1.immState & 1) != 0) {
               if (arb1.b1.type == 2 && arb1.b1.component.sleeping) {
-                let o9 = arb1.b1;
+                const o9 = arb1.b1;
                 if (!o9.world) {
                   o9.component.waket = this.stamp + (this.midstep ? 0 : 1);
                   if (o9.type == 3) {
@@ -11567,7 +10909,7 @@ export class ZPP_Space {
                 }
               }
               if (arb1.b2.type == 2 && arb1.b2.component.sleeping) {
-                let o10 = arb1.b2;
+                const o10 = arb1.b2;
                 if (!o10.world) {
                   o10.component.waket = this.stamp + (this.midstep ? 0 : 1);
                   if (o10.type == 3) {
@@ -11581,7 +10923,7 @@ export class ZPP_Space {
             }
             if (arb1.sleeping) {
               arb1.sleeping = false;
-              let _this22 = this.f_arbiters;
+              const _this22 = this.f_arbiters;
               let ret27;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
                 ret27 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
@@ -11591,7 +10933,7 @@ export class ZPP_Space {
                 ret27.next = null;
               }
               ret27.elt = arb1;
-              let temp10 = ret27;
+              const temp10 = ret27;
               temp10.next = _this22.head;
               _this22.head = temp10;
               _this22.modified = true;
@@ -11599,7 +10941,7 @@ export class ZPP_Space {
             }
             ret = arb1;
           } else if (first) {
-            let o12 = arb1;
+            const o12 = arb1;
             o12.next = ZPP_FluidArbiter.zpp_pool;
             ZPP_FluidArbiter.zpp_pool = o12;
             ret = null;
@@ -11610,14 +10952,14 @@ export class ZPP_Space {
           ret = arb1;
         }
       } else if (itype == 1) {
-        let carbs = stat ? this.c_arbiters_true : this.c_arbiters_false;
+        const carbs = stat ? this.c_arbiters_true : this.c_arbiters_false;
         let xarb1;
         if (in_arb == null) {
           let ret28 = null;
-          let b4 = b1.arbiters.length < b2.arbiters.length ? b1 : b2;
+          const b4 = b1.arbiters.length < b2.arbiters.length ? b1 : b2;
           let cx_ite10 = b4.arbiters.head;
           while (cx_ite10 != null) {
-            let arb2 = cx_ite10.elt;
+            const arb2 = cx_ite10.elt;
             if (arb2.id == sa.id && arb2.di == sb.id) {
               ret28 = arb2;
               break;
@@ -11641,10 +10983,10 @@ export class ZPP_Space {
           }
           arb3.stat = stat;
         } else if (xarb1.colarb == null) {
-          let b5 = null;
+          const b5 = null;
           xarb1.cleared = true;
           if (b5 == null || xarb1.b2 == b5) {
-            let _this23 = xarb1.b1.arbiters;
+            const _this23 = xarb1.b1.arbiters;
             let pre2 = null;
             let cur4 = _this23.head;
             let ret29 = false;
@@ -11667,7 +11009,7 @@ export class ZPP_Space {
                     _this23.pushmod = true;
                   }
                 }
-                let o13 = old2;
+                const o13 = old2;
                 o13.elt = null;
                 o13.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o13;
@@ -11682,7 +11024,7 @@ export class ZPP_Space {
             }
           }
           if (b5 == null || xarb1.b1 == b5) {
-            let _this24 = xarb1.b2.arbiters;
+            const _this24 = xarb1.b2.arbiters;
             let pre3 = null;
             let cur5 = _this24.head;
             let ret31 = false;
@@ -11705,7 +11047,7 @@ export class ZPP_Space {
                     _this24.pushmod = true;
                   }
                 }
-                let o14 = old3;
+                const o14 = old3;
                 o14.elt = null;
                 o14.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o14;
@@ -11742,26 +11084,24 @@ export class ZPP_Space {
           if (arb3.stat != stat) {
             arb3.stat = stat;
             if (!arb3.sleeping) {
-              (stat ? this.c_arbiters_false : this.c_arbiters_true).remove(
-                arb3
-              );
+              (stat ? this.c_arbiters_false : this.c_arbiters_true).remove(arb3);
               carbs.add(arb3);
             }
           }
         }
-        let inttype1 = 1;
+        const inttype1 = 1;
         if (first1 || arb3.stamp != this.stamp || continuous) {
           arb3.stamp = this.stamp;
           if (ZPP_Collide.contactCollide(sa, sb, arb3, reverse)) {
             if (first1) {
-              let di1 = sb.id;
+              const di1 = sb.id;
               arb3.b1 = s1.body;
               arb3.ws1 = s1;
               arb3.b2 = s2.body;
               arb3.ws2 = s2;
               arb3.id = sa.id;
               arb3.di = di1;
-              let _this25 = arb3.b1.arbiters;
+              const _this25 = arb3.b1.arbiters;
               let ret33;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                 ret33 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -11771,12 +11111,12 @@ export class ZPP_Space {
                 ret33.next = null;
               }
               ret33.elt = arb3;
-              let temp11 = ret33;
+              const temp11 = ret33;
               temp11.next = _this25.head;
               _this25.head = temp11;
               _this25.modified = true;
               _this25.length++;
-              let _this26 = arb3.b2.arbiters;
+              const _this26 = arb3.b2.arbiters;
               let ret34;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                 ret34 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -11786,7 +11126,7 @@ export class ZPP_Space {
                 ret34.next = null;
               }
               ret34.elt = arb3;
-              let temp12 = ret34;
+              const temp12 = ret34;
               temp12.next = _this26.head;
               _this26.head = temp12;
               _this26.modified = true;
@@ -11812,9 +11152,7 @@ export class ZPP_Space {
                   arb3.restitution = 1;
                 } else {
                   arb3.restitution =
-                    (arb3.s1.material.elasticity +
-                      arb3.s2.material.elasticity) /
-                    2;
+                    (arb3.s1.material.elasticity + arb3.s2.material.elasticity) / 2;
                 }
                 if (arb3.restitution < 0) {
                   arb3.restitution = 0;
@@ -11825,20 +11163,17 @@ export class ZPP_Space {
               }
               if (!arb3.userdef_dyn_fric) {
                 arb3.dyn_fric = Math.sqrt(
-                  arb3.s1.material.dynamicFriction *
-                    arb3.s2.material.dynamicFriction
+                  arb3.s1.material.dynamicFriction * arb3.s2.material.dynamicFriction,
                 );
               }
               if (!arb3.userdef_stat_fric) {
                 arb3.stat_fric = Math.sqrt(
-                  arb3.s1.material.staticFriction *
-                    arb3.s2.material.staticFriction
+                  arb3.s1.material.staticFriction * arb3.s2.material.staticFriction,
                 );
               }
               if (!arb3.userdef_rfric) {
                 arb3.rfric = Math.sqrt(
-                  arb3.s1.material.rollingFriction *
-                    arb3.s2.material.rollingFriction
+                  arb3.s1.material.rollingFriction * arb3.s2.material.rollingFriction,
                 );
               }
               let ret35;
@@ -11850,7 +11185,7 @@ export class ZPP_Space {
                 ret35.next = null;
               }
               ret35.elt = arb3;
-              let temp13 = ret35;
+              const temp13 = ret35;
               temp13.next = carbs.head;
               carbs.head = temp13;
               carbs.modified = true;
@@ -11858,20 +11193,19 @@ export class ZPP_Space {
               arb3.fresh = !swapped1;
             } else {
               arb3.fresh =
-                arb3.up_stamp < this.stamp - 1 ||
-                (arb3.endGenerated == this.stamp && continuous);
+                arb3.up_stamp < this.stamp - 1 || (arb3.endGenerated == this.stamp && continuous);
             }
             arb3.up_stamp = arb3.stamp;
             if (arb3.fresh || (arb3.immState & 4) == 0) {
               arb3.immState = 1;
               let anyimpure1 = false;
-              let arbs11 = arb3.ws1.id > arb3.ws2.id ? arb3.ws2 : arb3.ws1;
-              let arbs21 = arb3.ws1.id > arb3.ws2.id ? arb3.ws1 : arb3.ws2;
-              let _this27 = this.mrca1;
+              const arbs11 = arb3.ws1.id > arb3.ws2.id ? arb3.ws2 : arb3.ws1;
+              const arbs21 = arb3.ws1.id > arb3.ws2.id ? arb3.ws1 : arb3.ws2;
+              const _this27 = this.mrca1;
               while (_this27.head != null) {
-                let ret36 = _this27.head;
+                const ret36 = _this27.head;
                 _this27.head = ret36.next;
-                let o15 = ret36;
+                const o15 = ret36;
                 o15.elt = null;
                 o15.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o15;
@@ -11882,11 +11216,11 @@ export class ZPP_Space {
                 _this27.length--;
               }
               _this27.pushmod = true;
-              let _this28 = this.mrca2;
+              const _this28 = this.mrca2;
               while (_this28.head != null) {
-                let ret37 = _this28.head;
+                const ret37 = _this28.head;
                 _this28.head = ret37.next;
-                let o16 = ret37;
+                const o16 = ret37;
                 o16.elt = null;
                 o16.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o16;
@@ -11898,7 +11232,7 @@ export class ZPP_Space {
               }
               _this28.pushmod = true;
               if (arbs11.cbSet != null) {
-                let _this29 = this.mrca1;
+                const _this29 = this.mrca1;
                 let ret38;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret38 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11908,15 +11242,15 @@ export class ZPP_Space {
                   ret38.next = null;
                 }
                 ret38.elt = arbs11;
-                let temp14 = ret38;
+                const temp14 = ret38;
                 temp14.next = _this29.head;
                 _this29.head = temp14;
                 _this29.modified = true;
                 _this29.length++;
               }
               if (arbs11.body.cbSet != null) {
-                let _this30 = this.mrca1;
-                let o17 = arbs11.body;
+                const _this30 = this.mrca1;
+                const o17 = arbs11.body;
                 let ret39;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret39 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11926,14 +11260,14 @@ export class ZPP_Space {
                   ret39.next = null;
                 }
                 ret39.elt = o17;
-                let temp15 = ret39;
+                const temp15 = ret39;
                 temp15.next = _this30.head;
                 _this30.head = temp15;
                 _this30.modified = true;
                 _this30.length++;
               }
               if (arbs21.cbSet != null) {
-                let _this31 = this.mrca2;
+                const _this31 = this.mrca2;
                 let ret40;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret40 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11943,15 +11277,15 @@ export class ZPP_Space {
                   ret40.next = null;
                 }
                 ret40.elt = arbs21;
-                let temp16 = ret40;
+                const temp16 = ret40;
                 temp16.next = _this31.head;
                 _this31.head = temp16;
                 _this31.modified = true;
                 _this31.length++;
               }
               if (arbs21.body.cbSet != null) {
-                let _this32 = this.mrca2;
-                let o18 = arbs21.body;
+                const _this32 = this.mrca2;
+                const o18 = arbs21.body;
                 let ret41;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret41 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -11961,7 +11295,7 @@ export class ZPP_Space {
                   ret41.next = null;
                 }
                 ret41.elt = o18;
-                let temp17 = ret41;
+                const temp17 = ret41;
                 temp17.next = _this32.head;
                 _this32.head = temp17;
                 _this32.modified = true;
@@ -11970,22 +11304,21 @@ export class ZPP_Space {
               let c11 = arbs11.body.compound;
               let c21 = arbs21.body.compound;
               while (c11 != c21) {
-                let d11 = c11 == null ? 0 : c11.depth;
-                let d21 = c21 == null ? 0 : c21.depth;
+                const d11 = c11 == null ? 0 : c11.depth;
+                const d21 = c21 == null ? 0 : c21.depth;
                 if (d11 < d21) {
                   if (c21.cbSet != null) {
-                    let _this33 = this.mrca2;
+                    const _this33 = this.mrca2;
                     let ret42;
                     if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                       ret42 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
                     } else {
                       ret42 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool =
-                        ret42.next;
+                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret42.next;
                       ret42.next = null;
                     }
                     ret42.elt = c21;
-                    let temp18 = ret42;
+                    const temp18 = ret42;
                     temp18.next = _this33.head;
                     _this33.head = temp18;
                     _this33.modified = true;
@@ -11994,18 +11327,17 @@ export class ZPP_Space {
                   c21 = c21.compound;
                 } else {
                   if (c11.cbSet != null) {
-                    let _this34 = this.mrca1;
+                    const _this34 = this.mrca1;
                     let ret43;
                     if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                       ret43 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
                     } else {
                       ret43 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool =
-                        ret43.next;
+                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret43.next;
                       ret43.next = null;
                     }
                     ret43.elt = c11;
-                    let temp19 = ret43;
+                    const temp19 = ret43;
                     temp19.next = _this34.head;
                     _this34.head = temp19;
                     _this34.modified = true;
@@ -12016,25 +11348,20 @@ export class ZPP_Space {
               }
               let cx_ite11 = this.mrca1.head;
               while (cx_ite11 != null) {
-                let i11 = cx_ite11.elt;
+                const i11 = cx_ite11.elt;
                 let cx_ite12 = this.mrca2.head;
                 while (cx_ite12 != null) {
-                  let i21 = cx_ite12.elt;
-                  let cb11 = i11.cbSet;
-                  let cb21 = i21.cbSet;
-                  let _this35 = cb11.manager;
+                  const i21 = cx_ite12.elt;
+                  const cb11 = i11.cbSet;
+                  const cb21 = i21.cbSet;
+                  const _this35 = cb11.manager;
                   let ret44 = null;
-                  let pairs2 =
-                    cb11.cbpairs.length < cb21.cbpairs.length
-                      ? cb11.cbpairs
-                      : cb21.cbpairs;
+                  const pairs2 =
+                    cb11.cbpairs.length < cb21.cbpairs.length ? cb11.cbpairs : cb21.cbpairs;
                   let cx_ite13 = pairs2.head;
                   while (cx_ite13 != null) {
-                    let p2 = cx_ite13.elt;
-                    if (
-                      (p2.a == cb11 && p2.b == cb21) ||
-                      (p2.a == cb21 && p2.b == cb11)
-                    ) {
+                    const p2 = cx_ite13.elt;
+                    if ((p2.a == cb11 && p2.b == cb21) || (p2.a == cb21 && p2.b == cb11)) {
                       ret44 = p2;
                       break;
                     }
@@ -12073,16 +11400,14 @@ export class ZPP_Space {
                   }
                   let callbackset1 = null;
                   let ncallbackset1 = null;
-                  let _this36 = this.prelisteners;
+                  const _this36 = this.prelisteners;
                   while (_this36.head != null) {
-                    let ret46 = _this36.head;
+                    const ret46 = _this36.head;
                     _this36.head = ret46.next;
-                    let o19 = ret46;
+                    const o19 = ret46;
                     o19.elt = null;
-                    o19.next =
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool =
-                      o19;
+                    o19.next = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
+                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = o19;
                     if (_this36.head == null) {
                       _this36.pushmod = true;
                     }
@@ -12091,19 +11416,14 @@ export class ZPP_Space {
                   }
                   _this36.pushmod = true;
                   let lite1 = null;
-                  let _this37 = cb11.manager;
+                  const _this37 = cb11.manager;
                   let ret47 = null;
-                  let pairs3 =
-                    cb11.cbpairs.length < cb21.cbpairs.length
-                      ? cb11.cbpairs
-                      : cb21.cbpairs;
+                  const pairs3 =
+                    cb11.cbpairs.length < cb21.cbpairs.length ? cb11.cbpairs : cb21.cbpairs;
                   let cx_ite14 = pairs3.head;
                   while (cx_ite14 != null) {
-                    let p3 = cx_ite14.elt;
-                    if (
-                      (p3.a == cb11 && p3.b == cb21) ||
-                      (p3.a == cb21 && p3.b == cb11)
-                    ) {
+                    const p3 = cx_ite14.elt;
+                    if ((p3.a == cb11 && p3.b == cb21) || (p3.a == cb21 && p3.b == cb11)) {
                       ret47 = p3;
                       break;
                     }
@@ -12138,27 +11458,20 @@ export class ZPP_Space {
                   }
                   let cx_ite15 = ret47.listeners.head;
                   while (cx_ite15 != null) {
-                    let x4 = cx_ite15.elt;
+                    const x4 = cx_ite15.elt;
                     if (x4.event == 5) {
                       if ((x4.itype & inttype1) != 0) {
-                        let _this38 = _gthis.prelisteners;
+                        const _this38 = _gthis.prelisteners;
                         let ret49;
-                        if (
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener
-                            .zpp_pool == null
-                        ) {
-                          ret49 =
-                            new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
+                        if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                          ret49 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
                         } else {
-                          ret49 =
-                            ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener
-                              .zpp_pool;
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool =
-                            ret49.next;
+                          ret49 = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
+                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret49.next;
                           ret49.next = null;
                         }
                         ret49.elt = x4;
-                        let temp20 = ret49;
+                        const temp20 = ret49;
                         if (lite1 == null) {
                           temp20.next = _this38.head;
                           _this38.head = temp20;
@@ -12180,16 +11493,12 @@ export class ZPP_Space {
                   }
                   callbackset1 = ZPP_Space._zpp.phys.ZPP_Interactor.get(i11, i21);
                   if (callbackset1 == null) {
-                    ncallbackset1 = ZPP_CallbackSet.get(
-                      i11,
-                      i21
-                    );
+                    ncallbackset1 = ZPP_CallbackSet.get(i11, i21);
                     this.add_callbackset(ncallbackset1);
                   }
                   if (
                     callbackset1 == null ||
-                    ((callbackset1.COLLISIONstamp != this.stamp ||
-                      continuous) &&
+                    ((callbackset1.COLLISIONstamp != this.stamp || continuous) &&
                       (callbackset1.COLLISIONstate & 4) == 0)
                   ) {
                     if (ncallbackset1 != null) {
@@ -12198,7 +11507,7 @@ export class ZPP_Space {
                     if (callbackset1 != null) {
                       let cx_ite16 = this.prelisteners.head;
                       while (cx_ite16 != null) {
-                        let listener3 = cx_ite16.elt;
+                        const listener3 = cx_ite16.elt;
                         if (listener3.itype == 7) {
                           callbackset1.COLLISIONstamp = this.stamp;
                           callbackset1.SENSORstamp = this.stamp;
@@ -12216,9 +11525,9 @@ export class ZPP_Space {
                     if (arb3.wrap_contacts != null) {
                       arb3.wrap_contacts.zpp_inner.immutable = false;
                     }
-                    let pact1 = arb3.active;
+                    const pact1 = arb3.active;
                     arb3.active = true;
-                    let emptycontacts1 = false;
+                    const emptycontacts1 = false;
                     let fst = true;
                     let pre4 = null;
                     let prei = null;
@@ -12226,12 +11535,9 @@ export class ZPP_Space {
                     arb3.hc2 = false;
                     let cx_ite17 = arb3.contacts.next;
                     while (cx_ite17 != null) {
-                      let c = cx_ite17;
-                      if (
-                        c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay <
-                        arb3.stamp
-                      ) {
-                        let _this39 = arb3.contacts;
+                      const c = cx_ite17;
+                      if (c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < arb3.stamp) {
+                        const _this39 = arb3.contacts;
                         let old4;
                         let ret50;
                         if (pre4 == null) {
@@ -12254,7 +11560,7 @@ export class ZPP_Space {
                         _this39.length--;
                         _this39.pushmod = true;
                         cx_ite17 = ret50;
-                        let _this40 = arb3.innards;
+                        const _this40 = arb3.innards;
                         let old5;
                         let ret51;
                         if (prei == null) {
@@ -12277,14 +11583,14 @@ export class ZPP_Space {
                         _this40.length--;
                         _this40.pushmod = true;
                         cx_itei = ret51;
-                        let o20 = c;
+                        const o20 = c;
                         o20.arbiter = null;
                         o20.next = ZPP_Contact.zpp_pool;
                         ZPP_Contact.zpp_pool = o20;
                         continue;
                       }
-                      let ci = c.inner;
-                      let pact2 = c.active;
+                      const ci = c.inner;
+                      const pact2 = c.active;
                       c.active = c.stamp == arb3.stamp;
                       if (c.active) {
                         if (fst) {
@@ -12308,10 +11614,10 @@ export class ZPP_Space {
                     if (arb3.hc2) {
                       arb3.hpc2 = true;
                       if (arb3.oc1.posOnly) {
-                        let tmp = arb3.c1;
+                        const tmp = arb3.c1;
                         arb3.c1 = arb3.c2;
                         arb3.c2 = tmp;
-                        let tmp2 = arb3.oc1;
+                        const tmp2 = arb3.oc1;
                         arb3.oc1 = arb3.oc2;
                         arb3.oc2 = tmp2;
                         arb3.hc2 = false;
@@ -12328,20 +11634,20 @@ export class ZPP_Space {
                     this.precb.zpp_inner.set = callbackset1;
                     let cx_ite18 = this.prelisteners.head;
                     while (cx_ite18 != null) {
-                      let listener4 = cx_ite18.elt;
+                      const listener4 = cx_ite18.elt;
                       this.precb.zpp_inner.listener = listener4;
-                      let cb3 = this.precb.zpp_inner;
-                      let o110 = callbackset1.int1;
-                      let o22 = callbackset1.int2;
+                      const cb3 = this.precb.zpp_inner;
+                      const o110 = callbackset1.int1;
+                      const o22 = callbackset1.int2;
                       let ret52;
-                      let _this41 = listener4.options1;
-                      let xs2 = o110.cbTypes;
+                      const _this41 = listener4.options1;
+                      const xs2 = o110.cbTypes;
                       if (
                         _this41.nonemptyintersection(xs2, _this41.includes) &&
                         !_this41.nonemptyintersection(xs2, _this41.excludes)
                       ) {
-                        let _this42 = listener4.options2;
-                        let xs3 = o22.cbTypes;
+                        const _this42 = listener4.options2;
+                        const xs3 = o22.cbTypes;
                         ret52 =
                           _this42.nonemptyintersection(xs3, _this42.includes) &&
                           !_this42.nonemptyintersection(xs3, _this42.excludes);
@@ -12355,45 +11661,32 @@ export class ZPP_Space {
                         cb3.int1 = o22;
                         cb3.int2 = o110;
                       }
-                      this.precb.zpp_inner.pre_swapped =
-                        i11 != this.precb.zpp_inner.int1;
-                      let ret53 = listener4.handlerp(this.precb);
+                      this.precb.zpp_inner.pre_swapped = i11 != this.precb.zpp_inner.int1;
+                      const ret53 = listener4.handlerp(this.precb);
                       if (ret53 != null) {
                         let ret54;
                         if (ZPP_Flags.PreFlag_ACCEPT == null) {
                           ZPP_Flags.internal = true;
-                          ZPP_Flags.PreFlag_ACCEPT =
-                            new ZPP_Space._nape.callbacks.PreFlag();
+                          ZPP_Flags.PreFlag_ACCEPT = new ZPP_Space._nape.callbacks.PreFlag();
                           ZPP_Flags.internal = false;
                         }
                         if (ret53 == ZPP_Flags.PreFlag_ACCEPT) {
                           ret54 = 5;
                         } else {
-                          if (
-                            ZPP_Flags.PreFlag_ACCEPT_ONCE == null
-                          ) {
+                          if (ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
                             ZPP_Flags.internal = true;
-                            ZPP_Flags.PreFlag_ACCEPT_ONCE =
-                              new ZPP_Space._nape.callbacks.PreFlag();
+                            ZPP_Flags.PreFlag_ACCEPT_ONCE = new ZPP_Space._nape.callbacks.PreFlag();
                             ZPP_Flags.internal = false;
                           }
-                          if (
-                            ret53 == ZPP_Flags.PreFlag_ACCEPT_ONCE
-                          ) {
+                          if (ret53 == ZPP_Flags.PreFlag_ACCEPT_ONCE) {
                             ret54 = 1;
                           } else {
-                            if (
-                              ZPP_Flags.PreFlag_IGNORE == null
-                            ) {
+                            if (ZPP_Flags.PreFlag_IGNORE == null) {
                               ZPP_Flags.internal = true;
-                              ZPP_Flags.PreFlag_IGNORE =
-                                new ZPP_Space._nape.callbacks.PreFlag();
+                              ZPP_Flags.PreFlag_IGNORE = new ZPP_Space._nape.callbacks.PreFlag();
                               ZPP_Flags.internal = false;
                             }
-                            ret54 =
-                              ret53 == ZPP_Flags.PreFlag_IGNORE
-                                ? 6
-                                : 2;
+                            ret54 = ret53 == ZPP_Flags.PreFlag_IGNORE ? 6 : 2;
                           }
                         }
                         arb3.immState = ret54;
@@ -12411,7 +11704,7 @@ export class ZPP_Space {
                     if (callbackset1 != null) {
                       let cx_ite19 = this.prelisteners.head;
                       while (cx_ite19 != null) {
-                        let listener5 = cx_ite19.elt;
+                        const listener5 = cx_ite19.elt;
                         if (listener5.itype == 7) {
                           callbackset1.COLLISIONstate = arb3.immState;
                           callbackset1.SENSORstate = arb3.immState;
@@ -12435,7 +11728,7 @@ export class ZPP_Space {
               }
               if (anyimpure1 && (arb3.immState & 4) == 0) {
                 if (arb3.b1.type == 2) {
-                  let o23 = arb3.b1;
+                  const o23 = arb3.b1;
                   if (!o23.world) {
                     o23.component.waket = this.stamp + (this.midstep ? 0 : 1);
                     if (o23.type == 3) {
@@ -12447,7 +11740,7 @@ export class ZPP_Space {
                   }
                 }
                 if (arb3.b1.type == 2) {
-                  let o24 = arb3.b2;
+                  const o24 = arb3.b2;
                   if (!o24.world) {
                     o24.component.waket = this.stamp + (this.midstep ? 0 : 1);
                     if (o24.type == 3) {
@@ -12462,7 +11755,7 @@ export class ZPP_Space {
             }
             if ((arb3.immState & 1) != 0) {
               if (arb3.b1.type == 2 && arb3.b1.component.sleeping) {
-                let o25 = arb3.b1;
+                const o25 = arb3.b1;
                 if (!o25.world) {
                   o25.component.waket = this.stamp + (this.midstep ? 0 : 1);
                   if (o25.type == 3) {
@@ -12474,7 +11767,7 @@ export class ZPP_Space {
                 }
               }
               if (arb3.b2.type == 2 && arb3.b2.component.sleeping) {
-                let o26 = arb3.b2;
+                const o26 = arb3.b2;
                 if (!o26.world) {
                   o26.component.waket = this.stamp + (this.midstep ? 0 : 1);
                   if (o26.type == 3) {
@@ -12497,7 +11790,7 @@ export class ZPP_Space {
                 ret55.next = null;
               }
               ret55.elt = arb3;
-              let temp21 = ret55;
+              const temp21 = ret55;
               temp21.next = carbs.head;
               carbs.head = temp21;
               carbs.modified = true;
@@ -12505,7 +11798,7 @@ export class ZPP_Space {
             }
             ret = arb3;
           } else if (first1) {
-            let o27 = arb3;
+            const o27 = arb3;
             o27.userdef_dyn_fric = false;
             o27.userdef_stat_fric = false;
             o27.userdef_restitution = false;
@@ -12524,10 +11817,10 @@ export class ZPP_Space {
         let xarb2;
         if (in_arb == null) {
           let ret56 = null;
-          let b6 = b1.arbiters.length < b2.arbiters.length ? b1 : b2;
+          const b6 = b1.arbiters.length < b2.arbiters.length ? b1 : b2;
           let cx_ite20 = b6.arbiters.head;
           while (cx_ite20 != null) {
-            let arb4 = cx_ite20.elt;
+            const arb4 = cx_ite20.elt;
             if (arb4.id == sa.id && arb4.di == sb.id) {
               ret56 = arb4;
               break;
@@ -12550,10 +11843,10 @@ export class ZPP_Space {
             arb5.next = null;
           }
         } else if (xarb2.sensorarb == null) {
-          let b7 = null;
+          const b7 = null;
           xarb2.cleared = true;
           if (b7 == null || xarb2.b2 == b7) {
-            let _this43 = xarb2.b1.arbiters;
+            const _this43 = xarb2.b1.arbiters;
             let pre5 = null;
             let cur6 = _this43.head;
             let ret57 = false;
@@ -12576,7 +11869,7 @@ export class ZPP_Space {
                     _this43.pushmod = true;
                   }
                 }
-                let o28 = old6;
+                const o28 = old6;
                 o28.elt = null;
                 o28.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o28;
@@ -12591,7 +11884,7 @@ export class ZPP_Space {
             }
           }
           if (b7 == null || xarb2.b1 == b7) {
-            let _this44 = xarb2.b2.arbiters;
+            const _this44 = xarb2.b2.arbiters;
             let pre6 = null;
             let cur7 = _this44.head;
             let ret59 = false;
@@ -12614,7 +11907,7 @@ export class ZPP_Space {
                     _this44.pushmod = true;
                   }
                 }
-                let o29 = old7;
+                const o29 = old7;
                 o29.elt = null;
                 o29.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o29;
@@ -12647,19 +11940,19 @@ export class ZPP_Space {
         } else {
           arb5 = xarb2.sensorarb;
         }
-        let inttype2 = 2;
+        const inttype2 = 2;
         if (first2 || arb5.stamp != this.stamp || continuous) {
           arb5.stamp = this.stamp;
           if (ZPP_Collide.testCollide(sa, sb)) {
             if (first2) {
-              let di2 = sb.id;
+              const di2 = sb.id;
               arb5.b1 = s1.body;
               arb5.ws1 = s1;
               arb5.b2 = s2.body;
               arb5.ws2 = s2;
               arb5.id = sa.id;
               arb5.di = di2;
-              let _this45 = arb5.b1.arbiters;
+              const _this45 = arb5.b1.arbiters;
               let ret61;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                 ret61 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -12669,12 +11962,12 @@ export class ZPP_Space {
                 ret61.next = null;
               }
               ret61.elt = arb5;
-              let temp22 = ret61;
+              const temp22 = ret61;
               temp22.next = _this45.head;
               _this45.head = temp22;
               _this45.modified = true;
               _this45.length++;
-              let _this46 = arb5.b2.arbiters;
+              const _this46 = arb5.b2.arbiters;
               let ret62;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
                 ret62 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
@@ -12684,7 +11977,7 @@ export class ZPP_Space {
                 ret62.next = null;
               }
               ret62.elt = arb5;
-              let temp23 = ret62;
+              const temp23 = ret62;
               temp23.next = _this46.head;
               _this46.head = temp23;
               _this46.modified = true;
@@ -12695,7 +11988,7 @@ export class ZPP_Space {
               arb5.sleeping = false;
               arb5.fresh = false;
               arb5.presentable = false;
-              let _this47 = this.s_arbiters;
+              const _this47 = this.s_arbiters;
               let ret63;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
                 ret63 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
@@ -12705,7 +11998,7 @@ export class ZPP_Space {
                 ret63.next = null;
               }
               ret63.elt = arb5;
-              let temp24 = ret63;
+              const temp24 = ret63;
               temp24.next = _this47.head;
               _this47.head = temp24;
               _this47.modified = true;
@@ -12713,20 +12006,19 @@ export class ZPP_Space {
               arb5.fresh = !swapped2;
             } else {
               arb5.fresh =
-                arb5.up_stamp < this.stamp - 1 ||
-                (arb5.endGenerated == this.stamp && continuous);
+                arb5.up_stamp < this.stamp - 1 || (arb5.endGenerated == this.stamp && continuous);
             }
             arb5.up_stamp = arb5.stamp;
             if (arb5.fresh || (arb5.immState & 4) == 0) {
               arb5.immState = 1;
               let anyimpure2 = false;
-              let arbs12 = arb5.ws1.id > arb5.ws2.id ? arb5.ws2 : arb5.ws1;
-              let arbs22 = arb5.ws1.id > arb5.ws2.id ? arb5.ws1 : arb5.ws2;
-              let _this48 = this.mrca1;
+              const arbs12 = arb5.ws1.id > arb5.ws2.id ? arb5.ws2 : arb5.ws1;
+              const arbs22 = arb5.ws1.id > arb5.ws2.id ? arb5.ws1 : arb5.ws2;
+              const _this48 = this.mrca1;
               while (_this48.head != null) {
-                let ret64 = _this48.head;
+                const ret64 = _this48.head;
                 _this48.head = ret64.next;
-                let o30 = ret64;
+                const o30 = ret64;
                 o30.elt = null;
                 o30.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o30;
@@ -12737,11 +12029,11 @@ export class ZPP_Space {
                 _this48.length--;
               }
               _this48.pushmod = true;
-              let _this49 = this.mrca2;
+              const _this49 = this.mrca2;
               while (_this49.head != null) {
-                let ret65 = _this49.head;
+                const ret65 = _this49.head;
                 _this49.head = ret65.next;
-                let o31 = ret65;
+                const o31 = ret65;
                 o31.elt = null;
                 o31.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
                 ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o31;
@@ -12753,7 +12045,7 @@ export class ZPP_Space {
               }
               _this49.pushmod = true;
               if (arbs12.cbSet != null) {
-                let _this50 = this.mrca1;
+                const _this50 = this.mrca1;
                 let ret66;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret66 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -12763,15 +12055,15 @@ export class ZPP_Space {
                   ret66.next = null;
                 }
                 ret66.elt = arbs12;
-                let temp25 = ret66;
+                const temp25 = ret66;
                 temp25.next = _this50.head;
                 _this50.head = temp25;
                 _this50.modified = true;
                 _this50.length++;
               }
               if (arbs12.body.cbSet != null) {
-                let _this51 = this.mrca1;
-                let o32 = arbs12.body;
+                const _this51 = this.mrca1;
+                const o32 = arbs12.body;
                 let ret67;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret67 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -12781,14 +12073,14 @@ export class ZPP_Space {
                   ret67.next = null;
                 }
                 ret67.elt = o32;
-                let temp26 = ret67;
+                const temp26 = ret67;
                 temp26.next = _this51.head;
                 _this51.head = temp26;
                 _this51.modified = true;
                 _this51.length++;
               }
               if (arbs22.cbSet != null) {
-                let _this52 = this.mrca2;
+                const _this52 = this.mrca2;
                 let ret68;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret68 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -12798,15 +12090,15 @@ export class ZPP_Space {
                   ret68.next = null;
                 }
                 ret68.elt = arbs22;
-                let temp27 = ret68;
+                const temp27 = ret68;
                 temp27.next = _this52.head;
                 _this52.head = temp27;
                 _this52.modified = true;
                 _this52.length++;
               }
               if (arbs22.body.cbSet != null) {
-                let _this53 = this.mrca2;
-                let o33 = arbs22.body;
+                const _this53 = this.mrca2;
+                const o33 = arbs22.body;
                 let ret69;
                 if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                   ret69 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -12816,7 +12108,7 @@ export class ZPP_Space {
                   ret69.next = null;
                 }
                 ret69.elt = o33;
-                let temp28 = ret69;
+                const temp28 = ret69;
                 temp28.next = _this53.head;
                 _this53.head = temp28;
                 _this53.modified = true;
@@ -12825,22 +12117,21 @@ export class ZPP_Space {
               let c12 = arbs12.body.compound;
               let c22 = arbs22.body.compound;
               while (c12 != c22) {
-                let d12 = c12 == null ? 0 : c12.depth;
-                let d22 = c22 == null ? 0 : c22.depth;
+                const d12 = c12 == null ? 0 : c12.depth;
+                const d22 = c22 == null ? 0 : c22.depth;
                 if (d12 < d22) {
                   if (c22.cbSet != null) {
-                    let _this54 = this.mrca2;
+                    const _this54 = this.mrca2;
                     let ret70;
                     if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                       ret70 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
                     } else {
                       ret70 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool =
-                        ret70.next;
+                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret70.next;
                       ret70.next = null;
                     }
                     ret70.elt = c22;
-                    let temp29 = ret70;
+                    const temp29 = ret70;
                     temp29.next = _this54.head;
                     _this54.head = temp29;
                     _this54.modified = true;
@@ -12849,18 +12140,17 @@ export class ZPP_Space {
                   c22 = c22.compound;
                 } else {
                   if (c12.cbSet != null) {
-                    let _this55 = this.mrca1;
+                    const _this55 = this.mrca1;
                     let ret71;
                     if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
                       ret71 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
                     } else {
                       ret71 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool =
-                        ret71.next;
+                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret71.next;
                       ret71.next = null;
                     }
                     ret71.elt = c12;
-                    let temp30 = ret71;
+                    const temp30 = ret71;
                     temp30.next = _this55.head;
                     _this55.head = temp30;
                     _this55.modified = true;
@@ -12871,25 +12161,20 @@ export class ZPP_Space {
               }
               let cx_ite21 = this.mrca1.head;
               while (cx_ite21 != null) {
-                let i12 = cx_ite21.elt;
+                const i12 = cx_ite21.elt;
                 let cx_ite22 = this.mrca2.head;
                 while (cx_ite22 != null) {
-                  let i22 = cx_ite22.elt;
-                  let cb12 = i12.cbSet;
-                  let cb22 = i22.cbSet;
-                  let _this56 = cb12.manager;
+                  const i22 = cx_ite22.elt;
+                  const cb12 = i12.cbSet;
+                  const cb22 = i22.cbSet;
+                  const _this56 = cb12.manager;
                   let ret72 = null;
-                  let pairs4 =
-                    cb12.cbpairs.length < cb22.cbpairs.length
-                      ? cb12.cbpairs
-                      : cb22.cbpairs;
+                  const pairs4 =
+                    cb12.cbpairs.length < cb22.cbpairs.length ? cb12.cbpairs : cb22.cbpairs;
                   let cx_ite23 = pairs4.head;
                   while (cx_ite23 != null) {
-                    let p4 = cx_ite23.elt;
-                    if (
-                      (p4.a == cb12 && p4.b == cb22) ||
-                      (p4.a == cb22 && p4.b == cb12)
-                    ) {
+                    const p4 = cx_ite23.elt;
+                    if ((p4.a == cb12 && p4.b == cb22) || (p4.a == cb22 && p4.b == cb12)) {
                       ret72 = p4;
                       break;
                     }
@@ -12928,16 +12213,14 @@ export class ZPP_Space {
                   }
                   let callbackset2 = null;
                   let ncallbackset2 = null;
-                  let _this57 = this.prelisteners;
+                  const _this57 = this.prelisteners;
                   while (_this57.head != null) {
-                    let ret74 = _this57.head;
+                    const ret74 = _this57.head;
                     _this57.head = ret74.next;
-                    let o34 = ret74;
+                    const o34 = ret74;
                     o34.elt = null;
-                    o34.next =
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool =
-                      o34;
+                    o34.next = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
+                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = o34;
                     if (_this57.head == null) {
                       _this57.pushmod = true;
                     }
@@ -12946,19 +12229,14 @@ export class ZPP_Space {
                   }
                   _this57.pushmod = true;
                   let lite2 = null;
-                  let _this58 = cb12.manager;
+                  const _this58 = cb12.manager;
                   let ret75 = null;
-                  let pairs5 =
-                    cb12.cbpairs.length < cb22.cbpairs.length
-                      ? cb12.cbpairs
-                      : cb22.cbpairs;
+                  const pairs5 =
+                    cb12.cbpairs.length < cb22.cbpairs.length ? cb12.cbpairs : cb22.cbpairs;
                   let cx_ite24 = pairs5.head;
                   while (cx_ite24 != null) {
-                    let p5 = cx_ite24.elt;
-                    if (
-                      (p5.a == cb12 && p5.b == cb22) ||
-                      (p5.a == cb22 && p5.b == cb12)
-                    ) {
+                    const p5 = cx_ite24.elt;
+                    if ((p5.a == cb12 && p5.b == cb22) || (p5.a == cb22 && p5.b == cb12)) {
                       ret75 = p5;
                       break;
                     }
@@ -12993,27 +12271,20 @@ export class ZPP_Space {
                   }
                   let cx_ite25 = ret75.listeners.head;
                   while (cx_ite25 != null) {
-                    let x5 = cx_ite25.elt;
+                    const x5 = cx_ite25.elt;
                     if (x5.event == 5) {
                       if ((x5.itype & inttype2) != 0) {
-                        let _this59 = _gthis.prelisteners;
+                        const _this59 = _gthis.prelisteners;
                         let ret77;
-                        if (
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener
-                            .zpp_pool == null
-                        ) {
-                          ret77 =
-                            new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
+                        if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                          ret77 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
                         } else {
-                          ret77 =
-                            ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener
-                              .zpp_pool;
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool =
-                            ret77.next;
+                          ret77 = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
+                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret77.next;
                           ret77.next = null;
                         }
                         ret77.elt = x5;
-                        let temp31 = ret77;
+                        const temp31 = ret77;
                         if (lite2 == null) {
                           temp31.next = _this59.head;
                           _this59.head = temp31;
@@ -13035,10 +12306,7 @@ export class ZPP_Space {
                   }
                   callbackset2 = ZPP_Space._zpp.phys.ZPP_Interactor.get(i12, i22);
                   if (callbackset2 == null) {
-                    ncallbackset2 = ZPP_CallbackSet.get(
-                      i12,
-                      i22
-                    );
+                    ncallbackset2 = ZPP_CallbackSet.get(i12, i22);
                     this.add_callbackset(ncallbackset2);
                   }
                   if (
@@ -13052,7 +12320,7 @@ export class ZPP_Space {
                     if (callbackset2 != null) {
                       let cx_ite26 = this.prelisteners.head;
                       while (cx_ite26 != null) {
-                        let listener6 = cx_ite26.elt;
+                        const listener6 = cx_ite26.elt;
                         if (listener6.itype == 7) {
                           callbackset2.COLLISIONstamp = this.stamp;
                           callbackset2.SENSORstamp = this.stamp;
@@ -13063,27 +12331,27 @@ export class ZPP_Space {
                         cx_ite26 = cx_ite26.next;
                       }
                     }
-                    let pact3 = arb5.active;
+                    const pact3 = arb5.active;
                     arb5.active = true;
-                    let emptycontacts2 = false;
+                    const emptycontacts2 = false;
                     this.precb.zpp_inner.pre_arbiter = arb5;
                     this.precb.zpp_inner.set = callbackset2;
                     let cx_ite27 = this.prelisteners.head;
                     while (cx_ite27 != null) {
-                      let listener7 = cx_ite27.elt;
+                      const listener7 = cx_ite27.elt;
                       this.precb.zpp_inner.listener = listener7;
-                      let cb4 = this.precb.zpp_inner;
-                      let o111 = callbackset2.int1;
-                      let o210 = callbackset2.int2;
+                      const cb4 = this.precb.zpp_inner;
+                      const o111 = callbackset2.int1;
+                      const o210 = callbackset2.int2;
                       let ret78;
-                      let _this60 = listener7.options1;
-                      let xs4 = o111.cbTypes;
+                      const _this60 = listener7.options1;
+                      const xs4 = o111.cbTypes;
                       if (
                         _this60.nonemptyintersection(xs4, _this60.includes) &&
                         !_this60.nonemptyintersection(xs4, _this60.excludes)
                       ) {
-                        let _this61 = listener7.options2;
-                        let xs5 = o210.cbTypes;
+                        const _this61 = listener7.options2;
+                        const xs5 = o210.cbTypes;
                         ret78 =
                           _this61.nonemptyintersection(xs5, _this61.includes) &&
                           !_this61.nonemptyintersection(xs5, _this61.excludes);
@@ -13097,45 +12365,32 @@ export class ZPP_Space {
                         cb4.int1 = o210;
                         cb4.int2 = o111;
                       }
-                      this.precb.zpp_inner.pre_swapped =
-                        i12 != this.precb.zpp_inner.int1;
-                      let ret79 = listener7.handlerp(this.precb);
+                      this.precb.zpp_inner.pre_swapped = i12 != this.precb.zpp_inner.int1;
+                      const ret79 = listener7.handlerp(this.precb);
                       if (ret79 != null) {
                         let ret80;
                         if (ZPP_Flags.PreFlag_ACCEPT == null) {
                           ZPP_Flags.internal = true;
-                          ZPP_Flags.PreFlag_ACCEPT =
-                            new ZPP_Space._nape.callbacks.PreFlag();
+                          ZPP_Flags.PreFlag_ACCEPT = new ZPP_Space._nape.callbacks.PreFlag();
                           ZPP_Flags.internal = false;
                         }
                         if (ret79 == ZPP_Flags.PreFlag_ACCEPT) {
                           ret80 = 5;
                         } else {
-                          if (
-                            ZPP_Flags.PreFlag_ACCEPT_ONCE == null
-                          ) {
+                          if (ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
                             ZPP_Flags.internal = true;
-                            ZPP_Flags.PreFlag_ACCEPT_ONCE =
-                              new ZPP_Space._nape.callbacks.PreFlag();
+                            ZPP_Flags.PreFlag_ACCEPT_ONCE = new ZPP_Space._nape.callbacks.PreFlag();
                             ZPP_Flags.internal = false;
                           }
-                          if (
-                            ret79 == ZPP_Flags.PreFlag_ACCEPT_ONCE
-                          ) {
+                          if (ret79 == ZPP_Flags.PreFlag_ACCEPT_ONCE) {
                             ret80 = 1;
                           } else {
-                            if (
-                              ZPP_Flags.PreFlag_IGNORE == null
-                            ) {
+                            if (ZPP_Flags.PreFlag_IGNORE == null) {
                               ZPP_Flags.internal = true;
-                              ZPP_Flags.PreFlag_IGNORE =
-                                new ZPP_Space._nape.callbacks.PreFlag();
+                              ZPP_Flags.PreFlag_IGNORE = new ZPP_Space._nape.callbacks.PreFlag();
                               ZPP_Flags.internal = false;
                             }
-                            ret80 =
-                              ret79 == ZPP_Flags.PreFlag_IGNORE
-                                ? 6
-                                : 2;
+                            ret80 = ret79 == ZPP_Flags.PreFlag_IGNORE ? 6 : 2;
                           }
                         }
                         arb5.immState = ret80;
@@ -13146,7 +12401,7 @@ export class ZPP_Space {
                     if (callbackset2 != null) {
                       let cx_ite28 = this.prelisteners.head;
                       while (cx_ite28 != null) {
-                        let listener8 = cx_ite28.elt;
+                        const listener8 = cx_ite28.elt;
                         if (listener8.itype == 7) {
                           callbackset2.COLLISIONstate = arb5.immState;
                           callbackset2.SENSORstate = arb5.immState;
@@ -13170,7 +12425,7 @@ export class ZPP_Space {
               }
               if (anyimpure2 && (arb5.immState & 4) == 0) {
                 if (arb5.b1.type != 1) {
-                  let o35 = arb5.b1;
+                  const o35 = arb5.b1;
                   if (!o35.world) {
                     o35.component.waket = this.stamp + (this.midstep ? 0 : 1);
                     if (o35.type == 3) {
@@ -13182,7 +12437,7 @@ export class ZPP_Space {
                   }
                 }
                 if (arb5.b2.type != 1) {
-                  let o36 = arb5.b2;
+                  const o36 = arb5.b2;
                   if (!o36.world) {
                     o36.component.waket = this.stamp + (this.midstep ? 0 : 1);
                     if (o36.type == 3) {
@@ -13197,7 +12452,7 @@ export class ZPP_Space {
             }
             if (arb5.sleeping) {
               arb5.sleeping = false;
-              let _this62 = this.s_arbiters;
+              const _this62 = this.s_arbiters;
               let ret81;
               if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
                 ret81 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
@@ -13207,7 +12462,7 @@ export class ZPP_Space {
                 ret81.next = null;
               }
               ret81.elt = arb5;
-              let temp32 = ret81;
+              const temp32 = ret81;
               temp32.next = _this62.head;
               _this62.head = temp32;
               _this62.modified = true;
@@ -13215,7 +12470,7 @@ export class ZPP_Space {
             }
             ret = arb5;
           } else if (first2) {
-            let o37 = arb5;
+            const o37 = arb5;
             o37.next = ZPP_SensorArbiter.zpp_pool;
             ZPP_SensorArbiter.zpp_pool = o37;
             ret = null;
@@ -13231,11 +12486,11 @@ export class ZPP_Space {
   }
 
   MRCA_chains(s1, s2) {
-    let _this = this.mrca1;
+    const _this = this.mrca1;
     while (_this.head != null) {
-      let ret = _this.head;
+      const ret = _this.head;
       _this.head = ret.next;
-      let o = ret;
+      const o = ret;
       o.elt = null;
       o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
       ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o;
@@ -13246,11 +12501,11 @@ export class ZPP_Space {
       _this.length--;
     }
     _this.pushmod = true;
-    let _this1 = this.mrca2;
+    const _this1 = this.mrca2;
     while (_this1.head != null) {
-      let ret1 = _this1.head;
+      const ret1 = _this1.head;
       _this1.head = ret1.next;
-      let o1 = ret1;
+      const o1 = ret1;
       o1.elt = null;
       o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
       ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o1;
@@ -13262,7 +12517,7 @@ export class ZPP_Space {
     }
     _this1.pushmod = true;
     if (s1.cbSet != null) {
-      let _this2 = this.mrca1;
+      const _this2 = this.mrca1;
       let ret2;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13272,15 +12527,15 @@ export class ZPP_Space {
         ret2.next = null;
       }
       ret2.elt = s1;
-      let temp = ret2;
+      const temp = ret2;
       temp.next = _this2.head;
       _this2.head = temp;
       _this2.modified = true;
       _this2.length++;
     }
     if (s1.body.cbSet != null) {
-      let _this3 = this.mrca1;
-      let o2 = s1.body;
+      const _this3 = this.mrca1;
+      const o2 = s1.body;
       let ret3;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13290,14 +12545,14 @@ export class ZPP_Space {
         ret3.next = null;
       }
       ret3.elt = o2;
-      let temp1 = ret3;
+      const temp1 = ret3;
       temp1.next = _this3.head;
       _this3.head = temp1;
       _this3.modified = true;
       _this3.length++;
     }
     if (s2.cbSet != null) {
-      let _this4 = this.mrca2;
+      const _this4 = this.mrca2;
       let ret4;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13307,15 +12562,15 @@ export class ZPP_Space {
         ret4.next = null;
       }
       ret4.elt = s2;
-      let temp2 = ret4;
+      const temp2 = ret4;
       temp2.next = _this4.head;
       _this4.head = temp2;
       _this4.modified = true;
       _this4.length++;
     }
     if (s2.body.cbSet != null) {
-      let _this5 = this.mrca2;
-      let o3 = s2.body;
+      const _this5 = this.mrca2;
+      const o3 = s2.body;
       let ret5;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13325,7 +12580,7 @@ export class ZPP_Space {
         ret5.next = null;
       }
       ret5.elt = o3;
-      let temp3 = ret5;
+      const temp3 = ret5;
       temp3.next = _this5.head;
       _this5.head = temp3;
       _this5.modified = true;
@@ -13334,11 +12589,11 @@ export class ZPP_Space {
     let c1 = s1.body.compound;
     let c2 = s2.body.compound;
     while (c1 != c2) {
-      let d1 = c1 == null ? 0 : c1.depth;
-      let d2 = c2 == null ? 0 : c2.depth;
+      const d1 = c1 == null ? 0 : c1.depth;
+      const d2 = c2 == null ? 0 : c2.depth;
       if (d1 < d2) {
         if (c2.cbSet != null) {
-          let _this6 = this.mrca2;
+          const _this6 = this.mrca2;
           let ret6;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13348,7 +12603,7 @@ export class ZPP_Space {
             ret6.next = null;
           }
           ret6.elt = c2;
-          let temp4 = ret6;
+          const temp4 = ret6;
           temp4.next = _this6.head;
           _this6.head = temp4;
           _this6.modified = true;
@@ -13357,7 +12612,7 @@ export class ZPP_Space {
         c2 = c2.compound;
       } else {
         if (c1.cbSet != null) {
-          let _this7 = this.mrca1;
+          const _this7 = this.mrca1;
           let ret7;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13367,7 +12622,7 @@ export class ZPP_Space {
             ret7.next = null;
           }
           ret7.elt = c1;
-          let temp5 = ret7;
+          const temp5 = ret7;
           temp5.next = _this7.head;
           _this7.head = temp5;
           _this7.modified = true;
@@ -13379,11 +12634,11 @@ export class ZPP_Space {
   }
 
   inlined_MRCA_chains(s1, s2) {
-    let _this = this.mrca1;
+    const _this = this.mrca1;
     while (_this.head != null) {
-      let ret = _this.head;
+      const ret = _this.head;
       _this.head = ret.next;
-      let o = ret;
+      const o = ret;
       o.elt = null;
       o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
       ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o;
@@ -13394,11 +12649,11 @@ export class ZPP_Space {
       _this.length--;
     }
     _this.pushmod = true;
-    let _this1 = this.mrca2;
+    const _this1 = this.mrca2;
     while (_this1.head != null) {
-      let ret1 = _this1.head;
+      const ret1 = _this1.head;
       _this1.head = ret1.next;
-      let o1 = ret1;
+      const o1 = ret1;
       o1.elt = null;
       o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
       ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o1;
@@ -13410,7 +12665,7 @@ export class ZPP_Space {
     }
     _this1.pushmod = true;
     if (s1.cbSet != null) {
-      let _this2 = this.mrca1;
+      const _this2 = this.mrca1;
       let ret2;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13420,15 +12675,15 @@ export class ZPP_Space {
         ret2.next = null;
       }
       ret2.elt = s1;
-      let temp = ret2;
+      const temp = ret2;
       temp.next = _this2.head;
       _this2.head = temp;
       _this2.modified = true;
       _this2.length++;
     }
     if (s1.body.cbSet != null) {
-      let _this3 = this.mrca1;
-      let o2 = s1.body;
+      const _this3 = this.mrca1;
+      const o2 = s1.body;
       let ret3;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13438,14 +12693,14 @@ export class ZPP_Space {
         ret3.next = null;
       }
       ret3.elt = o2;
-      let temp1 = ret3;
+      const temp1 = ret3;
       temp1.next = _this3.head;
       _this3.head = temp1;
       _this3.modified = true;
       _this3.length++;
     }
     if (s2.cbSet != null) {
-      let _this4 = this.mrca2;
+      const _this4 = this.mrca2;
       let ret4;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13455,15 +12710,15 @@ export class ZPP_Space {
         ret4.next = null;
       }
       ret4.elt = s2;
-      let temp2 = ret4;
+      const temp2 = ret4;
       temp2.next = _this4.head;
       _this4.head = temp2;
       _this4.modified = true;
       _this4.length++;
     }
     if (s2.body.cbSet != null) {
-      let _this5 = this.mrca2;
-      let o3 = s2.body;
+      const _this5 = this.mrca2;
+      const o3 = s2.body;
       let ret5;
       if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
         ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13473,7 +12728,7 @@ export class ZPP_Space {
         ret5.next = null;
       }
       ret5.elt = o3;
-      let temp3 = ret5;
+      const temp3 = ret5;
       temp3.next = _this5.head;
       _this5.head = temp3;
       _this5.modified = true;
@@ -13482,11 +12737,11 @@ export class ZPP_Space {
     let c1 = s1.body.compound;
     let c2 = s2.body.compound;
     while (c1 != c2) {
-      let d1 = c1 == null ? 0 : c1.depth;
-      let d2 = c2 == null ? 0 : c2.depth;
+      const d1 = c1 == null ? 0 : c1.depth;
+      const d2 = c2 == null ? 0 : c2.depth;
       if (d1 < d2) {
         if (c2.cbSet != null) {
-          let _this6 = this.mrca2;
+          const _this6 = this.mrca2;
           let ret6;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13496,7 +12751,7 @@ export class ZPP_Space {
             ret6.next = null;
           }
           ret6.elt = c2;
-          let temp4 = ret6;
+          const temp4 = ret6;
           temp4.next = _this6.head;
           _this6.head = temp4;
           _this6.modified = true;
@@ -13505,7 +12760,7 @@ export class ZPP_Space {
         c2 = c2.compound;
       } else {
         if (c1.cbSet != null) {
-          let _this7 = this.mrca1;
+          const _this7 = this.mrca1;
           let ret7;
           if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
             ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
@@ -13515,7 +12770,7 @@ export class ZPP_Space {
             ret7.next = null;
           }
           ret7.elt = c1;
-          let temp5 = ret7;
+          const temp5 = ret7;
           temp5.next = _this7.head;
           _this7.head = temp5;
           _this7.modified = true;

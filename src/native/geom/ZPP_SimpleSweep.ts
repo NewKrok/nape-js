@@ -66,10 +66,7 @@ export class ZPP_SimpleSweep {
     } else if (p.right == q.left) {
       let tmp: boolean;
       if (q.left.x == q.right.x) {
-        tmp =
-          q.left.y < q.right.y
-            ? q.left.y > p.left.y
-            : q.right.y > p.left.y;
+        tmp = q.left.y < q.right.y ? q.left.y > p.left.y : q.right.y > p.left.y;
       } else {
         flip = q.right.x < q.left.x;
         ux = q.right.x - q.left.x;
@@ -179,19 +176,14 @@ export class ZPP_SimpleSweep {
         uy = q.right.y - q.left.y;
         vx = p.right.x - q.left.x;
         vy = p.right.y - q.left.y;
-        const aplrg1 =
-          (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
+        const aplrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
         if (plrg1 == aplrg1) {
           return plrg1;
         }
         const py =
-          ((this.sweepx - p.left.x) / (p.right.x - p.left.x)) *
-            (p.right.y - p.left.y) +
-          p.left.y;
+          ((this.sweepx - p.left.x) / (p.right.x - p.left.x)) * (p.right.y - p.left.y) + p.left.y;
         const qy =
-          ((this.sweepx - q.left.x) / (q.right.x - q.left.x)) *
-            (q.right.y - q.left.y) +
-          q.left.y;
+          ((this.sweepx - q.left.x) / (q.right.x - q.left.x)) * (q.right.y - q.left.y) + q.left.y;
         return py > qy;
       }
     }
@@ -232,12 +224,7 @@ export class ZPP_SimpleSweep {
   intersect(p: Any, q: Any): boolean {
     if (p == null || q == null) {
       return false;
-    } else if (
-      p.left == q.left ||
-      p.left == q.right ||
-      p.right == q.left ||
-      p.right == q.right
-    ) {
+    } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
       return false;
     } else {
       const lsign =
@@ -267,12 +254,7 @@ export class ZPP_SimpleSweep {
   intersection(p: Any, q: Any): Any {
     if (p == null || q == null) {
       return null;
-    } else if (
-      p.left == q.left ||
-      p.left == q.right ||
-      p.right == q.left ||
-      p.right == q.right
-    ) {
+    } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
       return null;
     } else {
       const ux = p.right.x - p.left.x;
@@ -310,14 +292,7 @@ export class ZPP_SimpleSweep {
         if (t == 1 && cases) {
           throw new Error("corner case 1c");
         }
-        vet =
-          s == 0
-            ? q.left
-            : s == 1
-              ? q.right
-              : t == 0
-                ? p.left
-                : p.right;
+        vet = s == 0 ? q.left : s == 1 ? q.right : t == 0 ? p.left : p.right;
       } else {
         const x = 0.5 * (p.left.x + ux * t + q.left.x + vx * s);
         const y = 0.5 * (p.left.y + uy * t + q.left.y + vy * s);

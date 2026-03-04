@@ -6,11 +6,7 @@ import { ZPP_Monotone } from "../../../src/native/geom/ZPP_Monotone";
 describe("ZPP_Monotone", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_Monotone.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_Monotone",
-      ]);
+      expect(ZPP_Monotone.__name__).toEqual(["zpp_nape", "geom", "ZPP_Monotone"]);
     });
   });
 

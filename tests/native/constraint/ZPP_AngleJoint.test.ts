@@ -9,18 +9,20 @@ import { ZPP_Constraint } from "../../../src/native/constraint/ZPP_Constraint";
 import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
 
 /** Helper: create a mock body with solver fields. */
-function createMockBody(opts: {
-  id?: number;
-  type?: number;
-  rot?: number;
-  angvel?: number;
-  kinangvel?: number;
-  sinertia?: number;
-  iinertia?: number;
-  axisx?: number;
-  axisy?: number;
-  space?: any;
-} = {}) {
+function createMockBody(
+  opts: {
+    id?: number;
+    type?: number;
+    rot?: number;
+    angvel?: number;
+    kinangvel?: number;
+    sinertia?: number;
+    iinertia?: number;
+    axisx?: number;
+    axisy?: number;
+    space?: any;
+  } = {},
+) {
   const comp: any = { parent: null as any, rank: 0 };
   comp.parent = comp; // self-referential root
   return {
@@ -49,11 +51,7 @@ describe("ZPP_AngleJoint", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_AngleJoint.__name__).toEqual([
-        "zpp_nape",
-        "constraint",
-        "ZPP_AngleJoint",
-      ]);
+      expect(ZPP_AngleJoint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_AngleJoint"]);
     });
   });
 
@@ -237,9 +235,7 @@ describe("ZPP_AngleJoint", () => {
       aj.space = space1;
       aj.b1 = createMockBody({ id: 1, space: space1 });
       aj.b2 = createMockBody({ id: 2, space: space2 });
-      expect(() => aj.validate()).toThrow(
-        "Constraints must have each body within the same space",
-      );
+      expect(() => aj.validate()).toThrow("Constraints must have each body within the same space");
     });
 
     it("should throw if jointMin > jointMax", () => {
@@ -342,16 +338,18 @@ describe("ZPP_AngleJoint", () => {
   });
 
   describe("preStep", () => {
-    function setupJoint(opts: {
-      jointMin?: number;
-      jointMax?: number;
-      ratio?: number;
-      b1Rot?: number;
-      b2Rot?: number;
-      b1Sinertia?: number;
-      b2Sinertia?: number;
-      stiff?: boolean;
-    } = {}) {
+    function setupJoint(
+      opts: {
+        jointMin?: number;
+        jointMax?: number;
+        ratio?: number;
+        b1Rot?: number;
+        b2Rot?: number;
+        b1Sinertia?: number;
+        b2Sinertia?: number;
+        stiff?: boolean;
+      } = {},
+    ) {
       const aj = new ZPP_AngleJoint();
       aj.jointMin = opts.jointMin ?? -1.0;
       aj.jointMax = opts.jointMax ?? 1.0;
@@ -560,21 +558,23 @@ describe("ZPP_AngleJoint", () => {
   });
 
   describe("applyImpulseVel", () => {
-    function setupForVel(opts: {
-      slack?: boolean;
-      equal?: boolean;
-      scale?: number;
-      ratio?: number;
-      kMass?: number;
-      jAcc?: number;
-      jMax?: number;
-      bias?: number;
-      gamma?: number;
-      stiff?: boolean;
-      breakUnderForce?: boolean;
-      b1Angvel?: number;
-      b2Angvel?: number;
-    } = {}) {
+    function setupForVel(
+      opts: {
+        slack?: boolean;
+        equal?: boolean;
+        scale?: number;
+        ratio?: number;
+        kMass?: number;
+        jAcc?: number;
+        jMax?: number;
+        bias?: number;
+        gamma?: number;
+        stiff?: boolean;
+        breakUnderForce?: boolean;
+        b1Angvel?: number;
+        b2Angvel?: number;
+      } = {},
+    ) {
       const aj = new ZPP_AngleJoint();
       aj.slack = opts.slack ?? false;
       aj.equal = opts.equal ?? true;
@@ -660,16 +660,18 @@ describe("ZPP_AngleJoint", () => {
   });
 
   describe("applyImpulsePos", () => {
-    function setupForPos(opts: {
-      jointMin?: number;
-      jointMax?: number;
-      ratio?: number;
-      kMass?: number;
-      b1Rot?: number;
-      b2Rot?: number;
-      breakUnderError?: boolean;
-      maxError?: number;
-    } = {}) {
+    function setupForPos(
+      opts: {
+        jointMin?: number;
+        jointMax?: number;
+        ratio?: number;
+        kMass?: number;
+        b1Rot?: number;
+        b2Rot?: number;
+        breakUnderError?: boolean;
+        maxError?: number;
+      } = {},
+    ) {
       const aj = new ZPP_AngleJoint();
       aj.jointMin = opts.jointMin ?? -1;
       aj.jointMax = opts.jointMax ?? 1;

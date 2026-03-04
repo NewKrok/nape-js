@@ -12,10 +12,7 @@ import { Polygon } from "../../../src/shape/Polygon";
 import { Geom } from "../../../src/geom/Geom";
 
 /** Helper to get validated ZPP shapes from bodies after a space step. */
-function setupAndValidate(
-  space: Space,
-  bodies: Body[],
-): any[] {
+function setupAndValidate(space: Space, bodies: Body[]): any[] {
   space.step(1 / 60);
   return bodies.map((b) => {
     const zpp = (b as any).zpp_inner.shapes.head.elt;
@@ -27,11 +24,7 @@ function setupAndValidate(
 describe("ZPP_SweepDistance", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_SweepDistance.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_SweepDistance",
-      ]);
+      expect(ZPP_SweepDistance.__name__).toEqual(["zpp_nape", "geom", "ZPP_SweepDistance"]);
     });
   });
 

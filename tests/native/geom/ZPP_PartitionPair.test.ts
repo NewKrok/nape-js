@@ -8,11 +8,7 @@ describe("ZPP_PartitionPair", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_PartitionPair.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_PartitionPair",
-      ]);
+      expect(ZPP_PartitionPair.__name__).toEqual(["zpp_nape", "geom", "ZPP_PartitionPair"]);
     });
   });
 

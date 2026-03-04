@@ -72,8 +72,7 @@ export class ZPP_Convex {
           while (cx_ite1 != null) {
             const qdiag = cx_ite1.elt;
             if (qdiag == p1) {
-              const qleft =
-                cx_ite1.next == null ? q.next : cx_ite1.next.elt;
+              const qleft = cx_ite1.next == null ? q.next : cx_ite1.next.elt;
               removable = ZPP_Convex.isinner(qleft, q, qright);
               break;
             }

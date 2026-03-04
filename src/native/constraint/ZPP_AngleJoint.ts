@@ -161,9 +161,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
       throw new Error("Error: AngleJoint cannot be simulated null bodies");
     }
     if (this.b1 == this.b2) {
-      throw new Error(
-        "Error: AngleJoint cannot be simulated with body1 == body2",
-      );
+      throw new Error("Error: AngleJoint cannot be simulated with body1 == body2");
     }
     if (this.b1.space != this.space || this.b2.space != this.space) {
       throw new Error(
@@ -174,9 +172,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
       throw new Error("Error: AngleJoint must have jointMin <= jointMax");
     }
     if (this.b1.type != 2 && this.b2.type != 2) {
-      throw new Error(
-        "Error: Constraints cannot have both bodies non-dynamic",
-      );
+      throw new Error("Error: Constraints cannot have both bodies non-dynamic");
     }
   }
 
@@ -338,8 +334,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     }
     const C1 = C;
     if (!this.slack) {
-      this.kMass =
-        this.b1.sinertia + this.ratio * this.ratio * this.b2.sinertia;
+      this.kMass = this.b1.sinertia + this.ratio * this.ratio * this.b2.sinertia;
       if (this.kMass != 0) {
         this.kMass = 1 / this.kMass;
       } else {
@@ -384,19 +379,14 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     }
     const E =
       this.scale *
-      (this.ratio * (this.b2.angvel + this.b2.kinangvel) -
-        this.b1.angvel -
-        this.b1.kinangvel);
+      (this.ratio * (this.b2.angvel + this.b2.kinangvel) - this.b1.angvel - this.b1.kinangvel);
     let j = this.kMass * (this.bias - E) - this.jAcc * this.gamma;
     const jOld = this.jAcc;
     this.jAcc += j;
     if (!this.equal && this.jAcc > 0) {
       this.jAcc = 0;
     }
-    if (
-      this.breakUnderForce &&
-      (this.jAcc > this.jMax || this.jAcc < -this.jMax)
-    ) {
+    if (this.breakUnderForce && (this.jAcc > this.jMax || this.jAcc < -this.jMax)) {
       return true;
     }
     if (!this.stiff) {
@@ -498,13 +488,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   /**
    * Dict-lookup / deferred-todo body copying. Used by all joints' copy().
    */
-  static _copyBody(
-    dict: Any,
-    todo: Any,
-    srcBody: Any,
-    ret: Any,
-    field: string,
-  ): void {
+  static _copyBody(dict: Any, todo: Any, srcBody: Any, ret: Any, field: string): void {
     if (dict != null && srcBody != null) {
       let b: Any = null;
       for (let _g = 0; _g < dict.length; _g++) {

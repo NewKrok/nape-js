@@ -78,12 +78,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
 
   override copy(dict?: Any, todo?: Any): Any {
     const nape = getNape();
-    const ret = new nape.constraint.MotorJoint(
-      null,
-      null,
-      this.rate,
-      this.ratio,
-    );
+    const ret = new nape.constraint.MotorJoint(null, null, this.rate, this.ratio);
     this.copyto(ret);
     if (dict != null && this.b1 != null) {
       let b = null;
@@ -136,9 +131,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
       throw new Error("Error: AngleJoint cannot be simulated null bodies");
     }
     if (this.b1 == this.b2) {
-      throw new Error(
-        "Error: MotorJoint cannot be simulated with body1 == body2",
-      );
+      throw new Error("Error: MotorJoint cannot be simulated with body1 == body2");
     }
     if (this.b1.space != this.space || this.b2.space != this.space) {
       throw new Error(
@@ -146,9 +139,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
       );
     }
     if (this.b1.type != 2 && this.b2.type != 2) {
-      throw new Error(
-        "Error: Constraints cannot have both bodies non-dynamic",
-      );
+      throw new Error("Error: Constraints cannot have both bodies non-dynamic");
     }
   }
 

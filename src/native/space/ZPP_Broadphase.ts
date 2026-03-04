@@ -81,9 +81,7 @@ export class ZPP_Broadphase {
                     if (_this.type == 1) {
                       const _this1 = _this.polygon;
                       if (_this1.lverts.next == null) {
-                        throw new Error(
-                          "Error: An empty polygon has no meaningful localCOM"
-                        );
+                        throw new Error("Error: An empty polygon has no meaningful localCOM");
                       }
                       if (_this1.lverts.next.next == null) {
                         _this1.localCOMx = _this1.lverts.next.x;
@@ -149,12 +147,10 @@ export class ZPP_Broadphase {
                   }
                   _this.worldCOMx =
                     _this.body.posx +
-                    (_this.body.axisy * _this.localCOMx -
-                      _this.body.axisx * _this.localCOMy);
+                    (_this.body.axisy * _this.localCOMx - _this.body.axisx * _this.localCOMy);
                   _this.worldCOMy =
                     _this.body.posy +
-                    (_this.localCOMx * _this.body.axisx +
-                      _this.localCOMy * _this.body.axisy);
+                    (_this.localCOMx * _this.body.axisx + _this.localCOMy * _this.body.axisy);
                 }
               }
               const rx = _this.radius;
@@ -181,20 +177,14 @@ export class ZPP_Broadphase {
                     const g = cx_ite1;
                     const l = li;
                     li = li.next;
-                    g.x =
-                      _this3.body.posx +
-                      (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
-                    g.y =
-                      _this3.body.posy +
-                      (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
+                    g.x = _this3.body.posx + (_this3.body.axisy * l.x - _this3.body.axisx * l.y);
+                    g.y = _this3.body.posy + (l.x * _this3.body.axisx + l.y * _this3.body.axisy);
                     cx_ite1 = cx_ite1.next;
                   }
                 }
               }
               if (_this3.lverts.next == null) {
-                throw new Error(
-                  "Error: An empty polygon has no meaningful bounds"
-                );
+                throw new Error("Error: An empty polygon has no meaningful bounds");
               }
               const p0 = _this3.gverts.next;
               _this3.aabb.minx = p0.x;
@@ -240,9 +230,7 @@ export class ZPP_Broadphase {
                       if (_this6.type == 1) {
                         const _this7 = _this6.polygon;
                         if (_this7.lverts.next == null) {
-                          throw new Error(
-                            "Error: An empty polygon has no meaningful localCOM"
-                          );
+                          throw new Error("Error: An empty polygon has no meaningful localCOM");
                         }
                         if (_this7.lverts.next.next == null) {
                           _this7.localCOMx = _this7.lverts.next.x;
@@ -308,12 +296,10 @@ export class ZPP_Broadphase {
                     }
                     _this6.worldCOMx =
                       _this6.body.posx +
-                      (_this6.body.axisy * _this6.localCOMx -
-                        _this6.body.axisx * _this6.localCOMy);
+                      (_this6.body.axisy * _this6.localCOMx - _this6.body.axisx * _this6.localCOMy);
                     _this6.worldCOMy =
                       _this6.body.posy +
-                      (_this6.localCOMx * _this6.body.axisx +
-                        _this6.localCOMy * _this6.body.axisy);
+                      (_this6.localCOMx * _this6.body.axisx + _this6.localCOMy * _this6.body.axisy);
                   }
                 }
                 const rx1 = _this6.radius;
@@ -341,19 +327,15 @@ export class ZPP_Broadphase {
                       const l1 = li1;
                       li1 = li1.next;
                       g1.x =
-                        _this9.body.posx +
-                        (_this9.body.axisy * l1.x - _this9.body.axisx * l1.y);
+                        _this9.body.posx + (_this9.body.axisy * l1.x - _this9.body.axisx * l1.y);
                       g1.y =
-                        _this9.body.posy +
-                        (l1.x * _this9.body.axisx + l1.y * _this9.body.axisy);
+                        _this9.body.posy + (l1.x * _this9.body.axisx + l1.y * _this9.body.axisy);
                       cx_ite4 = cx_ite4.next;
                     }
                   }
                 }
                 if (_this9.lverts.next == null) {
-                  throw new Error(
-                    "Error: An empty polygon has no meaningful bounds"
-                  );
+                  throw new Error("Error: An empty polygon has no meaningful bounds");
                 }
                 const p01 = _this9.gverts.next;
                 _this9.aabb.minx = p01.x;
@@ -382,10 +364,7 @@ export class ZPP_Broadphase {
           }
         }
         let sync: boolean;
-        if (
-          node.dyn ==
-          (shape.body.type == 1 ? false : !shape.body.component.sleeping)
-        ) {
+        if (node.dyn == (shape.body.type == 1 ? false : !shape.body.component.sleeping)) {
           const _this11 = node.aabb;
           const x = shape.aabb;
           sync = !(
@@ -414,21 +393,11 @@ export class ZPP_Broadphase {
 
   // ========== Spatial queries (overridden by subclasses) ==========
 
-  shapesUnderPoint(
-    _x: number,
-    _y: number,
-    _filter: Any,
-    _output: Any
-  ): Any {
+  shapesUnderPoint(_x: number, _y: number, _filter: Any, _output: Any): Any {
     return null;
   }
 
-  bodiesUnderPoint(
-    _x: number,
-    _y: number,
-    _filter: Any,
-    _output: Any
-  ): Any {
+  bodiesUnderPoint(_x: number, _y: number, _filter: Any, _output: Any): Any {
     return null;
   }
 
@@ -447,12 +416,7 @@ export class ZPP_Broadphase {
       const body = new nape.phys.Body(zpp.util.ZPP_Flags.BodyType_STATIC);
       const _this = body.zpp_inner.wrap_shapes;
       const obj = (this.aabbShape = new nape.shape.Polygon(
-        nape.shape.Polygon.rect(
-          aabb.minx,
-          aabb.miny,
-          aabb.maxx - aabb.minx,
-          aabb.maxy - aabb.miny
-        )
+        nape.shape.Polygon.rect(aabb.minx, aabb.miny, aabb.maxx - aabb.minx, aabb.maxy - aabb.miny),
       ));
       if (_this.zpp_inner.reverse_flag) {
         _this.push(obj);
@@ -466,12 +430,12 @@ export class ZPP_Broadphase {
       if (this.matrix == null) {
         this.matrix = new nape.geom.Mat23();
       }
-      let _this1 = this.matrix;
+      const _this1 = this.matrix;
       if (sx !== sx) {
         throw new Error("Error: Mat23::a cannot be NaN");
       }
       _this1.zpp_inner.a = sx;
-      let _this2 = _this1.zpp_inner;
+      const _this2 = _this1.zpp_inner;
       if (_this2._invalidate != null) {
         _this2._invalidate();
       }
@@ -536,9 +500,7 @@ export class ZPP_Broadphase {
                 if (_this14.type == 1) {
                   const _this15 = _this14.polygon;
                   if (_this15.lverts.next == null) {
-                    throw new Error(
-                      "Error: An empty polygon has no meaningful localCOM"
-                    );
+                    throw new Error("Error: An empty polygon has no meaningful localCOM");
                   }
                   if (_this15.lverts.next.next == null) {
                     _this15.localCOMx = _this15.lverts.next.x;
@@ -604,12 +566,10 @@ export class ZPP_Broadphase {
               }
               _this14.worldCOMx =
                 _this14.body.posx +
-                (_this14.body.axisy * _this14.localCOMx -
-                  _this14.body.axisx * _this14.localCOMy);
+                (_this14.body.axisy * _this14.localCOMx - _this14.body.axisx * _this14.localCOMy);
               _this14.worldCOMy =
                 _this14.body.posy +
-                (_this14.localCOMx * _this14.body.axisx +
-                  _this14.localCOMy * _this14.body.axisy);
+                (_this14.localCOMx * _this14.body.axisx + _this14.localCOMy * _this14.body.axisy);
             }
           }
           const rx = _this14.radius;
@@ -636,20 +596,14 @@ export class ZPP_Broadphase {
                 const g = cx_ite1;
                 const l = li;
                 li = li.next;
-                g.x =
-                  _this17.body.posx +
-                  (_this17.body.axisy * l.x - _this17.body.axisx * l.y);
-                g.y =
-                  _this17.body.posy +
-                  (l.x * _this17.body.axisx + l.y * _this17.body.axisy);
+                g.x = _this17.body.posx + (_this17.body.axisy * l.x - _this17.body.axisx * l.y);
+                g.y = _this17.body.posy + (l.x * _this17.body.axisx + l.y * _this17.body.axisy);
                 cx_ite1 = cx_ite1.next;
               }
             }
           }
           if (_this17.lverts.next == null) {
-            throw new Error(
-              "Error: An empty polygon has no meaningful bounds"
-            );
+            throw new Error("Error: An empty polygon has no meaningful bounds");
           }
           const p0 = _this17.gverts.next;
           _this17.aabb.minx = p0.x;
@@ -703,12 +657,8 @@ export class ZPP_Broadphase {
               const g1 = cx_ite3;
               const l1 = li1;
               li1 = li1.next;
-              g1.x =
-                _this19.body.posx +
-                (_this19.body.axisy * l1.x - _this19.body.axisx * l1.y);
-              g1.y =
-                _this19.body.posy +
-                (l1.x * _this19.body.axisx + l1.y * _this19.body.axisy);
+              g1.x = _this19.body.posx + (_this19.body.axisy * l1.x - _this19.body.axisx * l1.y);
+              g1.y = _this19.body.posy + (l1.x * _this19.body.axisx + l1.y * _this19.body.axisy);
               cx_ite3 = cx_ite3.next;
             }
           }
@@ -723,14 +673,10 @@ export class ZPP_Broadphase {
           ite = ite.next;
           e.gp0 = u1;
           e.gp1 = v1;
-          e.gnormx =
-            _this19.body.axisy * e.lnormx - _this19.body.axisx * e.lnormy;
-          e.gnormy =
-            e.lnormx * _this19.body.axisx + e.lnormy * _this19.body.axisy;
+          e.gnormx = _this19.body.axisy * e.lnormx - _this19.body.axisx * e.lnormy;
+          e.gnormy = e.lnormx * _this19.body.axisx + e.lnormy * _this19.body.axisy;
           e.gprojection =
-            _this19.body.posx * e.gnormx +
-            _this19.body.posy * e.gnormy +
-            e.lprojection;
+            _this19.body.posx * e.gnormx + _this19.body.posy * e.gnormy + e.lprojection;
           if (e.wrap_gnorm != null) {
             e.wrap_gnorm.zpp_inner.x = e.gnormx;
             e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -745,14 +691,10 @@ export class ZPP_Broadphase {
         ite = ite.next;
         e1.gp0 = u1;
         e1.gp1 = v2;
-        e1.gnormx =
-          _this19.body.axisy * e1.lnormx - _this19.body.axisx * e1.lnormy;
-        e1.gnormy =
-          e1.lnormx * _this19.body.axisx + e1.lnormy * _this19.body.axisy;
+        e1.gnormx = _this19.body.axisy * e1.lnormx - _this19.body.axisx * e1.lnormy;
+        e1.gnormy = e1.lnormx * _this19.body.axisx + e1.lnormy * _this19.body.axisy;
         e1.gprojection =
-          _this19.body.posx * e1.gnormx +
-          _this19.body.posy * e1.gnormy +
-          e1.lprojection;
+          _this19.body.posx * e1.gnormx + _this19.body.posy * e1.gnormy + e1.lprojection;
         if (e1.wrap_gnorm != null) {
           e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
           e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -770,7 +712,7 @@ export class ZPP_Broadphase {
     _strict: boolean,
     _containment: boolean,
     _filter: Any,
-    _output: Any
+    _output: Any,
   ): Any {
     return null;
   }
@@ -780,7 +722,7 @@ export class ZPP_Broadphase {
     _strict: boolean,
     _containment: boolean,
     _filter: Any,
-    _output: Any
+    _output: Any,
   ): Any {
     return null;
   }
@@ -839,9 +781,7 @@ export class ZPP_Broadphase {
         ret.zpp_inner.outer = ret;
       } else {
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: Vec2 has been disposed and cannot be used!"
-          );
+          throw new Error("Error: Vec2 has been disposed and cannot be used!");
         }
         const _this1 = ret.zpp_inner;
         if (_this1._immutable) {
@@ -855,9 +795,7 @@ export class ZPP_Broadphase {
         }
         let obj: boolean;
         if (ret != null && ret.zpp_disp) {
-          throw new Error(
-            "Error: Vec2 has been disposed and cannot be used!"
-          );
+          throw new Error("Error: Vec2 has been disposed and cannot be used!");
         }
         const _this2 = ret.zpp_inner;
         if (_this2._validate != null) {
@@ -865,9 +803,7 @@ export class ZPP_Broadphase {
         }
         if (ret.zpp_inner.x == x1) {
           if (ret != null && ret.zpp_disp) {
-            throw new Error(
-              "Error: Vec2 has been disposed and cannot be used!"
-            );
+            throw new Error("Error: Vec2 has been disposed and cannot be used!");
           }
           const _this3 = ret.zpp_inner;
           if (_this3._validate != null) {
@@ -970,9 +906,7 @@ export class ZPP_Broadphase {
                 if (_this18.type == 1) {
                   const _this19 = _this18.polygon;
                   if (_this19.lverts.next == null) {
-                    throw new Error(
-                      "Error: An empty polygon has no meaningful localCOM"
-                    );
+                    throw new Error("Error: An empty polygon has no meaningful localCOM");
                   }
                   if (_this19.lverts.next.next == null) {
                     _this19.localCOMx = _this19.lverts.next.x;
@@ -1038,12 +972,10 @@ export class ZPP_Broadphase {
               }
               _this18.worldCOMx =
                 _this18.body.posx +
-                (_this18.body.axisy * _this18.localCOMx -
-                  _this18.body.axisx * _this18.localCOMy);
+                (_this18.body.axisy * _this18.localCOMx - _this18.body.axisx * _this18.localCOMy);
               _this18.worldCOMy =
                 _this18.body.posy +
-                (_this18.localCOMx * _this18.body.axisx +
-                  _this18.localCOMy * _this18.body.axisy);
+                (_this18.localCOMx * _this18.body.axisx + _this18.localCOMy * _this18.body.axisy);
             }
           }
           const rx = _this18.radius;
@@ -1070,20 +1002,14 @@ export class ZPP_Broadphase {
                 const g = cx_ite1;
                 const l = li;
                 li = li.next;
-                g.x =
-                  _this21.body.posx +
-                  (_this21.body.axisy * l.x - _this21.body.axisx * l.y);
-                g.y =
-                  _this21.body.posy +
-                  (l.x * _this21.body.axisx + l.y * _this21.body.axisy);
+                g.x = _this21.body.posx + (_this21.body.axisy * l.x - _this21.body.axisx * l.y);
+                g.y = _this21.body.posy + (l.x * _this21.body.axisx + l.y * _this21.body.axisy);
                 cx_ite1 = cx_ite1.next;
               }
             }
           }
           if (_this21.lverts.next == null) {
-            throw new Error(
-              "Error: An empty polygon has no meaningful bounds"
-            );
+            throw new Error("Error: An empty polygon has no meaningful bounds");
           }
           const p0 = _this21.gverts.next;
           _this21.aabb.minx = p0.x;
@@ -1120,7 +1046,7 @@ export class ZPP_Broadphase {
     _r: number,
     _containment: boolean,
     _filter: Any,
-    _output: Any
+    _output: Any,
   ): Any {
     return null;
   }
@@ -1131,7 +1057,7 @@ export class ZPP_Broadphase {
     _r: number,
     _containment: boolean,
     _filter: Any,
-    _output: Any
+    _output: Any,
   ): Any {
     return null;
   }
@@ -1167,12 +1093,8 @@ export class ZPP_Broadphase {
                 const g = cx_ite;
                 const l = li;
                 li = li.next;
-                g.x =
-                  _this.body.posx +
-                  (_this.body.axisy * l.x - _this.body.axisx * l.y);
-                g.y =
-                  _this.body.posy +
-                  (l.x * _this.body.axisx + l.y * _this.body.axisy);
+                g.x = _this.body.posx + (_this.body.axisy * l.x - _this.body.axisx * l.y);
+                g.y = _this.body.posy + (l.x * _this.body.axisx + l.y * _this.body.axisy);
                 cx_ite = cx_ite.next;
               }
             }
@@ -1187,14 +1109,9 @@ export class ZPP_Broadphase {
             ite = ite.next;
             e.gp0 = u;
             e.gp1 = v;
-            e.gnormx =
-              _this.body.axisy * e.lnormx - _this.body.axisx * e.lnormy;
-            e.gnormy =
-              e.lnormx * _this.body.axisx + e.lnormy * _this.body.axisy;
-            e.gprojection =
-              _this.body.posx * e.gnormx +
-              _this.body.posy * e.gnormy +
-              e.lprojection;
+            e.gnormx = _this.body.axisy * e.lnormx - _this.body.axisx * e.lnormy;
+            e.gnormy = e.lnormx * _this.body.axisx + e.lnormy * _this.body.axisy;
+            e.gprojection = _this.body.posx * e.gnormx + _this.body.posy * e.gnormy + e.lprojection;
             if (e.wrap_gnorm != null) {
               e.wrap_gnorm.zpp_inner.x = e.gnormx;
               e.wrap_gnorm.zpp_inner.y = e.gnormy;
@@ -1209,14 +1126,10 @@ export class ZPP_Broadphase {
           ite = ite.next;
           e1.gp0 = u;
           e1.gp1 = v1;
-          e1.gnormx =
-            _this.body.axisy * e1.lnormx - _this.body.axisx * e1.lnormy;
-          e1.gnormy =
-            e1.lnormx * _this.body.axisx + e1.lnormy * _this.body.axisy;
+          e1.gnormx = _this.body.axisy * e1.lnormx - _this.body.axisx * e1.lnormy;
+          e1.gnormy = e1.lnormx * _this.body.axisx + e1.lnormy * _this.body.axisy;
           e1.gprojection =
-            _this.body.posx * e1.gnormx +
-            _this.body.posy * e1.gnormy +
-            e1.lprojection;
+            _this.body.posx * e1.gnormx + _this.body.posy * e1.gnormy + e1.lprojection;
           if (e1.wrap_gnorm != null) {
             e1.wrap_gnorm.zpp_inner.x = e1.gnormx;
             e1.wrap_gnorm.zpp_inner.y = e1.gnormy;
@@ -1239,9 +1152,7 @@ export class ZPP_Broadphase {
                 if (_this3.type == 1) {
                   const _this4 = _this3.polygon;
                   if (_this4.lverts.next == null) {
-                    throw new Error(
-                      "Error: An empty polygon has no meaningful localCOM"
-                    );
+                    throw new Error("Error: An empty polygon has no meaningful localCOM");
                   }
                   if (_this4.lverts.next.next == null) {
                     _this4.localCOMx = _this4.lverts.next.x;
@@ -1307,12 +1218,10 @@ export class ZPP_Broadphase {
               }
               _this3.worldCOMx =
                 _this3.body.posx +
-                (_this3.body.axisy * _this3.localCOMx -
-                  _this3.body.axisx * _this3.localCOMy);
+                (_this3.body.axisy * _this3.localCOMx - _this3.body.axisx * _this3.localCOMy);
               _this3.worldCOMy =
                 _this3.body.posy +
-                (_this3.localCOMx * _this3.body.axisx +
-                  _this3.localCOMy * _this3.body.axisy);
+                (_this3.localCOMx * _this3.body.axisx + _this3.localCOMy * _this3.body.axisy);
             }
           }
           const rx = _this3.radius;
@@ -1339,20 +1248,14 @@ export class ZPP_Broadphase {
                 const g1 = cx_ite3;
                 const l1 = li1;
                 li1 = li1.next;
-                g1.x =
-                  _this6.body.posx +
-                  (_this6.body.axisy * l1.x - _this6.body.axisx * l1.y);
-                g1.y =
-                  _this6.body.posy +
-                  (l1.x * _this6.body.axisx + l1.y * _this6.body.axisy);
+                g1.x = _this6.body.posx + (_this6.body.axisy * l1.x - _this6.body.axisx * l1.y);
+                g1.y = _this6.body.posy + (l1.x * _this6.body.axisx + l1.y * _this6.body.axisy);
                 cx_ite3 = cx_ite3.next;
               }
             }
           }
           if (_this6.lverts.next == null) {
-            throw new Error(
-              "Error: An empty polygon has no meaningful bounds"
-            );
+            throw new Error("Error: An empty polygon has no meaningful bounds");
           }
           const p0 = _this6.gverts.next;
           _this6.aabb.minx = p0.x;
@@ -1387,9 +1290,7 @@ export class ZPP_Broadphase {
           if (s.type == 1) {
             const _this8 = s.polygon;
             if (_this8.lverts.next == null) {
-              throw new Error(
-                "Error: An empty polygon has no meaningful localCOM"
-              );
+              throw new Error("Error: An empty polygon has no meaningful localCOM");
             }
             if (_this8.lverts.next.next == null) {
               _this8.localCOMx = _this8.lverts.next.x;
@@ -1453,33 +1354,19 @@ export class ZPP_Broadphase {
           _this9.axisx = Math.sin(_this9.rot);
           _this9.axisy = Math.cos(_this9.rot);
         }
-        s.worldCOMx =
-          s.body.posx +
-          (s.body.axisy * s.localCOMx - s.body.axisx * s.localCOMy);
-        s.worldCOMy =
-          s.body.posy +
-          (s.localCOMx * s.body.axisx + s.localCOMy * s.body.axisy);
+        s.worldCOMx = s.body.posx + (s.body.axisy * s.localCOMx - s.body.axisx * s.localCOMy);
+        s.worldCOMy = s.body.posy + (s.localCOMx * s.body.axisx + s.localCOMy * s.body.axisy);
       }
     }
   }
 
   // ========== shapesInShape / bodiesInShape (overridden by subclasses) ==========
 
-  shapesInShape(
-    _shape: Any,
-    _containment: boolean,
-    _filter: Any,
-    _output: Any
-  ): Any {
+  shapesInShape(_shape: Any, _containment: boolean, _filter: Any, _output: Any): Any {
     return null;
   }
 
-  bodiesInShape(
-    _shape: Any,
-    _containment: boolean,
-    _filter: Any,
-    _output: Any
-  ): Any {
+  bodiesInShape(_shape: Any, _containment: boolean, _filter: Any, _output: Any): Any {
     return null;
   }
 

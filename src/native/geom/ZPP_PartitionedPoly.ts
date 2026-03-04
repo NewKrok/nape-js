@@ -39,16 +39,14 @@ export class ZPP_PartitionedPoly {
 
   static getSharedPP(): Any {
     if (ZPP_PartitionedPoly.sharedPPList == null) {
-      ZPP_PartitionedPoly.sharedPPList =
-        new (getNape().__zpp.util.ZNPList_ZPP_PartitionedPoly)();
+      ZPP_PartitionedPoly.sharedPPList = new (getNape().__zpp.util.ZNPList_ZPP_PartitionedPoly)();
     }
     return ZPP_PartitionedPoly.sharedPPList;
   }
 
   static getShared(): Any {
     if (ZPP_PartitionedPoly.sharedGVList == null) {
-      ZPP_PartitionedPoly.sharedGVList =
-        new (getNape().__zpp.util.ZNPList_ZPP_GeomVert)();
+      ZPP_PartitionedPoly.sharedGVList = new (getNape().__zpp.util.ZNPList_ZPP_GeomVert)();
     }
     return ZPP_PartitionedPoly.sharedGVList;
   }

@@ -7,16 +7,18 @@ import { ZPP_Constraint } from "../../../src/native/constraint/ZPP_Constraint";
 import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
 
 /** Helper: create a mock body with solver fields. */
-function createMockBody(opts: {
-  id?: number;
-  type?: number;
-  rot?: number;
-  angvel?: number;
-  kinangvel?: number;
-  sinertia?: number;
-  iinertia?: number;
-  space?: any;
-} = {}) {
+function createMockBody(
+  opts: {
+    id?: number;
+    type?: number;
+    rot?: number;
+    angvel?: number;
+    kinangvel?: number;
+    sinertia?: number;
+    iinertia?: number;
+    space?: any;
+  } = {},
+) {
   const comp: any = { parent: null as any, rank: 0 };
   comp.parent = comp;
   return {
@@ -43,11 +45,7 @@ describe("ZPP_MotorJoint", () => {
 
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_MotorJoint.__name__).toEqual([
-        "zpp_nape",
-        "constraint",
-        "ZPP_MotorJoint",
-      ]);
+      expect(ZPP_MotorJoint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_MotorJoint"]);
     });
   });
 
@@ -171,9 +169,7 @@ describe("ZPP_MotorJoint", () => {
       mj.space = space1;
       mj.b1 = createMockBody({ id: 1, space: space1 });
       mj.b2 = createMockBody({ id: 2, space: space2 });
-      expect(() => mj.validate()).toThrow(
-        "Constraints must have each body within the same space",
-      );
+      expect(() => mj.validate()).toThrow("Constraints must have each body within the same space");
     });
 
     it("should throw if both bodies are non-dynamic", () => {
@@ -268,13 +264,15 @@ describe("ZPP_MotorJoint", () => {
   });
 
   describe("preStep", () => {
-    function setupJoint(opts: {
-      ratio?: number;
-      rate?: number;
-      b1Sinertia?: number;
-      b2Sinertia?: number;
-      maxForce?: number;
-    } = {}) {
+    function setupJoint(
+      opts: {
+        ratio?: number;
+        rate?: number;
+        b1Sinertia?: number;
+        b2Sinertia?: number;
+        maxForce?: number;
+      } = {},
+    ) {
       const mj = new ZPP_MotorJoint();
       mj.ratio = opts.ratio ?? 1.0;
       mj.rate = opts.rate ?? 5.0;
@@ -372,18 +370,20 @@ describe("ZPP_MotorJoint", () => {
   });
 
   describe("applyImpulseVel", () => {
-    function setupForVel(opts: {
-      ratio?: number;
-      rate?: number;
-      kMass?: number;
-      jAcc?: number;
-      jMax?: number;
-      breakUnderForce?: boolean;
-      b1Angvel?: number;
-      b2Angvel?: number;
-      b1Kinangvel?: number;
-      b2Kinangvel?: number;
-    } = {}) {
+    function setupForVel(
+      opts: {
+        ratio?: number;
+        rate?: number;
+        kMass?: number;
+        jAcc?: number;
+        jMax?: number;
+        breakUnderForce?: boolean;
+        b1Angvel?: number;
+        b2Angvel?: number;
+        b1Kinangvel?: number;
+        b2Kinangvel?: number;
+      } = {},
+    ) {
       const mj = new ZPP_MotorJoint();
       mj.ratio = opts.ratio ?? 1.0;
       mj.rate = opts.rate ?? 5.0;

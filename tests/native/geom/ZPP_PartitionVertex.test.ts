@@ -6,11 +6,7 @@ import { ZPP_PartitionVertex } from "../../../src/native/geom/ZPP_PartitionVerte
 describe("ZPP_PartitionVertex", () => {
   describe("__name__", () => {
     it("should have correct Haxe metadata", () => {
-      expect(ZPP_PartitionVertex.__name__).toEqual([
-        "zpp_nape",
-        "geom",
-        "ZPP_PartitionVertex",
-      ]);
+      expect(ZPP_PartitionVertex.__name__).toEqual(["zpp_nape", "geom", "ZPP_PartitionVertex"]);
     });
   });
 
