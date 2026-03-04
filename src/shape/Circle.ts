@@ -16,12 +16,14 @@ export class Circle extends Shape {
     filter?: InteractionFilter,
   ) {
     super();
-    (this as Writable<Circle>)._inner = new (getNape().shape.Circle)(
+    const compiledInner = new (getNape().shape.Circle)(
       radius,
       localCOM?._inner,
       material?._inner,
       filter?._inner,
     );
+    (this as Writable<Circle>)._inner = compiledInner;
+    this.zpp_inner_i = compiledInner.zpp_inner_i;
   }
 
   /** @internal */
@@ -29,6 +31,7 @@ export class Circle extends Shape {
     return getOrCreate(inner, (raw) => {
       const c = Object.create(Circle.prototype) as Circle;
       (c as Writable<Circle>)._inner = raw;
+      c.zpp_inner_i = raw.zpp_inner_i;
       return c;
     });
   }
