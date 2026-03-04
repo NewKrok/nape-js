@@ -31,14 +31,29 @@ export function _bindCompoundWrapForInteractor(fn: SubclassWrapFn): void {
  * Cannot be instantiated directly — only via Body, Shape, or Compound.
  * Provides shared properties: id, userData, group, cbTypes, and type
  * casting methods (castBody, castShape, castCompound).
+ *
+ * Fully modernized — all methods use ZPP_Interactor fields directly
+ * via `zpp_inner_i` (no compiled prototype delegation).
  */
 export class Interactor {
-  /** @internal */
+  /**
+   * @internal ZPP_Interactor-compatible object set by subclass constructors.
+   * For fully modernized subclasses (Body, Compound): this is the ZPP_Body/ZPP_Compound.
+   * For thin wrappers (Circle, Polygon): this is copied from the compiled inner object.
+   */
+  zpp_inner_i: any;
+
+  /**
+   * @internal Backward-compatible accessor for compiled Shape/Circle/Polygon code.
+   * Thin wrappers set this to the compiled inner object; modernized subclasses set
+   * it to `this`. Shape-level methods still delegate through this.
+   */
   readonly _inner: NapeInner;
 
   /** @internal – only subclasses may construct. */
   protected constructor() {
     (this as Writable<Interactor>)._inner = undefined!;
+    this.zpp_inner_i = null;
   }
 
   /** @internal Wrap a compiled Interactor (Body/Shape/Compound) instance. */
@@ -49,63 +64,80 @@ export class Interactor {
     // Dispatch to concrete subclass wrapper based on runtime type
     if (inner.isBody && inner.isBody() && _bodyWrap) return _bodyWrap(inner);
     if (inner.isShape && inner.isShape() && _shapeWrap) return _shapeWrap(inner);
-    if (inner.isCompound && inner.isCompound() && _compoundWrap) return _compoundWrap(inner);
+    if (inner.isCompound && inner.isCompound() && _compoundWrap)
+      return _compoundWrap(inner);
 
     // Fallback: generic Interactor wrapper
     return getOrCreate(inner, (raw: NapeInner) => {
       const i = Object.create(Interactor.prototype) as Interactor;
       (i as Writable<Interactor>)._inner = raw;
+      i.zpp_inner_i = raw.zpp_inner_i ?? raw;
       return i;
     });
   }
 
   // ---------------------------------------------------------------------------
-  // Properties
+  // Properties — direct ZPP_Interactor field access
   // ---------------------------------------------------------------------------
 
   /** Unique numeric identifier for this interactor. */
   get id(): number {
-    return this._inner.get_id();
+    return this.zpp_inner_i.id;
   }
 
   /** User-defined data storage object. */
   get userData(): Record<string, unknown> {
-    return this._inner.get_userData();
+    if (this.zpp_inner_i.userData == null) {
+      this.zpp_inner_i.userData = {};
+    }
+    return this.zpp_inner_i.userData;
   }
 
   /** The interaction group this interactor belongs to. */
   get group(): InteractionGroup | null {
-    const raw = this._inner.get_group();
-    return raw ? InteractionGroup._wrap(raw) : null;
+    if (this.zpp_inner_i.group == null) return null;
+    return this.zpp_inner_i.group.outer;
   }
   set group(value: InteractionGroup | null) {
-    this._inner.set_group(value?._inner ?? null);
+    this.zpp_inner_i.immutable_midstep("Interactor::group");
+    this.zpp_inner_i.setGroup(
+      value == null ? null : (value as any).zpp_inner,
+    );
   }
 
   /** Callback types assigned to this interactor. */
-  get cbTypes(): NapeInner {
-    return this._inner.get_cbTypes();
+  get cbTypes(): any {
+    if (this.zpp_inner_i.wrap_cbTypes == null) {
+      this.zpp_inner_i.setupcbTypes();
+    }
+    return this.zpp_inner_i.wrap_cbTypes;
   }
 
   /** Cast to Body — returns the Body wrapper if this is a Body, else null. */
   get castBody(): any {
-    const raw = this._inner.get_castBody();
-    if (!raw) return null;
-    return _bodyWrap ? _bodyWrap(raw) : raw;
+    if (this.zpp_inner_i.ibody != null) {
+      const outer = this.zpp_inner_i.ibody.outer;
+      return _bodyWrap ? _bodyWrap(outer) : outer;
+    }
+    return null;
   }
 
   /** Cast to Shape — returns the Shape wrapper if this is a Shape, else null. */
   get castShape(): any {
-    const raw = this._inner.get_castShape();
-    if (!raw) return null;
-    return _shapeWrap ? _shapeWrap(raw) : raw;
+    if (this.zpp_inner_i.ishape != null) {
+      const outer = this.zpp_inner_i.ishape.outer;
+      return _shapeWrap ? _shapeWrap(outer) : outer;
+    }
+    return null;
   }
 
   /** Cast to Compound — returns the Compound wrapper if this is a Compound, else null. */
   get castCompound(): any {
-    const raw = this._inner.get_castCompound();
-    if (!raw) return null;
-    return _compoundWrap ? _compoundWrap(raw) : raw;
+    if (this.zpp_inner_i.icompound != null) {
+      const outer = this.zpp_inner_i.icompound.outer;
+      return _compoundWrap ? _compoundWrap(outer) : outer;
+    }
+    return null;
   }
 
   // ---------------------------------------------------------------------------
@@ -114,20 +146,20 @@ export class Interactor {
 
   /** Returns true if this interactor is a Shape. */
   isShape(): boolean {
-    return this._inner.isShape();
+    return this.zpp_inner_i.ishape != null;
   }
 
   /** Returns true if this interactor is a Body. */
   isBody(): boolean {
-    return this._inner.isBody();
+    return this.zpp_inner_i.ibody != null;
   }
 
   /** Returns true if this interactor is a Compound. */
   isCompound(): boolean {
-    return this._inner.isCompound();
+    return this.zpp_inner_i.icompound != null;
   }
 
   toString(): string {
-    return this._inner.toString();
+    return "";
   }
 }

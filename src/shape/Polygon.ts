@@ -21,11 +21,13 @@ export class Polygon extends Shape {
       rawVerts = vertices.map((v: Vec2) => v._inner);
     }
 
-    (this as Writable<Polygon>)._inner = new nape.shape.Polygon(
+    const compiledInner = new nape.shape.Polygon(
       rawVerts,
       material?._inner,
       filter?._inner,
     );
+    (this as Writable<Polygon>)._inner = compiledInner;
+    this.zpp_inner_i = compiledInner.zpp_inner_i;
   }
 
   /** @internal */
@@ -33,6 +35,7 @@ export class Polygon extends Shape {
     return getOrCreate(inner, (raw) => {
       const p = Object.create(Polygon.prototype) as Polygon;
       (p as Writable<Polygon>)._inner = raw;
+      p.zpp_inner_i = raw.zpp_inner_i;
       return p;
     });
   }

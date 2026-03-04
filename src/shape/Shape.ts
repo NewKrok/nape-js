@@ -47,6 +47,7 @@ export class Shape extends Interactor {
     return getOrCreate(inner, (raw) => {
       const s = Object.create(Shape.prototype) as Shape;
       (s as Writable<Shape>)._inner = raw;
+      (s as any).zpp_inner_i = raw.zpp_inner_i ?? raw;
       return s;
     });
   }
