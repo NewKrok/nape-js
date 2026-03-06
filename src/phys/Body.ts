@@ -1898,20 +1898,9 @@ function _invalidateShapes(cur: ZPP_Body): void {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 
-// Save compiled Interactor prototype before we replace Body,
-// so we can copy interactor methods for backward compat
-const compiledInteractorProto = nape.phys.Interactor.prototype;
-
 // Replace the compiled Body with our TS class
 nape.phys.Body = Body;
 (Body.prototype as Any).__class__ = Body;
-
-// Copy compiled Interactor prototype methods for backward compat
-for (const k in compiledInteractorProto) {
-  if (!Object.prototype.hasOwnProperty.call(Body.prototype, k)) {
-    (Body.prototype as Any)[k] = compiledInteractorProto[k];
-  }
-}
 
 // Bind Body._wrap into Interactor so Interactor._wrap can dispatch without circular import.
 _bindBodyWrapForInteractor((inner) => Body._wrap(inner));

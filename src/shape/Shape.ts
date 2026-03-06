@@ -249,7 +249,10 @@ export class Shape extends Interactor {
 
   /** Callback types assigned to this shape. */
   get cbTypes(): CbTypeSet {
-    const raw = this._inner.get_cbTypes();
+    if (this.zpp_inner_i.wrap_cbTypes == null) {
+      this.zpp_inner_i.setupcbTypes();
+    }
+    const raw = this.zpp_inner_i.wrap_cbTypes;
     return {
       _inner: raw,
       add(cbType: { _inner: NapeInner }) {

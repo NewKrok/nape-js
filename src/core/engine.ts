@@ -50,3 +50,4 @@ import "../geom/GeomVertexIterator";
 import "../native/util/ZPP_Vec2List";
 import "../native/util/ZPP_ContactList";
 import "../native/geom/ZPP_GeomVertexIterator";
+import "../native/util/ZPP_MixVec2List";
