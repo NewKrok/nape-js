@@ -249,7 +249,6 @@ export function registerZPPClasses(nape: any, zpp: any, hxClasses: HxClasses): v
 
   (ZPP_SpaceArbiterList as any)._nape = nape;
   (ZPP_SpaceArbiterList as any)._zpp = zpp;
-  (ZPP_SpaceArbiterList as any)._init();
   zpp.dynamics.ZPP_SpaceArbiterList = hxClasses["zpp_nape.dynamics.ZPP_SpaceArbiterList"] = ZPP_SpaceArbiterList;
   ZPP_SpaceArbiterList.prototype.__class__ = ZPP_SpaceArbiterList;
 
@@ -475,14 +474,9 @@ export function registerZPPClasses(nape: any, zpp: any, hxClasses: HxClasses): v
   zpp.util.ZPP_PubPool = hxClasses["zpp_nape.util.ZPP_PubPool"] = ZPP_PubPool;
   ZPP_PubPool.prototype.__class__ = ZPP_PubPool;
 
-  // --- init enums & statics ---
-  zpp.callbacks.ZPP_CbType._initEnums(nape);
-  zpp.callbacks.ZPP_Listener._initEnums(nape, zpp.util.ZPP_Flags);
+  // --- init statics (engine.ts calls _initEnums after TS enum classes load) ---
   zpp.callbacks.ZPP_InteractionListener._initStatics(zpp);
-  zpp.dynamics.ZPP_Arbiter._initEnums(nape, zpp.util.ZPP_Flags);
   zpp.geom.ZPP_Collide._initStatics(zpp);
-  zpp.phys.ZPP_Body._initEnums(nape, zpp.util.ZPP_Flags);
-  zpp.shape.ZPP_Shape._initEnums(nape, zpp.util.ZPP_Flags);
   zpp.space.ZPP_AABBTree._initStatics();
 
   // Expose zpp_nape via nape.__zpp for engine.ts and other TS modules.

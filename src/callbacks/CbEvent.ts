@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { getNape, ensureEnumsReady } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 type Any = any;
@@ -131,21 +131,6 @@ export class CbEvent {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 
-// Fix prototypes of singletons created by the compiled stub at init time.
-const flagKeys = [
-  "CbEvent_BEGIN",
-  "CbEvent_ONGOING",
-  "CbEvent_END",
-  "CbEvent_WAKE",
-  "CbEvent_SLEEP",
-  "CbEvent_BREAK",
-  "CbEvent_PRE",
-];
-for (const key of flagKeys) {
-  if ((ZPP_Flags as Any)[key] != null) {
-    Object.setPrototypeOf((ZPP_Flags as Any)[key], CbEvent.prototype);
-  }
-}
-
 nape.callbacks.CbEvent = CbEvent;
 (CbEvent.prototype as Any).__class__ = CbEvent;
+ensureEnumsReady();

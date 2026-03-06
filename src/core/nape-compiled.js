@@ -57,25 +57,9 @@ define(function () {
   // nape.callbacks.BodyListener: converted to TypeScript → src/callbacks/BodyListener.ts
   // Registration handled by BodyListener.ts at module load time.
   // nape.callbacks.CbEvent: converted to TypeScript → src/callbacks/CbEvent.ts
-  // Minimal stub needed because compiled init code (line ~119982) creates singletons.
-  // The real CbEvent class replaces this at module load time via self-registration.
-  nape.callbacks.CbEvent = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError("Error: Cannot instantiate CbEvent derp!");
-    }
-  };
-  nape.callbacks.CbEvent.__name__ = ["nape", "callbacks", "CbEvent"];
-  nape.callbacks.CbEvent.prototype.__class__ = nape.callbacks.CbEvent;
+  // Registration handled by CbEvent.ts at module load time.
   // nape.callbacks.CbType: converted to TypeScript → src/callbacks/CbType.ts
-  // Minimal stub so ANY_* singletons can be created during compiled init (line ~121055).
-  // The real CbType class replaces this at module load time via self-registration.
-  nape.callbacks.CbType = function () {
-    this.zpp_inner = null;
-    this.zpp_inner = new zpp_nape.callbacks.ZPP_CbType();
-    this.zpp_inner.outer = this;
-  };
-  nape.callbacks.CbType.__name__ = ["nape", "callbacks", "CbType"];
-  nape.callbacks.CbType.prototype.__class__ = nape.callbacks.CbType;
+  // Registration handled by CbType.ts at module load time.
   // nape.callbacks.CbTypeIterator + nape.callbacks.CbTypeList: converted to TypeScript → src/util/registerLists.ts
   // Registration handled by registerLists.ts at module load time.
   // nape.callbacks.ConstraintCallback: stub → src/callbacks/ConstraintCallback.ts
@@ -103,17 +87,7 @@ define(function () {
   // nape.callbacks.ListenerIterator + nape.callbacks.ListenerList: converted to TypeScript → src/util/registerLists.ts
   // Registration handled by registerLists.ts at module load time.
   // nape.callbacks.ListenerType: converted to TypeScript → src/callbacks/ListenerType.ts
-  // Minimal stub needed for init-time singleton creation (~line 120354).
-  // ListenerType.ts replaces this class and fixes prototypes via Object.setPrototypeOf.
-  nape.callbacks.ListenerType = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate ListenerType derp!"
-      );
-    }
-  };
-  nape.callbacks.ListenerType.__name__ = ["nape", "callbacks", "ListenerType"];
-  nape.callbacks.ListenerType.prototype.__class__ = nape.callbacks.ListenerType;
+  // Registration handled by ListenerType.ts at module load time.
   // nape.callbacks.OptionType: converted to TypeScript → src/callbacks/OptionType.ts
   // Minimal stub so ZPP_OptionType.argument() works before TS module loads.
   // The real OptionType class replaces this at module load time via self-registration.
@@ -204,25 +178,8 @@ define(function () {
   nape.dynamics.Arbiter.__name__ = ["nape", "dynamics", "Arbiter"];
   // nape.dynamics.ArbiterIterator + nape.dynamics.ArbiterList: converted to TypeScript → src/util/registerLists.ts
   // Registration handled by registerLists.ts at module load time.
-  // Stub needed: ZPP_SpaceArbiterList extends ArbiterList at init time (prototype copy + .call).
-  nape.dynamics.ArbiterList = function () {
-    this.zpp_inner = null;
-    this.zpp_inner = new zpp_nape.util.ZPP_ArbiterList();
-    this.zpp_inner.outer = this;
-  };
-  nape.dynamics.ArbiterList.prototype.zpp_inner = null;
   // nape.dynamics.ArbiterType: converted to TypeScript → src/dynamics/ArbiterType.ts
-  // Minimal stub needed for init-time singleton creation (~line 120451).
-  // ArbiterType.ts replaces this class and fixes prototypes via Object.setPrototypeOf.
-  nape.dynamics.ArbiterType = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError(
-        "Error: Cannot instantiate ArbiterType derp!"
-      );
-    }
-  };
-  nape.dynamics.ArbiterType.__name__ = ["nape", "dynamics", "ArbiterType"];
-  nape.dynamics.ArbiterType.prototype.__class__ = nape.dynamics.ArbiterType;
+  // Registration handled by ArbiterType.ts at module load time.
   // nape.dynamics.CollisionArbiter: converted to TypeScript → src/dynamics/CollisionArbiter.ts
   // Registration handled by CollisionArbiter.ts at module load time to avoid circular imports.
   // Stub needed: ZPP_Arbiter.wrapper() creates instances via new nape.dynamics.CollisionArbiter().
@@ -369,15 +326,7 @@ define(function () {
   // nape.phys.BodyIterator + nape.phys.BodyList: converted to TypeScript → src/util/registerLists.ts
   // Registration handled by registerLists.ts at module load time.
   // nape.phys.BodyType: converted to TypeScript → src/phys/BodyType.ts
-  // Minimal stub needed because compiled init code (line ~120132) creates singletons.
-  // The real BodyType class replaces this at module load time via self-registration.
-  nape.phys.BodyType = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError("Error: Cannot instantiate BodyType derp!");
-    }
-  };
-  nape.phys.BodyType.__name__ = ["nape", "phys", "BodyType"];
-  nape.phys.BodyType.prototype.__class__ = nape.phys.BodyType;
+  // Registration handled by BodyType.ts at module load time.
   // nape.phys.Compound: converted to TypeScript → src/phys/Compound.ts
   // Registration handled by Compound.ts at module load time to avoid circular imports.
   // Stub constructor needed because compiled code references nape.phys.Compound before TS module loads.
@@ -448,15 +397,7 @@ define(function () {
   // nape.shape.ShapeIterator + nape.shape.ShapeList: converted to TypeScript → src/util/registerLists.ts
   // Registration handled by registerLists.ts at module load time.
   // nape.shape.ShapeType: converted to TypeScript → src/shape/ShapeType.ts
-  // Minimal stub needed because compiled init code (line ~120163) creates singletons.
-  // The real ShapeType class replaces this at module load time via self-registration.
-  nape.shape.ShapeType = function () {
-    if (!zpp_nape.util.ZPP_Flags.internal) {
-      throw new js._Boot.HaxeError("Error: Cannot instantiate ShapeType derp!");
-    }
-  };
-  nape.shape.ShapeType.__name__ = ["nape", "shape", "ShapeType"];
-  nape.shape.ShapeType.prototype.__class__ = nape.shape.ShapeType;
+  // Registration handled by ShapeType.ts at module load time.
   // nape.shape.ValidationResult: stub → src/shape/ValidationResult.ts
   // Minimal stub needed because compiled shape validation code creates instances.
   nape.shape.ValidationResult = function () {
@@ -492,8 +433,9 @@ define(function () {
   sandbox.Main.main = function () {};
   sandbox.Main.prototype.__class__ = sandbox.Main;
   if (typeof zpp_nape == "undefined") zpp_nape = {};
-  // All ZPP_* class registrations, _init()/_initEnums()/_initStatics(), nape.__zpp = zpp_nape:
+  // All ZPP_* class registrations, _init()/_initStatics(), nape.__zpp = zpp_nape:
   // moved to TypeScript → src/native/util/ZPPRegistry.ts
+  // _initEnums() calls moved to engine.ts (after TS enum classes self-register).
   registerZPPClasses(nape, zpp_nape, $hxClasses);
   sandbox.Main.main();
   {

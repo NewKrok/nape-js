@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { getNape, ensureEnumsReady } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import type { NapeInner } from "../geom/Vec2";
@@ -152,17 +152,5 @@ export class CbType {
 const nape = getNape();
 nape.callbacks.CbType = CbType;
 (CbType.prototype as Any).__class__ = CbType;
+ensureEnumsReady();
 
-// Retroactively fix prototypes of ANY_* singletons created by the compiled stub
-// before this module loaded. They have valid zpp_inner but wrong prototype chain.
-const anyTypes = [
-  (ZPP_CbType as Any).ANY_SHAPE,
-  (ZPP_CbType as Any).ANY_BODY,
-  (ZPP_CbType as Any).ANY_COMPOUND,
-  (ZPP_CbType as Any).ANY_CONSTRAINT,
-];
-for (const inst of anyTypes) {
-  if (inst && !(inst instanceof CbType)) {
-    Object.setPrototypeOf(inst, CbType.prototype);
-  }
-}

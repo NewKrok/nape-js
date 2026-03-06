@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { getNape, ensureEnumsReady } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 type Any = any;
@@ -61,13 +61,6 @@ export class ShapeType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 
-// Fix prototypes of singletons created by the compiled stub at init time.
-if (ZPP_Flags.ShapeType_CIRCLE != null) {
-  Object.setPrototypeOf(ZPP_Flags.ShapeType_CIRCLE, ShapeType.prototype);
-}
-if (ZPP_Flags.ShapeType_POLYGON != null) {
-  Object.setPrototypeOf(ZPP_Flags.ShapeType_POLYGON, ShapeType.prototype);
-}
-
 nape.shape.ShapeType = ShapeType;
 (ShapeType.prototype as Any).__class__ = ShapeType;
+ensureEnumsReady();
