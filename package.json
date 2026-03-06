@@ -34,7 +34,9 @@
     "format:check": "prettier --check src/ tests/",
     "check:circular": "madge --circular --extensions ts src/ --json | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));if(d.length>5){console.error('New circular dependencies detected: '+d.length+' (max 5)');process.exit(1)}else{console.log('Circular dependencies: '+d.length+'/5 (OK)')}\"",
     "benchmark": "npm run build && node benchmarks/run.mjs",
-    "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js && node scripts/stamp-docs.mjs"
+    "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js && node scripts/stamp-docs.mjs && npm run build:typedoc",
+    "build:typedoc": "typedoc",
+    "serve:docs": "npx serve docs"
   },
   "repository": {
     "type": "git",
@@ -63,6 +65,7 @@
     "madge": "^8.0.0",
     "prettier": "^3.8.1",
     "tsup": "^8.4.0",
+    "typedoc": "^0.28.17",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.56.1",
     "vitest": "^3.0.0"

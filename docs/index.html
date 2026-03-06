@@ -12,7 +12,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="style.css?v=3.3.42" />
+  <link rel="stylesheet" href="style.css?v=3.4.5" />
 </head>
 <body>
   <!-- ===== HERO ===== -->
@@ -24,10 +24,14 @@
         Rigid bodies &bull; Convex polygons &bull; Circle shapes &bull; Constraints &bull;
         Collision callbacks &bull; Spatial queries &mdash; all with a clean, typed API.
       </p>
+      <div class="hero-meta">
+        <span class="version-badge" id="versionBadge">v3.4.5</span>
+      </div>
       <div class="hero-actions">
         <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
         <a href="#demos" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Try the Demos</a>
         <a href="#benchmarks" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">Benchmarks</a>
+        <a href="api/index.html" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">API Docs</a>
       </div>
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
@@ -54,7 +58,7 @@
         <a href="examples.html" class="tab tab-more" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'more_examples'})">More &rarr;</a>
       </nav>
 
-      <div class="canvas-wrap">
+      <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
         <div class="canvas-overlay" id="canvasOverlay">Loading engine&hellip;</div>
       </div>
@@ -64,9 +68,15 @@
         <span id="bodyCount">Bodies: —</span>
         <span id="stepTime">Step: —</span>
         <button class="btn btn-small" id="resetBtn">Reset</button>
-        <label class="toggle-label">
-          <input type="checkbox" id="debugDraw" checked /> Show outlines
-        </label>
+        <div class="demo-bar-right">
+          <div class="render-mode-toggle" id="renderModeToggle">
+            <button class="render-mode-btn active" data-mode="2d">2D</button>
+            <button class="render-mode-btn" data-mode="3d">3D</button>
+          </div>
+          <label class="toggle-label">
+            <input type="checkbox" id="debugDraw" checked /> Show outlines
+          </label>
+        </div>
       </div>
 
       <div class="demo-description" id="demoDescription"></div>
@@ -76,54 +86,11 @@
         <div class="code-panel-header">
           <span class="code-panel-title">Source Code</span>
           <div class="code-panel-actions">
-            <div class="render-mode-toggle" id="renderModeToggle">
-              <button class="render-mode-btn active" data-mode="2d">2D Canvas</button>
-              <button class="render-mode-btn" data-mode="3d">3D Three.js</button>
-            </div>
             <button class="btn btn-small" id="copyCodeBtn" title="Copy to clipboard">Copy</button>
             <button class="btn btn-small btn-codepen" id="codepenBtn" title="Open in CodePen">CodePen</button>
           </div>
         </div>
         <pre class="code-panel-body"><code id="codePreview"></code></pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== BEFORE / AFTER ===== -->
-  <section class="section section-alt">
-    <div class="container">
-      <h2>Before &amp; After</h2>
-      <div class="compare-grid">
-        <div class="compare-card">
-          <h3>v1 — Raw Haxe API</h3>
-          <pre><code>import initNape from "./nape-js.module.js";
-initNape();
-
-const body = new nape.phys.Body(
-  nape.phys.BodyType.get_DYNAMIC()
-);
-body.get_shapes().add(
-  new nape.shape.Polygon(
-    nape.shape.Polygon.box(100, 100)
-  )
-);
-body.get_position().set_x(200);
-body.set_rotation(Math.PI / 2);
-body.set_space(space);</code></pre>
-        </div>
-        <div class="compare-card highlight">
-          <h3>v2 — TypeScript Wrapper</h3>
-          <pre><code>import { Body, BodyType, Polygon }
-  from "@newkrok/nape-js";
-
-const body = new Body(BodyType.DYNAMIC);
-body.shapes.add(
-  new Polygon(Polygon.box(100, 100))
-);
-body.position.x = 200;
-body.rotation = Math.PI / 2;
-body.space = space;</code></pre>
-        </div>
       </div>
     </div>
   </section>
@@ -204,6 +171,6 @@ body.space = space;</code></pre>
     </div>
   </footer>
 
-  <script type="module" src="app.js?v=3.3.42"></script>
+  <script type="module" src="app.js?v=3.4.5"></script>
 </body>
 </html>
