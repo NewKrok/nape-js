@@ -241,7 +241,169 @@ Tests: `tests/core/HaxeShims.test.ts`.
 - **Benchmark** (`benchmarks/run.mjs`) updated to use `getNape()` from `dist/index.js`
   instead of direct import from the now-deleted source file.
 
-## Modernization Pattern
+## Upcoming Modernization Tasks
+
+Audit findings (as of Priority 20 completion):
+
+| Metric | Value |
+|--------|-------|
+| `prototype.__class__` assignments | ~200 (ONLY written, never read → dead code) |
+| `$hxClasses["..."] = X` registrations | ~120 (ONLY written, never read → dead code) |
+| `type Any = any` alias | 152 files |
+| `: any` / `as any` occurrences | 218 + 126 |
+| `getNape()` call sites | 88 files (32 access `__zpp` for ZPP class lookup) |
+| Bundle size (ESM, unminified) | 2.2 MB |
+| `sideEffects: true` | tree shaking fully disabled |
+| Missing test files | 16 (callbacks, lists, integration) |
+
+### Priority 21: Drop `$hxClasses` + `prototype.__class__`
+
+**Effort: S | Impact: medium | Risk: low**
+
+Both are write-only dead code. No Haxe `Std.is()` or string-based class lookup remains.
+- Remove all 88 `ZPP_Xxx.prototype.__class__ = ZPP_Xxx` lines from `ZPPRegistry.ts`
+- Remove all `(Foo.prototype as Any).__class__ = Foo` lines from ~60 public API files
+- Remove `$hxClasses` import from `ZPPRegistry.ts` and `ZNPRegistry.ts`
+- Remove `$hxClasses` export from `HaxeShims.ts` (if no other consumers remain)
+
+Result: ~200 lines deleted, `ZPPRegistry.ts` shrinks by ~100 lines.
+
+### Priority 22: Bundle minification
+
+**Effort: XS | Impact: large | Risk: zero**
+
+Add `minify: true` to `tsup.config.ts`. Expected: 2.2 MB → ~650 KB ESM.
+Separately, exclude source maps from the published npm package via `.npmignore` (~4 MB saving).
+
+### Priority 23: `getNape().__zpp.xxx.YYY` → direct imports
+
+**Effort: M | Impact: large | Risk: medium**
+
+32 files access ZPP classes through the runtime namespace:
+```typescript
+// Current (untyped runtime lookup):
+const zpp = getNape().__zpp;
+zpp.util.ZPP_InteractorList.get(...)
+
+// Target (typed static import):
+import { ZPP_InteractorList } from "../native/util/ZNPList";
+ZPP_InteractorList.get(...)
+```
+When all 32 files are migrated, `nape.__zpp = zpp` in `ZPPRegistry.ts` becomes
+unnecessary and can be removed along with the `zpp` namespace object entirely.
+
+### Priority 24: `nape.*` public namespace audit + reduction
+
+**Effort: S | Impact: medium | Risk: low**
+
+The `nape.xxx.Foo = Foo` assignments serve three purposes — only two are still needed:
+
+| Purpose | Example | Still needed? |
+|---------|---------|---------------|
+| Enum singleton access | `nape.phys.BodyType` | ✅ yes (`ZPP_Body._initEnums`) |
+| Config access | `nape.Config.epsilon` | ✅ yes (`ZPP_Space`) |
+| Class constructor lookup | `nape.phys.Body` | ❌ no — `_wrapFn` callback replaces it |
+| Subclass factory | `nape.shape.Circle` | ❌ no — `_createFn` callback replaces it |
+
+~40 pure class-registration assignments in public API files can be deleted.
+
+### Priority 25: `type Any = any` → real TypeScript types
+
+**Effort: XL | Impact: largest | Risk: medium**
+
+152 files use `type Any = any` as an escape hatch. Three categories:
+
+- **~30% — generics**: `static _wrap(inner: Any): Any` → `static _wrap<T>(inner: T): Wrapper<T>`
+- **~30% — union types**: `filter?: Any` → `filter?: InteractionFilter | null`
+- **~40% — legitimately dynamic**: user-data fields, engine-internal casts — keep as `unknown` or `any`
+
+Start with public API files (Body, Space, Vec2, Shape) — these affect library consumers directly.
+Native ZPP classes are internal; lower priority.
+
+### Priority 26: Tree shaking
+
+**Effort: L | Impact: large (bundle selectivity) | Risk: high**
+
+Blocker: `"sideEffects": true` is required because every public API module registers itself
+as a side effect (`nape.phys.Body = Body` at module bottom).
+
+Target architecture:
+```typescript
+// Centralized bootstrap file (src/core/bootstrap.ts):
+import { Body } from "../phys/Body";
+import { ZPP_Body } from "../native/phys/ZPP_Body";
+ZPP_Body._wrapFn = (zpp) => new Body(zpp);
+// ... all registrations here
+
+// package.json:
+"sideEffects": ["src/core/engine.ts", "src/core/bootstrap.ts"]
+```
+This allows `import { Vec2 } from "nape-js"` without pulling in Space/Body/Constraints.
+Prerequisite: Priority 23 (direct ZPP imports) and Priority 24 (namespace reduction) done first.
+
+### Priority 27: HaxeShims.ts final audit
+
+**Effort: S | Impact: small | Risk: low**
+
+After Priority 21 removes `$hxClasses`, audit what remains in `HaxeShims.ts`:
+
+| Shim | Still needed? |
+|------|---------------|
+| `$hxClasses` | ❌ (removed in P21) |
+| `HaxeError` | ✅ ZPP code throws/catches Haxe errors |
+| `$bind` | verify — may be used in ZPP callbacks |
+| `$estr`, `jsBoot.__string_rec` | verify — likely only in error paths |
+| `Reflect`, `Std`, `StringTools` | verify — drop if no callers remain |
+
+Target: 150-line file → ~20 lines (only `HaxeError` + confirmed active shims).
+
+### Priority 28: User-facing API improvements
+
+**Effort: M | Impact: DX | Risk: low**
+
+- **28a** — Verify `Symbol.iterator` works uniformly on all List types
+  (`GeomVertexIterator`, `Vec2List`, `ContactList`, factory-generated lists)
+- **28b** — Enable `strictNullChecks: true` in `tsconfig.json` (requires P25 first)
+- **28c** — Audit `get_*()` / `set_*()` Haxe-style accessor methods on public API:
+  deprecate any that are exported in `index.ts` in favour of native TS getters/setters
+
+### Priority 29: Missing test coverage
+
+**Effort: M | Impact: safety | Risk: zero**
+
+16 missing test files, priority order:
+1. `tests/core/engine.test.ts` — `getNape()` lazy init, `ensureEnumsReady`
+2. `tests/geom/Vec2List.test.ts`, `tests/dynamics/ContactList.test.ts`, `tests/geom/GeomVertexIterator.test.ts`
+3. `tests/callbacks/BodyCallback.test.ts`, `tests/dynamics/CollisionArbiter.test.ts`, `tests/dynamics/FluidArbiter.test.ts`
+4. `tests/callbacks/Listener.test.ts`, `tests/callbacks/ConstraintListener.test.ts`, `tests/callbacks/PreListener.test.ts`
+5. `tests/constraint/Constraint.test.ts` (integration)
+
+### Execution order
+
+```
+P21 → P22 → P23 → P24 → P27
+(dead code)  (bundle)  (zpp imports)  (namespace)  (shims)
+                ↓
+          P25 (Any → types)  ←→  P28 (API ergonomics)
+                ↓
+          P26 (tree shaking)
+                ↓
+          P29 (tests)
+```
+
+| Priority | Effort | Impact | Risk |
+|----------|--------|--------|------|
+| P21 — Drop `__class__` / `$hxClasses` | S | medium | low |
+| P22 — Minification | XS | **large** | none |
+| P23 — `__zpp` → direct imports | M | large | medium |
+| P24 — Namespace reduction | S | medium | low |
+| P25 — `Any` → real types | XL | **largest** | medium |
+| P26 — Tree shaking | L | large | high |
+| P27 — HaxeShims audit | S | small | low |
+| P28 — API ergonomics | M | DX | low |
+| P29 — Test coverage | M | safety | none |
+
+
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions
 as reference implementations:
