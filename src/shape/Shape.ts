@@ -14,6 +14,10 @@ import { Interactor, _bindShapeWrapForInteractor } from "../phys/Interactor";
 import "./ShapeType";
 import type { ShapeType } from "./ShapeType";
 import { ZPP_Shape } from "../native/shape/ZPP_Shape";
+import { ZPP_Geom } from "../native/geom/ZPP_Geom";
+import { ZPP_Collide } from "../native/geom/ZPP_Collide";
+import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
+import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
 // ---------------------------------------------------------------------------
 // Subclass wrap bindings — Circle and Polygon register their _wrap functions
@@ -427,8 +431,6 @@ export class Shape extends Interactor {
   }
 
   contains(point: Vec2): boolean {
-    const nape = getNape();
-    const zpp_ns = nape.__zpp;
     const zpp = (this as Any).zpp_inner;
     if ((point as Any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -439,10 +441,10 @@ export class Shape extends Interactor {
     if ((zpp.body != null ? zpp.body.outer : null) == null) {
       throw new Error("Error: Shape is not well defined without a Body");
     }
-    zpp_ns.geom.ZPP_Geom.validateShape(zpp);
+    ZPP_Geom.validateShape(zpp);
     const inner = (point as Any).zpp_inner;
     if (inner._validate != null) inner._validate();
-    const ret = zpp_ns.collision.ZPP_Collide.shapeContains(zpp, inner);
+    const ret = ZPP_Collide.shapeContains(zpp, inner);
     if (inner.weak) {
       point.dispose();
     }
@@ -495,7 +497,6 @@ export class Shape extends Interactor {
   /** Setup worldCOM lazy Vec2 wrapper */
   private _setupWorldCOM(): void {
     const nape = getNape();
-    const zpp_ns = nape.__zpp;
     const zpp = (this as Any).zpp_inner;
     const x = zpp.worldCOMx;
     const y = zpp.worldCOMy;
@@ -504,24 +505,24 @@ export class Shape extends Interactor {
     }
     // Get or create Vec2 from pool
     let ret: Any;
-    if (zpp_ns.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
-      ret = zpp_ns.util.ZPP_PubPool.poolVec2;
-      zpp_ns.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret === zpp_ns.util.ZPP_PubPool.nextVec2) {
-        zpp_ns.util.ZPP_PubPool.nextVec2 = null;
+      if (ret === ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
     if (ret.zpp_inner == null) {
       let ret1: Any;
-      if (zpp_ns.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp_ns.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp_ns.geom.ZPP_Vec2.zpp_pool;
-        zpp_ns.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;

@@ -7,10 +7,10 @@
  * Converted from nape-compiled.js lines 29958–30409.
  */
 
-import { getNape } from "../../core/engine";
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_PartitionedPoly } from "./ZPP_PartitionedPoly";
+import { ZNPList_ZPP_PartitionVertex, ZPP_Set_ZPP_PartitionVertex } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -204,7 +204,7 @@ export class ZPP_Monotone {
       return poly;
     }
     if (ZPP_Monotone.queue == null) {
-      ZPP_Monotone.queue = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+      ZPP_Monotone.queue = new ZNPList_ZPP_PartitionVertex();
     }
     const F = poly.vertices;
     const L = poly.vertices;
@@ -299,13 +299,12 @@ export class ZPP_Monotone {
       xxlist.pushmod = true;
     }
     // Initialize BST edge set
-    const zpp = getNape().__zpp;
     if (ZPP_Monotone.edges == null) {
-      if (zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool == null) {
-        ZPP_Monotone.edges = new zpp.util.ZPP_Set_ZPP_PartitionVertex();
+      if (ZPP_Set_ZPP_PartitionVertex.zpp_pool == null) {
+        ZPP_Monotone.edges = new ZPP_Set_ZPP_PartitionVertex();
       } else {
-        ZPP_Monotone.edges = zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_PartitionVertex.zpp_pool = ZPP_Monotone.edges.next;
+        ZPP_Monotone.edges = ZPP_Set_ZPP_PartitionVertex.zpp_pool;
+        ZPP_Set_ZPP_PartitionVertex.zpp_pool = ZPP_Monotone.edges.next;
         ZPP_Monotone.edges.next = null;
       }
       ZPP_Monotone.edges.lt = ZPP_PartitionVertex.edge_lt;

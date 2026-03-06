@@ -1,6 +1,7 @@
 import { getNape } from "../core/engine";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
+import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_Contact } from "../native/dynamics/ZPP_Contact";
 import type { ZPP_IContact } from "../native/dynamics/ZPP_IContact";
 
@@ -42,7 +43,6 @@ export class Contact {
       return null;
     }
     const outer = this.zpp_inner.arbiter.outer;
-    const ZPP_Arbiter = getNape().__zpp.dynamics.ZPP_Arbiter;
     if (outer.zpp_inner.type == ZPP_Arbiter.COL) {
       return outer.zpp_inner.colarb.outer_zn;
     }

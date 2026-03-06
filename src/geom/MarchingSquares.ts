@@ -1,4 +1,5 @@
 import { getNape } from "../core/engine";
+import { ZPP_MarchingSquares } from "../native/geom/ZPP_MarchingSquares";
 import type { Vec2 } from "./Vec2";
 import type { AABB } from "./AABB";
 
@@ -93,7 +94,7 @@ export class MarchingSquares {
     // --- Get or create output list ---
     const nape = getNape();
     const ret = output != null ? output : new nape.geom.GeomPolyList();
-    const zppMs = nape.__zpp.geom.ZPP_MarchingSquares;
+    const zppMs = ZPP_MarchingSquares;
 
     // --- Extract bounds ---
     const boundsZpp = (bounds as Any).zpp_inner;

@@ -280,5 +280,3 @@ nape.constraint.MotorJoint = MotorJoint;
 (MotorJoint.prototype as Any).__class__ = MotorJoint;
 
 ZPP_MotorJoint._createFn = (...args: any[]) => new (MotorJoint as any)(...args);
-const zpp = nape.__zpp;
-zpp.constraint.ZPP_MotorJoint = ZPP_MotorJoint;

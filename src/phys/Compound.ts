@@ -5,6 +5,7 @@ import { Body } from "./Body";
 import { Space } from "../space/Space";
 import { Interactor, _bindCompoundWrapForInteractor } from "./Interactor";
 import { ZPP_Compound } from "../native/phys/ZPP_Compound";
+import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 
 type Any = any;
 
@@ -35,9 +36,8 @@ export class Compound extends Interactor {
     // so we can reassign it here.
     (this as Writable<Compound>)._inner = this as Any;
 
-    // Register ANY_COMPOUND callback type (use the ZPP-level singleton, same as compiled code)
-    const zppNs = getNape().__zpp;
-    zpp.insert_cbtype(zppNs.callbacks.ZPP_CbType.ANY_COMPOUND.zpp_inner);
+    // Register ANY_COMPOUND callback type
+    zpp.insert_cbtype((ZPP_CbType as any).ANY_COMPOUND.zpp_inner);
   }
 
   /** @internal */

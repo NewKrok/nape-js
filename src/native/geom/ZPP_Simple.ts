@@ -8,7 +8,7 @@
  * Converted from nape-compiled.js lines 33689–35033.
  */
 
-import { getNape } from "../../core/engine";
+
 import { ZPP_SimpleVert } from "./ZPP_SimpleVert";
 import { ZPP_SimpleSeg } from "./ZPP_SimpleSeg";
 import { ZPP_SimpleEvent } from "./ZPP_SimpleEvent";
@@ -16,6 +16,7 @@ import { ZPP_SimpleSweep } from "./ZPP_SimpleSweep";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { Hashable2_Boolfalse } from "../util/Hashable2_Boolfalse";
 import { FastHash2_Hashable2_Boolfalse } from "../util/FastHash2_Hashable2_Boolfalse";
+import { ZNPList_ZPP_GeomVert, ZNPList_ZPP_SimpleVert, ZNPList_ZPP_SimpleEvent, ZPP_Set_ZPP_SimpleVert, ZPP_Set_ZPP_SimpleEvent } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -33,28 +34,28 @@ export class ZPP_Simple {
   __class__: Any = ZPP_Simple;
 
   static decompose(poly: Any, rets: Any): Any {
-    const zpp = getNape().__zpp;
+    
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
       ZPP_Simple.inthash = new FastHash2_Hashable2_Boolfalse();
     }
     if (ZPP_Simple.vertices == null) {
-      if (zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
-        ZPP_Simple.vertices = new zpp.util.ZPP_Set_ZPP_SimpleVert();
+      if (ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
+        ZPP_Simple.vertices = new ZPP_Set_ZPP_SimpleVert();
       } else {
-        ZPP_Simple.vertices = zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool = ZPP_Simple.vertices.next;
+        ZPP_Simple.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool;
+        ZPP_Set_ZPP_SimpleVert.zpp_pool = ZPP_Simple.vertices.next;
         ZPP_Simple.vertices.next = null;
       }
       ZPP_Simple.vertices.lt = ZPP_SimpleVert.less_xy;
       ZPP_Simple.vertices.swapped = ZPP_SimpleVert.swap_nodes;
     }
     if (ZPP_Simple.queue == null) {
-      if (zpp.util.ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
-        ZPP_Simple.queue = new zpp.util.ZPP_Set_ZPP_SimpleEvent();
+      if (ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
+        ZPP_Simple.queue = new ZPP_Set_ZPP_SimpleEvent();
       } else {
-        ZPP_Simple.queue = zpp.util.ZPP_Set_ZPP_SimpleEvent.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.queue.next;
+        ZPP_Simple.queue = ZPP_Set_ZPP_SimpleEvent.zpp_pool;
+        ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.queue.next;
         ZPP_Simple.queue.next = null;
       }
       ZPP_Simple.queue.lt = ZPP_SimpleEvent.less_xy;
@@ -185,11 +186,11 @@ export class ZPP_Simple {
     pre.links.insert(fst);
     fst.links.insert(pre);
     if (ZPP_Simple.ints == null) {
-      if (zpp.util.ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
-        ZPP_Simple.ints = new zpp.util.ZPP_Set_ZPP_SimpleEvent();
+      if (ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
+        ZPP_Simple.ints = new ZPP_Set_ZPP_SimpleEvent();
       } else {
-        ZPP_Simple.ints = zpp.util.ZPP_Set_ZPP_SimpleEvent.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.ints.next;
+        ZPP_Simple.ints = ZPP_Set_ZPP_SimpleEvent.zpp_pool;
+        ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.ints.next;
         ZPP_Simple.ints.next = null;
       }
       ZPP_Simple.ints.lt = ZPP_SimpleEvent.less_xy;
@@ -902,7 +903,7 @@ export class ZPP_Simple {
       ZPP_Simple.inthash.table[i] = null;
     }
     if (rets == null) {
-      rets = new zpp.util.ZNPList_ZPP_GeomVert();
+      rets = new ZNPList_ZPP_GeomVert();
     }
     while (!ZPP_Simple.vertices.empty()) ZPP_Simple.clip_polygon(ZPP_Simple.vertices, rets);
     return rets;
@@ -1068,14 +1069,13 @@ export class ZPP_Simple {
   }
 
   static isSimple(poly: Any): boolean {
-    const zpp = getNape().__zpp;
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
       ZPP_Simple.inthash = new FastHash2_Hashable2_Boolfalse();
     }
     let vertices = ZPP_Simple.list_vertices;
     if (vertices == null) {
-      vertices = ZPP_Simple.list_vertices = new zpp.util.ZNPList_ZPP_SimpleVert();
+      vertices = ZPP_Simple.list_vertices = new ZNPList_ZPP_SimpleVert();
     }
     const F = poly;
     const L = poly;
@@ -1104,7 +1104,7 @@ export class ZPP_Simple {
     }
     let queue = ZPP_Simple.list_queue;
     if (queue == null) {
-      queue = ZPP_Simple.list_queue = new zpp.util.ZNPList_ZPP_SimpleEvent();
+      queue = ZPP_Simple.list_queue = new ZNPList_ZPP_SimpleEvent();
     }
     let cx_ite = vertices.head;
     let u = cx_ite.elt;

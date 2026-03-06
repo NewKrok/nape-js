@@ -12,6 +12,7 @@ import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_AABB } from "./ZPP_AABB";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_ConvexRayResult } from "./ZPP_ConvexRayResult";
+import { ZNPNode_RayResult } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -558,8 +559,6 @@ export class ZPP_Ray {
   // ---------------------------------------------------------------------------
 
   private static _insertSorted(list: Any, res: Any): void {
-    const nape = getNape();
-    const zpp = nape.__zpp;
     let pre: Any = null;
     let cx_ite = list.zpp_inner.inner.head;
     while (cx_ite != null) {
@@ -578,11 +577,11 @@ export class ZPP_Ray {
     }
     const _this = list.zpp_inner.inner;
     let node: Any;
-    if (zpp.util.ZNPNode_RayResult.zpp_pool == null) {
-      node = new zpp.util.ZNPNode_RayResult();
+    if (ZNPNode_RayResult.zpp_pool == null) {
+      node = new ZNPNode_RayResult();
     } else {
-      node = zpp.util.ZNPNode_RayResult.zpp_pool;
-      zpp.util.ZNPNode_RayResult.zpp_pool = node.next;
+      node = ZNPNode_RayResult.zpp_pool;
+      ZNPNode_RayResult.zpp_pool = node.next;
       node.next = null;
     }
     node.elt = res;

@@ -7,9 +7,9 @@
  * Converted from nape-compiled.js lines 33937–34265.
  */
 
-import { getNape } from "../../core/engine";
 import { ZPP_SimpleVert } from "./ZPP_SimpleVert";
 import { ZPP_SimpleEvent } from "./ZPP_SimpleEvent";
+import { ZPP_Set_ZPP_SimpleSeg } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -22,12 +22,11 @@ export class ZPP_SimpleSweep {
   __class__: Any = ZPP_SimpleSweep;
 
   constructor() {
-    const zpp = getNape().__zpp;
-    if (zpp.util.ZPP_Set_ZPP_SimpleSeg.zpp_pool == null) {
-      this.tree = new zpp.util.ZPP_Set_ZPP_SimpleSeg();
+    if (ZPP_Set_ZPP_SimpleSeg.zpp_pool == null) {
+      this.tree = new ZPP_Set_ZPP_SimpleSeg();
     } else {
-      this.tree = zpp.util.ZPP_Set_ZPP_SimpleSeg.zpp_pool;
-      zpp.util.ZPP_Set_ZPP_SimpleSeg.zpp_pool = this.tree.next;
+      this.tree = ZPP_Set_ZPP_SimpleSeg.zpp_pool;
+      ZPP_Set_ZPP_SimpleSeg.zpp_pool = this.tree.next;
       this.tree.next = null;
     }
     this.tree.lt = (p: Any, q: Any) => this.edge_lt(p, q);

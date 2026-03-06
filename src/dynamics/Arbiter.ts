@@ -2,6 +2,7 @@ import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
 import type { NapeInner } from "../geom/Vec2";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
+import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 type Any = any;
 
@@ -98,7 +99,6 @@ export class Arbiter {
   get state(): Any {
     this._activeCheck();
     const nape = getNape();
-    const ZPP_Flags = nape.__zpp.util.ZPP_Flags;
     const s = this.zpp_inner.immState;
     if (s == 5) {
       if (ZPP_Flags.PreFlag_ACCEPT == null) {

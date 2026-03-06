@@ -11,6 +11,7 @@
 import { getNape } from "../../core/engine";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
+import { ZNPList_ZPP_PartitionedPoly, ZNPList_ZPP_GeomVert } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -39,14 +40,14 @@ export class ZPP_PartitionedPoly {
 
   static getSharedPP(): Any {
     if (ZPP_PartitionedPoly.sharedPPList == null) {
-      ZPP_PartitionedPoly.sharedPPList = new (getNape().__zpp.util.ZNPList_ZPP_PartitionedPoly)();
+      ZPP_PartitionedPoly.sharedPPList = new ZNPList_ZPP_PartitionedPoly();
     }
     return ZPP_PartitionedPoly.sharedPPList;
   }
 
   static getShared(): Any {
     if (ZPP_PartitionedPoly.sharedGVList == null) {
-      ZPP_PartitionedPoly.sharedGVList = new (getNape().__zpp.util.ZNPList_ZPP_GeomVert)();
+      ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert();
     }
     return ZPP_PartitionedPoly.sharedGVList;
   }
@@ -243,7 +244,7 @@ export class ZPP_PartitionedPoly {
 
   extract_partitions(ret: Any): Any {
     if (ret == null) {
-      ret = new (getNape().__zpp.util.ZNPList_ZPP_PartitionedPoly)();
+      ret = new ZNPList_ZPP_PartitionedPoly();
     }
     if (this.vertices != null) {
       const F = this.vertices;
@@ -370,7 +371,7 @@ export class ZPP_PartitionedPoly {
 
   extract(ret: Any): Any {
     if (ret == null) {
-      ret = new (getNape().__zpp.util.ZNPList_ZPP_GeomVert)();
+      ret = new ZNPList_ZPP_GeomVert();
     }
     if (this.vertices != null) {
       const F = this.vertices;

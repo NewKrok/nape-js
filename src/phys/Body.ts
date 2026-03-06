@@ -9,10 +9,12 @@ import { Space } from "../space/Space";
 import { BodyType } from "./BodyType";
 import { Interactor, _bindBodyWrapForInteractor } from "./Interactor";
 import { ZPP_Body } from "../native/phys/ZPP_Body";
+import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
+import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 
 type Any = any;
 
@@ -170,8 +172,7 @@ export class Body extends Interactor {
     }
 
     // Register ANY_BODY callback type
-    const zppNs = nape.__zpp;
-    zpp.insert_cbtype(zppNs.callbacks.ZPP_CbType.ANY_BODY.zpp_inner);
+    zpp.insert_cbtype((ZPP_CbType as any).ANY_BODY.zpp_inner);
   }
 
   /** @internal */
@@ -866,17 +867,15 @@ export class Body extends Interactor {
   }
 
   get_arbiters(): Any {
-    const zppNs = getNape().__zpp;
     if (this.zpp_inner.wrap_arbiters == null) {
-      this.zpp_inner.wrap_arbiters = zppNs.util.ZPP_ArbiterList.get(this.zpp_inner.arbiters, true);
+      this.zpp_inner.wrap_arbiters = ZPP_ArbiterList.get(this.zpp_inner.arbiters, true);
     }
     return this.zpp_inner.wrap_arbiters;
   }
 
   get_constraints(): Any {
-    const zppNs = getNape().__zpp;
     if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = zppNs.util.ZPP_ConstraintList.get(
+      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
         this.zpp_inner.constraints,
         true,
       );

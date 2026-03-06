@@ -6,10 +6,10 @@
  * Converted from nape-compiled.js lines 35672–35983.
  */
 
-import { getNape } from "../../core/engine";
 import { ZPP_SimplifyV } from "./ZPP_SimplifyV";
 import { ZPP_SimplifyP } from "./ZPP_SimplifyP";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
+import { ZNPList_ZPP_SimplifyP } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -61,7 +61,7 @@ export class ZPP_Simplify {
     let max: ZPP_SimplifyV | null = null;
     epsilon *= epsilon;
     if (ZPP_Simplify.stack == null) {
-      ZPP_Simplify.stack = new (getNape().__zpp.util.ZNPList_ZPP_SimplifyP)();
+      ZPP_Simplify.stack = new ZNPList_ZPP_SimplifyP();
     }
     let pre: ZPP_SimplifyV | null = null;
     let fst: ZPP_SimplifyV | null = null;

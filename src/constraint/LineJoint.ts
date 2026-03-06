@@ -438,5 +438,3 @@ nape.constraint.LineJoint = LineJoint;
 (LineJoint.prototype as Any).__class__ = LineJoint;
 
 ZPP_LineJoint._createFn = (...args: any[]) => new (LineJoint as any)(...args);
-const zpp = nape.__zpp;
-zpp.constraint.ZPP_LineJoint = ZPP_LineJoint;

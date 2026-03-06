@@ -367,5 +367,3 @@ nape.constraint.WeldJoint = WeldJoint;
 (WeldJoint.prototype as Any).__class__ = WeldJoint;
 
 ZPP_WeldJoint._createFn = (...args: any[]) => new (WeldJoint as any)(...args);
-const zpp = nape.__zpp;
-zpp.constraint.ZPP_WeldJoint = ZPP_WeldJoint;

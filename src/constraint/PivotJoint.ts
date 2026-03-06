@@ -324,5 +324,3 @@ nape.constraint.PivotJoint = PivotJoint;
 (PivotJoint.prototype as Any).__class__ = PivotJoint;
 
 ZPP_PivotJoint._createFn = (...args: any[]) => new (PivotJoint as any)(...args);
-const zpp = nape.__zpp;
-zpp.constraint.ZPP_PivotJoint = ZPP_PivotJoint;

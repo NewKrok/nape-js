@@ -13,6 +13,23 @@ import { ZNPNode } from "./ZNPNode";
 import { ZNPList } from "./ZNPList";
 import { ZPP_Set } from "./ZPP_Set";
 
+// ---------------------------------------------------------------------------
+// Exported direct references — set inside registerZNPClasses()
+// ---------------------------------------------------------------------------
+
+export let ZNPList_ZPP_PartitionVertex: typeof ZNPList = null as any;
+export let ZNPList_ZPP_PartitionedPoly: typeof ZNPList = null as any;
+export let ZNPList_ZPP_GeomVert: typeof ZNPList = null as any;
+export let ZNPList_ZPP_SimplifyP: typeof ZNPList = null as any;
+export let ZNPList_ZPP_Vec2: typeof ZNPList = null as any;
+export let ZNPList_ZPP_SimpleVert: typeof ZNPList = null as any;
+export let ZNPNode_RayResult: typeof ZNPNode = null as any;
+export let ZPP_Set_ZPP_SimpleVert: typeof ZPP_Set = null as any;
+export let ZPP_Set_ZPP_SimpleSeg: typeof ZPP_Set = null as any;
+export let ZPP_Set_ZPP_SimpleEvent: typeof ZPP_Set = null as any;
+export let ZPP_Set_ZPP_PartitionVertex: typeof ZPP_Set = null as any;
+export let ZPP_Set_ZPP_PartitionPair: typeof ZPP_Set = null as any;
+export let ZNPList_ZPP_SimpleEvent: typeof ZNPList = null as any;
 
 // ---------------------------------------------------------------------------
 // Factory helpers
@@ -93,6 +110,7 @@ export function registerZNPClasses(zpp: any): void {
   zpp.util.ZNPList_ZPP_CbSet               = createZNPList("ZPP_CbSet",               u.ZNPNode_ZPP_CbSet);
   zpp.util.ZNPList_ZPP_CbType              = createZNPList("ZPP_CbType",              u.ZNPNode_ZPP_CbType);
   zpp.util.ZNPList_ZPP_Vec2                = createZNPList("ZPP_Vec2",                u.ZNPNode_ZPP_Vec2);
+  ZNPList_ZPP_Vec2 = zpp.util.ZNPList_ZPP_Vec2;
   zpp.util.ZNPList_ZPP_CallbackSet         = createZNPList("ZPP_CallbackSet",         u.ZNPNode_ZPP_CallbackSet);
   zpp.util.ZNPList_ZPP_Shape               = createZNPList("ZPP_Shape",               u.ZNPNode_ZPP_Shape);
   zpp.util.ZNPList_ZPP_Body                = createZNPList("ZPP_Body",                u.ZNPNode_ZPP_Body);
@@ -102,11 +120,15 @@ export function registerZNPClasses(zpp: any): void {
   zpp.util.ZNPList_ZPP_CutInt              = createZNPList("ZPP_CutInt",              u.ZNPNode_ZPP_CutInt);
   zpp.util.ZNPList_ZPP_CutVert             = createZNPList("ZPP_CutVert",             u.ZNPNode_ZPP_CutVert);
   zpp.util.ZNPList_ZPP_PartitionVertex     = createZNPList("ZPP_PartitionVertex",     u.ZNPNode_ZPP_PartitionVertex);
+  ZNPList_ZPP_PartitionVertex = zpp.util.ZNPList_ZPP_PartitionVertex;
   zpp.util.ZNPList_ZPP_SimplifyP           = createZNPList("ZPP_SimplifyP",           u.ZNPNode_ZPP_SimplifyP);
+  ZNPList_ZPP_SimplifyP = zpp.util.ZNPList_ZPP_SimplifyP;
   zpp.util.ZNPList_ZPP_PartitionedPoly     = createZNPList("ZPP_PartitionedPoly",     u.ZNPNode_ZPP_PartitionedPoly);
+  ZNPList_ZPP_PartitionedPoly = zpp.util.ZNPList_ZPP_PartitionedPoly;
   zpp.util.ZNPList_ZPP_GeomVert            = createZNPList("ZPP_GeomVert",            u.ZNPNode_ZPP_GeomVert);
+  ZNPList_ZPP_GeomVert = zpp.util.ZNPList_ZPP_GeomVert;
   zpp.util.ZNPList_ZPP_SimpleVert          = createZNPList("ZPP_SimpleVert",          u.ZNPNode_ZPP_SimpleVert);
-  zpp.util.ZNPList_ZPP_SimpleEvent         = createZNPList("ZPP_SimpleEvent",         u.ZNPNode_ZPP_SimpleEvent);
+  ZNPList_ZPP_SimpleEvent = zpp.util.ZNPList_ZPP_SimpleEvent = createZNPList("ZPP_SimpleEvent", u.ZNPNode_ZPP_SimpleEvent);
   zpp.util.ZNPList_ZPP_AABBPair            = createZNPList("ZPP_AABBPair",            u.ZNPNode_ZPP_AABBPair);
   zpp.util.ZNPList_ZPP_Edge                = createZNPList("ZPP_Edge",                u.ZNPNode_ZPP_Edge);
   zpp.util.ZNPList_ZPP_AABBNode            = createZNPList("ZPP_AABBNode",            u.ZNPNode_ZPP_AABBNode);
@@ -120,14 +142,23 @@ export function registerZNPClasses(zpp: any): void {
   zpp.util.ZNPList_ConvexResult            = createZNPList("ConvexResult",            u.ZNPNode_ConvexResult);
   zpp.util.ZNPList_ZPP_GeomPoly            = createZNPList("ZPP_GeomPoly",            u.ZNPNode_ZPP_GeomPoly);
   zpp.util.ZNPList_RayResult               = createZNPList("RayResult",               u.ZNPNode_RayResult);
+  ZNPNode_RayResult = zpp.util.ZNPNode_RayResult;
+
+  // --- also assign SimpleVert ---
+  ZNPList_ZPP_SimpleVert = zpp.util.ZNPList_ZPP_SimpleVert;
 
   // --- ZPP_Set classes ---
   zpp.util.ZPP_Set_ZPP_Body            = createZPPSet("ZPP_Body");
   zpp.util.ZPP_Set_ZPP_CbSetPair       = createZPPSet("ZPP_CbSetPair");
   zpp.util.ZPP_Set_ZPP_PartitionVertex = createZPPSet("ZPP_PartitionVertex");
+  ZPP_Set_ZPP_PartitionVertex = zpp.util.ZPP_Set_ZPP_PartitionVertex;
   zpp.util.ZPP_Set_ZPP_PartitionPair   = createZPPSet("ZPP_PartitionPair");
+  ZPP_Set_ZPP_PartitionPair = zpp.util.ZPP_Set_ZPP_PartitionPair;
   zpp.util.ZPP_Set_ZPP_SimpleVert      = createZPPSet("ZPP_SimpleVert");
+  ZPP_Set_ZPP_SimpleVert = zpp.util.ZPP_Set_ZPP_SimpleVert;
   zpp.util.ZPP_Set_ZPP_SimpleSeg       = createZPPSet("ZPP_SimpleSeg");
+  ZPP_Set_ZPP_SimpleSeg = zpp.util.ZPP_Set_ZPP_SimpleSeg;
   zpp.util.ZPP_Set_ZPP_SimpleEvent     = createZPPSet("ZPP_SimpleEvent");
+  ZPP_Set_ZPP_SimpleEvent = zpp.util.ZPP_Set_ZPP_SimpleEvent;
   zpp.util.ZPP_Set_ZPP_CbSet           = createZPPSet("ZPP_CbSet");
 }

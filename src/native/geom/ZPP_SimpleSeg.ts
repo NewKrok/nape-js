@@ -7,7 +7,8 @@
  * Converted from nape-compiled.js lines 33818–33878.
  */
 
-import { getNape } from "../../core/engine";
+import { ZPP_Set_ZPP_SimpleVert } from "../util/ZNPRegistry";
+import { ZPP_ID } from "../util/ZPP_ID";
 
 type Any = any;
 
@@ -26,13 +27,12 @@ export class ZPP_SimpleSeg {
   __class__: Any = ZPP_SimpleSeg;
 
   constructor() {
-    const zpp = getNape().__zpp;
-    this.id = zpp.ZPP_ID.ZPP_SimpleSeg();
-    if (zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
-      this.vertices = new zpp.util.ZPP_Set_ZPP_SimpleVert();
+    this.id = ZPP_ID.ZPP_SimpleSeg();
+    if (ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
+      this.vertices = new ZPP_Set_ZPP_SimpleVert();
     } else {
-      this.vertices = zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool;
-      zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool = this.vertices.next;
+      this.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool;
+      ZPP_Set_ZPP_SimpleVert.zpp_pool = this.vertices.next;
       this.vertices.next = null;
     }
     this.vertices.lt = (a: Any, b: Any) => this.less_xy(a, b);

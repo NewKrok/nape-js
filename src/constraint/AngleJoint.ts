@@ -326,5 +326,3 @@ nape.constraint.AngleJoint = AngleJoint;
 (AngleJoint.prototype as Any).__class__ = AngleJoint;
 
 ZPP_AngleJoint._createFn = (...args: any[]) => new (AngleJoint as any)(...args);
-const zpp = nape.__zpp;
-zpp.constraint.ZPP_AngleJoint = ZPP_AngleJoint;

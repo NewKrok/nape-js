@@ -5,6 +5,7 @@ import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Shape, _bindPolygonWrap } from "./Shape";
 import { ZPP_Polygon } from "../native/shape/ZPP_Polygon";
+import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 
@@ -174,8 +175,7 @@ export class Polygon extends Shape {
     }
 
     // --- Register ANY_SHAPE callback type ---
-    const zppNs = nape.__zpp;
-    zpp.insert_cbtype(zppNs.callbacks.ZPP_CbType.ANY_SHAPE.zpp_inner);
+    zpp.insert_cbtype((ZPP_CbType as any).ANY_SHAPE.zpp_inner);
   }
 
   /** @internal */
