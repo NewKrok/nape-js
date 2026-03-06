@@ -40,4 +40,4 @@ export const Config = {
 // Self-register: apply all constants to nape.Config so compiled ZPP engine
 // code accessing nape.Config.epsilon etc. at runtime sees the TS values.
 const nape = getNape();
-Object.assign(nape.Config, Config);
+nape.Config = Object.assign(nape.Config || {}, Config);

@@ -52,45 +52,51 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~462 lines)
+### What remains in nape-compiled.js (~108 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
 | Section | Lines | Status |
 |---------|-------|--------|
-| Imports (registerZPPClasses, HaxeShims) | ~6 | Infrastructure |
-| Namespace initialization (`nape.callbacks = {}` etc.) | ~8 | Lightweight bootstrap |
-| Public API stubs (Callback, Listener, OptionType, etc.) | ~370 | Still needed for runtime use before TS loads |
-| sandbox.Main + registerZPPClasses call | ~10 | Bootstrap |
-| Haxe shim fixes + return | ~8 | Bootstrap |
+| Imports (registerZPPClasses, HaxeShims) | ~2 | Infrastructure |
+| Namespace initialization (`nape.callbacks = {}` etc.) | ~10 | Lightweight bootstrap |
+| Subclass stubs (empty constructors + `__name__`) | ~48 | Needed for circular ESM dep workaround |
+| registerZPPClasses call | ~2 | Bootstrap |
+| Haxe shim fixes + return | ~10 | Bootstrap |
 
-**All public API wrappers fully modernized — no thin wrappers remain in compiled.**
-ConvexResult and RayResult are already fully TS (stubs only in compiled, replaced at load).
+**All public API wrappers fully modernized — no implementations remain in compiled.**
 
-**Enum stubs removed** (CbEvent, CbType, ListenerType, ArbiterType, BodyType, ShapeType):
-singletons are now created via `ensureEnumsReady()` in engine.ts after all TS enum classes
-self-register.
+### Base/standalone classes: side-effect imported from engine.ts
 
-### Compiled code stubs
+These classes have no `extends` or their `extends` chain doesn't create circular ESM
+dependencies. They are imported as side-effects from `engine.ts` and self-register in
+the nape namespace at module load time. No stubs needed in nape-compiled.js.
 
-Some modernized classes keep minimal stubs in `nape-compiled.js` because compiled
-runtime code references them before the TS module self-registers (e.g. `ZPP_Space`
-constructor creates a `PreCallback`). The TS class replaces the stub at module load time.
+**Classes imported from engine.ts:** Config, Debug, registerLists, Vec2List, ContactList,
+GeomVertexIterator, Callback, Listener, OptionType, InteractionType, PreFlag, Constraint,
+Arbiter, Contact, InteractionFilter, InteractionGroup, AABB, ConvexResult, Geom, GeomPoly,
+MarchingSquares, Mat23, MatMN, Ray, RayResult, Vec2, Vec3, Winding, Interactor,
+FluidProperties, Material, GravMassMode, InertiaMode, MassMode, Edge, ValidationResult,
+Broadphase, Space, CbEvent, CbType, ListenerType, ArbiterType, BodyType, ShapeType.
 
-**Classes with stubs:** OptionType, Listener, Callback, BodyCallback, ConstraintCallback,
-InteractionCallback, PreCallback, ValidationResult, Broadphase, Arbiter, CollisionArbiter,
-FluidArbiter, Callback hierarchy, Vec2List, Vec2Iterator, ContactList, ContactIterator,
-GeomVertexIterator, DistanceJoint, PivotJoint, LineJoint, WeldJoint, AngleJoint, MotorJoint,
-Body, Shape, Circle, Polygon, Compound, Edge, Interactor, Space, etc.
+### Subclass stubs: minimal placeholders in nape-compiled.js
 
-**Classes without stubs** (self-register after factory, no fixup needed):
-CbType, CbEvent, ListenerType, ArbiterType, BodyType, ShapeType (enum singletons created
-eagerly by `ensureEnumsReady()` in engine.ts once all 6 TS classes have self-registered).
+Classes that use `extends` cannot be side-effect imported from engine.ts because it creates
+a circular ESM dependency: engine → Subclass → BaseClass → engine. In this cycle, the
+subclass evaluates before the base class, causing `class X extends undefined`.
+
+These classes keep minimal 2-line stubs (empty constructor + `__name__`) in nape-compiled.js.
+The TS class replaces the stub at module load time when user code imports it (or via index.ts).
+
+**Subclasses with stubs:** BodyCallback, ConstraintCallback, InteractionCallback, PreCallback,
+BodyListener, ConstraintListener, InteractionListener, PreListener, AngleJoint, DistanceJoint,
+LineJoint, MotorJoint, PivotJoint, PulleyJoint, UserConstraint, WeldJoint, CollisionArbiter,
+FluidArbiter, Body, Compound, Shape, Circle, Polygon.
 
 ### Internal namespace exposure
 
-`nape.__zpp = zpp_nape;` at the end of the compiled factory function allows TS classes
-to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, etc.
+`nape.__zpp = zpp_nape;` at the end of `registerZPPClasses()` in ZPPRegistry.ts allows
+TS classes to access internal classes like `ZNPList_*`, `ZPP_Set_*`, etc.
 
 ## Remaining Modernization Tasks
 
@@ -181,12 +187,29 @@ into TS module initializers.
   `_initEnums` once all 6 constructors are available (handles circular-import cycles
   gracefully using a `var` flag + early-return check).
 
-#### Remaining Phase 19b: ~462 lines
-- **Public API stubs** (~370 lines): Callback, Listener, OptionType, Arbiter, Body,
-  Shape, etc. These are used by compiled runtime code (`ZPP_Space` creates `PreCallback`
-  etc.) before TS classes load. Removal requires either adding all public classes as
-  side-effect imports in engine.ts, or structural refactoring.
-- **`nape.__zpp` exposure**: Already done in `registerZPPClasses`.
+#### ✅ Phase 19c: Public API stub removal (done)
+(462 → 108 lines, -354):
+- **Base/standalone class stubs removed** (~260 lines): Stubs for Callback, Listener,
+  OptionType, Constraint, Arbiter, Contact, InteractionFilter, InteractionGroup,
+  Interactor, Edge, ValidationResult, Broadphase, Space, Debug, Config, Geom, Ray,
+  Vec2List, Vec2Iterator, ContactList, ContactIterator, GeomVertexIterator, etc.
+  Replaced by side-effect imports in `engine.ts` — TS classes self-register at load time.
+- **Subclass stubs simplified** (~92 → ~48 lines): Guard logic, prototype chains, and
+  `$hxClasses` registrations removed from stubs for BodyCallback, CollisionArbiter,
+  Circle, etc. Each stub is now 2 lines (empty constructor + `__name__`).
+  Cannot be imported from engine.ts due to circular ESM dependencies.
+- **Haxe shim imports cleaned**: Removed unused `Reflect`, `Std`, `StringTools`, `$estr`
+  imports from factory. Only `$hxClasses` and `js` remain (for bootstrap code).
+- **sandbox.Main removed**: Empty main() call was a no-op.
+
+#### Remaining: ~108 lines
+- **Subclass stubs** (~48 lines): 23 empty constructor + `__name__` pairs for subclasses
+  that can't be side-effect imported from engine.ts (circular ESM dep workaround).
+  To eliminate these, ZPP classes would need to import public API constructors directly
+  instead of using `nape.xxx.Foo`, or use lazy registration callbacks.
+- **Namespace init** (~10 lines): `nape.callbacks = {}` etc.
+- **Bootstrap** (~12 lines): registerZPPClasses call, String/Array `__name__`, HaxeError
+  message getter, `js.Boot.__toStr`.
 
 ## Modernization Pattern
 
@@ -231,11 +254,15 @@ as reference implementations:
 - **Circular imports**: Foo.ts → engine.ts → nape-compiled.js. Never import Foo.ts from compiled code.
 - **Test circular deps**: Tests for ZPP_* classes that import `getNape` must add
   `import "../../../src/core/engine"` before the class import to break the circular dependency.
+- **Circular ESM dep with `extends`**: A subclass (e.g. `Circle extends Shape`) CANNOT be
+  side-effect imported from engine.ts if both the base class and subclass import from
+  engine.ts. The ESM dependency cycle causes the subclass to evaluate before the base,
+  resulting in `class extends undefined`. These subclasses keep minimal stubs in
+  nape-compiled.js and self-register when user code imports them (or via index.ts).
 - **Init-time stubs**: Enum singleton classes (CbEvent, CbType, etc.) no longer need stubs —
   `ensureEnumsReady()` in engine.ts creates singletons after all TS classes self-register.
-  For non-enum classes used by compiled runtime code, keep minimal stubs in compiled code.
-- **Runtime `instanceof`**: If compiled code uses `val instanceof nape.xxx.Foo`, the stub
-  must exist with any methods called before TS module loads.
+  Base/standalone classes are side-effect imported from engine.ts. Subclasses keep minimal
+  2-line stubs (empty constructor + `__name__`) in nape-compiled.js.
 - **ensureEnumsReady pattern**: Uses `var` (not `let`) to avoid temporal dead zone issues
   when called during ESM circular-import resolution. Each of the 6 enum classes calls it
   after self-registering; it runs `_initEnums` only when all 6 are available.
