@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~3,016 lines, down from ~82k) into clean, typed TypeScript classes.
+currently ~1,674 lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2250 tests across 119 files
+npm test             # vitest — 2358 tests across 126 files
 npm run lint         # eslint + prettier
 ```
 
@@ -52,27 +52,29 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~3,016 lines)
+### What remains in nape-compiled.js (~1,674 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
 | Section | Lines | Status |
 |---------|-------|--------|
-| Imports of TS-extracted classes | ~92 | Infrastructure |
-| Bootstrap Haxe shims (Reflect, Std, StringTools, js.Boot) | ~175 | **Priority 18** |
+| Imports of TS-extracted classes | ~98 | Infrastructure |
+| Bootstrap Haxe shims (imported from HaxeShims.ts) | ~6 | ✅ P18 |
 | Public API stubs (Callback, Listener, CbType, OptionType, etc.) | ~90 | Stubs (replaced by TS at load) |
+| `nape.phys.Interactor` full implementation | ~100 | Needs extraction |
 | `nape.constraint.Constraint` stub + comment | ~5 | Stub (replaced by Constraint.ts) ✅ P11 |
 | Comment markers for converted classes | ~50 | Informational |
 | `nape.util.Debug` stub + comment | ~5 | Stub (replaced by Debug.ts) ✅ P14 |
-| Generic factories (createZNPNode, createZNPList, createZPPSet) | ~350 | **Priority 17** |
-| Factory instantiations (35+35+8 = 78 generated classes) | ~85 | (removed with factories) |
-| ZPP class registrations to compiled namespace | ~700 | **Priority 19** |
+| Generic factories (slim subclass creators using TS bases) | ~30 | ✅ P17 |
+| Factory instantiations (35+35+8 = 78 generated classes) | ~85 | ✅ P17 (using TS bases) |
+| ZPP class registrations to compiled namespace | ~400 | Remaining P19 |
 | Internal list backing classes (2 comment lines) | ~2 | ✅ P15 |
-| ZNPArray2 utility classes (3 types) | ~230 | **Priority 16** |
-| Hashable2 + FastHash2 utility classes | ~270 | **Priority 16** |
+| ZNPArray2 utility classes (3 types) | ~5 | ✅ P16 (registration only) |
+| Hashable2 + FastHash2 utility classes | ~5 | ✅ P16 (registration only) |
 | `nape.Config` comment (values moved to src/Config.ts) | ~2 | ✅ P13 |
-| Singleton enum creation + statics | ~600 | **Priority 19** |
-| Pool & flag initialization | ~110 | **Priority 19** |
+| ZPP_MixVec2List implementation | ~350 | Needs extraction |
+| Singleton enum creation + statics (init calls) | ~15 | ✅ P19a (logic in TS `_initEnums`/`_initStatics`) |
+| Pool & flag initialization | ~0 | ✅ P19a (moved to TS static fields) |
 | `nape.__zpp` exposure + module export | ~2 | (last to go) |
 
 **All public API wrappers fully modernized — no thin wrappers remain in compiled.**
@@ -94,7 +96,7 @@ DistanceJoint, PivotJoint, LineJoint, WeldJoint, AngleJoint, MotorJoint
 ### Internal namespace exposure
 
 `nape.__zpp = zpp_nape;` at the end of the compiled factory function allows TS classes
-to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`, etc.
+to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, etc.
 
 ## Remaining Modernization Tasks
 
@@ -119,57 +121,70 @@ class + `makeZPP_List()` factory in `src/native/util/ZPP_PublicList.ts`.
 Each specialisation has its own `static internal` flag for the iterator guard pattern.
 Tests: `tests/native/util/ZPP_PublicList.test.ts`.
 
-### Priority 16: Utility infrastructure classes → TypeScript (~500 lines)
+### ✅ Priority 16: Utility infrastructure classes — DONE
+~500 compiled lines replaced by 3 TypeScript files:
+- `src/native/util/ZNPArray2.ts` — Generic `ZNPArray2<T>` base class + `ZNPArray2_Float`,
+  `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair` subclasses (2D resizable arrays).
+  `ZPP_MarchingSquares.ts` updated to direct-import these instead of `_zpp.util.*`.
+- `src/native/util/Hashable2_Boolfalse.ts` — Pooled pair-key hash entry with static
+  factory methods (`get`, `getpersist`, `ordered_get`, `ordered_get_persist`).
+- `src/native/util/FastHash2_Hashable2_Boolfalse.ts` — 2^20-slot hash table for
+  `Hashable2_Boolfalse` entries. `ZPP_Simple.ts` updated to direct-import both classes.
+Tests: `tests/native/util/ZNPArray2.test.ts`, `tests/native/util/Hashable2_Boolfalse.test.ts`,
+`tests/native/util/FastHash2_Hashable2_Boolfalse.test.ts`.
 
-Three utility class families still compiled:
+### ✅ Priority 17: Generic factories → TypeScript generics — DONE
+~477 compiled lines replaced by 3 TypeScript generic base classes:
+- `src/native/util/ZNPNode.ts` — `ZNPNode<T>` linked list node base class.
+- `src/native/util/ZNPList.ts` — `ZNPList<T>` singly-linked list with pool allocation,
+  inlined method aliases, and `_NodeClass` static for per-subclass node pooling.
+- `src/native/util/ZPP_Set.ts` — `ZPP_Set<T>` Red-Black tree set with all balancing
+  operations (`__fix_dbl_red`, `__fix_neg_red`), pool allocation via `this.constructor`.
+Compiled factories now create slim `class extends Base` subclasses (~6 lines each).
+The 78 named classes (35 nodes + 35 lists + 8 sets) remain registered for compatibility.
+Tests: `tests/native/util/ZNPNode.test.ts`, `tests/native/util/ZNPList.test.ts`,
+`tests/native/util/ZPP_Set.test.ts`.
 
-- **ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair** (~230 lines)
-  — 2D resizable array wrappers. Can become a generic `ZNPArray2<T>` TypeScript class.
-- **Hashable2_Boolfalse** (~110 lines) — pooled pair-key hash entry
-- **FastHash2_Hashable2_Boolfalse** (~160 lines) — fast hash table using Hashable2
+### ✅ Priority 18: Bootstrap / Haxe shims → TypeScript — DONE
+~164 compiled lines replaced by `src/core/HaxeShims.ts`:
+- `Reflect` — `field`, `fields`, `copy` utility functions.
+- `Std` — `string(v)` wrapper using `js.Boot.__string_rec`.
+- `StringTools` — `hex(n, digits)` implementation.
+- `js.Boot.__string_rec` — recursive Haxe-style string representation.
+- `js._Boot.HaxeError` — Error subclass with `val` property.
+- `$hxClasses` registry, `$estr`, `$bind` helpers.
+Compiled factory imports and assigns to local vars.
+`ZPP_Shape.ts` simplified to use `Object.assign()` directly.
+Tests: `tests/core/HaxeShims.test.ts`.
 
-### Priority 17: Generic factories → TypeScript generics (~350 lines + 78 generated classes)
+### Priority 19: Static initialization code migration — IN PROGRESS
 
-Replace `createZNPNode()`, `createZNPList()`, `createZPPSet()` dynamic factory functions
-with static TypeScript generic classes:
+The final step — migrate all init-time code out of the compiled factory function
+into TS module initializers. **Phase 19a completed** (1,999 → 1,674 lines, -325):
 
-- `ZNPNode<T>` + `ZNPList<T>` generic classes cover all 35 node/list types
-- `ZPP_Set<T>` generic class covers all 8 set types
-- Eliminates the factory function code AND the `createZNPNode/List/Set(...)` call blocks
-- The 78 "instances" become type aliases or subclasses
+#### ✅ Phase 19a: Constants, pools, flags, singleton enums (done)
+- **ZPP_Flags id_* constants** (~47): Moved to `ZPP_Flags.ts` static field initializers
+- **Pool & flag initialization** (~166 lines removed): All `zpp_pool = null`,
+  `internal = false`, constant assignments already existed in TS static fields
+- **Singleton enum arrays**: `_initEnums()` methods added to `ZPP_Listener.ts` (ListenerType
+  + CbEvent), `ZPP_Arbiter.ts` (ArbiterType), `ZPP_Body.ts` (BodyType), `ZPP_Shape.ts`
+  (ShapeType). Compiled IIFEs replaced by single-line calls.
+- **CbType ANY_* singletons**: `_initEnums()` added to `ZPP_CbType.ts`
+- **Static object inits**: `_initStatics()` added to `ZPP_InteractionListener.ts`,
+  `ZPP_Collide.ts`, `ZPP_AABBTree.ts`. `ZPP_MarchingSquares._init()` extended.
 
-This is complex because compiled code references specific named classes (e.g.
-`ZNPList_ZPP_Body`). The named class references must remain but can point to
-generic instances.
-
-### Priority 18: Bootstrap / Haxe shims → TypeScript (~175 lines)
-
-Replace Haxe-to-JS runtime shims with TypeScript equivalents:
-
-- `Reflect` — `hasField`, `field`, `setField`, `fields`, `copy` → TS utility functions
-- `Std` — `string(v)` → `String(v)` wrapper
-- `StringTools` — `hex(n, digits)` → simple padStart implementation
-- `js.Boot` + `js._Boot.HaxeError` — error/string conversion helpers
-
-These are standalone utility classes with no circular dependencies.
-
-### Priority 19: Static initialization code migration (~1,400 lines)
-
-The final and most complex step — migrate all init-time code out of the compiled
-factory function into TS module initializers:
-
-- **ZPP registrations** (~700 lines): Move `zpp_nape.xxx.ZPP_Foo = ZPP_Foo_TS` assignments
-  to the bottom of each respective ZPP_Foo.ts module (most are already done via `_wrapFn`)
-- **Singleton enum creation** (~600 lines): Move `ZPP_CbType.ANY_*` creation, `Flags.*`
-  bitmasks, `ListenerType`/`CbEvent`/`ArbiterType`/`BodyType`/`ShapeType` array initialization
-  to their respective TS files
-- **Pool & flag initialization** (~110 lines): Move `zpp_pool = null` and `internal = false`
-  assignments to the static field declarations in TS classes
-- **`nape.__zpp` exposure**: Once all references to `zpp_nape` are in TS, this line moves
-  to the engine bootstrap
-
-After Priority 19, the compiled file is eliminated entirely. The engine bootstrap (`src/core/engine.ts`)
-becomes the single entry point.
+#### Remaining Phase 19b: Structural cleanup (~1,674 lines)
+- **ZPP registrations** (~400 lines): `zpp_nape.xxx = XXX_TS` assignments + `_nape`/`_zpp`
+  setting. These stay until the `nape`/`zpp_nape` namespace creation moves to engine.ts.
+- **Public API stubs** (~560 lines): Stubs for Callback, Listener, CbType, OptionType,
+  Arbiter, Body, Shape, etc. Needed until singleton creation moves fully to TS.
+- **Interactor implementation** (~100 lines): Full `nape.phys.Interactor` class still
+  in compiled. Needs extraction to `src/phys/Interactor.ts`.
+- **ZPP_MixVec2List** (~350 lines): Full class implementation still in compiled.
+  Needs extraction to `src/native/util/ZPP_MixVec2List.ts`.
+- **Generic factories + instantiations** (~115 lines): ZNPNode/ZNPList/ZPP_Set subclass
+  creation. Could move to a TS registry module.
+- **`nape.__zpp` exposure**: Last line to move to engine bootstrap.
 
 ## Modernization Pattern
 

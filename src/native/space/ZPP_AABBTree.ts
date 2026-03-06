@@ -19,6 +19,13 @@ export class ZPP_AABBTree {
   // --- Static: temporary AABB used during insert cost calculations ---
   static tmpaabb: ZPP_AABB | null = null;
 
+  /**
+   * Initialize static instances. Called once from compiled factory.
+   */
+  static _initStatics(): void {
+    ZPP_AABBTree.tmpaabb = new ZPP_AABB();
+  }
+
   // --- Instance: tree root ---
   root: ZPP_AABBNode | null = null;
 

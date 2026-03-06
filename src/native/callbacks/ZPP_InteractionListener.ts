@@ -537,4 +537,16 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     }
     return ret;
   }
+
+  /**
+   * Initialize static working lists. Called once from compiled factory.
+   */
+  static _initStatics(zpp_nape: Any): void {
+    ZPP_InteractionListener.UCbSet = new zpp_nape.util.ZNPList_ZPP_CbSet();
+    ZPP_InteractionListener.VCbSet = new zpp_nape.util.ZNPList_ZPP_CbSet();
+    ZPP_InteractionListener.WCbSet = new zpp_nape.util.ZNPList_ZPP_CbSet();
+    ZPP_InteractionListener.UCbType = new zpp_nape.util.ZNPList_ZPP_CbType();
+    ZPP_InteractionListener.VCbType = new zpp_nape.util.ZNPList_ZPP_CbType();
+    ZPP_InteractionListener.WCbType = new zpp_nape.util.ZNPList_ZPP_CbType();
+  }
 }
