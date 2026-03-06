@@ -303,7 +303,7 @@ export class ZPP_Space {
     this.wrap_gravity.zpp_inner._validate = () => this.gravity_validate();
   }
 
-  gravity_invalidate(x) {
+  gravity_invalidate(x: Any) {
     if (this.midstep) {
       throw new Error("Error: Space::gravity cannot be set during space step");
     }
@@ -887,7 +887,7 @@ export class ZPP_Space {
     this.cbsets.clear();
   }
 
-  bodies_adder(x) {
+  bodies_adder(x: Any) {
     if (x.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set",
@@ -904,7 +904,7 @@ export class ZPP_Space {
     }
   }
 
-  bodies_subber(x) {
+  bodies_subber(x: Any) {
     this.remBody(x.zpp_inner);
   }
 
@@ -914,7 +914,7 @@ export class ZPP_Space {
     }
   }
 
-  compounds_adder(x) {
+  compounds_adder(x: Any) {
     if (x.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of an inner Compound, only the root Compound space can be set",
@@ -931,7 +931,7 @@ export class ZPP_Space {
     }
   }
 
-  compounds_subber(x) {
+  compounds_subber(x: Any) {
     this.remCompound(x.zpp_inner);
   }
 
@@ -941,7 +941,7 @@ export class ZPP_Space {
     }
   }
 
-  constraints_adder(x) {
+  constraints_adder(x: Any) {
     if (x.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of a Constraint belonging to a Compound, only the root Compound space can be set",
@@ -958,7 +958,7 @@ export class ZPP_Space {
     }
   }
 
-  constraints_subber(x) {
+  constraints_subber(x: Any) {
     this.remConstraint(x.zpp_inner);
   }
 
@@ -968,7 +968,7 @@ export class ZPP_Space {
     }
   }
 
-  listeners_adder(x) {
+  listeners_adder(x: Any) {
     if (x.zpp_inner.space != this) {
       if (x.zpp_inner.space != null) {
         x.zpp_inner.space.outer.zpp_inner.wrap_listeners.remove(x);
@@ -980,7 +980,7 @@ export class ZPP_Space {
     }
   }
 
-  listeners_subber(x) {
+  listeners_subber(x: Any) {
     this.remListener(x.zpp_inner);
   }
 
@@ -990,23 +990,23 @@ export class ZPP_Space {
     }
   }
 
-  revoke_listener(x) {}
+  revoke_listener(x: Any) {}
 
-  unrevoke_listener(x) {}
+  unrevoke_listener(x: Any) {}
 
-  addListener(x) {
+  addListener(x: Any) {
     x.space = this;
     x.addedToSpace();
     const tmp = x.interaction != null;
   }
 
-  remListener(x) {
+  remListener(x: Any) {
     const tmp = x.interaction != null;
     x.removedFromSpace();
     x.space = null;
   }
 
-  add_callbackset(cb) {
+  add_callbackset(cb: Any) {
     const _this = cb.int1.cbsets;
     let ret;
     if (ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
@@ -1046,7 +1046,7 @@ export class ZPP_Space {
     _this2.length++;
   }
 
-  remove_callbackset(cb) {
+  remove_callbackset(cb: Any) {
     cb.lazydel = true;
     const _this = cb.int1.cbsets;
     let pre = null;
@@ -1122,7 +1122,7 @@ export class ZPP_Space {
     }
   }
 
-  transmitType(p, new_type) {
+  transmitType(p: Any, new_type: Any) {
     const o = p;
     if (!o.world) {
       o.component.waket = this.stamp + (this.midstep ? 0 : 1);
@@ -1161,7 +1161,7 @@ export class ZPP_Space {
     }
   }
 
-  added_shape(s, dontwake) {
+  added_shape(s: Any, dontwake: Any) {
     if (dontwake == null) {
       dontwake = false;
     }
@@ -1181,7 +1181,7 @@ export class ZPP_Space {
     s.addedToSpace();
   }
 
-  removed_shape(s, deleting) {
+  removed_shape(s: Any, deleting: Any) {
     if (deleting == null) {
       deleting = false;
     }
@@ -1454,7 +1454,7 @@ export class ZPP_Space {
     s.removedFromSpace();
   }
 
-  addConstraint(con) {
+  addConstraint(con: Any) {
     con.space = this;
     con.addedToSpace();
     if (con.active) {
@@ -1463,7 +1463,7 @@ export class ZPP_Space {
     }
   }
 
-  remConstraint(con) {
+  remConstraint(con: Any) {
     if (con.active) {
       this.wake_constraint(con, true);
       this.live_constraints.remove(con);
@@ -1472,7 +1472,7 @@ export class ZPP_Space {
     con.space = null;
   }
 
-  addCompound(x) {
+  addCompound(x: Any) {
     x.space = this;
     x.addedToSpace();
     let cx_ite = x.bodies.head;
@@ -1495,7 +1495,7 @@ export class ZPP_Space {
     }
   }
 
-  remCompound(x) {
+  remCompound(x: Any) {
     let cx_ite = x.bodies.head;
     while (cx_ite != null) {
       const i = cx_ite.elt;
@@ -1621,23 +1621,23 @@ export class ZPP_Space {
     body.space = null;
   }
 
-  shapesUnderPoint(x, y, filter, output) {
+  shapesUnderPoint(x: Any, y: Any, filter: Any, output: Any) {
     return this.bphase.shapesUnderPoint(x, y, filter, output);
   }
 
-  bodiesUnderPoint(x, y, filter, output) {
+  bodiesUnderPoint(x: Any, y: Any, filter: Any, output: Any) {
     return this.bphase.bodiesUnderPoint(x, y, filter, output);
   }
 
-  shapesInAABB(aabb, strict, cont, filter, output) {
+  shapesInAABB(aabb: Any, strict: Any, cont: Any, filter: Any, output: Any) {
     return this.bphase.shapesInAABB(aabb.zpp_inner, strict, cont, filter, output);
   }
 
-  bodiesInAABB(aabb, strict, cont, filter, output) {
+  bodiesInAABB(aabb: Any, strict: Any, cont: Any, filter: Any, output: Any) {
     return this.bphase.bodiesInAABB(aabb.zpp_inner, strict, cont, filter, output);
   }
 
-  shapesInCircle(pos, rad, cont, filter, output) {
+  shapesInCircle(pos: Any, rad: Any, cont: Any, filter: Any, output: Any) {
     const tmp = this.bphase;
     if (pos != null && pos.zpp_disp) {
       throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
@@ -1657,7 +1657,7 @@ export class ZPP_Space {
     return tmp.shapesInCircle(tmp1, pos.zpp_inner.y, rad, cont, filter, output);
   }
 
-  bodiesInCircle(pos, rad, cont, filter, output) {
+  bodiesInCircle(pos: Any, rad: Any, cont: Any, filter: Any, output: Any) {
     const tmp = this.bphase;
     if (pos != null && pos.zpp_disp) {
       throw new Error("Error: " + "Vec2" + " has been disposed and cannot be used!");
@@ -1677,19 +1677,19 @@ export class ZPP_Space {
     return tmp.bodiesInCircle(tmp1, pos.zpp_inner.y, rad, cont, filter, output);
   }
 
-  shapesInShape(shape, cont, filter, output) {
+  shapesInShape(shape: Any, cont: Any, filter: Any, output: Any) {
     return this.bphase.shapesInShape(shape, cont, filter, output);
   }
 
-  bodiesInShape(shape, cont, filter, output) {
+  bodiesInShape(shape: Any, cont: Any, filter: Any, output: Any) {
     return this.bphase.bodiesInShape(shape, cont, filter, output);
   }
 
-  rayCast(ray, inner, filter) {
+  rayCast(ray: Any, inner: Any, filter: Any) {
     return this.bphase.rayCast(ray.zpp_inner, inner, filter == null ? null : filter.zpp_inner);
   }
 
-  rayMultiCast(ray, inner, filter, output) {
+  rayMultiCast(ray: Any, inner: Any, filter: Any, output: Any) {
     return this.bphase.rayMultiCast(
       ray.zpp_inner,
       inner,
@@ -1698,7 +1698,7 @@ export class ZPP_Space {
     );
   }
 
-  convexCast(shape, deltaTime, filter, dynamics) {
+  convexCast(shape: Any, deltaTime: Any, filter: Any, dynamics: Any) {
     let toi;
     if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
       toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
@@ -2302,7 +2302,7 @@ export class ZPP_Space {
     }
   }
 
-  prepareCast(s) {
+  prepareCast(s: Any) {
     if (s.type == 0) {
       const _this = s.circle;
       if (_this.zip_worldCOM) {
@@ -2462,7 +2462,7 @@ export class ZPP_Space {
     }
   }
 
-  convexMultiCast(shape, deltaTime, filter, dynamics, output) {
+  convexMultiCast(shape: Any, deltaTime: Any, filter: Any, dynamics: Any, output: Any) {
     let toi;
     if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
       toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
@@ -3084,7 +3084,7 @@ export class ZPP_Space {
     return ret;
   }
 
-  push_callback(i) {
+  push_callback(i: Any) {
     let cb;
     if (ZPP_Callback.zpp_pool == null) {
       cb = new ZPP_Callback();
@@ -3098,7 +3098,7 @@ export class ZPP_Space {
     return cb;
   }
 
-  step(deltaTime, velocityIterations, positionIterations) {
+  step(deltaTime: Any, velocityIterations: Any, positionIterations: Any) {
     const _gthis = this;
     if (this.midstep) {
       throw new Error(
@@ -3471,7 +3471,7 @@ export class ZPP_Space {
     }
   }
 
-  continuousCollisions(deltaTime) {
+  continuousCollisions(deltaTime: Any) {
     const MAX_VEL = (2 * Math.PI) / deltaTime;
     this.bphase.broadphase(this, false);
     let curTimeAlpha = 0.0;
@@ -4527,7 +4527,7 @@ export class ZPP_Space {
     }
   }
 
-  continuousEvent(s1, s2, stat, in_arb, _) {
+  continuousEvent(s1: Any, s2: Any, stat: Any, in_arb: Any, _: Any) {
     if (s1.body.sweepFrozen && s2.body.sweepFrozen) {
       return in_arb;
     }
@@ -4709,7 +4709,7 @@ export class ZPP_Space {
     return in_arb;
   }
 
-  bodyCbWake(b) {
+  bodyCbWake(b: Any) {
     if (b.type == 2 && b.cbSet != null) {
       if (this.midstep) {
         let cx_ite = b.cbSet.bodylisteners.head;
@@ -4730,7 +4730,7 @@ export class ZPP_Space {
     }
   }
 
-  bodyCbSleep(b) {
+  bodyCbSleep(b: Any) {
     if (b.type == 2 && b.cbSet != null) {
       let cx_ite = b.cbSet.bodylisteners.head;
       while (cx_ite != null) {
@@ -4747,7 +4747,7 @@ export class ZPP_Space {
     }
   }
 
-  constraintCbWake(con) {
+  constraintCbWake(con: Any) {
     if (con.cbSet != null) {
       if (this.midstep) {
         let cx_ite = con.cbSet.conlisteners.head;
@@ -4768,7 +4768,7 @@ export class ZPP_Space {
     }
   }
 
-  constraintCbSleep(con) {
+  constraintCbSleep(con: Any) {
     if (con.cbSet != null) {
       let cx_ite = con.cbSet.conlisteners.head;
       while (cx_ite != null) {
@@ -4785,7 +4785,7 @@ export class ZPP_Space {
     }
   }
 
-  constraintCbBreak(con) {
+  constraintCbBreak(con: Any) {
     if (con.cbSet != null) {
       let cx_ite = con.cbSet.conlisteners.head;
       while (cx_ite != null) {
@@ -4802,7 +4802,7 @@ export class ZPP_Space {
     }
   }
 
-  nullListenerType(cb1, cb2) {
+  nullListenerType(cb1: Any, cb2: Any) {
     const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
     let cx_ite = cb1.interactors.head;
     while (cx_ite != null) {
@@ -4884,7 +4884,7 @@ export class ZPP_Space {
     }
   }
 
-  nullInteractorType(intx, me) {
+  nullInteractorType(intx: Any, me: Any) {
     if (me == null) {
       me = intx;
     }
@@ -4944,7 +4944,7 @@ export class ZPP_Space {
     }
   }
 
-  freshListenerType(cb1, cb2) {
+  freshListenerType(cb1: Any, cb2: Any) {
     const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
     let cx_ite = cb1.interactors.head;
     while (cx_ite != null) {
@@ -5058,7 +5058,7 @@ export class ZPP_Space {
     }
   }
 
-  freshInteractorType(intx, me) {
+  freshInteractorType(intx: Any, me: Any) {
     if (me == null) {
       me = intx;
     }
@@ -5195,7 +5195,7 @@ export class ZPP_Space {
     }
   }
 
-  wakeCompound(x) {
+  wakeCompound(x: Any) {
     let cx_ite = x.bodies.head;
     while (cx_ite != null) {
       const y = cx_ite.elt;
@@ -5225,7 +5225,7 @@ export class ZPP_Space {
     }
   }
 
-  wakeIsland(i) {
+  wakeIsland(i: Any) {
     while (i.comps.head != null) {
       const c = i.comps.pop_unsafe();
       c.waket = this.stamp + (this.midstep ? 0 : 1);
@@ -5586,7 +5586,7 @@ export class ZPP_Space {
     }
   }
 
-  doForests(dt) {
+  doForests(dt: Any) {
     let cx_ite = this.c_arbiters_false.head;
     while (cx_ite != null) {
       const arb = cx_ite.elt;
@@ -5605,7 +5605,7 @@ export class ZPP_Space {
               obj = nxt;
             }
             while (stack != null) {
-              const nxt1 = stack.parent;
+              const nxt1: Any = stack.parent;
               stack.parent = obj;
               stack = nxt1;
             }
@@ -5624,7 +5624,7 @@ export class ZPP_Space {
               obj1 = nxt2;
             }
             while (stack1 != null) {
-              const nxt3 = stack1.parent;
+              const nxt3: Any = stack1.parent;
               stack1.parent = obj1;
               stack1 = nxt3;
             }
@@ -5662,7 +5662,7 @@ export class ZPP_Space {
               obj2 = nxt4;
             }
             while (stack2 != null) {
-              const nxt5 = stack2.parent;
+              const nxt5: Any = stack2.parent;
               stack2.parent = obj2;
               stack2 = nxt5;
             }
@@ -5681,7 +5681,7 @@ export class ZPP_Space {
               obj3 = nxt6;
             }
             while (stack3 != null) {
-              const nxt7 = stack3.parent;
+              const nxt7: Any = stack3.parent;
               stack3.parent = obj3;
               stack3 = nxt7;
             }
@@ -5726,7 +5726,7 @@ export class ZPP_Space {
           obj4 = nxt8;
         }
         while (stack4 != null) {
-          const nxt9 = stack4.parent;
+          const nxt9: Any = stack4.parent;
           stack4.parent = obj4;
           stack4 = nxt9;
         }
@@ -5792,7 +5792,7 @@ export class ZPP_Space {
           obj5 = nxt10;
         }
         while (stack5 != null) {
-          const nxt11 = stack5.parent;
+          const nxt11: Any = stack5.parent;
           stack5.parent = obj5;
           stack5 = nxt11;
         }
@@ -6069,7 +6069,7 @@ export class ZPP_Space {
     }
   }
 
-  static_validation(body) {
+  static_validation(body: Any) {
     if (body.shapes.head != null) {
       if (body.shapes.head == null) {
         throw new Error("Error: Body bounds only makes sense if it contains shapes");
@@ -7038,7 +7038,7 @@ export class ZPP_Space {
     }
   }
 
-  updateVel(dt) {
+  updateVel(dt: Any) {
     let pre = null;
     const linDrag = 1 - dt * this.global_lin_drag;
     const angDrag = 1 - dt * this.global_ang_drag;
@@ -7063,7 +7063,7 @@ export class ZPP_Space {
     }
   }
 
-  updatePos(dt) {
+  updatePos(dt: Any) {
     const MAX_VEL = (2 * Math.PI) / dt;
     let cx_ite = this.live.head;
     while (cx_ite != null) {
@@ -9018,7 +9018,7 @@ export class ZPP_Space {
     return false;
   }
 
-  prestep(dt) {
+  prestep(dt: Any) {
     let pre = null;
     let cx_ite = this.live_constraints.head;
     while (cx_ite != null) {
@@ -9272,7 +9272,7 @@ export class ZPP_Space {
     }
   }
 
-  iterateVel(times) {
+  iterateVel(times: Any) {
     let _g = 0;
     const _g1 = times;
     while (_g < _g1) {
@@ -9540,7 +9540,7 @@ export class ZPP_Space {
     }
   }
 
-  iteratePos(times) {
+  iteratePos(times: Any) {
     let _g = 0;
     const _g1 = times;
     while (_g < _g1) {
@@ -9980,7 +9980,7 @@ export class ZPP_Space {
     }
   }
 
-  group_ignore(s1, s2) {
+  group_ignore(s1: Any, s2: Any) {
     let cur = s1;
     while (cur != null && cur.group == null)
       if (cur.ishape != null) {
@@ -10024,7 +10024,7 @@ export class ZPP_Space {
     }
   }
 
-  interactionType(s1, s2, b1, b2) {
+  interactionType(s1: Any, s2: Any, b1: Any, b2: Any) {
     let con_ignore;
     con_ignore = false;
     let cx_ite = b1.constraints.head;
@@ -10125,7 +10125,7 @@ export class ZPP_Space {
     }
   }
 
-  narrowPhase(s1, s2, stat, in_arb, continuous) {
+  narrowPhase(s1: Any, s2: Any, stat: Any, in_arb: Any, continuous: Any) {
     const _gthis = this;
     let ret = null;
     const b1 = s1.body;
@@ -12485,7 +12485,7 @@ export class ZPP_Space {
     return ret;
   }
 
-  MRCA_chains(s1, s2) {
+  MRCA_chains(s1: Any, s2: Any) {
     const _this = this.mrca1;
     while (_this.head != null) {
       const ret = _this.head;
@@ -12633,7 +12633,7 @@ export class ZPP_Space {
     }
   }
 
-  inlined_MRCA_chains(s1, s2) {
+  inlined_MRCA_chains(s1: Any, s2: Any) {
     const _this = this.mrca1;
     while (_this.head != null) {
       const ret = _this.head;

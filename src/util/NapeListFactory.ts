@@ -472,6 +472,15 @@ export function createListClasses(spec: ListSpec): {
     return this;
   };
 
+  TypedList.prototype.toArray = function (this: Any): Any[] {
+    const result: Any[] = [];
+    const it = TypedIterator.get(this);
+    while (it.hasNext()) {
+      result.push(it.next());
+    }
+    return result;
+  };
+
   TypedList.prototype.__class__ = TypedList;
 
   // ---------------------------------------------------------------------------

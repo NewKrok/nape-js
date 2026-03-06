@@ -68,8 +68,10 @@ export class ZPP_Polygon {
   sweepCoef!: number;
   sweepRadius!: number;
   material: Any;
+  filter: Any;
   wrap_localCOM: Any;
   outer: Any;
+  outer_i: Any;
   invalidate_area_inertia!: () => void;
   invalidate_angDrag!: () => void;
   invalidate_localCOM!: () => void;
@@ -78,6 +80,9 @@ export class ZPP_Polygon {
   validate_localCOM!: () => void;
   immutable_midstep!: (name: string) => void;
   wake!: () => void;
+  setMaterial!: (m: Any) => void;
+  setFilter!: (f: Any) => void;
+  insert_cbtype!: (cb: Any) => void;
 
   constructor() {
     this.zip_sanitation = false;

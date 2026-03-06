@@ -16,6 +16,7 @@ type Any = any;
 export class ZPP_PulleyJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_PulleyJoint"];
   static __super__ = ZPP_Constraint;
+  static _wrapFn: ((zpp: ZPP_PulleyJoint) => Any) | null = null;
 
   outer_zn: Any = null;
   ratio = 1.0;
