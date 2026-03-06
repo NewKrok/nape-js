@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
-incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~51 lines, down from ~82k) into clean, typed TypeScript classes.
+nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase has been
+fully modernized: all code extracted from the compiled blob (`nape-compiled.js`, originally
+~82k lines) into clean, typed TypeScript classes. `nape-compiled.js` is now **deleted**.
 
 ### Architecture
 
@@ -13,7 +13,7 @@ Public API wrappers (src/{phys,shape,constraint,callbacks,dynamics,geom,space}/)
         ↕
 Internal ZPP_* classes (src/native/)
         ↕
-Compiled engine core (src/core/nape-compiled.js)
+Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + HaxeShims.ts)
 ```
 
 ### Build & Test
@@ -52,21 +52,18 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~51 lines)
+### nape-compiled.js — DELETED ✅ (Priority 20)
 
-The file is a minimal bootstrap shell. All public API classes and ZPP implementations
-have been fully extracted to TypeScript. Remaining content:
+All content has been migrated to TypeScript. The file no longer exists.
 
-| Section | Lines | Status |
-|---------|-------|--------|
-| Imports (registerZPPClasses, HaxeShims) | ~2 | Infrastructure |
-| Namespace initialization (`nape.callbacks = {}` etc.) | ~10 | Lightweight bootstrap |
-| registerZPPClasses call | ~2 | Bootstrap |
-| Haxe shim fixes + return | ~10 | Bootstrap |
-| Comments | ~5 | Documentation |
+| Former section | Migrated to |
+|----------------|-------------|
+| Namespace initialization (`nape.callbacks = {}` etc.) | `ZPPRegistry.ts` (`registerZPPClasses()`) |
+| registerZPPClasses call | `engine.ts` (lazy `getNape()`) |
+| Haxe runtime bootstrap (String.__name__, HaxeError.message, etc.) | `HaxeShims.ts` |
 
-**No stubs, no implementations.** All public API classes self-register via side-effect
-imports from `engine.ts` (base/standalone) or `index.ts` + `tests/setup.ts` (subclasses).
+**All public API classes self-register via side-effect imports** from `engine.ts`
+(base/standalone) or `index.ts` + `tests/setup.ts` (subclasses).
 
 ### Public API class registration
 
@@ -231,6 +228,19 @@ Tests: `tests/core/HaxeShims.test.ts`.
 - **Test updates**: `ZPP_Flags.test.ts` and `ZPP_Vec3.test.ts` updated to expect
   initialized state (enum singletons created by `ensureEnumsReady()` at module load).
 
+### ✅ Priority 20: Eliminate nape-compiled.js — DONE
+
+`src/core/nape-compiled.js` **deleted** (51 → 0 lines). The entire codebase is now pure TypeScript:
+- **Haxe runtime bootstrap** (`String.__name__`, `Array.__name__`, `HaxeError.prototype.message`,
+  `js.Boot.__toStr`) moved to `src/core/HaxeShims.ts` (executed once at module load).
+- **Namespace initialization** (`nape.callbacks = {}` etc.) moved into `registerZPPClasses()`
+  in `src/native/util/ZPPRegistry.ts`. The function now creates and returns the `nape` object.
+- **`engine.ts`** uses lazy initialization (`var napeNamespace`) so that side-effect imports
+  calling `getNape()` during ESM circular-import resolution always succeed (same `var` pattern
+  as `ensureEnumsReady`).
+- **Benchmark** (`benchmarks/run.mjs`) updated to use `getNape()` from `dist/index.js`
+  instead of direct import from the now-deleted source file.
+
 ## Modernization Pattern
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions
@@ -261,17 +271,14 @@ as reference implementations:
    nape.xxx.Foo = Foo;
    ```
 
-4. **Remove compiled code** from `nape-compiled.js`, replace with comment:
-   ```js
-   // nape.xxx.Foo: converted to TypeScript → src/.../Foo.ts
-   ```
-   Do NOT import Foo.ts from nape-compiled.js (circular import).
+4. **Register at module bottom** as shown in step 3 above.
+   Do NOT import Foo.ts from ZPPRegistry.ts (circular import).
 
 5. **Verify**: all tests pass, `npm run build` succeeds
 
 ### Key gotchas
 
-- **Circular imports**: Foo.ts → engine.ts → nape-compiled.js. Never import Foo.ts from compiled code.
+- **Circular imports**: Foo.ts → engine.ts → ZPPRegistry.ts. Never import Foo.ts from ZPPRegistry.
 - **Test setup**: `tests/setup.ts` imports all subclass modules — factory callbacks and
   namespace registrations are available in all tests without per-file imports.
 - **Circular ESM dep with `extends`**: A subclass (e.g. `Circle extends Shape`) CANNOT be

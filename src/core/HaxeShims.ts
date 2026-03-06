@@ -196,3 +196,16 @@ $hxClasses["js._Boot.HaxeError"] = HaxeError;
 $hxClasses["js.Boot"] = jsBoot;
 
 export { jsBoot, HaxeError };
+
+// ---------------------------------------------------------------------------
+// Haxe runtime bootstrap — executed once at module load time.
+// Previously in nape-compiled.js; moved here (Priority 20).
+// ---------------------------------------------------------------------------
+(String as any).__name__ = true;
+(Array as any).__name__ = true;
+Object.defineProperty(HaxeError.prototype, "message", {
+  get: function () {
+    return String(this.val);
+  },
+});
+jsBoot.__toStr = ({} as any).toString;

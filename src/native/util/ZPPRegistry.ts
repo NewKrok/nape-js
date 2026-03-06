@@ -109,10 +109,28 @@ import { ZPP_Space } from "../space/ZPP_Space";
 import { ZPP_SweepData } from "../space/ZPP_SweepData";
 import { ZPP_SweepPhase } from "../space/ZPP_SweepPhase";
 
-type HxClasses = Record<string, any>;
+import { $hxClasses } from "../../core/HaxeShims";
 
+/**
+ * Creates and returns the nape namespace object with all ZPP_* classes registered.
+ * Previously called from nape-compiled.js; now fully self-contained (Priority 20).
+ */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function registerZPPClasses(nape: any, zpp: any, hxClasses: HxClasses): void {
+export function registerZPPClasses(): any {
+  const nape: any = {};
+  const zpp: any = {};
+  const hxClasses = $hxClasses;
+
+  // --- Public API namespace initialization ---
+  nape.callbacks = {};
+  nape.constraint = {};
+  nape.dynamics = {};
+  nape.geom = {};
+  nape.phys = {};
+  nape.shape = {};
+  nape.space = {};
+  nape.util = {};
+
   // --- top-level ---
   zpp.ZPP_Const = hxClasses["zpp_nape.ZPP_Const"] = ZPP_Const;
   ZPP_Const.prototype.__class__ = ZPP_Const;
@@ -481,4 +499,6 @@ export function registerZPPClasses(nape: any, zpp: any, hxClasses: HxClasses): v
 
   // Expose zpp_nape via nape.__zpp for engine.ts and other TS modules.
   nape.__zpp = zpp;
+
+  return nape;
 }

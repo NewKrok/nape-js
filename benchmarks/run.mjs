@@ -10,11 +10,11 @@
  *   npm run benchmark
  */
 
-// Import the compiled nape module (raw, for overhead comparison)
-import napeRaw from "../src/core/nape-compiled.js";
-
 // Import the TypeScript wrappers (from build output)
-import { Space, Body, BodyType, Vec2, Circle, Polygon, PivotJoint } from "../dist/index.js";
+import { getNape, Space, Body, BodyType, Vec2, Circle, Polygon, PivotJoint } from "../dist/index.js";
+
+// Raw nape namespace (for wrapper-overhead comparison in Scenario C)
+const napeRaw = getNape();
 
 // ---------------------------------------------------------------------------
 // Helpers
