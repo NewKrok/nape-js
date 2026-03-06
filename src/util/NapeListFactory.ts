@@ -483,6 +483,22 @@ export function createListClasses(spec: ListSpec): {
 
   TypedList.prototype.__class__ = TypedList;
 
+  // ES6 iterable protocol — enables for...of and spread on all Nape lists.
+  TypedList.prototype[Symbol.iterator] = function (this: Any) {
+    const it = TypedIterator.get(this);
+    return {
+      next(): IteratorResult<Any> {
+        if (it.hasNext()) {
+          return { value: it.next(), done: false };
+        }
+        return { value: undefined, done: true };
+      },
+      [Symbol.iterator]() {
+        return this;
+      },
+    };
+  };
+
   // ---------------------------------------------------------------------------
   // Register in nape namespace
   // ---------------------------------------------------------------------------
