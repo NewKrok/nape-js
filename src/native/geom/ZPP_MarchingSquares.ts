@@ -37,6 +37,9 @@ export class ZPP_MarchingSquares {
   static _init(zpp: Any, nape: Any): void {
     ZPP_MarchingSquares._zpp = zpp;
     ZPP_MarchingSquares._nape = nape;
+    // Initialize singleton + lookup table (was in compiled init block)
+    ZPP_MarchingSquares.me = new ZPP_MarchingSquares();
+    ZPP_MarchingSquares.look_march = [-1, 224, 56, 216, 14, -1, 54, 214, 131, 99, -1, 91, 141, 109, 181, 85];
   }
 
   // ---------------------------------------------------------------------------

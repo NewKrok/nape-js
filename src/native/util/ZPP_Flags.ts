@@ -85,5 +85,53 @@ export class ZPP_Flags {
   // --- Internal flag ---
   static internal = false;
 
+  // --- ID constants (numeric bitmasks / enum ordinals) ---
+  static id_ImmState_ACCEPT = 1;
+  static id_ImmState_IGNORE = 2;
+  static id_ImmState_ALWAYS = 4;
+  static id_GravMassMode_DEFAULT = 0;
+  static id_GravMassMode_FIXED = 1;
+  static id_GravMassMode_SCALED = 2;
+  static id_InertiaMode_DEFAULT = 0;
+  static id_InertiaMode_FIXED = 1;
+  static id_MassMode_DEFAULT = 0;
+  static id_MassMode_FIXED = 1;
+  static id_BodyType_STATIC = 1;
+  static id_BodyType_DYNAMIC = 2;
+  static id_BodyType_KINEMATIC = 3;
+  static id_ListenerType_BODY = 0;
+  static id_ListenerType_CONSTRAINT = 1;
+  static id_ListenerType_INTERACTION = 2;
+  static id_ListenerType_PRE = 3;
+  static id_PreFlag_ACCEPT = 1;
+  static id_PreFlag_IGNORE = 2;
+  static id_PreFlag_ACCEPT_ONCE = 3;
+  static id_PreFlag_IGNORE_ONCE = 4;
+  static id_CbEvent_BEGIN = 0;
+  static id_CbEvent_END = 1;
+  static id_CbEvent_WAKE = 2;
+  static id_CbEvent_SLEEP = 3;
+  static id_CbEvent_BREAK = 4;
+  static id_CbEvent_PRE = 5;
+  static id_CbEvent_ONGOING = 6;
+  static id_InteractionType_COLLISION = 1;
+  static id_InteractionType_SENSOR = 2;
+  static id_InteractionType_FLUID = 4;
+  static id_InteractionType_ANY = 7;
+  static id_Winding_UNDEFINED = 0;
+  static id_Winding_CLOCKWISE = 1;
+  static id_Winding_ANTICLOCKWISE = 2;
+  static id_ValidationResult_VALID = 0;
+  static id_ValidationResult_DEGENERATE = 1;
+  static id_ValidationResult_CONCAVE = 2;
+  static id_ValidationResult_SELF_INTERSECTING = 3;
+  static id_ShapeType_CIRCLE = 0;
+  static id_ShapeType_POLYGON = 1;
+  static id_Broadphase_DYNAMIC_AABB_TREE = 0;
+  static id_Broadphase_SWEEP_AND_PRUNE = 1;
+  static id_ArbiterType_COLLISION = 1;
+  static id_ArbiterType_SENSOR = 2;
+  static id_ArbiterType_FLUID = 4;
+
   __class__: Any = ZPP_Flags;
 }

@@ -26,8 +26,19 @@ export class ZPP_Arbiter {
   static FLUID = 4;
   static SENSOR = 2;
 
-  // --- Static: arbiter type enum lookup (set at init time by compiled code) ---
+  // --- Static: arbiter type enum lookup (populated by _initEnums) ---
   static types: Any[] = [];
+
+  /**
+   * Initialize ArbiterType singleton enums. Called once from compiled factory.
+   */
+  static _initEnums(nape: Any, ZPP_Flags: Any): void {
+    const mk = () => { ZPP_Flags.internal = true; const o = new nape.dynamics.ArbiterType(); ZPP_Flags.internal = false; return o; };
+    if (ZPP_Flags.ArbiterType_COLLISION == null) ZPP_Flags.ArbiterType_COLLISION = mk();
+    if (ZPP_Flags.ArbiterType_SENSOR == null) ZPP_Flags.ArbiterType_SENSOR = mk();
+    if (ZPP_Flags.ArbiterType_FLUID == null) ZPP_Flags.ArbiterType_FLUID = mk();
+    ZPP_Arbiter.types = [null, ZPP_Flags.ArbiterType_COLLISION, ZPP_Flags.ArbiterType_SENSOR, null, ZPP_Flags.ArbiterType_FLUID];
+  }
 
   // --- Instance: public wrapper ---
   outer: Any = null;
