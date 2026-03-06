@@ -104,12 +104,12 @@ export function drawConstraints(ctx, space) {
       const c = rawConstraints.at(i);
       if (c.get_body1 && c.get_body2) {
         try {
-          const b1 = c.get_body1();
-          const b2 = c.get_body2();
+          const b1 = c.body1;
+          const b2 = c.body2;
           if (b1 && b2) {
             ctx.beginPath();
-            ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
-            ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
+            ctx.moveTo(b1.position.x, b1.position.y);
+            ctx.lineTo(b2.position.x, b2.position.y);
             ctx.strokeStyle = "#d2992233";
             ctx.lineWidth = 1;
             ctx.stroke();
