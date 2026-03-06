@@ -2,8 +2,7 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner } from "./Vec2";
 import { ZPP_ConvexRayResult } from "../native/geom/ZPP_ConvexRayResult";
-
-type Any = any;
+import type { Shape } from "../shape/Shape";
 
 /**
  * Result from a convex-cast query.
@@ -30,12 +29,11 @@ export class ConvexResult {
   }
 
   /** @internal */
-  static _wrap(inner: Any): ConvexResult {
+  static _wrap(inner: ZPP_ConvexRayResult | ConvexResult | null): ConvexResult {
     if (!inner) return null as unknown as ConvexResult;
     if (inner instanceof ConvexResult) return inner;
-    // inner is a compiled ConvexResult with a zpp_inner
-    const zppInner = inner.zpp_inner ?? inner;
-    return getOrCreate(zppInner, (raw: Any) => {
+    const zppInner = (inner as any).zpp_inner ?? inner;
+    return getOrCreate(zppInner, (raw: ZPP_ConvexRayResult) => {
       const c = Object.create(ConvexResult.prototype) as ConvexResult;
       c.zpp_inner = raw;
       return c;
@@ -61,7 +59,7 @@ export class ConvexResult {
     return this.zpp_inner.toiDistance;
   }
 
-  get shape(): Any {
+  get shape(): Shape {
     this._disposed();
     return this.zpp_inner.shape;
   }
