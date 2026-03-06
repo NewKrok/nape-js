@@ -583,5 +583,6 @@ const nape = getNape();
 nape.constraint.PulleyJoint = PulleyJoint;
 (PulleyJoint.prototype as Any).__class__ = PulleyJoint;
 
+ZPP_PulleyJoint._createFn = (...args: any[]) => new (PulleyJoint as any)(...args);
 const zpp = nape.__zpp;
 zpp.constraint.ZPP_PulleyJoint = ZPP_PulleyJoint;

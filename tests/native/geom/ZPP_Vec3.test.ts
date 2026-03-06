@@ -39,8 +39,8 @@ describe("ZPP_Vec3", () => {
   });
 
   describe("_zpp static", () => {
-    it("should have _zpp static property", () => {
-      expect(ZPP_Vec3._zpp).toBeNull();
+    it("should have _zpp static property initialized after module load", () => {
+      expect(ZPP_Vec3._zpp).not.toBeNull();
     });
   });
 });

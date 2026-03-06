@@ -21,6 +21,10 @@ export class ZPP_Arbiter {
   // --- Static: creation guard ---
   static internal = false;
 
+  // --- Static: factory callbacks (set by TS subclass modules at load time) ---
+  static _createColArb: (() => any) | null = null;
+  static _createFluidArb: (() => any) | null = null;
+
   // --- Static: arbiter type constants ---
   static COL = 1;
   static FLUID = 4;
@@ -125,10 +129,10 @@ export class ZPP_Arbiter {
       const nape = ZPP_Arbiter._nape;
       ZPP_Arbiter.internal = true;
       if (this.type == ZPP_Arbiter.COL) {
-        this.colarb.outer_zn = new nape.dynamics.CollisionArbiter();
+        this.colarb.outer_zn = ZPP_Arbiter._createColArb!();
         this.outer = this.colarb.outer_zn;
       } else if (this.type == ZPP_Arbiter.FLUID) {
-        this.fluidarb.outer_zn = new nape.dynamics.FluidArbiter();
+        this.fluidarb.outer_zn = ZPP_Arbiter._createFluidArb!();
         this.outer = this.fluidarb.outer_zn;
       } else {
         this.outer = new nape.dynamics.Arbiter();

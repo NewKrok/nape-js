@@ -19,6 +19,7 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_DistanceJoint"];
   static __super__ = ZPP_Constraint;
   static _wrapFn: ((zpp: ZPP_DistanceJoint) => Any) | null = null;
+  static _createFn: ((...args: any[]) => any) | null = null;
 
   outer_zn: Any = null;
   jointMin = 0.0;
@@ -184,7 +185,7 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
     if (_this1.zpp_inner_zn.wrap_a2 == null) {
       _this1.zpp_inner_zn.setup_a2();
     }
-    const ret = new napeNs.constraint.DistanceJoint(
+    const ret = ZPP_DistanceJoint._createFn!(
       null,
       null,
       ret_a1,

@@ -21,6 +21,12 @@ export class ZPP_Callback {
   static internal = false;
   static zpp_pool: ZPP_Callback | null = null;
 
+  // --- Static: factory callbacks (set by TS subclass modules at load time) ---
+  static _createBodyCb: (() => any) | null = null;
+  static _createConCb: (() => any) | null = null;
+  static _createIntCb: (() => any) | null = null;
+  static _createPreCb: (() => any) | null = null;
+
   // --- Instance ---
   outer_body: Any = null;
   outer_con: Any = null;
@@ -46,7 +52,7 @@ export class ZPP_Callback {
   wrapper_body(): Any {
     if (this.outer_body == null) {
       ZPP_Callback.internal = true;
-      this.outer_body = new ZPP_Callback._nape.callbacks.BodyCallback();
+      this.outer_body = ZPP_Callback._createBodyCb!();
       ZPP_Callback.internal = false;
       this.outer_body.zpp_inner = this;
     }
@@ -56,7 +62,7 @@ export class ZPP_Callback {
   wrapper_con(): Any {
     if (this.outer_con == null) {
       ZPP_Callback.internal = true;
-      this.outer_con = new ZPP_Callback._nape.callbacks.ConstraintCallback();
+      this.outer_con = ZPP_Callback._createConCb!();
       ZPP_Callback.internal = false;
       this.outer_con.zpp_inner = this;
     }
@@ -67,7 +73,7 @@ export class ZPP_Callback {
     const zpp = ZPP_Callback._zpp;
     if (this.outer_int == null) {
       ZPP_Callback.internal = true;
-      this.outer_int = new ZPP_Callback._nape.callbacks.InteractionCallback();
+      this.outer_int = ZPP_Callback._createIntCb!();
       ZPP_Callback.internal = false;
       this.outer_int.zpp_inner = this;
     }

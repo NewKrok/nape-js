@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
+import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 
 type Any = any;
 
@@ -36,3 +37,4 @@ const nape = getNape();
 nape.callbacks.ConstraintCallback = ConstraintCallback;
 (ConstraintCallback as Any).__super__ = Callback;
 (ConstraintCallback.prototype as Any).__class__ = ConstraintCallback;
+ZPP_Callback._createConCb = () => new ConstraintCallback();

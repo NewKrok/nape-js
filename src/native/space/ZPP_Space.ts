@@ -135,7 +135,7 @@ export class ZPP_Space {
     this.global_lin_drag = 0.015;
     this.global_ang_drag = 0.015;
     ZPP_Callback.internal = true;
-    this.precb = new ZPP_Space._nape.callbacks.PreCallback();
+    this.precb = ZPP_Callback._createPreCb!();
     this.precb.zpp_inner = new ZPP_Callback();
     ZPP_Callback.internal = false;
     this.sortcontacts = true;

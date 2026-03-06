@@ -16,6 +16,7 @@ type Any = any;
 export class ZPP_MotorJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_MotorJoint"];
   static _wrapFn: ((zpp: ZPP_MotorJoint) => Any) | null = null;
+  static _createFn: ((...args: any[]) => any) | null = null;
 
   // Joint-specific fields
   outer_zn: Any = null;
@@ -77,8 +78,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
   }
 
   override copy(dict?: Any, todo?: Any): Any {
-    const nape = getNape();
-    const ret = new nape.constraint.MotorJoint(null, null, this.rate, this.ratio);
+    const ret = ZPP_MotorJoint._createFn!(null, null, this.rate, this.ratio);
     this.copyto(ret);
     if (dict != null && this.b1 != null) {
       let b = null;

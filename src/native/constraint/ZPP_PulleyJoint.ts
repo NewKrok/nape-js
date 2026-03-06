@@ -17,6 +17,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_PulleyJoint"];
   static __super__ = ZPP_Constraint;
   static _wrapFn: ((zpp: ZPP_PulleyJoint) => Any) | null = null;
+  static _createFn: ((...args: any[]) => any) | null = null;
 
   outer_zn: Any = null;
   ratio = 1.0;
@@ -642,7 +643,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     if (_this3.zpp_inner_zn.wrap_a4 == null) {
       _this3.zpp_inner_zn.setup_a4();
     }
-    const ret3 = new napeNs.constraint.PulleyJoint(
+    const ret3 = ZPP_PulleyJoint._createFn!(
       null,
       null,
       null,

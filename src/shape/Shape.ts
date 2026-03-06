@@ -561,10 +561,8 @@ export interface CbTypeSet {
 
 // NOTE: Shape extends Interactor. Both import engine.ts, so importing Shape from
 // engine.ts creates a circular ESM dep (engine → Shape → Interactor → engine).
-// Shape cannot be side-effect imported from engine.ts. Instead, a minimal stub
-// in nape-compiled.js provides the constructor, and Circle/Polygon/Edge copy
-// compiled Interactor methods. Shape is replaced when Circle.ts or user code
-// imports it and triggers self-registration via index.ts.
-
-// getNape() is NOT called here to avoid import-ordering issues
-// (getNape import is retained for use in instance methods only)
+// Shape cannot be side-effect imported from engine.ts. Instead, it self-registers
+// here, and is loaded via index.ts or the test setup file.
+const nape = getNape();
+nape.shape.Shape = Shape;
+(Shape.prototype as Any).__class__ = Shape;

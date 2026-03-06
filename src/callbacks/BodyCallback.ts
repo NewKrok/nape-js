@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
+import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 
 type Any = any;
 
@@ -36,3 +37,4 @@ const nape = getNape();
 nape.callbacks.BodyCallback = BodyCallback;
 (BodyCallback as Any).__super__ = Callback;
 (BodyCallback.prototype as Any).__class__ = BodyCallback;
+ZPP_Callback._createBodyCb = () => new BodyCallback();

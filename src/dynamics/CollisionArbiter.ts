@@ -1,6 +1,7 @@
 import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
+import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 
 type Any = any;
 
@@ -278,3 +279,4 @@ export class CollisionArbiter extends Arbiter {
 const nape = getNape();
 nape.dynamics.CollisionArbiter = CollisionArbiter;
 (CollisionArbiter.prototype as any).__class__ = CollisionArbiter;
+ZPP_Arbiter._createColArb = () => new CollisionArbiter();
