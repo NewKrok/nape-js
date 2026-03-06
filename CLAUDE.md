@@ -315,8 +315,25 @@ in native/ code):
 - `Mat23.ts`, `MatMN.ts` — `type Any` removed; `_wrap` signatures typed
 - `ArbiterType.ts`, `Winding.ts`, `BodyType.ts`, `GravMassMode.ts`, `InertiaMode.ts`,
   `MassMode.ts`, `ShapeType.ts`, `ValidationResult.ts`, `Broadphase.ts` — unused `type Any` removed
+- **callbacks/** (16 files) — all `type Any = any` removed; typed: `CbEvent`, `Listener`,
+  `Body`, `Constraint`, `Interactor`, `Arbiter`, `PreFlag`, `ArbiterType` getters; handler
+  callbacks typed with concrete Callback subclass params; `options: OptionType|CbType|null`;
+  `OptionType.includes/excludes: object` (factory-generated list); `CbType.interactors/
+  constraints: object`; `(Foo as any).__super__` pattern for Haxe metadata
+- **dynamics/** (4 files) — `Arbiter.ts`: `type`, `shape1/2`, `body1/2`, `collisionArbiter`,
+  `fluidArbiter`, `state` all typed; `Contact.ts`: `arbiter: CollisionArbiter|null`,
+  impulse methods `body: Body|null`; `CollisionArbiter.ts`: `contacts: object`, `normal: Vec2`,
+  `referenceEdge1/2: Edge|null`, impulse methods typed; `FluidArbiter.ts`: all `body: Body|null`
+- `Compound.ts` — `type Any` removed; `visitConstraints(lambda: (c: Constraint)=>void)`,
+  `visitBodies` lambdas typed; list getters `bodies/constraints/compounds: object`;
+  also fixed latent bug: `setupWorldCOM` → `getworldCOM`
+- `Edge.ts` — `type Any` removed; `_wrap` typed, `polygon: Polygon`, `_wrapVert(ZPP_Vec2)`
 
-Remaining: native ZPP classes (~100+ files) — lower priority.
+**Remaining public API** (still has `type Any`): `Shape.ts`, `Circle.ts`, `Polygon.ts`,
+`Geom.ts`, `GeomPoly.ts`, `MarchingSquares.ts`, `Vec2List.ts`, `GeomVertexIterator.ts`,
+`ContactList.ts`, `constraint/` (9 files). Count: ~116 files total (down from 136).
+
+Remaining: native ZPP classes (~100 files) — lower priority.
 
 ### Priority 26: Tree shaking
 
