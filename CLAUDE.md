@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~5,089 lines, down from ~82k) into clean, typed TypeScript classes.
+currently ~3,016 lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2220 tests across 115 files
+npm test             # vitest — 2250 tests across 119 files
 npm run lint         # eslint + prettier
 ```
 
@@ -52,7 +52,7 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~4,233 lines)
+### What remains in nape-compiled.js (~3,016 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
@@ -67,7 +67,7 @@ The file is structured as a single factory function. Remaining sections:
 | Generic factories (createZNPNode, createZNPList, createZPPSet) | ~350 | **Priority 17** |
 | Factory instantiations (35+35+8 = 78 generated classes) | ~85 | (removed with factories) |
 | ZPP class registrations to compiled namespace | ~700 | **Priority 19** |
-| Internal list backing classes (13× ZPP_*List) | ~1,500 | **Priority 15** |
+| Internal list backing classes (2 comment lines) | ~2 | ✅ P15 |
 | ZNPArray2 utility classes (3 types) | ~230 | **Priority 16** |
 | Hashable2 + FastHash2 utility classes | ~270 | **Priority 16** |
 | `nape.Config` comment (values moved to src/Config.ts) | ~2 | ✅ P13 |
@@ -113,19 +113,11 @@ Tests: `tests/Config.test.ts`.
 `Debug.version()` and `Debug.clearObjectPools()` extracted to `src/util/Debug.ts`.
 Compiled implementation (488 lines) deleted. Tests: `tests/util/Debug.test.ts`.
 
-### Priority 15: Internal list backing classes → TypeScript (~1,500 lines, 13 classes)
-
-These `zpp_nape.util.ZPP_*List` classes back the public factory-generated lists and
-the special-case lists. Each has:
-- `inner` (ZNPList backing), `outer` (public API wrapper)
-- `at()`, `push()`, `iterator_at()`, validation/invalidation hooks
-
-All 13 classes (ConstraintList, BodyList, ShapeList, ArbiterList, InteractorList,
-CompoundList, InteractionGroupList, EdgeList, ListenerList, GeomPolyList,
-RayResultList, ConvexResultList, CbTypeList) follow an identical pattern.
-
-**Approach:** Replace with a generic TypeScript class `ZPP_PublicList<T>` analogous
-to `NapeListFactory`. Each specialization is a one-liner subclass or factory call.
+### ✅ Priority 15: Internal list backing classes — DONE
+All 13 `ZPP_*List` classes (~1,217 compiled lines) replaced by `ZPP_PublicList` base
+class + `makeZPP_List()` factory in `src/native/util/ZPP_PublicList.ts`.
+Each specialisation has its own `static internal` flag for the iterator guard pattern.
+Tests: `tests/native/util/ZPP_PublicList.test.ts`.
 
 ### Priority 16: Utility infrastructure classes → TypeScript (~500 lines)
 
