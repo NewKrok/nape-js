@@ -1,8 +1,8 @@
 import { getNape } from "../core/engine";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
-
-type Any = any;
+import type { CbEvent } from "./CbEvent";
+import type { Listener } from "./Listener";
 
 /**
  * Base class for all physics engine callbacks.
@@ -23,11 +23,11 @@ export class Callback {
     }
   }
 
-  get event(): Any {
+  get event(): CbEvent {
     return ZPP_Listener.events[this.zpp_inner!.event];
   }
 
-  get listener(): Any {
+  get listener(): Listener {
     return this.zpp_inner!.listener.outer;
   }
 

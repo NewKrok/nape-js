@@ -1,7 +1,6 @@
 import { getNape, ensureEnumsReady } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
-type Any = any;
 
 /**
  * Callback event types.

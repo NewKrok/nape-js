@@ -2,10 +2,11 @@ import { getNape } from "../core/engine";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
+import { ZPP_ColArbiter } from "../native/dynamics/ZPP_ColArbiter";
 import { ZPP_Contact } from "../native/dynamics/ZPP_Contact";
 import type { ZPP_IContact } from "../native/dynamics/ZPP_IContact";
-
-type Any = any;
+import type { Body } from "../phys/Body";
+import type { CollisionArbiter } from "./CollisionArbiter";
 
 /**
  * Represents a contact point between two colliding shapes.
@@ -38,7 +39,7 @@ export class Contact {
   // ---------------------------------------------------------------------------
 
   /** The collision arbiter this contact belongs to, or null. */
-  get arbiter(): Any {
+  get arbiter(): CollisionArbiter | null {
     if (this.zpp_inner.arbiter == null) {
       return null;
     }
@@ -85,7 +86,7 @@ export class Contact {
    * @param body - If null, returns world-frame impulse. Otherwise returns
    *               impulse on the given body (must be one of the two in contact).
    */
-  normalImpulse(body: Any = null): Vec3 {
+  normalImpulse(body: Body | null = null): Vec3 {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
     const cin: ZPP_IContact = this.zpp_inner.inner;
@@ -113,7 +114,7 @@ export class Contact {
    * @param body - If null, returns world-frame impulse. Otherwise returns
    *               impulse on the given body.
    */
-  tangentImpulse(body: Any = null): Vec3 {
+  tangentImpulse(body: Body | null = null): Vec3 {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
     const cin: ZPP_IContact = this.zpp_inner.inner;
@@ -141,7 +142,7 @@ export class Contact {
    * @param body - If null, returns total rolling impulse. Otherwise returns
    *               rolling impulse on the given body.
    */
-  rollingImpulse(body: Any = null): number {
+  rollingImpulse(body: Body | null = null): number {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
     const jrAcc = colarb.jrAcc;
@@ -157,7 +158,7 @@ export class Contact {
    * @param body - If null, returns world-frame impulse. Otherwise returns
    *               impulse on the given body.
    */
-  totalImpulse(body: Any = null): Vec3 {
+  totalImpulse(body: Body | null = null): Vec3 {
     this._inactiveCheck();
     const colarb = this.zpp_inner.arbiter.colarb;
     const cin: ZPP_IContact = this.zpp_inner.inner;
@@ -203,7 +204,7 @@ export class Contact {
   }
 
   /** @internal */
-  private _checkBody(body: Any, colarb: Any): void {
+  private _checkBody(body: Body, colarb: ZPP_ColArbiter): void {
     if (body != colarb.b1.outer && body != colarb.b2.outer) {
       throw new Error("Error: Contact does not relate to the given body");
     }

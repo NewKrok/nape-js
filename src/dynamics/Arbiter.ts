@@ -3,8 +3,12 @@ import { Vec3 } from "../geom/Vec3";
 import type { NapeInner } from "../geom/Vec2";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
-
-type Any = any;
+import type { ArbiterType } from "./ArbiterType";
+import type { Shape } from "../shape/Shape";
+import type { Body } from "../phys/Body";
+import type { CollisionArbiter } from "./CollisionArbiter";
+import type { FluidArbiter } from "./FluidArbiter";
+import type { PreFlag } from "../callbacks/PreFlag";
 
 /**
  * Represents an interaction arbiter between two shapes.
@@ -43,12 +47,12 @@ export class Arbiter {
   }
 
   /** The type of this arbiter (COLLISION, SENSOR, or FLUID). */
-  get type(): Any {
+  get type(): ArbiterType {
     return ZPP_Arbiter.types[this.zpp_inner.type];
   }
 
   /** Cast to CollisionArbiter if this is a collision, else null. */
-  get collisionArbiter(): Any {
+  get collisionArbiter(): CollisionArbiter | null {
     if (this.zpp_inner.type == ZPP_Arbiter.COL) {
       return this.zpp_inner.colarb.outer_zn;
     }
@@ -56,7 +60,7 @@ export class Arbiter {
   }
 
   /** Cast to FluidArbiter if this is a fluid interaction, else null. */
-  get fluidArbiter(): Any {
+  get fluidArbiter(): FluidArbiter | null {
     if (this.zpp_inner.type == ZPP_Arbiter.FLUID) {
       return this.zpp_inner.fluidarb.outer_zn;
     }
@@ -64,7 +68,7 @@ export class Arbiter {
   }
 
   /** First shape (lower id). */
-  get shape1(): Any {
+  get shape1(): Shape {
     this._activeCheck();
     return this.zpp_inner.ws1.id > this.zpp_inner.ws2.id
       ? this.zpp_inner.ws2.outer
@@ -72,7 +76,7 @@ export class Arbiter {
   }
 
   /** Second shape (higher id). */
-  get shape2(): Any {
+  get shape2(): Shape {
     this._activeCheck();
     return this.zpp_inner.ws1.id > this.zpp_inner.ws2.id
       ? this.zpp_inner.ws1.outer
@@ -80,7 +84,7 @@ export class Arbiter {
   }
 
   /** Body of shape1. */
-  get body1(): Any {
+  get body1(): Body {
     this._activeCheck();
     return this.zpp_inner.ws1.id > this.zpp_inner.ws2.id
       ? this.zpp_inner.b2.outer
@@ -88,7 +92,7 @@ export class Arbiter {
   }
 
   /** Body of shape2. */
-  get body2(): Any {
+  get body2(): Body {
     this._activeCheck();
     return this.zpp_inner.ws1.id > this.zpp_inner.ws2.id
       ? this.zpp_inner.b1.outer
@@ -96,7 +100,7 @@ export class Arbiter {
   }
 
   /** The pre-handler state of this arbiter. */
-  get state(): Any {
+  get state(): PreFlag {
     this._activeCheck();
     const nape = getNape();
     const s = this.zpp_inner.immState;
@@ -158,7 +162,7 @@ export class Arbiter {
    * Total impulse of this arbiter. Base implementation returns Vec3(0,0,0).
    * Overridden by CollisionArbiter and FluidArbiter.
    */
-  totalImpulse(body: Any = null, _freshOnly: boolean = false): Vec3 {
+  totalImpulse(body: Body | null = null, _freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) {
       this._checkBody(body);
@@ -205,7 +209,7 @@ export class Arbiter {
   }
 
   /** @internal */
-  protected _checkBody(body: Any): void {
+  protected _checkBody(body: Body): void {
     const inner = this.zpp_inner;
     const b1 = inner.ws1.id > inner.ws2.id ? inner.b2.outer : inner.b1.outer;
     const b2 = inner.ws1.id > inner.ws2.id ? inner.b1.outer : inner.b2.outer;

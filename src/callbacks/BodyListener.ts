@@ -10,15 +10,16 @@ import { ZPP_BodyListener } from "../native/callbacks/ZPP_BodyListener";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import { Listener } from "./Listener";
 import { CbEvent } from "./CbEvent";
-
-type Any = any;
+import type { OptionType } from "./OptionType";
+import type { CbType } from "./CbType";
+import type { BodyCallback } from "./BodyCallback";
 
 export class BodyListener extends Listener {
   static __name__ = ["nape", "callbacks", "BodyListener"];
 
   zpp_inner_zn: ZPP_BodyListener;
 
-  constructor(event: CbEvent, options: Any, handler: (cb: Any) => void, precedence = 0) {
+  constructor(event: CbEvent, options: OptionType | CbType | null, handler: (cb: BodyCallback) => void, precedence = 0) {
     ZPP_Listener.internal = true;
     super();
     ZPP_Listener.internal = false;
@@ -45,19 +46,19 @@ export class BodyListener extends Listener {
     this.zpp_inner.precedence = precedence;
   }
 
-  get options(): Any {
+  get options(): OptionType {
     return this.zpp_inner_zn.options.outer;
   }
 
-  set options(options: Any) {
-    this.zpp_inner_zn.options.set(options.zpp_inner);
+  set options(options: OptionType | CbType) {
+    this.zpp_inner_zn.options.set((options as any).zpp_inner);
   }
 
-  get handler(): (cb: Any) => void {
+  get handler(): (cb: BodyCallback) => void {
     return this.zpp_inner_zn.handler;
   }
 
-  set handler(handler: (cb: Any) => void) {
+  set handler(handler: (cb: BodyCallback) => void) {
     if (handler == null) {
       throw new Error("Error: BodyListener::handler cannot be null");
     }

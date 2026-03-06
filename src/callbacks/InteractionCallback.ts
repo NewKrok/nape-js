@@ -1,8 +1,7 @@
 import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
-
-type Any = any;
+import type { Interactor } from "../phys/Interactor";
 
 /**
  * Callback for interaction events (BEGIN/END/ONGOING).
@@ -14,15 +13,16 @@ type Any = any;
 export class InteractionCallback extends Callback {
   static override __name__ = ["nape", "callbacks", "InteractionCallback"];
 
-  get int1(): Any {
+  get int1(): Interactor {
     return this.zpp_inner!.int1.outer_i;
   }
 
-  get int2(): Any {
+  get int2(): Interactor {
     return this.zpp_inner!.int2.outer_i;
   }
 
-  get arbiters(): Any {
+  // ArbiterList is a factory-generated list class; no static TS type available
+  get arbiters(): object {
     return this.zpp_inner!.wrap_arbiters;
   }
 
@@ -45,5 +45,5 @@ export class InteractionCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(InteractionCallback as Any).__super__ = Callback;
+(InteractionCallback as any).__super__ = Callback;
 ZPP_Callback._createIntCb = () => new InteractionCallback();

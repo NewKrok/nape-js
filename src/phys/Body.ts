@@ -1616,7 +1616,7 @@ export class Body extends Interactor {
   normalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
-      (arb: Arbiter) => arb.collisionArbiter.normalImpulse(this, freshOnly),
+      (arb: Arbiter) => arb.collisionArbiter!.normalImpulse(this, freshOnly),
       body,
     );
   }
@@ -1624,7 +1624,7 @@ export class Body extends Interactor {
   tangentImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
-      (arb: Arbiter) => arb.collisionArbiter.tangentImpulse(this, freshOnly),
+      (arb: Arbiter) => arb.collisionArbiter!.tangentImpulse(this, freshOnly),
       body,
     );
   }
@@ -1632,7 +1632,7 @@ export class Body extends Interactor {
   totalContactsImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
-      (arb: Arbiter) => arb.collisionArbiter.totalImpulse(this, freshOnly),
+      (arb: Arbiter) => arb.collisionArbiter!.totalImpulse(this, freshOnly),
       body,
     );
   }
@@ -1656,7 +1656,7 @@ export class Body extends Interactor {
       const arb = oarb.zpp_inner;
       if (arb.type !== ZPP_Arbiter.COL) continue;
       if (body != null && arb.b2 !== body.zpp_inner && arb.b1 !== body.zpp_inner) continue;
-      ret += oarb.collisionArbiter.rollingImpulse(this, freshOnly);
+      ret += oarb.collisionArbiter!.rollingImpulse(this, freshOnly);
     }
     return ret;
   }
@@ -1664,7 +1664,7 @@ export class Body extends Interactor {
   buoyancyImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
-      (arb: Arbiter) => arb.fluidArbiter.buoyancyImpulse(this),
+      (arb: Arbiter) => arb.fluidArbiter!.buoyancyImpulse(this),
       body,
     );
   }
@@ -1672,7 +1672,7 @@ export class Body extends Interactor {
   dragImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
-      (arb: Arbiter) => arb.fluidArbiter.dragImpulse(this),
+      (arb: Arbiter) => arb.fluidArbiter!.dragImpulse(this),
       body,
     );
   }
@@ -1680,7 +1680,7 @@ export class Body extends Interactor {
   totalFluidImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
-      (arb: Arbiter) => arb.fluidArbiter.totalImpulse(this),
+      (arb: Arbiter) => arb.fluidArbiter!.totalImpulse(this),
       body,
     );
   }

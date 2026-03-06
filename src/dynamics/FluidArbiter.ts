@@ -3,8 +3,7 @@ import { Vec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
-
-type Any = any;
+import type { Body } from "../phys/Body";
 
 /**
  * A fluid arbiter between two shapes with fluid interaction.
@@ -72,7 +71,7 @@ export class FluidArbiter extends Arbiter {
   // ---------------------------------------------------------------------------
 
   /** Buoyancy impulse applied by this fluid arbiter. */
-  buoyancyImpulse(body: Any = null): Vec3 {
+  buoyancyImpulse(body: Body | null = null): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const farb = this.zpp_inner.fluidarb;
@@ -86,7 +85,7 @@ export class FluidArbiter extends Arbiter {
   }
 
   /** Drag impulse applied by this fluid arbiter. */
-  dragImpulse(body: Any = null): Vec3 {
+  dragImpulse(body: Body | null = null): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const farb = this.zpp_inner.fluidarb;
@@ -95,7 +94,7 @@ export class FluidArbiter extends Arbiter {
   }
 
   /** Total impulse (buoyancy + drag). */
-  override totalImpulse(body: Any = null, _freshOnly: boolean = false): Vec3 {
+  override totalImpulse(body: Body | null = null, _freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const buoy = this.buoyancyImpulse(body);

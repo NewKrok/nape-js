@@ -3,8 +3,9 @@ import { getOrCreate } from "../core/cache";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_InteractorList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { NapeInner } from "../geom/Vec2";
-
-type Any = any;
+import type { OptionType } from "./OptionType";
+import type { Interactor } from "../phys/Interactor";
+import type { Constraint } from "../constraint/Constraint";
 
 /**
  * Callback type — used to tag interactors so that listeners
@@ -31,19 +32,19 @@ export class CbType {
   // ---------------------------------------------------------------------------
 
   static get ANY_BODY(): CbType {
-    return (ZPP_CbType as Any).ANY_BODY;
+    return ZPP_CbType.ANY_BODY;
   }
 
   static get ANY_CONSTRAINT(): CbType {
-    return (ZPP_CbType as Any).ANY_CONSTRAINT;
+    return ZPP_CbType.ANY_CONSTRAINT;
   }
 
   static get ANY_SHAPE(): CbType {
-    return (ZPP_CbType as Any).ANY_SHAPE;
+    return ZPP_CbType.ANY_SHAPE;
   }
 
   static get ANY_COMPOUND(): CbType {
-    return (ZPP_CbType as Any).ANY_COMPOUND;
+    return ZPP_CbType.ANY_COMPOUND;
   }
 
   // ---------------------------------------------------------------------------
@@ -51,19 +52,19 @@ export class CbType {
   // ---------------------------------------------------------------------------
 
   static get_ANY_BODY(): CbType {
-    return (ZPP_CbType as Any).ANY_BODY;
+    return ZPP_CbType.ANY_BODY;
   }
 
   static get_ANY_CONSTRAINT(): CbType {
-    return (ZPP_CbType as Any).ANY_CONSTRAINT;
+    return ZPP_CbType.ANY_CONSTRAINT;
   }
 
   static get_ANY_SHAPE(): CbType {
-    return (ZPP_CbType as Any).ANY_SHAPE;
+    return ZPP_CbType.ANY_SHAPE;
   }
 
   static get_ANY_COMPOUND(): CbType {
-    return (ZPP_CbType as Any).ANY_COMPOUND;
+    return ZPP_CbType.ANY_COMPOUND;
   }
 
   // ---------------------------------------------------------------------------
@@ -74,14 +75,15 @@ export class CbType {
     return this.zpp_inner.id;
   }
 
-  get userData(): Any {
+  get userData(): Record<string, unknown> {
     if (this.zpp_inner.userData == null) {
       this.zpp_inner.userData = {};
     }
     return this.zpp_inner.userData;
   }
 
-  get interactors(): Any {
+  // InteractorList is factory-generated; no static TS type available
+  get interactors(): object {
     if (this.zpp_inner.wrap_interactors == null) {
       this.zpp_inner.wrap_interactors = ZPP_InteractorList.get(
         this.zpp_inner.interactors,
@@ -91,7 +93,8 @@ export class CbType {
     return this.zpp_inner.wrap_interactors;
   }
 
-  get constraints(): Any {
+  // ConstraintList is factory-generated; no static TS type available
+  get constraints(): object {
     if (this.zpp_inner.wrap_constraints == null) {
       this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
         this.zpp_inner.constraints,
@@ -105,22 +108,22 @@ export class CbType {
   // Methods
   // ---------------------------------------------------------------------------
 
-  including(includes: Any): Any {
+  including(includes: CbType | OptionType): OptionType {
     return new (getNape().callbacks.OptionType)(this).including(includes);
   }
 
-  excluding(excludes: Any): Any {
+  excluding(excludes: CbType | OptionType): OptionType {
     return new (getNape().callbacks.OptionType)(this).excluding(excludes);
   }
 
   toString(): string {
-    if (this === (ZPP_CbType as Any).ANY_BODY) {
+    if (this === ZPP_CbType.ANY_BODY) {
       return "ANY_BODY";
-    } else if (this === (ZPP_CbType as Any).ANY_SHAPE) {
+    } else if (this === ZPP_CbType.ANY_SHAPE) {
       return "ANY_SHAPE";
-    } else if (this === (ZPP_CbType as Any).ANY_COMPOUND) {
+    } else if (this === ZPP_CbType.ANY_COMPOUND) {
       return "ANY_COMPOUND";
-    } else if (this === (ZPP_CbType as Any).ANY_CONSTRAINT) {
+    } else if (this === ZPP_CbType.ANY_CONSTRAINT) {
       return "ANY_CONSTRAINT";
     } else {
       return "CbType#" + this.zpp_inner.id;

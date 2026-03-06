@@ -1,7 +1,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
-type Any = any;
 
 /**
  * Interaction type filter for interaction listeners.
