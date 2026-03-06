@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-~11k lines, down from ~82k) into clean, typed TypeScript classes.
+currently ~5,089 lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -35,110 +35,52 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ## Modernization Status
 
-### Extracted ZPP_* classes (src/native/) — 85 classes
+### Extracted ZPP_* classes (src/native/) — 85 classes — ALL DONE ✅
 
-| Category | Classes |
-|----------|---------|
-| Callbacks | `ZPP_Callback`, `ZPP_CbType`, `ZPP_CbSet`, `ZPP_CbSetPair`, `ZPP_OptionType`, `ZPP_Listener`, `ZPP_BodyListener`, `ZPP_ConstraintListener`, `ZPP_InteractionListener` |
-| Collision | `ZPP_Collide`, `ZPP_SweepDistance` |
-| Constraints | `ZPP_Constraint`, `ZPP_CopyHelper`, `ZPP_UserBody`, `ZPP_AngleJoint`, `ZPP_MotorJoint`, `ZPP_DistanceJoint`, `ZPP_PivotJoint`, `ZPP_LineJoint`, `ZPP_WeldJoint`, `ZPP_PulleyJoint`, `ZPP_UserConstraint` |
-| Dynamics | `ZPP_InteractionFilter`, `ZPP_InteractionGroup`, `ZPP_Contact`, `ZPP_IContact`, `ZPP_Arbiter`, `ZPP_SensorArbiter`, `ZPP_FluidArbiter`, `ZPP_ColArbiter`, `ZPP_SpaceArbiterList` |
-| Geometry (core) | `ZPP_Vec2`, `ZPP_Vec3`, `ZPP_AABB`, `ZPP_Mat23`, `ZPP_MatMN`, `ZPP_GeomPoly`, `ZPP_MarchSpan`, `ZPP_MarchPair`, `ZPP_CutVert`, `ZPP_CutInt`, `ZPP_ConvexRayResult`, `ZPP_GeomVertexIterator` |
-| Geometry (algorithms) | `ZPP_Ray`, `ZPP_Cutter`, `ZPP_Simple`, `ZPP_SimpleSweep`, `ZPP_SimpleVert`, `ZPP_SimpleSeg`, `ZPP_SimpleEvent`, `ZPP_Simplify`, `ZPP_SimplifyV`, `ZPP_SimplifyP`, `ZPP_Monotone`, `ZPP_PartitionedPoly`, `ZPP_PartitionPair`, `ZPP_PartitionVertex`, `ZPP_Triangular`, `ZPP_Convex`, `ZPP_Geom`, `ZPP_GeomVert`, `ZPP_VecMath` |
-| Physics | `ZPP_Material`, `ZPP_FluidProperties`, `ZPP_Compound`, `ZPP_Body` |
-| Shapes | `ZPP_Shape`, `ZPP_Circle`, `ZPP_Edge`, `ZPP_Polygon` |
-| Space | `ZPP_Space`, `ZPP_DynAABBPhase`, `ZPP_Broadphase`, `ZPP_SweepPhase`, `ZPP_AABBTree`, `ZPP_AABBNode`, `ZPP_AABBPair`, `ZPP_Island`, `ZPP_Component`, `ZPP_SweepData`, `ZPP_CallbackSet`, `ZPP_CbSetManager` |
-| Utilities | `ZPP_Math`, `ZPP_Const`, `ZPP_ID`, `ZPP_Flags`, `ZPP_PubPool`, `ZPP_Vec2List`, `ZPP_ContactList` |
+All internal ZPP_* classes have been extracted to TypeScript. Every public API class
+has a fully modernized TypeScript wrapper with direct ZPP access (no compiled delegate).
 
-### Public API classes — all have TypeScript wrappers
-
-Every public API class has a TypeScript wrapper. Classes are either **fully modernized**
-(ZPP extracted, direct access) or **thin wrappers** (delegates to compiled ZPP).
-
-#### Fully modernized (ZPP extracted, direct access)
-
-| Class | File | Notes |
-|-------|------|-------|
-| Material | `src/phys/Material.ts` | Direct ZPP_Material access |
-| InteractionFilter | `src/dynamics/InteractionFilter.ts` | 6 bitmask props, shouldCollide/Sense/Flow |
-| InteractionGroup | `src/dynamics/InteractionGroup.ts` | 1 boolean prop, group hierarchy |
-| FluidProperties | `src/phys/FluidProperties.ts` | 2 props + gravity (Vec2 dependency) |
-| Vec2 | `src/geom/Vec2.ts` | Core class, pooling, weak references |
-| Vec3 | `src/geom/Vec3.ts` | 3D vector (x, y, z) |
-| Mat23 | `src/geom/Mat23.ts` | 2x3 affine matrix, factories |
-| GeomPoly | `src/geom/GeomPoly.ts` | Vertex ring, decomposition algorithms |
-| CbType | `src/callbacks/CbType.ts` | Callback type tags, ANY_* singletons |
-| OptionType | `src/callbacks/OptionType.ts` | Include/exclude CbType filtering |
-| AABB | `src/geom/AABB.ts` | Geometry bounds, Vec2 min/max wrappers |
-| MatMN | `src/geom/MatMN.ts` | Variable-sized M×N matrix |
-| MarchingSquares | `src/geom/MarchingSquares.ts` | Static isosurface extraction |
-| Interactor | `src/phys/Interactor.ts` | Base class for Body/Shape/Compound, direct ZPP_Interactor access |
-| Shape | `src/shape/Shape.ts` | Base shape, dispatch to Circle/Polygon |
-| Compound | `src/phys/Compound.ts` | Hierarchical grouping, extends Interactor |
-| Body | `src/phys/Body.ts` | Fully modernized, all ~58 methods native, direct ZPP_Body access |
-| Listener | `src/callbacks/Listener.ts` | Base listener, space/event/precedence |
-| BodyListener | `src/callbacks/BodyListener.ts` | WAKE/SLEEP body events |
-| ConstraintListener | `src/callbacks/ConstraintListener.ts` | WAKE/SLEEP/BREAK constraint events |
-| InteractionListener | `src/callbacks/InteractionListener.ts` | BEGIN/END/ONGOING interaction events |
-| PreListener | `src/callbacks/PreListener.ts` | PRE interaction events |
-| Callback | `src/callbacks/Callback.ts` | Base callback class |
-| BodyCallback | `src/callbacks/BodyCallback.ts` | Body event callback (WAKE/SLEEP) |
-| ConstraintCallback | `src/callbacks/ConstraintCallback.ts` | Constraint event callback |
-| InteractionCallback | `src/callbacks/InteractionCallback.ts` | Interaction event callback |
-| PreCallback | `src/callbacks/PreCallback.ts` | Pre-interaction callback |
-| Contact | `src/dynamics/Contact.ts` | Direct ZPP_Contact access, impulse methods |
-| Arbiter | `src/dynamics/Arbiter.ts` | Direct ZPP_Arbiter access, shape/body accessors |
-| CollisionArbiter | `src/dynamics/CollisionArbiter.ts` | Direct ZPP_ColArbiter access, contacts/normal/friction |
-| FluidArbiter | `src/dynamics/FluidArbiter.ts` | Direct ZPP_FluidArbiter access, position/overlap/buoyancy |
-| Constraint | `src/constraint/Constraint.ts` | Direct ZPP_Constraint access, base props modernized |
-| Edge | `src/shape/Edge.ts` | Direct ZPP_Edge access, vertex/normal/projection getters |
-| Shape | `src/shape/Shape.ts` | Direct ZPP_Shape access, base shape dispatch |
-| Circle | `src/shape/Circle.ts` | Direct ZPP_Circle access, radius getter/setter |
-| DistanceJoint | `src/constraint/DistanceJoint.ts` | Direct ZPP_DistanceJoint access, anchor/body/limit setters |
-| PivotJoint | `src/constraint/PivotJoint.ts` | Direct ZPP_PivotJoint access, anchor/body setters, 2-DOF |
-| LineJoint | `src/constraint/LineJoint.ts` | Direct ZPP_LineJoint access, anchor/body/direction/limit setters |
-| WeldJoint | `src/constraint/WeldJoint.ts` | Direct ZPP_WeldJoint access, anchor/body/phase setters, 3-DOF |
-| UserConstraint | `src/constraint/UserConstraint.ts` | Direct ZPP_UserConstraint access, abstract N-DOF constraint base |
-| Ray | `src/geom/Ray.ts` | Direct ZPP_Ray access, origin/direction/maxDistance, at/copy/aabb |
-| Geom | `src/geom/Geom.ts` | Static utility, direct ZPP_SweepDistance/ZPP_Collide calls |
-| Polygon | `src/shape/Polygon.ts` | Direct ZPP_Polygon access, vertex input types, static factories |
-| PulleyJoint | `src/constraint/PulleyJoint.ts` | Direct ZPP_PulleyJoint access, 4-body/anchor constraint |
-| Space | `src/space/Space.ts` | Direct ZPP_Space access, simulation, visitors, 14 query methods |
-
-**Singleton enums** (fully modernized, init-time stub + `setPrototypeOf` where needed):
+**Singleton enums** (fully modernized):
 GravMassMode, InertiaMode, MassMode, BodyType, ShapeType, ArbiterType, Winding,
 ListenerType, Broadphase, ValidationResult, CbEvent, InteractionType, PreFlag
 
-#### Thin wrappers (ZPP extracted, but public API still delegates to compiled prototype)
-
-These classes have their ZPP_* internals fully extracted to TypeScript, but the public
-API wrapper class still has a full compiled implementation in `nape-compiled.js`. The next
-step for each is to rewrite the public wrapper to use the extracted ZPP directly (Priority 10).
-
-| Class | File | Notes |
-|-------|------|-------|
-| ConvexResult | `src/geom/ConvexResult.ts` | Direct ZPP_ConvexRayResult access |
-| RayResult | `src/geom/RayResult.ts` | Direct ZPP_ConvexRayResult access |
-
-### Generic List/Iterator factory
-
-Factory in `src/util/NapeListFactory.ts` + `src/util/registerLists.ts` replaces ~7,300 lines
-of compiled boilerplate with ~750 lines of generic TypeScript.
-
-**Factory-generated (13 pairs, 26 classes):**
+**Factory-generated lists** (13 pairs via `src/util/NapeListFactory.ts`):
 CbTypeList, ListenerList, ConstraintList, ArbiterList, InteractionGroupList,
 ConvexResultList, GeomPolyList, RayResultList, BodyList, CompoundList,
 InteractorList, EdgeList, ShapeList (+ matching Iterators)
 
-**Special-case lists (extracted to TypeScript, stubs in compiled code):**
-- `Vec2List` + `Vec2Iterator` (`src/geom/Vec2List.ts`) — custom Vec2 wrapper creation in `at()`
-- `ContactList` + `ContactIterator` (`src/dynamics/ContactList.ts`) — active-contact filtering
-- `GeomVertexIterator` (`src/geom/GeomVertexIterator.ts`) — vertex ring traversal
+**Special-case lists** (fully extracted):
+Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-**Internal list backing classes (extracted to TypeScript):**
-- `ZPP_Vec2List` (`src/native/util/ZPP_Vec2List.ts`)
-- `ZPP_ContactList` (`src/native/util/ZPP_ContactList.ts`)
-- `ZPP_GeomVertexIterator` (`src/native/geom/ZPP_GeomVertexIterator.ts`)
+### What remains in nape-compiled.js (~5,089 lines)
+
+The file is structured as a single factory function. Remaining sections:
+
+| Section | Lines | Status |
+|---------|-------|--------|
+| Imports of TS-extracted classes | ~92 | Infrastructure |
+| Bootstrap Haxe shims (Reflect, Std, StringTools, js.Boot) | ~175 | **Priority 18** |
+| Public API stubs (Callback, Listener, CbType, OptionType, etc.) | ~90 | Stubs (replaced by TS at load) |
+| **`nape.constraint.Constraint` base — full compiled implementation** | ~360 | **Priority 11** |
+| Comment markers for converted classes | ~50 | Informational |
+| `nape.util.Debug` (version + clearObjectPools) | ~500 | **Priority 14** |
+| Generic factories (createZNPNode, createZNPList, createZPPSet) | ~350 | **Priority 17** |
+| Factory instantiations (35+35+8 = 78 generated classes) | ~85 | (removed with factories) |
+| ZPP class registrations to compiled namespace | ~700 | **Priority 19** |
+| Internal list backing classes (13× ZPP_*List) | ~1,500 | **Priority 15** |
+| ZNPArray2 utility classes (3 types) | ~230 | **Priority 16** |
+| Hashable2 + FastHash2 utility classes | ~270 | **Priority 16** |
+| `nape.Config` constants | ~30 | **Priority 13** |
+| Singleton enum creation + statics | ~600 | **Priority 19** |
+| Pool & flag initialization | ~110 | **Priority 19** |
+| `nape.__zpp` exposure + module export | ~2 | (last to go) |
+
+**Thin wrappers still in compiled (ZPP extracted, public API not yet rewritten):**
+
+| Class | File | Notes |
+|-------|------|-------|
+| ConvexResult | `src/geom/ConvexResult.ts` | Uses ZPP_ConvexRayResult, compiled prototype still active |
+| RayResult | `src/geom/RayResult.ts` | Uses ZPP_ConvexRayResult, compiled prototype still active |
 
 ### Compiled code stubs
 
@@ -158,77 +100,117 @@ DistanceJoint, PivotJoint, LineJoint, WeldJoint, AngleJoint, MotorJoint
 `nape.__zpp = zpp_nape;` at the end of the compiled factory function allows TS classes
 to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`, etc.
 
-## Next Modernization Candidates
+## Remaining Modernization Tasks
 
-**Priority 1 (complete all public API wrappers)** — DONE
+### Priority 11: Complete Constraint base class modernization (~360 lines)
 
-**Priority 2: Upgrade thin wrappers to full modernization (ZPP extraction)**
-- ~~`ZPP_Compound` extraction → Compound full modernization~~ ✅
-- ~~`ZPP_Body` extraction → Body full modernization~~ ✅
-- ~~`ZPP_Contact` extraction (~500 lines incl. linked list) → Contact full modernization~~ ✅
-- ~~`ZPP_Arbiter` extraction (~2,800 lines incl. subclasses) → Arbiter/CollisionArbiter/FluidArbiter full modernization~~ ✅
+`nape.constraint.Constraint` has a full compiled implementation (constructor + all
+getter/setter prototype methods) at lines ~404–760 of `nape-compiled.js`. The TS
+`Constraint.ts` currently copies missing methods from the compiled prototype but does
+NOT replace `nape.constraint.Constraint` with itself.
 
-~~**Priority 3: Constraint classes (~7,600 lines, 11 classes)**~~ ✅
-- ~~`ZPP_Constraint` (base, ~400 lines) + `ZPP_CopyHelper` (~30 lines)~~
-- ~~`Constraint.ts` public API fully modernized (direct ZPP_Constraint access)~~
-- ~~`ZPP_AngleJoint` (~470 lines), `ZPP_MotorJoint` (~305 lines)~~
-- ~~`ZPP_DistanceJoint` (~875 lines), `ZPP_PivotJoint` (~863 lines)~~
-- ~~`ZPP_LineJoint` (~1,100 lines), `ZPP_PulleyJoint` (~1,890 lines)~~
-- ~~`ZPP_WeldJoint` (~990 lines), `ZPP_UserConstraint` (~670 lines), `ZPP_UserBody` (~16 lines)~~
+**Goal:** Replace the compiled Constraint class with the TS Constraint class, so the
+compiled implementation can be deleted.
 
-~~**Priority 4: Shape classes (~3,270 lines, 4 classes)**~~ ✅
-- ~~`ZPP_Shape` (base, ~980 lines) + `ZPP_Circle` (~330 lines) + `ZPP_Polygon` (~1,610 lines) + `ZPP_Edge` (~350 lines)~~
+- `Constraint.ts` already has all properties and backward-compat `get_*/set_*` methods
+- Missing: `nape.constraint.Constraint = Constraint` registration at module bottom
+- Stubs for `zpp_internalAlloc` guard may need to stay or move to TS
+- After registration, delete compiled lines ~404–760
 
-~~**Priority 5: Isolated geometry algorithms (~8,700 lines, 19 classes)**~~ ✅
-- ~~`ZPP_Ray` (~1,930 lines), `ZPP_Cutter` (~1,760 lines)~~
-- ~~`ZPP_Simple` (~1,345 lines), `ZPP_SimpleSweep` (~330 lines), `ZPP_Simplify` (~310 lines), `ZPP_SimplifyV`, `ZPP_SimplifyP`~~
-- ~~`ZPP_SimpleVert`, `ZPP_SimpleSeg`, `ZPP_SimpleEvent` (pool objects)~~
-- ~~`ZPP_Monotone` (~450 lines), `ZPP_PartitionedPoly` (~550 lines), `ZPP_PartitionPair` (~410 lines), `ZPP_PartitionVertex` (~280 lines), `ZPP_Triangular` (~340 lines)~~
-- ~~`ZPP_Convex` (~80 lines), `ZPP_Geom` (~330 lines), `ZPP_GeomVert` (~184 lines), `ZPP_VecMath` (~18 lines)~~
+### Priority 12: ConvexResult & RayResult full modernization (~100 lines)
 
-~~**Priority 6: Collision & continuous detection (~6,500 lines, 2 classes)**~~ ✅
-- ~~`ZPP_Collide` (~3,190 lines, narrowphase collision dispatcher)~~
-- ~~`ZPP_SweepDistance` (~3,310 lines, continuous collision / time-of-impact)~~
+Both classes have `ZPP_ConvexRayResult` already extracted. The compiled prototype
+is still active (thin wrapper pattern). Follow the same full-modernization pattern
+as other public API classes.
 
-~~**Priority 7: Space & broadphase (~23,400 lines — largest and most complex)**~~ ✅
-- ~~`ZPP_Space` (~13,450 lines, core simulation loop, integration, solver)~~
-- ~~`ZPP_DynAABBPhase` (~4,920 lines, dynamic AABB broadphase)~~
-- ~~`ZPP_Broadphase` (~1,445 lines, base broadphase container)~~
-- ~~`ZPP_SweepPhase` (~1,210 lines, sweep-and-prune variant)~~
-- ~~`ZPP_AABBTree` (~1,170 lines) + `ZPP_AABBNode` (~66 lines) + `ZPP_AABBPair` (~26 lines)~~
-- ~~`ZPP_Island` (~365 lines) + `ZPP_Component` (~45 lines) + `ZPP_SweepData` (~26 lines)~~
-- ~~`ZPP_CallbackSet` (~567 lines) + `ZPP_CbSetManager` (~145 lines)~~
-- ~~`ZPP_SpaceArbiterList` (~277 lines)~~
+- `src/geom/ConvexResult.ts` — rewrite to use `ZPP_ConvexRayResult` directly
+- `src/geom/RayResult.ts` — rewrite to use `ZPP_ConvexRayResult` directly
+- Register both at module bottom, delete compiled implementation
 
-~~**Priority 8: Remaining internal ZPP classes (~4,240 lines, 3 classes)**~~ ✅
-- ~~`ZPP_Interactor` (~378 lines, base class for Body/Compound/Shape — cbType management, callback sets, group logic)~~
-- ~~`ZPP_ToiEvent` (~40 lines, pool object used by ZPP_SweepDistance)~~
-- ~~`ZPP_MarchingSquares` (~3,824 lines, internal compiled version — public MarchingSquares TS already exists)~~
+### Priority 13: nape.Config → TypeScript (~30 lines)
 
-~~**Priority 9: Special lists & internal list wrappers (~1,250 lines)**~~ ✅
-- ~~`Vec2List` + `Vec2Iterator` (~671 lines, complex Vec2 wrapper creation in `at()`)~~
-- ~~`ContactList` + `ContactIterator` (~798 lines, active-contact filtering in iteration)~~
-- ~~`GeomVertexIterator` (~136 lines, vertex ring traversal)~~
-- ~~`ZPP_CbTypeList` (~93 lines), `ZPP_Vec2List` (~89 lines), `ZPP_ContactList` (~94 lines)~~
+Extract the physics configuration constants to `src/Config.ts`:
 
-~~**Priority 10: Public API wrapper full modernization (~16,600 lines)**~~ ✅
-Public wrappers that still have full compiled implementations (ZPP_* extracted, but
-public class still delegates through compiled prototype code):
-- ~~`nape.phys.Body` (~5,146 lines — largest single public API class)~~ ✅
-- ~~`nape.space.Space` (~1,394 lines)~~ ✅
-- ~~`nape.constraint.*Joint` wrappers: DistanceJoint (~975), LineJoint (~1,239), PivotJoint (~882), PulleyJoint (~1,885), WeldJoint (~915), UserConstraint (~179), Constraint base (~347)~~ ✅
-- ~~`nape.shape.*` wrappers: Shape (~758), Circle (~197), Polygon (~1,306), Edge (~534)~~ ✅
-- ~~`nape.geom.*` wrappers: Ray (~888), Geom (~656)~~ ✅
-- ~~`nape.phys.Interactor` (~97 lines)~~ ✅
+- ~22 numeric constants (epsilon, sleepDelay, collisionSlop, contactBiasCoef variants,
+  constraintLinearSlop, illConditionedThreshold, CCD thresholds, etc.)
+- Export as a plain `Config` object or class with static fields
+- Delete compiled initialization block
 
-**Still in compiled (infrastructure, not candidates for individual extraction):**
-- Bootstrap: `Reflect`, `Std`, `StringTools`, `js.Boot` (Haxe stdlib shims, ~280 lines)
-- `nape.Config` (static constants)
-- `nape.util.Debug` (~493 lines, `version()`, `clearObjectPools()`)
-- Generic factories: `createZNPNode`, `createZNPList`, `createZPPSet` (~340 lines, generate 35+35+8 types)
-- Utility classes: `ZNPArray2_*` (~107 lines), `Hashable2_*` + `FastHash2_*` (~269 lines)
-- Public API stubs for init-time created singletons (~200 lines)
-- Static initialization code (~404 lines)
+### Priority 14: nape.util.Debug → TypeScript (~500 lines)
+
+Extract `src/util/Debug.ts`:
+
+- `version()` → returns `"Nape 2.0.19"` (or make it a constant)
+- `clearObjectPools()` → clears ~60 pool chains across all ZPP classes, ZNPNode types,
+  ZPP_Set types, iterators, list pools
+- The pool-clearing code references all extracted TS ZPP classes directly, so it can
+  import them without circular issues
+
+### Priority 15: Internal list backing classes → TypeScript (~1,500 lines, 13 classes)
+
+These `zpp_nape.util.ZPP_*List` classes back the public factory-generated lists and
+the special-case lists. Each has:
+- `inner` (ZNPList backing), `outer` (public API wrapper)
+- `at()`, `push()`, `iterator_at()`, validation/invalidation hooks
+
+All 13 classes (ConstraintList, BodyList, ShapeList, ArbiterList, InteractorList,
+CompoundList, InteractionGroupList, EdgeList, ListenerList, GeomPolyList,
+RayResultList, ConvexResultList, CbTypeList) follow an identical pattern.
+
+**Approach:** Replace with a generic TypeScript class `ZPP_PublicList<T>` analogous
+to `NapeListFactory`. Each specialization is a one-liner subclass or factory call.
+
+### Priority 16: Utility infrastructure classes → TypeScript (~500 lines)
+
+Three utility class families still compiled:
+
+- **ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair** (~230 lines)
+  — 2D resizable array wrappers. Can become a generic `ZNPArray2<T>` TypeScript class.
+- **Hashable2_Boolfalse** (~110 lines) — pooled pair-key hash entry
+- **FastHash2_Hashable2_Boolfalse** (~160 lines) — fast hash table using Hashable2
+
+### Priority 17: Generic factories → TypeScript generics (~350 lines + 78 generated classes)
+
+Replace `createZNPNode()`, `createZNPList()`, `createZPPSet()` dynamic factory functions
+with static TypeScript generic classes:
+
+- `ZNPNode<T>` + `ZNPList<T>` generic classes cover all 35 node/list types
+- `ZPP_Set<T>` generic class covers all 8 set types
+- Eliminates the factory function code AND the `createZNPNode/List/Set(...)` call blocks
+- The 78 "instances" become type aliases or subclasses
+
+This is complex because compiled code references specific named classes (e.g.
+`ZNPList_ZPP_Body`). The named class references must remain but can point to
+generic instances.
+
+### Priority 18: Bootstrap / Haxe shims → TypeScript (~175 lines)
+
+Replace Haxe-to-JS runtime shims with TypeScript equivalents:
+
+- `Reflect` — `hasField`, `field`, `setField`, `fields`, `copy` → TS utility functions
+- `Std` — `string(v)` → `String(v)` wrapper
+- `StringTools` — `hex(n, digits)` → simple padStart implementation
+- `js.Boot` + `js._Boot.HaxeError` — error/string conversion helpers
+
+These are standalone utility classes with no circular dependencies.
+
+### Priority 19: Static initialization code migration (~1,400 lines)
+
+The final and most complex step — migrate all init-time code out of the compiled
+factory function into TS module initializers:
+
+- **ZPP registrations** (~700 lines): Move `zpp_nape.xxx.ZPP_Foo = ZPP_Foo_TS` assignments
+  to the bottom of each respective ZPP_Foo.ts module (most are already done via `_wrapFn`)
+- **Singleton enum creation** (~600 lines): Move `ZPP_CbType.ANY_*` creation, `Flags.*`
+  bitmasks, `ListenerType`/`CbEvent`/`ArbiterType`/`BodyType`/`ShapeType` array initialization
+  to their respective TS files
+- **Pool & flag initialization** (~110 lines): Move `zpp_pool = null` and `internal = false`
+  assignments to the static field declarations in TS classes
+- **`nape.__zpp` exposure**: Once all references to `zpp_nape` are in TS, this line moves
+  to the engine bootstrap
+
+After Priority 19, the compiled file is eliminated entirely. The engine bootstrap (`src/core/engine.ts`)
+becomes the single entry point.
 
 ## Modernization Pattern
 
