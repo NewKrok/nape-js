@@ -96,185 +96,21 @@ import { FastHash2_Hashable2_Boolfalse as FastHash2_Hashable2_Boolfalse_TS } fro
 import { ZNPNode as ZNPNode_Base } from "../native/util/ZNPNode";
 import { ZNPList as ZNPList_Base } from "../native/util/ZNPList";
 import { ZPP_Set as ZPP_Set_Base } from "../native/util/ZPP_Set";
+import { $hxClasses as $hxClasses_TS, Reflect as Reflect_TS, Std as Std_TS, StringTools as StringTools_TS, js as js_TS, $estr as $estr_TS } from "./HaxeShims";
 var _nape;
 var define = function (factory) {
   _nape = factory();
 };
 define(function () {
   "use strict";
-  var nape, zpp_nape, js, Std, Reflect, StringTools, sandbox;
-  var $_,
-    $hxClasses = $hxClasses || {},
-    $estr = function () {
-      return js.Boot.__string_rec(this, "");
-    };
-  function $bind(o, m) {
-    var f = function () {
-      return f.method.apply(f.scope, arguments);
-    };
-    f.scope = o;
-    f.method = m;
-    return f;
-  }
-  Reflect = $hxClasses["Reflect"] = function () {};
-  Reflect.__name__ = ["Reflect"];
-  Reflect.field = function (o, field) {
-    try {
-      return o[field];
-    } catch (e) {
-      var e1 = e instanceof js._Boot.HaxeError ? e.val : e;
-      return null;
-    }
-  };
-  Reflect.fields = function (o) {
-    var a = [];
-    if (o != null) {
-      var hasOwnProperty = Object.prototype.hasOwnProperty;
-      for (var f in o) {
-        if (
-          f != "__id__" &&
-          f != "hx__closures__" &&
-          hasOwnProperty.call(o, f)
-        ) {
-          a.push(f);
-        }
-      }
-    }
-    return a;
-  };
-  Reflect.copy = function (o) {
-    if (o == null) {
-      return null;
-    }
-    var o2 = {};
-    var _g = 0;
-    var _g1 = Reflect.fields(o);
-    while (_g < _g1.length) {
-      var f = _g1[_g];
-      ++_g;
-      o2[f] = Reflect.field(o, f);
-    }
-    return o2;
-  };
-  Reflect.prototype.__class__ = Reflect;
-  Std = $hxClasses["Std"] = function () {};
-  Std.__name__ = ["Std"];
-  Std.string = function (s) {
-    return js.Boot.__string_rec(s, "");
-  };
-  Std.prototype.__class__ = Std;
-  StringTools = $hxClasses["StringTools"] = function () {};
-  StringTools.__name__ = ["StringTools"];
-  StringTools.hex = function (n, digits) {
-    var s = "";
-    var hexChars = "0123456789ABCDEF";
-    while (true) {
-      s = hexChars.charAt(n & 15) + s;
-      n >>>= 4;
-      if (!(n > 0)) {
-        break;
-      }
-    }
-    if (digits != null) {
-      while (s.length < digits) s = "0" + s;
-    }
-    return s;
-  };
-  StringTools.prototype.__class__ = StringTools;
-  if (typeof js == "undefined") js = {};
-  if (!js._Boot) js._Boot = {};
-  js._Boot.HaxeError = $hxClasses["js._Boot.HaxeError"] = function (val) {
-    Error.call(this);
-    this.val = val;
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, js._Boot.HaxeError);
-    }
-  };
-  js._Boot.HaxeError.__name__ = ["js", "_Boot", "HaxeError"];
-  js._Boot.HaxeError.__super__ = Error;
-  for (var k in Error.prototype)
-    js._Boot.HaxeError.prototype[k] = Error.prototype[k];
-  js._Boot.HaxeError.prototype.val = null;
-  js._Boot.HaxeError.prototype.__class__ = js._Boot.HaxeError;
-  js.Boot = $hxClasses["js.Boot"] = function () {};
-  js.Boot.__name__ = ["js", "Boot"];
-  js.Boot.__string_rec = function (o, s) {
-    if (o == null) {
-      return "null";
-    }
-    if (s.length >= 5) {
-      return "<...>";
-    }
-    var t = typeof o;
-    if (t == "function" && (o.__name__ || o.__ename__)) {
-      t = "object";
-    }
-    switch (t) {
-      case "function":
-        return "<function>";
-      case "object":
-        if (o instanceof Array) {
-          var str = "[";
-          s += "\t";
-          var _g3 = 0;
-          var _g11 = o.length;
-          while (_g3 < _g11) {
-            var i = _g3++;
-            str += (i > 0 ? "," : "") + js.Boot.__string_rec(o[i], s);
-          }
-          str += "]";
-          return str;
-        }
-        var tostr;
-        try {
-          tostr = o.toString;
-        } catch (e1) {
-          var e2 = e1 instanceof js._Boot.HaxeError ? e1.val : e1;
-          return "???";
-        }
-        if (
-          tostr != null &&
-          tostr != Object.toString &&
-          typeof tostr == "function"
-        ) {
-          var s2 = o.toString();
-          if (s2 != "[object Object]") {
-            return s2;
-          }
-        }
-        var str1 = "{\n";
-        s += "\t";
-        var hasp = o.hasOwnProperty != null;
-        var k = null;
-        for (k in o) {
-          if (hasp && !o.hasOwnProperty(k)) {
-            continue;
-          }
-          if (
-            k == "prototype" ||
-            k == "__class__" ||
-            k == "__super__" ||
-            k == "__interfaces__" ||
-            k == "__properties__"
-          ) {
-            continue;
-          }
-          if (str1.length != 2) {
-            str1 += ", \n";
-          }
-          str1 += s + k + " : " + js.Boot.__string_rec(o[k], s);
-        }
-        s = s.substring(1);
-        str1 += "\n" + s + "}";
-        return str1;
-      case "string":
-        return o;
-      default:
-        return String(o);
-    }
-  };
-  js.Boot.__toStr = null;
-  js.Boot.prototype.__class__ = js.Boot;
+  var nape, zpp_nape, sandbox;
+  // Haxe shims — extracted to TypeScript → src/core/HaxeShims.ts
+  var $hxClasses = $hxClasses_TS;
+  var $estr = $estr_TS;
+  var js = js_TS;
+  var Reflect = Reflect_TS;
+  var Std = Std_TS;
+  var StringTools = StringTools_TS;
   if (typeof nape == "undefined") nape = {};
   nape.Config = $hxClasses["nape.Config"] = function () {};
   nape.Config.__name__ = ["nape", "Config"];

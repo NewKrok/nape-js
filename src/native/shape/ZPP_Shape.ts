@@ -512,12 +512,7 @@ export class ZPP_Shape {
     ret.fluidEnabled = this.fluidEnabled;
     ret.sensorEnabled = this.sensorEnabled;
     if (this.userData != null) {
-      const Reflect = (nape as Any).__Reflect || ZPP_Shape._zpp.__Reflect;
-      if (Reflect && Reflect.copy) {
-        ret.userData = Reflect.copy(this.userData);
-      } else {
-        ret.userData = Object.assign({}, this.userData);
-      }
+      ret.userData = Object.assign({}, this.userData);
     }
     this.copyto(ret.outer);
     return ret.outer;
