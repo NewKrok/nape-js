@@ -53,4 +53,3 @@ export class Broadphase {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.space.Broadphase = Broadphase;
-(Broadphase.prototype as Any).__class__ = Broadphase;

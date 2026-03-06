@@ -45,8 +45,5 @@ export class InteractionCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.callbacks.InteractionCallback = InteractionCallback;
 (InteractionCallback as Any).__super__ = Callback;
-(InteractionCallback.prototype as Any).__class__ = InteractionCallback;
 ZPP_Callback._createIntCb = () => new InteractionCallback();

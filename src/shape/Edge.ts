@@ -2,6 +2,7 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { ZPP_Edge } from "../native/shape/ZPP_Edge";
+import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 
 type Any = any;
 
@@ -193,7 +194,6 @@ export class Edge {
    */
   private _wrapVert(vert: Any): Vec2 {
     const nape = getNape();
-    const zpp = nape.__zpp;
     if (vert.outer == null) {
       vert.outer = new nape.geom.Vec2();
       const o = vert.outer.zpp_inner;
@@ -204,8 +204,8 @@ export class Edge {
       o._isimmutable = null;
       o._validate = null;
       o._invalidate = null;
-      o.next = zpp.geom.ZPP_Vec2.zpp_pool;
-      zpp.geom.ZPP_Vec2.zpp_pool = o;
+      o.next = ZPP_Vec2.zpp_pool;
+      ZPP_Vec2.zpp_pool = o;
       vert.outer.zpp_inner = vert;
     }
     return vert.outer;
@@ -231,4 +231,3 @@ const nape = getNape();
 
 // Replace the compiled Edge with our TS class
 nape.shape.Edge = Edge;
-(Edge.prototype as Any).__class__ = Edge;

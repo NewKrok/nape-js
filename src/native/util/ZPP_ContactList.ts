@@ -105,4 +105,3 @@ export class ZPP_ContactList {
 // --- Register in compiled namespace ---
 const nape = getNape();
 nape.__zpp.util.ZPP_ContactList = ZPP_ContactList;
-nape.__zpp.util.ZPP_ContactList.prototype.__class__ = ZPP_ContactList;

@@ -54,8 +54,4 @@ describe("ArbiterType", () => {
   it("FLUID toString should return 'FLUID'", () => {
     expect(ArbiterType.get_FLUID().toString()).toBe("FLUID");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((ArbiterType.get_COLLISION() as any).__class__).toBe(ArbiterType);
-  });
 });

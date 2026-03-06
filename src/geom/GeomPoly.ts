@@ -1,6 +1,15 @@
 import { getNape } from "../core/engine";
 import { ZPP_GeomPoly } from "../native/geom/ZPP_GeomPoly";
+import { ZPP_GeomVert } from "../native/geom/ZPP_GeomVert";
 import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
+import { ZPP_Simple } from "../native/geom/ZPP_Simple";
+import { ZPP_Monotone } from "../native/geom/ZPP_Monotone";
+import { ZPP_Simplify } from "../native/geom/ZPP_Simplify";
+import { ZPP_Cutter } from "../native/geom/ZPP_Cutter";
+import { ZPP_PartitionedPoly } from "../native/geom/ZPP_PartitionedPoly";
+import { ZPP_Triangular } from "../native/geom/ZPP_Triangular";
+import { ZPP_Convex } from "../native/geom/ZPP_Convex";
+import { ZNPList_ZPP_GeomVert, ZNPList_ZPP_PartitionedPoly } from "../native/util/ZNPRegistry";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { Vec2 } from "./Vec2";
@@ -48,20 +57,14 @@ export class GeomPoly {
     }
   }
 
-  /** @internal Get compiled ZPP_GeomVert class */
-  private static _gvClass(): Any {
-    return getNape().__zpp.geom.ZPP_GeomVert;
-  }
-
   /** @internal Create a ZPP_GeomVert from pool or new */
   private static _createVert(x: number, y: number): Any {
-    const GV = GeomPoly._gvClass();
     let ret: Any;
-    if (GV.zpp_pool == null) {
-      ret = new GV();
+    if (ZPP_GeomVert.zpp_pool == null) {
+      ret = new ZPP_GeomVert();
     } else {
-      ret = GV.zpp_pool;
-      GV.zpp_pool = ret.next;
+      ret = ZPP_GeomVert.zpp_pool;
+      ZPP_GeomVert.zpp_pool = ret.next;
       ret.next = null;
     }
     ret.forced = false;
@@ -98,10 +101,9 @@ export class GeomPoly {
 
   /** @internal Free a vertex: cleanup wrap + return to pool */
   private static _freeVert(vert: Any): void {
-    const GV = GeomPoly._gvClass();
     vert.free();
-    vert.next = GV.zpp_pool;
-    GV.zpp_pool = vert;
+    vert.next = ZPP_GeomVert.zpp_pool;
+    ZPP_GeomVert.zpp_pool = vert;
   }
 
   /** @internal Remove head, new head = prev (pop direction) */
@@ -595,13 +597,13 @@ export class GeomPoly {
   isSimple(): boolean {
     this._checkDisposed();
     if (this._isDegenRing()) return true;
-    return getNape().__zpp.geom.ZPP_Simple.isSimple(this.zpp_inner.vertices);
+    return ZPP_Simple.isSimple(this.zpp_inner.vertices);
   }
 
   isMonotone(): boolean {
     this._checkDisposed();
     if (this._isDegenRing()) return true;
-    return getNape().__zpp.geom.ZPP_Monotone.isMonotone(this.zpp_inner.vertices);
+    return ZPP_Monotone.isMonotone(this.zpp_inner.vertices);
   }
 
   isDegenerate(): boolean {
@@ -620,7 +622,7 @@ export class GeomPoly {
       throw new Error("Error: Epsilon should be > 0 for simplifying a GeomPoly");
     }
     if (this._isDegenRing()) return this.copy();
-    const x = getNape().__zpp.geom.ZPP_Simplify.simplify(this.zpp_inner.vertices, epsilon);
+    const x = ZPP_Simplify.simplify(this.zpp_inner.vertices, epsilon);
     const ret = GeomPoly.get();
     ret.zpp_inner.vertices = x;
     return ret;
@@ -631,13 +633,12 @@ export class GeomPoly {
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
     }
-    const zpp = getNape().__zpp;
     const nape = getNape();
     const MPs = this.zpp_inner.vertices;
-    if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
+    if (ZPP_PartitionedPoly.sharedGVList == null) {
+      ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert();
     }
-    const MPs1 = zpp.geom.ZPP_Simple.decompose(MPs, zpp.geom.ZPP_PartitionedPoly.sharedGVList);
+    const MPs1 = ZPP_Simple.decompose(MPs, ZPP_PartitionedPoly.sharedGVList);
     const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs1.head != null) {
       const MP = MPs1.pop_unsafe();
@@ -657,17 +658,16 @@ export class GeomPoly {
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
     }
-    const zpp = getNape().__zpp;
     const nape = getNape();
     const poly = this.zpp_inner.vertices;
-    if (zpp.geom.ZPP_Monotone.sharedPPoly == null) {
-      zpp.geom.ZPP_Monotone.sharedPPoly = new zpp.geom.ZPP_PartitionedPoly();
+    if (ZPP_Monotone.sharedPPoly == null) {
+      ZPP_Monotone.sharedPPoly = new ZPP_PartitionedPoly();
     }
-    const poly1 = zpp.geom.ZPP_Monotone.decompose(poly, zpp.geom.ZPP_Monotone.sharedPPoly);
-    if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
+    const poly1 = ZPP_Monotone.decompose(poly, ZPP_Monotone.sharedPPoly);
+    if (ZPP_PartitionedPoly.sharedGVList == null) {
+      ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert();
     }
-    const MPs = poly1.extract(zpp.geom.ZPP_PartitionedPoly.sharedGVList);
+    const MPs = poly1.extract(ZPP_PartitionedPoly.sharedGVList);
     const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs.head != null) {
       const MP = MPs.pop_unsafe();
@@ -687,32 +687,31 @@ export class GeomPoly {
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
     }
-    const zpp = getNape().__zpp;
     const nape = getNape();
     const poly = this.zpp_inner.vertices;
-    if (zpp.geom.ZPP_Monotone.sharedPPoly == null) {
-      zpp.geom.ZPP_Monotone.sharedPPoly = new zpp.geom.ZPP_PartitionedPoly();
+    if (ZPP_Monotone.sharedPPoly == null) {
+      ZPP_Monotone.sharedPPoly = new ZPP_PartitionedPoly();
     }
-    const poly1 = zpp.geom.ZPP_Monotone.decompose(poly, zpp.geom.ZPP_Monotone.sharedPPoly);
-    if (zpp.geom.ZPP_PartitionedPoly.sharedPPList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedPPList = new zpp.util.ZNPList_ZPP_PartitionedPoly();
+    const poly1 = ZPP_Monotone.decompose(poly, ZPP_Monotone.sharedPPoly);
+    if (ZPP_PartitionedPoly.sharedPPList == null) {
+      ZPP_PartitionedPoly.sharedPPList = new ZNPList_ZPP_PartitionedPoly();
     }
-    const MPs = poly1.extract_partitions(zpp.geom.ZPP_PartitionedPoly.sharedPPList);
+    const MPs = poly1.extract_partitions(ZPP_PartitionedPoly.sharedPPList);
     const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs.head != null) {
       const MP = MPs.pop_unsafe();
-      zpp.geom.ZPP_Triangular.triangulate(MP);
+      ZPP_Triangular.triangulate(MP);
       if (delaunay) {
-        zpp.geom.ZPP_Triangular.optimise(MP);
+        ZPP_Triangular.optimise(MP);
       }
-      zpp.geom.ZPP_Convex.optimise(MP);
-      if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-        zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
+      ZPP_Convex.optimise(MP);
+      if (ZPP_PartitionedPoly.sharedGVList == null) {
+        ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert();
       }
-      const MQs = MP.extract(zpp.geom.ZPP_PartitionedPoly.sharedGVList);
+      const MQs = MP.extract(ZPP_PartitionedPoly.sharedGVList);
       const o = MP;
-      o.next = zpp.geom.ZPP_PartitionedPoly.zpp_pool;
-      zpp.geom.ZPP_PartitionedPoly.zpp_pool = o;
+      o.next = ZPP_PartitionedPoly.zpp_pool;
+      ZPP_PartitionedPoly.zpp_pool = o;
       while (MQs.head != null) {
         const MQ = MQs.pop_unsafe();
         const x = GeomPoly.get();
@@ -732,31 +731,30 @@ export class GeomPoly {
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
     }
-    const zpp = getNape().__zpp;
     const nape = getNape();
     const poly = this.zpp_inner.vertices;
-    if (zpp.geom.ZPP_Monotone.sharedPPoly == null) {
-      zpp.geom.ZPP_Monotone.sharedPPoly = new zpp.geom.ZPP_PartitionedPoly();
+    if (ZPP_Monotone.sharedPPoly == null) {
+      ZPP_Monotone.sharedPPoly = new ZPP_PartitionedPoly();
     }
-    const poly1 = zpp.geom.ZPP_Monotone.decompose(poly, zpp.geom.ZPP_Monotone.sharedPPoly);
-    if (zpp.geom.ZPP_PartitionedPoly.sharedPPList == null) {
-      zpp.geom.ZPP_PartitionedPoly.sharedPPList = new zpp.util.ZNPList_ZPP_PartitionedPoly();
+    const poly1 = ZPP_Monotone.decompose(poly, ZPP_Monotone.sharedPPoly);
+    if (ZPP_PartitionedPoly.sharedPPList == null) {
+      ZPP_PartitionedPoly.sharedPPList = new ZNPList_ZPP_PartitionedPoly();
     }
-    const MPs = poly1.extract_partitions(zpp.geom.ZPP_PartitionedPoly.sharedPPList);
+    const MPs = poly1.extract_partitions(ZPP_PartitionedPoly.sharedPPList);
     const ret = output == null ? new nape.geom.GeomPolyList() : output;
     while (MPs.head != null) {
       const MP = MPs.pop_unsafe();
-      zpp.geom.ZPP_Triangular.triangulate(MP);
+      ZPP_Triangular.triangulate(MP);
       if (delaunay) {
-        zpp.geom.ZPP_Triangular.optimise(MP);
+        ZPP_Triangular.optimise(MP);
       }
-      if (zpp.geom.ZPP_PartitionedPoly.sharedGVList == null) {
-        zpp.geom.ZPP_PartitionedPoly.sharedGVList = new zpp.util.ZNPList_ZPP_GeomVert();
+      if (ZPP_PartitionedPoly.sharedGVList == null) {
+        ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert();
       }
-      const MQs = MP.extract(zpp.geom.ZPP_PartitionedPoly.sharedGVList);
+      const MQs = MP.extract(ZPP_PartitionedPoly.sharedGVList);
       const o = MP;
-      o.next = zpp.geom.ZPP_PartitionedPoly.zpp_pool;
-      zpp.geom.ZPP_PartitionedPoly.zpp_pool = o;
+      o.next = ZPP_PartitionedPoly.zpp_pool;
+      ZPP_PartitionedPoly.zpp_pool = o;
       while (MQs.head != null) {
         const MQ = MQs.pop_unsafe();
         const x = GeomPoly.get();
@@ -829,7 +827,7 @@ export class GeomPoly {
     if (
       !(this._isDegenRing()
         ? true
-        : getNape().__zpp.geom.ZPP_Simple.isSimple(this.zpp_inner.vertices))
+        : ZPP_Simple.isSimple(this.zpp_inner.vertices))
     ) {
       throw new Error("Error: Cut requires a truly simple polygon");
     }
@@ -843,7 +841,7 @@ export class GeomPoly {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
 
-    const ret = getNape().__zpp.geom.ZPP_Cutter.run(
+    const ret = ZPP_Cutter.run(
       this.zpp_inner.vertices,
       start,
       end,
@@ -930,4 +928,3 @@ export class GeomPoly {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.geom.GeomPoly = GeomPoly;
-(GeomPoly.prototype as Any).__class__ = GeomPoly;

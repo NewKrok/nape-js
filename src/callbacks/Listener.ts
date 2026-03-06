@@ -186,4 +186,3 @@ export class Listener {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.callbacks.Listener = Listener;
-(Listener.prototype as Any).__class__ = Listener;

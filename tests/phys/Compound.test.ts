@@ -13,10 +13,6 @@ describe("Compound", () => {
     expect(Compound.__name__).toEqual(["nape", "phys", "Compound"]);
   });
 
-  it("should have __class__ set on prototype", () => {
-    expect((Compound.prototype as any).__class__).toBe(Compound);
-  });
-
   it("should extend Interactor", () => {
     const c = new Compound();
     expect(c).toBeInstanceOf(Interactor);

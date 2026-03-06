@@ -139,4 +139,3 @@ export class Debug {
 // Self-register: replace compiled nape.util.Debug with TS class.
 const nape = getNape();
 nape.util.Debug = Debug;
-(Debug.prototype as any).__class__ = Debug;

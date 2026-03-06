@@ -68,8 +68,4 @@ describe("ListenerType", () => {
   it("PRE toString should return 'PRE'", () => {
     expect(ListenerType.get_PRE().toString()).toBe("PRE");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((ListenerType.get_BODY() as any).__class__).toBe(ListenerType);
-  });
 });

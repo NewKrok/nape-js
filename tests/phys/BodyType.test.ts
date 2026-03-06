@@ -61,8 +61,4 @@ describe("BodyType", () => {
     expect(BodyType.DYNAMIC).toBe(BodyType.get_DYNAMIC());
     expect(BodyType.KINEMATIC).toBe(BodyType.get_KINEMATIC());
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((BodyType.get_DYNAMIC() as any).__class__).toBe(BodyType);
-  });
 });

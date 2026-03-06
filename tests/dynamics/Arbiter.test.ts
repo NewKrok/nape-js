@@ -44,10 +44,6 @@ describe("Arbiter", () => {
     expect(() => new Arbiter()).toThrow("Cannot instantiate");
   });
 
-  it("should have __class__ set on prototype", () => {
-    expect((Arbiter.prototype as any).__class__).toBe(Arbiter);
-  });
-
   it("should be accessible via collision arbiters after simulation", () => {
     const { space } = createCollisionScene();
     const arbiters = space.arbiters;
@@ -115,10 +111,6 @@ describe("CollisionArbiter", () => {
 
   it("should throw on direct instantiation", () => {
     expect(() => new CollisionArbiter()).toThrow("Cannot instantiate");
-  });
-
-  it("should have __class__ set on prototype", () => {
-    expect((CollisionArbiter.prototype as any).__class__).toBe(CollisionArbiter);
   });
 
   it("should extend Arbiter", () => {
@@ -199,10 +191,6 @@ describe("FluidArbiter", () => {
 
   it("should throw on direct instantiation", () => {
     expect(() => new FluidArbiter()).toThrow("Cannot instantiate");
-  });
-
-  it("should have __class__ set on prototype", () => {
-    expect((FluidArbiter.prototype as any).__class__).toBe(FluidArbiter);
   });
 
   it("should extend Arbiter", () => {

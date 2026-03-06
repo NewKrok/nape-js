@@ -33,8 +33,5 @@ export class BodyCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.callbacks.BodyCallback = BodyCallback;
 (BodyCallback as Any).__super__ = Callback;
-(BodyCallback.prototype as Any).__class__ = BodyCallback;
 ZPP_Callback._createBodyCb = () => new BodyCallback();

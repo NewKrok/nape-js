@@ -1,6 +1,7 @@
 import { getNape, ensureEnumsReady } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
+import { ZPP_InteractorList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { NapeInner } from "../geom/Vec2";
 
 type Any = any;
@@ -81,9 +82,8 @@ export class CbType {
   }
 
   get interactors(): Any {
-    const zpp = getNape().__zpp;
     if (this.zpp_inner.wrap_interactors == null) {
-      this.zpp_inner.wrap_interactors = zpp.util.ZPP_InteractorList.get(
+      this.zpp_inner.wrap_interactors = ZPP_InteractorList.get(
         this.zpp_inner.interactors,
         true,
       );
@@ -92,9 +92,8 @@ export class CbType {
   }
 
   get constraints(): Any {
-    const zpp = getNape().__zpp;
     if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = zpp.util.ZPP_ConstraintList.get(
+      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
         this.zpp_inner.constraints,
         true,
       );
@@ -151,6 +150,5 @@ export class CbType {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.callbacks.CbType = CbType;
-(CbType.prototype as Any).__class__ = CbType;
 ensureEnumsReady();
 

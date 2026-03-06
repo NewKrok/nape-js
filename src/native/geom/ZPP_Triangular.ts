@@ -7,10 +7,10 @@
  * Converted from nape-compiled.js lines 39177–39514.
  */
 
-import { getNape } from "../../core/engine";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_PartitionPair } from "./ZPP_PartitionPair";
 import { ZPP_PartitionedPoly } from "./ZPP_PartitionedPoly";
+import { ZNPList_ZPP_PartitionVertex, ZPP_Set_ZPP_PartitionPair } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -126,13 +126,12 @@ export class ZPP_Triangular {
         }
       }
     }
-    const zpp = getNape().__zpp;
     if (ZPP_Triangular.edgeSet == null) {
-      if (zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool == null) {
-        ZPP_Triangular.edgeSet = new zpp.util.ZPP_Set_ZPP_PartitionPair();
+      if (ZPP_Set_ZPP_PartitionPair.zpp_pool == null) {
+        ZPP_Triangular.edgeSet = new ZPP_Set_ZPP_PartitionPair();
       } else {
-        ZPP_Triangular.edgeSet = zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool;
-        zpp.util.ZPP_Set_ZPP_PartitionPair.zpp_pool = ZPP_Triangular.edgeSet.next;
+        ZPP_Triangular.edgeSet = ZPP_Set_ZPP_PartitionPair.zpp_pool;
+        ZPP_Set_ZPP_PartitionPair.zpp_pool = ZPP_Triangular.edgeSet.next;
         ZPP_Triangular.edgeSet.next = null;
       }
       ZPP_Triangular.edgeSet.lt = ZPP_PartitionPair.edge_lt;
@@ -275,7 +274,7 @@ export class ZPP_Triangular {
       }
     }
     if (ZPP_Triangular.queue == null) {
-      ZPP_Triangular.queue = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+      ZPP_Triangular.queue = new ZNPList_ZPP_PartitionVertex();
     }
     let rp = max.prev!;
     let lp = max.next!;
@@ -292,7 +291,7 @@ export class ZPP_Triangular {
       }
     ZPP_Triangular.queue.add(min);
     if (ZPP_Triangular.stack == null) {
-      ZPP_Triangular.stack = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+      ZPP_Triangular.stack = new ZNPList_ZPP_PartitionVertex();
     }
     ZPP_Triangular.stack.add(ZPP_Triangular.queue.pop_unsafe());
     let pre = ZPP_Triangular.queue.pop_unsafe();

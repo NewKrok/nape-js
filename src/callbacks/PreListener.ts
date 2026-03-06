@@ -115,6 +115,3 @@ export class PreListener extends Listener {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.callbacks.PreListener = PreListener;
-(PreListener.prototype as Any).__class__ = PreListener;

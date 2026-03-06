@@ -1,0 +1,17 @@
+# Source maps — large files not needed by consumers
+dist/*.map
+dist/*.js.map
+dist/*.cjs.map
+
+# Source files — consumers only need dist/
+src/
+tsup.config.ts
+tsconfig.json
+vitest.config.ts
+benchmarks/
+tests/
+
+# Dev files
+*.test.ts
+.eslintrc*
+.prettierrc*

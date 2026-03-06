@@ -21,10 +21,6 @@ describe("Callback", () => {
     expect(nape.callbacks.Callback).toBe(Callback);
   });
 
-  it("should have __class__ set on prototype", () => {
-    expect((Callback.prototype as any).__class__).toBe(Callback);
-  });
-
   it("should create via internal flag", () => {
     ZPP_Callback.internal = true;
     const cb = new Callback();
@@ -51,11 +47,6 @@ describe("BodyCallback", () => {
     expect(cb).toBeInstanceOf(BodyCallback);
   });
 
-  it("should be registered in namespace", () => {
-    const nape = getNape();
-    expect(nape.callbacks.BodyCallback).toBe(BodyCallback);
-  });
-
   it("should have __super__ set", () => {
     expect((BodyCallback as any).__super__).toBe(Callback);
   });
@@ -78,10 +69,6 @@ describe("ConstraintCallback", () => {
     expect(cb).toBeInstanceOf(ConstraintCallback);
   });
 
-  it("should be registered in namespace", () => {
-    const nape = getNape();
-    expect(nape.callbacks.ConstraintCallback).toBe(ConstraintCallback);
-  });
 });
 
 describe("InteractionCallback", () => {
@@ -101,10 +88,6 @@ describe("InteractionCallback", () => {
     expect(cb).toBeInstanceOf(InteractionCallback);
   });
 
-  it("should be registered in namespace", () => {
-    const nape = getNape();
-    expect(nape.callbacks.InteractionCallback).toBe(InteractionCallback);
-  });
 });
 
 describe("PreCallback", () => {
@@ -124,8 +107,5 @@ describe("PreCallback", () => {
     expect(cb).toBeInstanceOf(PreCallback);
   });
 
-  it("should be registered in namespace", () => {
-    const nape = getNape();
-    expect(nape.callbacks.PreCallback).toBe(PreCallback);
-  });
 });
+

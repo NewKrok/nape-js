@@ -68,8 +68,4 @@ describe("ValidationResult", () => {
   it("SELF_INTERSECTING toString should return 'SELF_INTERSECTING'", () => {
     expect(ValidationResult.get_SELF_INTERSECTING().toString()).toBe("SELF_INTERSECTING");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((ValidationResult.get_VALID() as any).__class__).toBe(ValidationResult);
-  });
 });

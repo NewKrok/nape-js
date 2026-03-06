@@ -100,4 +100,3 @@ ZPP_ConvexRayResult._createConvexResult = () => new ConvexResult();
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.geom.ConvexResult = ConvexResult;
-(ConvexResult.prototype as any).__class__ = ConvexResult;

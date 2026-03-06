@@ -76,5 +76,4 @@ export class BodyType {
 const nape = getNape();
 
 nape.phys.BodyType = BodyType;
-(BodyType.prototype as Any).__class__ = BodyType;
 ensureEnumsReady();

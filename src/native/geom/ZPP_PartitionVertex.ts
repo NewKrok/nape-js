@@ -7,7 +7,7 @@
  * Converted from nape-compiled.js lines 30410–30687.
  */
 
-import { getNape } from "../../core/engine";
+import { ZNPList_ZPP_PartitionVertex } from "../util/ZNPRegistry";
 
 type Any = any;
 
@@ -39,7 +39,7 @@ export class ZPP_PartitionVertex {
 
   constructor() {
     this.id = ZPP_PartitionVertex.nextId++;
-    this.diagonals = new (getNape().__zpp.util.ZNPList_ZPP_PartitionVertex)();
+    this.diagonals = new ZNPList_ZPP_PartitionVertex();
   }
 
   // --- Static methods ---

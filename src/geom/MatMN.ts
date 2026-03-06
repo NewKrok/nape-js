@@ -133,4 +133,3 @@ export class MatMN {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.MatMN = MatMN;
-(MatMN.prototype as Any).__class__ = MatMN;

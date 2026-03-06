@@ -89,4 +89,3 @@ export class InteractionType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.InteractionType = InteractionType;
-(InteractionType.prototype as Any).__class__ = InteractionType;

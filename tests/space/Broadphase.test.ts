@@ -41,8 +41,4 @@ describe("Broadphase", () => {
   it("SWEEP_AND_PRUNE toString should return 'SWEEP_AND_PRUNE'", () => {
     expect(Broadphase.get_SWEEP_AND_PRUNE().toString()).toBe("SWEEP_AND_PRUNE");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((Broadphase.get_DYNAMIC_AABB_TREE() as any).__class__).toBe(Broadphase);
-  });
 });

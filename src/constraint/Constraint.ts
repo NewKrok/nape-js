@@ -409,4 +409,3 @@ export class Constraint {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.constraint.Constraint = Constraint;
-(Constraint.prototype as Any).__class__ = Constraint;

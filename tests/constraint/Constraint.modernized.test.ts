@@ -19,12 +19,6 @@ describe("Constraint (P11 modernized)", () => {
     expect(joint).toBeInstanceOf(Constraint);
   });
 
-  it("Constraint prototype.__class__ is Constraint", () => {
-    // Each joint subclass sets __class__ on its own prototype; the Constraint
-    // prototype itself should carry __class__ === Constraint.
-    expect((Constraint.prototype as any).__class__).toBe(Constraint);
-  });
-
   it("Constraint base properties work via joint instance", () => {
     const joint = new DistanceJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 0, 100);
     expect(joint.debugDraw).toBe(true);

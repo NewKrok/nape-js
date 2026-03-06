@@ -74,6 +74,3 @@ export class ConstraintListener extends Listener {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.callbacks.ConstraintListener = ConstraintListener;
-(ConstraintListener.prototype as Any).__class__ = ConstraintListener;

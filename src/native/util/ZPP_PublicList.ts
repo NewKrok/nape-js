@@ -116,10 +116,19 @@ function makeZPP_List(
   return Cls;
 }
 
+// ---------------------------------------------------------------------------
+// Exported direct references — set by makeZPP_List calls below
+// ---------------------------------------------------------------------------
+
+type ZPP_PublicListWithGet = typeof ZPP_PublicList & { get(list: any, imm?: boolean): any };
+export let ZPP_ConstraintList: ZPP_PublicListWithGet = null as any;
+export let ZPP_InteractorList: ZPP_PublicListWithGet = null as any;
+export let ZPP_ArbiterList: ZPP_PublicListWithGet = null as any;
+
 // Register all 13 ZPP_*List specialisations.
-makeZPP_List("ZNPList_ZPP_Constraint",       "constraint", "ConstraintList",       "ZPP_ConstraintList");
+ZPP_ConstraintList = makeZPP_List("ZNPList_ZPP_Constraint",       "constraint", "ConstraintList",       "ZPP_ConstraintList");
 makeZPP_List("ZNPList_ZPP_Body",             "phys",       "BodyList",             "ZPP_BodyList");
-makeZPP_List("ZNPList_ZPP_Interactor",       "phys",       "InteractorList",       "ZPP_InteractorList");
+ZPP_InteractorList = makeZPP_List("ZNPList_ZPP_Interactor",       "phys",       "InteractorList",       "ZPP_InteractorList");
 makeZPP_List("ZNPList_ZPP_Compound",         "phys",       "CompoundList",         "ZPP_CompoundList");
 makeZPP_List("ZNPList_ZPP_Listener",         "callbacks",  "ListenerList",         "ZPP_ListenerList");
 makeZPP_List("ZNPList_ZPP_CbType",           "callbacks",  "CbTypeList",           "ZPP_CbTypeList");
@@ -129,4 +138,4 @@ makeZPP_List("ZNPList_ConvexResult",         "geom",       "ConvexResultList",  
 makeZPP_List("ZNPList_ZPP_Edge",             "shape",      "EdgeList",             "ZPP_EdgeList");
 makeZPP_List("ZNPList_ZPP_Shape",            "shape",      "ShapeList",            "ZPP_ShapeList");
 makeZPP_List("ZNPList_ZPP_InteractionGroup", "dynamics",   "InteractionGroupList", "ZPP_InteractionGroupList");
-makeZPP_List("ZNPList_ZPP_Arbiter",          "dynamics",   "ArbiterList",          "ZPP_ArbiterList");
+ZPP_ArbiterList = makeZPP_List("ZNPList_ZPP_Arbiter",          "dynamics",   "ArbiterList",          "ZPP_ArbiterList");

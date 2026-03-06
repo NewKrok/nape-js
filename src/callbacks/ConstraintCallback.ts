@@ -33,8 +33,5 @@ export class ConstraintCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.callbacks.ConstraintCallback = ConstraintCallback;
 (ConstraintCallback as Any).__super__ = Callback;
-(ConstraintCallback.prototype as Any).__class__ = ConstraintCallback;
 ZPP_Callback._createConCb = () => new ConstraintCallback();

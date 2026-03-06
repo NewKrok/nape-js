@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
+import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 
 type Any = any;
 
@@ -23,8 +24,7 @@ export class Callback {
   }
 
   get event(): Any {
-    const nape = getNape();
-    return nape.__zpp.callbacks.ZPP_Listener.events[this.zpp_inner!.event];
+    return ZPP_Listener.events[this.zpp_inner!.event];
   }
 
   get listener(): Any {
@@ -41,4 +41,3 @@ export class Callback {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.Callback = Callback;
-(Callback.prototype as Any).__class__ = Callback;

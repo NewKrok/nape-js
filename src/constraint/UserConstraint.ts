@@ -219,4 +219,3 @@ export abstract class UserConstraint extends Constraint {
 
 const nape = getNape();
 nape.constraint.UserConstraint = UserConstraint;
-(UserConstraint.prototype as Any).__class__ = UserConstraint;

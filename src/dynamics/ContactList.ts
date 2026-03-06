@@ -97,7 +97,6 @@ ContactIterator.prototype.next = function (this: Any): Any {
   return this.zpp_inner.at(this.zpp_i++);
 };
 
-ContactIterator.prototype.__class__ = ContactIterator;
 
 // ---------------------------------------------------------------------------
 // ContactList
@@ -474,7 +473,6 @@ ContactListCtor.prototype.filter = function (this: Any, lambda: Any): Any {
   return this;
 };
 
-ContactListCtor.prototype.__class__ = ContactListCtor;
 
 // ---------------------------------------------------------------------------
 // Register in nape namespace

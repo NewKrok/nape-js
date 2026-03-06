@@ -118,7 +118,4 @@ export class FluidArbiter extends Arbiter {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.dynamics.FluidArbiter = FluidArbiter;
-(FluidArbiter.prototype as any).__class__ = FluidArbiter;
 ZPP_Arbiter._createFluidArb = () => new FluidArbiter();

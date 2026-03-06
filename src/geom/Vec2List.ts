@@ -103,7 +103,6 @@ Vec2Iterator.prototype.next = function (this: Any): Any {
   return this.zpp_inner.at(this.zpp_i++);
 };
 
-Vec2Iterator.prototype.__class__ = Vec2Iterator;
 
 // ---------------------------------------------------------------------------
 // Vec2List
@@ -500,7 +499,6 @@ Vec2ListCtor.prototype.filter = function (this: Any, lambda: Any): Any {
   return this;
 };
 
-Vec2ListCtor.prototype.__class__ = Vec2ListCtor;
 
 // ---------------------------------------------------------------------------
 // Register in nape namespace

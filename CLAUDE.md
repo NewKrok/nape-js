@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
-incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~51 lines, down from ~82k) into clean, typed TypeScript classes.
+nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase has been
+fully modernized: all code extracted from the compiled blob (`nape-compiled.js`, originally
+~82k lines) into clean, typed TypeScript classes. `nape-compiled.js` is now **deleted**.
 
 ### Architecture
 
@@ -13,7 +13,7 @@ Public API wrappers (src/{phys,shape,constraint,callbacks,dynamics,geom,space}/)
         ↕
 Internal ZPP_* classes (src/native/)
         ↕
-Compiled engine core (src/core/nape-compiled.js)
+Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + HaxeShims.ts)
 ```
 
 ### Build & Test
@@ -52,21 +52,18 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~51 lines)
+### nape-compiled.js — DELETED ✅ (Priority 20)
 
-The file is a minimal bootstrap shell. All public API classes and ZPP implementations
-have been fully extracted to TypeScript. Remaining content:
+All content has been migrated to TypeScript. The file no longer exists.
 
-| Section | Lines | Status |
-|---------|-------|--------|
-| Imports (registerZPPClasses, HaxeShims) | ~2 | Infrastructure |
-| Namespace initialization (`nape.callbacks = {}` etc.) | ~10 | Lightweight bootstrap |
-| registerZPPClasses call | ~2 | Bootstrap |
-| Haxe shim fixes + return | ~10 | Bootstrap |
-| Comments | ~5 | Documentation |
+| Former section | Migrated to |
+|----------------|-------------|
+| Namespace initialization (`nape.callbacks = {}` etc.) | `ZPPRegistry.ts` (`registerZPPClasses()`) |
+| registerZPPClasses call | `engine.ts` (lazy `getNape()`) |
+| Haxe runtime bootstrap (String.__name__, HaxeError.message, etc.) | `HaxeShims.ts` |
 
-**No stubs, no implementations.** All public API classes self-register via side-effect
-imports from `engine.ts` (base/standalone) or `index.ts` + `tests/setup.ts` (subclasses).
+**All public API classes self-register via side-effect imports** from `engine.ts`
+(base/standalone) or `index.ts` + `tests/setup.ts` (subclasses).
 
 ### Public API class registration
 
@@ -231,7 +228,166 @@ Tests: `tests/core/HaxeShims.test.ts`.
 - **Test updates**: `ZPP_Flags.test.ts` and `ZPP_Vec3.test.ts` updated to expect
   initialized state (enum singletons created by `ensureEnumsReady()` at module load).
 
+### ✅ Priority 20: Eliminate nape-compiled.js — DONE
+
+`src/core/nape-compiled.js` **deleted** (51 → 0 lines). The entire codebase is now pure TypeScript:
+- **Haxe runtime bootstrap** (`String.__name__`, `Array.__name__`, `HaxeError.prototype.message`,
+  `js.Boot.__toStr`) moved to `src/core/HaxeShims.ts` (executed once at module load).
+- **Namespace initialization** (`nape.callbacks = {}` etc.) moved into `registerZPPClasses()`
+  in `src/native/util/ZPPRegistry.ts`. The function now creates and returns the `nape` object.
+- **`engine.ts`** uses lazy initialization (`var napeNamespace`) so that side-effect imports
+  calling `getNape()` during ESM circular-import resolution always succeed (same `var` pattern
+  as `ensureEnumsReady`).
+- **Benchmark** (`benchmarks/run.mjs`) updated to use `getNape()` from `dist/index.js`
+  instead of direct import from the now-deleted source file.
+
+### ✅ Priority 21: Drop `$hxClasses` + `prototype.__class__` — DONE
+
+~290 lines of write-only dead code removed. No Haxe `Std.is()` or string-based class
+lookup survives in the TypeScript codebase.
+- `HaxeShims.ts`: Removed `$hxClasses` export, 5 `$hxClasses["Xxx"] = Cls` registrations,
+  and 5 `prototype.__class__` assignments (Reflect, Std, StringTools, HaxeError, jsBoot).
+- `ZPPRegistry.ts`: Removed `$hxClasses` import, `const hxClasses`, and 85 `hxClasses[...] = Cls`
+  assignments; simplified all `zpp.xxx.Yyy = hxClasses[...] = Cls` to `zpp.xxx.Yyy = Cls`.
+- `ZNPRegistry.ts`: Removed `HxClasses` type, `hxClasses` parameter from factory functions,
+  and all dynamic `hxClasses[...] = cls` registrations.
+- 47 public API files: Removed all `(Foo.prototype as Any).__class__ = Foo` assignments.
+- 7 native list files: Removed `prototype.__class__` from ContactList, Vec2List, etc.
+- 21 test files updated to remove 23 `"should have __class__ set on prototype"` test cases.
+
+### ✅ Priority 22: Bundle minification — DONE
+
+- `tsup.config.ts`: Added `minify: true` → 2.17 MB → **1005 KB** ESM (-54%).
+- `.npmignore`: Excludes source maps and dev files from npm package (~4 MB saving).
+
+### ✅ Priority 23: `getNape().__zpp.xxx.YYY` → direct imports — DONE
+
+52 of 59 runtime namespace accesses converted to typed static imports across 32 files.
+
+**New exported variables added:**
+- `ZNPRegistry.ts`: 12 exported `let` vars (ZNPList_ZPP_PartitionVertex/PartitionedPoly/
+  GeomVert/SimplifyP/Vec2/SimpleVert/SimpleEvent, ZNPNode_RayResult, ZPP_Set_ZPP_SimpleVert/
+  SimpleSeg/SimpleEvent/PartitionVertex/PartitionPair) — populated by `registerZNPClasses()`.
+- `ZPP_PublicList.ts`: 3 exported `let` vars (ZPP_ConstraintList, ZPP_InteractorList,
+  ZPP_ArbiterList) with `ZPP_PublicListWithGet` type for typed `.get()` access.
+
+**7 accesses intentionally kept** (runtime namespace needed for self-registration or dynamic
+factory patterns): Debug.ts pool cleanup, ZPP_PublicList factory, ZPP_Vec2List/ContactList/
+MixVec2List registration, ZPP_GeomVertexIterator registration.
+
+### ✅ Priority 24: `nape.*` namespace audit + reduction — DONE
+
+**17 safe `nape.xxx.Yyy = Yyy` assignments removed** where ZPP internal code uses factory
+callbacks instead of namespace lookups (confirmed no `nape.constraint.AngleJoint` etc. reads
+in native/ code):
+- 7 constraint joints (AngleJoint..WeldJoint) — use `ZPP_*Joint._createFn`
+- 4 callback listeners (Body/Constraint/Interaction/PreListener)
+- 4 callback subclasses (Body/Constraint/Interaction/PreCallback)
+- 2 arbiter subclasses (CollisionArbiter, FluidArbiter) — use `ZPP_Arbiter._createXxxArb`
+
+**Remaining namespace assignments are still needed** for:
+- Enum singleton access (`new nape.phys.BodyType()` etc. in `ZPP_Body._initEnums`)
+- Config constants (`nape.Config.epsilon` in `ZPP_Space`)
+- Public API iterators and wrapper classes created at runtime
+
 ## Modernization Pattern
+
+### Priority 25: `type Any = any` → real TypeScript types
+
+**Effort: XL | Impact: largest | Risk: medium**
+
+152 files use `type Any = any` as an escape hatch. Three categories:
+
+- **~30% — generics**: `static _wrap(inner: Any): Any` → `static _wrap<T>(inner: T): Wrapper<T>`
+- **~30% — union types**: `filter?: Any` → `filter?: InteractionFilter | null`
+- **~40% — legitimately dynamic**: user-data fields, engine-internal casts — keep as `unknown` or `any`
+
+Start with public API files (Body, Space, Vec2, Shape) — these affect library consumers directly.
+Native ZPP classes are internal; lower priority.
+
+### Priority 26: Tree shaking
+
+**Effort: L | Impact: large (bundle selectivity) | Risk: high**
+
+Blocker: `"sideEffects": true` is required because every public API module registers itself
+as a side effect (`nape.phys.Body = Body` at module bottom).
+
+Target architecture:
+```typescript
+// Centralized bootstrap file (src/core/bootstrap.ts):
+import { Body } from "../phys/Body";
+import { ZPP_Body } from "../native/phys/ZPP_Body";
+ZPP_Body._wrapFn = (zpp) => new Body(zpp);
+// ... all registrations here
+
+// package.json:
+"sideEffects": ["src/core/engine.ts", "src/core/bootstrap.ts"]
+```
+This allows `import { Vec2 } from "nape-js"` without pulling in Space/Body/Constraints.
+Prerequisite: Priority 23 (direct ZPP imports) and Priority 24 (namespace reduction) done first.
+
+### Priority 27: HaxeShims.ts final audit
+
+**Effort: S | Impact: small | Risk: low**
+
+After Priority 21 removes `$hxClasses`, audit what remains in `HaxeShims.ts`:
+
+| Shim | Still needed? |
+|------|---------------|
+| `$hxClasses` | ❌ (removed in P21) |
+| `HaxeError` | ✅ ZPP code throws/catches Haxe errors |
+| `$bind` | verify — may be used in ZPP callbacks |
+| `$estr`, `jsBoot.__string_rec` | verify — likely only in error paths |
+| `Reflect`, `Std`, `StringTools` | verify — drop if no callers remain |
+
+Target: 150-line file → ~20 lines (only `HaxeError` + confirmed active shims).
+
+### Priority 28: User-facing API improvements
+
+**Effort: M | Impact: DX | Risk: low**
+
+- **28a** — Verify `Symbol.iterator` works uniformly on all List types
+  (`GeomVertexIterator`, `Vec2List`, `ContactList`, factory-generated lists)
+- **28b** — Enable `strictNullChecks: true` in `tsconfig.json` (requires P25 first)
+- **28c** — Audit `get_*()` / `set_*()` Haxe-style accessor methods on public API:
+  deprecate any that are exported in `index.ts` in favour of native TS getters/setters
+
+### Priority 29: Missing test coverage
+
+**Effort: M | Impact: safety | Risk: zero**
+
+16 missing test files, priority order:
+1. `tests/core/engine.test.ts` — `getNape()` lazy init, `ensureEnumsReady`
+2. `tests/geom/Vec2List.test.ts`, `tests/dynamics/ContactList.test.ts`, `tests/geom/GeomVertexIterator.test.ts`
+3. `tests/callbacks/BodyCallback.test.ts`, `tests/dynamics/CollisionArbiter.test.ts`, `tests/dynamics/FluidArbiter.test.ts`
+4. `tests/callbacks/Listener.test.ts`, `tests/callbacks/ConstraintListener.test.ts`, `tests/callbacks/PreListener.test.ts`
+5. `tests/constraint/Constraint.test.ts` (integration)
+
+### Execution order
+
+```
+P21 → P22 → P23 → P24 → P27
+(dead code)  (bundle)  (zpp imports)  (namespace)  (shims)
+                ↓
+          P25 (Any → types)  ←→  P28 (API ergonomics)
+                ↓
+          P26 (tree shaking)
+                ↓
+          P29 (tests)
+```
+
+| Priority | Effort | Impact | Risk |
+|----------|--------|--------|------|
+| P21 — Drop `__class__` / `$hxClasses` | S | medium | low |
+| P22 — Minification | XS | **large** | none |
+| P23 — `__zpp` → direct imports | M | large | medium |
+| P24 — Namespace reduction | S | medium | low |
+| P25 — `Any` → real types | XL | **largest** | medium |
+| P26 — Tree shaking | L | large | high |
+| P27 — HaxeShims audit | S | small | low |
+| P28 — API ergonomics | M | DX | low |
+| P29 — Test coverage | M | safety | none |
+
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions
 as reference implementations:
@@ -261,17 +417,14 @@ as reference implementations:
    nape.xxx.Foo = Foo;
    ```
 
-4. **Remove compiled code** from `nape-compiled.js`, replace with comment:
-   ```js
-   // nape.xxx.Foo: converted to TypeScript → src/.../Foo.ts
-   ```
-   Do NOT import Foo.ts from nape-compiled.js (circular import).
+4. **Register at module bottom** as shown in step 3 above.
+   Do NOT import Foo.ts from ZPPRegistry.ts (circular import).
 
 5. **Verify**: all tests pass, `npm run build` succeeds
 
 ### Key gotchas
 
-- **Circular imports**: Foo.ts → engine.ts → nape-compiled.js. Never import Foo.ts from compiled code.
+- **Circular imports**: Foo.ts → engine.ts → ZPPRegistry.ts. Never import Foo.ts from ZPPRegistry.
 - **Test setup**: `tests/setup.ts` imports all subclass modules — factory callbacks and
   namespace registrations are available in all tests without per-file imports.
 - **Circular ESM dep with `extends`**: A subclass (e.g. `Circle extends Shape`) CANNOT be

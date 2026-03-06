@@ -194,8 +194,4 @@ describe("MarchingSquares", () => {
   it("should have correct __name__", () => {
     expect(MarchingSquares.__name__).toEqual(["nape", "geom", "MarchingSquares"]);
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((MarchingSquares.prototype as any).__class__).toBe(MarchingSquares);
-  });
 });

@@ -6,11 +6,6 @@
  */
 
 // ---------------------------------------------------------------------------
-// $hxClasses — Global Haxe class registry
-// ---------------------------------------------------------------------------
-export const $hxClasses: Record<string, any> = {};
-
-// ---------------------------------------------------------------------------
 // Reflect — Haxe reflection utilities
 // ---------------------------------------------------------------------------
 export const Reflect: any = function () {};
@@ -47,7 +42,6 @@ Reflect.copy = function (o: any): any {
   }
   return o2;
 };
-Reflect.prototype.__class__ = Reflect;
 
 // ---------------------------------------------------------------------------
 // Std — Haxe standard library shim
@@ -57,7 +51,6 @@ Std.__name__ = ["Std"];
 Std.string = function (s: any): string {
   return jsBoot.__string_rec(s, "");
 };
-Std.prototype.__class__ = Std;
 
 // ---------------------------------------------------------------------------
 // StringTools — Haxe string utilities
@@ -76,7 +69,6 @@ StringTools.hex = function (n: number, digits?: number): string {
   }
   return s;
 };
-StringTools.prototype.__class__ = StringTools;
 
 // ---------------------------------------------------------------------------
 // js._Boot.HaxeError — Haxe error wrapper
@@ -162,7 +154,6 @@ jsBoot.__string_rec = function (o: any, s: string): string {
   }
 };
 jsBoot.__toStr = null as any;
-jsBoot.prototype.__class__ = jsBoot;
 
 // ---------------------------------------------------------------------------
 // Assembled `js` namespace (matches compiled code's `js` variable structure)
@@ -188,11 +179,17 @@ export function $bind(o: any, m: any): any {
   return f;
 }
 
-// Register shim classes in the Haxe class registry
-$hxClasses["Reflect"] = Reflect;
-$hxClasses["Std"] = Std;
-$hxClasses["StringTools"] = StringTools;
-$hxClasses["js._Boot.HaxeError"] = HaxeError;
-$hxClasses["js.Boot"] = jsBoot;
-
 export { jsBoot, HaxeError };
+
+// ---------------------------------------------------------------------------
+// Haxe runtime bootstrap — executed once at module load time.
+// Previously in nape-compiled.js; moved here (Priority 20).
+// ---------------------------------------------------------------------------
+(String as any).__name__ = true;
+(Array as any).__name__ = true;
+Object.defineProperty(HaxeError.prototype, "message", {
+  get: function () {
+    return String(this.val);
+  },
+});
+jsBoot.__toStr = ({} as any).toString;

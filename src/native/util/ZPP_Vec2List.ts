@@ -8,6 +8,7 @@
  */
 
 import { getNape } from "../../core/engine";
+import { ZNPList_ZPP_Vec2 } from "./ZNPRegistry";
 
 type Any = any;
 
@@ -40,8 +41,7 @@ export class ZPP_Vec2List {
   __class__: Any = ZPP_Vec2List;
 
   constructor() {
-    const nape = getNape();
-    this.inner = new nape.__zpp.util.ZNPList_ZPP_Vec2();
+    this.inner = new ZNPList_ZPP_Vec2();
     this._invalidated = true;
   }
 
@@ -102,7 +102,3 @@ export class ZPP_Vec2List {
   }
 }
 
-// --- Register in compiled namespace ---
-const nape = getNape();
-nape.__zpp.util.ZPP_Vec2List = ZPP_Vec2List;
-nape.__zpp.util.ZPP_Vec2List.prototype.__class__ = ZPP_Vec2List;

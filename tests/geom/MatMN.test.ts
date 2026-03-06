@@ -285,9 +285,4 @@ describe("MatMN", () => {
   });
 
   // --- __class__ ---
-
-  it("should have __class__ set on prototype", () => {
-    const m = new MatMN(1, 1);
-    expect((m as any).__class__).toBe(MatMN);
-  });
 });

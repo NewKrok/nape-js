@@ -62,5 +62,4 @@ export class ShapeType {
 const nape = getNape();
 
 nape.shape.ShapeType = ShapeType;
-(ShapeType.prototype as Any).__class__ = ShapeType;
 ensureEnumsReady();

@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  $hxClasses,
   Reflect,
   Std,
   StringTools,
@@ -12,18 +11,6 @@ import {
 } from "../../src/core/HaxeShims";
 
 describe("HaxeShims", () => {
-  describe("$hxClasses", () => {
-    it("should be an object registry", () => {
-      expect(typeof $hxClasses).toBe("object");
-    });
-
-    it("should contain registered shim classes", () => {
-      expect($hxClasses["Reflect"]).toBe(Reflect);
-      expect($hxClasses["Std"]).toBe(Std);
-      expect($hxClasses["StringTools"]).toBe(StringTools);
-      expect($hxClasses["js.Boot"]).toBe(jsBoot);
-    });
-  });
 
   describe("Reflect", () => {
     it("field should access object properties", () => {

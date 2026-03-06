@@ -66,5 +66,4 @@ export class ArbiterType {
 const nape = getNape();
 
 nape.dynamics.ArbiterType = ArbiterType;
-(ArbiterType.prototype as Any).__class__ = ArbiterType;
 ensureEnumsReady();

@@ -293,4 +293,3 @@ ZPP_Material._wrapFn = (zpp: ZPP_Material): Material => {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.Material = Material;
-(Material.prototype as any).__class__ = Material;
