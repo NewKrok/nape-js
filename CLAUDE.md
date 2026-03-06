@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~3,016 lines, down from ~82k) into clean, typed TypeScript classes.
+currently ~2,640 lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2250 tests across 119 files
+npm test             # vitest — 2284 tests across 122 files
 npm run lint         # eslint + prettier
 ```
 
@@ -52,13 +52,13 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~3,016 lines)
+### What remains in nape-compiled.js (~2,640 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
 | Section | Lines | Status |
 |---------|-------|--------|
-| Imports of TS-extracted classes | ~92 | Infrastructure |
+| Imports of TS-extracted classes | ~95 | Infrastructure |
 | Bootstrap Haxe shims (Reflect, Std, StringTools, js.Boot) | ~175 | **Priority 18** |
 | Public API stubs (Callback, Listener, CbType, OptionType, etc.) | ~90 | Stubs (replaced by TS at load) |
 | `nape.constraint.Constraint` stub + comment | ~5 | Stub (replaced by Constraint.ts) ✅ P11 |
@@ -68,8 +68,8 @@ The file is structured as a single factory function. Remaining sections:
 | Factory instantiations (35+35+8 = 78 generated classes) | ~85 | (removed with factories) |
 | ZPP class registrations to compiled namespace | ~700 | **Priority 19** |
 | Internal list backing classes (2 comment lines) | ~2 | ✅ P15 |
-| ZNPArray2 utility classes (3 types) | ~230 | **Priority 16** |
-| Hashable2 + FastHash2 utility classes | ~270 | **Priority 16** |
+| ZNPArray2 utility classes (3 types) | ~5 | ✅ P16 (registration only) |
+| Hashable2 + FastHash2 utility classes | ~5 | ✅ P16 (registration only) |
 | `nape.Config` comment (values moved to src/Config.ts) | ~2 | ✅ P13 |
 | Singleton enum creation + statics | ~600 | **Priority 19** |
 | Pool & flag initialization | ~110 | **Priority 19** |
@@ -94,7 +94,7 @@ DistanceJoint, PivotJoint, LineJoint, WeldJoint, AngleJoint, MotorJoint
 ### Internal namespace exposure
 
 `nape.__zpp = zpp_nape;` at the end of the compiled factory function allows TS classes
-to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`, etc.
+to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, etc.
 
 ## Remaining Modernization Tasks
 
@@ -119,14 +119,17 @@ class + `makeZPP_List()` factory in `src/native/util/ZPP_PublicList.ts`.
 Each specialisation has its own `static internal` flag for the iterator guard pattern.
 Tests: `tests/native/util/ZPP_PublicList.test.ts`.
 
-### Priority 16: Utility infrastructure classes → TypeScript (~500 lines)
-
-Three utility class families still compiled:
-
-- **ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair** (~230 lines)
-  — 2D resizable array wrappers. Can become a generic `ZNPArray2<T>` TypeScript class.
-- **Hashable2_Boolfalse** (~110 lines) — pooled pair-key hash entry
-- **FastHash2_Hashable2_Boolfalse** (~160 lines) — fast hash table using Hashable2
+### ✅ Priority 16: Utility infrastructure classes — DONE
+~500 compiled lines replaced by 3 TypeScript files:
+- `src/native/util/ZNPArray2.ts` — Generic `ZNPArray2<T>` base class + `ZNPArray2_Float`,
+  `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair` subclasses (2D resizable arrays).
+  `ZPP_MarchingSquares.ts` updated to direct-import these instead of `_zpp.util.*`.
+- `src/native/util/Hashable2_Boolfalse.ts` — Pooled pair-key hash entry with static
+  factory methods (`get`, `getpersist`, `ordered_get`, `ordered_get_persist`).
+- `src/native/util/FastHash2_Hashable2_Boolfalse.ts` — 2^20-slot hash table for
+  `Hashable2_Boolfalse` entries. `ZPP_Simple.ts` updated to direct-import both classes.
+Tests: `tests/native/util/ZNPArray2.test.ts`, `tests/native/util/Hashable2_Boolfalse.test.ts`,
+`tests/native/util/FastHash2_Hashable2_Boolfalse.test.ts`.
 
 ### Priority 17: Generic factories → TypeScript generics (~350 lines + 78 generated classes)
 
