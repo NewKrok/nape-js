@@ -37,6 +37,10 @@ import "../util/Debug";
 // getNape() — even without going through the barrel export — gets the lists.
 import "../util/registerLists";
 
+// Internal list backing classes — must run after registerLists so the public
+// wrapper classes (BodyList, ConstraintList, etc.) are already in nape namespace.
+import "../native/util/ZPP_PublicList";
+
 // Special-case lists (Vec2List, ContactList, GeomVertexIterator) that have
 // custom behavior not handled by the generic NapeListFactory.
 // Public classes must register before ZPP classes reference them.
