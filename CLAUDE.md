@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~2,640 lines, down from ~82k) into clean, typed TypeScript classes.
+currently ~2,163 lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2284 tests across 122 files
+npm test             # vitest — 2334 tests across 125 files
 npm run lint         # eslint + prettier
 ```
 
@@ -52,20 +52,20 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~2,640 lines)
+### What remains in nape-compiled.js (~2,163 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
 | Section | Lines | Status |
 |---------|-------|--------|
-| Imports of TS-extracted classes | ~95 | Infrastructure |
+| Imports of TS-extracted classes | ~98 | Infrastructure |
 | Bootstrap Haxe shims (Reflect, Std, StringTools, js.Boot) | ~175 | **Priority 18** |
 | Public API stubs (Callback, Listener, CbType, OptionType, etc.) | ~90 | Stubs (replaced by TS at load) |
 | `nape.constraint.Constraint` stub + comment | ~5 | Stub (replaced by Constraint.ts) ✅ P11 |
 | Comment markers for converted classes | ~50 | Informational |
 | `nape.util.Debug` stub + comment | ~5 | Stub (replaced by Debug.ts) ✅ P14 |
-| Generic factories (createZNPNode, createZNPList, createZPPSet) | ~350 | **Priority 17** |
-| Factory instantiations (35+35+8 = 78 generated classes) | ~85 | (removed with factories) |
+| Generic factories (slim subclass creators using TS bases) | ~30 | ✅ P17 |
+| Factory instantiations (35+35+8 = 78 generated classes) | ~85 | ✅ P17 (using TS bases) |
 | ZPP class registrations to compiled namespace | ~700 | **Priority 19** |
 | Internal list backing classes (2 comment lines) | ~2 | ✅ P15 |
 | ZNPArray2 utility classes (3 types) | ~5 | ✅ P16 (registration only) |
@@ -131,19 +131,17 @@ Tests: `tests/native/util/ZPP_PublicList.test.ts`.
 Tests: `tests/native/util/ZNPArray2.test.ts`, `tests/native/util/Hashable2_Boolfalse.test.ts`,
 `tests/native/util/FastHash2_Hashable2_Boolfalse.test.ts`.
 
-### Priority 17: Generic factories → TypeScript generics (~350 lines + 78 generated classes)
-
-Replace `createZNPNode()`, `createZNPList()`, `createZPPSet()` dynamic factory functions
-with static TypeScript generic classes:
-
-- `ZNPNode<T>` + `ZNPList<T>` generic classes cover all 35 node/list types
-- `ZPP_Set<T>` generic class covers all 8 set types
-- Eliminates the factory function code AND the `createZNPNode/List/Set(...)` call blocks
-- The 78 "instances" become type aliases or subclasses
-
-This is complex because compiled code references specific named classes (e.g.
-`ZNPList_ZPP_Body`). The named class references must remain but can point to
-generic instances.
+### ✅ Priority 17: Generic factories → TypeScript generics — DONE
+~477 compiled lines replaced by 3 TypeScript generic base classes:
+- `src/native/util/ZNPNode.ts` — `ZNPNode<T>` linked list node base class.
+- `src/native/util/ZNPList.ts` — `ZNPList<T>` singly-linked list with pool allocation,
+  inlined method aliases, and `_NodeClass` static for per-subclass node pooling.
+- `src/native/util/ZPP_Set.ts` — `ZPP_Set<T>` Red-Black tree set with all balancing
+  operations (`__fix_dbl_red`, `__fix_neg_red`), pool allocation via `this.constructor`.
+Compiled factories now create slim `class extends Base` subclasses (~6 lines each).
+The 78 named classes (35 nodes + 35 lists + 8 sets) remain registered for compatibility.
+Tests: `tests/native/util/ZNPNode.test.ts`, `tests/native/util/ZNPList.test.ts`,
+`tests/native/util/ZPP_Set.test.ts`.
 
 ### Priority 18: Bootstrap / Haxe shims → TypeScript (~175 lines)
 
