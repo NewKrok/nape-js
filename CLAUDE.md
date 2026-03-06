@@ -4,7 +4,7 @@
 
 nape-js is a 2D physics engine ported from Haxe to JavaScript. The codebase is being
 incrementally modernized: extracting code from a large compiled blob (`nape-compiled.js`,
-currently ~2,163 lines, down from ~82k) into clean, typed TypeScript classes.
+currently ~1,999 lines, down from ~82k) into clean, typed TypeScript classes.
 
 ### Architecture
 
@@ -20,7 +20,7 @@ Compiled engine core (src/core/nape-compiled.js)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2334 tests across 125 files
+npm test             # vitest — 2358 tests across 126 files
 npm run lint         # eslint + prettier
 ```
 
@@ -52,14 +52,14 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~2,163 lines)
+### What remains in nape-compiled.js (~1,999 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
 | Section | Lines | Status |
 |---------|-------|--------|
 | Imports of TS-extracted classes | ~98 | Infrastructure |
-| Bootstrap Haxe shims (Reflect, Std, StringTools, js.Boot) | ~175 | **Priority 18** |
+| Bootstrap Haxe shims (imported from HaxeShims.ts) | ~6 | ✅ P18 |
 | Public API stubs (Callback, Listener, CbType, OptionType, etc.) | ~90 | Stubs (replaced by TS at load) |
 | `nape.constraint.Constraint` stub + comment | ~5 | Stub (replaced by Constraint.ts) ✅ P11 |
 | Comment markers for converted classes | ~50 | Informational |
@@ -143,16 +143,17 @@ The 78 named classes (35 nodes + 35 lists + 8 sets) remain registered for compat
 Tests: `tests/native/util/ZNPNode.test.ts`, `tests/native/util/ZNPList.test.ts`,
 `tests/native/util/ZPP_Set.test.ts`.
 
-### Priority 18: Bootstrap / Haxe shims → TypeScript (~175 lines)
-
-Replace Haxe-to-JS runtime shims with TypeScript equivalents:
-
-- `Reflect` — `hasField`, `field`, `setField`, `fields`, `copy` → TS utility functions
-- `Std` — `string(v)` → `String(v)` wrapper
-- `StringTools` — `hex(n, digits)` → simple padStart implementation
-- `js.Boot` + `js._Boot.HaxeError` — error/string conversion helpers
-
-These are standalone utility classes with no circular dependencies.
+### ✅ Priority 18: Bootstrap / Haxe shims → TypeScript — DONE
+~164 compiled lines replaced by `src/core/HaxeShims.ts`:
+- `Reflect` — `field`, `fields`, `copy` utility functions.
+- `Std` — `string(v)` wrapper using `js.Boot.__string_rec`.
+- `StringTools` — `hex(n, digits)` implementation.
+- `js.Boot.__string_rec` — recursive Haxe-style string representation.
+- `js._Boot.HaxeError` — Error subclass with `val` property.
+- `$hxClasses` registry, `$estr`, `$bind` helpers.
+Compiled factory imports and assigns to local vars.
+`ZPP_Shape.ts` simplified to use `Object.assign()` directly.
+Tests: `tests/core/HaxeShims.test.ts`.
 
 ### Priority 19: Static initialization code migration (~1,400 lines)
 
