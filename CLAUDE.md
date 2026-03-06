@@ -52,7 +52,7 @@ InteractorList, EdgeList, ShapeList (+ matching Iterators)
 **Special-case lists** (fully extracted):
 Vec2List + Vec2Iterator, ContactList + ContactIterator, GeomVertexIterator
 
-### What remains in nape-compiled.js (~5,089 lines)
+### What remains in nape-compiled.js (~4,233 lines)
 
 The file is structured as a single factory function. Remaining sections:
 
@@ -61,26 +61,22 @@ The file is structured as a single factory function. Remaining sections:
 | Imports of TS-extracted classes | ~92 | Infrastructure |
 | Bootstrap Haxe shims (Reflect, Std, StringTools, js.Boot) | ~175 | **Priority 18** |
 | Public API stubs (Callback, Listener, CbType, OptionType, etc.) | ~90 | Stubs (replaced by TS at load) |
-| **`nape.constraint.Constraint` base — full compiled implementation** | ~360 | **Priority 11** |
+| `nape.constraint.Constraint` stub + comment | ~5 | Stub (replaced by Constraint.ts) ✅ P11 |
 | Comment markers for converted classes | ~50 | Informational |
-| `nape.util.Debug` (version + clearObjectPools) | ~500 | **Priority 14** |
+| `nape.util.Debug` stub + comment | ~5 | Stub (replaced by Debug.ts) ✅ P14 |
 | Generic factories (createZNPNode, createZNPList, createZPPSet) | ~350 | **Priority 17** |
 | Factory instantiations (35+35+8 = 78 generated classes) | ~85 | (removed with factories) |
 | ZPP class registrations to compiled namespace | ~700 | **Priority 19** |
 | Internal list backing classes (13× ZPP_*List) | ~1,500 | **Priority 15** |
 | ZNPArray2 utility classes (3 types) | ~230 | **Priority 16** |
 | Hashable2 + FastHash2 utility classes | ~270 | **Priority 16** |
-| `nape.Config` constants | ~30 | **Priority 13** |
+| `nape.Config` comment (values moved to src/Config.ts) | ~2 | ✅ P13 |
 | Singleton enum creation + statics | ~600 | **Priority 19** |
 | Pool & flag initialization | ~110 | **Priority 19** |
 | `nape.__zpp` exposure + module export | ~2 | (last to go) |
 
-**Thin wrappers still in compiled (ZPP extracted, public API not yet rewritten):**
-
-| Class | File | Notes |
-|-------|------|-------|
-| ConvexResult | `src/geom/ConvexResult.ts` | Uses ZPP_ConvexRayResult, compiled prototype still active |
-| RayResult | `src/geom/RayResult.ts` | Uses ZPP_ConvexRayResult, compiled prototype still active |
+**All public API wrappers fully modernized — no thin wrappers remain in compiled.**
+ConvexResult and RayResult are already fully TS (stubs only in compiled, replaced at load).
 
 ### Compiled code stubs
 
@@ -102,49 +98,20 @@ to access internal compiled classes like `ZNPList_*`, `ZPP_Set_*`, `FastHash2_*`
 
 ## Remaining Modernization Tasks
 
-### Priority 11: Complete Constraint base class modernization (~360 lines)
+### ✅ Priority 11: Constraint base class — DONE
+`nape.constraint.Constraint` compiled implementation deleted. TS class registered via
+`nape.constraint.Constraint = Constraint`. Tests: `tests/constraint/Constraint.modernized.test.ts`.
 
-`nape.constraint.Constraint` has a full compiled implementation (constructor + all
-getter/setter prototype methods) at lines ~404–760 of `nape-compiled.js`. The TS
-`Constraint.ts` currently copies missing methods from the compiled prototype but does
-NOT replace `nape.constraint.Constraint` with itself.
+### ✅ Priority 12: ConvexResult & RayResult — DONE
+Both already fully modernized (only comment stubs remain in compiled). No action needed.
 
-**Goal:** Replace the compiled Constraint class with the TS Constraint class, so the
-compiled implementation can be deleted.
+### ✅ Priority 13: nape.Config — DONE
+All 29 constants extracted to `src/Config.ts`. Compiled init block deleted.
+Tests: `tests/Config.test.ts`.
 
-- `Constraint.ts` already has all properties and backward-compat `get_*/set_*` methods
-- Missing: `nape.constraint.Constraint = Constraint` registration at module bottom
-- Stubs for `zpp_internalAlloc` guard may need to stay or move to TS
-- After registration, delete compiled lines ~404–760
-
-### Priority 12: ConvexResult & RayResult full modernization (~100 lines)
-
-Both classes have `ZPP_ConvexRayResult` already extracted. The compiled prototype
-is still active (thin wrapper pattern). Follow the same full-modernization pattern
-as other public API classes.
-
-- `src/geom/ConvexResult.ts` — rewrite to use `ZPP_ConvexRayResult` directly
-- `src/geom/RayResult.ts` — rewrite to use `ZPP_ConvexRayResult` directly
-- Register both at module bottom, delete compiled implementation
-
-### Priority 13: nape.Config → TypeScript (~30 lines)
-
-Extract the physics configuration constants to `src/Config.ts`:
-
-- ~22 numeric constants (epsilon, sleepDelay, collisionSlop, contactBiasCoef variants,
-  constraintLinearSlop, illConditionedThreshold, CCD thresholds, etc.)
-- Export as a plain `Config` object or class with static fields
-- Delete compiled initialization block
-
-### Priority 14: nape.util.Debug → TypeScript (~500 lines)
-
-Extract `src/util/Debug.ts`:
-
-- `version()` → returns `"Nape 2.0.19"` (or make it a constant)
-- `clearObjectPools()` → clears ~60 pool chains across all ZPP classes, ZNPNode types,
-  ZPP_Set types, iterators, list pools
-- The pool-clearing code references all extracted TS ZPP classes directly, so it can
-  import them without circular issues
+### ✅ Priority 14: nape.util.Debug — DONE
+`Debug.version()` and `Debug.clearObjectPools()` extracted to `src/util/Debug.ts`.
+Compiled implementation (488 lines) deleted. Tests: `tests/util/Debug.test.ts`.
 
 ### Priority 15: Internal list backing classes → TypeScript (~1,500 lines, 13 classes)
 

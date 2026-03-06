@@ -14,6 +14,7 @@ type Any = any;
  */
 export class Constraint {
   static __name__ = ["nape", "constraint", "Constraint"];
+  static zpp_internalAlloc = false;
 
   /** Direct access to the extracted internal ZPP_Constraint. */
   zpp_inner!: ZPP_Constraint;
@@ -404,17 +405,8 @@ export class Constraint {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register: copy compiled Constraint prototype methods for backward compat
+// Self-register: replace compiled nape.constraint.Constraint with TS class
 // ---------------------------------------------------------------------------
 const nape = getNape();
-const compiledConstraintProto = nape.constraint.Constraint.prototype;
-
-// Copy compiled Constraint prototype methods onto TS Constraint (only those
-// not already defined) for backward compat with compiled joint code.
-for (const k in compiledConstraintProto) {
-  if (!Object.prototype.hasOwnProperty.call(Constraint.prototype, k)) {
-    (Constraint.prototype as Any)[k] = compiledConstraintProto[k];
-  }
-}
-
+nape.constraint.Constraint = Constraint;
 (Constraint.prototype as Any).__class__ = Constraint;
