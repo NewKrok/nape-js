@@ -41,8 +41,4 @@ describe("MassMode", () => {
   it("FIXED toString should return 'FIXED'", () => {
     expect(MassMode.get_FIXED().toString()).toBe("FIXED");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((MassMode.get_DEFAULT() as any).__class__).toBe(MassMode);
-  });
 });

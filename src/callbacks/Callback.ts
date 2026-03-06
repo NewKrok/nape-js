@@ -41,4 +41,3 @@ export class Callback {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.Callback = Callback;
-(Callback.prototype as Any).__class__ = Callback;

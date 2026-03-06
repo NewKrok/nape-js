@@ -154,4 +154,3 @@ export class MarchingSquares {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.MarchingSquares = MarchingSquares;
-(MarchingSquares.prototype as Any).__class__ = MarchingSquares;

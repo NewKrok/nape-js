@@ -1899,7 +1899,6 @@ const nape = getNape();
 
 // Replace the compiled Body with our TS class
 nape.phys.Body = Body;
-(Body.prototype as Any).__class__ = Body;
 
 // Bind Body._wrap into Interactor so Interactor._wrap can dispatch without circular import.
 _bindBodyWrapForInteractor((inner) => Body._wrap(inner));

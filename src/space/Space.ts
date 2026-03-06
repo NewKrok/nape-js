@@ -869,4 +869,3 @@ export class Space {
 
 const nape = getNape();
 nape.space.Space = Space;
-(Space.prototype as Any).__class__ = Space;

@@ -252,4 +252,3 @@ export class Ray {
 
 const nape = getNape();
 nape.geom.Ray = Ray;
-(Ray.prototype as Any).__class__ = Ray;

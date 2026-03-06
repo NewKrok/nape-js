@@ -150,6 +150,5 @@ export class CbType {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.callbacks.CbType = CbType;
-(CbType.prototype as Any).__class__ = CbType;
 ensureEnumsReady();
 

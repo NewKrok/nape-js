@@ -132,5 +132,4 @@ export class CbEvent {
 const nape = getNape();
 
 nape.callbacks.CbEvent = CbEvent;
-(CbEvent.prototype as Any).__class__ = CbEvent;
 ensureEnumsReady();

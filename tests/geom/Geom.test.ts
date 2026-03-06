@@ -12,10 +12,6 @@ describe("Geom", () => {
     expect(Geom.__name__).toEqual(["nape", "geom", "Geom"]);
   });
 
-  it("should have __class__ set on prototype", () => {
-    expect((Geom.prototype as any).__class__).toBe(Geom);
-  });
-
   describe("distance", () => {
     it("should calculate distance between two circle shapes", () => {
       const space = new Space(new Vec2(0, 0));

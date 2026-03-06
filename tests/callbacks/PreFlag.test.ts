@@ -74,8 +74,4 @@ describe("PreFlag", () => {
     expect(PreFlag.ACCEPT_ONCE).toBe(PreFlag.get_ACCEPT_ONCE());
     expect(PreFlag.IGNORE_ONCE).toBe(PreFlag.get_IGNORE_ONCE());
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((PreFlag.get_ACCEPT() as any).__class__).toBe(PreFlag);
-  });
 });

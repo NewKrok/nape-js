@@ -54,8 +54,4 @@ describe("GravMassMode", () => {
   it("SCALED toString should return 'SCALED'", () => {
     expect(GravMassMode.get_SCALED().toString()).toBe("SCALED");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((GravMassMode.get_DEFAULT() as any).__class__).toBe(GravMassMode);
-  });
 });

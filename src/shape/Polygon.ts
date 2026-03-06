@@ -326,7 +326,6 @@ const nape = getNape();
 
 // Replace the compiled Polygon with our TS class
 nape.shape.Polygon = Polygon;
-(Polygon.prototype as Any).__class__ = Polygon;
 
 // Copy compiled Shape prototype methods for backward compat.
 const compiledShapeProto = nape.shape.Shape.prototype;

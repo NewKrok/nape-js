@@ -231,4 +231,3 @@ const nape = getNape();
 
 // Replace the compiled Edge with our TS class
 nape.shape.Edge = Edge;
-(Edge.prototype as Any).__class__ = Edge;

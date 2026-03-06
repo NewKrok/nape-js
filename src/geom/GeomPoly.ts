@@ -928,4 +928,3 @@ export class GeomPoly {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.geom.GeomPoly = GeomPoly;
-(GeomPoly.prototype as Any).__class__ = GeomPoly;

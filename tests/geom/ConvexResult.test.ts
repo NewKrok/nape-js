@@ -12,10 +12,6 @@ describe("ConvexResult", () => {
     expect(nape.geom.ConvexResult).toBe(ConvexResult);
   });
 
-  it("should have __class__ set on prototype", () => {
-    expect(ConvexResult.prototype.__class__).toBe(ConvexResult);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new ConvexResult()).toThrow("ConvexResult cannot be instantiated");
   });

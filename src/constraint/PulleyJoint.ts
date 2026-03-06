@@ -579,8 +579,5 @@ ZPP_PulleyJoint._wrapFn = (zpp: ZPP_PulleyJoint): PulleyJoint => {
   });
 };
 
-const nape = getNape();
-nape.constraint.PulleyJoint = PulleyJoint;
-(PulleyJoint.prototype as Any).__class__ = PulleyJoint;
 
 ZPP_PulleyJoint._createFn = (...args: any[]) => new (PulleyJoint as any)(...args);

@@ -120,8 +120,4 @@ describe("CbEvent", () => {
     expect(CbEvent.BREAK).toBe(CbEvent.get_BREAK());
     expect(CbEvent.PRE).toBe(CbEvent.get_PRE());
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((CbEvent.get_BEGIN() as any).__class__).toBe(CbEvent);
-  });
 });

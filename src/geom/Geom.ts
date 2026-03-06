@@ -214,4 +214,3 @@ export class Geom {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.geom.Geom = Geom;
-(Geom.prototype as any).__class__ = Geom;

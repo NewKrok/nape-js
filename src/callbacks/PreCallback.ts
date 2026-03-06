@@ -48,8 +48,5 @@ export class PreCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.callbacks.PreCallback = PreCallback;
 (PreCallback as Any).__super__ = Callback;
-(PreCallback.prototype as Any).__class__ = PreCallback;
 ZPP_Callback._createPreCb = () => new PreCallback();

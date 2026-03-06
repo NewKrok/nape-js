@@ -77,4 +77,3 @@ export class ValidationResult {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.shape.ValidationResult = ValidationResult;
-(ValidationResult.prototype as Any).__class__ = ValidationResult;

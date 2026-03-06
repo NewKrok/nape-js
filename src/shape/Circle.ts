@@ -192,7 +192,6 @@ const nape = getNape();
 
 // Replace the compiled Circle with our TS class
 nape.shape.Circle = Circle;
-(Circle.prototype as Any).__class__ = Circle;
 
 // Copy compiled Shape prototype methods for backward compat.
 // Use `in` to check the full prototype chain — methods already defined on

@@ -38,10 +38,6 @@ describe("Contact", () => {
     it("should have correct __name__", () => {
       expect(Contact.__name__).toEqual(["nape", "dynamics", "Contact"]);
     });
-
-    it("should have __class__ set on prototype", () => {
-      expect((Contact.prototype as any).__class__).toBe(Contact);
-    });
   });
 
   describe("instantiation", () => {

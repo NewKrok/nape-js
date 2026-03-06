@@ -348,7 +348,6 @@ _bindCompoundWrapForInteractor((inner) => Compound._wrap(inner));
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.phys.Compound = Compound;
-(Compound.prototype as Any).__class__ = Compound;
 
 // Also define the ES5-style property accessors that compiled code expects
 Object.defineProperty(Compound.prototype, "bodies", {

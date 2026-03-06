@@ -386,4 +386,3 @@ ZPP_Mat23._wrapFn = (zpp: ZPP_Mat23): Mat23 => {
 // Self-register
 const nape = getNape();
 nape.geom.Mat23 = Mat23;
-(Mat23.prototype as Any).__class__ = Mat23;

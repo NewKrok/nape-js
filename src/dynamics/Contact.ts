@@ -227,4 +227,3 @@ ZPP_Contact._wrapFn = (zpp: ZPP_Contact): Contact => {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.dynamics.Contact = Contact;
-(Contact.prototype as any).__class__ = Contact;

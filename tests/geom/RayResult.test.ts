@@ -17,10 +17,6 @@ describe("RayResult", () => {
     expect(nape.geom.RayResult).toBe(RayResult);
   });
 
-  it("should have __class__ set on prototype", () => {
-    expect(RayResult.prototype.__class__).toBe(RayResult);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new RayResult()).toThrow("RayResult cannot be instantiated");
   });

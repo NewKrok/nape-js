@@ -41,8 +41,4 @@ describe("InertiaMode", () => {
   it("FIXED toString should return 'FIXED'", () => {
     expect(InertiaMode.get_FIXED().toString()).toBe("FIXED");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((InertiaMode.get_DEFAULT() as any).__class__).toBe(InertiaMode);
-  });
 });

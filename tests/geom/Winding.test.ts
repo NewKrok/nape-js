@@ -54,8 +54,4 @@ describe("Winding", () => {
   it("ANTICLOCKWISE toString should return 'ANTICLOCKWISE'", () => {
     expect(Winding.get_ANTICLOCKWISE().toString()).toBe("ANTICLOCKWISE");
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((Winding.get_CLOCKWISE() as any).__class__).toBe(Winding);
-  });
 });

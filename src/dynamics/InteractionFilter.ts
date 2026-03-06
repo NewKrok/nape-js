@@ -265,4 +265,3 @@ ZPP_InteractionFilter._wrapFn = (zpp: ZPP_InteractionFilter): InteractionFilter 
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.dynamics.InteractionFilter = InteractionFilter;
-(InteractionFilter.prototype as any).__class__ = InteractionFilter;

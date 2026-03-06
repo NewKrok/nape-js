@@ -77,6 +77,5 @@ export class ListenerType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.ListenerType = ListenerType;
-(ListenerType.prototype as Any).__class__ = ListenerType;
 ensureEnumsReady();
 

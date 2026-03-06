@@ -276,7 +276,4 @@ export class CollisionArbiter extends Arbiter {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.dynamics.CollisionArbiter = CollisionArbiter;
-(CollisionArbiter.prototype as any).__class__ = CollisionArbiter;
 ZPP_Arbiter._createColArb = () => new CollisionArbiter();

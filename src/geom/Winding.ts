@@ -65,4 +65,3 @@ export class Winding {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.Winding = Winding;
-(Winding.prototype as Any).__class__ = Winding;

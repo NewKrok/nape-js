@@ -566,4 +566,3 @@ export interface CbTypeSet {
 // here, and is loaded via index.ts or the test setup file.
 const nape = getNape();
 nape.shape.Shape = Shape;
-(Shape.prototype as Any).__class__ = Shape;

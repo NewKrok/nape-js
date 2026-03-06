@@ -66,6 +66,3 @@ export class BodyListener extends Listener {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.callbacks.BodyListener = BodyListener;
-(BodyListener.prototype as Any).__class__ = BodyListener;

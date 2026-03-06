@@ -482,4 +482,3 @@ ZPP_AABB._wrapFn = (zpp: ZPP_AABB): AABB => {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.AABB = AABB;
-(AABB.prototype as any).__class__ = AABB;

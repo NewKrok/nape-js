@@ -53,4 +53,3 @@ export class InertiaMode {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.InertiaMode = InertiaMode;
-(InertiaMode.prototype as Any).__class__ = InertiaMode;

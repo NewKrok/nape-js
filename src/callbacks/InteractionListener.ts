@@ -147,6 +147,3 @@ export class InteractionListener extends Listener {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.callbacks.InteractionListener = InteractionListener;
-(InteractionListener.prototype as Any).__class__ = InteractionListener;

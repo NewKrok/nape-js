@@ -74,8 +74,4 @@ describe("InteractionType", () => {
     expect(InteractionType.FLUID).toBe(InteractionType.get_FLUID());
     expect(InteractionType.ANY).toBe(InteractionType.get_ANY());
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((InteractionType.get_COLLISION() as any).__class__).toBe(InteractionType);
-  });
 });

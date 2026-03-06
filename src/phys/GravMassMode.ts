@@ -65,4 +65,3 @@ export class GravMassMode {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.GravMassMode = GravMassMode;
-(GravMassMode.prototype as Any).__class__ = GravMassMode;

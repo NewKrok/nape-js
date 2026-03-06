@@ -173,4 +173,3 @@ export class Interactor {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.Interactor = Interactor;
-(Interactor.prototype as any).__class__ = Interactor;

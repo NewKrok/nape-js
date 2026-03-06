@@ -46,8 +46,4 @@ describe("ShapeType", () => {
     expect(ShapeType.CIRCLE).toBe(ShapeType.get_CIRCLE());
     expect(ShapeType.POLYGON).toBe(ShapeType.get_POLYGON());
   });
-
-  it("should have __class__ set on prototype", () => {
-    expect((ShapeType.get_CIRCLE() as any).__class__).toBe(ShapeType);
-  });
 });

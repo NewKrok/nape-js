@@ -267,4 +267,3 @@ ZPP_Vec3._wrapFn = (zpp: ZPP_Vec3): Vec3 => {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.Vec3 = Vec3;
-(Vec3.prototype as any).__class__ = Vec3;
