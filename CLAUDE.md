@@ -241,71 +241,56 @@ Tests: `tests/core/HaxeShims.test.ts`.
 - **Benchmark** (`benchmarks/run.mjs`) updated to use `getNape()` from `dist/index.js`
   instead of direct import from the now-deleted source file.
 
-## Upcoming Modernization Tasks
+### ✅ Priority 21: Drop `$hxClasses` + `prototype.__class__` — DONE
 
-Audit findings (as of Priority 20 completion):
+~290 lines of write-only dead code removed. No Haxe `Std.is()` or string-based class
+lookup survives in the TypeScript codebase.
+- `HaxeShims.ts`: Removed `$hxClasses` export, 5 `$hxClasses["Xxx"] = Cls` registrations,
+  and 5 `prototype.__class__` assignments (Reflect, Std, StringTools, HaxeError, jsBoot).
+- `ZPPRegistry.ts`: Removed `$hxClasses` import, `const hxClasses`, and 85 `hxClasses[...] = Cls`
+  assignments; simplified all `zpp.xxx.Yyy = hxClasses[...] = Cls` to `zpp.xxx.Yyy = Cls`.
+- `ZNPRegistry.ts`: Removed `HxClasses` type, `hxClasses` parameter from factory functions,
+  and all dynamic `hxClasses[...] = cls` registrations.
+- 47 public API files: Removed all `(Foo.prototype as Any).__class__ = Foo` assignments.
+- 7 native list files: Removed `prototype.__class__` from ContactList, Vec2List, etc.
+- 21 test files updated to remove 23 `"should have __class__ set on prototype"` test cases.
 
-| Metric | Value |
-|--------|-------|
-| `prototype.__class__` assignments | ~200 (ONLY written, never read → dead code) |
-| `$hxClasses["..."] = X` registrations | ~120 (ONLY written, never read → dead code) |
-| `type Any = any` alias | 152 files |
-| `: any` / `as any` occurrences | 218 + 126 |
-| `getNape()` call sites | 88 files (32 access `__zpp` for ZPP class lookup) |
-| Bundle size (ESM, unminified) | 2.2 MB |
-| `sideEffects: true` | tree shaking fully disabled |
-| Missing test files | 16 (callbacks, lists, integration) |
+### ✅ Priority 22: Bundle minification — DONE
 
-### Priority 21: Drop `$hxClasses` + `prototype.__class__`
+- `tsup.config.ts`: Added `minify: true` → 2.17 MB → **1005 KB** ESM (-54%).
+- `.npmignore`: Excludes source maps and dev files from npm package (~4 MB saving).
 
-**Effort: S | Impact: medium | Risk: low**
+### ✅ Priority 23: `getNape().__zpp.xxx.YYY` → direct imports — DONE
 
-Both are write-only dead code. No Haxe `Std.is()` or string-based class lookup remains.
-- Remove all 88 `ZPP_Xxx.prototype.__class__ = ZPP_Xxx` lines from `ZPPRegistry.ts`
-- Remove all `(Foo.prototype as Any).__class__ = Foo` lines from ~60 public API files
-- Remove `$hxClasses` import from `ZPPRegistry.ts` and `ZNPRegistry.ts`
-- Remove `$hxClasses` export from `HaxeShims.ts` (if no other consumers remain)
+52 of 59 runtime namespace accesses converted to typed static imports across 32 files.
 
-Result: ~200 lines deleted, `ZPPRegistry.ts` shrinks by ~100 lines.
+**New exported variables added:**
+- `ZNPRegistry.ts`: 12 exported `let` vars (ZNPList_ZPP_PartitionVertex/PartitionedPoly/
+  GeomVert/SimplifyP/Vec2/SimpleVert/SimpleEvent, ZNPNode_RayResult, ZPP_Set_ZPP_SimpleVert/
+  SimpleSeg/SimpleEvent/PartitionVertex/PartitionPair) — populated by `registerZNPClasses()`.
+- `ZPP_PublicList.ts`: 3 exported `let` vars (ZPP_ConstraintList, ZPP_InteractorList,
+  ZPP_ArbiterList) with `ZPP_PublicListWithGet` type for typed `.get()` access.
 
-### Priority 22: Bundle minification
+**7 accesses intentionally kept** (runtime namespace needed for self-registration or dynamic
+factory patterns): Debug.ts pool cleanup, ZPP_PublicList factory, ZPP_Vec2List/ContactList/
+MixVec2List registration, ZPP_GeomVertexIterator registration.
 
-**Effort: XS | Impact: large | Risk: zero**
+### ✅ Priority 24: `nape.*` namespace audit + reduction — DONE
 
-Add `minify: true` to `tsup.config.ts`. Expected: 2.2 MB → ~650 KB ESM.
-Separately, exclude source maps from the published npm package via `.npmignore` (~4 MB saving).
+**17 safe `nape.xxx.Yyy = Yyy` assignments removed** where ZPP internal code uses factory
+callbacks instead of namespace lookups (confirmed no `nape.constraint.AngleJoint` etc. reads
+in native/ code):
+- 7 constraint joints (AngleJoint..WeldJoint) — use `ZPP_*Joint._createFn`
+- 4 callback listeners (Body/Constraint/Interaction/PreListener)
+- 4 callback subclasses (Body/Constraint/Interaction/PreCallback)
+- 2 arbiter subclasses (CollisionArbiter, FluidArbiter) — use `ZPP_Arbiter._createXxxArb`
 
-### Priority 23: `getNape().__zpp.xxx.YYY` → direct imports
+**Remaining namespace assignments are still needed** for:
+- Enum singleton access (`new nape.phys.BodyType()` etc. in `ZPP_Body._initEnums`)
+- Config constants (`nape.Config.epsilon` in `ZPP_Space`)
+- Public API iterators and wrapper classes created at runtime
 
-**Effort: M | Impact: large | Risk: medium**
-
-32 files access ZPP classes through the runtime namespace:
-```typescript
-// Current (untyped runtime lookup):
-const zpp = getNape().__zpp;
-zpp.util.ZPP_InteractorList.get(...)
-
-// Target (typed static import):
-import { ZPP_InteractorList } from "../native/util/ZNPList";
-ZPP_InteractorList.get(...)
-```
-When all 32 files are migrated, `nape.__zpp = zpp` in `ZPPRegistry.ts` becomes
-unnecessary and can be removed along with the `zpp` namespace object entirely.
-
-### Priority 24: `nape.*` public namespace audit + reduction
-
-**Effort: S | Impact: medium | Risk: low**
-
-The `nape.xxx.Foo = Foo` assignments serve three purposes — only two are still needed:
-
-| Purpose | Example | Still needed? |
-|---------|---------|---------------|
-| Enum singleton access | `nape.phys.BodyType` | ✅ yes (`ZPP_Body._initEnums`) |
-| Config access | `nape.Config.epsilon` | ✅ yes (`ZPP_Space`) |
-| Class constructor lookup | `nape.phys.Body` | ❌ no — `_wrapFn` callback replaces it |
-| Subclass factory | `nape.shape.Circle` | ❌ no — `_createFn` callback replaces it |
-
-~40 pure class-registration assignments in public API files can be deleted.
+## Modernization Pattern
 
 ### Priority 25: `type Any = any` → real TypeScript types
 
@@ -402,7 +387,6 @@ P21 → P22 → P23 → P24 → P27
 | P27 — HaxeShims audit | S | small | low |
 | P28 — API ergonomics | M | DX | low |
 | P29 — Test coverage | M | safety | none |
-
 
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions
