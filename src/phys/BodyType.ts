@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { getNape, ensureEnumsReady } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 type Any = any;
@@ -75,16 +75,6 @@ export class BodyType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 
-// Fix prototypes of singletons created by the compiled stub at init time.
-if (ZPP_Flags.BodyType_STATIC != null) {
-  Object.setPrototypeOf(ZPP_Flags.BodyType_STATIC, BodyType.prototype);
-}
-if (ZPP_Flags.BodyType_DYNAMIC != null) {
-  Object.setPrototypeOf(ZPP_Flags.BodyType_DYNAMIC, BodyType.prototype);
-}
-if (ZPP_Flags.BodyType_KINEMATIC != null) {
-  Object.setPrototypeOf(ZPP_Flags.BodyType_KINEMATIC, BodyType.prototype);
-}
-
 nape.phys.BodyType = BodyType;
 (BodyType.prototype as Any).__class__ = BodyType;
+ensureEnumsReady();

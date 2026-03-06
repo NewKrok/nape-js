@@ -50,3 +50,40 @@ import "../geom/GeomVertexIterator";
 import "../native/util/ZPP_Vec2List";
 import "../native/util/ZPP_ContactList";
 import "../native/geom/ZPP_GeomVertexIterator";
+import "../native/util/ZPP_MixVec2List";
+
+// Singleton enum classes — import so they self-register before user code runs.
+// Each class calls ensureEnumsReady() after registering; _initEnums runs once
+// all 6 classes are available (handles circular-import cycles gracefully).
+import "../callbacks/CbEvent";
+import "../callbacks/CbType";
+import "../callbacks/ListenerType";
+import "../dynamics/ArbiterType";
+import "../phys/BodyType";
+import "../shape/ShapeType";
+
+// Deferred singleton enum initialization — called by each enum class after
+// self-registering.  Runs _initEnums only when all 6 constructors exist.
+// eslint-disable-next-line no-var
+var _enumsReady = false;
+export function ensureEnumsReady(): void {
+  if (_enumsReady) return;
+  const n = napeNamespace;
+  if (
+    !n?.callbacks?.CbEvent ||
+    !n?.callbacks?.CbType ||
+    !n?.callbacks?.ListenerType ||
+    !n?.dynamics?.ArbiterType ||
+    !n?.phys?.BodyType ||
+    !n?.shape?.ShapeType
+  ) {
+    return; // Not all enum classes registered yet — will retry when the last one loads.
+  }
+  _enumsReady = true;
+  const _z = n.__zpp;
+  _z.callbacks.ZPP_CbType._initEnums(n);
+  _z.callbacks.ZPP_Listener._initEnums(n, _z.util.ZPP_Flags);
+  _z.dynamics.ZPP_Arbiter._initEnums(n, _z.util.ZPP_Flags);
+  _z.phys.ZPP_Body._initEnums(n, _z.util.ZPP_Flags);
+  _z.shape.ZPP_Shape._initEnums(n, _z.util.ZPP_Flags);
+}

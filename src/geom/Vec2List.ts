@@ -510,22 +510,4 @@ const nape = getNape();
 nape.geom.Vec2Iterator = Vec2Iterator;
 nape.geom.Vec2List = Vec2ListCtor;
 
-// Fix up ZPP_MixVec2List: it copied prototype methods from the old compiled
-// Vec2List stub at init time. Re-copy from the new TS prototype for methods
-// that ZPP_MixVec2List doesn't override (has, add, empty, iterator, copy,
-// merge, toString, foreach, filter, get_length, zpp_gl, zpp_vm).
-const MixVec2List = nape.__zpp?.util?.ZPP_MixVec2List;
-if (MixVec2List) {
-  for (const k in Vec2ListCtor.prototype) {
-    if (
-      !Object.prototype.hasOwnProperty.call(MixVec2List.prototype, k) ||
-      k === "__class__"
-    ) {
-      if (k !== "__class__") {
-        MixVec2List.prototype[k] = (Vec2ListCtor.prototype as Any)[k];
-      }
-    }
-  }
-}
-
 export { Vec2ListCtor as Vec2List, Vec2Iterator };

@@ -350,14 +350,6 @@ const nape = getNape();
 nape.phys.Compound = Compound;
 (Compound.prototype as Any).__class__ = Compound;
 
-// Copy compiled nape.phys.Interactor prototype methods for backward compat.
-// These use `this.zpp_inner_i` which our Compound instances have set.
-for (const k in nape.phys.Interactor.prototype) {
-  if (!Object.prototype.hasOwnProperty.call(Compound.prototype, k)) {
-    (Compound.prototype as Any)[k] = nape.phys.Interactor.prototype[k];
-  }
-}
-
 // Also define the ES5-style property accessors that compiled code expects
 Object.defineProperty(Compound.prototype, "bodies", {
   get: function (this: Compound) {

@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { getNape, ensureEnumsReady } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 type Any = any;
@@ -78,18 +78,5 @@ export class ListenerType {
 const nape = getNape();
 nape.callbacks.ListenerType = ListenerType;
 (ListenerType.prototype as Any).__class__ = ListenerType;
+ensureEnumsReady();
 
-// Fix prototypes of singletons created by the compiled stub at init time
-// (ZPP_Listener.types array is built before TS modules load).
-if (ZPP_Flags.ListenerType_BODY != null) {
-  Object.setPrototypeOf(ZPP_Flags.ListenerType_BODY, ListenerType.prototype);
-}
-if (ZPP_Flags.ListenerType_CONSTRAINT != null) {
-  Object.setPrototypeOf(ZPP_Flags.ListenerType_CONSTRAINT, ListenerType.prototype);
-}
-if (ZPP_Flags.ListenerType_INTERACTION != null) {
-  Object.setPrototypeOf(ZPP_Flags.ListenerType_INTERACTION, ListenerType.prototype);
-}
-if (ZPP_Flags.ListenerType_PRE != null) {
-  Object.setPrototypeOf(ZPP_Flags.ListenerType_PRE, ListenerType.prototype);
-}

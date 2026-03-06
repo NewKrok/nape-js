@@ -13,7 +13,6 @@ type Any = any;
 export class ZPP_SpaceArbiterList {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "dynamics", "ZPP_SpaceArbiterList"];
-  static __super__: Any = null;
 
   // --- Static: namespace references ---
   static _nape: Any = null;
@@ -40,8 +39,6 @@ export class ZPP_SpaceArbiterList {
   __class__: Any = ZPP_SpaceArbiterList;
 
   constructor() {
-    // Call parent ArbiterList constructor
-    ZPP_SpaceArbiterList._nape.dynamics.ArbiterList.call(this);
     this.at_index_0 = 0;
     this.at_index_1 = 0;
     this.at_index_2 = 0;
@@ -53,17 +50,6 @@ export class ZPP_SpaceArbiterList {
     this.lengths.push(0);
     this.lengths.push(0);
     this.lengths.push(0);
-  }
-
-  static _init(): void {
-    ZPP_SpaceArbiterList.__super__ = ZPP_SpaceArbiterList._nape.dynamics.ArbiterList;
-    // Copy parent prototype methods
-    const parentProto = ZPP_SpaceArbiterList._nape.dynamics.ArbiterList.prototype;
-    for (const k in parentProto) {
-      if (!(k in ZPP_SpaceArbiterList.prototype)) {
-        (ZPP_SpaceArbiterList.prototype as Any)[k] = parentProto[k];
-      }
-    }
   }
 
   // ========== Length computation ==========

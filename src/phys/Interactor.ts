@@ -1,3 +1,4 @@
+import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { InteractionGroup } from "../dynamics/InteractionGroup";
 import type { NapeInner, Writable } from "../geom/Vec2";
@@ -36,6 +37,9 @@ export function _bindCompoundWrapForInteractor(fn: SubclassWrapFn): void {
  * via `zpp_inner_i` (no compiled prototype delegation).
  */
 export class Interactor {
+  /** @internal – guards against direct instantiation (matches compiled zpp_internalAlloc pattern). */
+  static zpp_internalAlloc = false;
+
   /**
    * @internal ZPP_Interactor-compatible object set by subclass constructors.
    * For fully modernized subclasses (Body, Compound): this is the ZPP_Body/ZPP_Compound.
@@ -163,3 +167,10 @@ export class Interactor {
     return "";
   }
 }
+
+// ---------------------------------------------------------------------------
+// Self-register in the compiled namespace
+// ---------------------------------------------------------------------------
+const nape = getNape();
+nape.phys.Interactor = Interactor;
+(Interactor.prototype as any).__class__ = Interactor;

@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { getNape, ensureEnumsReady } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 type Any = any;
@@ -65,17 +65,6 @@ export class ArbiterType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 
-// Fix prototypes of singletons created by the compiled stub at init time.
-// These were created as instances of the stub constructor before this module loaded.
-if (ZPP_Flags.ArbiterType_COLLISION != null) {
-  Object.setPrototypeOf(ZPP_Flags.ArbiterType_COLLISION, ArbiterType.prototype);
-}
-if (ZPP_Flags.ArbiterType_SENSOR != null) {
-  Object.setPrototypeOf(ZPP_Flags.ArbiterType_SENSOR, ArbiterType.prototype);
-}
-if (ZPP_Flags.ArbiterType_FLUID != null) {
-  Object.setPrototypeOf(ZPP_Flags.ArbiterType_FLUID, ArbiterType.prototype);
-}
-
 nape.dynamics.ArbiterType = ArbiterType;
 (ArbiterType.prototype as Any).__class__ = ArbiterType;
+ensureEnumsReady();
