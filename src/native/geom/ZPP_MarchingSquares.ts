@@ -13,6 +13,7 @@ import { ZPP_MarchSpan } from "./ZPP_MarchSpan";
 import { ZPP_GeomPoly } from "./ZPP_GeomPoly";
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
+import { ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair } from "../util/ZNPArray2";
 import { getNape } from "../../core/engine";
 
 type Any = any;
@@ -280,7 +281,7 @@ export class ZPP_MarchingSquares {
     if (combine) {
       if (ZPP_MarchingSquares.map == null) {
         ZPP_MarchingSquares.map =
-          new ZPP_MarchingSquares._zpp.util.ZNPArray2_ZPP_MarchPair(xn, yn);
+          new ZNPArray2_ZPP_MarchPair(xn, yn);
       } else {
         ZPP_MarchingSquares.map.resize(xn, yn, null);
       }
@@ -288,7 +289,7 @@ export class ZPP_MarchingSquares {
 
     if (ZPP_MarchingSquares.isos == null) {
       ZPP_MarchingSquares.isos =
-        new ZPP_MarchingSquares._zpp.util.ZNPArray2_Float(xn + 1, yn + 1);
+        new ZNPArray2_Float(xn + 1, yn + 1);
     } else {
       ZPP_MarchingSquares.isos.resize(xn + 1, yn + 1, 0);
     }
@@ -335,7 +336,7 @@ export class ZPP_MarchingSquares {
 
     if (ZPP_MarchingSquares.ints == null) {
       ZPP_MarchingSquares.ints =
-        new ZPP_MarchingSquares._zpp.util.ZNPArray2_ZPP_GeomVert(xn + 1, (yn << 1) + 1);
+        new ZNPArray2_ZPP_GeomVert(xn + 1, (yn << 1) + 1);
     } else {
       ZPP_MarchingSquares.ints.resize(xn + 1, (yn << 1) + 1, null);
     }

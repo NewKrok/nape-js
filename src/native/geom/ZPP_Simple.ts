@@ -14,6 +14,8 @@ import { ZPP_SimpleSeg } from "./ZPP_SimpleSeg";
 import { ZPP_SimpleEvent } from "./ZPP_SimpleEvent";
 import { ZPP_SimpleSweep } from "./ZPP_SimpleSweep";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
+import { Hashable2_Boolfalse } from "../util/Hashable2_Boolfalse";
+import { FastHash2_Hashable2_Boolfalse } from "../util/FastHash2_Hashable2_Boolfalse";
 
 type Any = any;
 
@@ -34,7 +36,7 @@ export class ZPP_Simple {
     const zpp = getNape().__zpp;
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
-      ZPP_Simple.inthash = new zpp.util.FastHash2_Hashable2_Boolfalse();
+      ZPP_Simple.inthash = new FastHash2_Hashable2_Boolfalse();
     }
     if (ZPP_Simple.vertices == null) {
       if (zpp.util.ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
@@ -248,11 +250,11 @@ export class ZPP_Simple {
                   const id = s.next.id;
                   const di = s.id;
                   let ret5: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret5 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret5 = new Hashable2_Boolfalse();
                   } else {
-                    ret5 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret5.next;
+                    ret5 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret5.next;
                     ret5.next = null;
                   }
                   ret5.id = id;
@@ -265,11 +267,11 @@ export class ZPP_Simple {
                   const id1 = s.id;
                   const di1 = s.next.id;
                   let ret7: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret7 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret7 = new Hashable2_Boolfalse();
                   } else {
-                    ret7 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret7.next;
+                    ret7 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret7.next;
                     ret7.next = null;
                   }
                   ret7.id = id1;
@@ -362,11 +364,11 @@ export class ZPP_Simple {
                   const id2 = s.id;
                   const di2 = s.prev.id;
                   let ret9: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret9 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret9 = new Hashable2_Boolfalse();
                   } else {
-                    ret9 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret9.next;
+                    ret9 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret9.next;
                     ret9.next = null;
                   }
                   ret9.id = id2;
@@ -379,11 +381,11 @@ export class ZPP_Simple {
                   const id3 = s.prev.id;
                   const di3 = s.id;
                   let ret11: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret11 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret11 = new Hashable2_Boolfalse();
                   } else {
-                    ret11 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret11.next;
+                    ret11 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret11.next;
                     ret11.next = null;
                   }
                   ret11.id = id3;
@@ -489,11 +491,11 @@ export class ZPP_Simple {
                     const id4 = nxt.id;
                     const di4 = pre1.id;
                     let ret13: Any;
-                    if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                      ret13 = new zpp.util.Hashable2_Boolfalse();
+                    if (Hashable2_Boolfalse.zpp_pool == null) {
+                      ret13 = new Hashable2_Boolfalse();
                     } else {
-                      ret13 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                      zpp.util.Hashable2_Boolfalse.zpp_pool = ret13.next;
+                      ret13 = Hashable2_Boolfalse.zpp_pool;
+                      Hashable2_Boolfalse.zpp_pool = ret13.next;
                       ret13.next = null;
                     }
                     ret13.id = id4;
@@ -506,11 +508,11 @@ export class ZPP_Simple {
                     const id5 = pre1.id;
                     const di5 = nxt.id;
                     let ret15: Any;
-                    if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                      ret15 = new zpp.util.Hashable2_Boolfalse();
+                    if (Hashable2_Boolfalse.zpp_pool == null) {
+                      ret15 = new Hashable2_Boolfalse();
                     } else {
-                      ret15 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                      zpp.util.Hashable2_Boolfalse.zpp_pool = ret15.next;
+                      ret15 = Hashable2_Boolfalse.zpp_pool;
+                      Hashable2_Boolfalse.zpp_pool = ret15.next;
                       ret15.next = null;
                     }
                     ret15.id = id5;
@@ -694,11 +696,11 @@ export class ZPP_Simple {
                   const id6 = b.next.id;
                   const di6 = b.id;
                   let ret17: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret17 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret17 = new Hashable2_Boolfalse();
                   } else {
-                    ret17 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret17.next;
+                    ret17 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret17.next;
                     ret17.next = null;
                   }
                   ret17.id = id6;
@@ -711,11 +713,11 @@ export class ZPP_Simple {
                   const id7 = b.id;
                   const di7 = b.next.id;
                   let ret19: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret19 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret19 = new Hashable2_Boolfalse();
                   } else {
-                    ret19 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret19.next;
+                    ret19 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret19.next;
                     ret19.next = null;
                   }
                   ret19.id = id7;
@@ -808,11 +810,11 @@ export class ZPP_Simple {
                   const id8 = a.id;
                   const di8 = a.prev.id;
                   let ret21: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret21 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret21 = new Hashable2_Boolfalse();
                   } else {
-                    ret21 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret21.next;
+                    ret21 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret21.next;
                     ret21.next = null;
                   }
                   ret21.id = id8;
@@ -825,11 +827,11 @@ export class ZPP_Simple {
                   const id9 = a.prev.id;
                   const di9 = a.id;
                   let ret23: Any;
-                  if (zpp.util.Hashable2_Boolfalse.zpp_pool == null) {
-                    ret23 = new zpp.util.Hashable2_Boolfalse();
+                  if (Hashable2_Boolfalse.zpp_pool == null) {
+                    ret23 = new Hashable2_Boolfalse();
                   } else {
-                    ret23 = zpp.util.Hashable2_Boolfalse.zpp_pool;
-                    zpp.util.Hashable2_Boolfalse.zpp_pool = ret23.next;
+                    ret23 = Hashable2_Boolfalse.zpp_pool;
+                    Hashable2_Boolfalse.zpp_pool = ret23.next;
                     ret23.next = null;
                   }
                   ret23.id = id9;
@@ -893,8 +895,8 @@ export class ZPP_Simple {
         const t1 = n.hnext;
         n.hnext = null;
         const o28 = n;
-        o28.next = zpp.util.Hashable2_Boolfalse.zpp_pool;
-        zpp.util.Hashable2_Boolfalse.zpp_pool = o28;
+        o28.next = Hashable2_Boolfalse.zpp_pool;
+        Hashable2_Boolfalse.zpp_pool = o28;
         n = t1;
       }
       ZPP_Simple.inthash.table[i] = null;
@@ -1069,7 +1071,7 @@ export class ZPP_Simple {
     const zpp = getNape().__zpp;
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
-      ZPP_Simple.inthash = new zpp.util.FastHash2_Hashable2_Boolfalse();
+      ZPP_Simple.inthash = new FastHash2_Hashable2_Boolfalse();
     }
     let vertices = ZPP_Simple.list_vertices;
     if (vertices == null) {
