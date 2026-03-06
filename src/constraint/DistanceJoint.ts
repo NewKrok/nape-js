@@ -425,5 +425,6 @@ const nape = getNape();
 nape.constraint.DistanceJoint = DistanceJoint;
 (DistanceJoint.prototype as Any).__class__ = DistanceJoint;
 
+ZPP_DistanceJoint._createFn = (...args: any[]) => new (DistanceJoint as any)(...args);
 const zpp = nape.__zpp;
 zpp.constraint.ZPP_DistanceJoint = ZPP_DistanceJoint;

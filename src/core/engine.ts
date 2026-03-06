@@ -52,6 +52,48 @@ import "../native/util/ZPP_ContactList";
 import "../native/geom/ZPP_GeomVertexIterator";
 import "../native/util/ZPP_MixVec2List";
 
+// --- Public API base/standalone classes (self-register at module load time) ---
+// Stubs for these classes have been removed from nape-compiled.js.
+// NOTE: Subclasses that use `extends` (e.g. BodyCallback extends Callback) CANNOT
+// be imported here — doing so creates circular ESM dependencies where the subclass
+// evaluates before the base class. Subclasses keep minimal stubs in nape-compiled.js
+// and self-register when imported by user code or index.ts.
+import "../callbacks/Callback";
+import "../callbacks/Listener";
+import "../callbacks/OptionType";
+import "../callbacks/InteractionType";
+import "../callbacks/PreFlag";
+import "../constraint/Constraint";
+import "../dynamics/Arbiter";
+import "../dynamics/Contact";
+import "../dynamics/InteractionFilter";
+import "../dynamics/InteractionGroup";
+import "../geom/AABB";
+import "../geom/ConvexResult";
+import "../geom/Geom";
+import "../geom/GeomPoly";
+import "../geom/MarchingSquares";
+import "../geom/Mat23";
+import "../geom/MatMN";
+import "../geom/Ray";
+import "../geom/RayResult";
+import "../geom/Vec2";
+import "../geom/Vec3";
+import "../geom/Winding";
+import "../phys/Interactor";
+// Body/Compound extend Interactor → cannot import here (circular ESM dep)
+import "../phys/FluidProperties";
+import "../phys/Material";
+import "../phys/GravMassMode";
+import "../phys/InertiaMode";
+import "../phys/MassMode";
+// Shape extends Interactor → cannot import here (circular ESM dep)
+// Circle/Polygon extend Shape → cannot import here
+import "../shape/Edge";
+import "../shape/ValidationResult";
+import "../space/Broadphase";
+import "../space/Space";
+
 // Singleton enum classes — import so they self-register before user code runs.
 // Each class calls ensureEnumsReady() after registering; _initEnums runs once
 // all 6 classes are available (handles circular-import cycles gracefully).

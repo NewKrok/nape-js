@@ -32,17 +32,18 @@ describe("ZPP_Flags", () => {
       expect(ZPP_Flags.MassMode_FIXED).toBeNull();
     });
 
-    it("should initialize body type flags to null", () => {
-      expect(ZPP_Flags.BodyType_STATIC).toBeNull();
-      expect(ZPP_Flags.BodyType_DYNAMIC).toBeNull();
-      expect(ZPP_Flags.BodyType_KINEMATIC).toBeNull();
+    it("should have body type flags initialized by ensureEnumsReady()", () => {
+      // After module load, ensureEnumsReady() initializes enum singletons
+      expect(ZPP_Flags.BodyType_STATIC).not.toBeNull();
+      expect(ZPP_Flags.BodyType_DYNAMIC).not.toBeNull();
+      expect(ZPP_Flags.BodyType_KINEMATIC).not.toBeNull();
     });
 
-    it("should initialize listener type flags to null", () => {
-      expect(ZPP_Flags.ListenerType_BODY).toBeNull();
-      expect(ZPP_Flags.ListenerType_CONSTRAINT).toBeNull();
-      expect(ZPP_Flags.ListenerType_INTERACTION).toBeNull();
-      expect(ZPP_Flags.ListenerType_PRE).toBeNull();
+    it("should have listener type flags initialized by ensureEnumsReady()", () => {
+      expect(ZPP_Flags.ListenerType_BODY).not.toBeNull();
+      expect(ZPP_Flags.ListenerType_CONSTRAINT).not.toBeNull();
+      expect(ZPP_Flags.ListenerType_INTERACTION).not.toBeNull();
+      expect(ZPP_Flags.ListenerType_PRE).not.toBeNull();
     });
 
     it("should initialize pre flags to null", () => {
@@ -52,14 +53,14 @@ describe("ZPP_Flags", () => {
       expect(ZPP_Flags.PreFlag_IGNORE_ONCE).toBeNull();
     });
 
-    it("should initialize callback event flags to null", () => {
-      expect(ZPP_Flags.CbEvent_BEGIN).toBeNull();
-      expect(ZPP_Flags.CbEvent_ONGOING).toBeNull();
-      expect(ZPP_Flags.CbEvent_END).toBeNull();
-      expect(ZPP_Flags.CbEvent_WAKE).toBeNull();
-      expect(ZPP_Flags.CbEvent_SLEEP).toBeNull();
-      expect(ZPP_Flags.CbEvent_BREAK).toBeNull();
-      expect(ZPP_Flags.CbEvent_PRE).toBeNull();
+    it("should have callback event flags initialized by ensureEnumsReady()", () => {
+      expect(ZPP_Flags.CbEvent_BEGIN).not.toBeNull();
+      expect(ZPP_Flags.CbEvent_ONGOING).not.toBeNull();
+      expect(ZPP_Flags.CbEvent_END).not.toBeNull();
+      expect(ZPP_Flags.CbEvent_WAKE).not.toBeNull();
+      expect(ZPP_Flags.CbEvent_SLEEP).not.toBeNull();
+      expect(ZPP_Flags.CbEvent_BREAK).not.toBeNull();
+      expect(ZPP_Flags.CbEvent_PRE).not.toBeNull();
     });
 
     it("should initialize interaction type flags to null", () => {
@@ -82,9 +83,9 @@ describe("ZPP_Flags", () => {
       expect(ZPP_Flags.ValidationResult_SELF_INTERSECTING).toBeNull();
     });
 
-    it("should initialize shape type flags to null", () => {
-      expect(ZPP_Flags.ShapeType_CIRCLE).toBeNull();
-      expect(ZPP_Flags.ShapeType_POLYGON).toBeNull();
+    it("should have shape type flags initialized by ensureEnumsReady()", () => {
+      expect(ZPP_Flags.ShapeType_CIRCLE).not.toBeNull();
+      expect(ZPP_Flags.ShapeType_POLYGON).not.toBeNull();
     });
 
     it("should initialize broadphase flags to null", () => {
@@ -92,10 +93,10 @@ describe("ZPP_Flags", () => {
       expect(ZPP_Flags.Broadphase_SWEEP_AND_PRUNE).toBeNull();
     });
 
-    it("should initialize arbiter type flags to null", () => {
-      expect(ZPP_Flags.ArbiterType_COLLISION).toBeNull();
-      expect(ZPP_Flags.ArbiterType_SENSOR).toBeNull();
-      expect(ZPP_Flags.ArbiterType_FLUID).toBeNull();
+    it("should have arbiter type flags initialized by ensureEnumsReady()", () => {
+      expect(ZPP_Flags.ArbiterType_COLLISION).not.toBeNull();
+      expect(ZPP_Flags.ArbiterType_SENSOR).not.toBeNull();
+      expect(ZPP_Flags.ArbiterType_FLUID).not.toBeNull();
     });
 
     it("should initialize internal flag to false", () => {

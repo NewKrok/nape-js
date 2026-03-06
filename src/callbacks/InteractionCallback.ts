@@ -1,5 +1,6 @@
 import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
+import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 
 type Any = any;
 
@@ -48,3 +49,4 @@ const nape = getNape();
 nape.callbacks.InteractionCallback = InteractionCallback;
 (InteractionCallback as Any).__super__ = Callback;
 (InteractionCallback.prototype as Any).__class__ = InteractionCallback;
+ZPP_Callback._createIntCb = () => new InteractionCallback();

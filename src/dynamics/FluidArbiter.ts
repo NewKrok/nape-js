@@ -2,6 +2,7 @@ import { getNape } from "../core/engine";
 import { Vec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
+import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 
 type Any = any;
 
@@ -120,3 +121,4 @@ export class FluidArbiter extends Arbiter {
 const nape = getNape();
 nape.dynamics.FluidArbiter = FluidArbiter;
 (FluidArbiter.prototype as any).__class__ = FluidArbiter;
+ZPP_Arbiter._createFluidArb = () => new FluidArbiter();

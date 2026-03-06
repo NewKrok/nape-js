@@ -17,6 +17,7 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_WeldJoint"];
   static __super__ = ZPP_Constraint;
   static _wrapFn: ((zpp: ZPP_WeldJoint) => Any) | null = null;
+  static _createFn: ((...args: any[]) => any) | null = null;
 
   outer_zn: Any = null;
   b1: Any = null;
@@ -334,7 +335,7 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
     if (_this1.zpp_inner_zn.wrap_a2 == null) {
       _this1.zpp_inner_zn.setup_a2();
     }
-    const ret1 = new napeNs.constraint.WeldJoint(null, null, ret, _this1.zpp_inner_zn.wrap_a2);
+    const ret1 = ZPP_WeldJoint._createFn!(null, null, ret, _this1.zpp_inner_zn.wrap_a2);
     this.copyto(ret1);
     ZPP_AngleJoint._copyBody(dict, todo, this.b1, ret1, "b1");
     ZPP_AngleJoint._copyBody(dict, todo, this.b2, ret1, "b2");

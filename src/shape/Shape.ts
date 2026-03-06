@@ -559,13 +559,10 @@ export interface CbTypeSet {
 // Self-register in the compiled namespace
 // ---------------------------------------------------------------------------
 
-// NOTE: We do NOT replace nape.shape.Shape because compiled Polygon constructor
-// calls nape.shape.Shape.call(this) which fails for ES6 classes. Instead, the TS
-// Shape class provides getters through the prototype chain (Circle extends Shape).
-//
-// Module-bottom registration is deferred to avoid blocking Vec2 module evaluation.
-// Circle.ts and Edge.ts call getNape() at their module bottom and copy compiled
-// Interactor methods there.
-
-// getNape() is NOT called here to avoid import-ordering issues
-// (getNape import is retained for use in instance methods only)
+// NOTE: Shape extends Interactor. Both import engine.ts, so importing Shape from
+// engine.ts creates a circular ESM dep (engine → Shape → Interactor → engine).
+// Shape cannot be side-effect imported from engine.ts. Instead, it self-registers
+// here, and is loaded via index.ts or the test setup file.
+const nape = getNape();
+nape.shape.Shape = Shape;
+(Shape.prototype as Any).__class__ = Shape;

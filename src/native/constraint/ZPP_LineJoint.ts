@@ -17,6 +17,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_LineJoint"];
   static __super__ = ZPP_Constraint;
   static _wrapFn: ((zpp: ZPP_LineJoint) => Any) | null = null;
+  static _createFn: ((...args: any[]) => any) | null = null;
 
   outer_zn: Any = null;
   scale = 0.0;
@@ -325,7 +326,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     if (_this2.zpp_inner_zn.wrap_n == null) {
       _this2.zpp_inner_zn.setup_n();
     }
-    const ret2 = new napeNs.constraint.LineJoint(
+    const ret2 = ZPP_LineJoint._createFn!(
       null,
       null,
       ret,
