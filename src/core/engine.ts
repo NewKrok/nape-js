@@ -26,10 +26,20 @@ export function getNape(): any {
   return napeNamespace;
 }
 
+// Config constants — must run before any physics simulation.
+import "../Config";
+
+// Debug utility class.
+import "../util/Debug";
+
 // Register typed List + Iterator classes after the compiled code is loaded.
 // This must happen here (not just in index.ts) so that any module importing
 // getNape() — even without going through the barrel export — gets the lists.
 import "../util/registerLists";
+
+// Internal list backing classes — must run after registerLists so the public
+// wrapper classes (BodyList, ConstraintList, etc.) are already in nape namespace.
+import "../native/util/ZPP_PublicList";
 
 // Special-case lists (Vec2List, ContactList, GeomVertexIterator) that have
 // custom behavior not handled by the generic NapeListFactory.
