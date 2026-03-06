@@ -471,3 +471,18 @@ a:hover { text-decoration: underline; }
   color: var(--text-dim);
 }
 .footer p + p { margin-top: 6px; }
+.footer-support { margin-top: 16px; }
+.kofi-link {
+  display: inline-block;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.kofi-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
