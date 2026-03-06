@@ -119,7 +119,6 @@ export function createListClasses(spec: ListSpec): {
     return this.zpp_inner.at(this.zpp_i++);
   };
 
-  TypedIterator.prototype.__class__ = TypedIterator;
 
   // ---------------------------------------------------------------------------
   // List
@@ -481,7 +480,6 @@ export function createListClasses(spec: ListSpec): {
     return result;
   };
 
-  TypedList.prototype.__class__ = TypedList;
 
   // ES6 iterable protocol — enables for...of and spread on all Nape lists.
   TypedList.prototype[Symbol.iterator] = function (this: Any) {

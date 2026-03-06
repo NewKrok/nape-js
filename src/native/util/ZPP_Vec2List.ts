@@ -105,4 +105,3 @@ export class ZPP_Vec2List {
 // --- Register in compiled namespace ---
 const nape = getNape();
 nape.__zpp.util.ZPP_Vec2List = ZPP_Vec2List;
-nape.__zpp.util.ZPP_Vec2List.prototype.__class__ = ZPP_Vec2List;

@@ -70,4 +70,3 @@ export class ZPP_GeomVertexIterator {
 // --- Register in compiled namespace ---
 const nape = getNape();
 nape.__zpp.geom.ZPP_GeomVertexIterator = ZPP_GeomVertexIterator;
-nape.__zpp.geom.ZPP_GeomVertexIterator.prototype.__class__ = ZPP_GeomVertexIterator;

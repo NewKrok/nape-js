@@ -8,6 +8,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { getNape } from "../../src/index";
+import { PivotJoint } from "../../src/constraint/PivotJoint";
 
 describe("Engine integration — namespace registrations", () => {
   const nape = getNape();
@@ -93,7 +94,7 @@ describe("Engine integration — property accessors on compiled objects", () => 
   it("PivotJoint own property accessors should return defined values", () => {
     const body1 = new nape.phys.Body(nape.phys.BodyType.DYNAMIC);
     const body2 = new nape.phys.Body(nape.phys.BodyType.DYNAMIC);
-    const joint = new nape.constraint.PivotJoint(
+    const joint = new PivotJoint(
       body1,
       body2,
       new nape.geom.Vec2(0, 0),

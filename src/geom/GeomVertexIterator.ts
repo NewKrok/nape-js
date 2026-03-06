@@ -115,7 +115,6 @@ GeomVertexIteratorCtor.prototype.next = function (this: Any): Any {
   return result;
 };
 
-GeomVertexIteratorCtor.prototype.__class__ = GeomVertexIteratorCtor;
 
 // ---------------------------------------------------------------------------
 // Register in nape namespace
