@@ -43,7 +43,7 @@ describe("ZPP_Contact", () => {
       expect(c.px).toBe(0.0);
       expect(c.py).toBe(0.0);
       // Haxe class reference
-      expect(c.__class__).toBe(ZPP_Contact);
+
     });
 
     it("should create an inner ZPP_IContact instance", () => {

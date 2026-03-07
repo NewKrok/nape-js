@@ -9,8 +9,6 @@
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 
-type Any = any;
-
 export class ZPP_ToiEvent {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_ToiEvent"];
@@ -21,9 +19,9 @@ export class ZPP_ToiEvent {
   // --- Instance fields ---
   next: ZPP_ToiEvent | null = null;
   toi: number = 0.0;
-  s1: Any = null;
-  s2: Any = null;
-  arbiter: Any = null;
+  s1: object | null = null;
+  s2: object | null = null;
+  arbiter: object | null = null;
   frozen1: boolean = false;
   frozen2: boolean = false;
   c1: ZPP_Vec2;
@@ -33,7 +31,6 @@ export class ZPP_ToiEvent {
   failed: boolean = false;
   kinematic: boolean = false;
 
-  __class__: Any = ZPP_ToiEvent;
 
   constructor() {
     this.c1 = new ZPP_Vec2();

@@ -8,13 +8,6 @@ describe("ZPP_Math", () => {
     });
   });
 
-  describe("__class__", () => {
-    it("should reference ZPP_Math", () => {
-      const inst = new ZPP_Math();
-      expect(inst.__class__).toBe(ZPP_Math);
-    });
-  });
-
   describe("sqrt", () => {
     it("should return square root of positive numbers", () => {
       expect(ZPP_Math.sqrt(4)).toBe(2);

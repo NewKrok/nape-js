@@ -11,25 +11,22 @@ import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 import { getNape } from "../../core/engine";
 
-type Any = any;
-
 export class ZPP_Collide {
   static __name__ = ["zpp_nape", "geom", "ZPP_Collide"];
-  __class__: Any = ZPP_Collide;
 
   /** Internal list for flow collision polygon vertices (ZNPList_ZPP_Vec2). */
-  static flowpoly: Any = null;
+  static flowpoly: any = null;
 
   /**
    * Initialize static working lists. Called once from compiled factory.
    */
-  static _initStatics(zpp_nape: Any): void {
+  static _initStatics(zpp_nape: any): void {
     ZPP_Collide.flowpoly = new zpp_nape.util.ZNPList_ZPP_Vec2();
     ZPP_Collide.flowsegs = new zpp_nape.util.ZNPList_ZPP_Vec2();
   }
 
   /** Internal list for flow collision segments (ZNPList_ZPP_Vec2). */
-  static flowsegs: Any = null;
+  static flowsegs: any = null;
 
   static circleContains(c, p) {
     const dx = p.x - c.worldCOMx;

@@ -7,23 +7,21 @@
  * Converted from nape-compiled.js lines 73495–73561, 133826.
  */
 
-type Any = any;
-
 export class ZPP_Mat23 {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_Mat23"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
+  static _nape: any = null;
 
   // --- Static: wrapper factory callback (set by public Mat23 class) ---
-  static _wrapFn: ((zpp: ZPP_Mat23) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Mat23) => any) | null = null;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_Mat23 | null = null;
 
   // --- Instance ---
-  outer: Any = null;
+  outer: any = null;
   a = 0.0;
   b = 0.0;
   c = 0.0;
@@ -32,8 +30,6 @@ export class ZPP_Mat23 {
   ty = 0.0;
   _invalidate: (() => void) | null = null;
   next: ZPP_Mat23 | null = null;
-
-  __class__: Any = ZPP_Mat23;
 
   /** Static factory with pooling. */
   static get(): ZPP_Mat23 {
@@ -56,7 +52,7 @@ export class ZPP_Mat23 {
   }
 
   /** Create a public wrapper, recycling any existing inner. */
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Mat23._wrapFn) {
         this.outer = ZPP_Mat23._wrapFn(this);

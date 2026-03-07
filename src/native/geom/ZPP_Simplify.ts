@@ -10,26 +10,26 @@ import { ZPP_SimplifyV } from "./ZPP_SimplifyV";
 import { ZPP_SimplifyP } from "./ZPP_SimplifyP";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { ZNPList_ZPP_SimplifyP } from "../util/ZNPRegistry";
+import { ZNPList } from "../util/ZNPList";
 
-type Any = any;
+/** Minimal interface for vertex-like objects with x, y coords. */
+interface XYPoint { x: number; y: number; }
 
 export class ZPP_Simplify {
   static __name__ = ["zpp_nape", "geom", "ZPP_Simplify"];
 
-  static stack: Any = null;
+  static stack: ZNPList<ZPP_SimplifyP> | null = null;
 
-  __class__: Any = ZPP_Simplify;
-
-  static lessval(a: Any, b: Any): number {
+  static lessval(a: XYPoint, b: XYPoint): number {
     return a.x - b.x + (a.y - b.y);
   }
 
-  static less(a: Any, b: Any): boolean {
+  static less(a: XYPoint, b: XYPoint): boolean {
     return a.x - b.x + (a.y - b.y) < 0.0;
   }
 
   /** Perpendicular distance squared from vertex v to line segment a-b. */
-  static distance(v: Any, a: Any, b: Any): number {
+  static distance(v: XYPoint, a: XYPoint, b: XYPoint): number {
     const nx = b.x - a.x;
     const ny = b.y - a.y;
     let cx = v.x - a.x;
@@ -55,13 +55,13 @@ export class ZPP_Simplify {
   }
 
   /** Simplify a polygon vertex ring using Ramer-Douglas-Peucker. Returns new GeomVert ring. */
-  static simplify(P: Any, epsilon: number): Any {
+  static simplify(P: ZPP_GeomVert, epsilon: number): ZPP_GeomVert | null {
     let ret: ZPP_SimplifyV | null = null;
     let min: ZPP_SimplifyV | null = null;
     let max: ZPP_SimplifyV | null = null;
     epsilon *= epsilon;
     if (ZPP_Simplify.stack == null) {
-      ZPP_Simplify.stack = new ZNPList_ZPP_SimplifyP();
+      ZPP_Simplify.stack = new ZNPList_ZPP_SimplifyP() as ZNPList<ZPP_SimplifyP>;
     }
     let pre: ZPP_SimplifyV | null = null;
     let fst: ZPP_SimplifyV | null = null;
@@ -100,7 +100,7 @@ export class ZPP_Simplify {
         }
         pre = v;
       }
-      const obj: Any = v;
+      const obj = v;
       if (ret == null) {
         obj.prev = obj.next = obj;
       } else {
@@ -234,12 +234,12 @@ export class ZPP_Simplify {
       const cur1 = ZPP_Simplify.stack.pop_unsafe();
       const min1 = cur1.min;
       const max1 = cur1.max;
-      const o: Any = cur1;
+      const o = cur1;
       o.min = o.max = null;
       o.next = ZPP_SimplifyP.zpp_pool;
       ZPP_SimplifyP.zpp_pool = o;
       let dmax = epsilon;
-      let dv: Any = null;
+      let dv: ZPP_SimplifyV | null = null;
       let ite = min1.next;
       while (ite != max1) {
         const dist = ZPP_Simplify.distance(ite, min1, max1);
@@ -277,7 +277,7 @@ export class ZPP_Simplify {
         tmp9.add(ret11);
       }
     }
-    let retp: Any = null;
+    let retp: ZPP_GeomVert | null = null;
     while (ret != null) {
       if (ret.flag) {
         const x = ret.x;
@@ -293,7 +293,7 @@ export class ZPP_Simplify {
         ret12.forced = false;
         ret12.x = x;
         ret12.y = y;
-        const obj1: Any = ret12;
+        const obj1 = ret12;
         if (retp == null) {
           obj1.prev = obj1.next = obj1;
         } else {
@@ -307,18 +307,16 @@ export class ZPP_Simplify {
       }
       if (ret != null && ret.prev == ret) {
         ret.next = ret.prev = null;
-        const o1: Any = ret;
-        o1.next = ZPP_SimplifyV.zpp_pool;
-        ZPP_SimplifyV.zpp_pool = o1;
-        ret = null as Any;
+        ret!.next = ZPP_SimplifyV.zpp_pool;
+        ZPP_SimplifyV.zpp_pool = ret!;
+        ret = null!;
       } else {
         const retnodes = ret!.next;
         ret!.prev!.next = ret!.next;
         ret!.next!.prev = ret!.prev;
         ret!.next = ret!.prev = null;
-        const o2: Any = ret;
-        o2.next = ZPP_SimplifyV.zpp_pool;
-        ZPP_SimplifyV.zpp_pool = o2;
+        ret!.next = ZPP_SimplifyV.zpp_pool;
+        ZPP_SimplifyV.zpp_pool = ret!;
         ret = retnodes;
       }
     }

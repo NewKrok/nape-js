@@ -11,15 +11,13 @@
 
 import { ZPP_IContact } from "./ZPP_IContact";
 
-type Any = any;
-
 export class ZPP_Contact {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "dynamics", "ZPP_Contact"];
 
   // --- Static: namespace references (set during registration) ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_Contact | null = null;
@@ -28,20 +26,20 @@ export class ZPP_Contact {
   static internal = false;
 
   // --- Static: wrapper factory callback (set by Contact.ts) ---
-  static _wrapFn: ((zpp: ZPP_Contact) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Contact) => any) | null = null;
 
   // --- Instance: public wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: contact position ---
   px = 0.0;
   py = 0.0;
 
   // --- Instance: lazy Vec2 position wrapper ---
-  wrap_position: Any = null;
+  wrap_position: any = null;
 
-  // --- Instance: arbiter reference (ZPP_ColArbiter, not yet extracted) ---
-  arbiter: Any = null;
+  // --- Instance: arbiter reference (ZPP_ColArbiter) ---
+  arbiter: any = null;
 
   // --- Instance: inner impulse data ---
   inner: ZPP_IContact;
@@ -61,9 +59,6 @@ export class ZPP_Contact {
   modified = false;
   _inuse = false;
   next: ZPP_Contact | null = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Contact;
 
   constructor() {
     this.length = 0;
@@ -89,7 +84,7 @@ export class ZPP_Contact {
 
   // ========== Wrapper ==========
 
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Contact._wrapFn) {
         this.outer = ZPP_Contact._wrapFn(this);
@@ -118,7 +113,7 @@ export class ZPP_Contact {
     const zpp = ZPP_Contact._zpp;
     const napeNs = ZPP_Contact._nape;
 
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -132,7 +127,7 @@ export class ZPP_Contact {
     }
 
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {

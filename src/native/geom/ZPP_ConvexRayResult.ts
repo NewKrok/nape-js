@@ -10,8 +10,6 @@
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
-type Any = any;
-
 export class ZPP_ConvexRayResult {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_ConvexRayResult"];
@@ -24,28 +22,27 @@ export class ZPP_ConvexRayResult {
   static internal = false;
 
   // --- Static: wrapper factory callbacks (set by RayResult / ConvexResult at module load) ---
-  static _createRayResult: (() => Any) | null = null;
-  static _createConvexResult: (() => Any) | null = null;
+  static _createRayResult: (() => any) | null = null;
+  static _createConvexResult: (() => any) | null = null;
 
   // --- Instance fields ---
-  normal: Any = null;
-  shape: Any = null;
-  convex: Any = null; // back-reference to ConvexResult wrapper (or null for ray)
-  position: Any = null;
-  ray: Any = null; // back-reference to RayResult wrapper (or null for convex)
+  // `any` because these reference public API objects (Vec2, Shape, ConvexResult, RayResult)
+  // which cannot be imported here without circular dependencies.
+  normal: any = null;
+  shape: any = null;
+  convex: any = null; // back-reference to ConvexResult wrapper (or null for ray)
+  position: any = null;
+  ray: any = null; // back-reference to RayResult wrapper (or null for convex)
   inner = false;
   next: ZPP_ConvexRayResult | null = null;
   toiDistance = 0.0;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_ConvexRayResult;
 
   // ---------------------------------------------------------------------------
   // Static factory: getRay
   // ---------------------------------------------------------------------------
 
-  static getRay(normal: Any, time: number, inner: boolean, shape: Any): Any {
-    let ret: Any;
+  static getRay(normal: any, time: number, inner: boolean, shape: any): any {
+    let ret: any;
     if (ZPP_ConvexRayResult.rayPool == null) {
       ZPP_ConvexRayResult.internal = true;
       ret = ZPP_ConvexRayResult._createRayResult!();
@@ -70,8 +67,8 @@ export class ZPP_ConvexRayResult {
   // Static factory: getConvex
   // ---------------------------------------------------------------------------
 
-  static getConvex(normal: Any, position: Any, toiDistance: number, shape: Any): Any {
-    let ret: Any;
+  static getConvex(normal: any, position: any, toiDistance: number, shape: any): any {
+    let ret: any;
     if (ZPP_ConvexRayResult.convexPool == null) {
       ZPP_ConvexRayResult.internal = true;
       ret = ZPP_ConvexRayResult._createConvexResult!();
@@ -133,7 +130,7 @@ export class ZPP_ConvexRayResult {
   // Private: Vec2 wrapper disposal (inlined from compiled Haxe)
   // ---------------------------------------------------------------------------
 
-  private static _disposeVec2(v: Any): void {
+  private static _disposeVec2(v: any): void {
     // Unlock immutability first
     v.zpp_inner._immutable = false;
 

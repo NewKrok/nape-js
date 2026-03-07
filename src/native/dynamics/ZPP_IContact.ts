@@ -8,8 +8,6 @@
  * Converted from nape-compiled.js lines 32346–32733.
  */
 
-type Any = any;
-
 export class ZPP_IContact {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "dynamics", "ZPP_IContact"];
@@ -44,9 +42,6 @@ export class ZPP_IContact {
   lr1y = 0.0;
   lr2x = 0.0;
   lr2y = 0.0;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_IContact;
 
   // ========== Linked list methods (ZNPList pattern) ==========
 

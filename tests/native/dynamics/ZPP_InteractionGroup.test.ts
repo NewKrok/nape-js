@@ -33,7 +33,7 @@ describe("ZPP_InteractionGroup", () => {
       expect(g.groups).toBeInstanceOf(MockZNPList);
       expect(g.interactors).toBeInstanceOf(MockZNPList);
       expect(g.depth).toBe(0);
-      expect(g.__class__).toBe(ZPP_InteractionGroup);
+
     });
   });
 

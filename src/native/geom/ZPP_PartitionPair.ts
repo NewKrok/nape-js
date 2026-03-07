@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 38764–39176.
  */
 
-type Any = any;
-
 export class ZPP_PartitionPair {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_PartitionPair"];
@@ -17,22 +15,21 @@ export class ZPP_PartitionPair {
   static zpp_pool: ZPP_PartitionPair | null = null;
 
   // --- Instance fields ---
-  node: Any = null;
+  node: any = null;
   di = 0;
   id = 0;
-  b: Any = null;
-  a: Any = null;
+  b: any = null;
+  a: any = null;
   length = 0;
   pushmod = false;
   modified = false;
   _inuse = false;
   next: ZPP_PartitionPair | null = null;
 
-  __class__: Any = ZPP_PartitionPair;
 
   // --- Static methods ---
 
-  static get(a: Any, b: Any): ZPP_PartitionPair {
+  static get(a: any, b: any): ZPP_PartitionPair {
     let ret: ZPP_PartitionPair;
     if (ZPP_PartitionPair.zpp_pool == null) {
       ret = new ZPP_PartitionPair();

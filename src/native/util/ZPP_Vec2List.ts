@@ -8,9 +8,8 @@
  */
 
 import { getNape } from "../../core/engine";
+import { ZNPList } from "./ZNPList";
 import { ZNPList_ZPP_Vec2 } from "./ZNPRegistry";
-
-type Any = any;
 
 export class ZPP_Vec2List {
   // --- Static: Haxe metadata ---
@@ -20,25 +19,23 @@ export class ZPP_Vec2List {
   static internal = false;
 
   // --- Instance fields ---
-  outer: Any = null;
-  inner: Any = null;
+  outer: any = null;
+  inner: ZNPList<unknown> = null!;
   immutable = false;
   _invalidated = false;
   _invalidate: ((self: ZPP_Vec2List) => void) | null = null;
   _validate: (() => void) | null = null;
   _modifiable: (() => void) | null = null;
-  adder: ((obj: Any) => boolean) | null = null;
-  post_adder: ((obj: Any) => void) | null = null;
-  subber: ((obj: Any) => void) | null = null;
+  adder: ((obj: any) => boolean) | null = null;
+  post_adder: ((obj: any) => void) | null = null;
+  subber: ((obj: any) => void) | null = null;
   dontremove = false;
   reverse_flag = false;
   at_index = 0;
-  at_ite: Any = null;
-  push_ite: Any = null;
+  at_ite: any = null;
+  push_ite: any = null;
   zip_length = false;
   user_length = 0;
-
-  __class__: Any = ZPP_Vec2List;
 
   constructor() {
     this.inner = new ZNPList_ZPP_Vec2();
@@ -48,7 +45,7 @@ export class ZPP_Vec2List {
   /**
    * Factory: wrap a raw ZNPList_ZPP_Vec2 into a public Vec2List.
    */
-  static get(list: Any, imm?: boolean): Any {
+  static get(list: ZNPList<unknown>, imm?: boolean): any {
     if (imm == null) imm = false;
     const nape = getNape();
     const ret = new nape.geom.Vec2List();

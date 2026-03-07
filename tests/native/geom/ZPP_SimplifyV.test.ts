@@ -21,7 +21,6 @@ describe("ZPP_SimplifyV", () => {
       expect(v.prev).toBeNull();
       expect(v.flag).toBe(false);
       expect(v.forced).toBe(false);
-      expect(v.__class__).toBe(ZPP_SimplifyV);
     });
   });
 

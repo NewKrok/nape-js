@@ -206,7 +206,7 @@ export class Edge {
       ZPP_Vec2.zpp_pool = o;
       vert.outer.zpp_inner = vert;
     }
-    return vert.outer;
+    return vert.outer!;
   }
 }
 

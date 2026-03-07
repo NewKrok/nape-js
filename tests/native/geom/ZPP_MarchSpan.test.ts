@@ -33,10 +33,6 @@ describe("ZPP_MarchSpan", () => {
       expect(span.next).toBeNull();
     });
 
-    it("should set __class__ to ZPP_MarchSpan", () => {
-      const span = new ZPP_MarchSpan();
-      expect(span.__class__).toBe(ZPP_MarchSpan);
-    });
   });
 
   describe("free", () => {

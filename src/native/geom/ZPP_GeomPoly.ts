@@ -6,19 +6,16 @@
  * Converted from nape-compiled.js lines 69554–69563.
  */
 
-type Any = any;
-
 export class ZPP_GeomPoly {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_GeomPoly"];
 
   // --- Instance ---
-  outer: Any = null;
-  vertices: Any = null;
+  outer: object | null = null;
+  vertices: any = null;
 
-  __class__: Any = ZPP_GeomPoly;
 
-  constructor(outer: Any = null) {
+  constructor(outer: object | null = null) {
     this.outer = outer;
   }
 }

@@ -21,7 +21,6 @@ describe("ZPP_GeomVert", () => {
       expect(v.prev).toBeNull();
       expect(v.forced).toBe(false);
       expect(v.wrap).toBeNull();
-      expect(v.__class__).toBe(ZPP_GeomVert);
     });
   });
 

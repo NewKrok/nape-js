@@ -747,15 +747,23 @@ loop();`,
   // ------ Pendulum Chain ------
   chain: {
     label: "Pendulum Chain",
-    desc: 'A pendulum chain made of <code>PivotJoint</code> constraints. <b>Click</b> to apply an impulse near the cursor.',
+    desc: 'A pendulum chain with a heavy bob. <b>Drag</b> any link to grab and pull it.',
+    velocityIterations: 10,
+    positionIterations: 8,
+    _mouseBody: null,
+    _grabJoint: null,
+    _pendingGrab: null,
+    _pendingRelease: false,
+    _dragX: 0,
+    _dragY: 0,
     setup() {
-      space = new Space(new Vec2(0, 400));
+      space = new Space(new Vec2(0, 500));
       addWalls();
 
-      const links = 20;
-      const linkLen = 18;
+      const links = 14;
+      const linkLen = 20;
       const anchorX = W / 2;
-      const anchorY = 40;
+      const anchorY = 50;
 
       const anchor = new Body(BodyType.STATIC, new Vec2(anchorX, anchorY));
       anchor.shapes.add(new Circle(6));
@@ -764,94 +772,144 @@ loop();`,
       let prev = anchor;
       for (let i = 0; i < links; i++) {
         const link = new Body(BodyType.DYNAMIC, new Vec2(
-          anchorX + (i + 1) * linkLen,
-          anchorY,
+          anchorX,
+          anchorY + (i + 1) * linkLen,
         ));
         link.shapes.add(new Circle(5));
         try { link.userData._colorIdx = i % 2; } catch(_) {}
         link.space = space;
 
-        const joint = new PivotJoint(
+        new PivotJoint(
           prev, link,
-          new Vec2(i === 0 ? 0 : linkLen / 2, 0),
-          new Vec2(-linkLen / 2, 0),
-        );
-        joint.space = space;
+          i === 0 ? new Vec2(0, 0) : new Vec2(0, linkLen / 2),
+          new Vec2(0, -linkLen / 2),
+        ).space = space;
         prev = link;
       }
 
       const bob = new Body(BodyType.DYNAMIC, new Vec2(
-        anchorX + links * linkLen + linkLen,
-        anchorY,
+        anchorX,
+        anchorY + (links + 1) * linkLen + 18,
       ));
-      bob.shapes.add(new Circle(18, undefined, new Material(0.3, 0.3, 0.5, 8)));
+      bob.shapes.add(new Circle(18, undefined, new Material(0.3, 0.2, 0.5, 10)));
       try { bob.userData._colorIdx = 3; } catch(_) {}
       bob.space = space;
 
-      const lastJoint = new PivotJoint(
+      new PivotJoint(
         prev, bob,
-        new Vec2(linkLen / 2, 0),
-        new Vec2(-18, 0),
-      );
-      lastJoint.space = space;
+        new Vec2(0, linkLen / 2),
+        new Vec2(0, -18),
+      ).space = space;
+
+      bob.applyImpulse(new Vec2(220, 0));
+
+      // Kinematic mouse anchor — lives in space, position freely settable
+      this._mouseBody = new Body(BodyType.KINEMATIC, new Vec2(-1000, -1000));
+      this._mouseBody.space = space;
+      this._grabJoint = null;
+      this._pendingGrab = null;
+      this._pendingRelease = false;
     },
-    click(x, y) {
-      for (const body of space.bodies) {
-        if (body.isStatic()) continue;
-        const dx = body.position.x - x;
-        const dy = body.position.y - y;
+    step() {
+      if (this._pendingRelease) {
+        this._pendingRelease = false;
+        if (this._grabJoint) {
+          this._grabJoint.space = null;
+          this._grabJoint = null;
+        }
+        // Park mouse body off-screen
+        this._mouseBody.position.setxy(-1000, -1000);
+        this._mouseBody.velocity.setxy(0, 0);
+      }
+      if (this._pendingGrab) {
+        const { body, localPt } = this._pendingGrab;
+        this._pendingGrab = null;
+        if (this._grabJoint) { this._grabJoint.space = null; this._grabJoint = null; }
+        this._mouseBody.position.setxy(this._dragX, this._dragY);
+        this._grabJoint = new PivotJoint(
+          this._mouseBody, body,
+          new Vec2(0, 0), localPt,
+        );
+        // Soft enough that chain joints always win, stiff enough to feel responsive
+        this._grabJoint.stiff = false;
+        this._grabJoint.frequency = 4;
+        this._grabJoint.damping = 0.9;
+        this._grabJoint.space = space;
+      }
+      // Move mouse body smoothly toward cursor — capped speed prevents sudden forces
+      if (this._grabJoint) {
+        const dx = this._dragX - this._mouseBody.position.x;
+        const dy = this._dragY - this._mouseBody.position.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 150) {
-          const force = 800 * (1 - dist / 150);
-          body.applyImpulse(new Vec2(dx / dist * force, dy / dist * force));
+        const maxSpeed = 800;
+        if (dist > 1) {
+          const speed = Math.min(dist * 60, maxSpeed);
+          this._mouseBody.velocity.setxy(dx / dist * speed, dy / dist * speed);
+        } else {
+          this._mouseBody.velocity.setxy(0, 0);
         }
       }
     },
-    code2d: `// Pendulum chain using PivotJoint constraints
-const space = new Space(new Vec2(0, 400));
+    click(x, y) {
+      this._dragX = x;
+      this._dragY = y;
+      let best = null, bestDist = 60;
+      for (const body of space.bodies) {
+        if (!body.isDynamic()) continue;
+        const dx = body.position.x - x;
+        const dy = body.position.y - y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < bestDist) { bestDist = d; best = body; }
+      }
+      if (!best) return;
+      const localPt = best.worldPointToLocal(new Vec2(x, y));
+      this._pendingGrab = { body: best, localPt };
+    },
+    drag(x, y) {
+      this._dragX = x;
+      this._dragY = y;
+    },
+    release() {
+      this._pendingRelease = true;
+    },
+    code2d: `// Pendulum chain — grab and drag any link
+const space = new Space(new Vec2(0, 500));
 
 // Static anchor point
-const anchor = new Body(BodyType.STATIC, new Vec2(W / 2, 40));
+const anchor = new Body(BodyType.STATIC, new Vec2(W / 2, 50));
 anchor.shapes.add(new Circle(6));
 anchor.space = space;
 
-// Create chain links connected by PivotJoints
-const links = 20;
-const linkLen = 18;
+// 14 links hanging straight down
+const links = 14, linkLen = 20;
 let prev = anchor;
-
 for (let i = 0; i < links; i++) {
-  const link = new Body(BodyType.DYNAMIC, new Vec2(
-    W / 2 + (i + 1) * linkLen, 40,
-  ));
+  const link = new Body(BodyType.DYNAMIC,
+    new Vec2(W / 2, 50 + (i + 1) * linkLen));
   link.shapes.add(new Circle(5));
   link.space = space;
-
-  const joint = new PivotJoint(
+  new PivotJoint(
     prev, link,
-    new Vec2(i === 0 ? 0 : linkLen / 2, 0),
-    new Vec2(-linkLen / 2, 0),
-  );
-  joint.space = space;
+    i === 0 ? new Vec2(0, 0) : new Vec2(0, linkLen / 2),
+    new Vec2(0, -linkLen / 2),
+  ).space = space;
   prev = link;
 }
 
-// Heavy bob at the end
-const bob = new Body(BodyType.DYNAMIC, new Vec2(
-  W / 2 + links * linkLen + linkLen, 40,
-));
+// Heavy bob
+const bob = new Body(BodyType.DYNAMIC,
+  new Vec2(W / 2, 50 + (links + 1) * linkLen + 18));
 bob.shapes.add(new Circle(18, undefined,
-  new Material(0.3, 0.3, 0.5, 8),
-));
+  new Material(0.3, 0.2, 0.5, 10)));
 bob.space = space;
+new PivotJoint(prev, bob,
+  new Vec2(0, linkLen / 2), new Vec2(0, -18)).space = space;
 
-const lastJoint = new PivotJoint(
-  prev, bob, new Vec2(linkLen / 2, 0), new Vec2(-18, 0),
-);
-lastJoint.space = space;
+// Initial nudge
+bob.applyImpulse(new Vec2(220, 0));
 
 function loop() {
-  space.step(1 / 60, 8, 3);
+  space.step(1 / 60, 10, 8);
   ctx.clearRect(0, 0, W, H);
   drawGrid();
   drawConstraintLines();
@@ -879,46 +937,51 @@ const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.se
 scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
-const space = new Space(new Vec2(0, 400));
-const anchor = new Body(BodyType.STATIC, new Vec2(W / 2, 40));
+const space = new Space(new Vec2(0, 500));
+const anchor = new Body(BodyType.STATIC, new Vec2(W / 2, 50));
 anchor.shapes.add(new Circle(6));
 anchor.space = space;
 
 const meshes = [];
 function addSphere(body, r, color) {
+  const geom = new THREE.SphereGeometry(r, 16, 16);
   const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(r, 16, 16),
+    geom,
     new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }),
   );
   scene.add(mesh);
-  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(geom, 15),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }),
+  );
   mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
 addSphere(anchor, 6, 0x455a64);
 
-const links = 20, linkLen = 18;
+const links = 14, linkLen = 20;
 let prev = anchor;
 for (let i = 0; i < links; i++) {
-  const link = new Body(BodyType.DYNAMIC, new Vec2(W / 2 + (i + 1) * linkLen, 40));
+  const link = new Body(BodyType.DYNAMIC, new Vec2(W / 2, 50 + (i + 1) * linkLen));
   link.shapes.add(new Circle(5));
   link.space = space;
-  const joint = new PivotJoint(prev, link,
-    new Vec2(i === 0 ? 0 : linkLen / 2, 0), new Vec2(-linkLen / 2, 0));
-  joint.space = space;
+  new PivotJoint(prev, link,
+    i === 0 ? new Vec2(0, 0) : new Vec2(0, linkLen / 2),
+    new Vec2(0, -linkLen / 2)).space = space;
   prev = link;
   addSphere(link, 5, i % 2 === 0 ? 0x58a6ff : 0xd29922);
 }
 
-const bob = new Body(BodyType.DYNAMIC, new Vec2(W / 2 + links * linkLen + linkLen, 40));
-bob.shapes.add(new Circle(18, undefined, new Material(0.3, 0.3, 0.5, 8)));
+const bob = new Body(BodyType.DYNAMIC, new Vec2(W / 2, 50 + (links + 1) * linkLen + 18));
+bob.shapes.add(new Circle(18, undefined, new Material(0.3, 0.2, 0.5, 10)));
 bob.space = space;
-new PivotJoint(prev, bob, new Vec2(linkLen / 2, 0), new Vec2(-18, 0)).space = space;
+new PivotJoint(prev, bob, new Vec2(0, linkLen / 2), new Vec2(0, -18)).space = space;
 addSphere(bob, 18, 0xf85149);
+bob.applyImpulse(new Vec2(220, 0));
 
 function loop() {
-  space.step(1 / 60, 8, 3);
+  space.step(1 / 60, 10, 8);
   for (const { mesh, body } of meshes) {
     mesh.position.set(body.position.x, -body.position.y, 0);
   }
@@ -2382,7 +2445,7 @@ function loop() {
   if (demo.step) demo.step();
 
   const stepStart = performance.now();
-  space.step(1 / 60, 8, 3);
+  space.step(1 / 60, demo.velocityIterations ?? 8, demo.positionIterations ?? 3);
   const stepMs = performance.now() - stepStart;
   stepTimeLabel.textContent = `Step: ${stepMs.toFixed(2)}ms`;
 
@@ -2448,7 +2511,7 @@ canvasWrap.addEventListener("mousedown", (e) => {
   DEMOS[currentDemo].click?.(mouseX, mouseY);
 });
 
-canvasWrap.addEventListener("mousemove", (e) => {
+document.addEventListener("mousemove", (e) => {
   if (!mouseDown) return;
   const rect = canvasWrap.getBoundingClientRect();
   const { sx, sy } = getCanvasScale();
@@ -2457,10 +2520,17 @@ canvasWrap.addEventListener("mousemove", (e) => {
   if (currentDemo === "falling") {
     spawnRandomShape(mouseX + (Math.random()-0.5)*20, mouseY + (Math.random()-0.5)*20);
   }
+  DEMOS[currentDemo].drag?.(mouseX, mouseY);
 });
 
-canvasWrap.addEventListener("mouseup", () => { mouseDown = false; });
-canvasWrap.addEventListener("mouseleave", () => { mouseDown = false; });
+document.addEventListener("mouseup", () => {
+  mouseDown = false;
+  DEMOS[currentDemo].release?.();
+});
+canvasWrap.addEventListener("mouseleave", () => {
+  // only stop spawning shapes, don't end drag
+  if (currentDemo === "falling") mouseDown = false;
+});
 
 canvasWrap.addEventListener("touchstart", (e) => {
   e.preventDefault();

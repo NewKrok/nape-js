@@ -10,8 +10,6 @@
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
-type Any = any;
-
 export class ZPP_GeomVert {
   static __name__ = ["zpp_nape", "geom", "ZPP_GeomVert"];
   static zpp_pool: ZPP_GeomVert | null = null;
@@ -20,10 +18,8 @@ export class ZPP_GeomVert {
   y = 0.0;
   prev: ZPP_GeomVert | null = null;
   next: ZPP_GeomVert | null = null;
-  wrap: Any = null;
+  wrap: any = null; // public Vec2 wrapper; `any` to avoid circular import
   forced = false;
-
-  __class__: Any = ZPP_GeomVert;
 
   /** Factory: get from pool or create new, set coordinates. */
   static get(x: number, y: number): ZPP_GeomVert {
@@ -91,7 +87,7 @@ export class ZPP_GeomVert {
   }
 
   /** Get or create a Vec2 wrapper for this vertex. */
-  wrapper(): Any {
+  wrapper(): any {
     if (this.wrap == null) {
       let x = this.x;
       let y = this.y;
@@ -104,7 +100,7 @@ export class ZPP_GeomVert {
       if (x !== x || y !== y) {
         throw new Error("Error: Vec2 components cannot be NaN");
       }
-      let ret: Any;
+      let ret: any;
       if (ZPP_PubPool.poolVec2 == null) {
         // Need to get Vec2 class from nape namespace — use _createVec2Fn callback
         ret = ZPP_GeomVert._createVec2Fn!();
@@ -178,13 +174,13 @@ export class ZPP_GeomVert {
       ret.zpp_inner.weak = false;
       this.wrap = ret;
       this.wrap.zpp_inner._inuse = true;
-      this.wrap.zpp_inner._invalidate = (n: Any) => this.modwrap(n);
+      this.wrap.zpp_inner._invalidate = (n: ZPP_Vec2) => this.modwrap(n);
       this.wrap.zpp_inner._validate = () => this.getwrap();
     }
     return this.wrap;
   }
 
-  modwrap(n: Any): void {
+  modwrap(n: ZPP_Vec2): void {
     this.x = n.x;
     this.y = n.y;
   }
@@ -195,5 +191,5 @@ export class ZPP_GeomVert {
   }
 
   /** Callback to create a new Vec2 public API object. Set by Vec2.ts or engine init. */
-  static _createVec2Fn: (() => Any) | null = null;
+  static _createVec2Fn: (() => object) | null = null;
 }

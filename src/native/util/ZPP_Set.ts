@@ -8,10 +8,13 @@
  * and as individual tree nodes. New nodes are allocated from the subclass's
  * static `zpp_pool`.
  */
-type Any = any;
+interface ZPP_SetConstructor<T> {
+  zpp_pool: ZPP_Set<T> | null;
+  new (): ZPP_Set<T>;
+}
 
 export class ZPP_Set<T> {
-  static zpp_pool: Any = null;
+  static zpp_pool: ZPP_Set<unknown> | null = null;
 
   colour: number = 0;
   parent: ZPP_Set<T> | null = null;
@@ -21,10 +24,8 @@ export class ZPP_Set<T> {
   swapped: ((a: T, b: T) => void) | null = null;
   lt: ((a: T, b: T) => boolean) | null = null;
 
-  __class__: Any;
-
   private _allocNode(): ZPP_Set<T> {
-    const Cls = this.constructor as Any;
+    const Cls = this.constructor as unknown as ZPP_SetConstructor<T>;
     let x: ZPP_Set<T>;
     if (Cls.zpp_pool == null) {
       x = new Cls();
@@ -37,7 +38,7 @@ export class ZPP_Set<T> {
   }
 
   private _freeNode(node: ZPP_Set<T>): void {
-    const Cls = this.constructor as Any;
+    const Cls = this.constructor as unknown as ZPP_SetConstructor<T>;
     node.data = null;
     node.lt = null;
     node.swapped = null;

@@ -25,7 +25,6 @@ describe("ZPP_Mat23", () => {
       expect(m.ty).toBe(0.0);
       expect(m._invalidate).toBeNull();
       expect(m.next).toBeNull();
-      expect(m.__class__).toBe(ZPP_Mat23);
     });
   });
 

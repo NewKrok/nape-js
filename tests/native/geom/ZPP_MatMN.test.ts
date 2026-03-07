@@ -27,11 +27,6 @@ describe("ZPP_MatMN", () => {
       expect(mat.x[0]).toBe(0.0);
     });
 
-    it("should set __class__ to ZPP_MatMN", () => {
-      const mat = new ZPP_MatMN(2, 2);
-      expect(mat.__class__).toBe(ZPP_MatMN);
-    });
-
     it("should initialize outer to null", () => {
       const mat = new ZPP_MatMN(2, 2);
       expect(mat.outer).toBeNull();

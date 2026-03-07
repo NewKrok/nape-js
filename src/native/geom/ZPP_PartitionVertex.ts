@@ -9,8 +9,6 @@
 
 import { ZNPList_ZPP_PartitionVertex } from "../util/ZNPRegistry";
 
-type Any = any;
-
 export class ZPP_PartitionVertex {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_PartitionVertex"];
@@ -22,20 +20,19 @@ export class ZPP_PartitionVertex {
   static nextId = 0;
 
   // --- Instance fields ---
-  node: Any = null;
+  node: any = null;
   prev: ZPP_PartitionVertex | null = null;
   next: ZPP_PartitionVertex | null = null;
   rightchain = false;
   helper: ZPP_PartitionVertex | null = null;
   type = 0;
-  diagonals: Any = null;
+  diagonals: any = null;
   forced = false;
   y = 0.0;
   x = 0.0;
   mag = 0;
   id = 0;
 
-  __class__: Any = ZPP_PartitionVertex;
 
   constructor() {
     this.id = ZPP_PartitionVertex.nextId++;
@@ -44,7 +41,7 @@ export class ZPP_PartitionVertex {
 
   // --- Static methods ---
 
-  static get(x: Any): ZPP_PartitionVertex {
+  static get(x: { x: number; y: number }): ZPP_PartitionVertex {
     let ret: ZPP_PartitionVertex;
     if (ZPP_PartitionVertex.zpp_pool == null) {
       ret = new ZPP_PartitionVertex();
@@ -168,10 +165,10 @@ export class ZPP_PartitionVertex {
     const xxlist = this.diagonals;
     if (xxlist.head != null && xxlist.head.next != null) {
       let head = xxlist.head;
-      let tail: Any;
-      let left: Any;
-      let right: Any;
-      let nxt: Any;
+      let tail: any;
+      let left: any;
+      let right: any;
+      let nxt: any;
       let listSize = 1;
       let numMerges: number;
       let leftSize: number;

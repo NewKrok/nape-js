@@ -17,7 +17,6 @@ describe("ZPP_Vec3", () => {
       expect(v.z).toBe(0.0);
       expect(v.immutable).toBe(false);
       expect(v._validate).toBeNull();
-      expect(v.__class__).toBe(ZPP_Vec3);
     });
   });
 

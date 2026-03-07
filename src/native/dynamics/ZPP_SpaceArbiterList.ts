@@ -8,35 +8,33 @@
  * Converted from nape-compiled.js lines 20830–21107.
  */
 
-type Any = any;
-
 export class ZPP_SpaceArbiterList {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "dynamics", "ZPP_SpaceArbiterList"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Instance fields (from ArbiterList parent) ---
-  zpp_inner: Any = null;
+  zpp_inner: any = null;
 
   // --- Instance fields ---
-  space: Any = null;
+  space: any = null;
   _length = 0;
   zip_length = false;
   lengths: number[] = [];
-  ite_0: Any = null;
-  ite_1: Any = null;
-  ite_2: Any = null;
-  ite_3: Any = null;
+  ite_0: any = null;
+  ite_1: any = null;
+  ite_2: any = null;
+  ite_3: any = null;
   at_index_0 = 0;
   at_index_1 = 0;
   at_index_2 = 0;
   at_index_3 = 0;
 
   // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_SpaceArbiterList;
+
 
   constructor() {
     this.at_index_0 = 0;
@@ -145,23 +143,23 @@ export class ZPP_SpaceArbiterList {
 
   // ========== Immutable overrides ==========
 
-  push(_obj: Any): void {
+  push(_obj: any): void {
     throw new Error("Error: ArbiterList is immutable");
   }
 
-  pop(): Any {
+  pop(): any {
     throw new Error("Error: ArbiterList is immutable");
   }
 
-  unshift(_obj: Any): void {
+  unshift(_obj: any): void {
     throw new Error("Error: ArbiterList is immutable");
   }
 
-  shift(): Any {
+  shift(): any {
     throw new Error("Error: ArbiterList is immutable");
   }
 
-  remove(_obj: Any): void {
+  remove(_obj: any): void {
     throw new Error("Error: ArbiterList is immutable");
   }
 
@@ -171,12 +169,12 @@ export class ZPP_SpaceArbiterList {
 
   // ========== Indexed access ==========
 
-  at(index: number): Any {
+  at(index: number): any {
     this.zpp_vm();
     if (index < 0 || index >= this.zpp_gl()) {
       throw new Error("Error: Index out of bounds");
     }
-    let ret: Any = null;
+    let ret: any = null;
     let accum_length = 0;
 
     if (ret == null) {

@@ -9,8 +9,6 @@
 
 import { ZPP_SimplifyV } from "./ZPP_SimplifyV";
 
-type Any = any;
-
 export class ZPP_SimplifyP {
   static __name__ = ["zpp_nape", "geom", "ZPP_SimplifyP"];
   static zpp_pool: ZPP_SimplifyP | null = null;
@@ -18,8 +16,6 @@ export class ZPP_SimplifyP {
   next: ZPP_SimplifyP | null = null;
   min: ZPP_SimplifyV | null = null;
   max: ZPP_SimplifyV | null = null;
-
-  __class__: Any = ZPP_SimplifyP;
 
   static get(min: ZPP_SimplifyV, max: ZPP_SimplifyV): ZPP_SimplifyP {
     let ret: ZPP_SimplifyP;

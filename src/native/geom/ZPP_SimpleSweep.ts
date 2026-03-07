@@ -9,37 +9,35 @@
 
 import { ZPP_SimpleVert } from "./ZPP_SimpleVert";
 import { ZPP_SimpleEvent } from "./ZPP_SimpleEvent";
+import { ZPP_SimpleSeg } from "./ZPP_SimpleSeg";
 import { ZPP_Set_ZPP_SimpleSeg } from "../util/ZNPRegistry";
-
-type Any = any;
+import { ZPP_Set } from "../util/ZPP_Set";
 
 export class ZPP_SimpleSweep {
   static __name__ = ["zpp_nape", "geom", "ZPP_SimpleSweep"];
 
   sweepx = 0.0;
-  tree: Any = null;
-
-  __class__: Any = ZPP_SimpleSweep;
+  tree: ZPP_Set<ZPP_SimpleSeg> | null = null;
 
   constructor() {
     if (ZPP_Set_ZPP_SimpleSeg.zpp_pool == null) {
-      this.tree = new ZPP_Set_ZPP_SimpleSeg();
+      this.tree = new ZPP_Set_ZPP_SimpleSeg() as ZPP_Set<ZPP_SimpleSeg>;
     } else {
-      this.tree = ZPP_Set_ZPP_SimpleSeg.zpp_pool;
+      this.tree = ZPP_Set_ZPP_SimpleSeg.zpp_pool as ZPP_Set<ZPP_SimpleSeg>;
       ZPP_Set_ZPP_SimpleSeg.zpp_pool = this.tree.next;
       this.tree.next = null;
     }
-    this.tree.lt = (p: Any, q: Any) => this.edge_lt(p, q);
-    this.tree.swapped = (p: Any, q: Any) => this.swap_nodes(p, q);
+    this.tree.lt = (p: ZPP_SimpleSeg, q: ZPP_SimpleSeg) => this.edge_lt(p, q);
+    this.tree.swapped = (p: ZPP_SimpleSeg, q: ZPP_SimpleSeg) => this.swap_nodes(p, q);
   }
 
-  swap_nodes(p: Any, q: Any): void {
+  swap_nodes(p: ZPP_SimpleSeg, q: ZPP_SimpleSeg): void {
     const t = p.node;
     p.node = q.node;
     q.node = t;
   }
 
-  edge_lt(p: Any, q: Any): boolean {
+  edge_lt(p: ZPP_SimpleSeg, q: ZPP_SimpleSeg): boolean {
     let ux: number;
     let uy: number;
     let vx: number;
@@ -189,38 +187,38 @@ export class ZPP_SimpleSweep {
   }
 
   clear(): void {
-    this.tree.clear();
+    this.tree!.clear();
   }
 
-  add(e: Any): Any {
-    e.node = this.tree.insert(e);
-    const nxt = this.tree.successor_node(e.node);
-    const pre = this.tree.predecessor_node(e.node);
+  add(e: ZPP_SimpleSeg): ZPP_SimpleSeg {
+    e.node = this.tree!.insert(e);
+    const nxt = this.tree!.successor_node(e.node);
+    const pre = this.tree!.predecessor_node(e.node);
     if (nxt != null) {
-      e.next = nxt.data;
-      nxt.data.prev = e;
+      e.next = nxt.data as ZPP_SimpleSeg;
+      (nxt.data as ZPP_SimpleSeg).prev = e;
     }
     if (pre != null) {
-      e.prev = pre.data;
-      pre.data.next = e;
+      e.prev = pre.data as ZPP_SimpleSeg;
+      (pre.data as ZPP_SimpleSeg).next = e;
     }
     return e;
   }
 
-  remove(e: Any): void {
-    const nxt = this.tree.successor_node(e.node);
-    const pre = this.tree.predecessor_node(e.node);
+  remove(e: ZPP_SimpleSeg): void {
+    const nxt = this.tree!.successor_node(e.node!);
+    const pre = this.tree!.predecessor_node(e.node!);
     if (nxt != null) {
-      nxt.data.prev = e.prev;
+      (nxt.data as ZPP_SimpleSeg).prev = e.prev;
     }
     if (pre != null) {
-      pre.data.next = e.next;
+      (pre.data as ZPP_SimpleSeg).next = e.next;
     }
-    this.tree.remove_node(e.node);
+    this.tree!.remove_node(e.node!);
     e.node = null;
   }
 
-  intersect(p: Any, q: Any): boolean {
+  intersect(p: ZPP_SimpleSeg | null, q: ZPP_SimpleSeg | null): boolean {
     if (p == null || q == null) {
       return false;
     } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
@@ -250,7 +248,7 @@ export class ZPP_SimpleSweep {
     }
   }
 
-  intersection(p: Any, q: Any): Any {
+  intersection(p: ZPP_SimpleSeg | null, q: ZPP_SimpleSeg | null): ZPP_SimpleEvent | null {
     if (p == null || q == null) {
       return null;
     } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
@@ -275,7 +273,7 @@ export class ZPP_SimpleSweep {
       if (s < 0 || s > 1) {
         return null;
       }
-      let vet: Any;
+      let vet: ZPP_SimpleVert;
       if (s == 0 || s == 1 || t == 0 || t == 1) {
         let cases = s == 0;
         if (s == 1 && cases) {
@@ -291,7 +289,7 @@ export class ZPP_SimpleSweep {
         if (t == 1 && cases) {
           throw new Error("corner case 1c");
         }
-        vet = s == 0 ? q.left : s == 1 ? q.right : t == 0 ? p.left : p.right;
+        vet = (s == 0 ? q.left : s == 1 ? q.right : t == 0 ? p.left : p.right) as ZPP_SimpleVert;
       } else {
         const x = 0.5 * (p.left.x + ux * t + q.left.x + vx * s);
         const y = 0.5 * (p.left.y + uy * t + q.left.y + vy * s);

@@ -8,15 +8,13 @@
  * Converted from nape-compiled.js lines 29044–29362, 80738–80766.
  */
 
-type Any = any;
-
 export class ZPP_Arbiter {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "dynamics", "ZPP_Arbiter"];
 
   // --- Static: namespace references (set during registration) ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: creation guard ---
   static internal = false;
@@ -31,12 +29,12 @@ export class ZPP_Arbiter {
   static SENSOR = 2;
 
   // --- Static: arbiter type enum lookup (populated by _initEnums) ---
-  static types: Any[] = [];
+  static types: any[] = [];
 
   /**
    * Initialize ArbiterType singleton enums. Called once from compiled factory.
    */
-  static _initEnums(nape: Any, ZPP_Flags: Any): void {
+  static _initEnums(nape: any, ZPP_Flags: any): void {
     const mk = () => { ZPP_Flags.internal = true; const o = new nape.dynamics.ArbiterType(); ZPP_Flags.internal = false; return o; };
     if (ZPP_Flags.ArbiterType_COLLISION == null) ZPP_Flags.ArbiterType_COLLISION = mk();
     if (ZPP_Flags.ArbiterType_SENSOR == null) ZPP_Flags.ArbiterType_SENSOR = mk();
@@ -45,7 +43,7 @@ export class ZPP_Arbiter {
   }
 
   // --- Instance: public wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: hash-next for broadphase hash table ---
   hnext: ZPP_Arbiter | null = null;
@@ -73,24 +71,21 @@ export class ZPP_Arbiter {
   invalidated = false;
 
   // --- Instance: body/shape references ---
-  b1: Any = null;
-  b2: Any = null;
-  ws1: Any = null;
-  ws2: Any = null;
+  b1: any = null;
+  b2: any = null;
+  ws1: any = null;
+  ws2: any = null;
 
   // --- Instance: broadphase pair ---
-  pair: Any = null;
+  pair: any = null;
 
   // --- Instance: arbiter type ---
   type = 0;
 
   // --- Instance: subclass references ---
-  colarb: Any = null;
-  fluidarb: Any = null;
-  sensorarb: Any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Arbiter;
+  colarb: any = null;
+  fluidarb: any = null;
+  sensorarb: any = null;
 
   constructor() {
     this.sensorarb = null;
@@ -124,7 +119,7 @@ export class ZPP_Arbiter {
 
   // ========== Wrapper ==========
 
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       const nape = ZPP_Arbiter._nape;
       ZPP_Arbiter.internal = true;
@@ -160,7 +155,7 @@ export class ZPP_Arbiter {
   // ========== Feature swapping ==========
 
   swap_features(): void {
-    let t: Any = this.b1;
+    let t: any = this.b1;
     this.b1 = this.b2;
     this.b2 = t;
     t = this.ws1;
@@ -173,7 +168,7 @@ export class ZPP_Arbiter {
 
   // ========== Lazy retire ==========
 
-  lazyRetire(s: Any, b: Any): void {
+  lazyRetire(s: any, b: any): void {
     const zpp = ZPP_Arbiter._zpp;
     this.cleared = true;
 
@@ -194,7 +189,7 @@ export class ZPP_Arbiter {
 
   // ========== Base assign (shared by subclasses) ==========
 
-  sup_assign(s1: Any, s2: Any, id: number, di: number): void {
+  sup_assign(s1: any, s2: any, id: number, di: number): void {
     const zpp = ZPP_Arbiter._zpp;
     this.b1 = s1.body;
     this.ws1 = s1;
@@ -235,13 +230,13 @@ export class ZPP_Arbiter {
   // ========== Internal list helpers ==========
 
   /** Remove this arbiter from a ZNPList_ZPP_Arbiter */
-  static _removeFromArbiterList(list: Any, arb: ZPP_Arbiter, zpp: Any): void {
-    let pre: Any = null;
-    let cur: Any = list.head;
+  static _removeFromArbiterList(list: any, arb: ZPP_Arbiter, zpp: any): void {
+    let pre: any = null;
+    let cur: any = list.head;
     while (cur != null) {
       if (cur.elt == arb) {
-        let old: Any;
-        let ret: Any;
+        let old: any;
+        let ret: any;
         if (pre == null) {
           old = list.head;
           ret = old.next;
@@ -272,8 +267,8 @@ export class ZPP_Arbiter {
   }
 
   /** Add this arbiter to a ZNPList_ZPP_Arbiter */
-  static _addToArbiterList(list: Any, arb: ZPP_Arbiter, zpp: Any): void {
-    let ret: Any;
+  static _addToArbiterList(list: any, arb: ZPP_Arbiter, zpp: any): void {
+    let ret: any;
     if (zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
       ret = new zpp.util.ZNPNode_ZPP_Arbiter();
     } else {

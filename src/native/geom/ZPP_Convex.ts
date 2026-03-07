@@ -7,18 +7,15 @@
  * Converted from nape-compiled.js lines 24287–24365.
  */
 
-type Any = any;
-
 export class ZPP_Convex {
   static __name__ = ["zpp_nape", "geom", "ZPP_Convex"];
 
-  __class__: Any = ZPP_Convex;
 
   /**
    * Test if the angle at vertex b (from a→b→c) is an inner angle.
    * Returns true if the cross product (a-b) × (c-b) >= 0.
    */
-  static isinner(a: Any, b: Any, c: Any): boolean {
+  static isinner(a: { x: number; y: number }, b: { x: number; y: number }, c: { x: number; y: number }): boolean {
     const ux = a.x - b.x;
     const uy = a.y - b.y;
     const vx = c.x - b.x;
@@ -30,7 +27,7 @@ export class ZPP_Convex {
    * Optimize a partitioned polygon by removing unnecessary diagonals
    * that don't contribute to convexity.
    */
-  static optimise(P: Any): void {
+  static optimise(P: any): void {
     // First pass: sort diagonals for each vertex
     const F = P.vertices;
     const L = P.vertices;
@@ -53,7 +50,7 @@ export class ZPP_Convex {
       while (true) {
         const p1 = nite1;
         let pright = p1.prev;
-        let ppre: Any = null;
+        let ppre: any = null;
         let cx_ite = p1.diagonals.head;
         while (cx_ite != null) {
           const pdiag = cx_ite.elt;
@@ -67,7 +64,7 @@ export class ZPP_Convex {
           let removable = true;
           const q = pdiag;
           let qright = q.prev;
-          let qpre: Any = null;
+          let qpre: any = null;
           let cx_ite1 = q.diagonals.head;
           while (cx_ite1 != null) {
             const qdiag = cx_ite1.elt;

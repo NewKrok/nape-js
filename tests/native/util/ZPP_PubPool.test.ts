@@ -17,13 +17,6 @@ describe("ZPP_PubPool", () => {
     });
   });
 
-  describe("__class__", () => {
-    it("should reference ZPP_PubPool", () => {
-      const inst = new ZPP_PubPool();
-      expect(inst.__class__).toBe(ZPP_PubPool);
-    });
-  });
-
   describe("static pool references", () => {
     it("should initialize all pools to null", () => {
       expect(ZPP_PubPool.poolGeomPoly).toBeNull();

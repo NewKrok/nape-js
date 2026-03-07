@@ -16,24 +16,23 @@ import { ZPP_SimpleSweep } from "./ZPP_SimpleSweep";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { Hashable2_Boolfalse } from "../util/Hashable2_Boolfalse";
 import { FastHash2_Hashable2_Boolfalse } from "../util/FastHash2_Hashable2_Boolfalse";
+import { ZNPNode } from "../util/ZNPNode";
+import { ZNPList } from "../util/ZNPList";
+import { ZPP_Set } from "../util/ZPP_Set";
 import { ZNPList_ZPP_GeomVert, ZNPList_ZPP_SimpleVert, ZNPList_ZPP_SimpleEvent, ZPP_Set_ZPP_SimpleVert, ZPP_Set_ZPP_SimpleEvent } from "../util/ZNPRegistry";
-
-type Any = any;
 
 export class ZPP_Simple {
   static __name__ = ["zpp_nape", "geom", "ZPP_Simple"];
 
   static sweep: ZPP_SimpleSweep | null = null;
-  static inthash: Any = null;
-  static vertices: Any = null;
-  static queue: Any = null;
-  static ints: Any = null;
-  static list_vertices: Any = null;
-  static list_queue: Any = null;
+  static inthash: FastHash2_Hashable2_Boolfalse | null = null;
+  static vertices: ZPP_Set<ZPP_SimpleVert> | null = null;
+  static queue: ZPP_Set<ZPP_SimpleEvent> | null = null;
+  static ints: ZPP_Set<ZPP_SimpleEvent> | null = null;
+  static list_vertices: ZNPList<ZPP_SimpleVert> | null = null;
+  static list_queue: ZNPList<ZPP_SimpleEvent> | null = null;
 
-  __class__: Any = ZPP_Simple;
-
-  static decompose(poly: Any, rets: Any): Any {
+  static decompose(poly: ZPP_GeomVert | null, rets: ZNPList<ZPP_GeomVert>): ZNPList<ZPP_GeomVert> {
     
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
@@ -61,8 +60,8 @@ export class ZPP_Simple {
       ZPP_Simple.queue.lt = ZPP_SimpleEvent.less_xy;
       ZPP_Simple.queue.swapped = ZPP_SimpleEvent.swap_nodes;
     }
-    let fst: Any = null;
-    let pre: Any = null;
+    let fst: ZPP_SimpleVert | null = null;
+    let pre: ZPP_SimpleVert | null = null;
     const F = poly;
     const L = poly;
     if (F != null) {
@@ -81,7 +80,7 @@ export class ZPP_Simple {
         }
         ret.x = x;
         ret.y = y;
-        let vert: Any = ret;
+        let vert: ZPP_SimpleVert = ret;
         let cur = ZPP_Simple.vertices.parent;
         while (cur != null)
           if (ZPP_Simple.vertices.lt(vert, cur.data)) {
@@ -124,7 +123,7 @@ export class ZPP_Simple {
           }
           ret2.vertex = vert;
           const e2 = ret2;
-          let seg: Any;
+          let seg: ZPP_SimpleSeg;
           if (ZPP_SimpleEvent.less_xy(e1, e2)) {
             e1.type = 1;
             e2.type = 2;
@@ -170,7 +169,7 @@ export class ZPP_Simple {
     }
     ret4.vertex = fst;
     const e21 = ret4;
-    let seg1: Any;
+    let seg1: ZPP_SimpleSeg;
     if (ZPP_SimpleEvent.less_xy(e11, e21)) {
       e11.type = 1;
       e21.type = 2;
@@ -250,7 +249,7 @@ export class ZPP_Simple {
                   const tmp = ZPP_Simple.inthash;
                   const id = s.next.id;
                   const di = s.id;
-                  let ret5: Any;
+                  let ret5: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret5 = new Hashable2_Boolfalse();
                   } else {
@@ -267,7 +266,7 @@ export class ZPP_Simple {
                   const tmp1 = ZPP_Simple.inthash;
                   const id1 = s.id;
                   const di1 = s.next.id;
-                  let ret7: Any;
+                  let ret7: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret7 = new Hashable2_Boolfalse();
                   } else {
@@ -364,7 +363,7 @@ export class ZPP_Simple {
                   const tmp2 = ZPP_Simple.inthash;
                   const id2 = s.id;
                   const di2 = s.prev.id;
-                  let ret9: Any;
+                  let ret9: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret9 = new Hashable2_Boolfalse();
                   } else {
@@ -381,7 +380,7 @@ export class ZPP_Simple {
                   const tmp3 = ZPP_Simple.inthash;
                   const id3 = s.prev.id;
                   const di3 = s.id;
-                  let ret11: Any;
+                  let ret11: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret11 = new Hashable2_Boolfalse();
                   } else {
@@ -491,7 +490,7 @@ export class ZPP_Simple {
                     const tmp4 = ZPP_Simple.inthash;
                     const id4 = nxt.id;
                     const di4 = pre1.id;
-                    let ret13: Any;
+                    let ret13: Hashable2_Boolfalse;
                     if (Hashable2_Boolfalse.zpp_pool == null) {
                       ret13 = new Hashable2_Boolfalse();
                     } else {
@@ -508,7 +507,7 @@ export class ZPP_Simple {
                     const tmp5 = ZPP_Simple.inthash;
                     const id5 = pre1.id;
                     const di5 = nxt.id;
-                    let ret15: Any;
+                    let ret15: Hashable2_Boolfalse;
                     if (Hashable2_Boolfalse.zpp_pool == null) {
                       ret15 = new Hashable2_Boolfalse();
                     } else {
@@ -696,7 +695,7 @@ export class ZPP_Simple {
                   const tmp6 = ZPP_Simple.inthash;
                   const id6 = b.next.id;
                   const di6 = b.id;
-                  let ret17: Any;
+                  let ret17: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret17 = new Hashable2_Boolfalse();
                   } else {
@@ -713,7 +712,7 @@ export class ZPP_Simple {
                   const tmp7 = ZPP_Simple.inthash;
                   const id7 = b.id;
                   const di7 = b.next.id;
-                  let ret19: Any;
+                  let ret19: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret19 = new Hashable2_Boolfalse();
                   } else {
@@ -810,7 +809,7 @@ export class ZPP_Simple {
                   const tmp8 = ZPP_Simple.inthash;
                   const id8 = a.id;
                   const di8 = a.prev.id;
-                  let ret21: Any;
+                  let ret21: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret21 = new Hashable2_Boolfalse();
                   } else {
@@ -827,7 +826,7 @@ export class ZPP_Simple {
                   const tmp9 = ZPP_Simple.inthash;
                   const id9 = a.prev.id;
                   const di9 = a.id;
-                  let ret23: Any;
+                  let ret23: Hashable2_Boolfalse;
                   if (Hashable2_Boolfalse.zpp_pool == null) {
                     ret23 = new Hashable2_Boolfalse();
                   } else {
@@ -909,8 +908,8 @@ export class ZPP_Simple {
     return rets;
   }
 
-  static clip_polygon(vertices: Any, rets: Any): void {
-    let ret: Any = null;
+  static clip_polygon(vertices: ZPP_Set<ZPP_SimpleVert>, rets: ZNPList<ZPP_GeomVert>): void {
+    let ret: ZPP_GeomVert | null = null;
     let cur = vertices.first();
     const fst = cur;
     const pren = cur.links.parent;
@@ -926,7 +925,7 @@ export class ZPP_Simple {
     }
     const x = cur.x;
     const y = cur.y;
-    let ret1: Any;
+    let ret1: ZPP_GeomVert;
     if (ZPP_GeomVert.zpp_pool == null) {
       ret1 = new ZPP_GeomVert();
     } else {
@@ -965,7 +964,7 @@ export class ZPP_Simple {
       }
       const x1 = nxt.x;
       const y1 = nxt.y;
-      let ret2: Any;
+      let ret2: ZPP_GeomVert;
       if (ZPP_GeomVert.zpp_pool == null) {
         ret2 = new ZPP_GeomVert();
       } else {
@@ -1000,7 +999,7 @@ export class ZPP_Simple {
         cur = nxt;
         nxt = nxt.links.parent.data;
       } else {
-        let min: Any = null;
+        let min: ZPP_SimpleVert | null = null;
         let minl = 0.0;
         if (!nxt.links.empty()) {
           let set_ite = nxt.links.parent;
@@ -1068,7 +1067,7 @@ export class ZPP_Simple {
     rets.add(ret);
   }
 
-  static isSimple(poly: Any): boolean {
+  static isSimple(poly: ZPP_GeomVert | null): boolean {
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
       ZPP_Simple.inthash = new FastHash2_Hashable2_Boolfalse();
@@ -1120,7 +1119,7 @@ export class ZPP_Simple {
         ret1.next = null;
       }
       ret1.vertex = u;
-      const e1: Any = queue.add(ret1);
+      const e1: ZPP_SimpleEvent = queue.add(ret1);
       let ret2: ZPP_SimpleEvent;
       if (ZPP_SimpleEvent.zpp_pool == null) {
         ret2 = new ZPP_SimpleEvent();
@@ -1130,8 +1129,8 @@ export class ZPP_Simple {
         ret2.next = null;
       }
       ret2.vertex = v1;
-      const e2: Any = queue.add(ret2);
-      let tmp: Any;
+      const e2: ZPP_SimpleEvent = queue.add(ret2);
+      let tmp: ZPP_SimpleSeg;
       if (ZPP_SimpleEvent.less_xy(e1, e2)) {
         e1.type = 1;
         e2.type = 2;
@@ -1155,7 +1154,7 @@ export class ZPP_Simple {
       ret3.next = null;
     }
     ret3.vertex = u;
-    const e11: Any = queue.add(ret3);
+    const e11: ZPP_SimpleEvent = queue.add(ret3);
     let ret4: ZPP_SimpleEvent;
     if (ZPP_SimpleEvent.zpp_pool == null) {
       ret4 = new ZPP_SimpleEvent();
@@ -1165,8 +1164,8 @@ export class ZPP_Simple {
       ret4.next = null;
     }
     ret4.vertex = v2;
-    const e21: Any = queue.add(ret4);
-    let tmp1: Any;
+    const e21: ZPP_SimpleEvent = queue.add(ret4);
+    let tmp1: ZPP_SimpleSeg;
     if (ZPP_SimpleEvent.less_xy(e11, e21)) {
       e11.type = 1;
       e21.type = 2;
@@ -1181,10 +1180,10 @@ export class ZPP_Simple {
     const xxlist = queue;
     if (xxlist.head != null && xxlist.head.next != null) {
       let head = xxlist.head;
-      let tail: Any;
-      let left: Any;
-      let right: Any;
-      let nxt: Any;
+      let tail: ZNPNode<ZPP_SimpleEvent> | null;
+      let left: ZNPNode<ZPP_SimpleEvent> | null;
+      let right: ZNPNode<ZPP_SimpleEvent> | null;
+      let nxt: ZNPNode<ZPP_SimpleEvent>;
       let listSize = 1;
       let numMerges: number;
       let leftSize: number;

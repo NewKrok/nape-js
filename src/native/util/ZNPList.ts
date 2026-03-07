@@ -9,20 +9,25 @@
  */
 import { ZNPNode } from "./ZNPNode";
 
-type Any = any;
+interface ZNPNodeClass<T> {
+  new (): ZNPNode<T>;
+  zpp_pool: ZNPNode<T> | null;
+}
+
+interface ZNPListConstructor<T> {
+  _NodeClass: ZNPNodeClass<T>;
+}
 
 export class ZNPList<T> {
-  static _NodeClass: Any;
+  static _NodeClass: ZNPNodeClass<unknown>;
 
   head: ZNPNode<T> | null = null;
   length: number = 0;
   modified: boolean = false;
   pushmod: boolean = false;
 
-  __class__: Any;
-
   private _allocNode(): ZNPNode<T> {
-    const N = (this.constructor as Any)._NodeClass;
+    const N = (this.constructor as unknown as ZNPListConstructor<T>)._NodeClass;
     let ret: ZNPNode<T>;
     if (N.zpp_pool == null) {
       ret = new N();
@@ -35,7 +40,7 @@ export class ZNPList<T> {
   }
 
   private _freeNode(node: ZNPNode<T>): void {
-    const N = (this.constructor as Any)._NodeClass;
+    const N = (this.constructor as unknown as ZNPListConstructor<T>)._NodeClass;
     node.elt = null;
     node.next = N.zpp_pool;
     N.zpp_pool = node;

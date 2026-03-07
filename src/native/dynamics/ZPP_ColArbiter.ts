@@ -12,8 +12,6 @@ import { ZPP_Arbiter } from "./ZPP_Arbiter";
 import { ZPP_Contact } from "./ZPP_Contact";
 import { ZPP_IContact } from "./ZPP_IContact";
 
-type Any = any;
-
 export class ZPP_ColArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
   static override __name__ = ["zpp_nape", "dynamics", "ZPP_ColArbiter"];
@@ -28,7 +26,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   static zpp_pool: ZPP_ColArbiter | null = null;
 
   // --- Instance: outer wrapper reference ---
-  outer_zn: Any = null;
+  outer_zn: any = null;
 
   // --- Instance: friction/restitution properties ---
   dyn_fric = 0.0;
@@ -41,14 +39,14 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   userdef_rfric = false;
 
   // --- Instance: shape references ---
-  s1: Any = null;
-  s2: Any = null;
+  s1: any = null;
+  s2: any = null;
 
   // --- Instance: contact list (ZPP_Contact sentinel) ---
   contacts: ZPP_Contact;
 
   // --- Instance: contacts wrapper ---
-  wrap_contacts: Any = null;
+  wrap_contacts: any = null;
 
   // --- Instance: inner contact list (ZPP_IContact sentinel) ---
   innards: ZPP_IContact;
@@ -58,7 +56,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   ny = 0.0;
 
   // --- Instance: normal wrapper ---
-  wrap_normal: Any = null;
+  wrap_normal: any = null;
 
   // --- Instance: mass matrix ---
   kMassa = 0.0;
@@ -93,7 +91,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   surfacey = 0.0;
 
   // --- Instance: collision geometry ---
-  ptype: Any = null;
+  ptype: any = null;
   lnormx = 0.0;
   lnormy = 0.0;
   lproj = 0.0;
@@ -102,15 +100,15 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   biasCoef = 0.0;
 
   // --- Instance: reference edges ---
-  __ref_edge1: Any = null;
-  __ref_edge2: Any = null;
+  __ref_edge1: any = null;
+  __ref_edge2: any = null;
   __ref_vertex = 0;
 
   // --- Instance: contact point cache ---
-  c1: Any = null;
-  oc1: Any = null;
-  c2: Any = null;
-  oc2: Any = null;
+  c1: any = null;
+  oc1: any = null;
+  c2: any = null;
+  oc2: any = null;
   hc2 = false;
   hpc2 = false;
 
@@ -123,7 +121,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   pre_dt = 0.0;
 
   // --- Instance: Haxe class reference ---
-  override __class__: Any = ZPP_ColArbiter;
+
 
   constructor() {
     super();
@@ -225,7 +223,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     const x = 0;
     const y = 0;
 
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -239,7 +237,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
 
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -364,7 +362,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
   // ========== Assign ==========
 
-  assign(s1: Any, s2: Any, id: number, di: number): void {
+  assign(s1: any, s2: any, id: number, di: number): void {
     this.sup_assign(s1, s2, id, di);
     this.s1 = s1;
     this.s2 = s2;
@@ -466,13 +464,13 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
   // ========== Contact list management ==========
 
-  contacts_adder(_x: Any): void {
+  contacts_adder(_x: any): void {
     throw new Error(
       "Error: Cannot add new contacts, information required is far too specific and detailed :)",
     );
   }
 
-  contacts_subber(x: Any): void {
+  contacts_subber(x: any): void {
     let pre: ZPP_Contact | null = null;
     let prei: ZPP_IContact | null = null;
     let cx_itei: ZPP_IContact | null = this.innards.next;
@@ -1050,7 +1048,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
   }
 
-  private _applyImpulsePosCircle(napeNs: Any): void {
+  private _applyImpulsePosCircle(napeNs: any): void {
     const c = this.c1;
     let r2x = this.b2.axisy * c.lr2x - this.b2.axisx * c.lr2y;
     let r2y = c.lr2x * this.b2.axisx + c.lr2y * this.b2.axisy;
@@ -1113,7 +1111,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
   }
 
-  private _applyImpulsePosEdge(napeNs: Any): void {
+  private _applyImpulsePosEdge(napeNs: any): void {
     let gnormx: number;
     let gnormy: number;
     let gproj: number;
@@ -1294,9 +1292,9 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   // ========== Internal helpers ==========
 
   /** Erase element after `pre` from a linked list sentinel, return next element */
-  private static _eraseFromList(list: Any, pre: Any): Any {
-    let old: Any;
-    let ret: Any;
+  private static _eraseFromList(list: any, pre: any): any {
+    let old: any;
+    let ret: any;
     if (pre == null) {
       old = list.next;
       ret = old.next;
@@ -1320,7 +1318,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   }
 
   /** Rotate body by small angle (with fast approximation for small dr) */
-  private static _rotateBody(body: Any, dr: number): void {
+  private static _rotateBody(body: any, dr: number): void {
     body.rot += dr;
     if (dr * dr > 0.0001) {
       body.axisx = Math.sin(body.rot);
@@ -1337,8 +1335,8 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
   /** Apply 2-contact position impulse */
   private static _applyPosImpulse2(
-    b1: Any,
-    b2: Any,
+    b1: any,
+    b2: any,
     gnormx: number,
     gnormy: number,
     xx: number,

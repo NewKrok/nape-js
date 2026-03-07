@@ -6,8 +6,6 @@
  * Converted from nape-compiled.js lines 127059–127090.
  */
 
-type Any = any;
-
 export class ZPP_Math {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "util", "ZPP_Math"];
@@ -37,5 +35,4 @@ export class ZPP_Math {
     else return x;
   }
 
-  __class__: Any = ZPP_Math;
 }
