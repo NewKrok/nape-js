@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";

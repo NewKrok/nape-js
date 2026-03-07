@@ -4,7 +4,6 @@
  * Fully modernized from nape-compiled.js lines 434–515.
  */
 
-import { getNape } from "../core/engine";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import { ZPP_BodyListener } from "../native/callbacks/ZPP_BodyListener";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";

@@ -266,6 +266,5 @@ ZPP_MotorJoint._wrapFn = (zpp: ZPP_MotorJoint): MotorJoint => {
   });
 };
 
-const nape = getNape();
 
 ZPP_MotorJoint._createFn = (...args: any[]) => new (MotorJoint as any)(...args);

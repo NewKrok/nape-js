@@ -343,6 +343,5 @@ ZPP_WeldJoint._wrapFn = (zpp: ZPP_WeldJoint): WeldJoint => {
   });
 };
 
-const nape = getNape();
 
 ZPP_WeldJoint._createFn = (...args: any[]) => new (WeldJoint as any)(...args);

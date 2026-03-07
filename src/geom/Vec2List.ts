@@ -14,7 +14,6 @@ import { getNape } from "../core/engine";
 import { ZPP_Vec2List } from "../native/util/ZPP_Vec2List";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
-import { Vec2 } from "./Vec2";
 
 
 // ---------------------------------------------------------------------------

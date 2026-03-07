@@ -4,8 +4,6 @@ import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_InteractorList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { NapeInner } from "../geom/Vec2";
 import type { OptionType } from "./OptionType";
-import type { Interactor } from "../phys/Interactor";
-import type { Constraint } from "../constraint/Constraint";
 
 /**
  * Callback type — used to tag interactors so that listeners

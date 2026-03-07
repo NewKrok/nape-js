@@ -19,7 +19,7 @@ function getZppBody(b: any): any {
 }
 
 /** Validate a Vec2 output parameter: not disposed, not immutable. */
-function validateOutVec2(v: any, name: string): void {
+function validateOutVec2(v: any, _name: string): void {
   if (v != null && v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }

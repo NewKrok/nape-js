@@ -322,6 +322,4 @@ ZPP_AngleJoint._wrapFn = (zpp: ZPP_AngleJoint): AngleJoint => {
   });
 };
 
-const nape = getNape();
-
 ZPP_AngleJoint._createFn = (...args: any[]) => new (AngleJoint as any)(...args);

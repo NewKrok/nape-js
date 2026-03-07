@@ -10,11 +10,9 @@
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { ZPP_MarchPair } from "./ZPP_MarchPair";
 import { ZPP_MarchSpan } from "./ZPP_MarchSpan";
-import { ZPP_GeomPoly } from "./ZPP_GeomPoly";
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair } from "../util/ZNPArray2";
-import { getNape } from "../../core/engine";
 
 type Any = any;
 
@@ -197,7 +195,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   private static _pushVert(head: ZPP_GeomVert | null, obj: ZPP_GeomVert): ZPP_GeomVert {
     if (head == null) {
-      head = obj.prev = obj.next = obj;
+      obj.prev = obj.next = obj;
     } else {
       obj.prev = head;
       obj.next = head.next;
@@ -611,13 +609,11 @@ export class ZPP_MarchingSquares {
         if (poly != null && poly.prev == poly) {
           poly.next = poly.prev = null;
           poly = null as Any;
-          poly = poly;
         } else {
           const retnodes = poly.next;
           poly.prev!.next = poly.next;
           poly.next!.prev = poly.prev;
           poly.next = poly.prev = null;
-          poly = null as Any;
           poly = retnodes;
         }
       }
@@ -672,7 +668,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: linkup
   // ---------------------------------------------------------------------------
-  linkup(poly: Any, key: number): Any {
+  linkup(poly: Any, _key: number): Any {
     return poly;
   }
 
@@ -720,10 +716,8 @@ export class ZPP_MarchingSquares {
   // Instance method: combUD — combine up-down adjacent cells
   // ---------------------------------------------------------------------------
   combUD(a: ZPP_MarchPair, b: ZPP_MarchPair): void {
-    const ad = a.p2 != null && a.key2 == 56 ? a.p2 : a.p1;
-    const bu = b.p2 != null && b.key2 == 14 ? b.p2 : b.p1;
     const ap = a.pd;
-    const bp = bu;
+    const bp = b.p2 != null && b.key2 == 14 ? b.p2 : b.p1;
     const ap2 = ap.prev;
     const bp2 = bp.next;
 
@@ -743,10 +737,8 @@ export class ZPP_MarchingSquares {
   // Instance method: combUD_virtual — mark forced vertices for virtual combine
   // ---------------------------------------------------------------------------
   combUD_virtual(a: ZPP_MarchPair, b: ZPP_MarchPair): void {
-    const ad = a.p2 != null && a.key2 == 56 ? a.p2 : a.p1;
-    const bu = b.p2 != null && b.key2 == 14 ? b.p2 : b.p1;
     const ap = a.pd;
-    const bp = bu;
+    const bp = b.p2 != null && b.key2 == 14 ? b.p2 : b.p1;
     const ap2 = ap.prev;
     const bp2 = bp.next;
     ap.forced = bp.forced = ap2.forced = bp2.forced = true;
@@ -840,7 +832,7 @@ export class ZPP_MarchingSquares {
 
     for (let i = 0; i < 8; i++) {
       if ((val & (1 << i)) != 0) {
-        let p: ZPP_GeomVert | null = null;
+        let p: ZPP_GeomVert | null;
 
         if (i == 0) {
           p = ZPP_MarchingSquares._allocVert(x0, y0);
@@ -1232,11 +1224,9 @@ export class ZPP_MarchingSquares {
     quality: number,
     ret: ZPP_MarchPair,
   ): { val: number } {
-    let head: ZPP_GeomVert | null = null;
-
     for (let i = 0; i < 8; i++) {
       if ((val & (1 << i)) != 0) {
-        let p: ZPP_GeomVert | null = null;
+        let p: ZPP_GeomVert | null;
 
         if (i == 0) {
           p = ZPP_MarchingSquares._allocVert(x0, y0);

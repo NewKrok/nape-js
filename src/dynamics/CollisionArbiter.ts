@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";

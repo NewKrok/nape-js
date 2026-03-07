@@ -12,8 +12,6 @@ import { ZPP_Body } from "../native/phys/ZPP_Body";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
-import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { Compound } from "./Compound";
 import type { Arbiter } from "../dynamics/Arbiter";
@@ -1586,7 +1584,7 @@ export class Body extends Interactor {
     return this.zpp_inner.connectedBodies(depth, output);
   }
 
-  interactingBodies(type: InteractionType | null = null, depth: number = -1, output: object | null = null): object {
+  interactingBodies(type: InteractionType | null = null, _depth: number = -1, output: object | null = null): object {
     let arbiter_type: number;
     if (type == null) {
       arbiter_type = ZPP_Arbiter.COL | ZPP_Arbiter.SENSOR | ZPP_Arbiter.FLUID;

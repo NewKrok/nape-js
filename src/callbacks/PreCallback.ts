@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 import type { Arbiter } from "../dynamics/Arbiter";

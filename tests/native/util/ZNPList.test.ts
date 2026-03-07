@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import "../../../src/core/engine";
 import { getNape } from "../../../src/core/engine";
 import { ZNPList } from "../../../src/native/util/ZNPList";
-import { ZNPNode } from "../../../src/native/util/ZNPNode";
 
 describe("ZNPList", () => {
   let ListClass: any;

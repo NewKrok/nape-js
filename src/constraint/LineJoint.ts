@@ -409,6 +409,5 @@ ZPP_LineJoint._wrapFn = (zpp: ZPP_LineJoint): LineJoint => {
   });
 };
 
-const nape = getNape();
 
 ZPP_LineJoint._createFn = (...args: any[]) => new (LineJoint as any)(...args);

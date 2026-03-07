@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { ZPP_Edge } from "../native/shape/ZPP_Edge";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 

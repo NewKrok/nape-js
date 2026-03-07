@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2, type NapeInner } from "../geom/Vec2";
 import { AABB } from "../geom/AABB";
 import { Body } from "../phys/Body";
 import { Constraint } from "../constraint/Constraint";

@@ -233,8 +233,6 @@ export class DistanceJoint extends Constraint {
     if (this.zpp_inner.wrap_a1 == null) {
       this.zpp_inner.setup_a1();
     }
-    const x = _readVec2X(value);
-    const y = _readVec2Y(value);
     this.zpp_inner.wrap_a1.set(value);
     _disposeWeakVec2(value);
   }
@@ -255,8 +253,6 @@ export class DistanceJoint extends Constraint {
     if (this.zpp_inner.wrap_a2 == null) {
       this.zpp_inner.setup_a2();
     }
-    const x = _readVec2X(value);
-    const y = _readVec2Y(value);
     this.zpp_inner.wrap_a2.set(value);
     _disposeWeakVec2(value);
   }
@@ -401,7 +397,5 @@ ZPP_DistanceJoint._wrapFn = (zpp: ZPP_DistanceJoint): DistanceJoint => {
     return j;
   });
 };
-
-const nape = getNape();
 
 ZPP_DistanceJoint._createFn = (...args: any[]) => new (DistanceJoint as any)(...args);
