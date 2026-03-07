@@ -1,8 +1,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
-type Any = any;
-
 /**
  * Inertia mode for a body.
  *

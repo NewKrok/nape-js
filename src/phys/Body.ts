@@ -12,11 +12,17 @@ import { ZPP_Body } from "../native/phys/ZPP_Body";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
-import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
-
-type Any = any;
+import type { Compound } from "./Compound";
+import type { Arbiter } from "../dynamics/Arbiter";
+import type { Mat23 } from "../geom/Mat23";
+import type { Material } from "./Material";
+import type { FluidProperties } from "./FluidProperties";
+import type { InteractionFilter } from "../dynamics/InteractionFilter";
+import type { InteractionType } from "../callbacks/InteractionType";
+import type { MassMode } from "./MassMode";
+import type { InertiaMode } from "./InertiaMode";
+import type { GravMassMode } from "./GravMassMode";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -24,7 +30,7 @@ type Any = any;
 
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if (v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
   const inner = v.zpp_inner;
@@ -34,7 +40,7 @@ function _readVec2X(v: Vec2): number {
 
 /** Read validated y from a Vec2 input. */
 function _readVec2Y(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if (v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
   const inner = v.zpp_inner;
@@ -44,7 +50,7 @@ function _readVec2Y(v: Vec2): number {
 
 /** Check a Vec2 is not disposed. */
 function _checkVec2Disposed(v: Vec2): void {
-  if (v != null && (v as Any).zpp_disp) {
+  if (v != null && v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
 }
@@ -92,12 +98,12 @@ function _ensureFlag<T>(
   flagName: keyof typeof ZPP_Flags,
   ctor: () => T,
 ): T {
-  if ((ZPP_Flags as Any)[flagName] == null) {
+  if ((ZPP_Flags as any)[flagName] == null) {
     ZPP_Flags.internal = true;
-    (ZPP_Flags as Any)[flagName] = ctor();
+    (ZPP_Flags as any)[flagName] = ctor();
     ZPP_Flags.internal = false;
   }
-  return (ZPP_Flags as Any)[flagName] as T;
+  return (ZPP_Flags as any)[flagName] as T;
 }
 
 /**
@@ -107,7 +113,7 @@ function _ensureFlag<T>(
  */
 export class Body extends Interactor {
   static __name__ = ["nape", "phys", "Body"];
-  static __super__: Any = Interactor;
+  static __super__: typeof Interactor = Interactor;
 
   /** Direct access to the extracted internal ZPP_Body. */
   zpp_inner!: ZPP_Body;
@@ -120,10 +126,10 @@ export class Body extends Interactor {
     this.zpp_inner = zpp;
     zpp.outer = this;
     zpp.outer_i = this;
-    (this as Any).zpp_inner_i = zpp;
+    (this as any).zpp_inner_i = zpp;
 
     // Override the Interactor's _inner to point at this object (backward compat).
-    (this as Writable<Body>)._inner = this as Any;
+    (this as Writable<Body>)._inner = this as any;
 
     // Set position
     if (position != null) {
@@ -185,8 +191,8 @@ export class Body extends Interactor {
         b.zpp_inner = zpp;
         zpp.outer = b;
         zpp.outer_i = b;
-        (b as Any).zpp_inner_i = zpp;
-        (b as Writable<Body>)._inner = b as Any;
+        (b as any).zpp_inner_i = zpp;
+        (b as Writable<Body>)._inner = b as any;
         b.debugDraw = true;
         return b;
       });
@@ -411,14 +417,14 @@ export class Body extends Interactor {
     return Space._wrap(this.zpp_inner.space.outer);
   }
   set space(value: Space | null) {
-    this.set_space(value != null ? ((value as Any)._inner ?? value) : null);
+    this.set_space(value != null ? ((value as any)._inner ?? value) : null);
   }
 
-  get compound(): Any {
+  get compound(): Compound | null {
     if (this.zpp_inner.compound == null) return null;
     return this.zpp_inner.compound.outer;
   }
-  set compound(value: Any) {
+  set compound(value: Compound | null) {
     this.set_compound(value);
   }
 
@@ -448,24 +454,24 @@ export class Body extends Interactor {
   // Mode getters/setters
   // ---------------------------------------------------------------------------
 
-  get massMode(): Any {
+  get massMode(): MassMode {
     return this.get_massMode();
   }
-  set massMode(value: Any) {
+  set massMode(value: MassMode) {
     this.set_massMode(value);
   }
 
-  get inertiaMode(): Any {
+  get inertiaMode(): InertiaMode {
     return this.get_inertiaMode();
   }
-  set inertiaMode(value: Any) {
+  set inertiaMode(value: InertiaMode) {
     this.set_inertiaMode(value);
   }
 
-  get gravMassMode(): Any {
+  get gravMassMode(): GravMassMode {
     return this.get_gravMassMode();
   }
-  set gravMassMode(value: Any) {
+  set gravMassMode(value: GravMassMode) {
     this.set_gravMassMode(value);
   }
 
@@ -489,18 +495,18 @@ export class Body extends Interactor {
     const prefix = zpp.world
       ? "(space::world"
       : "(" + (zpp.type === 2 ? "dynamic" : zpp.type === 1 ? "static" : "kinematic");
-    return prefix + ")#" + (this as Any).zpp_inner_i.id;
+    return prefix + ")#" + (this as any).zpp_inner_i.id;
   }
 
   // ---------------------------------------------------------------------------
   // Compiled-code compatibility (get_*/set_* methods)
   // ---------------------------------------------------------------------------
 
-  get_type(): Any {
+  get_type(): BodyType {
     return ZPP_Body.types[this.zpp_inner.type];
   }
 
-  set_type(type: Any): Any {
+  set_type(type: BodyType): BodyType {
     const zpp = this.zpp_inner;
     zpp.immutable_midstep("Body::type");
     if (zpp.world) {
@@ -527,7 +533,7 @@ export class Body extends Interactor {
     return ZPP_Body.types[zpp.type];
   }
 
-  get_shapes(): Any {
+  get_shapes(): object {
     return this.zpp_inner.wrap_shapes;
   }
 
@@ -547,14 +553,14 @@ export class Body extends Interactor {
     return v;
   }
 
-  get_position(): Any {
+  get_position(): Vec2 {
     if (this.zpp_inner.wrap_pos == null) {
       this.zpp_inner.setupPosition();
     }
     return this.zpp_inner.wrap_pos;
   }
 
-  set_position(position: Any): Any {
+  set_position(position: Vec2): Vec2 {
     _setVec2Prop(
       "position",
       this.zpp_inner.wrap_pos,
@@ -568,14 +574,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_pos;
   }
 
-  get_velocity(): Any {
+  get_velocity(): Vec2 {
     if (this.zpp_inner.wrap_vel == null) {
       this.zpp_inner.setupVelocity();
     }
     return this.zpp_inner.wrap_vel;
   }
 
-  set_velocity(velocity: Any): Any {
+  set_velocity(velocity: Vec2): Vec2 {
     _setVec2Prop(
       "velocity",
       this.zpp_inner.wrap_vel,
@@ -635,14 +641,14 @@ export class Body extends Interactor {
     return zpp.angvel;
   }
 
-  get_kinematicVel(): Any {
+  get_kinematicVel(): Vec2 {
     if (this.zpp_inner.wrap_kinvel == null) {
       this.zpp_inner.setupkinvel();
     }
     return this.zpp_inner.wrap_kinvel;
   }
 
-  set_kinematicVel(kinematicVel: Any): Any {
+  set_kinematicVel(kinematicVel: Vec2): Vec2 {
     _setVec2Prop(
       "kinematicVel",
       this.zpp_inner.wrap_kinvel,
@@ -675,14 +681,14 @@ export class Body extends Interactor {
     return zpp.kinangvel;
   }
 
-  get_surfaceVel(): Any {
+  get_surfaceVel(): Vec2 {
     if (this.zpp_inner.wrap_svel == null) {
       this.zpp_inner.setupsvel();
     }
     return this.zpp_inner.wrap_svel;
   }
 
-  set_surfaceVel(surfaceVel: Any): Any {
+  set_surfaceVel(surfaceVel: Vec2): Vec2 {
     _setVec2Prop(
       "surfaceVel",
       this.zpp_inner.wrap_svel,
@@ -696,14 +702,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_svel;
   }
 
-  get_force(): Any {
+  get_force(): Vec2 {
     if (this.zpp_inner.wrap_force == null) {
       this.zpp_inner.setupForce();
     }
     return this.zpp_inner.wrap_force;
   }
 
-  set_force(force: Any): Any {
+  set_force(force: Vec2): Vec2 {
     _setVec2Prop(
       "force",
       this.zpp_inner.wrap_force,
@@ -739,14 +745,14 @@ export class Body extends Interactor {
     return zpp.torque;
   }
 
-  get_bounds(): Any {
+  get_bounds(): AABB {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no bounds");
     }
     return this.zpp_inner.aabb.wrapper();
   }
 
-  get_constraintVelocity(): Any {
+  get_constraintVelocity(): Vec2 {
     if (this.zpp_inner.wrapcvel == null) {
       this.zpp_inner.setup_cvel();
     }
@@ -806,12 +812,12 @@ export class Body extends Interactor {
     return this.zpp_inner.component.sleeping;
   }
 
-  get_compound(): Any {
+  get_compound(): Compound | null {
     if (this.zpp_inner.compound == null) return null;
     return this.zpp_inner.compound.outer;
   }
 
-  set_compound(compound: Any): Any {
+  set_compound(compound: Compound | null): Compound | null {
     const currentCompound = this.zpp_inner.compound == null
       ? null
       : this.zpp_inner.compound.outer;
@@ -832,12 +838,12 @@ export class Body extends Interactor {
     return this.zpp_inner.compound.outer;
   }
 
-  get_space(): Any {
+  get_space(): Space | null {
     if (this.zpp_inner.space == null) return null;
     return this.zpp_inner.space.outer;
   }
 
-  set_space(space: Any): Any {
+  set_space(space: Space | null): Space | null {
     if (this.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set",
@@ -866,14 +872,14 @@ export class Body extends Interactor {
     return this.zpp_inner.space.outer;
   }
 
-  get_arbiters(): Any {
+  get_arbiters(): any {
     if (this.zpp_inner.wrap_arbiters == null) {
       this.zpp_inner.wrap_arbiters = ZPP_ArbiterList.get(this.zpp_inner.arbiters, true);
     }
     return this.zpp_inner.wrap_arbiters;
   }
 
-  get_constraints(): Any {
+  get_constraints(): any {
     if (this.zpp_inner.wrap_constraints == null) {
       this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
         this.zpp_inner.constraints,
@@ -887,14 +893,14 @@ export class Body extends Interactor {
   // Mass / Inertia mode getters/setters
   // ---------------------------------------------------------------------------
 
-  get_massMode(): Any {
+  get_massMode(): MassMode {
     const nape = getNape();
     const d = _ensureFlag("MassMode_DEFAULT", () => new nape.phys.MassMode());
     const f = _ensureFlag("MassMode_FIXED", () => new nape.phys.MassMode());
     return [d, f][this.zpp_inner.massMode];
   }
 
-  set_massMode(massMode: Any): Any {
+  set_massMode(massMode: MassMode): MassMode {
     const nape = getNape();
     this.zpp_inner.immutable_midstep("Body::massMode");
     if (this.zpp_inner.world) {
@@ -953,7 +959,7 @@ export class Body extends Interactor {
     return this.zpp_inner.cmass;
   }
 
-  get_gravMassMode(): Any {
+  get_gravMassMode(): GravMassMode {
     const nape = getNape();
     const d = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
     const f = _ensureFlag("GravMassMode_FIXED", () => new nape.phys.GravMassMode());
@@ -961,7 +967,7 @@ export class Body extends Interactor {
     return [d, f, s][this.zpp_inner.gravMassMode];
   }
 
-  set_gravMassMode(gravMassMode: Any): Any {
+  set_gravMassMode(gravMassMode: GravMassMode): GravMassMode {
     const nape = getNape();
     this.zpp_inner.immutable_midstep("Body::gravMassMode");
     if (this.zpp_inner.world) {
@@ -1061,14 +1067,14 @@ export class Body extends Interactor {
     return this.zpp_inner.gravMassScale;
   }
 
-  get_inertiaMode(): Any {
+  get_inertiaMode(): InertiaMode {
     const nape = getNape();
     const d = _ensureFlag("InertiaMode_DEFAULT", () => new nape.phys.InertiaMode());
     const f = _ensureFlag("InertiaMode_FIXED", () => new nape.phys.InertiaMode());
     return [d, f][this.zpp_inner.inertiaMode];
   }
 
-  set_inertiaMode(inertiaMode: Any): Any {
+  set_inertiaMode(inertiaMode: InertiaMode): InertiaMode {
     const nape = getNape();
     this.zpp_inner.immutable_midstep("Body::inertiaMode");
     if (this.zpp_inner.world) {
@@ -1131,7 +1137,7 @@ export class Body extends Interactor {
   // localCOM / worldCOM
   // ---------------------------------------------------------------------------
 
-  get_localCOM(): Any {
+  get_localCOM(): Vec2 {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no localCOM");
     }
@@ -1145,7 +1151,7 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_localCOM;
   }
 
-  get_worldCOM(): Any {
+  get_worldCOM(): Vec2 {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no worldCOM");
     }
@@ -1417,7 +1423,7 @@ export class Body extends Interactor {
     return this;
   }
 
-  transformShapes(matrix: Any): Body {
+  transformShapes(matrix: Mat23): Body {
     this.zpp_inner.immutable_midstep("Body::transformShapes()");
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world is immutable");
@@ -1482,7 +1488,7 @@ export class Body extends Interactor {
     return this;
   }
 
-  setShapeMaterials(material: Any): Body {
+  setShapeMaterials(material: Material): Body {
     this.zpp_inner.immutable_midstep("Body::setShapeMaterials()");
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world is immutable");
@@ -1501,7 +1507,7 @@ export class Body extends Interactor {
     return this;
   }
 
-  setShapeFilters(filter: Any): Body {
+  setShapeFilters(filter: InteractionFilter): Body {
     this.zpp_inner.immutable_midstep("Body::setShapeFilters()");
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world is immutable");
@@ -1520,7 +1526,7 @@ export class Body extends Interactor {
     return this;
   }
 
-  setShapeFluidProperties(fluidProperties: Any): Body {
+  setShapeFluidProperties(fluidProperties: FluidProperties): Body {
     this.zpp_inner.immutable_midstep("Body::setShapeFluidProperties()");
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world is immutable");
@@ -1574,11 +1580,11 @@ export class Body extends Interactor {
   // Connected/interacting bodies
   // ---------------------------------------------------------------------------
 
-  connectedBodies(depth: number = -1, output: Any = null): Any {
+  connectedBodies(depth: number = -1, output: object | null = null): object {
     return this.zpp_inner.connectedBodies(depth, output);
   }
 
-  interactingBodies(type: Any = null, depth: number = -1, output: Any = null): Any {
+  interactingBodies(type: InteractionType | null = null, _depth: number = -1, output: object | null = null): object {
     let arbiter_type: number;
     if (type == null) {
       arbiter_type = ZPP_Arbiter.COL | ZPP_Arbiter.SENSOR | ZPP_Arbiter.FLUID;
@@ -1605,31 +1611,31 @@ export class Body extends Interactor {
   // Impulse queries
   // ---------------------------------------------------------------------------
 
-  normalImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  normalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
-      (arb: Any) => arb.collisionArbiter.normalImpulse(this, freshOnly),
+      (arb: Arbiter) => arb.collisionArbiter!.normalImpulse(this, freshOnly),
       body,
     );
   }
 
-  tangentImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  tangentImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
-      (arb: Any) => arb.collisionArbiter.tangentImpulse(this, freshOnly),
+      (arb: Arbiter) => arb.collisionArbiter!.tangentImpulse(this, freshOnly),
       body,
     );
   }
 
-  totalContactsImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  totalContactsImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
-      (arb: Any) => arb.collisionArbiter.totalImpulse(this, freshOnly),
+      (arb: Arbiter) => arb.collisionArbiter!.totalImpulse(this, freshOnly),
       body,
     );
   }
 
-  rollingImpulse(body: Any = null, freshOnly: boolean = false): number {
+  rollingImpulse(body: Body | null = null, freshOnly: boolean = false): number {
     let ret = 0;
     const arbList = this.get_arbiters();
     const iter = arbList.iterator();
@@ -1648,31 +1654,31 @@ export class Body extends Interactor {
       const arb = oarb.zpp_inner;
       if (arb.type !== ZPP_Arbiter.COL) continue;
       if (body != null && arb.b2 !== body.zpp_inner && arb.b1 !== body.zpp_inner) continue;
-      ret += oarb.collisionArbiter.rollingImpulse(this, freshOnly);
+      ret += oarb.collisionArbiter!.rollingImpulse(this, freshOnly);
     }
     return ret;
   }
 
-  buoyancyImpulse(body: Any = null): Vec3 {
+  buoyancyImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
-      (arb: Any) => arb.fluidArbiter.buoyancyImpulse(this),
+      (arb: Arbiter) => arb.fluidArbiter!.buoyancyImpulse(this),
       body,
     );
   }
 
-  dragImpulse(body: Any = null): Vec3 {
+  dragImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
-      (arb: Any) => arb.fluidArbiter.dragImpulse(this),
+      (arb: Arbiter) => arb.fluidArbiter!.dragImpulse(this),
       body,
     );
   }
 
-  totalFluidImpulse(body: Any = null): Vec3 {
+  totalFluidImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
-      (arb: Any) => arb.fluidArbiter.totalImpulse(this),
+      (arb: Arbiter) => arb.fluidArbiter!.totalImpulse(this),
       body,
     );
   }
@@ -1698,7 +1704,7 @@ export class Body extends Interactor {
     return Vec3.get(retx, rety, retz);
   }
 
-  totalImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  totalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     let retx = 0;
     let rety = 0;
     let retz = 0;
@@ -1830,8 +1836,8 @@ export class Body extends Interactor {
 
   private _arbiterImpulseQuery(
     arbType: number,
-    getImpulse: (arb: Any) => Vec3,
-    body: Any,
+    getImpulse: (arb: Arbiter) => Vec3,
+    body: Body | null,
   ): Vec3 {
     let retx = 0;
     let rety = 0;
@@ -1871,7 +1877,7 @@ export class Body extends Interactor {
 // Internal helper: convert BodyType to integer
 // ---------------------------------------------------------------------------
 
-function _bodyTypeToInt(type: BodyType, nape: Any): number {
+function _bodyTypeToInt(type: BodyType, nape: any): number {
   const dynamic = _ensureFlag("BodyType_DYNAMIC", () => new nape.phys.BodyType());
   if (type === dynamic) return 2;
   const kinematic = _ensureFlag("BodyType_KINEMATIC", () => new nape.phys.BodyType());

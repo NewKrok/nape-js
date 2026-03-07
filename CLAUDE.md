@@ -292,7 +292,7 @@ in native/ code):
 
 ## Modernization Pattern
 
-### Priority 25: `type Any = any` → real TypeScript types
+### Priority 25: `type Any = any` → real TypeScript types (in progress)
 
 **Effort: XL | Impact: largest | Risk: medium**
 
@@ -302,8 +302,47 @@ in native/ code):
 - **~30% — union types**: `filter?: Any` → `filter?: InteractionFilter | null`
 - **~40% — legitimately dynamic**: user-data fields, engine-internal casts — keep as `unknown` or `any`
 
-Start with public API files (Body, Space, Vec2, Shape) — these affect library consumers directly.
-Native ZPP classes are internal; lower priority.
+**Done so far** (public API files):
+- `Body.ts` — `type Any` removed; ~30 occurrences replaced with real types (`Compound`, `Arbiter`,
+  `Mat23`, `Material`, `InteractionFilter`, `MassMode`, `InertiaMode`, `GravMassMode`,
+  `Vec2`, `AABB`, `Space`, `BodyType`); remaining `any` casts are legitimately dynamic
+- `Space.ts` — `type Any` removed; constructor, getters, `visitCompounds`, `interactionType`,
+  `shapesUnderPoint` typed (`Broadphase`, `Compound`, `InteractionType`)
+- `Ray.ts` — `type Any` removed; `_wrap`, `fromSegment`, `origin`/`direction` setters typed;
+  `(v as Any).zpp_disp` → `v.zpp_disp` (Vec2 properties are directly accessible)
+- `ConvexResult.ts`, `RayResult.ts` — `type Any` removed; `_wrap` typed with `ZPP_ConvexRayResult`;
+  `shape` getter returns `Shape` instead of `any`
+- `Mat23.ts`, `MatMN.ts` — `type Any` removed; `_wrap` signatures typed
+- `ArbiterType.ts`, `Winding.ts`, `BodyType.ts`, `GravMassMode.ts`, `InertiaMode.ts`,
+  `MassMode.ts`, `ShapeType.ts`, `ValidationResult.ts`, `Broadphase.ts` — unused `type Any` removed
+- **callbacks/** (16 files) — all `type Any = any` removed; typed: `CbEvent`, `Listener`,
+  `Body`, `Constraint`, `Interactor`, `Arbiter`, `PreFlag`, `ArbiterType` getters; handler
+  callbacks typed with concrete Callback subclass params; `options: OptionType|CbType|null`;
+  `OptionType.includes/excludes: object` (factory-generated list); `CbType.interactors/
+  constraints: object`; `(Foo as any).__super__` pattern for Haxe metadata
+- **dynamics/** (4 files) — `Arbiter.ts`: `type`, `shape1/2`, `body1/2`, `collisionArbiter`,
+  `fluidArbiter`, `state` all typed; `Contact.ts`: `arbiter: CollisionArbiter|null`,
+  impulse methods `body: Body|null`; `CollisionArbiter.ts`: `contacts: object`, `normal: Vec2`,
+  `referenceEdge1/2: Edge|null`, impulse methods typed; `FluidArbiter.ts`: all `body: Body|null`
+- `Compound.ts` — `type Any` removed; `visitConstraints(lambda: (c: Constraint)=>void)`,
+  `visitBodies` lambdas typed; list getters `bodies/constraints/compounds: object`;
+  also fixed latent bug: `setupWorldCOM` → `getworldCOM`
+- `Edge.ts` — `type Any` removed; `_wrap` typed, `polygon: Polygon`, `_wrapVert(ZPP_Vec2)`
+- **shape/** (3 files) — `Shape.ts`, `Circle.ts`, `Polygon.ts`: `type Any` removed; remaining
+  `any` casts are legitimately dynamic (ZPP internal dispatch, prototype copy loops)
+- **constraint/** (9 files) — `Constraint.ts` + 7 joints + `UserConstraint`: `type Any` removed;
+  typed: `impulse(): MatMN`, `bodyImpulse(): Vec3`, `body1/2: Body|null`, `anchor*: Vec2`,
+  `compound: Compound|null`, `cbTypes: object`, `userData: Record<string,unknown>`,
+  `get_body*/set_body*`, `get_anchor*/set_anchor*` backward-compat methods
+- **geom/** (5 files) — `Geom.ts`, `GeomPoly.ts`, `MarchingSquares.ts`, `Vec2List.ts`,
+  `GeomVertexIterator.ts`: `type Any` removed; internal ZPP vertex/iterator helpers remain `any`
+- **dynamics/ContactList.ts** — `type Any` removed; prototype-based constructor pattern
+  retains `this: any` (Haxe-ported list implementation)
+
+**All public API files done** — `type Any = any` fully eliminated from `src/` (non-native).
+Count: ~114 files remain in `src/native/` — lower priority.
+
+Remaining: native ZPP classes (~100 files) — lower priority.
 
 ### Priority 26: Tree shaking
 
@@ -326,21 +365,12 @@ ZPP_Body._wrapFn = (zpp) => new Body(zpp);
 This allows `import { Vec2 } from "nape-js"` without pulling in Space/Body/Constraints.
 Prerequisite: Priority 23 (direct ZPP imports) and Priority 24 (namespace reduction) done first.
 
-### Priority 27: HaxeShims.ts final audit
+### ✅ Priority 27: HaxeShims.ts final audit — DONE
 
-**Effort: S | Impact: small | Risk: low**
-
-After Priority 21 removes `$hxClasses`, audit what remains in `HaxeShims.ts`:
-
-| Shim | Still needed? |
-|------|---------------|
-| `$hxClasses` | ❌ (removed in P21) |
-| `HaxeError` | ✅ ZPP code throws/catches Haxe errors |
-| `$bind` | verify — may be used in ZPP callbacks |
-| `$estr`, `jsBoot.__string_rec` | verify — likely only in error paths |
-| `Reflect`, `Std`, `StringTools` | verify — drop if no callers remain |
-
-Target: 150-line file → ~20 lines (only `HaxeError` + confirmed active shims).
+`src/core/HaxeShims.ts` **deleted** entirely (195 → 0 lines). All remaining shims were
+either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted.
+- `HaxeError`, `$bind`, `jsBoot.__string_rec` — migrated into `ZPPRegistry.ts` / native classes
+- `Reflect`, `Std`, `StringTools` — no callers remained; removed completely
 
 ### Priority 28: User-facing API improvements
 
@@ -366,27 +396,26 @@ Target: 150-line file → ~20 lines (only `HaxeError` + confirmed active shims).
 ### Execution order
 
 ```
-P21 → P22 → P23 → P24 → P27
-(dead code)  (bundle)  (zpp imports)  (namespace)  (shims)
+P21 → P22 → P23 → P24 → P27 (all done ✅)
                 ↓
-          P25 (Any → types)  ←→  P28 (API ergonomics)
+          P25 (Any → types, in progress)  ←→  P28 (API ergonomics)
                 ↓
           P26 (tree shaking)
                 ↓
           P29 (tests)
 ```
 
-| Priority | Effort | Impact | Risk |
-|----------|--------|--------|------|
-| P21 — Drop `__class__` / `$hxClasses` | S | medium | low |
-| P22 — Minification | XS | **large** | none |
-| P23 — `__zpp` → direct imports | M | large | medium |
-| P24 — Namespace reduction | S | medium | low |
-| P25 — `Any` → real types | XL | **largest** | medium |
-| P26 — Tree shaking | L | large | high |
-| P27 — HaxeShims audit | S | small | low |
-| P28 — API ergonomics | M | DX | low |
-| P29 — Test coverage | M | safety | none |
+| Priority | Effort | Impact | Risk | Status |
+|----------|--------|--------|------|--------|
+| P21 — Drop `__class__` / `$hxClasses` | S | medium | low | ✅ Done |
+| P22 — Minification | XS | **large** | none | ✅ Done |
+| P23 — `__zpp` → direct imports | M | large | medium | ✅ Done |
+| P24 — Namespace reduction | S | medium | low | ✅ Done |
+| P25 — `Any` → real types | XL | **largest** | medium | 🔄 In progress |
+| P26 — Tree shaking | L | large | high | ⬜ Pending |
+| P27 — HaxeShims audit | S | small | low | ✅ Done |
+| P28 — API ergonomics | M | DX | low | ⬜ Pending |
+| P29 — Test coverage | M | safety | none | ⬜ Pending |
 
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions

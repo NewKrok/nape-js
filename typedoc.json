@@ -1,0 +1,14 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/api",
+  "skipErrorChecking": true,
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "readme": "README.md",
+  "name": "nape-js API",
+  "navigationLinks": {
+    "GitHub": "https://github.com/NewKrok/nape-js",
+    "Home": "../index.html"
+  }
+}

@@ -1,8 +1,6 @@
-import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
-
-type Any = any;
+import type { Constraint } from "../constraint/Constraint";
 
 /**
  * Callback for constraint events (WAKE/SLEEP/BREAK).
@@ -14,7 +12,7 @@ type Any = any;
 export class ConstraintCallback extends Callback {
   static override __name__ = ["nape", "callbacks", "ConstraintCallback"];
 
-  get constraint(): Any {
+  get constraint(): Constraint {
     return this.zpp_inner!.constraint.outer;
   }
 
@@ -33,5 +31,5 @@ export class ConstraintCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(ConstraintCallback as Any).__super__ = Callback;
+(ConstraintCallback as any).__super__ = Callback;
 ZPP_Callback._createConCb = () => new ConstraintCallback();

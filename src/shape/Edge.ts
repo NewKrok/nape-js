@@ -1,10 +1,10 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { ZPP_Edge } from "../native/shape/ZPP_Edge";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 
-type Any = any;
+import type { Polygon } from "./Polygon";
 
 /**
  * An edge of a polygon shape.
@@ -27,7 +27,7 @@ export class Edge {
   }
 
   /** @internal */
-  static _wrap(inner: Any): Edge {
+  static _wrap(inner: ZPP_Edge | Edge | null | undefined): Edge {
     if (!inner) return null as unknown as Edge;
     if (inner instanceof Edge) return inner;
     if (inner instanceof ZPP_Edge) {
@@ -40,17 +40,15 @@ export class Edge {
         return e;
       });
     }
-    // Legacy: compiled Edge with zpp_inner
-    if (inner.zpp_inner) return Edge._wrap(inner.zpp_inner);
-    return inner;
+    return null as unknown as Edge;
   }
 
   // ---------------------------------------------------------------------------
   // Read-only properties
   // ---------------------------------------------------------------------------
 
-  /** Parent polygon (as compiled Polygon wrapper). */
-  get polygon(): Any {
+  /** Parent polygon. */
+  get polygon(): Polygon {
     const zpp = this.zpp_inner;
     if (zpp.polygon == null) {
       throw new Error("Error: Edge not current in use");
@@ -192,7 +190,7 @@ export class Edge {
    * Wrap a ZPP_Vec2 vertex into its public Vec2 outer.
    * Mirrors the compiled vertex wrapping pattern.
    */
-  private _wrapVert(vert: Any): Vec2 {
+  private _wrapVert(vert: ZPP_Vec2): Vec2 {
     const nape = getNape();
     if (vert.outer == null) {
       vert.outer = new nape.geom.Vec2();

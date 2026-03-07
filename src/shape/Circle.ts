@@ -10,7 +10,6 @@ import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 import { ZPP_Const } from "../native/util/ZPP_Const";
 
-type Any = any;
 
 /**
  * A circular physics shape.
@@ -21,7 +20,7 @@ type Any = any;
  */
 export class Circle extends Shape {
   static __name__ = ["nape", "shape", "Circle"];
-  static __super__: Any = Shape;
+  static __super__: any = Shape;
 
   /** Direct access to the extracted internal ZPP_Circle. */
   zpp_inner_zn!: ZPP_Circle;
@@ -37,14 +36,14 @@ export class Circle extends Shape {
     const nape = getNape();
     const zpp = new ZPP_Circle();
     this.zpp_inner_zn = zpp;
-    (this as Any).zpp_inner = zpp;
+    (this as any).zpp_inner = zpp;
     this.zpp_inner_i = zpp;
     zpp.outer = this;
     zpp.outer_zn = this;
     zpp.outer_i = this;
 
     // _inner = this so Shape-level methods (via compiled prototype) work
-    (this as Writable<Circle>)._inner = this as Any;
+    (this as Writable<Circle>)._inner = this as any;
 
     // --- Validate and set radius ---
     if (radius !== zpp.radius) {
@@ -67,7 +66,7 @@ export class Circle extends Shape {
 
     // --- Handle localCOM ---
     if (localCOM != null) {
-      if ((localCOM as Any).zpp_disp) {
+      if ((localCOM as any).zpp_disp) {
         throw new Error("Error: Vec2 has been disposed and cannot be used!");
       }
       const inner = localCOM.zpp_inner;
@@ -94,7 +93,7 @@ export class Circle extends Shape {
       }
     } else {
       zpp.immutable_midstep("Shape::material");
-      zpp.setMaterial((material as Any).zpp_inner);
+      zpp.setMaterial((material as any).zpp_inner);
       zpp.material.wrapper();
     }
 
@@ -109,7 +108,7 @@ export class Circle extends Shape {
       }
     } else {
       zpp.immutable_midstep("Shape::filter");
-      zpp.setFilter((filter as Any).zpp_inner);
+      zpp.setFilter((filter as any).zpp_inner);
       zpp.filter.wrapper();
     }
 
@@ -125,12 +124,12 @@ export class Circle extends Shape {
       return getOrCreate(inner, (zpp: ZPP_Circle) => {
         const c = Object.create(Circle.prototype) as Circle;
         c.zpp_inner_zn = zpp;
-        (c as Any).zpp_inner = zpp;
+        (c as any).zpp_inner = zpp;
         c.zpp_inner_i = zpp;
         zpp.outer = c;
         zpp.outer_zn = c;
         zpp.outer_i = c;
-        (c as Writable<Circle>)._inner = c as Any;
+        (c as Writable<Circle>)._inner = c as any;
         return c;
       });
     }
@@ -155,7 +154,7 @@ export class Circle extends Shape {
   set radius(value: number) {
     const zpp = this.zpp_inner_zn;
     const nape = getNape();
-    (this as Any).zpp_inner.immutable_midstep("Circle::radius");
+    (this as any).zpp_inner.immutable_midstep("Circle::radius");
     if (zpp.body != null && zpp.body.type === 1 && zpp.body.space != null) {
       throw new Error(
         "Error: Cannot modifiy radius of Circle contained in static object once added to space",
@@ -199,7 +198,7 @@ nape.shape.Circle = Circle;
 const compiledShapeProto = nape.shape.Shape.prototype;
 for (const k in compiledShapeProto) {
   if (!(k in Circle.prototype)) {
-    (Circle.prototype as Any)[k] = compiledShapeProto[k];
+    (Circle.prototype as any)[k] = compiledShapeProto[k];
   }
 }
 
@@ -207,6 +206,6 @@ for (const k in compiledShapeProto) {
 const compiledInteractorProto = nape.phys.Interactor.prototype;
 for (const k in compiledInteractorProto) {
   if (!(k in Circle.prototype)) {
-    (Circle.prototype as Any)[k] = compiledInteractorProto[k];
+    (Circle.prototype as any)[k] = compiledInteractorProto[k];
   }
 }

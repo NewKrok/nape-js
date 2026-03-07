@@ -184,7 +184,6 @@ export class ZPP_Interactor {
 
   setupcbTypes(): void {
     const zpp = ZPP_Interactor._zpp;
-    const nape = ZPP_Interactor._nape;
     this.wrap_cbTypes = zpp.util.ZPP_CbTypeList.get(this.cbTypes);
     this.wrap_cbTypes.zpp_inner.adder = this.wrap_cbTypes_adder.bind(this);
     this.wrap_cbTypes.zpp_inner.subber = this.wrap_cbTypes_subber.bind(this);
@@ -336,6 +335,7 @@ export class ZPP_Interactor {
   }
 
   lookup_group(): Any {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let cur: Any = this;
     while (cur != null && cur.group == null) {
       if (cur.ishape != null) {

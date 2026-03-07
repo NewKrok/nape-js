@@ -107,7 +107,7 @@ describe("Edge", () => {
   });
 
   it("should have worldProjection when body has a body", () => {
-    const { body, poly } = makeBoxInBody();
+    const { poly } = makeBoxInBody();
     const iter = poly.edges.iterator();
     const edge = iter.next();
     expect(typeof edge.worldProjection).toBe("number");
@@ -115,7 +115,7 @@ describe("Edge", () => {
   });
 
   it("should have worldVertex1 and worldVertex2 with body", () => {
-    const { body, poly } = makeBoxInBody();
+    const { poly } = makeBoxInBody();
     const iter = poly.edges.iterator();
     const edge = iter.next();
     const wv1 = edge.worldVertex1;
@@ -140,7 +140,7 @@ describe("Edge", () => {
   });
 
   it("should have toString with worldNormal when body exists", () => {
-    const { body, poly } = makeBoxInBody();
+    const { poly } = makeBoxInBody();
     const iter = poly.edges.iterator();
     const edge = iter.next();
     const str = edge.toString();
@@ -155,7 +155,7 @@ describe("Edge", () => {
   it("should throw for worldNormal without body", () => {
     // Create an edge from a polygon NOT in a body
     // We use the internal mechanism
-    const poly = new Polygon(Polygon.box(10, 10));
+    new Polygon(Polygon.box(10, 10));
     // Polygon not added to body
     // But accessing edges should still work for local properties
     // worldNormal should throw since no body

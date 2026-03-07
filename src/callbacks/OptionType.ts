@@ -2,8 +2,7 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import type { NapeInner } from "../geom/Vec2";
-
-type Any = any;
+import type { CbType } from "./CbType";
 
 /**
  * Composite callback option type — allows including and excluding CbTypes.
@@ -19,7 +18,7 @@ export class OptionType {
     return this;
   }
 
-  constructor(includes?: Any, excludes?: Any) {
+  constructor(includes?: CbType | OptionType, excludes?: CbType | OptionType) {
     this.zpp_inner = new ZPP_OptionType();
     this.zpp_inner.outer = this;
     if (includes != null) {
@@ -34,14 +33,15 @@ export class OptionType {
   // Properties
   // ---------------------------------------------------------------------------
 
-  get includes(): Any {
+  // CbTypeList is factory-generated; no static TS type available
+  get includes(): object {
     if (this.zpp_inner.wrap_includes == null) {
       this.zpp_inner.setup_includes();
     }
     return this.zpp_inner.wrap_includes;
   }
 
-  get excludes(): Any {
+  get excludes(): object {
     if (this.zpp_inner.wrap_excludes == null) {
       this.zpp_inner.setup_excludes();
     }
@@ -49,11 +49,11 @@ export class OptionType {
   }
 
   // Compiled code compat accessors
-  get_includes(): Any {
+  get_includes(): object {
     return this.includes;
   }
 
-  get_excludes(): Any {
+  get_excludes(): object {
     return this.excludes;
   }
 
@@ -61,12 +61,12 @@ export class OptionType {
   // Methods
   // ---------------------------------------------------------------------------
 
-  including(includes: Any): this {
+  including(includes: CbType | OptionType): this {
     this.zpp_inner.append(this.zpp_inner.includes, includes);
     return this;
   }
 
-  excluding(excludes: Any): this {
+  excluding(excludes: CbType | OptionType): this {
     this.zpp_inner.append(this.zpp_inner.excludes, excludes);
     return this;
   }

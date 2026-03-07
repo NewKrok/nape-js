@@ -104,12 +104,12 @@ export function drawConstraints(ctx, space) {
       const c = rawConstraints.at(i);
       if (c.get_body1 && c.get_body2) {
         try {
-          const b1 = c.get_body1();
-          const b2 = c.get_body2();
+          const b1 = c.body1;
+          const b2 = c.body2;
           if (b1 && b2) {
             ctx.beginPath();
-            ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
-            ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
+            ctx.moveTo(b1.position.x, b1.position.y);
+            ctx.lineTo(b2.position.x, b2.position.y);
             ctx.strokeStyle = "#d2992233";
             ctx.lineWidth = 1;
             ctx.stroke();
@@ -149,25 +149,6 @@ export function drawGrid(ctx, W, H) {
  * @param {string} [version] — nape-js version string to display
  */
 export function installErrorOverlay(version) {
-  // --- Version badge (always visible, bottom-left) ---
-  if (version) {
-    const badge = document.createElement("div");
-    badge.id = "version-badge";
-    badge.textContent = `nape-js v${version}`;
-    badge.style.cssText = [
-      "position:fixed",
-      "bottom:6px",
-      "left:8px",
-      "font:11px/1 monospace",
-      "color:#8b949e",
-      "opacity:0.7",
-      "z-index:99998",
-      "pointer-events:none",
-      "user-select:none",
-    ].join(";");
-    document.body.appendChild(badge);
-  }
-
   // --- Error overlay (hidden until an error occurs) ---
   const el = document.createElement("div");
   el.id = "error-overlay";

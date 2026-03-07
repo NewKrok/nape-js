@@ -5,7 +5,6 @@ import { Polygon } from "../../src/shape/Polygon";
 import { Body } from "../../src/phys/Body";
 import { Material } from "../../src/phys/Material";
 import { InteractionFilter } from "../../src/dynamics/InteractionFilter";
-import { FluidProperties } from "../../src/phys/FluidProperties";
 import { Vec2 } from "../../src/geom/Vec2";
 import { Space } from "../../src/space/Space";
 import { Interactor } from "../../src/phys/Interactor";

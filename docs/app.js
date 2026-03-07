@@ -10,16 +10,17 @@ import {
   Material, InteractionFilter, InteractionGroup,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
   VERSION,
-} from "./nape-js.esm.js?v=3.3.42";
+} from "./nape-js.esm.js?v=3.4.5";
 import {
   bodyColor, drawBody as _drawBody, drawConstraints, drawGrid,
   installErrorOverlay,
-} from "./renderer.js?v=3.3.42";
+} from "./renderer.js?v=3.4.5";
 
 // =========================================================================
 // Canvas & state
 // =========================================================================
 
+const canvasWrap = document.getElementById("canvasWrap");
 const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("demoCanvas"));
 const ctx = canvas.getContext("2d");
 const overlay = document.getElementById("canvasOverlay");
@@ -28,6 +29,7 @@ const bodyCountLabel = document.getElementById("bodyCount");
 const stepTimeLabel = document.getElementById("stepTime");
 const demoDescEl = document.getElementById("demoDescription");
 const debugDrawCb = /** @type {HTMLInputElement} */ (document.getElementById("debugDraw"));
+
 const codePreviewEl = document.getElementById("codePreview");
 const copyCodeBtn = document.getElementById("copyCodeBtn");
 const codepenBtn = document.getElementById("codepenBtn");
@@ -47,11 +49,121 @@ let mouseY = 0;
 let renderMode = "2d"; // "2d" or "3d"
 
 // =========================================================================
+// Three.js state
+// =========================================================================
+
+let THREE = null;
+let three_renderer = null;
+let three_scene = null;
+let three_camera = null;
+let three_meshes = []; // { mesh, body }
+
+const MESH_COLORS = [0x4fc3f7, 0xffb74d, 0x81c784, 0xef5350, 0xce93d8, 0x4dd0e1, 0xfff176, 0xff8a65];
+
+async function loadThree() {
+  if (THREE) return THREE;
+  THREE = await import("https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js");
+  return THREE;
+}
+
+function setup3d() {
+  // Remove old WebGL canvas if any
+  if (three_renderer) {
+    three_renderer.dispose();
+    three_renderer = null;
+  }
+  canvas.style.display = "none";
+
+  three_scene = new THREE.Scene();
+  three_scene.background = new THREE.Color(0x0d1117);
+  // Perspective camera: slight top-down angle so object sides are visible
+  const fov = 45;
+  const aspect = W / H;
+  // Z so the W-wide physics space fits horizontally at z=0
+  const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / aspect;
+  three_camera = new THREE.PerspectiveCamera(fov, aspect, 1, camZ * 6);
+  three_camera.position.set(W / 2, -H / 2, camZ);
+  three_camera.lookAt(W / 2, -H / 2, 0);
+  const displayW = canvasWrap.clientWidth || W;
+  const displayH = Math.round(displayW * (H / W));
+  three_renderer = new THREE.WebGLRenderer({ antialias: true });
+  three_renderer.setSize(displayW, displayH);
+  canvasWrap.appendChild(three_renderer.domElement);
+
+  // Key light — warm, top-left, strong
+  const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0);
+  keyLight.position.set(-W * 0.3, H * 0.6, 800);
+  three_scene.add(keyLight);
+  // Fill light — cool blue, opposite side, softer
+  const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6);
+  fillLight.position.set(W * 1.2, -H * 0.3, 400);
+  three_scene.add(fillLight);
+  // Rim light — top, slight warm, separates objects from bg
+  const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8);
+  rimLight.position.set(W * 0.5, H * 1.5, 200);
+  three_scene.add(rimLight);
+  // Low ambient so shadows stay dark
+  three_scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
+
+  three_meshes = [];
+}
+
+function teardown3d() {
+  if (three_renderer) {
+    canvasWrap.removeChild(three_renderer.domElement);
+    three_renderer.dispose();
+    three_renderer = null;
+  }
+  three_scene = null;
+  three_camera = null;
+  three_meshes = [];
+  canvas.style.display = "";
+}
+
+function buildThreeMeshes() {
+  if (!space || !three_scene) return;
+  for (const body of space.bodies) {
+    for (const shape of body.shapes) {
+      let geom;
+      if (shape.isCircle()) {
+        geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+      } else if (shape.isPolygon()) {
+        const verts = shape.castPolygon.localVerts;
+        const len = verts.get_length();
+        if (len < 3) continue;
+        const pts = [];
+        for (let i = 0; i < len; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+        geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+        geom.translate(0, 0, -15);
+      }
+      if (!geom) continue;
+      const cIdx = (body.userData?._colorIdx ?? 0) % MESH_COLORS.length;
+      const color = body.isStatic() ? 0x455a64 : MESH_COLORS[cIdx];
+      const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
+      three_scene.add(mesh);
+      const edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geom, 15),
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 })
+      );
+      edges.visible = debugDrawCb.checked;
+      mesh.add(edges);
+      three_meshes.push({ mesh, body, edges });
+    }
+  }
+}
+
+function updateWireframeVisibility() {
+  for (const { edges } of three_meshes) {
+    if (edges) edges.visible = debugDrawCb.checked;
+  }
+}
+
+// =========================================================================
 // Rendering helpers
 // =========================================================================
 
 function getCanvasScale() {
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvasWrap.getBoundingClientRect();
   return { sx: W / rect.width, sy: H / rect.height };
 }
 
@@ -136,7 +248,98 @@ function openInCodePen() {
 
   const css = `body { margin: 20px; background: #0d1117; font-family: sans-serif; color: #e6edf3; }`;
 
+  const RENDERER_2D = `// ── Renderer ────────────────────────────────────────────────────────────────
+const COLORS = [
+  { fill: "rgba(88,166,255,0.18)",  stroke: "#58a6ff" },
+  { fill: "rgba(210,153,34,0.18)",  stroke: "#d29922" },
+  { fill: "rgba(63,185,80,0.18)",   stroke: "#3fb950" },
+  { fill: "rgba(248,81,73,0.18)",   stroke: "#f85149" },
+  { fill: "rgba(163,113,247,0.18)", stroke: "#a371f7" },
+  { fill: "rgba(219,171,255,0.18)", stroke: "#dbabff" },
+];
+function bodyColor(body) {
+  if (body.isStatic()) return { fill: "rgba(120,160,200,0.15)", stroke: "#607888" };
+  const idx = (body.userData?._colorIdx ?? Math.abs(Math.round(body.position.x * 0.1))) % COLORS.length;
+  return COLORS[idx];
+}
+function drawBody(body) {
+  const px = body.position.x, py = body.position.y;
+  ctx.save();
+  ctx.translate(px, py);
+  ctx.rotate(body.rotation);
+  const { fill, stroke } = bodyColor(body);
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      const r = shape.castCircle.radius;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fillStyle = fill; ctx.fill();
+      ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(r, 0);
+      ctx.strokeStyle = stroke + "55"; ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      const len = verts.get_length();
+      if (len < 3) continue;
+      ctx.beginPath();
+      ctx.moveTo(verts.at(0).x, verts.at(0).y);
+      for (let i = 1; i < len; i++) ctx.lineTo(verts.at(i).x, verts.at(i).y);
+      ctx.closePath();
+      ctx.fillStyle = fill; ctx.fill();
+      ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+function drawGrid() {
+  ctx.strokeStyle = "#1a2030"; ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+}
+function drawConstraintLines() {
+  try {
+    const raw = space._inner.get_constraints();
+    for (let i = 0; i < raw.get_length(); i++) {
+      const c = raw.at(i);
+      if (c.body1 && c.body2) {
+        ctx.beginPath();
+        ctx.moveTo(c.body1.position.x, c.body1.position.y);
+        ctx.lineTo(c.body2.position.x, c.body2.position.y);
+        ctx.strokeStyle = "#d2992233"; ctx.lineWidth = 1; ctx.stroke();
+      }
+    }
+  } catch(_) {}
+}
+// ── End Renderer ─────────────────────────────────────────────────────────────
+
+function addWalls() {
+  const t = 20;
+  const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - t / 2));
+  floor.shapes.add(new Polygon(Polygon.box(W, t))); floor.space = space;
+  const left = new Body(BodyType.STATIC, new Vec2(t / 2, H / 2));
+  left.shapes.add(new Polygon(Polygon.box(t, H))); left.space = space;
+  const right = new Body(BodyType.STATIC, new Vec2(W - t / 2, H / 2));
+  right.shapes.add(new Polygon(Polygon.box(t, H))); right.space = space;
+  const ceil = new Body(BodyType.STATIC, new Vec2(W / 2, t / 2));
+  ceil.shapes.add(new Polygon(Polygon.box(W, t))); ceil.space = space;
+  return floor;
+}
+`;
+
   let js;
+  const WALLS_3D = `function addWalls() {
+  const t = 20;
+  const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - t / 2));
+  floor.shapes.add(new Polygon(Polygon.box(W, t))); floor.space = space;
+  const left = new Body(BodyType.STATIC, new Vec2(t / 2, H / 2));
+  left.shapes.add(new Polygon(Polygon.box(t, H))); left.space = space;
+  const right = new Body(BodyType.STATIC, new Vec2(W - t / 2, H / 2));
+  right.shapes.add(new Polygon(Polygon.box(t, H))); right.space = space;
+  const ceil = new Body(BodyType.STATIC, new Vec2(W / 2, t / 2));
+  ceil.shapes.add(new Polygon(Polygon.box(W, t))); ceil.space = space;
+  return floor;
+}
+`;
+
   if (is3d) {
     js = `import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
 import {
@@ -146,6 +349,7 @@ import {
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
 } from "${NAPE_CDN}";
 
+${WALLS_3D}
 ${code}`;
   } else {
     js = `import {
@@ -159,6 +363,7 @@ const canvas = document.getElementById("demoCanvas");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
 
+${RENDERER_2D}
 ${code}`;
   }
 
@@ -186,6 +391,8 @@ ${code}`;
   document.body.removeChild(form);
 }
 
+debugDrawCb.addEventListener("change", updateWireframeVisibility);
+
 copyCodeBtn.addEventListener("click", () => {
   gtag("event", "click", { event_category: "code_action", event_label: "copy_code", demo: currentDemo });
   copyCode();
@@ -196,17 +403,35 @@ codepenBtn.addEventListener("click", () => {
 });
 
 // Render mode toggle
-document.getElementById("renderModeToggle").addEventListener("click", (e) => {
+document.getElementById("renderModeToggle").addEventListener("click", async (e) => {
   const btn = e.target.closest(".render-mode-btn");
   if (!btn) return;
   const mode = btn.dataset.mode;
   if (mode === renderMode) return;
   gtag("event", "click", { event_category: "render_mode", event_label: mode });
+
+  if (mode === "3d") await loadThree();
+
   renderMode = mode;
   document.querySelectorAll(".render-mode-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.mode === mode);
   });
   updateCodePreview(DEMOS[currentDemo]);
+
+  // Restart the current demo in the new render mode
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  if (mode === "2d") {
+    teardown3d();
+    DEMOS[currentDemo].setup();
+  } else {
+    setup3d();
+    DEMOS[currentDemo].setup();
+    buildThreeMeshes();
+  }
+  lastTime = performance.now();
+  frameCount = 0;
+  fpsAccum = 0;
+  loop();
 });
 
 // =========================================================================
@@ -270,10 +495,7 @@ const DEMOS = {
     code2d: `// Create a Space with downward gravity
 const space = new Space(new Vec2(0, 600));
 
-// Add static walls (floor, ceiling, left, right)
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 // Spawn random shapes
 for (let i = 0; i < 80; i++) {
@@ -293,43 +515,10 @@ for (let i = 0; i < 80; i++) {
   body.space = space;
 }
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x)) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      const r = shape.castCircle.radius;
-      ctx.beginPath();
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      const v0 = verts.at(0);
-      ctx.moveTo(v0.get_x(), v0.get_y());
-      for (let i = 1; i < verts.get_length(); i++) {
-        const v = verts.at(i);
-        ctx.lineTo(v.get_x(), v.get_y());
-      }
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
 }
@@ -339,26 +528,23 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-
-// Lighting
-scene.add(new THREE.AmbientLight(0x404050));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(W / 2, -H / 2, 500);
-scene.add(dirLight);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
 const space = new Space(new Vec2(0, 600));
-
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+const floor = addWalls();
 
 const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
 const meshes = [];
@@ -374,16 +560,18 @@ function createMesh(body) {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
     for (let i = 0; i < verts.get_length(); i++) {
-      pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+      pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     }
     const shape2d = new THREE.Shape(pts);
-    geom = new THREE.ExtrudeGeometry(shape2d, { depth, bevelEnabled: false });
-    geom.translate(0, 0, -depth / 2);
+    geom = new THREE.ExtrudeGeometry(shape2d, { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const color = body.isStatic() ? 0x607888 : COLORS[meshes.length % COLORS.length];
-  const mat = new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 });
+  const color = body.isStatic() ? 0x455a64 : COLORS[meshes.length % COLORS.length];
+  const mat = new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 });
   const mesh = new THREE.Mesh(geom, mat);
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -452,10 +640,7 @@ loop();`,
     code2d: `// Pyramid stress test — stacking many boxes
 const space = new Space(new Vec2(0, 600));
 
-// Static floor
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 // Build a pyramid of boxes
 const boxSize = 28;
@@ -476,38 +661,10 @@ for (let row = 0; row < rows; row++) {
   }
 }
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.y * 0.1)) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
 }
@@ -517,23 +674,23 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 800);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(W / 2, -H / 2, 500);
-scene.add(dirLight);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
 const space = new Space(new Vec2(0, 600));
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+const floor = addWalls();
 
 const ROW_COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7, 0xdbabff];
 const meshes = [];
@@ -546,13 +703,15 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     const s = new THREE.Shape(pts);
-    geom = new THREE.ExtrudeGeometry(s, { depth: 20, bevelEnabled: false });
-    geom.translate(0, 0, -10);
+    geom = new THREE.ExtrudeGeometry(s, { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -571,7 +730,7 @@ for (let row = 0; row < rows; row++) {
     addMesh(b, ROW_COLORS[row % ROW_COLORS.length]);
   }
 }
-addMesh(floor, 0x607888);
+addMesh(floor, 0x455a64);
 
 function loop() {
   space.step(1 / 60, 8, 3);
@@ -691,47 +850,10 @@ const lastJoint = new PivotJoint(
 );
 lastJoint.space = space;
 
-// 2D Canvas rendering
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : "#58a6ff";
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
-function drawConstraintLines() {
-  try {
-    const raw = space._inner.get_constraints();
-    for (let i = 0; i < raw.get_length(); i++) {
-      const c = raw.at(i);
-      if (c.get_body1 && c.get_body2) {
-        const b1 = c.get_body1(), b2 = c.get_body2();
-        if (b1 && b2) {
-          ctx.beginPath();
-          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
-          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
-          ctx.strokeStyle = "#d2992244";
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-    }
-  } catch (_) {}
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   drawConstraintLines();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
@@ -742,15 +864,19 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
 const space = new Space(new Vec2(0, 400));
@@ -762,13 +888,15 @@ const meshes = [];
 function addSphere(body, r, color) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(r, 16, 16),
-    new THREE.MeshPhongMaterial({ color }),
+    new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }),
   );
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
-addSphere(anchor, 6, 0x607888);
+addSphere(anchor, 6, 0x455a64);
 
 const links = 20, linkLen = 18;
 let prev = anchor;
@@ -837,10 +965,7 @@ loop();`,
     code2d: `// Impulse blast — apply radial impulse on click
 const space = new Space(new Vec2(0, 500));
 
-// Add walls
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 // Fill with mixed shapes
 for (let i = 0; i < 120; i++) {
@@ -859,8 +984,8 @@ for (let i = 0; i < 120; i++) {
 }
 
 // On click: radial impulse blast
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
+canvasWrap.addEventListener("click", (e) => {
+  const rect = canvasWrap.getBoundingClientRect();
   const sx = W / rect.width, sy = H / rect.height;
   const clickX = (e.clientX - rect.left) * sx;
   const clickY = (e.clientY - rect.top) * sy;
@@ -878,38 +1003,10 @@ canvas.addEventListener("click", (e) => {
   }
 });
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x)) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
 }
@@ -919,21 +1016,23 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 800);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -H / 2, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
 const space = new Space(new Vec2(0, 500));
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
 const meshes = [];
@@ -946,13 +1045,15 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     const s = new THREE.Shape(pts);
-    geom = new THREE.ExtrudeGeometry(s, { depth: 20, bevelEnabled: false });
-    geom.translate(0, 0, -10);
+    geom = new THREE.ExtrudeGeometry(s, { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -1165,40 +1266,11 @@ new PivotJoint(mAnchor, wheel, new Vec2(0, 0), new Vec2(0, 0)).space = space;
 const motor = new MotorJoint(mAnchor, wheel, 3);
 motor.space = space;
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-let colorIdx = 0;
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : COLORS[(colorIdx++) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
-  colorIdx = 0;
+  drawGrid();
+  drawConstraintLines();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
 }
@@ -1208,15 +1280,19 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 const space = new Space(new Vec2(0, 300));
 const COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7];
@@ -1230,12 +1306,14 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
-    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 20, bevelEnabled: false });
-    geom.translate(0, 0, -10);
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -1247,7 +1325,7 @@ const bar = new Body(BodyType.DYNAMIC, new Vec2(120, 80));
 bar.shapes.add(new Polygon(Polygon.box(80, 10)));
 bar.space = space;
 new PivotJoint(pivotAnchor, bar, new Vec2(0, 0), new Vec2(0, 0)).space = space;
-addMesh(pivotAnchor, 0x607888);
+addMesh(pivotAnchor, 0x455a64);
 addMesh(bar, COLORS[0]);
 
 // DistanceJoint: spring
@@ -1260,7 +1338,7 @@ ball.space = space;
 const spring = new DistanceJoint(dAnchor, ball, new Vec2(0, 0), new Vec2(0, 0), 80, 120);
 spring.stiff = false; spring.frequency = 2; spring.damping = 0.3;
 spring.space = space;
-addMesh(dAnchor, 0x607888);
+addMesh(dAnchor, 0x455a64);
 addMesh(ball, COLORS[1]);
 
 // MotorJoint: spinning wheel
@@ -1272,7 +1350,7 @@ wheel.shapes.add(new Polygon(Polygon.regular(30, 30, 6)));
 wheel.space = space;
 new PivotJoint(mAnchor, wheel, new Vec2(0, 0), new Vec2(0, 0)).space = space;
 new MotorJoint(mAnchor, wheel, 3).space = space;
-addMesh(mAnchor, 0x607888);
+addMesh(mAnchor, 0x455a64);
 addMesh(wheel, COLORS[3]);
 
 function loop() {
@@ -1380,29 +1458,11 @@ function applyGravity() {
   }
 }
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x * 0.1)) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
 function loop() {
   applyGravity();
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
 }
@@ -1412,15 +1472,19 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 700);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics — no global gravity
 const space = new Space(new Vec2(0, 0));
@@ -1434,7 +1498,7 @@ const meshes = [];
 // Planet mesh
 const planetMesh = new THREE.Mesh(
   new THREE.SphereGeometry(40, 32, 32),
-  new THREE.MeshPhongMaterial({ color: 0x607888, emissive: 0x1a2030 }),
+  new THREE.MeshPhongMaterial({ color: 0x455a64 }),
 );
 planetMesh.position.set(W / 2, -H / 2, 0);
 scene.add(planetMesh);
@@ -1457,6 +1521,8 @@ for (let i = 0; i < 50; i++) {
     new THREE.MeshPhongMaterial({ color: COLORS[i % COLORS.length] }),
   );
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -1611,10 +1677,7 @@ loop();`,
     code2d: `// Ragdoll using PivotJoint + AngleJoint constraints
 const space = new Space(new Vec2(0, 600));
 
-// Static floor
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 function spawnRagdoll(x, y) {
   const torso = new Body(BodyType.DYNAMIC, new Vec2(x, y));
@@ -1645,58 +1708,10 @@ function spawnRagdoll(x, y) {
 
 spawnRagdoll(W / 2, 120);
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.y * 0.05)) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
-function drawConstraintLines() {
-  try {
-    const raw = space._inner.get_constraints();
-    for (let i = 0; i < raw.get_length(); i++) {
-      const c = raw.at(i);
-      if (c.get_body1 && c.get_body2) {
-        const b1 = c.get_body1(), b2 = c.get_body2();
-        if (b1 && b2) {
-          ctx.beginPath();
-          ctx.moveTo(b1.get_position().get_x(), b1.get_position().get_y());
-          ctx.lineTo(b2.get_position().get_x(), b2.get_position().get_y());
-          ctx.strokeStyle = "#d2992233";
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-    }
-  } catch (_) {}
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   drawConstraintLines();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
@@ -1707,21 +1722,23 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 600);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
 const space = new Space(new Vec2(0, 600));
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 const meshes = [];
 function addMesh(body, color) {
@@ -1732,12 +1749,14 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
-    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 16, bevelEnabled: false });
-    geom.translate(0, 0, -8);
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color }));
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -1844,10 +1863,7 @@ loop();`,
     code2d: `// Stacking stability test — towers of various shapes
 const space = new Space(new Vec2(0, 600));
 
-// Static floor
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 // Tower of boxes
 for (let i = 0; i < 12; i++) {
@@ -1870,38 +1886,10 @@ for (let i = 0; i < 10; i++) {
   b.space = space;
 }
 
-// 2D Canvas rendering
-const COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149", "#a371f7"];
-
-function drawBody(body) {
-  ctx.save();
-  ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.rotation);
-  const color = body.isStatic() ? "#607888" : COLORS[Math.abs(Math.round(body.position.x * 0.01)) % COLORS.length];
-  for (const shape of body.shapes) {
-    if (shape.isCircle()) {
-      ctx.beginPath();
-      ctx.arc(0, 0, shape.castCircle.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    } else if (shape.isPolygon()) {
-      const verts = shape.castPolygon.localVerts;
-      ctx.beginPath();
-      ctx.moveTo(verts.at(0).get_x(), verts.at(0).get_y());
-      for (let i = 1; i < verts.get_length(); i++) ctx.lineTo(verts.at(i).get_x(), verts.at(i).get_y());
-      ctx.closePath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
 function loop() {
   space.step(1 / 60, 8, 3);
   ctx.clearRect(0, 0, W, H);
+  drawGrid();
   for (const body of space.bodies) drawBody(body);
   requestAnimationFrame(loop);
 }
@@ -1911,21 +1899,23 @@ loop();`,
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 800);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 // Physics
 const space = new Space(new Vec2(0, 600));
-const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
-floor.shapes.add(new Polygon(Polygon.box(W, 20)));
-floor.space = space;
+addWalls();
 
 const meshes = [];
 function addMesh(body, color) {
@@ -1936,12 +1926,14 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
-    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 20, bevelEnabled: false });
-    geom.translate(0, 0, -10);
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.85 }));
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -2164,21 +2156,35 @@ function createLeg(side, phase) {
   makeDJ(body2, wheel, lp6x, lp6y, wax, way, D6W);
   new PivotJoint(body2, chassis, new Vec2(0,0), new Vec2(p4x*S,(P.p4y+PIVOT_Y)*S)).space = space;
 }
-[0, Math.PI*2/3, Math.PI*4/3].forEach(ph => { createLeg(1,ph); createLeg(-1,ph); });`,
+[0, Math.PI*2/3, Math.PI*4/3].forEach(ph => { createLeg(1,ph); createLeg(-1,ph); });
+
+function loop() {
+  space.step(1 / 60, 8, 3);
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+  drawConstraintLines();
+  for (const body of space.bodies) drawBody(body);
+  requestAnimationFrame(loop);
+}
+loop();`,
 
     code3d: `// Setup Three.js scene
 const container = document.getElementById("container");
 const W = 900, H = 500;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const camera = new THREE.PerspectiveCamera(45, W / H, 1, 2000);
-camera.position.set(W / 2, -H / 2, 600);
+scene.background = new THREE.Color(0x0d1117);
+const fov = 45;
+const camZ = (W / 2) / Math.tan((fov / 2) * Math.PI / 180) / (W / H);
+const camera = new THREE.PerspectiveCamera(fov, W / H, 1, camZ * 6);
+camera.position.set(W / 2, -H / 2, camZ);
 camera.lookAt(W / 2, -H / 2, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(W, H);
 container.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0x404050));
-scene.add(new THREE.DirectionalLight(0xffffff, 1)).position.set(W / 2, -200, 500);
+const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.0); keyLight.position.set(-W*0.3, H*0.6, 800); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xadd8ff, 0.6); fillLight.position.set(W*1.2, -H*0.3, 400); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffe0b0, 0.8); rimLight.position.set(W*0.5, H*1.5, 200); scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x1a1a2e, 1.0));
 
 const space = new Space(new Vec2(0, 400));
 const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - 10));
@@ -2207,12 +2213,14 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).get_x(), verts.at(i).get_y()));
-    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 16, bevelEnabled: false });
-    geom.translate(0, 0, -8);
+    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+    geom.translate(0, 0, -15);
   }
-  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color }));
+  const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
   scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 15), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  mesh.add(edges);
   meshes.push({ mesh, body });
 }
 
@@ -2330,6 +2338,9 @@ function createSoftBody(startX, startY, cols, rows, gap, colorIdx) {
 
 function startDemo(name) {
   if (animId) cancelAnimationFrame(animId);
+  animId = null;
+  // Teardown 3D if switching away
+  if (renderMode === "3d") teardown3d();
   currentDemo = name;
 
   document.querySelectorAll(".tab").forEach(t => {
@@ -2340,6 +2351,11 @@ function startDemo(name) {
   demoDescEl.innerHTML = demo.desc;
   updateCodePreview(demo);
   demo.setup();
+
+  if (renderMode === "3d" && THREE) {
+    setup3d();
+    buildThreeMeshes();
+  }
 
   lastTime = performance.now();
   frameCount = 0;
@@ -2372,11 +2388,49 @@ function loop() {
 
   bodyCountLabel.textContent = `Bodies: ${space.bodies.length}`;
 
-  // Render
-  ctx.clearRect(0, 0, W, H);
-  drawGrid(ctx, W, H);
-  drawConstraints(ctx, space);
-  for (const body of space.bodies) drawBody(body);
+  if (renderMode === "3d" && three_renderer && three_scene && three_camera) {
+    // Sync new bodies that appeared after setup (e.g. click-spawned)
+    const tracked = new Set(three_meshes.map(m => m.body));
+    for (const body of space.bodies) {
+      if (tracked.has(body)) continue;
+      for (const shape of body.shapes) {
+        let geom;
+        if (shape.isCircle()) {
+          geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+        } else if (shape.isPolygon()) {
+          const verts = shape.castPolygon.localVerts;
+          const len = verts.get_length();
+          if (len < 3) continue;
+          const pts = [];
+          for (let i = 0; i < len; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+          geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
+          geom.translate(0, 0, -15);
+        }
+        if (!geom) continue;
+        const cIdx = (body.userData?._colorIdx ?? 0) % MESH_COLORS.length;
+        const color = body.isStatic() ? 0x455a64 : MESH_COLORS[cIdx];
+        const mesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }));
+        three_scene.add(mesh);
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geom, 15),
+          new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 })
+        );
+        edges.visible = debugDrawCb.checked;
+        mesh.add(edges);
+        three_meshes.push({ mesh, body, edges });
+      }
+    }
+    for (const { mesh, body } of three_meshes) {
+      mesh.position.set(body.position.x, -body.position.y, 0);
+      mesh.rotation.z = -body.rotation;
+    }
+    three_renderer.render(three_scene, three_camera);
+  } else {
+    ctx.clearRect(0, 0, W, H);
+    drawGrid(ctx, W, H);
+    drawConstraints(ctx, space);
+    for (const body of space.bodies) drawBody(body);
+  }
 
   animId = requestAnimationFrame(loop);
 }
@@ -2385,18 +2439,18 @@ function loop() {
 // Interaction
 // =========================================================================
 
-canvas.addEventListener("mousedown", (e) => {
+canvasWrap.addEventListener("mousedown", (e) => {
   mouseDown = true;
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvasWrap.getBoundingClientRect();
   const { sx, sy } = getCanvasScale();
   mouseX = (e.clientX - rect.left) * sx;
   mouseY = (e.clientY - rect.top) * sy;
   DEMOS[currentDemo].click?.(mouseX, mouseY);
 });
 
-canvas.addEventListener("mousemove", (e) => {
+canvasWrap.addEventListener("mousemove", (e) => {
   if (!mouseDown) return;
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvasWrap.getBoundingClientRect();
   const { sx, sy } = getCanvasScale();
   mouseX = (e.clientX - rect.left) * sx;
   mouseY = (e.clientY - rect.top) * sy;
@@ -2405,13 +2459,13 @@ canvas.addEventListener("mousemove", (e) => {
   }
 });
 
-canvas.addEventListener("mouseup", () => { mouseDown = false; });
-canvas.addEventListener("mouseleave", () => { mouseDown = false; });
+canvasWrap.addEventListener("mouseup", () => { mouseDown = false; });
+canvasWrap.addEventListener("mouseleave", () => { mouseDown = false; });
 
-canvas.addEventListener("touchstart", (e) => {
+canvasWrap.addEventListener("touchstart", (e) => {
   e.preventDefault();
   const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvasWrap.getBoundingClientRect();
   const { sx, sy } = getCanvasScale();
   mouseX = (touch.clientX - rect.left) * sx;
   mouseY = (touch.clientY - rect.top) * sy;
@@ -2492,7 +2546,7 @@ function runBenchmarkSuite() {
     const maxAvg = Math.max(...results.map(r => r.avg));
 
     let html = `
-      <table class="bench-table">
+      <div class="bench-table-wrap"><table class="bench-table">
         <thead>
           <tr>
             <th>Scenario</th>
@@ -2500,14 +2554,14 @@ function runBenchmarkSuite() {
             <th>Average</th>
             <th>Min</th>
             <th>Max</th>
-            <th style="width:200px"></th>
+            <th class="bench-bar-col"></th>
           </tr>
         </thead>
         <tbody>
     `;
 
     for (const r of results) {
-      const barWidth = Math.max(4, (r.avg / maxAvg) * 180);
+      const barWidth = Math.max(4, (r.avg / maxAvg) * 100);
       html += `
         <tr>
           <td>${r.label}</td>
@@ -2515,12 +2569,12 @@ function runBenchmarkSuite() {
           <td>${formatMs(r.avg)}</td>
           <td>${formatMs(r.min)}</td>
           <td>${formatMs(r.max)}</td>
-          <td><div class="bench-bar" style="width:${barWidth}px"></div></td>
+          <td class="bench-bar-col"><div class="bench-bar" style="width:${barWidth}px"></div></td>
         </tr>
       `;
     }
 
-    html += "</tbody></table>";
+    html += "</tbody></table></div>";
     html += `<p style="margin-top:12px;color:var(--text-dim);font-size:0.82rem">
       Measured with <code>space.step(1/60, 8, 3)</code> per iteration.
       Mixed circle/box shapes. Your results may vary by browser and hardware.
@@ -2544,5 +2598,7 @@ document.getElementById("runBenchmark").addEventListener("click", () => {
 // =========================================================================
 
 installErrorOverlay(VERSION);
+const versionBadge = document.getElementById("versionBadge");
+if (versionBadge) versionBadge.textContent = `v${VERSION}`;
 overlay.classList.add("hidden");
 startDemo("falling");

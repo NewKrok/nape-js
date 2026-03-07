@@ -37,7 +37,6 @@ export function _bindPolygonWrap(fn: SubclassWrapFn): void {
   _polygonWrap = fn;
 }
 
-type Any = any;
 
 /**
  * Base class for physics shapes (Circle, Polygon).
@@ -79,19 +78,19 @@ export class Shape extends Interactor {
   // ---------------------------------------------------------------------------
 
   get type(): ShapeType {
-    return ZPP_Shape.types[(this as Any).zpp_inner.type];
+    return ZPP_Shape.types[(this as any).zpp_inner.type];
   }
 
   isCircle(): boolean {
-    return (this as Any).zpp_inner.type === 0;
+    return (this as any).zpp_inner.type === 0;
   }
 
   isPolygon(): boolean {
-    return (this as Any).zpp_inner.type === 1;
+    return (this as any).zpp_inner.type === 1;
   }
 
   get body(): Body {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     if (zpp.body != null) {
       return zpp.body.outer;
     }
@@ -99,7 +98,7 @@ export class Shape extends Interactor {
   }
 
   set body(value: Body | null) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::body");
     const currentBody = zpp.body != null ? zpp.body.outer : null;
     if (currentBody !== value) {
@@ -107,7 +106,7 @@ export class Shape extends Interactor {
         currentBody.zpp_inner.wrap_shapes.remove(this);
       }
       if (value != null) {
-        const shapes = (value as Any).zpp_inner.wrap_shapes;
+        const shapes = (value as any).zpp_inner.wrap_shapes;
         if (shapes.zpp_inner.reverse_flag) {
           shapes.push(this);
         } else {
@@ -118,7 +117,7 @@ export class Shape extends Interactor {
   }
 
   get castCircle(): Shape | null {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     if (zpp.type === 0) {
       const outer = zpp.circle.outer_zn;
       return _circleWrap ? _circleWrap(outer) : outer;
@@ -127,7 +126,7 @@ export class Shape extends Interactor {
   }
 
   get castPolygon(): Shape | null {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     if (zpp.type === 1) {
       const outer = zpp.polygon.outer_zn;
       return _polygonWrap ? _polygonWrap(outer) : outer;
@@ -136,7 +135,7 @@ export class Shape extends Interactor {
   }
 
   get worldCOM(): Vec2 {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     if (zpp.wrap_worldCOM == null) {
       this._setupWorldCOM();
     }
@@ -144,7 +143,7 @@ export class Shape extends Interactor {
   }
 
   get localCOM(): Vec2 {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     if (zpp.wrap_localCOM == null) {
       if (zpp.type === 0) {
         zpp.circle.setupLocalCOM();
@@ -156,9 +155,9 @@ export class Shape extends Interactor {
   }
 
   set localCOM(value: Vec2) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Body::localCOM");
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
@@ -179,57 +178,57 @@ export class Shape extends Interactor {
     }
     // Set via the wrapper (triggers _invalidate callback)
     zpp.wrap_localCOM.set(value);
-    if ((value as Any).zpp_inner.weak) {
+    if ((value as any).zpp_inner.weak) {
       value.dispose();
     }
   }
 
   get area(): number {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.validate_area_inertia();
     return zpp.area;
   }
 
   get inertia(): number {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.validate_area_inertia();
     return zpp.inertia;
   }
 
   get angDrag(): number {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.validate_angDrag();
     return zpp.angDrag;
   }
 
   get material(): Material {
-    return (this as Any).zpp_inner.material.wrapper();
+    return (this as any).zpp_inner.material.wrapper();
   }
 
   set material(value: Material) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::material");
     if (value == null) {
       throw new Error("Error: Cannot assign null as Shape material");
     }
-    zpp.setMaterial((value as Any).zpp_inner);
+    zpp.setMaterial((value as any).zpp_inner);
   }
 
   get filter(): InteractionFilter {
-    return (this as Any).zpp_inner.filter.wrapper();
+    return (this as any).zpp_inner.filter.wrapper();
   }
 
   set filter(value: InteractionFilter) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::filter");
     if (value == null) {
       throw new Error("Error: Cannot assign null as Shape filter");
     }
-    zpp.setFilter((value as Any).zpp_inner);
+    zpp.setFilter((value as any).zpp_inner);
   }
 
   get fluidProperties(): FluidProperties {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::fluidProperties");
     if (zpp.fluidProperties == null) {
       zpp.setFluid(new FluidProperties().zpp_inner);
@@ -238,13 +237,13 @@ export class Shape extends Interactor {
   }
 
   set fluidProperties(value: FluidProperties) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     if (value == null) {
       throw new Error(
         "Error: Cannot assign null as Shape fluidProperties, disable fluids by setting fluidEnabled to false",
       );
     }
-    zpp.setFluid((value as Any).zpp_inner);
+    zpp.setFluid((value as any).zpp_inner);
     zpp.immutable_midstep("Shape::fluidProperties");
     if (zpp.fluidProperties == null) {
       zpp.setFluid(new FluidProperties().zpp_inner);
@@ -278,11 +277,11 @@ export class Shape extends Interactor {
   }
 
   get fluidEnabled(): boolean {
-    return (this as Any).zpp_inner.fluidEnabled;
+    return (this as any).zpp_inner.fluidEnabled;
   }
 
   set fluidEnabled(value: boolean) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::fluidEnabled");
     zpp.fluidEnabled = value;
     if (value && zpp.fluidProperties == null) {
@@ -298,18 +297,18 @@ export class Shape extends Interactor {
   }
 
   get sensorEnabled(): boolean {
-    return (this as Any).zpp_inner.sensorEnabled;
+    return (this as any).zpp_inner.sensorEnabled;
   }
 
   set sensorEnabled(value: boolean) {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::sensorEnabled");
     zpp.sensorEnabled = value;
     zpp.wake();
   }
 
   get bounds(): AABB {
-    return (this as Any).zpp_inner.aabb.wrapper();
+    return (this as any).zpp_inner.aabb.wrapper();
   }
 
   // ---------------------------------------------------------------------------
@@ -317,9 +316,9 @@ export class Shape extends Interactor {
   // ---------------------------------------------------------------------------
 
   translate(translation: Vec2): Shape {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::translate()");
-    if ((translation as Any)?.zpp_disp) {
+    if ((translation as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
@@ -330,8 +329,8 @@ export class Shape extends Interactor {
     if (translation == null) {
       throw new Error("Error: Cannot displace Shape by null Vec2");
     }
-    if ((translation as Any).lsq() > 0) {
-      const inner = (translation as Any).zpp_inner;
+    if ((translation as any).lsq() > 0) {
+      const inner = (translation as any).zpp_inner;
       if (inner._validate != null) inner._validate();
       const x = inner.x;
       if (inner._validate != null) inner._validate();
@@ -339,14 +338,14 @@ export class Shape extends Interactor {
       const target = zpp.type === 0 ? zpp.circle : zpp.polygon;
       target.__translate(x, y);
     }
-    if ((translation as Any).zpp_inner.weak) {
+    if ((translation as any).zpp_inner.weak) {
       translation.dispose();
     }
     return this;
   }
 
   scale(scaleX: number, scaleY: number): Shape {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     const nape = getNape();
     zpp.immutable_midstep("Shape::scale()");
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
@@ -376,7 +375,7 @@ export class Shape extends Interactor {
   }
 
   rotate(angle: number): Shape {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::rotate()");
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
       throw new Error(
@@ -400,7 +399,7 @@ export class Shape extends Interactor {
   }
 
   transform(matrix: { _inner: NapeInner }): Shape {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::transform()");
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
       throw new Error(
@@ -411,13 +410,13 @@ export class Shape extends Interactor {
       throw new Error("Error: Cannot transform Shape by null matrix");
     }
     const mat = matrix._inner ?? matrix;
-    if ((mat as Any).singular()) {
+    if ((mat as any).singular()) {
       throw new Error(
         "Error: Cannot transform Shape by a singular matrix",
       );
     }
     if (zpp.type === 0) {
-      if ((mat as Any).equiorthogonal()) {
+      if ((mat as any).equiorthogonal()) {
         zpp.circle.__transform(mat);
       } else {
         throw new Error(
@@ -431,8 +430,8 @@ export class Shape extends Interactor {
   }
 
   contains(point: Vec2): boolean {
-    const zpp = (this as Any).zpp_inner;
-    if ((point as Any)?.zpp_disp) {
+    const zpp = (this as any).zpp_inner;
+    if ((point as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (point == null) {
@@ -442,7 +441,7 @@ export class Shape extends Interactor {
       throw new Error("Error: Shape is not well defined without a Body");
     }
     ZPP_Geom.validateShape(zpp);
-    const inner = (point as Any).zpp_inner;
+    const inner = (point as any).zpp_inner;
     if (inner._validate != null) inner._validate();
     const ret = ZPP_Collide.shapeContains(zpp, inner);
     if (inner.weak) {
@@ -452,13 +451,13 @@ export class Shape extends Interactor {
   }
 
   copy(): Shape {
-    const result = (this as Any).zpp_inner.copy();
+    const result = (this as any).zpp_inner.copy();
     // ZPP_Shape.copy() returns the compiled wrapper — rewrap into TS class
     return result instanceof Shape ? result : Shape._wrap(result);
   }
 
   override toString(): string {
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     const ret = zpp.type === 0 ? "Circle" : "Polygon";
     return ret + "#" + this.zpp_inner_i.id;
   }
@@ -497,14 +496,14 @@ export class Shape extends Interactor {
   /** Setup worldCOM lazy Vec2 wrapper */
   private _setupWorldCOM(): void {
     const nape = getNape();
-    const zpp = (this as Any).zpp_inner;
+    const zpp = (this as any).zpp_inner;
     const x = zpp.worldCOMx;
     const y = zpp.worldCOMy;
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
     // Get or create Vec2 from pool
-    let ret: Any;
+    let ret: any;
     if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -517,7 +516,7 @@ export class Shape extends Interactor {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (ZPP_Vec2.zpp_pool == null) {
         ret1 = new ZPP_Vec2();
       } else {

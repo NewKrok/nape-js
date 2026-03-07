@@ -325,7 +325,6 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
   }
 
   override copy(dict: Any, todo: Any): Any {
-    const napeNs = ZPP_Constraint._nape;
     const _this = this.outer_zn;
     if (_this.zpp_inner_zn.wrap_a1 == null) {
       _this.zpp_inner_zn.setup_a1();

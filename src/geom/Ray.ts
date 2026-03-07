@@ -4,31 +4,29 @@ import { Vec2 } from "./Vec2";
 import { AABB } from "./AABB";
 import { ZPP_Ray } from "../native/geom/ZPP_Ray";
 
-type Any = any;
-
 /** Read validated x from a Vec2. */
 function _readVec2X(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if (v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
-  const inner = (v as Any).zpp_inner;
+  const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.x;
 }
 
 /** Read validated y from a Vec2. */
 function _readVec2Y(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if (v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
-  const inner = (v as Any).zpp_inner;
+  const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.y;
 }
 
 /** Dispose a Vec2 if it is weak. */
 function _disposeWeakVec2(v: Vec2): void {
-  if ((v as Any).zpp_inner.weak) {
+  if (v.zpp_inner.weak) {
     v.dispose();
   }
 }
@@ -51,7 +49,7 @@ export class Ray {
 
   constructor(origin: Vec2, direction: Vec2) {
     // Validate origin
-    if ((origin as Any)?.zpp_disp) {
+    if (origin?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (origin == null) {
@@ -59,7 +57,7 @@ export class Ray {
     }
 
     // Validate direction
-    if ((direction as Any)?.zpp_disp) {
+    if (direction?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (direction == null) {
@@ -95,12 +93,12 @@ export class Ray {
   }
 
   /** @internal */
-  static _wrap(inner: Any): Ray {
+  static _wrap(inner: ZPP_Ray | Ray | null): Ray {
     if (inner == null) return null!;
     if (inner instanceof Ray) return inner;
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: ZPP_Ray) => {
       const r = Object.create(Ray.prototype) as Ray;
-      r.zpp_inner = raw.zpp_inner ?? raw;
+      r.zpp_inner = (raw as any).zpp_inner ?? raw;
       return r;
     });
   }
@@ -110,13 +108,13 @@ export class Ray {
   // ---------------------------------------------------------------------------
 
   static fromSegment(start: Vec2, end: Vec2): Ray {
-    if ((start as Any)?.zpp_disp) {
+    if (start?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (start == null) {
       throw new Error("Error: Ray::fromSegment::start is null");
     }
-    if ((end as Any)?.zpp_disp) {
+    if (end?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (end == null) {
@@ -156,7 +154,7 @@ export class Ray {
   }
 
   set origin(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if (value?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -171,7 +169,7 @@ export class Ray {
   }
 
   set direction(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if (value?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -243,7 +241,7 @@ export class Ray {
   /** @internal */ set_direction(v: Vec2): Vec2 { this.direction = v; return this.direction; }
   /** @internal */ get_maxDistance(): number { return this.maxDistance; }
   /** @internal */ set_maxDistance(v: number): number { this.maxDistance = v; return this.zpp_inner.maxdist; }
-  /** @internal */ get_userData(): Any { return this.userData; }
+  /** @internal */ get_userData(): Record<string, unknown> { return this.userData; }
 }
 
 // ---------------------------------------------------------------------------

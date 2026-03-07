@@ -7,7 +7,6 @@ import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 import { ZPP_UserConstraint } from "../native/constraint/ZPP_UserConstraint";
 
-type Any = any;
 
 /**
  * Base class for user-defined N-DOF constraints.
@@ -32,12 +31,12 @@ export abstract class UserConstraint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: Any): UserConstraint {
+  static _wrap(inner: any): UserConstraint {
     if (inner == null) return null!;
     if (inner instanceof UserConstraint) return inner;
     if (inner.zpp_inner?.outer instanceof UserConstraint) return inner.zpp_inner.outer;
 
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: any) => {
       const c = Object.create(UserConstraint.prototype) as UserConstraint;
       c.zpp_inner = raw.zpp_inner ?? raw;
       c.zpp_inner.outer = c;
@@ -52,8 +51,8 @@ export abstract class UserConstraint extends Constraint {
 
   __bindVec2(): Vec2 {
     const ret = new Vec2();
-    (ret as Any).zpp_inner._inuse = true;
-    (ret as Any).zpp_inner._invalidate = this.zpp_inner.bindVec2_invalidate.bind(this.zpp_inner);
+    (ret as any).zpp_inner._inuse = true;
+    (ret as any).zpp_inner._invalidate = this.zpp_inner.bindVec2_invalidate.bind(this.zpp_inner);
     return ret;
   }
 
@@ -73,7 +72,7 @@ export abstract class UserConstraint extends Constraint {
   __validate(): void {}
 
   /** Draw debug visualization. Optional override. */
-  __draw(_debug: Any): void {}
+  __draw(_debug: any): void {}
 
   /** Prepare the constraint for solving. Optional override. */
   __prepare(): void {}
@@ -97,7 +96,7 @@ export abstract class UserConstraint extends Constraint {
   __clamp(_jAcc: number[]): void {}
 
   /** Apply impulse to a body. Must be overridden. */
-  __impulse(_imp: number[], _body: Body, _out: Any): void {
+  __impulse(_imp: number[], _body: Body, _out: any): void {
     throw new Error("Error: UserConstraint::__impulse must be overriden");
   }
 
@@ -123,7 +122,7 @@ export abstract class UserConstraint extends Constraint {
     }
     let found = false;
     for (const b of this.zpp_inner.bodies) {
-      if (b.body == (body as Any).zpp_inner) {
+      if (b.body == (body as any).zpp_inner) {
         found = true;
         break;
       }
@@ -134,7 +133,7 @@ export abstract class UserConstraint extends Constraint {
     if (!this.zpp_inner.active) {
       return Vec3.get();
     } else {
-      return this.zpp_inner.bodyImpulse((body as Any).zpp_inner);
+      return this.zpp_inner.bodyImpulse((body as any).zpp_inner);
     }
   }
 
@@ -179,22 +178,22 @@ export abstract class UserConstraint extends Constraint {
     this.zpp_inner.immutable_midstep("UserConstraint::registerBody(..)");
     if (oldBody != newBody) {
       if (oldBody != null) {
-        if (!this.zpp_inner.remBody((oldBody as Any).zpp_inner)) {
+        if (!this.zpp_inner.remBody((oldBody as any).zpp_inner)) {
           throw new Error("Error: oldBody is not registered to the cosntraint");
         }
         if (
           this.zpp_inner.active &&
           (this.zpp_inner.space == null ? null : this.zpp_inner.space.outer) != null
         ) {
-          (oldBody as Any).zpp_inner.wake();
+          (oldBody as any).zpp_inner.wake();
         }
       }
       if (newBody != null) {
-        this.zpp_inner.addBody((newBody as Any).zpp_inner);
+        this.zpp_inner.addBody((newBody as any).zpp_inner);
       }
       this.zpp_inner.wake();
       if (newBody != null) {
-        (newBody as Any).zpp_inner.wake();
+        (newBody as any).zpp_inner.wake();
       }
     }
     return newBody;

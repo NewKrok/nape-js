@@ -113,7 +113,6 @@ import { ZPP_SweepPhase } from "../space/ZPP_SweepPhase";
  * Creates and returns the nape namespace object with all ZPP_* classes registered.
  * Previously called from nape-compiled.js; now fully self-contained (Priority 20).
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function registerZPPClasses(): any {
   const nape: any = {};
   const zpp: any = {};

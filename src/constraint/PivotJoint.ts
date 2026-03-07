@@ -2,14 +2,15 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
+import { MatMN } from "../geom/MatMN";
+import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_PivotJoint } from "../native/constraint/ZPP_PivotJoint";
 
-type Any = any;
 
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if ((v as any).zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
   const inner = v.zpp_inner;
@@ -19,7 +20,7 @@ function _readVec2X(v: Vec2): number {
 
 /** Read validated y from a Vec2 input. */
 function _readVec2Y(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if ((v as any).zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
   const inner = v.zpp_inner;
@@ -55,7 +56,7 @@ export class PivotJoint extends Constraint {
     this._setBody2(body2);
 
     // Set anchor1
-    if ((anchor1 as Any)?.zpp_disp) {
+    if ((anchor1 as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (anchor1 == null) {
@@ -66,7 +67,7 @@ export class PivotJoint extends Constraint {
     _disposeWeakVec2(anchor1);
 
     // Set anchor2
-    if ((anchor2 as Any)?.zpp_disp) {
+    if ((anchor2 as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (anchor2 == null) {
@@ -78,7 +79,7 @@ export class PivotJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: Any): PivotJoint {
+  static _wrap(inner: any): PivotJoint {
     if (inner == null) return null!;
     if (inner instanceof PivotJoint) return inner;
     if (inner.zpp_inner?.outer instanceof PivotJoint) return inner.zpp_inner.outer;
@@ -94,7 +95,7 @@ export class PivotJoint extends Constraint {
       });
     }
 
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: any) => {
       const j = Object.create(PivotJoint.prototype) as PivotJoint;
       j.zpp_inner = raw.zpp_inner ?? raw;
       j.zpp_inner.outer = j;
@@ -118,7 +119,7 @@ export class PivotJoint extends Constraint {
   /** @internal */
   private _setBody1(body1: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body1");
-    const inbody1 = body1 == null ? null : (body1 as Any).zpp_inner;
+    const inbody1 = body1 == null ? null : (body1 as any).zpp_inner;
     if (inbody1 != this.zpp_inner.b1) {
       if (this.zpp_inner.b1 != null) {
         if (this.zpp_inner.space != null && this.zpp_inner.b2 != this.zpp_inner.b1) {
@@ -152,7 +153,7 @@ export class PivotJoint extends Constraint {
   /** @internal */
   private _setBody2(body2: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body2");
-    const inbody2 = body2 == null ? null : (body2 as Any).zpp_inner;
+    const inbody2 = body2 == null ? null : (body2 as any).zpp_inner;
     if (inbody2 != this.zpp_inner.b2) {
       if (this.zpp_inner.b2 != null) {
         if (this.zpp_inner.space != null && this.zpp_inner.b1 != this.zpp_inner.b2) {
@@ -186,7 +187,7 @@ export class PivotJoint extends Constraint {
     return this.zpp_inner.wrap_a1;
   }
   set anchor1(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -206,7 +207,7 @@ export class PivotJoint extends Constraint {
     return this.zpp_inner.wrap_a2;
   }
   set anchor2(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -223,7 +224,7 @@ export class PivotJoint extends Constraint {
   // Methods
   // ---------------------------------------------------------------------------
 
-  override impulse(): Any {
+  override impulse(): MatMN {
     const nape = getNape();
     const ret = new nape.geom.MatMN(2, 1);
     ret.zpp_inner.x[0] = this.zpp_inner.jAccx;
@@ -231,7 +232,7 @@ export class PivotJoint extends Constraint {
     return ret;
   }
 
-  override bodyImpulse(body: Body): Any {
+  override bodyImpulse(body: Body): Vec3 {
     const nape = getNape();
     if (body == null) {
       throw new Error("Error: Cannot evaluate impulse on null body");
@@ -244,7 +245,7 @@ export class PivotJoint extends Constraint {
     if (!this.zpp_inner.active) {
       return nape.geom.Vec3.get();
     } else {
-      return this.zpp_inner.bodyImpulse((body as Any).zpp_inner);
+      return this.zpp_inner.bodyImpulse((body as any).zpp_inner);
     }
   }
 
@@ -266,31 +267,31 @@ export class PivotJoint extends Constraint {
   // Backward-compat get_*/set_* methods for compiled code
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_body1(): Any {
+  /** @internal */ get_body1(): Body | null {
     return this.body1;
   }
-  /** @internal */ set_body1(v: Any): Any {
+  /** @internal */ set_body1(v: Body | null): Body | null {
     this.body1 = v;
     return this.body1;
   }
-  /** @internal */ get_body2(): Any {
+  /** @internal */ get_body2(): Body | null {
     return this.body2;
   }
-  /** @internal */ set_body2(v: Any): Any {
+  /** @internal */ set_body2(v: Body | null): Body | null {
     this.body2 = v;
     return this.body2;
   }
-  /** @internal */ get_anchor1(): Any {
+  /** @internal */ get_anchor1(): Vec2 {
     return this.anchor1;
   }
-  /** @internal */ set_anchor1(v: Any): Any {
+  /** @internal */ set_anchor1(v: Vec2): Vec2 {
     this.anchor1 = v;
     return this.anchor1;
   }
-  /** @internal */ get_anchor2(): Any {
+  /** @internal */ get_anchor2(): Vec2 {
     return this.anchor2;
   }
-  /** @internal */ set_anchor2(v: Any): Any {
+  /** @internal */ set_anchor2(v: Vec2): Vec2 {
     this.anchor2 = v;
     return this.anchor2;
   }
@@ -319,6 +320,5 @@ ZPP_PivotJoint._wrapFn = (zpp: ZPP_PivotJoint): PivotJoint => {
   });
 };
 
-const nape = getNape();
 
 ZPP_PivotJoint._createFn = (...args: any[]) => new (PivotJoint as any)(...args);

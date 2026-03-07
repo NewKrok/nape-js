@@ -14,8 +14,6 @@ import { CbEvent } from "./CbEvent";
 import { ListenerType } from "./ListenerType";
 import { Space } from "../space/Space";
 
-type Any = any;
-
 /**
  * Convert a CbEvent singleton to the internal numeric event code.
  */
@@ -35,7 +33,7 @@ export class Listener {
 
   zpp_inner: ZPP_Listener;
 
-  get _inner(): Any {
+  get _inner(): this {
     return this;
   }
 
@@ -43,16 +41,12 @@ export class Listener {
     if (!ZPP_Listener.internal) {
       throw new Error("Error: Cannot instantiate Listener derp!");
     }
-    this.zpp_inner = null as Any;
+    this.zpp_inner = null as unknown as ZPP_Listener;
   }
 
-  static _wrap(inner: Any): Listener {
+  static _wrap(inner: ZPP_Listener | Listener | null | undefined): Listener {
     if (inner instanceof Listener) return inner;
     if (!inner) return null as unknown as Listener;
-    // If it's a raw compiled-code wrapper with zpp_inner, unwrap
-    if (inner.zpp_inner && !(inner instanceof ZPP_Listener)) {
-      return Listener._wrap(inner.zpp_inner);
-    }
     if (inner instanceof ZPP_Listener) {
       return getOrCreate(inner, (zpp: ZPP_Listener) => {
         if (zpp.outer) return zpp.outer;
@@ -102,9 +96,9 @@ export class Listener {
     }
   }
 
-  set space(space: Space | Any | null) {
+  set space(space: Space | null) {
     // Unwrap TS Space wrapper if needed (TS Space has _inner, compiled Space has zpp_inner)
-    const compiledSpace = space != null ? (space._inner ?? space) : null;
+    const compiledSpace = space != null ? ((space as any)._inner ?? space) : null;
     const currentCompiledSpace = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
     if (currentCompiledSpace != compiledSpace) {
       if (this.zpp_inner.space != null) {

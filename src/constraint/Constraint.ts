@@ -2,9 +2,11 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Body } from "../phys/Body";
 import { Space } from "../space/Space";
+import { Compound } from "../phys/Compound";
+import { MatMN } from "../geom/MatMN";
+import { Vec3 } from "../geom/Vec3";
 import { ZPP_Constraint } from "../native/constraint/ZPP_Constraint";
 
-type Any = any;
 
 /**
  * Base class for all constraints / joints.
@@ -25,7 +27,7 @@ export class Constraint {
    * are fully modernized. Also serves as backward compat for compiled code.
    * @internal
    */
-  _inner: Any;
+  _inner: any;
 
   debugDraw: boolean = true;
 
@@ -35,7 +37,7 @@ export class Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: Any): Constraint {
+  static _wrap(inner: any): Constraint {
     if (inner == null) return null!;
     if (inner instanceof Constraint) return inner;
     // Compiled object whose ZPP outer already points to a TS wrapper
@@ -43,7 +45,7 @@ export class Constraint {
       return inner.zpp_inner.outer;
     }
     // Fallback: create a base Constraint wrapper (e.g. for copy() results)
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: any) => {
       const c = Object.create(Constraint.prototype) as Constraint;
       c.zpp_inner = raw.zpp_inner ?? raw;
       c._inner = raw;
@@ -79,7 +81,7 @@ export class Constraint {
       }
       if (value != null) {
         // Space may be a TS thin wrapper (_inner.zpp_inner) or compiled (zpp_inner)
-        const spaceZpp = (value as Any)._inner?.zpp_inner ?? (value as Any).zpp_inner;
+        const spaceZpp = (value as any)._inner?.zpp_inner ?? (value as any).zpp_inner;
         const _this = spaceZpp.wrap_constraints;
         if (_this.zpp_inner.reverse_flag) {
           _this.push(this);
@@ -92,20 +94,18 @@ export class Constraint {
     }
   }
 
-  get compound(): Any {
+  get compound(): Compound | null {
     if (this.zpp_inner.compound == null) return null;
     return this.zpp_inner.compound.outer;
   }
-  set compound(value: Any) {
+  set compound(value: Compound | null) {
     const current = this.zpp_inner.compound == null ? null : this.zpp_inner.compound.outer;
     if (current != value) {
       if (current != null) {
-        // Access ZPP_Compound's wrap_constraints directly
-        const curZpp = current.zpp_inner ?? current._inner?.zpp_inner;
-        curZpp.wrap_constraints.remove(this);
+        current.zpp_inner.wrap_constraints.remove(this);
       }
       if (value != null) {
-        const valZpp = value.zpp_inner ?? value._inner?.zpp_inner;
+        const valZpp = value.zpp_inner;
         const _this = valZpp.wrap_constraints;
         if (_this.zpp_inner.reverse_flag) {
           _this.push(this);
@@ -276,7 +276,7 @@ export class Constraint {
     return this.zpp_inner.userData;
   }
 
-  get cbTypes(): Any {
+  get cbTypes(): object {
     if (this.zpp_inner.wrap_cbTypes == null) {
       this.zpp_inner.setupcbTypes();
     }
@@ -287,11 +287,11 @@ export class Constraint {
   // Methods — base implementations (overridden by joint subclasses)
   // ---------------------------------------------------------------------------
 
-  impulse(): Any {
+  impulse(): MatMN | null {
     return null;
   }
 
-  bodyImpulse(_body: Body): Any {
+  bodyImpulse(_body: Body): Vec3 | null {
     return null;
   }
 
@@ -309,20 +309,20 @@ export class Constraint {
   // Backward-compat get_*/set_* methods for compiled code
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_userData(): Any {
+  /** @internal */ get_userData(): Record<string, unknown> {
     return this.userData;
   }
-  /** @internal */ get_compound(): Any {
+  /** @internal */ get_compound(): Compound | null {
     return this.compound;
   }
-  /** @internal */ set_compound(v: Any): Any {
+  /** @internal */ set_compound(v: Compound | null): Compound | null {
     this.compound = v;
     return this.compound;
   }
-  /** @internal */ get_space(): Any {
+  /** @internal */ get_space(): Space | null {
     return this.space;
   }
-  /** @internal */ set_space(v: Any): Any {
+  /** @internal */ set_space(v: Space | null): Space | null {
     this.space = v;
     return this.space;
   }
@@ -399,7 +399,7 @@ export class Constraint {
     this.removeOnBreak = v;
     return this.zpp_inner.removeOnBreak;
   }
-  /** @internal */ get_cbTypes(): Any {
+  /** @internal */ get_cbTypes(): object {
     return this.cbTypes;
   }
 }

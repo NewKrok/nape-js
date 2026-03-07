@@ -1,8 +1,7 @@
-import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
-
-type Any = any;
+import type { Arbiter } from "../dynamics/Arbiter";
+import type { Interactor } from "../phys/Interactor";
 
 /**
  * Callback for pre-interaction events.
@@ -14,15 +13,15 @@ type Any = any;
 export class PreCallback extends Callback {
   static override __name__ = ["nape", "callbacks", "PreCallback"];
 
-  get arbiter(): Any {
+  get arbiter(): Arbiter {
     return this.zpp_inner!.pre_arbiter.wrapper();
   }
 
-  get int1(): Any {
+  get int1(): Interactor {
     return this.zpp_inner!.int1.outer_i;
   }
 
-  get int2(): Any {
+  get int2(): Interactor {
     return this.zpp_inner!.int2.outer_i;
   }
 
@@ -48,5 +47,5 @@ export class PreCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(PreCallback as Any).__super__ = Callback;
+(PreCallback as any).__super__ = Callback;
 ZPP_Callback._createPreCb = () => new PreCallback();

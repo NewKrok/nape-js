@@ -4,15 +4,15 @@
  * Fully modernized from nape-compiled.js lines 659–1091.
  */
 
-import { getNape } from "../core/engine";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import { ZPP_InteractionListener } from "../native/callbacks/ZPP_InteractionListener";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import { Listener } from "./Listener";
 import { CbEvent } from "./CbEvent";
 import { InteractionType } from "./InteractionType";
-
-type Any = any;
+import type { OptionType } from "./OptionType";
+import type { CbType } from "./CbType";
+import type { InteractionCallback } from "./InteractionCallback";
 
 /**
  * Convert an InteractionType singleton to the internal numeric code.
@@ -43,9 +43,9 @@ export class InteractionListener extends Listener {
   constructor(
     event: CbEvent,
     interactionType: InteractionType,
-    options1: Any,
-    options2: Any,
-    handler: (cb: Any) => void,
+    options1: OptionType | CbType | null,
+    options2: OptionType | CbType | null,
+    handler: (cb: InteractionCallback) => void,
     precedence = 0,
   ) {
     ZPP_Listener.internal = true;
@@ -84,7 +84,7 @@ export class InteractionListener extends Listener {
     this.zpp_inner.outer = this;
     this.zpp_inner_zn.outer_zni = this;
     this.zpp_inner.precedence = precedence;
-    this.zpp_inner_zn.handleri = handler;
+    this.zpp_inner_zn.handleri = handler as (cb: any) => void;
 
     // Set interaction type
     if (interactionType == null) {
@@ -96,31 +96,31 @@ export class InteractionListener extends Listener {
     }
   }
 
-  get options1(): Any {
+  get options1(): OptionType {
     return this.zpp_inner_zn.options1.outer;
   }
 
-  set options1(options1: Any) {
-    this.zpp_inner_zn.options1.set(options1.zpp_inner);
+  set options1(options1: OptionType | CbType) {
+    this.zpp_inner_zn.options1.set((options1 as any).zpp_inner);
   }
 
-  get options2(): Any {
+  get options2(): OptionType {
     return this.zpp_inner_zn.options2.outer;
   }
 
-  set options2(options2: Any) {
-    this.zpp_inner_zn.options2.set(options2.zpp_inner);
+  set options2(options2: OptionType | CbType) {
+    this.zpp_inner_zn.options2.set((options2 as any).zpp_inner);
   }
 
-  get handler(): (cb: Any) => void {
+  get handler(): (cb: InteractionCallback) => void {
     return this.zpp_inner_zn.handleri;
   }
 
-  set handler(handler: (cb: Any) => void) {
+  set handler(handler: (cb: InteractionCallback) => void) {
     if (handler == null) {
       throw new Error("Error: InteractionListener::handler cannot be null");
     }
-    this.zpp_inner_zn.handleri = handler;
+    this.zpp_inner_zn.handleri = handler as (cb: any) => void;
   }
 
   get interactionType(): InteractionType | null {

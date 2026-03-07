@@ -13,13 +13,12 @@
 import { getNape } from "../core/engine";
 import { ZPP_ContactList } from "../native/util/ZPP_ContactList";
 
-type Any = any;
 
 // ---------------------------------------------------------------------------
 // Helper: count active contacts in the inner linked list
 // ---------------------------------------------------------------------------
 
-function countActiveContacts(inner: Any): number {
+function countActiveContacts(inner: any): number {
   let count = 0;
   let cx = inner.inner.next;
   while (cx != null) {
@@ -31,7 +30,7 @@ function countActiveContacts(inner: Any): number {
   return count;
 }
 
-function ensureLength(inner: Any): number {
+function ensureLength(inner: any): number {
   inner.valmod();
   if (inner.zip_length) {
     inner.zip_length = false;
@@ -44,7 +43,7 @@ function ensureLength(inner: Any): number {
 // ContactIterator
 // ---------------------------------------------------------------------------
 
-function ContactIterator(this: Any) {
+function ContactIterator(this: any) {
   this.zpp_next = null;
   this.zpp_critical = false;
   this.zpp_i = 0;
@@ -55,13 +54,13 @@ function ContactIterator(this: Any) {
 }
 
 ContactIterator.__name__ = ["nape", "dynamics", "ContactIterator"];
-ContactIterator.zpp_pool = null as Any;
+ContactIterator.zpp_pool = null as any;
 
-ContactIterator.get = function (list: Any): Any {
-  let ret: Any;
+ContactIterator.get = function (list: any): any {
+  let ret: any;
   if (ContactIterator.zpp_pool == null) {
     ZPP_ContactList.internal = true;
-    ret = new (ContactIterator as Any)();
+    ret = new (ContactIterator as any)();
     ZPP_ContactList.internal = false;
   } else {
     ret = ContactIterator.zpp_pool;
@@ -78,7 +77,7 @@ ContactIterator.prototype.zpp_i = null;
 ContactIterator.prototype.zpp_critical = null;
 ContactIterator.prototype.zpp_next = null;
 
-ContactIterator.prototype.hasNext = function (this: Any): boolean {
+ContactIterator.prototype.hasNext = function (this: any): boolean {
   this.zpp_inner.zpp_inner.valmod();
   const length = ensureLength(this.zpp_inner.zpp_inner);
   this.zpp_critical = true;
@@ -92,7 +91,7 @@ ContactIterator.prototype.hasNext = function (this: Any): boolean {
   }
 };
 
-ContactIterator.prototype.next = function (this: Any): Any {
+ContactIterator.prototype.next = function (this: any): any {
   this.zpp_critical = false;
   return this.zpp_inner.at(this.zpp_i++);
 };
@@ -102,7 +101,7 @@ ContactIterator.prototype.next = function (this: Any): Any {
 // ContactList
 // ---------------------------------------------------------------------------
 
-function ContactListCtor(this: Any) {
+function ContactListCtor(this: any) {
   this.zpp_inner = null;
   this.zpp_inner = new ZPP_ContactList();
   this.zpp_inner.outer = this;
@@ -110,7 +109,7 @@ function ContactListCtor(this: Any) {
 
 ContactListCtor.__name__ = ["nape", "dynamics", "ContactList"];
 
-ContactListCtor.fromArray = function (array: Any[]): Any {
+ContactListCtor.fromArray = function (array: any[]): any {
   if (array == null) {
     throw new Error("Error: Cannot convert null Array to Nape list");
   }
@@ -125,21 +124,21 @@ ContactListCtor.fromArray = function (array: Any[]): Any {
 ContactListCtor.prototype.zpp_inner = null;
 
 Object.defineProperty(ContactListCtor.prototype, "length", {
-  get: function (this: Any) {
+  get: function (this: any) {
     return this.get_length();
   },
 });
 
-ContactListCtor.prototype.get_length = function (this: Any): number {
+ContactListCtor.prototype.get_length = function (this: any): number {
   return ensureLength(this.zpp_inner);
 };
 
-ContactListCtor.prototype.has = function (this: Any, obj: Any): boolean {
+ContactListCtor.prototype.has = function (this: any, obj: any): boolean {
   this.zpp_inner.valmod();
   return this.zpp_inner.inner.has(obj.zpp_inner);
 };
 
-ContactListCtor.prototype.at = function (this: Any, index: number): Any {
+ContactListCtor.prototype.at = function (this: any, index: number): any {
   this.zpp_inner.valmod();
   const len = ensureLength(this.zpp_inner);
   if (index < 0 || index >= len) {
@@ -173,7 +172,7 @@ ContactListCtor.prototype.at = function (this: Any, index: number): Any {
   return this.zpp_inner.at_ite.wrapper();
 };
 
-ContactListCtor.prototype.push = function (this: Any, obj: Any): boolean {
+ContactListCtor.prototype.push = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: ContactList is immutable");
   }
@@ -205,7 +204,7 @@ ContactListCtor.prototype.push = function (this: Any, obj: Any): boolean {
   return cont;
 };
 
-ContactListCtor.prototype.unshift = function (this: Any, obj: Any): boolean {
+ContactListCtor.prototype.unshift = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: ContactList is immutable");
   }
@@ -237,7 +236,7 @@ ContactListCtor.prototype.unshift = function (this: Any, obj: Any): boolean {
   return cont;
 };
 
-ContactListCtor.prototype.pop = function (this: Any): Any {
+ContactListCtor.prototype.pop = function (this: any): any {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: ContactList is immutable");
   }
@@ -247,7 +246,7 @@ ContactListCtor.prototype.pop = function (this: Any): Any {
     throw new Error("Error: Cannot remove from empty list");
   }
   this.zpp_inner.valmod();
-  let ret: Any;
+  let ret: any;
   if (this.zpp_inner.reverse_flag) {
     ret = this.zpp_inner.inner.next;
     const retx = ret.wrapper();
@@ -262,7 +261,7 @@ ContactListCtor.prototype.pop = function (this: Any): Any {
       this.zpp_inner.at_ite = null;
     }
     const curLen = ensureLength(this.zpp_inner);
-    let ite: Any;
+    let ite: any;
     if (curLen == 1) {
       ite = null;
     } else {
@@ -281,7 +280,7 @@ ContactListCtor.prototype.pop = function (this: Any): Any {
   return ret.wrapper();
 };
 
-ContactListCtor.prototype.shift = function (this: Any): Any {
+ContactListCtor.prototype.shift = function (this: any): any {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: ContactList is immutable");
   }
@@ -291,13 +290,13 @@ ContactListCtor.prototype.shift = function (this: Any): Any {
     throw new Error("Error: Cannot remove from empty list");
   }
   this.zpp_inner.valmod();
-  let ret: Any;
+  let ret: any;
   if (this.zpp_inner.reverse_flag) {
     if (this.zpp_inner.at_ite != null && this.zpp_inner.at_ite.next == null) {
       this.zpp_inner.at_ite = null;
     }
     const curLen = ensureLength(this.zpp_inner);
-    let ite: Any;
+    let ite: any;
     if (curLen == 1) {
       ite = null;
     } else {
@@ -325,7 +324,7 @@ ContactListCtor.prototype.shift = function (this: Any): Any {
   return ret.wrapper();
 };
 
-ContactListCtor.prototype.add = function (this: Any, obj: Any): boolean {
+ContactListCtor.prototype.add = function (this: any, obj: any): boolean {
   if (this.zpp_inner.reverse_flag) {
     return this.push(obj);
   } else {
@@ -333,7 +332,7 @@ ContactListCtor.prototype.add = function (this: Any, obj: Any): boolean {
   }
 };
 
-ContactListCtor.prototype.remove = function (this: Any, obj: Any): boolean {
+ContactListCtor.prototype.remove = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: ContactList is immutable");
   }
@@ -360,7 +359,7 @@ ContactListCtor.prototype.remove = function (this: Any, obj: Any): boolean {
   return found;
 };
 
-ContactListCtor.prototype.clear = function (this: Any): void {
+ContactListCtor.prototype.clear = function (this: any): void {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: ContactList is immutable");
   }
@@ -375,16 +374,16 @@ ContactListCtor.prototype.clear = function (this: Any): void {
   }
 };
 
-ContactListCtor.prototype.empty = function (this: Any): boolean {
+ContactListCtor.prototype.empty = function (this: any): boolean {
   return ensureLength(this.zpp_inner) == 0;
 };
 
-ContactListCtor.prototype.iterator = function (this: Any): Any {
+ContactListCtor.prototype.iterator = function (this: any): any {
   this.zpp_inner.valmod();
   return ContactIterator.get(this);
 };
 
-ContactListCtor.prototype.copy = function (this: Any, deep?: boolean): Any {
+ContactListCtor.prototype.copy = function (this: any, deep?: boolean): any {
   if (deep == null) deep = false;
   const nape = getNape();
   const ret = new nape.dynamics.ContactList();
@@ -400,7 +399,7 @@ ContactListCtor.prototype.copy = function (this: Any, deep?: boolean): Any {
   return ret;
 };
 
-ContactListCtor.prototype.merge = function (this: Any, xs: Any): void {
+ContactListCtor.prototype.merge = function (this: any, xs: any): void {
   if (xs == null) {
     throw new Error("Error: Cannot merge with null list");
   }
@@ -418,7 +417,7 @@ ContactListCtor.prototype.merge = function (this: Any, xs: Any): void {
   }
 };
 
-ContactListCtor.prototype.toString = function (this: Any): string {
+ContactListCtor.prototype.toString = function (this: any): string {
   let ret = "[";
   let fst = true;
   this.zpp_inner.valmod();
@@ -432,7 +431,7 @@ ContactListCtor.prototype.toString = function (this: Any): string {
   return ret + "]";
 };
 
-ContactListCtor.prototype.foreach = function (this: Any, lambda: Any): Any {
+ContactListCtor.prototype.foreach = function (this: any, lambda: any): any {
   if (lambda == null) {
     throw new Error("Error: Cannot execute null on list elements");
   }
@@ -451,7 +450,7 @@ ContactListCtor.prototype.foreach = function (this: Any, lambda: Any): Any {
   return this;
 };
 
-ContactListCtor.prototype.filter = function (this: Any, lambda: Any): Any {
+ContactListCtor.prototype.filter = function (this: any, lambda: any): any {
   if (lambda == null) {
     throw new Error("Error: Cannot select elements of list with null");
   }

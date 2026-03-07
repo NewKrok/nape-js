@@ -1,9 +1,9 @@
-import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
-
-type Any = any;
+import type { Vec2 } from "../geom/Vec2";
+import type { Edge } from "../shape/Edge";
+import type { Body } from "../phys/Body";
 
 /**
  * A collision arbiter between two shapes in contact.
@@ -25,8 +25,8 @@ export class CollisionArbiter extends Arbiter {
   // Properties (read-only)
   // ---------------------------------------------------------------------------
 
-  /** Contact points for this collision. */
-  get contacts(): Any {
+  // ContactList is a special-case list; no generic factory type
+  get contacts(): object {
     this._activeCheck();
     if (this.zpp_inner.colarb.wrap_contacts == null) {
       this.zpp_inner.colarb.setupcontacts();
@@ -35,7 +35,7 @@ export class CollisionArbiter extends Arbiter {
   }
 
   /** Collision normal vector. */
-  get normal(): Any {
+  get normal(): Vec2 {
     this._activeCheck();
     if (this.zpp_inner.colarb.wrap_normal == null) {
       this.zpp_inner.colarb.getnormal();
@@ -50,7 +50,7 @@ export class CollisionArbiter extends Arbiter {
   }
 
   /** Reference edge of shape1 (if polygon), or null. */
-  get referenceEdge1(): Any {
+  get referenceEdge1(): Edge | null {
     this._activeCheck();
     let edge = this.zpp_inner.colarb.__ref_edge1;
     if (edge != null) {
@@ -70,7 +70,7 @@ export class CollisionArbiter extends Arbiter {
   }
 
   /** Reference edge of shape2 (if polygon), or null. */
-  get referenceEdge2(): Any {
+  get referenceEdge2(): Edge | null {
     this._activeCheck();
     let edge = this.zpp_inner.colarb.__ref_edge1;
     if (edge != null) {
@@ -198,28 +198,28 @@ export class CollisionArbiter extends Arbiter {
   // ---------------------------------------------------------------------------
 
   /** Normal impulse accumulated across all contacts. */
-  normalImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  normalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     return this._accumulateImpulse("normalImpulse", body, freshOnly);
   }
 
   /** Tangent (friction) impulse accumulated across all contacts. */
-  tangentImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  tangentImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     return this._accumulateImpulse("tangentImpulse", body, freshOnly);
   }
 
   /** Total impulse (normal + tangent + rolling) accumulated across all contacts. */
-  override totalImpulse(body: Any = null, freshOnly: boolean = false): Vec3 {
+  override totalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     return this._accumulateImpulse("totalImpulse", body, freshOnly);
   }
 
   /** Rolling impulse for this collision. */
-  rollingImpulse(body: Any = null, freshOnly: boolean = false): number {
+  rollingImpulse(body: Body | null = null, freshOnly: boolean = false): number {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const colarb = this.zpp_inner.colarb;
@@ -241,7 +241,7 @@ export class CollisionArbiter extends Arbiter {
   }
 
   /** @internal Accumulate impulse from contacts. */
-  private _accumulateImpulse(method: string, body: Any, freshOnly: boolean): Vec3 {
+  private _accumulateImpulse(method: string, body: Body | null, freshOnly: boolean): Vec3 {
     let retx = 0;
     let rety = 0;
     let retz = 0;

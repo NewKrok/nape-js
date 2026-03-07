@@ -4,8 +4,6 @@ import { ZPP_Mat23 } from "../native/geom/ZPP_Mat23";
 import { Vec2 } from "./Vec2";
 import type { NapeInner } from "./Vec2";
 
-type Any = any;
-
 /**
  * 2x3 affine transformation matrix [a b tx; c d ty].
  *
@@ -86,7 +84,7 @@ export class Mat23 {
     if (value !== value) {
       throw new Error("Error: Mat23::" + name + " cannot be NaN");
     }
-    (this.zpp_inner as Any)[name] = value;
+    (this.zpp_inner as any)[name] = value;
     this.zpp_inner.invalidate();
   }
 

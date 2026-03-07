@@ -6,15 +6,16 @@
  * Fully modernized from nape-compiled.js lines 1142–1338.
  */
 
-import { getNape } from "../core/engine";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import { ZPP_InteractionListener } from "../native/callbacks/ZPP_InteractionListener";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import { Listener } from "./Listener";
 import { InteractionType } from "./InteractionType";
 import { interactionTypeToNumber, numberToInteractionType } from "./InteractionListener";
-
-type Any = any;
+import type { OptionType } from "./OptionType";
+import type { CbType } from "./CbType";
+import type { PreCallback } from "./PreCallback";
+import type { PreFlag } from "./PreFlag";
 
 export class PreListener extends Listener {
   static __name__ = ["nape", "callbacks", "PreListener"];
@@ -23,9 +24,9 @@ export class PreListener extends Listener {
 
   constructor(
     interactionType: InteractionType,
-    options1: Any,
-    options2: Any,
-    handler: (cb: Any) => Any,
+    options1: OptionType | CbType | null,
+    options2: OptionType | CbType | null,
+    handler: (cb: PreCallback) => PreFlag | null,
     precedence = 0,
     pure = false,
   ) {
@@ -48,7 +49,7 @@ export class PreListener extends Listener {
     this.zpp_inner_zn.outer_znp = this;
     this.zpp_inner.precedence = precedence;
     this.zpp_inner_zn.pure = pure;
-    this.zpp_inner_zn.handlerp = handler;
+    this.zpp_inner_zn.handlerp = handler as (cb: any) => any;
 
     // Set interaction type
     if (interactionType == null) {
@@ -60,31 +61,31 @@ export class PreListener extends Listener {
     }
   }
 
-  get options1(): Any {
+  get options1(): OptionType {
     return this.zpp_inner_zn.options1.outer;
   }
 
-  set options1(options1: Any) {
-    this.zpp_inner_zn.options1.set(options1.zpp_inner);
+  set options1(options1: OptionType | CbType) {
+    this.zpp_inner_zn.options1.set((options1 as any).zpp_inner);
   }
 
-  get options2(): Any {
+  get options2(): OptionType {
     return this.zpp_inner_zn.options2.outer;
   }
 
-  set options2(options2: Any) {
-    this.zpp_inner_zn.options2.set(options2.zpp_inner);
+  set options2(options2: OptionType | CbType) {
+    this.zpp_inner_zn.options2.set((options2 as any).zpp_inner);
   }
 
-  get handler(): (cb: Any) => Any {
+  get handler(): (cb: PreCallback) => PreFlag | null {
     return this.zpp_inner_zn.handlerp;
   }
 
-  set handler(handler: (cb: Any) => Any) {
+  set handler(handler: (cb: PreCallback) => PreFlag | null) {
     if (handler == null) {
       throw new Error("Error: PreListener must take a non-null handler!");
     }
-    this.zpp_inner_zn.handlerp = handler;
+    this.zpp_inner_zn.handlerp = handler as (cb: any) => any;
     this.zpp_inner_zn.wake();
   }
 

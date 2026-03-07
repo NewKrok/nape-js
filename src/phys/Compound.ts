@@ -6,8 +6,7 @@ import { Space } from "../space/Space";
 import { Interactor, _bindCompoundWrapForInteractor } from "./Interactor";
 import { ZPP_Compound } from "../native/phys/ZPP_Compound";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
-
-type Any = any;
+import type { Constraint } from "../constraint/Constraint";
 
 /**
  * A compound physics object — a hierarchical grouping of Bodies, Constraints,
@@ -17,7 +16,7 @@ type Any = any;
  */
 export class Compound extends Interactor {
   static __name__ = ["nape", "phys", "Compound"];
-  static __super__: Any = Interactor;
+  static __super__ = Interactor;
 
   /** Direct access to the extracted internal ZPP_Compound. */
   zpp_inner!: ZPP_Compound;
@@ -29,12 +28,12 @@ export class Compound extends Interactor {
     this.zpp_inner = zpp;
     zpp.outer = this;
     zpp.outer_i = this;
-    (this as Any).zpp_inner_i = zpp;
+    (this as any).zpp_inner_i = zpp;
 
     // Override the Interactor's _inner to point at this object (backward compat).
     // _inner was set to undefined by Interactor's constructor as an instance property,
     // so we can reassign it here.
-    (this as Writable<Compound>)._inner = this as Any;
+    (this as Writable<Compound>)._inner = this as any;
 
     // Register ANY_COMPOUND callback type
     zpp.insert_cbtype((ZPP_CbType as any).ANY_COMPOUND.zpp_inner);
@@ -51,13 +50,13 @@ export class Compound extends Interactor {
         c.zpp_inner = zpp;
         zpp.outer = c;
         zpp.outer_i = c;
-        (c as Any).zpp_inner_i = zpp;
-        (c as Writable<Compound>)._inner = c as Any;
+        (c as any).zpp_inner_i = zpp;
+        (c as Writable<Compound>)._inner = c as any;
         return c;
       });
     }
     // Handle compiled objects with zpp_inner
-    if (inner.zpp_inner) return Compound._wrap(inner.zpp_inner);
+    if ((inner as any).zpp_inner) return Compound._wrap((inner as any).zpp_inner);
     return getOrCreate(inner, (raw: NapeInner) => {
       const c = Object.create(Compound.prototype) as Compound;
       (c as Writable<Compound>)._inner = raw;
@@ -70,17 +69,17 @@ export class Compound extends Interactor {
   // ---------------------------------------------------------------------------
 
   /** Bodies in this compound. */
-  get bodies(): Any {
+  get bodies(): object {
     return this.zpp_inner.wrap_bodies;
   }
 
   /** Constraints in this compound. */
-  get constraints(): Any {
+  get constraints(): object {
     return this.zpp_inner.wrap_constraints;
   }
 
   /** Child compounds in this compound. */
-  get compounds(): Any {
+  get compounds(): object {
     return this.zpp_inner.wrap_compounds;
   }
 
@@ -124,12 +123,12 @@ export class Compound extends Interactor {
     }
     this.zpp_inner.immutable_midstep("Compound::space");
     const currentSpaceOuter = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
-    if (currentSpaceOuter !== (value as Any)?._inner) {
+    if (currentSpaceOuter !== (value as any)?._inner) {
       if (currentSpaceOuter != null) {
         currentSpaceOuter.zpp_inner.wrap_compounds.remove(this);
       }
       if (value != null) {
-        const wc = (value as Any)._inner.zpp_inner.wrap_compounds;
+        const wc = (value as any)._inner.zpp_inner.wrap_compounds;
         if (wc.zpp_inner.reverse_flag) {
           wc.push(this);
         } else {
@@ -171,7 +170,7 @@ export class Compound extends Interactor {
   }
 
   /** Recursively visit all constraints in this compound and its sub-compounds. */
-  visitConstraints(lambda: (constraint: Any) => void): void {
+  visitConstraints(lambda: (constraint: Constraint) => void): void {
     if (lambda == null) {
       throw new Error("Error: lambda cannot be null for Compound::visitConstraints");
     }
@@ -206,7 +205,7 @@ export class Compound extends Interactor {
     const ret = new Vec2(0, 0);
     let total = 0.0;
 
-    this.visitBodies((b: Any) => {
+    this.visitBodies((b: Body) => {
       const shapes = b.zpp_inner.wrap_shapes;
       if (shapes.zpp_inner.inner.head != null) {
         if (b.zpp_inner.world) {
@@ -214,7 +213,7 @@ export class Compound extends Interactor {
         }
         // Get worldCOM
         if (b.zpp_inner.wrap_worldCOM == null) {
-          b.zpp_inner.setupWorldCOM();
+          b.zpp_inner.getworldCOM();
         }
         const worldCOM = b.zpp_inner.wrap_worldCOM;
 
@@ -247,7 +246,7 @@ export class Compound extends Interactor {
 
   /** Translate all bodies in this compound by the given vector. */
   translate(translation: Vec2): Compound {
-    if (translation != null && (translation as Any).zpp_disp) {
+    if (translation != null && (translation as any).zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (translation == null) {
@@ -255,7 +254,7 @@ export class Compound extends Interactor {
     }
     const weak = translation.zpp_inner.weak;
     translation.zpp_inner.weak = false;
-    this.visitBodies((b: Any) => {
+    this.visitBodies((b: Body) => {
       if (b.zpp_inner.wrap_pos == null) {
         b.zpp_inner.setupPosition();
       }
@@ -270,7 +269,7 @@ export class Compound extends Interactor {
 
   /** Rotate all bodies in this compound around the given centre point. */
   rotate(centre: Vec2, angle: number): Compound {
-    if (centre != null && (centre as Any).zpp_disp) {
+    if (centre != null && (centre as any).zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (centre == null) {
@@ -281,7 +280,7 @@ export class Compound extends Interactor {
     }
     const weak = centre.zpp_inner.weak;
     centre.zpp_inner.weak = false;
-    this.visitBodies((b: Any) => {
+    this.visitBodies((b: Body) => {
       b.rotate(centre, angle);
     });
     centre.zpp_inner.weak = weak;
@@ -300,29 +299,29 @@ export class Compound extends Interactor {
   // These are called by compiled code that accesses nape.phys.Compound prototype.
   // ---------------------------------------------------------------------------
 
-  get_bodies(): Any {
+  get_bodies(): object {
     return this.zpp_inner.wrap_bodies;
   }
-  get_constraints(): Any {
+  get_constraints(): object {
     return this.zpp_inner.wrap_constraints;
   }
-  get_compounds(): Any {
+  get_compounds(): object {
     return this.zpp_inner.wrap_compounds;
   }
-  get_compound(): Any {
+  get_compound(): Compound | null {
     if (this.zpp_inner.compound == null) return null;
     return this.zpp_inner.compound.outer;
   }
-  set_compound(compound: Any): Any {
+  set_compound(compound: Compound | null): Compound | null {
     this.compound = compound;
     if (this.zpp_inner.compound == null) return null;
     return this.zpp_inner.compound.outer;
   }
-  get_space(): Any {
+  get_space(): Space | null {
     if (this.zpp_inner.space == null) return null;
     return this.zpp_inner.space.outer;
   }
-  set_space(space: Any): Any {
+  set_space(space: Space | null): Space | null {
     this.space = space != null ? Space._wrap(space) : null;
     if (this.zpp_inner.space == null) return null;
     return this.zpp_inner.space.outer;
@@ -336,8 +335,8 @@ ZPP_Compound._wrapFn = (zpp: ZPP_Compound): Compound => {
     c.zpp_inner = raw;
     raw.outer = c;
     raw.outer_i = c;
-    (c as Any).zpp_inner_i = raw;
-    (c as Writable<Compound>)._inner = c as Any;
+    (c as any).zpp_inner_i = raw;
+    (c as Writable<Compound>)._inner = c as any;
     return c;
   });
 };

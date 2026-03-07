@@ -163,7 +163,6 @@ export class ZPP_Shape {
     if (ZPP_Shape._initialized) return;
     ZPP_Shape._initialized = true;
 
-    const zpp = ZPP_Shape._zpp;
     ZPP_Shape.__super__ = ZPP_Interactor;
 
     // Copy ZPP_Interactor prototype methods onto ZPP_Shape prototype
@@ -472,7 +471,6 @@ export class ZPP_Shape {
 
   // --- Copy ---
   copy(): Any {
-    const nape = ZPP_Shape._nape;
     const zpp = ZPP_Shape._zpp;
     const ret: Any = this.type === 0 ? this.circle.__copy() : this.polygon.__copy();
     if (!this.zip_area_inertia) {

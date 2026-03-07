@@ -4,21 +4,21 @@
  * Fully modernized from nape-compiled.js lines 546–649.
  */
 
-import { getNape } from "../core/engine";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import { ZPP_ConstraintListener } from "../native/callbacks/ZPP_ConstraintListener";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import { Listener } from "./Listener";
 import { CbEvent } from "./CbEvent";
-
-type Any = any;
+import type { OptionType } from "./OptionType";
+import type { CbType } from "./CbType";
+import type { ConstraintCallback } from "./ConstraintCallback";
 
 export class ConstraintListener extends Listener {
   static __name__ = ["nape", "callbacks", "ConstraintListener"];
 
   zpp_inner_zn: ZPP_ConstraintListener;
 
-  constructor(event: CbEvent, options: Any, handler: (cb: Any) => void, precedence = 0) {
+  constructor(event: CbEvent, options: OptionType | CbType | null, handler: (cb: ConstraintCallback) => void, precedence = 0) {
     ZPP_Listener.internal = true;
     super();
     ZPP_Listener.internal = false;
@@ -53,19 +53,19 @@ export class ConstraintListener extends Listener {
     this.zpp_inner.precedence = precedence;
   }
 
-  get options(): Any {
+  get options(): OptionType {
     return this.zpp_inner_zn.options.outer;
   }
 
-  set options(options: Any) {
-    this.zpp_inner_zn.options.set(options.zpp_inner);
+  set options(options: OptionType | CbType) {
+    this.zpp_inner_zn.options.set((options as any).zpp_inner);
   }
 
-  get handler(): (cb: Any) => void {
+  get handler(): (cb: ConstraintCallback) => void {
     return this.zpp_inner_zn.handler;
   }
 
-  set handler(handler: (cb: Any) => void) {
+  set handler(handler: (cb: ConstraintCallback) => void) {
     if (handler == null) {
       throw new Error("Error: ConstraintListener::handler cannot be null");
     }

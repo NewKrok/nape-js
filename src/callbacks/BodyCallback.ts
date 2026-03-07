@@ -1,8 +1,6 @@
-import { getNape } from "../core/engine";
 import { Callback } from "./Callback";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
-
-type Any = any;
+import type { Body } from "../phys/Body";
 
 /**
  * Callback for body events (WAKE/SLEEP).
@@ -14,7 +12,7 @@ type Any = any;
 export class BodyCallback extends Callback {
   static override __name__ = ["nape", "callbacks", "BodyCallback"];
 
-  get body(): Any {
+  get body(): Body {
     return this.zpp_inner!.body.outer;
   }
 
@@ -33,5 +31,5 @@ export class BodyCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(BodyCallback as Any).__super__ = Callback;
+(BodyCallback as any).__super__ = Callback;
 ZPP_Callback._createBodyCb = () => new BodyCallback();

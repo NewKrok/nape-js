@@ -3,8 +3,6 @@ import { getOrCreate } from "../core/cache";
 import { ZPP_MatMN } from "../native/geom/ZPP_MatMN";
 import type { NapeInner } from "./Vec2";
 
-type Any = any;
-
 /**
  * Variable-sized M×N matrix.
  *
@@ -31,7 +29,7 @@ export class MatMN {
   // Static wrap helper
   // ---------------------------------------------------------------------------
 
-  static _wrap(inner: Any): MatMN {
+  static _wrap(inner: ZPP_MatMN | MatMN | null): MatMN {
     if (inner instanceof MatMN) return inner;
     if (!inner) return null as unknown as MatMN;
     if (inner instanceof ZPP_MatMN) {
@@ -42,7 +40,7 @@ export class MatMN {
         return m;
       });
     }
-    if (inner.zpp_inner) return MatMN._wrap(inner.zpp_inner);
+    if ((inner as any).zpp_inner) return MatMN._wrap((inner as any).zpp_inner);
     return null as unknown as MatMN;
   }
 
