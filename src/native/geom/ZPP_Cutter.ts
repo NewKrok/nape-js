@@ -15,17 +15,14 @@ import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { getNape } from "../../core/engine";
 
-type Any = any;
-
 export class ZPP_Cutter {
   static __name__ = ["zpp_nape", "geom", "ZPP_Cutter"];
-  static __class__: Any = ZPP_Cutter;
 
   /** Internal list of intersections (ZNPList_ZPP_CutInt), lazily created. */
-  static ints: Any = null;
+  static ints: any = null;
 
   /** Internal list of paths (ZNPList_ZPP_CutVert), lazily created. */
-  static paths: Any = null;
+  static paths: any = null;
 
   /**
    * Cut polygon P along the line from _start to _end.
@@ -38,7 +35,7 @@ export class ZPP_Cutter {
    * @param output  Optional GeomPolyList to append results to
    * @returns       GeomPolyList of resulting sub-polygons
    */
-  static run(P: Any, _start: Any, _end: Any, bstart: boolean, bend: boolean, output: Any): Any {
+  static run(P: ZPP_GeomVert | null, _start: any, _end: any, bstart: boolean, bend: boolean, output: any): any {
     const napeNs = getNape();
     const zpp_nape = napeNs.__zpp;
 
@@ -77,7 +74,7 @@ export class ZPP_Cutter {
     const min = bstart ? 0 : -Infinity;
     const max = bend ? 1 : Infinity;
     const crx = -(py * dx - px * dy);
-    let verts: Any = null;
+    let verts: ZPP_CutVert | null = null;
     let clashes = false;
     let p = P;
     while (true) {
@@ -113,7 +110,7 @@ export class ZPP_Cutter {
       }
     }
     if (clashes) {
-      let start: Any = null;
+      let start: ZPP_CutVert | null = null;
       const F = verts;
       const L = verts;
       if (F != null) {
@@ -142,7 +139,7 @@ export class ZPP_Cutter {
       const t1 = nx;
       nx = -ny;
       ny = t1;
-      let pre: Any = null;
+      let pre: ZPP_CutVert | null = null;
       let p2 = start;
       while (true) {
         if (p2.value != 0.0 && (pre == null || p2 == pre.next)) {
@@ -287,7 +284,7 @@ export class ZPP_Cutter {
     if (ZPP_Cutter.paths == null) {
       ZPP_Cutter.paths = new zpp_nape.util.ZNPList_ZPP_CutVert();
     }
-    let start1: Any = null;
+    let start1: ZPP_CutVert | null = null;
     const x2 = verts.posx;
     const y2 = verts.posy;
     let ret2: ZPP_GeomVert;
@@ -362,7 +359,7 @@ export class ZPP_Cutter {
         const s = (uy * pax - ux * pay) * denom;
         if (s < min || s > max) {
           const tmp = ZPP_Cutter.ints;
-          let virtualint: Any = true;
+          let virtualint: boolean = true;
           if (virtualint == null) {
             virtualint = false;
           }
@@ -442,7 +439,7 @@ export class ZPP_Cutter {
           tmp1.add(ret7);
           const postpath = ZPP_Cutter.paths.head.elt;
           const tmp2 = ZPP_Cutter.ints;
-          let virtualint1: Any = true;
+          let virtualint1: boolean = true;
           if (virtualint1 == null) {
             virtualint1 = false;
           }
@@ -513,7 +510,7 @@ export class ZPP_Cutter {
           tmp3.add(ret10);
           const postpath1 = ZPP_Cutter.paths.head.elt;
           const tmp4 = ZPP_Cutter.ints;
-          let virtualint2: Any = true;
+          let virtualint2: boolean = true;
           if (virtualint2 == null) {
             virtualint2 = false;
           }
@@ -610,7 +607,7 @@ export class ZPP_Cutter {
           tmp5.add(ret14);
           const postpath2 = ZPP_Cutter.paths.head.elt;
           const tmp6 = ZPP_Cutter.ints;
-          let virtualint3: Any = false;
+          let virtualint3: boolean = false;
           if (virtualint3 == null) {
             virtualint3 = false;
           }
@@ -643,12 +640,12 @@ export class ZPP_Cutter {
     endof3.next = origin;
     origin.prev = endof3;
     const lastpath = ZPP_Cutter.paths.head.elt;
-    let xr: Any;
+    let xr: any;
     if (firstpath == firstpath.parent) {
       xr = firstpath;
     } else {
-      let obj11: Any = firstpath;
-      let stack: Any = null;
+      let obj11: any = firstpath;
+      let stack: any = null;
       while (obj11 != obj11.parent) {
         const nxt = obj11.parent;
         obj11.parent = stack;
@@ -662,12 +659,12 @@ export class ZPP_Cutter {
       }
       xr = obj11;
     }
-    let yr: Any;
+    let yr: any;
     if (lastpath == lastpath.parent) {
       yr = lastpath;
     } else {
       let obj12 = lastpath;
-      let stack1: Any = null;
+      let stack1: any = null;
       while (obj12 != obj12.parent) {
         const nxt2 = obj12.parent;
         obj12.parent = stack1;
@@ -694,10 +691,10 @@ export class ZPP_Cutter {
     const xxlist = ZPP_Cutter.ints;
     if (xxlist.head != null && xxlist.head.next != null) {
       let head = xxlist.head;
-      let tail: Any;
-      let left: Any;
-      let right: Any;
-      let nxt4: Any;
+      let tail: any;
+      let left: any;
+      let right: any;
+      let nxt4: any;
       let listSize = 1;
       let numMerges: number;
       let leftSize: number;
@@ -765,12 +762,12 @@ export class ZPP_Cutter {
         i1.start.prev.next = j1.end.next;
         j1.end.next = i1.start;
         i1.start.prev = j1.end;
-        let xr1: Any;
+        let xr1: any;
         if (i1.path0 == i1.path0.parent) {
           xr1 = i1.path0;
         } else {
           let obj13 = i1.path0;
-          let stack2: Any = null;
+          let stack2: any = null;
           while (obj13 != obj13.parent) {
             const nxt5 = obj13.parent;
             obj13.parent = stack2;
@@ -784,12 +781,12 @@ export class ZPP_Cutter {
           }
           xr1 = obj13;
         }
-        let yr1: Any;
+        let yr1: any;
         if (j1.path1 == j1.path1.parent) {
           yr1 = j1.path1;
         } else {
           let obj14 = j1.path1;
-          let stack3: Any = null;
+          let stack3: any = null;
           while (obj14 != obj14.parent) {
             const nxt7 = obj14.parent;
             obj14.parent = stack3;
@@ -813,12 +810,12 @@ export class ZPP_Cutter {
             xr1.rank++;
           }
         }
-        let xr2: Any;
+        let xr2: any;
         if (i1.path1 == i1.path1.parent) {
           xr2 = i1.path1;
         } else {
           let obj15 = i1.path1;
-          let stack4: Any = null;
+          let stack4: any = null;
           while (obj15 != obj15.parent) {
             const nxt9 = obj15.parent;
             obj15.parent = stack4;
@@ -832,12 +829,12 @@ export class ZPP_Cutter {
           }
           xr2 = obj15;
         }
-        let yr2: Any;
+        let yr2: any;
         if (j1.path0 == j1.path0.parent) {
           yr2 = j1.path0;
         } else {
           let obj16 = j1.path0;
-          let stack5: Any = null;
+          let stack5: any = null;
           while (obj16 != obj16.parent) {
             const nxt11 = obj16.parent;
             obj16.parent = stack5;
@@ -862,7 +859,7 @@ export class ZPP_Cutter {
           }
         }
       } else if (i1.virtualint && !j1.virtualint) {
-        let tmp7: Any;
+        let tmp7: any;
         if (j1.end != null && j1.end.prev == j1.end) {
           j1.end.next = j1.end.prev = null;
           const o = j1.end;
@@ -967,7 +964,7 @@ export class ZPP_Cutter {
           if (j1.end != j1.path0.vert) {
             j1.start.x = j1.end.x;
             j1.start.y = j1.end.y;
-            let tmp8: Any;
+            let tmp8: any;
             if (j1.end != null && j1.end.prev == j1.end) {
               j1.end.next = j1.end.prev = null;
               const o6 = j1.end;
@@ -1173,12 +1170,12 @@ export class ZPP_Cutter {
         j1.start.prev.next = j1.end.next;
         j1.end.next = j1.start;
         j1.start.prev = j1.end;
-        let xr3: Any;
+        let xr3: any;
         if (j1.path0 == j1.path0.parent) {
           xr3 = j1.path0;
         } else {
           let obj17 = j1.path0;
-          let stack6: Any = null;
+          let stack6: any = null;
           while (obj17 != obj17.parent) {
             const nxt13 = obj17.parent;
             obj17.parent = stack6;
@@ -1192,12 +1189,12 @@ export class ZPP_Cutter {
           }
           xr3 = obj17;
         }
-        let yr3: Any;
+        let yr3: any;
         if (j1.path1 == j1.path1.parent) {
           yr3 = j1.path1;
         } else {
           let obj18 = j1.path1;
-          let stack7: Any = null;
+          let stack7: any = null;
           while (obj18 != obj18.parent) {
             const nxt15 = obj18.parent;
             obj18.parent = stack7;
@@ -1222,7 +1219,7 @@ export class ZPP_Cutter {
           }
         }
       } else if (j1.virtualint && !i1.virtualint) {
-        let tmp9: Any;
+        let tmp9: any;
         if (i1.end != null && i1.end.prev == i1.end) {
           i1.end.next = i1.end.prev = null;
           const o18 = i1.end;
@@ -1327,7 +1324,7 @@ export class ZPP_Cutter {
           if (i1.end != i1.path0.vert) {
             i1.start.x = i1.end.x;
             i1.start.y = i1.end.y;
-            let tmp10: Any;
+            let tmp10: any;
             if (i1.end != null && i1.end.prev == i1.end) {
               i1.end.next = i1.end.prev = null;
               const o24 = i1.end;
@@ -1533,12 +1530,12 @@ export class ZPP_Cutter {
         i1.start.prev.next = i1.end.next;
         i1.end.next = i1.start;
         i1.start.prev = i1.end;
-        let xr4: Any;
+        let xr4: any;
         if (i1.path0 == i1.path0.parent) {
           xr4 = i1.path0;
         } else {
           let obj19 = i1.path0;
-          let stack8: Any = null;
+          let stack8: any = null;
           while (obj19 != obj19.parent) {
             const nxt17 = obj19.parent;
             obj19.parent = stack8;
@@ -1552,12 +1549,12 @@ export class ZPP_Cutter {
           }
           xr4 = obj19;
         }
-        let yr4: Any;
+        let yr4: any;
         if (i1.path1 == i1.path1.parent) {
           yr4 = i1.path1;
         } else {
           let obj20 = i1.path1;
-          let stack9: Any = null;
+          let stack9: any = null;
           while (obj20 != obj20.parent) {
             const nxt19 = obj20.parent;
             obj20.parent = stack9;
@@ -1597,12 +1594,12 @@ export class ZPP_Cutter {
     let cx_ite = ZPP_Cutter.paths.head;
     while (cx_ite != null) {
       const p5 = cx_ite.elt;
-      let poly: Any;
+      let poly: any;
       if (p5 == p5.parent) {
         poly = p5;
       } else {
         let obj21 = p5;
-        let stack10: Any = null;
+        let stack10: any = null;
         while (obj21 != obj21.parent) {
           const nxt21 = obj21.parent;
           obj21.parent = stack10;

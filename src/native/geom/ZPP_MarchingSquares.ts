@@ -13,26 +13,23 @@ import { ZPP_MarchSpan } from "./ZPP_MarchSpan";
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair } from "../util/ZNPArray2";
-
-type Any = any;
+import { ZNPList } from "../util/ZNPList";
 
 export class ZPP_MarchingSquares {
   static __name__ = ["zpp_nape", "geom", "ZPP_MarchingSquares"];
 
   // --- Static fields ---
-  static isos: Any = null;
-  static ints: Any = null;
-  static map: Any = null;
+  static isos: ZNPArray2_Float | null = null;
+  static ints: ZNPArray2_ZPP_GeomVert | null = null;
+  static map: ZNPArray2_ZPP_MarchPair | null = null;
   static me: ZPP_MarchingSquares;
   static look_march: number[];
 
   // Namespace refs for compiled-only types (ZNPArray2_*)
-  static _zpp: Any = null;
-  static _nape: Any = null;
+  static _zpp: any = null;
+  static _nape: any = null;
 
-  __class__: Any = ZPP_MarchingSquares;
-
-  static _init(zpp: Any, nape: Any): void {
+  static _init(zpp: any, nape: any): void {
     ZPP_MarchingSquares._zpp = zpp;
     ZPP_MarchingSquares._nape = nape;
     // Initialize singleton + lookup table (was in compiled init block)
@@ -247,10 +244,10 @@ export class ZPP_MarchingSquares {
     by0: number,
     bx1: number,
     by1: number,
-    cell: Any,
+    cell: any,
     quality: number,
     combine: boolean,
-    ret: Any,
+    ret: ZNPList<ZPP_GeomVert>,
   ): void {
     if (cell != null && cell.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -581,7 +578,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: output — emit a polygon to the result list
   // ---------------------------------------------------------------------------
-  output(ret: Any, poly: ZPP_GeomVert | null): void {
+  output(ret: ZNPList<ZPP_GeomVert>, poly: ZPP_GeomVert | null): void {
     const nape = ZPP_MarchingSquares._nape;
     let tmp: boolean;
     if (poly == null || poly.next == poly || poly.next == poly.prev) {
@@ -591,7 +588,7 @@ export class ZPP_MarchingSquares {
       const F = poly;
       const L = poly;
       if (F != null) {
-        let nite: Any = F;
+        let nite: ZPP_GeomVert = F;
         while (true) {
           const v = nite;
           area += v.x * (v.next.y - v.prev.y);
@@ -608,7 +605,7 @@ export class ZPP_MarchingSquares {
       while (poly != null) {
         if (poly != null && poly.prev == poly) {
           poly.next = poly.prev = null;
-          poly = null as Any;
+          poly = null;
         } else {
           const retnodes = poly.next;
           poly.prev!.next = poly.next;
@@ -632,7 +629,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: linkright
   // ---------------------------------------------------------------------------
-  linkright(poly: Any, key: number): Any {
+  linkright(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
     const kind = key & 7;
     if (kind == 0) {
       return poly;
@@ -646,7 +643,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: linkleft
   // ---------------------------------------------------------------------------
-  linkleft(poly: Any, key: number): Any {
+  linkleft(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
     if ((key & 1) == 0) {
       return poly.prev;
     } else {
@@ -657,7 +654,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: linkdown
   // ---------------------------------------------------------------------------
-  linkdown(poly: Any, key: number): Any {
+  linkdown(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
     if ((key & 128) == 0) {
       return poly.prev;
     } else {
@@ -668,7 +665,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: linkup
   // ---------------------------------------------------------------------------
-  linkup(poly: Any, _key: number): Any {
+  linkup(poly: ZPP_GeomVert | null, _key: number): ZPP_GeomVert | null {
     return poly;
   }
 
@@ -809,8 +806,8 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   private _buildPoly(
     val: number,
-    isos: Any,
-    ints: Any,
+    isos: ZNPArray2_Float,
+    ints: ZNPArray2_ZPP_GeomVert,
     x0: number,
     y0: number,
     x1: number,
@@ -929,8 +926,8 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   marchSquare(
     iso: (x: number, y: number) => number,
-    isos: Any,
-    ints: Any,
+    isos: ZNPArray2_Float,
+    ints: ZNPArray2_ZPP_GeomVert,
     x0: number,
     y0: number,
     x1: number,
@@ -1204,8 +1201,8 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   private _buildPoly2(
     val: number,
-    isos: Any,
-    ints: Any,
+    isos: ZNPArray2_Float,
+    ints: ZNPArray2_ZPP_GeomVert,
     x0: number,
     y0: number,
     x1: number,

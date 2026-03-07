@@ -14,8 +14,6 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_ConvexRayResult } from "./ZPP_ConvexRayResult";
 import { ZNPNode_RayResult } from "../util/ZNPRegistry";
 
-type Any = any;
-
 export class ZPP_Ray {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_Ray"];
@@ -35,19 +33,16 @@ export class ZPP_Ray {
   dirx = 0.0;
   originy = 0.0;
   originx = 0.0;
-  userData: Any = null;
+  userData: unknown = null;
   maxdist = 0.0;
-  direction: Any = null;
-  origin: Any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Ray;
+  direction: any = null;
+  origin: any = null;
 
   constructor() {
     const nape = getNape();
 
     // --- Create origin Vec2 wrapper from pool ---
-    let ret: Any;
+    let ret: any;
     if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -117,10 +112,10 @@ export class ZPP_Ray {
     }
     ret.zpp_inner.weak = false;
     this.origin = ret;
-    this.origin.zpp_inner._invalidate = (x: Any) => this.origin_invalidate(x);
+    this.origin.zpp_inner._invalidate = (x: ZPP_Vec2) => this.origin_invalidate(x);
 
     // --- Create direction Vec2 wrapper from pool ---
-    let ret2: Any;
+    let ret2: any;
     if (ZPP_PubPool.poolVec2 == null) {
       ret2 = new nape.geom.Vec2();
     } else {
@@ -190,7 +185,7 @@ export class ZPP_Ray {
     }
     ret2.zpp_inner.weak = false;
     this.direction = ret2;
-    this.direction.zpp_inner._invalidate = (x: Any) => this.direction_invalidate(x);
+    this.direction.zpp_inner._invalidate = (x: ZPP_Vec2) => this.direction_invalidate(x);
 
     this.originx = 0;
     this.originy = 0;
@@ -203,12 +198,12 @@ export class ZPP_Ray {
   // Invalidation callbacks
   // ---------------------------------------------------------------------------
 
-  origin_invalidate(x: Any): void {
+  origin_invalidate(x: ZPP_Vec2): void {
     this.originx = x.x;
     this.originy = x.y;
   }
 
-  direction_invalidate(x: Any): void {
+  direction_invalidate(x: ZPP_Vec2): void {
     this.dirx = x.x;
     this.diry = x.y;
     this.zip_dir = true;
@@ -300,7 +295,7 @@ export class ZPP_Ray {
   // aabbtest — Test if ray overlaps an AABB (separating axis test)
   // ---------------------------------------------------------------------------
 
-  aabbtest(a: Any): boolean {
+  aabbtest(a: ZPP_AABB): boolean {
     const dot1 =
       this.normalx * (this.originx - 0.5 * (a.minx + a.maxx)) +
       this.normaly * (this.originy - 0.5 * (a.miny + a.maxy));
@@ -314,7 +309,7 @@ export class ZPP_Ray {
   // aabbsect — Find the closest intersection of ray with an AABB
   // ---------------------------------------------------------------------------
 
-  aabbsect(a: Any): number {
+  aabbsect(a: ZPP_AABB): number {
     const cx = this.originx >= a.minx && this.originx <= a.maxx;
     const cy = this.originy >= a.miny && this.originy <= a.maxy;
     if (cx && cy) {
@@ -379,15 +374,15 @@ export class ZPP_Ray {
   // Helper: allocate a Vec2 wrapper with given (x, y) from pool
   // ---------------------------------------------------------------------------
 
-  private static _allocVec2(x: number, y: number): Any {
+  private static _allocVec2(x: number, y: number): any {
     const nape = getNape();
     if (x != x || y != y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
 
-    let ret: Any;
+    let ret: any;
     if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2();
+      ret = new nape.geom.Vec2() as any;
     } else {
       ret = ZPP_PubPool.poolVec2;
       ZPP_PubPool.poolVec2 = ret.zpp_pool;
@@ -455,7 +450,7 @@ export class ZPP_Ray {
   // Helper: validate worldCOM on a shape (used by circlesect/circlesect2)
   // ---------------------------------------------------------------------------
 
-  private static _validateWorldCOM(c: Any): void {
+  private static _validateWorldCOM(c: any): void {
     if (c.zip_worldCOM) {
       if (c.body != null) {
         c.zip_worldCOM = false;
@@ -538,7 +533,7 @@ export class ZPP_Ray {
   // Helper: compute circle normal at intersection point
   // ---------------------------------------------------------------------------
 
-  private _circleNormal(t: number, c: Any, insideFlip: boolean): { nx: number; ny: number } {
+  private _circleNormal(t: number, c: any, insideFlip: boolean): { nx: number; ny: number } {
     let nx = this.originx + this.dirx * t;
     let ny = this.originy + this.diry * t;
     nx -= c.worldCOMx;
@@ -558,8 +553,8 @@ export class ZPP_Ray {
   // Helper: insert a result into a sorted list (by toiDistance)
   // ---------------------------------------------------------------------------
 
-  private static _insertSorted(list: Any, res: Any): void {
-    let pre: Any = null;
+  private static _insertSorted(list: any, res: any): void {
+    let pre: any = null;
     let cx_ite = list.zpp_inner.inner.head;
     while (cx_ite != null) {
       const j = cx_ite.elt;
@@ -576,7 +571,7 @@ export class ZPP_Ray {
       cx_ite = cx_ite.next;
     }
     const _this = list.zpp_inner.inner;
-    let node: Any;
+    let node: any;
     if (ZNPNode_RayResult.zpp_pool == null) {
       node = new ZNPNode_RayResult();
     } else {
@@ -600,7 +595,7 @@ export class ZPP_Ray {
   // circlesect — Find closest circle intersection (single result)
   // ---------------------------------------------------------------------------
 
-  circlesect(c: Any, inner: boolean, mint: number): Any {
+  circlesect(c: any, inner: boolean, mint: number): any {
     ZPP_Ray._validateWorldCOM(c);
 
     const acx = this.originx - c.worldCOMx;
@@ -651,7 +646,7 @@ export class ZPP_Ray {
   // circlesect2 — Find all circle intersections (insert into sorted list)
   // ---------------------------------------------------------------------------
 
-  circlesect2(c: Any, inner: boolean, list: Any): void {
+  circlesect2(c: any, inner: boolean, list: any): void {
     ZPP_Ray._validateWorldCOM(c);
 
     const acx = this.originx - c.worldCOMx;
@@ -694,10 +689,10 @@ export class ZPP_Ray {
   // polysect — Find closest polygon intersection (single result)
   // ---------------------------------------------------------------------------
 
-  polysect(p: Any, inner: boolean, mint: number): Any {
+  polysect(p: any, inner: boolean, mint: number): any {
     const nape = getNape();
     let min = mint;
-    let edge: Any = null;
+    let edge: any = null;
     let ei = p.edges.head;
 
     // Iterate edges using paired vertex ring
@@ -776,12 +771,12 @@ export class ZPP_Ray {
   // polysect2 — Find all polygon intersections (insert into sorted list)
   // ---------------------------------------------------------------------------
 
-  polysect2(p: Any, inner: boolean, list: Any): void {
+  polysect2(p: any, inner: boolean, list: any): void {
     const nape = getNape();
     let min = Infinity;
     let max = -1.0;
-    let edge: Any = null;
-    let edgemax: Any = null;
+    let edge: any = null;
+    let edgemax: any = null;
     let ei = p.edges.head;
 
     // Iterate edges using paired vertex ring

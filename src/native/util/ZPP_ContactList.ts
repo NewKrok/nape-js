@@ -10,8 +10,6 @@
 import { getNape } from "../../core/engine";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 
-type Any = any;
-
 export class ZPP_ContactList {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "util", "ZPP_ContactList"];
@@ -20,25 +18,23 @@ export class ZPP_ContactList {
   static internal = false;
 
   // --- Instance fields ---
-  outer: Any = null;
-  inner: ZPP_Contact | Any = null;
+  outer: any = null;
+  inner: ZPP_Contact = null!;
   immutable = false;
   _invalidated = false;
   _invalidate: ((self: ZPP_ContactList) => void) | null = null;
   _validate: (() => void) | null = null;
   _modifiable: (() => void) | null = null;
-  adder: ((obj: Any) => boolean) | null = null;
-  post_adder: ((obj: Any) => void) | null = null;
-  subber: ((obj: Any) => void) | null = null;
+  adder: ((obj: any) => boolean) | null = null;
+  post_adder: ((obj: any) => void) | null = null;
+  subber: ((obj: any) => void) | null = null;
   dontremove = false;
   reverse_flag = false;
   at_index = 0;
-  at_ite: Any = null;
-  push_ite: Any = null;
+  at_ite: ZPP_Contact | null = null;
+  push_ite: ZPP_Contact | null = null;
   zip_length = false;
   user_length = 0;
-
-  __class__: Any = ZPP_ContactList;
 
   constructor() {
     this.inner = new ZPP_Contact();
@@ -48,7 +44,7 @@ export class ZPP_ContactList {
   /**
    * Factory: wrap a raw ZPP_Contact linked list into a public ContactList.
    */
-  static get(list: Any, imm?: boolean): Any {
+  static get(list: ZPP_Contact, imm?: boolean): any {
     if (imm == null) imm = false;
     const nape = getNape();
     const ret = new nape.dynamics.ContactList();
