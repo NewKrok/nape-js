@@ -8,13 +8,6 @@ describe("ZPP_Flags", () => {
     });
   });
 
-  describe("__class__", () => {
-    it("should reference ZPP_Flags", () => {
-      const inst = new ZPP_Flags();
-      expect(inst.__class__).toBe(ZPP_Flags);
-    });
-  });
-
   describe("static flag fields", () => {
     it("should initialize gravity mass mode flags to null", () => {
       expect(ZPP_Flags.GravMassMode_DEFAULT).toBeNull();

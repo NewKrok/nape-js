@@ -6,8 +6,6 @@
  * Converted from nape-compiled.js lines 69061–69081.
  */
 
-type Any = any;
-
 export class ZPP_MarchSpan {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_MarchSpan"];
@@ -20,8 +18,6 @@ export class ZPP_MarchSpan {
   rank = 0;
   out = false;
   next: ZPP_MarchSpan | null = null;
-
-  __class__: Any = ZPP_MarchSpan;
 
   constructor() {
     this.parent = this;

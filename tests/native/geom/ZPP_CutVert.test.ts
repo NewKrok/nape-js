@@ -25,7 +25,6 @@ describe("ZPP_CutVert", () => {
       expect(v.parent).toBeNull();
       expect(v.rank).toBe(0);
       expect(v.used).toBe(false);
-      expect(v.__class__).toBe(ZPP_CutVert);
     });
   });
 

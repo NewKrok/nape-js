@@ -21,13 +21,6 @@ describe("ZPP_ID", () => {
     });
   });
 
-  describe("__class__", () => {
-    it("should reference ZPP_ID", () => {
-      const inst = new ZPP_ID();
-      expect(inst.__class__).toBe(ZPP_ID);
-    });
-  });
-
   describe("Constraint", () => {
     it("should return monotonically increasing IDs", () => {
       expect(ZPP_ID.Constraint()).toBe(0);

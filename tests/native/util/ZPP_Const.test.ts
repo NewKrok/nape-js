@@ -8,13 +8,6 @@ describe("ZPP_Const", () => {
     });
   });
 
-  describe("__class__", () => {
-    it("should reference ZPP_Const", () => {
-      const inst = new ZPP_Const();
-      expect(inst.__class__).toBe(ZPP_Const);
-    });
-  });
-
   describe("FMAX", () => {
     it("should be 1e100", () => {
       expect(ZPP_Const.FMAX).toBe(1e100);

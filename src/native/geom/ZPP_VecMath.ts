@@ -6,12 +6,8 @@
  * Converted from nape-compiled.js lines 40101–40118.
  */
 
-type Any = any;
-
 export class ZPP_VecMath {
   static __name__ = ["zpp_nape", "geom", "ZPP_VecMath"];
-
-  __class__: Any = ZPP_VecMath;
 
   /** Squared distance between two 2D points. */
   static vec_dsq(ax: number, ay: number, bx: number, by: number): number {

@@ -29,7 +29,6 @@ describe("ZPP_MarchPair", () => {
       expect(pair.span2).toBeNull();
       expect(pair.spanr).toBeNull();
       expect(pair.next).toBeNull();
-      expect(pair.__class__).toBe(ZPP_MarchPair);
     });
   });
 

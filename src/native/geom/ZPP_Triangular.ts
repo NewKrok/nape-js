@@ -12,18 +12,15 @@ import { ZPP_PartitionPair } from "./ZPP_PartitionPair";
 import { ZPP_PartitionedPoly } from "./ZPP_PartitionedPoly";
 import { ZNPList_ZPP_PartitionVertex, ZPP_Set_ZPP_PartitionPair } from "../util/ZNPRegistry";
 
-type Any = any;
-
 export class ZPP_Triangular {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_Triangular"];
 
   // --- Static fields ---
-  static queue: Any = null;
-  static stack: Any = null;
-  static edgeSet: Any = null;
+  static queue: any = null;
+  static stack: any = null;
+  static edgeSet: any = null;
 
-  __class__: Any = ZPP_Triangular;
 
   // --- Static methods ---
 
@@ -239,13 +236,13 @@ export class ZPP_Triangular {
         }
       }
       ZPP_Triangular.edgeSet.remove_node(edge1.node);
-      const o: Any = edge1;
+      const o: any = edge1;
       o.a = o.b = null;
       o.node = null;
       o.next = ZPP_PartitionPair.zpp_pool;
       ZPP_PartitionPair.zpp_pool = o;
     }
-    const o1: Any = edgeStack;
+    const o1: any = edgeStack;
     o1.a = o1.b = null;
     o1.node = null;
     o1.next = ZPP_PartitionPair.zpp_pool;

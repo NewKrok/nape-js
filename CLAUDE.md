@@ -340,9 +340,34 @@ in native/ code):
   retains `this: any` (Haxe-ported list implementation)
 
 **All public API files done** — `type Any = any` fully eliminated from `src/` (non-native).
-Count: ~114 files remain in `src/native/` — lower priority.
 
-Remaining: native ZPP classes (~100 files) — lower priority.
+**Native files done** — 25 files cleaned in `src/native/geom/` and `src/native/util/`:
+- `ZPP_Const.ts`, `ZPP_ID.ts`, `ZPP_Math.ts`, `ZPP_SweepDistance.ts`, `ZPP_VecMath.ts` — removed
+  `type Any` and `__class__: Any = ClassName` dead code (P21 leftover)
+- `ZPP_PubPool.ts`, `ZPP_Flags.ts` — pool/flag fields typed as `any` (circular import: types are
+  Vec2/Vec3/GeomPoly and enum singletons, which can't be imported from these util files)
+- `ZPP_Vec3.ts`, `ZPP_Mat23.ts`, `ZPP_MatMN.ts` — `outer/wrap` typed (`any` for public wrapper ref)
+- `ZPP_GeomVertexIterator.ts` — `ptr/start/outer` typed as `any` (`.zpp_inner` access pattern)
+- `ZPP_ConvexRayResult.ts` — factory callbacks and instance fields typed as `any` (circular with Shape, Vec2)
+- `ZPP_Vec2.ts`, `ZPP_AABB.ts` — `outer: any`, `wrap_min/max: any` (Haxe pool disconnection pattern:
+  `outer.zpp_inner = null` assigns null to a non-nullable typed field — can't be typed without ugly casts)
+- `ZPP_GeomVert.ts`, `ZPP_GeomPoly.ts`, `ZPP_SimplifyV.ts`, `ZPP_SimpleVert.ts`,
+  `ZPP_PartitionVertex.ts`, `ZPP_PartitionPair.ts`, `ZPP_CutVert.ts`, `ZPP_SimpleEvent.ts`,
+  `ZPP_MarchPair.ts`, `ZPP_Triangular.ts`, `ZPP_Collide.ts`, `ZPP_Geom.ts`,
+  `ZPP_ToiEvent.ts`, `ZPP_Convex.ts` — `type Any` removed; dynamic/circular fields remain `any`
+
+**Key patterns established for native files:**
+- `outer`/`wrap`/`wrap_min`/`wrap_max` fields holding public API wrappers → always `any`
+  (circular ESM import prevention + Haxe `outer.zpp_inner = null` pool disconnection pattern)
+- `_nape`/`_zpp` static namespace refs → always `any` (dynamic dispatch)
+- `_wrapFn` callbacks → `((zpp: ZPP_Foo) => any) | null` (typed input, `any` output)
+- `__class__: Any = ClassName` instance fields → removed entirely (P21 dead code)
+- Corresponding `__class__` test assertions removed from 20 test files
+
+Count: ~70 files remain in `src/native/` (dynamics/, shape/, callbacks/, phys/, space/, constraint/,
+and remaining geom/ files: ZPP_Ray, ZPP_Simple, ZPP_Cutter, ZPP_Simplify, etc.)
+
+Remaining: native ZPP classes (~70 files) — lower priority.
 
 ### Priority 26: Tree shaking
 

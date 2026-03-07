@@ -7,33 +7,29 @@
  * Converted from nape-compiled.js lines 83412–83434.
  */
 
-type Any = any;
-
 export class ZPP_Vec3 {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_Vec3"];
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
+  static _zpp: object | null = null;
 
   // --- Static: wrapper factory callback (set by public Vec3 class) ---
-  static _wrapFn: ((zpp: ZPP_Vec3) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Vec3) => any) | null = null;
 
   // --- Instance ---
-  outer: Any = null;
+  outer: object | null = null;
   x = 0.0;
   y = 0.0;
   z = 0.0;
   immutable = false;
   _validate: (() => void) | null = null;
 
-  __class__: Any = ZPP_Vec3;
-
   validate(): void {
     if (this._validate != null) this._validate();
   }
 
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Vec3._wrapFn) {
         this.outer = ZPP_Vec3._wrapFn(this);

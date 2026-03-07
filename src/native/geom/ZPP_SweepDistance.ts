@@ -11,11 +11,8 @@
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { getNape } from "../../core/engine";
 
-type Any = any;
-
 export class ZPP_SweepDistance {
   static __name__ = ["zpp_nape", "geom", "ZPP_SweepDistance"];
-  __class__: Any = ZPP_SweepDistance;
 
   static dynamicSweep(toi, timeStep, lowerBound, negRadius, userAPI) {
     const napeNs = getNape();

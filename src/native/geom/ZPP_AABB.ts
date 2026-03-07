@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 63546–63965, 134951.
  */
 
-type Any = any;
-
 export class ZPP_AABB {
   // --- Static: object pool ---
   static zpp_pool: ZPP_AABB | null = null;
@@ -17,11 +15,11 @@ export class ZPP_AABB {
   static __name__ = ["zpp_nape", "geom", "ZPP_AABB"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by AABB.ts) ---
-  static _wrapFn: ((zpp: ZPP_AABB) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_AABB) => any) | null = null;
 
   // --- Instance: callbacks ---
   _invalidate: ((self: ZPP_AABB) => void) | null = null;
@@ -29,7 +27,7 @@ export class ZPP_AABB {
   _immutable = false;
 
   // --- Instance: public wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: pool linked list ---
   next: ZPP_AABB | null = null;
@@ -41,11 +39,8 @@ export class ZPP_AABB {
   maxy = 0.0;
 
   // --- Instance: lazy Vec2 wrappers ---
-  wrap_min: Any = null;
-  wrap_max: Any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_AABB;
+  wrap_min: any = null;
+  wrap_max: any = null;
 
   /** Static factory with pooling. */
   static get(minx: number, miny: number, maxx: number, maxy: number): ZPP_AABB {
@@ -76,7 +71,7 @@ export class ZPP_AABB {
 
   // ========== Wrapper / Pool ==========
 
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_AABB._wrapFn) {
         this.outer = ZPP_AABB._wrapFn(this);
@@ -133,7 +128,7 @@ export class ZPP_AABB {
   // ========== Min/Max Vec2 wrappers (lazy creation) ==========
 
   /** Helper: create a Vec2 wrapper from the compiled namespace pools. */
-  private static _makeVec2Wrapper(x: number, y: number): Any {
+  private static _makeVec2Wrapper(x: number, y: number): object {
     const zpp = ZPP_AABB._zpp;
     const napeNs = ZPP_AABB._nape;
 
@@ -141,7 +136,7 @@ export class ZPP_AABB {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
 
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -155,7 +150,7 @@ export class ZPP_AABB {
     }
 
     if (ret.zpp_inner == null) {
-      let inner: Any;
+      let inner: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         inner = new zpp.geom.ZPP_Vec2();
       } else {
@@ -211,7 +206,7 @@ export class ZPP_AABB {
     this.wrap_min.zpp_inner.y = this.miny;
   }
 
-  mod_min(min: Any): void {
+  mod_min(min: { x: number; y: number }): void {
     if (min.x !== this.minx || min.y !== this.miny) {
       this.minx = min.x;
       this.miny = min.y;
@@ -238,7 +233,7 @@ export class ZPP_AABB {
     this.wrap_max.zpp_inner.y = this.maxy;
   }
 
-  mod_max(max: Any): void {
+  mod_max(max: { x: number; y: number }): void {
     if (max.x !== this.maxx || max.y !== this.maxy) {
       this.maxx = max.x;
       this.maxy = max.y;

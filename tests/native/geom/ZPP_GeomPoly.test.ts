@@ -21,9 +21,5 @@ describe("ZPP_GeomPoly", () => {
       expect(gp.outer).toBe(outerObj);
     });
 
-    it("should set __class__ to ZPP_GeomPoly", () => {
-      const gp = new ZPP_GeomPoly();
-      expect(gp.__class__).toBe(ZPP_GeomPoly);
-    });
   });
 });

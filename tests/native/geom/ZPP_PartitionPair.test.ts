@@ -19,7 +19,6 @@ describe("ZPP_PartitionPair", () => {
       expect(p.b).toBeNull();
       expect(p.node).toBeNull();
       expect(p.next).toBeNull();
-      expect(p.__class__).toBe(ZPP_PartitionPair);
     });
   });
 

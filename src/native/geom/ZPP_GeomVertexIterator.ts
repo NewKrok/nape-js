@@ -9,8 +9,6 @@
 
 import { getNape } from "../../core/engine";
 
-type Any = any;
-
 export class ZPP_GeomVertexIterator {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_GeomVertexIterator"];
@@ -22,14 +20,12 @@ export class ZPP_GeomVertexIterator {
   static internal = false;
 
   // --- Instance fields ---
-  ptr: Any = null;
-  start: Any = null;
+  ptr: any = null;
+  start: any = null;
   first = false;
   forward = false;
-  outer: Any = null;
+  outer: any = null;
   next: ZPP_GeomVertexIterator | null = null;
-
-  __class__: Any = ZPP_GeomVertexIterator;
 
   constructor() {
     ZPP_GeomVertexIterator.internal = true;
@@ -42,7 +38,7 @@ export class ZPP_GeomVertexIterator {
    * Get a pooled iterator starting at the given vertex, traversing forward or backward.
    * Returns the public GeomVertexIterator wrapper.
    */
-  static get(poly: Any, forward: boolean): Any {
+  static get(poly: any, forward: boolean): any {
     let ret: ZPP_GeomVertexIterator;
     if (ZPP_GeomVertexIterator.zpp_pool == null) {
       ret = new ZPP_GeomVertexIterator();

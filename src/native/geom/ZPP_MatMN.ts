@@ -6,19 +6,15 @@
  * Converted from nape-compiled.js lines 72949–72972.
  */
 
-type Any = any;
-
 export class ZPP_MatMN {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_MatMN"];
 
   // --- Instance ---
-  outer: Any = null;
+  outer: object | null = null;
   m = 0;
   n = 0;
   x: number[];
-
-  __class__: Any = ZPP_MatMN;
 
   constructor(m: number, n: number) {
     this.m = m;

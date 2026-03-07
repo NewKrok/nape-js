@@ -6,8 +6,6 @@
  * Converted from nape-compiled.js lines 69082–69119.
  */
 
-type Any = any;
-
 export class ZPP_MarchPair {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_MarchPair"];
@@ -16,22 +14,21 @@ export class ZPP_MarchPair {
   static zpp_pool: ZPP_MarchPair | null = null;
 
   // --- Instance ---
-  p1: Any = null;
+  p1: any = null;
   key1 = 0;
   okey1 = 0;
-  p2: Any = null;
+  p2: any = null;
   key2 = 0;
   okey2 = 0;
-  pr: Any = null;
+  pr: any = null;
   keyr = 0;
   okeyr = 0;
-  pd: Any = null;
-  span1: Any = null;
-  span2: Any = null;
-  spanr: Any = null;
+  pd: any = null;
+  span1: any = null;
+  span2: any = null;
+  spanr: any = null;
   next: ZPP_MarchPair | null = null;
 
-  __class__: Any = ZPP_MarchPair;
 
   free(): void {
     this.p1 = this.p2 = this.pr = this.pd = null;

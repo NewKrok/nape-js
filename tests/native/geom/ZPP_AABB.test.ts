@@ -28,7 +28,6 @@ describe("ZPP_AABB", () => {
       expect(a.next).toBeNull();
       expect(a.wrap_min).toBeNull();
       expect(a.wrap_max).toBeNull();
-      expect(a.__class__).toBe(ZPP_AABB);
     });
   });
 

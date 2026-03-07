@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 44578–44607, 133603–133611.
  */
 
-type Any = any;
-
 export class ZPP_ID {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "ZPP_ID"];
@@ -61,5 +59,4 @@ export class ZPP_ID {
     return ZPP_ID._InteractionGroup++;
   }
 
-  __class__: Any = ZPP_ID;
 }

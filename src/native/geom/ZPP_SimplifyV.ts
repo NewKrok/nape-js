@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 35611–35643.
  */
 
-type Any = any;
-
 export class ZPP_SimplifyV {
   static __name__ = ["zpp_nape", "geom", "ZPP_SimplifyV"];
   static zpp_pool: ZPP_SimplifyV | null = null;
@@ -20,9 +18,7 @@ export class ZPP_SimplifyV {
   flag = false;
   forced = false;
 
-  __class__: Any = ZPP_SimplifyV;
-
-  static get(v: Any): ZPP_SimplifyV {
+  static get(v: { x: number; y: number }): ZPP_SimplifyV {
     let ret: ZPP_SimplifyV;
     if (ZPP_SimplifyV.zpp_pool == null) {
       ret = new ZPP_SimplifyV();

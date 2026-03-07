@@ -7,19 +7,16 @@
  * Converted from nape-compiled.js lines 127704–127707, 133961–133966.
  */
 
-type Any = any;
-
 export class ZPP_PubPool {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "util", "ZPP_PubPool"];
 
   // --- Static: pool heads and lookaheads ---
-  static poolGeomPoly: Any = null;
-  static nextGeomPoly: Any = null;
-  static poolVec2: Any = null;
-  static nextVec2: Any = null;
-  static poolVec3: Any = null;
-  static nextVec3: Any = null;
-
-  __class__: Any = ZPP_PubPool;
+  // Typed as `any` to avoid circular imports; concrete type is always a public API class.
+  static poolGeomPoly: any = null;
+  static nextGeomPoly: any = null;
+  static poolVec2: any = null;
+  static nextVec2: any = null;
+  static poolVec3: any = null;
+  static nextVec3: any = null;
 }

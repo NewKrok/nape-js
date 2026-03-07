@@ -20,7 +20,6 @@ describe("ZPP_SimplifyP", () => {
       expect(p.next).toBeNull();
       expect(p.min).toBeNull();
       expect(p.max).toBeNull();
-      expect(p.__class__).toBe(ZPP_SimplifyP);
     });
   });
 

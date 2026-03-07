@@ -6,15 +6,12 @@
  * Converted from nape-compiled.js lines 26135–26462.
  */
 
-type Any = any;
-
 export class ZPP_Geom {
   static __name__ = ["zpp_nape", "geom", "ZPP_Geom"];
 
-  __class__: Any = ZPP_Geom;
 
   /** Validate and update all derived geometry for a shape. */
-  static validateShape(s: Any): void {
+  static validateShape(s: any): void {
     if (s.type == 1) {
       const _this = s.polygon;
       if (_this.zip_gaxi) {
@@ -178,7 +175,7 @@ export class ZPP_Geom {
   }
 
   /** @internal Validate world COM of a circle shape (inlined from compiled code). */
-  private static _validateWorldCOM(shape: Any): void {
+  private static _validateWorldCOM(shape: any): void {
     if (shape.zip_worldCOM) {
       if (shape.body != null) {
         shape.zip_worldCOM = false;
@@ -209,7 +206,7 @@ export class ZPP_Geom {
   }
 
   /** @internal Compute polygon local COM from vertex ring. */
-  private static _computePolygonLocalCOM(poly: Any): void {
+  private static _computePolygonLocalCOM(poly: any): void {
     if (poly.lverts.next == null) {
       throw new Error("Error: An empty polygon has no meaningful localCOM");
     }

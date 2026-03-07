@@ -7,28 +7,25 @@
  * Converted from nape-compiled.js lines 33879–33936.
  */
 
-type Any = any;
-
 export class ZPP_SimpleEvent {
   static __name__ = ["zpp_nape", "geom", "ZPP_SimpleEvent"];
   static zpp_pool: ZPP_SimpleEvent | null = null;
 
   type = 0;
-  vertex: Any = null;
-  segment: Any = null;
-  segment2: Any = null;
-  node: Any = null;
+  vertex: any = null;
+  segment: any = null;
+  segment2: any = null;
+  node: any = null;
   next: ZPP_SimpleEvent | null = null;
 
-  __class__: Any = ZPP_SimpleEvent;
 
-  static swap_nodes(a: Any, b: Any): void {
+  static swap_nodes(a: ZPP_SimpleEvent, b: ZPP_SimpleEvent): void {
     const t = a.node;
     a.node = b.node;
     b.node = t;
   }
 
-  static less_xy(a: Any, b: Any): boolean {
+  static less_xy(a: ZPP_SimpleEvent, b: ZPP_SimpleEvent): boolean {
     if (a.vertex.x < b.vertex.x) {
       return true;
     } else if (a.vertex.x > b.vertex.x) {
@@ -42,7 +39,7 @@ export class ZPP_SimpleEvent {
     }
   }
 
-  static get(v: Any): ZPP_SimpleEvent {
+  static get(v: any): ZPP_SimpleEvent {
     let ret: ZPP_SimpleEvent;
     if (ZPP_SimpleEvent.zpp_pool == null) {
       ret = new ZPP_SimpleEvent();

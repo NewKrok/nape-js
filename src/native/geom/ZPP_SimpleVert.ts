@@ -10,8 +10,6 @@
 import { ZPP_Set_ZPP_SimpleVert } from "../util/ZNPRegistry";
 import { ZPP_ID } from "../util/ZPP_ID";
 
-type Any = any;
-
 export class ZPP_SimpleVert {
   static __name__ = ["zpp_nape", "geom", "ZPP_SimpleVert"];
   static zpp_pool: ZPP_SimpleVert | null = null;
@@ -19,12 +17,11 @@ export class ZPP_SimpleVert {
   forced = false;
   x = 0.0;
   y = 0.0;
-  links: Any = null;
+  links: any = null;
   id = 0;
   next: ZPP_SimpleVert | null = null;
-  node: Any = null;
+  node: any = null;
 
-  __class__: Any = ZPP_SimpleVert;
 
   constructor() {
     this.id = ZPP_ID.ZPP_SimpleVert();
@@ -38,7 +35,7 @@ export class ZPP_SimpleVert {
     this.links.lt = ZPP_SimpleVert.less_xy;
   }
 
-  static less_xy(p: Any, q: Any): boolean {
+  static less_xy(p: ZPP_SimpleVert, q: ZPP_SimpleVert): boolean {
     if (!(p.y < q.y)) {
       if (p.y == q.y) {
         return p.x < q.x;
@@ -50,7 +47,7 @@ export class ZPP_SimpleVert {
     }
   }
 
-  static swap_nodes(p: Any, q: Any): void {
+  static swap_nodes(p: ZPP_SimpleVert, q: ZPP_SimpleVert): void {
     const t = p.node;
     p.node = q.node;
     q.node = t;

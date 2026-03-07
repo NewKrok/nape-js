@@ -21,7 +21,6 @@ describe("ZPP_SimpleEvent", () => {
       expect(e.segment2).toBeNull();
       expect(e.node).toBeNull();
       expect(e.next).toBeNull();
-      expect(e.__class__).toBe(ZPP_SimpleEvent);
     });
   });
 

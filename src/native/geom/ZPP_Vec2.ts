@@ -9,7 +9,7 @@
  * Converted from nape-compiled.js lines 83820–84273, 134996.
  */
 
-type Any = any;
+import type { Vec2 } from "../../geom/Vec2";
 
 export class ZPP_Vec2 {
   // --- Static: object pool ---
@@ -19,11 +19,11 @@ export class ZPP_Vec2 {
   static __name__ = ["zpp_nape", "geom", "ZPP_Vec2"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by public Vec2 class) ---
-  static _wrapFn: ((zpp: ZPP_Vec2) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Vec2) => Vec2) | null = null;
 
   // --- Instance: vector data ---
   x = 0.0;
@@ -40,7 +40,8 @@ export class ZPP_Vec2 {
 
   // --- Instance: wrapper/pool ---
   weak = false;
-  outer: Any = null;
+  // `any` because disconnecting this.outer.zpp_inner = null is a Haxe pool pattern
+  outer: any = null;
 
   // --- Instance: immutability ---
   _immutable = false;
@@ -51,7 +52,6 @@ export class ZPP_Vec2 {
   _invalidate: ((self: ZPP_Vec2) => void) | null = null;
 
   // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Vec2;
 
   /** Static factory with optional pooling and immutability. */
   static get(x: number, y: number, immutable?: boolean): ZPP_Vec2 {
@@ -90,7 +90,7 @@ export class ZPP_Vec2 {
 
   // ========== Wrapper / Pool ==========
 
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Vec2._wrapFn) {
         this.outer = ZPP_Vec2._wrapFn(this);
