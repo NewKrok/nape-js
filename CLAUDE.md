@@ -364,7 +364,7 @@ in native/ code):
 - `__class__: Any = ClassName` instance fields → removed entirely (P21 dead code)
 - Corresponding `__class__` test assertions removed from 20 test files
 
-**Additional native geom files done** (this session):
+**Additional native geom files done** (previous sessions):
 - `ZPP_SimpleSeg.ts` — `left/right: ZPP_SimpleVert`, `vertices: ZPP_Set<ZPP_SimpleVert>`,
   `prev: ZPP_SimpleSeg|null`, `node: ZPP_Set<ZPP_SimpleSeg>|null`; `__class__` removed
 - `ZPP_CutInt.ts` — `path0/path1/start/end: ZPP_CutVert|null`; `__class__` removed;
@@ -379,7 +379,7 @@ in native/ code):
 - `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `simplify(P: ZPP_GeomVert): ZPP_GeomVert|null`;
   `XYPoint` interface for `lessval/less/distance` helpers; `dv: ZPP_SimplifyV|null`
 
-**Native dynamics/ files done** (this session):
+**Native dynamics/ files done** (previous sessions):
 - `ZPP_Arbiter.ts` — `_nape`/`_zpp`/`outer`/`b1`/`b2`/`ws1`/`ws2`/`pair`/`colarb`/`fluidarb`/`sensorarb`/`types` → `any`;
   `__class__` removed; method params/locals → `any`
 - `ZPP_Contact.ts` — `outer`/`wrap_position`/`arbiter` → `any`; `__class__` removed;
@@ -395,10 +395,27 @@ in native/ code):
   immutable override methods → `any`
 - 4 test files updated: removed `__class__` assertions from ZPP_Contact, ZPP_IContact, ZPP_InteractionFilter, ZPP_InteractionGroup
 
-Count: ~55 files remain in `src/native/` (shape/, callbacks/, phys/, space/, constraint/,
-and remaining geom/ files: ZPP_Ray, ZPP_Simple, ZPP_Cutter, ZPP_MarchingSquares, etc.)
+**Additional native util+geom files done** (this session):
+- `ZNPList.ts` — typed `_NodeClass` with `ZNPNodeClass<T>` interface, `constructor` cast with
+  `ZNPListConstructor<T>`; removed `__class__` field
+- `ZPP_Set.ts` — typed `zpp_pool`/constructor cast with `ZPP_SetConstructor<T>` interface;
+  removed `__class__` field
+- `ZPP_ContactList.ts` — typed `inner: ZPP_Contact`, `at_ite/push_ite: ZPP_Contact|null`;
+  `get()` param typed; removed `__class__` field
+- `ZPP_Vec2List.ts` — typed `inner: ZNPList<unknown>`; `get()` param typed; removed `__class__` field
+- `ZPP_Ray.ts` — typed `userData: unknown`, `aabbtest/aabbsect(a: ZPP_AABB)`, invalidate
+  callbacks `(x: ZPP_Vec2)`; `direction/origin: any` (circular); removed `__class__` field
+- `ZPP_Simple.ts` — typed all static fields (`FastHash2_Boolfalse`, `ZPP_Set<*>`, `ZNPList<*>`);
+  `decompose/clip_polygon/isSimple` params and locals typed; merge sort nodes as `ZNPNode<ZPP_SimpleEvent>`
+- `ZPP_MarchingSquares.ts` — typed `isos/ints/map` static fields (`ZNPArray2_Float`,
+  `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair`); `run/output/link*/marchSquare/_buildPoly*`
+  params typed; `_zpp/_nape: any`; removed `__class__` field
+- `ZPP_Cutter.ts` — typed `P: ZPP_GeomVert|null`; local `verts/start/pre/start1: ZPP_CutVert|null`;
+  `virtualint*: boolean`; stack/merge-sort vars remain `any`; removed static `__class__`
 
-Remaining: native ZPP classes (~55 files) — lower priority.
+Count: 43 files remain in `src/native/` (shape/, callbacks/, phys/, space/, constraint/)
+
+Remaining: native ZPP classes (~43 files) — lower priority.
 
 ### Priority 26: Tree shaking
 
