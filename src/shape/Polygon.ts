@@ -9,7 +9,6 @@ import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 
-type Any = any;
 
 /**
  * A convex polygon physics shape.
@@ -19,13 +18,13 @@ type Any = any;
  */
 export class Polygon extends Shape {
   static __name__ = ["nape", "shape", "Polygon"];
-  static __super__: Any = Shape;
+  static __super__: any = Shape;
 
   /** Direct access to the extracted internal ZPP_Polygon. */
   zpp_inner_zn!: ZPP_Polygon;
 
   constructor(
-    localVerts?: Vec2[] | Any,
+    localVerts?: Vec2[] | any,
     material?: Material,
     filter?: InteractionFilter,
   ) {
@@ -39,12 +38,12 @@ export class Polygon extends Shape {
 
     const zpp = new ZPP_Polygon();
     this.zpp_inner_zn = zpp;
-    (this as Any).zpp_inner = zpp;
+    (this as any).zpp_inner = zpp;
     this.zpp_inner_i = zpp;
     zpp.outer = this;
     zpp.outer_zn = this;
     zpp.outer_i = this;
-    (this as Writable<Polygon>)._inner = this as Any;
+    (this as Writable<Polygon>)._inner = this as any;
 
     // --- Process vertex inputs ---
     if (Array.isArray(localVerts)) {
@@ -55,7 +54,7 @@ export class Polygon extends Shape {
         if (!(v instanceof Vec2)) {
           throw new Error("Error: Array<Vec2> contains non Vec2 objects");
         }
-        if ((v as Any).zpp_disp) {
+        if ((v as any).zpp_disp) {
           throw new Error(
             "Error: Vec2 has been disposed and cannot be used!",
           );
@@ -112,7 +111,7 @@ export class Polygon extends Shape {
       // Dispose weak vertices from input list
       if (list.zpp_inner._validate != null) list.zpp_inner._validate();
       const ins = list.zpp_inner.inner;
-      let pre: Any = null;
+      let pre: any = null;
       let cur = ins.head;
       while (cur != null) {
         const vv = cur.elt;
@@ -155,7 +154,7 @@ export class Polygon extends Shape {
       }
     } else {
       zpp.immutable_midstep("Shape::material");
-      zpp.setMaterial((material as Any).zpp_inner);
+      zpp.setMaterial((material as any).zpp_inner);
       zpp.material.wrapper();
     }
 
@@ -170,7 +169,7 @@ export class Polygon extends Shape {
       }
     } else {
       zpp.immutable_midstep("Shape::filter");
-      zpp.setFilter((filter as Any).zpp_inner);
+      zpp.setFilter((filter as any).zpp_inner);
       zpp.filter.wrapper();
     }
 
@@ -186,17 +185,17 @@ export class Polygon extends Shape {
       return getOrCreate(inner, (zpp: ZPP_Polygon) => {
         const p = Object.create(Polygon.prototype) as Polygon;
         p.zpp_inner_zn = zpp;
-        (p as Any).zpp_inner = zpp;
+        (p as any).zpp_inner = zpp;
         p.zpp_inner_i = zpp;
         zpp.outer = p;
         zpp.outer_zn = p;
         zpp.outer_i = p;
-        (p as Writable<Polygon>)._inner = p as Any;
+        (p as Writable<Polygon>)._inner = p as any;
         return p;
       });
     }
     if (inner.zpp_inner_zn) return Polygon._wrap(inner.zpp_inner_zn);
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: any) => {
       const p = Object.create(Polygon.prototype) as Polygon;
       (p as Writable<Polygon>)._inner = raw;
       p.zpp_inner_i = raw.zpp_inner_i;
@@ -272,7 +271,7 @@ export class Polygon extends Shape {
   // ---------------------------------------------------------------------------
 
   /** Read-only list of local-space vertices. */
-  get localVerts(): Any {
+  get localVerts(): any {
     if (this.zpp_inner_zn.wrap_lverts == null) {
       this.zpp_inner_zn.getlverts();
     }
@@ -280,7 +279,7 @@ export class Polygon extends Shape {
   }
 
   /** Read-only list of world-space vertices (computed after stepping). */
-  get worldVerts(): Any {
+  get worldVerts(): any {
     if (this.zpp_inner_zn.wrap_gverts == null) {
       this.zpp_inner_zn.getgverts();
     }
@@ -288,7 +287,7 @@ export class Polygon extends Shape {
   }
 
   /** Read-only edge list. */
-  get edges(): Any {
+  get edges(): any {
     if (this.zpp_inner_zn.wrap_edges == null) {
       this.zpp_inner_zn.getedges();
     }
@@ -296,7 +295,7 @@ export class Polygon extends Shape {
   }
 
   /** Validate the polygon geometry. */
-  validity(): Any {
+  validity(): any {
     return this.zpp_inner_zn.valid();
   }
 
@@ -304,13 +303,13 @@ export class Polygon extends Shape {
   // Backward-compat get_*/set_* methods
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_localVerts(): Any {
+  /** @internal */ get_localVerts(): any {
     return this.localVerts;
   }
-  /** @internal */ get_worldVerts(): Any {
+  /** @internal */ get_worldVerts(): any {
     return this.worldVerts;
   }
-  /** @internal */ get_edges(): Any {
+  /** @internal */ get_edges(): any {
     return this.edges;
   }
 }
@@ -331,7 +330,7 @@ nape.shape.Polygon = Polygon;
 const compiledShapeProto = nape.shape.Shape.prototype;
 for (const k in compiledShapeProto) {
   if (!(k in Polygon.prototype)) {
-    (Polygon.prototype as Any)[k] = compiledShapeProto[k];
+    (Polygon.prototype as any)[k] = compiledShapeProto[k];
   }
 }
 
@@ -339,6 +338,6 @@ for (const k in compiledShapeProto) {
 const compiledInteractorProto = nape.phys.Interactor.prototype;
 for (const k in compiledInteractorProto) {
   if (!(k in Polygon.prototype)) {
-    (Polygon.prototype as Any)[k] = compiledInteractorProto[k];
+    (Polygon.prototype as any)[k] = compiledInteractorProto[k];
   }
 }

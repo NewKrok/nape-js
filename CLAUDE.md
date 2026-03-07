@@ -328,10 +328,19 @@ in native/ code):
   `visitBodies` lambdas typed; list getters `bodies/constraints/compounds: object`;
   also fixed latent bug: `setupWorldCOM` → `getworldCOM`
 - `Edge.ts` — `type Any` removed; `_wrap` typed, `polygon: Polygon`, `_wrapVert(ZPP_Vec2)`
+- **shape/** (3 files) — `Shape.ts`, `Circle.ts`, `Polygon.ts`: `type Any` removed; remaining
+  `any` casts are legitimately dynamic (ZPP internal dispatch, prototype copy loops)
+- **constraint/** (9 files) — `Constraint.ts` + 7 joints + `UserConstraint`: `type Any` removed;
+  typed: `impulse(): MatMN`, `bodyImpulse(): Vec3`, `body1/2: Body|null`, `anchor*: Vec2`,
+  `compound: Compound|null`, `cbTypes: object`, `userData: Record<string,unknown>`,
+  `get_body*/set_body*`, `get_anchor*/set_anchor*` backward-compat methods
+- **geom/** (5 files) — `Geom.ts`, `GeomPoly.ts`, `MarchingSquares.ts`, `Vec2List.ts`,
+  `GeomVertexIterator.ts`: `type Any` removed; internal ZPP vertex/iterator helpers remain `any`
+- **dynamics/ContactList.ts** — `type Any` removed; prototype-based constructor pattern
+  retains `this: any` (Haxe-ported list implementation)
 
-**Remaining public API** (still has `type Any`): `Shape.ts`, `Circle.ts`, `Polygon.ts`,
-`Geom.ts`, `GeomPoly.ts`, `MarchingSquares.ts`, `Vec2List.ts`, `GeomVertexIterator.ts`,
-`ContactList.ts`, `constraint/` (9 files). Count: ~116 files total (down from 136).
+**All public API files done** — `type Any = any` fully eliminated from `src/` (non-native).
+Count: ~114 files remain in `src/native/` — lower priority.
 
 Remaining: native ZPP classes (~100 files) — lower priority.
 

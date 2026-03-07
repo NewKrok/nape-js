@@ -7,7 +7,6 @@ import type { AABB } from "./AABB";
 // before ZPP_MarchingSquares.run() tries to access nape.geom.GeomPoly.get().
 import "./GeomPoly";
 
-type Any = any;
 
 /**
  * Isosurface extraction using the marching squares algorithm.
@@ -39,13 +38,13 @@ export class MarchingSquares {
     quality: number = 2,
     subgrid: Vec2 | null = null,
     combine: boolean = true,
-    output: Any = null,
-  ): Any {
+    output: any = null,
+  ): any {
     // --- Validate disposed Vec2 ---
-    if (cellsize != null && (cellsize as Any).zpp_disp) {
+    if (cellsize != null && (cellsize as any).zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
-    if (subgrid != null && (subgrid as Any).zpp_disp) {
+    if (subgrid != null && (subgrid as any).zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
 
@@ -65,7 +64,7 @@ export class MarchingSquares {
     }
 
     // --- Validate cellsize dimensions ---
-    const cellZpp = (cellsize as Any).zpp_inner;
+    const cellZpp = (cellsize as any).zpp_inner;
     if (cellZpp._validate != null) {
       cellZpp._validate();
     }
@@ -82,7 +81,7 @@ export class MarchingSquares {
 
     // --- Validate subgrid dimensions ---
     if (subgrid != null) {
-      const subZpp = (subgrid as Any).zpp_inner;
+      const subZpp = (subgrid as any).zpp_inner;
       if (subZpp._validate != null) {
         subZpp._validate();
       }
@@ -97,7 +96,7 @@ export class MarchingSquares {
     const zppMs = ZPP_MarchingSquares;
 
     // --- Extract bounds ---
-    const boundsZpp = (bounds as Any).zpp_inner;
+    const boundsZpp = (bounds as any).zpp_inner;
     if (boundsZpp._validate != null) {
       boundsZpp._validate();
     }
@@ -111,7 +110,7 @@ export class MarchingSquares {
       zppMs.run(iso, bx0, by0, bx1, by1, cellsize, quality, combine, ret);
     } else {
       // Partition bounds into subgrid cells
-      const subZpp = (subgrid as Any).zpp_inner;
+      const subZpp = (subgrid as any).zpp_inner;
       if (subZpp._validate != null) {
         subZpp._validate();
       }
@@ -139,10 +138,10 @@ export class MarchingSquares {
 
     // --- Dispose weak Vec2 references ---
     if (cellZpp.weak) {
-      (cellsize as Any).dispose();
+      (cellsize as any).dispose();
     }
-    if (subgrid != null && (subgrid as Any).zpp_inner.weak) {
-      (subgrid as Any).dispose();
+    if (subgrid != null && (subgrid as any).zpp_inner.weak) {
+      (subgrid as any).dispose();
     }
 
     return ret;

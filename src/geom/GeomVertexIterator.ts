@@ -12,9 +12,8 @@ import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
-type Any = any;
 
-function GeomVertexIteratorCtor(this: Any) {
+function GeomVertexIteratorCtor(this: any) {
   if (!ZPP_GeomVertexIterator.internal) {
     throw new Error("Error: Cannot instantiate GeomVertexIterator");
   }
@@ -24,7 +23,7 @@ GeomVertexIteratorCtor.__name__ = ["nape", "geom", "GeomVertexIterator"];
 
 GeomVertexIteratorCtor.prototype.zpp_inner = null;
 
-GeomVertexIteratorCtor.prototype.hasNext = function (this: Any): boolean {
+GeomVertexIteratorCtor.prototype.hasNext = function (this: any): boolean {
   if (this.zpp_inner == null) {
     throw new Error("Error: Iterator has been disposed");
   }
@@ -40,7 +39,7 @@ GeomVertexIteratorCtor.prototype.hasNext = function (this: Any): boolean {
   return ret;
 };
 
-GeomVertexIteratorCtor.prototype.next = function (this: Any): Any {
+GeomVertexIteratorCtor.prototype.next = function (this: any): any {
   if (this.zpp_inner == null) {
     throw new Error("Error: Iterator has been disposed");
   }
@@ -54,7 +53,7 @@ GeomVertexIteratorCtor.prototype.next = function (this: Any): Any {
     }
 
     const nape = getNape();
-    let ret: Any;
+    let ret: any;
     if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -68,7 +67,7 @@ GeomVertexIteratorCtor.prototype.next = function (this: Any): Any {
     }
 
     if (ret.zpp_inner == null) {
-      let zpp: Any;
+      let zpp: any;
       if (ZPP_Vec2.zpp_pool == null) {
         zpp = new ZPP_Vec2();
       } else {
@@ -104,7 +103,7 @@ GeomVertexIteratorCtor.prototype.next = function (this: Any): Any {
     ret.zpp_inner.weak = false;
     vert.wrap = ret;
     vert.wrap.zpp_inner._inuse = true;
-    vert.wrap.zpp_inner._invalidate = (n: Any) => vert.modwrap(n);
+    vert.wrap.zpp_inner._invalidate = (n: any) => vert.modwrap(n);
     vert.wrap.zpp_inner._validate = () => vert.getwrap();
   }
 

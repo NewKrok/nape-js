@@ -16,7 +16,6 @@ import { Vec2 } from "./Vec2";
 import { AABB } from "./AABB";
 import "./Winding"; // Side-effect: register Winding in namespace before GeomPoly methods use it
 
-type Any = any;
 
 /**
  * A polygon represented as a circular doubly-linked list of vertices.
@@ -34,11 +33,11 @@ export class GeomPoly {
   zpp_pool: GeomPoly | null = null;
   zpp_disp: boolean = false;
 
-  get _inner(): Any {
+  get _inner(): any {
     return this;
   }
 
-  constructor(vertices?: Any) {
+  constructor(vertices?: any) {
     this.zpp_inner = new ZPP_GeomPoly(this);
     if (vertices != null) {
       GeomPoly._addVertices(this, vertices);
@@ -58,8 +57,8 @@ export class GeomPoly {
   }
 
   /** @internal Create a ZPP_GeomVert from pool or new */
-  private static _createVert(x: number, y: number): Any {
-    let ret: Any;
+  private static _createVert(x: number, y: number): any {
+    let ret: any;
     if (ZPP_GeomVert.zpp_pool == null) {
       ret = new ZPP_GeomVert();
     } else {
@@ -74,7 +73,7 @@ export class GeomPoly {
   }
 
   /** @internal Insert vertex after current head (push pattern) */
-  private static _pushVert(target: GeomPoly, obj: Any): void {
+  private static _pushVert(target: GeomPoly, obj: any): void {
     if (target.zpp_inner.vertices == null) {
       target.zpp_inner.vertices = obj.prev = obj.next = obj;
     } else {
@@ -87,7 +86,7 @@ export class GeomPoly {
   }
 
   /** @internal Insert vertex before current head (unshift pattern) */
-  private static _unshiftVert(target: GeomPoly, obj: Any): void {
+  private static _unshiftVert(target: GeomPoly, obj: any): void {
     if (target.zpp_inner.vertices == null) {
       target.zpp_inner.vertices = obj.prev = obj.next = obj;
     } else {
@@ -100,14 +99,14 @@ export class GeomPoly {
   }
 
   /** @internal Free a vertex: cleanup wrap + return to pool */
-  private static _freeVert(vert: Any): void {
+  private static _freeVert(vert: any): void {
     vert.free();
     vert.next = ZPP_GeomVert.zpp_pool;
     ZPP_GeomVert.zpp_pool = vert;
   }
 
   /** @internal Remove head, new head = prev (pop direction) */
-  private _popHead(): Any {
+  private _popHead(): any {
     const v = this.zpp_inner.vertices;
     if (v.prev === v) {
       v.next = v.prev = null;
@@ -123,7 +122,7 @@ export class GeomPoly {
   }
 
   /** @internal Remove head, new head = next (shift direction) */
-  private _shiftHead(): Any {
+  private _shiftHead(): any {
     const v = this.zpp_inner.vertices;
     if (v.prev === v) {
       v.next = v.prev = null;
@@ -145,7 +144,7 @@ export class GeomPoly {
   }
 
   /** @internal Iterate all vertices, calling fn for each */
-  private _forEachVert(fn: (v: Any) => void): void {
+  private _forEachVert(fn: (v: any) => void): void {
     const F = this.zpp_inner.vertices;
     if (F != null) {
       let nite = F;
@@ -181,7 +180,7 @@ export class GeomPoly {
   }
 
   /** @internal Add vertices from constructor/get argument */
-  private static _addVertices(target: GeomPoly, vertices: Any): void {
+  private static _addVertices(target: GeomPoly, vertices: any): void {
     const nape = getNape();
 
     if (vertices instanceof Array) {
@@ -242,7 +241,7 @@ export class GeomPoly {
   }
 
   /** @internal After copying, dispose weak Vec2 inputs */
-  private static _disposeWeakInputs(vertices: Any): void {
+  private static _disposeWeakInputs(vertices: any): void {
     if (vertices instanceof Array) {
       let i = 0;
       while (i < vertices.length) {
@@ -260,7 +259,7 @@ export class GeomPoly {
         lv.zpp_inner._validate();
       }
       const ins = lv.zpp_inner.inner;
-      let pre: Any = null;
+      let pre: any = null;
       let cur = ins.head;
       while (cur != null) {
         const x = cur.elt;
@@ -281,7 +280,7 @@ export class GeomPoly {
   // Static factory
   // ---------------------------------------------------------------------------
 
-  static get(vertices?: Any): GeomPoly {
+  static get(vertices?: any): GeomPoly {
     let ret: GeomPoly;
     if (ZPP_PubPool.poolGeomPoly == null) {
       ret = new GeomPoly();
@@ -318,17 +317,17 @@ export class GeomPoly {
     return ret;
   }
 
-  iterator(): Any {
+  iterator(): any {
     this._checkDisposed();
     return ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, true);
   }
 
-  forwardIterator(): Any {
+  forwardIterator(): any {
     this._checkDisposed();
     return ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, true);
   }
 
-  backwardsIterator(): Any {
+  backwardsIterator(): any {
     this._checkDisposed();
     return ZPP_GeomVertexIterator.get(this.zpp_inner.vertices, false);
   }
@@ -425,7 +424,7 @@ export class GeomPoly {
   erase(count: number): this {
     this._checkDisposed();
     while (count !== 0 && this.zpp_inner.vertices != null) {
-      let retv: Any;
+      let retv: any;
       if (count > 0) {
         retv = this._shiftHead();
         --count;
@@ -450,7 +449,7 @@ export class GeomPoly {
   copy(): GeomPoly {
     this._checkDisposed();
     const ret = GeomPoly.get();
-    this._forEachVert((v: Any) => {
+    this._forEachVert((v: any) => {
       const obj = GeomPoly._createVert(v.x, v.y);
       GeomPoly._pushVert(ret, obj);
     });
@@ -480,14 +479,14 @@ export class GeomPoly {
     this._checkDisposed();
     if (this._isDegenRing()) return 0.0;
     let area = 0.0;
-    this._forEachVert((v: Any) => {
+    this._forEachVert((v: any) => {
       area += v.x * (v.next.y - v.prev.y);
     });
     const result = area * 0.5;
     return result < 0 ? -result : result;
   }
 
-  winding(): Any {
+  winding(): any {
     this._checkDisposed();
     if (this._isDegenRing()) {
       if (ZPP_Flags.Winding_UNDEFINED == null) {
@@ -498,7 +497,7 @@ export class GeomPoly {
       return ZPP_Flags.Winding_UNDEFINED;
     }
     let area = 0.0;
-    this._forEachVert((v: Any) => {
+    this._forEachVert((v: any) => {
       area += v.x * (v.next.y - v.prev.y);
     });
     const a = area * 0.5;
@@ -540,7 +539,7 @@ export class GeomPoly {
     const py = point.zpp_inner.y;
 
     let ret = false;
-    this._forEachVert((p: Any) => {
+    this._forEachVert((p: any) => {
       const q = p.prev;
       if (((p.y < py && q.y >= py) || (q.y < py && p.y >= py)) && (p.x <= px || q.x <= px)) {
         if (p.x + ((py - p.y) / (q.y - p.y)) * (q.x - p.x) < px) {
@@ -628,7 +627,7 @@ export class GeomPoly {
     return ret;
   }
 
-  simpleDecomposition(output?: Any): Any {
+  simpleDecomposition(output?: any): any {
     this._checkDisposed();
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
@@ -653,7 +652,7 @@ export class GeomPoly {
     return ret;
   }
 
-  monotoneDecomposition(output?: Any): Any {
+  monotoneDecomposition(output?: any): any {
     this._checkDisposed();
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
@@ -682,7 +681,7 @@ export class GeomPoly {
     return ret;
   }
 
-  convexDecomposition(delaunay: boolean = false, output?: Any): Any {
+  convexDecomposition(delaunay: boolean = false, output?: any): any {
     this._checkDisposed();
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
@@ -726,7 +725,7 @@ export class GeomPoly {
     return ret;
   }
 
-  triangularDecomposition(delaunay: boolean = false, output?: Any): Any {
+  triangularDecomposition(delaunay: boolean = false, output?: any): any {
     this._checkDisposed();
     if (this._isDegenRing()) {
       throw new Error("Error: Cannot decompose a degenerate polygon");
@@ -781,7 +780,7 @@ export class GeomPoly {
       inflation = -inflation;
     }
 
-    this._forEachVert((p: Any) => {
+    this._forEachVert((p: any) => {
       const prev = p.prev;
       const next = p.next;
 
@@ -821,8 +820,8 @@ export class GeomPoly {
     end: Vec2,
     boundedStart: boolean = false,
     boundedEnd: boolean = false,
-    output?: Any,
-  ): Any {
+    output?: any,
+  ): any {
     this._checkDisposed();
     if (
       !(this._isDegenRing()
@@ -859,12 +858,12 @@ export class GeomPoly {
     return ret;
   }
 
-  transform(matrix: Any): this {
+  transform(matrix: any): this {
     this._checkDisposed();
     if (matrix == null) {
       throw new Error("Error: Cannot transform by null matrix");
     }
-    this._forEachVert((v: Any) => {
+    this._forEachVert((v: any) => {
       const t = matrix.zpp_inner.a * v.x + matrix.zpp_inner.b * v.y + matrix.zpp_inner.tx;
       v.y = matrix.zpp_inner.c * v.x + matrix.zpp_inner.d * v.y + matrix.zpp_inner.ty;
       v.x = t;
@@ -872,7 +871,7 @@ export class GeomPoly {
     return this;
   }
 
-  bounds(): Any {
+  bounds(): any {
     this._checkDisposed();
     if (this.zpp_inner.vertices == null) {
       throw new Error("Error: empty GeomPoly has no defineable bounds");
@@ -881,7 +880,7 @@ export class GeomPoly {
     let miny = 1e100;
     let maxx = -1e100;
     let maxy = -1e100;
-    this._forEachVert((v: Any) => {
+    this._forEachVert((v: any) => {
       if (v.x < minx) minx = v.x;
       if (v.y < miny) miny = v.y;
       if (v.x > maxx) maxx = v.x;

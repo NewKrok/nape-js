@@ -7,11 +7,10 @@ import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 import { ZPP_PulleyJoint } from "../native/constraint/ZPP_PulleyJoint";
 
-type Any = any;
 
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if ((v as any).zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
   const inner = v.zpp_inner;
@@ -21,7 +20,7 @@ function _readVec2X(v: Vec2): number {
 
 /** Read validated y from a Vec2 input. */
 function _readVec2Y(v: Vec2): number {
-  if ((v as Any).zpp_disp) {
+  if ((v as any).zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
   const inner = v.zpp_inner;
@@ -132,7 +131,7 @@ export class PulleyJoint extends Constraint {
     name: string,
     set: (x: number, y: number) => void,
   ): void {
-    if ((anchor as Any)?.zpp_disp) {
+    if ((anchor as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (anchor == null) {
@@ -143,7 +142,7 @@ export class PulleyJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: Any): PulleyJoint {
+  static _wrap(inner: any): PulleyJoint {
     if (inner == null) return null!;
     if (inner instanceof PulleyJoint) return inner;
     if (inner.zpp_inner?.outer instanceof PulleyJoint)
@@ -160,7 +159,7 @@ export class PulleyJoint extends Constraint {
       });
     }
 
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: any) => {
       const j = Object.create(PulleyJoint.prototype) as PulleyJoint;
       j.zpp_inner = raw.zpp_inner ?? raw;
       j.zpp_inner.outer = j;
@@ -208,7 +207,7 @@ export class PulleyJoint extends Constraint {
   /** @internal */
   private _setBody1(body1: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body1");
-    const inbody = body1 == null ? null : (body1 as Any).zpp_inner;
+    const inbody = body1 == null ? null : (body1 as any).zpp_inner;
     if (inbody != this.zpp_inner.b1) {
       if (this.zpp_inner.b1 != null) {
         if (
@@ -243,7 +242,7 @@ export class PulleyJoint extends Constraint {
   /** @internal */
   private _setBody2(body2: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body2");
-    const inbody = body2 == null ? null : (body2 as Any).zpp_inner;
+    const inbody = body2 == null ? null : (body2 as any).zpp_inner;
     if (inbody != this.zpp_inner.b2) {
       if (this.zpp_inner.b2 != null) {
         if (
@@ -278,7 +277,7 @@ export class PulleyJoint extends Constraint {
   /** @internal */
   private _setBody3(body3: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body3");
-    const inbody = body3 == null ? null : (body3 as Any).zpp_inner;
+    const inbody = body3 == null ? null : (body3 as any).zpp_inner;
     if (inbody != this.zpp_inner.b3) {
       if (this.zpp_inner.b3 != null) {
         if (
@@ -313,7 +312,7 @@ export class PulleyJoint extends Constraint {
   /** @internal */
   private _setBody4(body4: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body4");
-    const inbody = body4 == null ? null : (body4 as Any).zpp_inner;
+    const inbody = body4 == null ? null : (body4 as any).zpp_inner;
     if (inbody != this.zpp_inner.b4) {
       if (this.zpp_inner.b4 != null) {
         if (
@@ -354,7 +353,7 @@ export class PulleyJoint extends Constraint {
     return this.zpp_inner.wrap_a1;
   }
   set anchor1(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -372,7 +371,7 @@ export class PulleyJoint extends Constraint {
     return this.zpp_inner.wrap_a2;
   }
   set anchor2(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -390,7 +389,7 @@ export class PulleyJoint extends Constraint {
     return this.zpp_inner.wrap_a3;
   }
   set anchor3(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -408,7 +407,7 @@ export class PulleyJoint extends Constraint {
     return this.zpp_inner.wrap_a4;
   }
   set anchor4(value: Vec2) {
-    if ((value as Any)?.zpp_disp) {
+    if ((value as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
     if (value == null) {
@@ -491,7 +490,7 @@ export class PulleyJoint extends Constraint {
     return this.zpp_inner.slack;
   }
 
-  override impulse(): Any {
+  override impulse(): MatMN {
     const ret = new MatMN(1, 1);
     if (0 >= ret.zpp_inner.m || 0 >= ret.zpp_inner.n) {
       throw new Error("Error: MatMN indices out of range");
@@ -500,7 +499,7 @@ export class PulleyJoint extends Constraint {
     return ret;
   }
 
-  override bodyImpulse(body: Body): Any {
+  override bodyImpulse(body: Body): Vec3 {
     if (body == null) {
       throw new Error("Error: Cannot evaluate impulse on null body");
     }
@@ -514,7 +513,7 @@ export class PulleyJoint extends Constraint {
     if (!this.zpp_inner.active) {
       return Vec3.get(0, 0, 0);
     } else {
-      return this.zpp_inner.bodyImpulse((body as Any).zpp_inner);
+      return this.zpp_inner.bodyImpulse((body as any).zpp_inner);
     }
   }
 
@@ -536,22 +535,22 @@ export class PulleyJoint extends Constraint {
   // Backward-compat get_*/set_* methods for compiled code
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_body1(): Any { return this.body1; }
-  /** @internal */ set_body1(v: Any): Any { this.body1 = v; return this.body1; }
-  /** @internal */ get_body2(): Any { return this.body2; }
-  /** @internal */ set_body2(v: Any): Any { this.body2 = v; return this.body2; }
-  /** @internal */ get_body3(): Any { return this.body3; }
-  /** @internal */ set_body3(v: Any): Any { this.body3 = v; return this.body3; }
-  /** @internal */ get_body4(): Any { return this.body4; }
-  /** @internal */ set_body4(v: Any): Any { this.body4 = v; return this.body4; }
-  /** @internal */ get_anchor1(): Any { return this.anchor1; }
-  /** @internal */ set_anchor1(v: Any): Any { this.anchor1 = v; return this.anchor1; }
-  /** @internal */ get_anchor2(): Any { return this.anchor2; }
-  /** @internal */ set_anchor2(v: Any): Any { this.anchor2 = v; return this.anchor2; }
-  /** @internal */ get_anchor3(): Any { return this.anchor3; }
-  /** @internal */ set_anchor3(v: Any): Any { this.anchor3 = v; return this.anchor3; }
-  /** @internal */ get_anchor4(): Any { return this.anchor4; }
-  /** @internal */ set_anchor4(v: Any): Any { this.anchor4 = v; return this.anchor4; }
+  /** @internal */ get_body1(): Body | null { return this.body1; }
+  /** @internal */ set_body1(v: Body | null): Body | null { this.body1 = v; return this.body1; }
+  /** @internal */ get_body2(): Body | null { return this.body2; }
+  /** @internal */ set_body2(v: Body | null): Body | null { this.body2 = v; return this.body2; }
+  /** @internal */ get_body3(): Body | null { return this.body3; }
+  /** @internal */ set_body3(v: Body | null): Body | null { this.body3 = v; return this.body3; }
+  /** @internal */ get_body4(): Body | null { return this.body4; }
+  /** @internal */ set_body4(v: Body | null): Body | null { this.body4 = v; return this.body4; }
+  /** @internal */ get_anchor1(): Vec2 { return this.anchor1; }
+  /** @internal */ set_anchor1(v: Vec2): Vec2 { this.anchor1 = v; return this.anchor1; }
+  /** @internal */ get_anchor2(): Vec2 { return this.anchor2; }
+  /** @internal */ set_anchor2(v: Vec2): Vec2 { this.anchor2 = v; return this.anchor2; }
+  /** @internal */ get_anchor3(): Vec2 { return this.anchor3; }
+  /** @internal */ set_anchor3(v: Vec2): Vec2 { this.anchor3 = v; return this.anchor3; }
+  /** @internal */ get_anchor4(): Vec2 { return this.anchor4; }
+  /** @internal */ set_anchor4(v: Vec2): Vec2 { this.anchor4 = v; return this.anchor4; }
   /** @internal */ get_jointMin(): number { return this.jointMin; }
   /** @internal */ set_jointMin(v: number): number { this.jointMin = v; return this.zpp_inner.jointMin; }
   /** @internal */ get_jointMax(): number { return this.jointMax; }

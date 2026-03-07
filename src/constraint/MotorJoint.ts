@@ -1,10 +1,11 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Body } from "../phys/Body";
+import { MatMN } from "../geom/MatMN";
+import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_MotorJoint } from "../native/constraint/ZPP_MotorJoint";
 
-type Any = any;
 
 /**
  * Motor joint — applies angular velocity to rotate bodies relative to each other.
@@ -47,7 +48,7 @@ export class MotorJoint extends Constraint {
   }
 
   /** @internal */
-  static _wrap(inner: Any): MotorJoint {
+  static _wrap(inner: any): MotorJoint {
     if (inner == null) return null!;
     if (inner instanceof MotorJoint) return inner;
     if (inner.zpp_inner?.outer instanceof MotorJoint) return inner.zpp_inner.outer;
@@ -63,7 +64,7 @@ export class MotorJoint extends Constraint {
       });
     }
 
-    return getOrCreate(inner, (raw: Any) => {
+    return getOrCreate(inner, (raw: any) => {
       const j = Object.create(MotorJoint.prototype) as MotorJoint;
       j.zpp_inner = raw.zpp_inner ?? raw;
       j.zpp_inner.outer = j;
@@ -87,7 +88,7 @@ export class MotorJoint extends Constraint {
   /** @internal */
   private _setBody1(body1: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body1");
-    const inbody1 = body1 == null ? null : (body1 as Any).zpp_inner;
+    const inbody1 = body1 == null ? null : (body1 as any).zpp_inner;
     if (inbody1 != this.zpp_inner.b1) {
       if (this.zpp_inner.b1 != null) {
         if (this.zpp_inner.space != null && this.zpp_inner.b2 != this.zpp_inner.b1) {
@@ -121,7 +122,7 @@ export class MotorJoint extends Constraint {
   /** @internal */
   private _setBody2(body2: Body | null): void {
     this.zpp_inner.immutable_midstep("Constraint::body2");
-    const inbody2 = body2 == null ? null : (body2 as Any).zpp_inner;
+    const inbody2 = body2 == null ? null : (body2 as any).zpp_inner;
     if (inbody2 != this.zpp_inner.b2) {
       if (this.zpp_inner.b2 != null) {
         if (this.zpp_inner.space != null && this.zpp_inner.b1 != this.zpp_inner.b2) {
@@ -180,7 +181,7 @@ export class MotorJoint extends Constraint {
   // Methods
   // ---------------------------------------------------------------------------
 
-  override impulse(): Any {
+  override impulse(): MatMN {
     const nape = getNape();
     const ret = new nape.geom.MatMN(1, 1);
     if (0 >= ret.zpp_inner.m || 0 >= ret.zpp_inner.n) {
@@ -190,7 +191,7 @@ export class MotorJoint extends Constraint {
     return ret;
   }
 
-  override bodyImpulse(body: Body): Any {
+  override bodyImpulse(body: Body): Vec3 {
     const nape = getNape();
     if (body == null) {
       throw new Error("Error: Cannot evaluate impulse on null body");
@@ -203,7 +204,7 @@ export class MotorJoint extends Constraint {
     if (!this.zpp_inner.active) {
       return nape.geom.Vec3.get();
     } else {
-      return this.zpp_inner.bodyImpulse((body as Any).zpp_inner);
+      return this.zpp_inner.bodyImpulse((body as any).zpp_inner);
     }
   }
 
@@ -222,20 +223,10 @@ export class MotorJoint extends Constraint {
   // Backward-compat get_*/set_* methods for compiled code
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_body1(): Any {
-    return this.body1;
-  }
-  /** @internal */ set_body1(v: Any): Any {
-    this.body1 = v;
-    return this.body1;
-  }
-  /** @internal */ get_body2(): Any {
-    return this.body2;
-  }
-  /** @internal */ set_body2(v: Any): Any {
-    this.body2 = v;
-    return this.body2;
-  }
+  /** @internal */ get_body1(): Body | null { return this.body1; }
+  /** @internal */ set_body1(v: Body | null): Body | null { this.body1 = v; return this.body1; }
+  /** @internal */ get_body2(): Body | null { return this.body2; }
+  /** @internal */ set_body2(v: Body | null): Body | null { this.body2 = v; return this.body2; }
   /** @internal */ get_rate(): number {
     return this.rate;
   }

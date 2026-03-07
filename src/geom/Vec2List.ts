@@ -16,7 +16,6 @@ import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { Vec2 } from "./Vec2";
 
-type Any = any;
 
 // ---------------------------------------------------------------------------
 // Helper: Ensure a ZPP_Vec2 has a public Vec2 wrapper. If the ZPP_Vec2
@@ -25,7 +24,7 @@ type Any = any;
 // at the target ZPP_Vec2.
 // ---------------------------------------------------------------------------
 
-function ensureVec2Wrapper(zpp: Any): Any {
+function ensureVec2Wrapper(zpp: any): any {
   if (zpp.outer == null) {
     const nape = getNape();
     zpp.outer = new nape.geom.Vec2();
@@ -50,7 +49,7 @@ function ensureVec2Wrapper(zpp: Any): Any {
 // Vec2Iterator
 // ---------------------------------------------------------------------------
 
-function Vec2Iterator(this: Any) {
+function Vec2Iterator(this: any) {
   this.zpp_next = null;
   this.zpp_critical = false;
   this.zpp_i = 0;
@@ -61,13 +60,13 @@ function Vec2Iterator(this: Any) {
 }
 
 Vec2Iterator.__name__ = ["nape", "geom", "Vec2Iterator"];
-Vec2Iterator.zpp_pool = null as Any;
+Vec2Iterator.zpp_pool = null as any;
 
-Vec2Iterator.get = function (list: Any): Any {
-  let ret: Any;
+Vec2Iterator.get = function (list: any): any {
+  let ret: any;
   if (Vec2Iterator.zpp_pool == null) {
     ZPP_Vec2List.internal = true;
-    ret = new (Vec2Iterator as Any)();
+    ret = new (Vec2Iterator as any)();
     ZPP_Vec2List.internal = false;
   } else {
     ret = Vec2Iterator.zpp_pool;
@@ -84,7 +83,7 @@ Vec2Iterator.prototype.zpp_i = null;
 Vec2Iterator.prototype.zpp_critical = null;
 Vec2Iterator.prototype.zpp_next = null;
 
-Vec2Iterator.prototype.hasNext = function (this: Any): boolean {
+Vec2Iterator.prototype.hasNext = function (this: any): boolean {
   this.zpp_inner.zpp_inner.valmod();
   const length = this.zpp_inner.zpp_gl();
   this.zpp_critical = true;
@@ -98,7 +97,7 @@ Vec2Iterator.prototype.hasNext = function (this: Any): boolean {
   }
 };
 
-Vec2Iterator.prototype.next = function (this: Any): Any {
+Vec2Iterator.prototype.next = function (this: any): any {
   this.zpp_critical = false;
   return this.zpp_inner.at(this.zpp_i++);
 };
@@ -108,7 +107,7 @@ Vec2Iterator.prototype.next = function (this: Any): Any {
 // Vec2List
 // ---------------------------------------------------------------------------
 
-function Vec2ListCtor(this: Any) {
+function Vec2ListCtor(this: any) {
   this.zpp_inner = null;
   this.zpp_inner = new ZPP_Vec2List();
   this.zpp_inner.outer = this;
@@ -116,7 +115,7 @@ function Vec2ListCtor(this: Any) {
 
 Vec2ListCtor.__name__ = ["nape", "geom", "Vec2List"];
 
-Vec2ListCtor.fromArray = function (array: Any[]): Any {
+Vec2ListCtor.fromArray = function (array: any[]): any {
   if (array == null) {
     throw new Error("Error: Cannot convert null Array to Nape list");
   }
@@ -131,16 +130,16 @@ Vec2ListCtor.fromArray = function (array: Any[]): Any {
 Vec2ListCtor.prototype.zpp_inner = null;
 
 Object.defineProperty(Vec2ListCtor.prototype, "length", {
-  get: function (this: Any) {
+  get: function (this: any) {
     return this.get_length();
   },
 });
 
-Vec2ListCtor.prototype.get_length = function (this: Any): number {
+Vec2ListCtor.prototype.get_length = function (this: any): number {
   return this.zpp_gl();
 };
 
-Vec2ListCtor.prototype.zpp_gl = function (this: Any): number {
+Vec2ListCtor.prototype.zpp_gl = function (this: any): number {
   this.zpp_inner.valmod();
   if (this.zpp_inner.zip_length) {
     this.zpp_inner.zip_length = false;
@@ -149,16 +148,16 @@ Vec2ListCtor.prototype.zpp_gl = function (this: Any): number {
   return this.zpp_inner.user_length;
 };
 
-Vec2ListCtor.prototype.zpp_vm = function (this: Any): void {
+Vec2ListCtor.prototype.zpp_vm = function (this: any): void {
   this.zpp_inner.valmod();
 };
 
-Vec2ListCtor.prototype.has = function (this: Any, obj: Any): boolean {
+Vec2ListCtor.prototype.has = function (this: any, obj: any): boolean {
   this.zpp_vm();
   return this.zpp_inner.inner.has(obj.zpp_inner);
 };
 
-Vec2ListCtor.prototype.at = function (this: Any, index: number): Any {
+Vec2ListCtor.prototype.at = function (this: any, index: number): any {
   this.zpp_vm();
   if (index < 0 || index >= this.zpp_gl()) {
     throw new Error("Error: Index out of bounds");
@@ -178,7 +177,7 @@ Vec2ListCtor.prototype.at = function (this: Any, index: number): Any {
   return ensureVec2Wrapper(this.zpp_inner.at_ite.elt);
 };
 
-Vec2ListCtor.prototype.push = function (this: Any, obj: Any): boolean {
+Vec2ListCtor.prototype.push = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -207,7 +206,7 @@ Vec2ListCtor.prototype.push = function (this: Any, obj: Any): boolean {
   return cont;
 };
 
-Vec2ListCtor.prototype.unshift = function (this: Any, obj: Any): boolean {
+Vec2ListCtor.prototype.unshift = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -236,7 +235,7 @@ Vec2ListCtor.prototype.unshift = function (this: Any, obj: Any): boolean {
   return cont;
 };
 
-Vec2ListCtor.prototype.pop = function (this: Any): Any {
+Vec2ListCtor.prototype.pop = function (this: any): any {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -245,7 +244,7 @@ Vec2ListCtor.prototype.pop = function (this: Any): Any {
     throw new Error("Error: Cannot remove from empty list");
   }
   this.zpp_vm();
-  let ret: Any;
+  let ret: any;
   if (this.zpp_inner.reverse_flag) {
     ret = this.zpp_inner.inner.head.elt;
     const retx = ensureVec2Wrapper(ret);
@@ -276,7 +275,7 @@ Vec2ListCtor.prototype.pop = function (this: Any): Any {
   return ensureVec2Wrapper(ret);
 };
 
-Vec2ListCtor.prototype.shift = function (this: Any): Any {
+Vec2ListCtor.prototype.shift = function (this: any): any {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -285,7 +284,7 @@ Vec2ListCtor.prototype.shift = function (this: Any): Any {
     throw new Error("Error: Cannot remove from empty list");
   }
   this.zpp_vm();
-  let ret: Any;
+  let ret: any;
   if (this.zpp_inner.reverse_flag) {
     if (this.zpp_inner.at_ite != null && this.zpp_inner.at_ite.next == null) {
       this.zpp_inner.at_ite = null;
@@ -316,7 +315,7 @@ Vec2ListCtor.prototype.shift = function (this: Any): Any {
   return ensureVec2Wrapper(ret);
 };
 
-Vec2ListCtor.prototype.add = function (this: Any, obj: Any): boolean {
+Vec2ListCtor.prototype.add = function (this: any, obj: any): boolean {
   if (this.zpp_inner.reverse_flag) {
     return this.push(obj);
   } else {
@@ -324,7 +323,7 @@ Vec2ListCtor.prototype.add = function (this: Any, obj: Any): boolean {
   }
 };
 
-Vec2ListCtor.prototype.remove = function (this: Any, obj: Any): boolean {
+Vec2ListCtor.prototype.remove = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -351,7 +350,7 @@ Vec2ListCtor.prototype.remove = function (this: Any, obj: Any): boolean {
   return found;
 };
 
-Vec2ListCtor.prototype.clear = function (this: Any): void {
+Vec2ListCtor.prototype.clear = function (this: any): void {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -362,23 +361,23 @@ Vec2ListCtor.prototype.clear = function (this: Any): void {
   }
 };
 
-Vec2ListCtor.prototype.empty = function (this: Any): boolean {
+Vec2ListCtor.prototype.empty = function (this: any): boolean {
   return this.zpp_gl() == 0;
 };
 
-Vec2ListCtor.prototype.iterator = function (this: Any): Any {
+Vec2ListCtor.prototype.iterator = function (this: any): any {
   this.zpp_vm();
   return Vec2Iterator.get(this);
 };
 
-Vec2ListCtor.prototype.copy = function (this: Any, deep?: boolean): Any {
+Vec2ListCtor.prototype.copy = function (this: any, deep?: boolean): any {
   if (deep == null) deep = false;
   const nape = getNape();
   const ret = new nape.geom.Vec2List();
   const it = Vec2Iterator.get(this);
   while (it.hasNext()) {
     const i = it.next();
-    let elem: Any;
+    let elem: any;
     if (deep) {
       // Deep copy: create a new Vec2 with same coordinates
       if (i != null && i.zpp_disp) {
@@ -391,7 +390,7 @@ Vec2ListCtor.prototype.copy = function (this: Any, deep?: boolean): Any {
       if (_this2._validate != null) _this2._validate();
       const y = i.zpp_inner.y;
 
-      let copy: Any;
+      let copy: any;
       if (ZPP_PubPool.poolVec2 == null) {
         copy = new nape.geom.Vec2();
       } else {
@@ -404,7 +403,7 @@ Vec2ListCtor.prototype.copy = function (this: Any, deep?: boolean): Any {
         }
       }
       if (copy.zpp_inner == null) {
-        let zpp: Any;
+        let zpp: any;
         if (ZPP_Vec2.zpp_pool == null) {
           zpp = new ZPP_Vec2();
         } else {
@@ -435,7 +434,7 @@ Vec2ListCtor.prototype.copy = function (this: Any, deep?: boolean): Any {
   return ret;
 };
 
-Vec2ListCtor.prototype.merge = function (this: Any, xs: Any): void {
+Vec2ListCtor.prototype.merge = function (this: any, xs: any): void {
   if (xs == null) {
     throw new Error("Error: Cannot merge with null list");
   }
@@ -448,7 +447,7 @@ Vec2ListCtor.prototype.merge = function (this: Any, xs: Any): void {
   }
 };
 
-Vec2ListCtor.prototype.toString = function (this: Any): string {
+Vec2ListCtor.prototype.toString = function (this: any): string {
   let ret = "[";
   let fst = true;
   const it = Vec2Iterator.get(this);
@@ -461,7 +460,7 @@ Vec2ListCtor.prototype.toString = function (this: Any): string {
   return ret + "]";
 };
 
-Vec2ListCtor.prototype.foreach = function (this: Any, lambda: Any): Any {
+Vec2ListCtor.prototype.foreach = function (this: any, lambda: any): any {
   if (lambda == null) {
     throw new Error("Error: Cannot execute null on list elements");
   }
@@ -479,7 +478,7 @@ Vec2ListCtor.prototype.foreach = function (this: Any, lambda: Any): Any {
   return this;
 };
 
-Vec2ListCtor.prototype.filter = function (this: Any, lambda: Any): Any {
+Vec2ListCtor.prototype.filter = function (this: any, lambda: any): any {
   if (lambda == null) {
     throw new Error("Error: Cannot select elements of list with null");
   }

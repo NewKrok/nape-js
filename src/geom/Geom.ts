@@ -7,20 +7,19 @@ import { ZPP_Geom } from "../native/geom/ZPP_Geom";
 import { ZPP_SweepDistance } from "../native/geom/ZPP_SweepDistance";
 import { ZPP_Collide } from "../native/geom/ZPP_Collide";
 
-type Any = any;
 
 /** Get the ZPP_Shape from a Shape (handles TS wrapper or compiled object). */
-function getZppShape(s: Any): Any {
+function getZppShape(s: any): any {
   return s?.zpp_inner ?? s?._inner?.zpp_inner;
 }
 
 /** Get the ZPP_Body from a Body (handles TS wrapper or compiled object). */
-function getZppBody(b: Any): Any {
+function getZppBody(b: any): any {
   return b?.zpp_inner ?? b?._inner?.zpp_inner;
 }
 
 /** Validate a Vec2 output parameter: not disposed, not immutable. */
-function validateOutVec2(v: Any, name: string): void {
+function validateOutVec2(v: any, name: string): void {
   if (v != null && v.zpp_disp) {
     throw new Error("Error: Vec2 has been disposed and cannot be used!");
   }
@@ -34,7 +33,7 @@ function validateOutVec2(v: Any, name: string): void {
 }
 
 /** Validate a shape has a body. */
-function validateShapeHasBody(s: Any, method: string): void {
+function validateShapeHasBody(s: any, method: string): void {
   const zpp = getZppShape(s);
   if (zpp?.body?.outer == null) {
     throw new Error(`Error: Shape must be part of a Body to calculate ${method}`);
@@ -78,8 +77,8 @@ export class Geom {
     return ZPP_SweepDistance.distanceBody(
       zb1,
       zb2,
-      (out1 as Any).zpp_inner,
-      (out2 as Any).zpp_inner,
+      (out1 as any).zpp_inner,
+      (out2 as any).zpp_inner,
     );
   }
 
@@ -112,8 +111,8 @@ export class Geom {
     const ret = ZPP_SweepDistance.distance(
       zs1,
       zs2,
-      (out1 as Any).zpp_inner,
-      (out2 as Any).zpp_inner,
+      (out1 as any).zpp_inner,
+      (out2 as any).zpp_inner,
       tmp,
       1e100,
     );
