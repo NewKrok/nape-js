@@ -8,37 +8,35 @@
  */
 
 import { ZPP_Set_ZPP_SimpleVert } from "../util/ZNPRegistry";
+import { ZPP_Set } from "../util/ZPP_Set";
 import { ZPP_ID } from "../util/ZPP_ID";
-
-type Any = any;
+import type { ZPP_SimpleVert } from "./ZPP_SimpleVert";
 
 export class ZPP_SimpleSeg {
   static __name__ = ["zpp_nape", "geom", "ZPP_SimpleSeg"];
   static zpp_pool: ZPP_SimpleSeg | null = null;
 
-  left: Any = null;
-  right: Any = null;
-  vertices: Any = null;
+  left: ZPP_SimpleVert | null = null;
+  right: ZPP_SimpleVert | null = null;
+  vertices: ZPP_Set<ZPP_SimpleVert> | null = null;
   id = 0;
   next: ZPP_SimpleSeg | null = null;
-  prev: Any = null;
-  node: Any = null;
-
-  __class__: Any = ZPP_SimpleSeg;
+  prev: ZPP_SimpleSeg | null = null;
+  node: ZPP_Set<ZPP_SimpleSeg> | null = null;
 
   constructor() {
     this.id = ZPP_ID.ZPP_SimpleSeg();
     if (ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
       this.vertices = new ZPP_Set_ZPP_SimpleVert();
     } else {
-      this.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool;
+      this.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool as ZPP_Set<ZPP_SimpleVert>;
       ZPP_Set_ZPP_SimpleVert.zpp_pool = this.vertices.next;
       this.vertices.next = null;
     }
-    this.vertices.lt = (a: Any, b: Any) => this.less_xy(a, b);
+    this.vertices.lt = (a: ZPP_SimpleVert, b: ZPP_SimpleVert) => this.less_xy(a, b);
   }
 
-  static get(left: Any, right: Any): ZPP_SimpleSeg {
+  static get(left: ZPP_SimpleVert, right: ZPP_SimpleVert): ZPP_SimpleSeg {
     let ret: ZPP_SimpleSeg;
     if (ZPP_SimpleSeg.zpp_pool == null) {
       ret = new ZPP_SimpleSeg();
@@ -49,8 +47,8 @@ export class ZPP_SimpleSeg {
     }
     ret.left = left;
     ret.right = right;
-    ret.vertices.insert(left);
-    ret.vertices.insert(right);
+    ret.vertices!.insert(left);
+    ret.vertices!.insert(right);
     return ret;
   }
 
@@ -58,13 +56,13 @@ export class ZPP_SimpleSeg {
     this.left = this.right = null;
     this.prev = null;
     this.node = null;
-    this.vertices.clear();
+    this.vertices!.clear();
   }
 
   alloc(): void {}
 
   /** Instance comparator: sort vertices by x then y. */
-  less_xy(a: Any, b: Any): boolean {
+  less_xy(a: ZPP_SimpleVert, b: ZPP_SimpleVert): boolean {
     if (!(a.x < b.x)) {
       if (a.x == b.x) {
         return a.y < b.y;

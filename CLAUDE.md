@@ -364,10 +364,25 @@ in native/ code):
 - `__class__: Any = ClassName` instance fields → removed entirely (P21 dead code)
 - Corresponding `__class__` test assertions removed from 20 test files
 
-Count: ~70 files remain in `src/native/` (dynamics/, shape/, callbacks/, phys/, space/, constraint/,
-and remaining geom/ files: ZPP_Ray, ZPP_Simple, ZPP_Cutter, ZPP_Simplify, etc.)
+**Additional native geom files done** (this session):
+- `ZPP_SimpleSeg.ts` — `left/right: ZPP_SimpleVert`, `vertices: ZPP_Set<ZPP_SimpleVert>`,
+  `prev: ZPP_SimpleSeg|null`, `node: ZPP_Set<ZPP_SimpleSeg>|null`; `__class__` removed
+- `ZPP_CutInt.ts` — `path0/path1/start/end: ZPP_CutVert|null`; `__class__` removed;
+  test updated (removed `__class__` assertion, factory args updated to `null`)
+- `ZPP_SimpleSweep.ts` — `tree: ZPP_Set<ZPP_SimpleSeg>|null`; `add/remove/intersect/intersection`
+  typed with `ZPP_SimpleSeg`; `intersection()` returns `ZPP_SimpleEvent|null`
+- `ZPP_PartitionedPoly.ts` — `sharedPPList: ZNPList<ZPP_PartitionedPoly>`, `sharedGVList: ZNPList<ZPP_GeomVert>`;
+  `extract_partitions/pull_partitions/extract/pull` fully typed; `p = p as Any` → `p = null!`
+- `ZPP_Monotone.ts` — `queue: ZNPList<ZPP_PartitionVertex>`, `edges: ZPP_Set<ZPP_PartitionVertex>`;
+  merge sort locals typed as `ZNPNode<ZPP_PartitionVertex>|null`; pool-return uses `(x as any).outer`
+  (ZPP_Vec2.outer is always `any` — circular import prevention)
+- `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `simplify(P: ZPP_GeomVert): ZPP_GeomVert|null`;
+  `XYPoint` interface for `lessval/less/distance` helpers; `dv: ZPP_SimplifyV|null`
 
-Remaining: native ZPP classes (~70 files) — lower priority.
+Count: ~64 files remain in `src/native/` (dynamics/, shape/, callbacks/, phys/, space/, constraint/,
+and remaining geom/ files: ZPP_Ray, ZPP_Simple, ZPP_Cutter, ZPP_MarchingSquares, etc.)
+
+Remaining: native ZPP classes (~64 files) — lower priority.
 
 ### Priority 26: Tree shaking
 

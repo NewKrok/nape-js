@@ -12,8 +12,8 @@ import { getNape } from "../../core/engine";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { ZNPList_ZPP_PartitionedPoly, ZNPList_ZPP_GeomVert } from "../util/ZNPRegistry";
-
-type Any = any;
+import { ZNPList } from "../util/ZNPList";
+import { ZNPNode } from "../util/ZNPNode";
 
 export class ZPP_PartitionedPoly {
   // --- Static: Haxe metadata ---
@@ -23,31 +23,29 @@ export class ZPP_PartitionedPoly {
   static zpp_pool: ZPP_PartitionedPoly | null = null;
 
   // --- Static: shared lists ---
-  static sharedPPList: Any = null;
-  static sharedGVList: Any = null;
+  static sharedPPList: ZNPList<ZPP_PartitionedPoly> | null = null;
+  static sharedGVList: ZNPList<ZPP_GeomVert> | null = null;
 
   // --- Instance fields ---
   next: ZPP_PartitionedPoly | null = null;
   vertices: ZPP_PartitionVertex | null = null;
 
-  __class__: Any = ZPP_PartitionedPoly;
-
-  constructor(P?: Any) {
+  constructor(P?: ZPP_PartitionVertex | null) {
     this.init(P);
   }
 
   // --- Static methods ---
 
-  static getSharedPP(): Any {
+  static getSharedPP(): ZNPList<ZPP_PartitionedPoly> {
     if (ZPP_PartitionedPoly.sharedPPList == null) {
-      ZPP_PartitionedPoly.sharedPPList = new ZNPList_ZPP_PartitionedPoly();
+      ZPP_PartitionedPoly.sharedPPList = new ZNPList_ZPP_PartitionedPoly() as ZNPList<ZPP_PartitionedPoly>;
     }
     return ZPP_PartitionedPoly.sharedPPList;
   }
 
-  static getShared(): Any {
+  static getShared(): ZNPList<ZPP_GeomVert> {
     if (ZPP_PartitionedPoly.sharedGVList == null) {
-      ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert();
+      ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert() as ZNPList<ZPP_GeomVert>;
     }
     return ZPP_PartitionedPoly.sharedGVList;
   }
@@ -64,7 +62,7 @@ export class ZPP_PartitionedPoly {
 
   free(): void {}
 
-  init(P?: Any): void {
+  init(P?: ZPP_PartitionVertex | null): void {
     if (P == null) {
       return;
     }
@@ -159,7 +157,7 @@ export class ZPP_PartitionedPoly {
           o.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o;
           p = null;
-          p = p as Any;
+          p = null!;
         } else {
           const retnodes = p!.next;
           p!.prev!.next = p!.next;
@@ -209,7 +207,7 @@ export class ZPP_PartitionedPoly {
             o2.next = ZPP_PartitionVertex.zpp_pool;
             ZPP_PartitionVertex.zpp_pool = o2;
             p = null;
-            p = p as Any;
+            p = null!;
           } else {
             const retnodes1 = p!.next;
             p!.prev!.next = p!.next;
@@ -242,9 +240,9 @@ export class ZPP_PartitionedPoly {
     p.forced = q.forced = true;
   }
 
-  extract_partitions(ret: Any): Any {
+  extract_partitions(ret: ZNPList<ZPP_PartitionedPoly> | null): ZNPList<ZPP_PartitionedPoly> {
     if (ret == null) {
-      ret = new ZNPList_ZPP_PartitionedPoly();
+      ret = new ZNPList_ZPP_PartitionedPoly() as ZNPList<ZPP_PartitionedPoly>;
     }
     if (this.vertices != null) {
       const F = this.vertices;
@@ -284,7 +282,7 @@ export class ZPP_PartitionedPoly {
         }
         this.vertices = tmp;
       }
-      let pre: Any = null;
+      let pre: ZNPNode<ZPP_PartitionedPoly> | null = null;
       let cx_ite = ret.head;
       while (cx_ite != null) {
         const p = cx_ite.elt;
@@ -299,7 +297,7 @@ export class ZPP_PartitionedPoly {
     return ret;
   }
 
-  pull_partitions(start: ZPP_PartitionVertex, ret: Any): ZPP_PartitionVertex {
+  pull_partitions(start: ZPP_PartitionVertex, ret: ZNPList<ZPP_PartitionedPoly>): ZPP_PartitionVertex {
     let poly: ZPP_PartitionedPoly;
     if (ZPP_PartitionedPoly.zpp_pool == null) {
       poly = new ZPP_PartitionedPoly();
@@ -369,9 +367,9 @@ export class ZPP_PartitionedPoly {
     return next;
   }
 
-  extract(ret: Any): Any {
+  extract(ret: ZNPList<ZPP_GeomVert> | null): ZNPList<ZPP_GeomVert> {
     if (ret == null) {
-      ret = new ZNPList_ZPP_GeomVert();
+      ret = new ZNPList_ZPP_GeomVert() as ZNPList<ZPP_GeomVert>;
     }
     if (this.vertices != null) {
       const F = this.vertices;
@@ -415,13 +413,13 @@ export class ZPP_PartitionedPoly {
     return ret;
   }
 
-  pull(start: ZPP_PartitionVertex, ret: Any): ZPP_PartitionVertex {
-    let poly: Any = null;
+  pull(start: ZPP_PartitionVertex, ret: ZNPList<ZPP_GeomVert>): ZPP_PartitionVertex {
+    let poly: ZPP_GeomVert | null = null;
     let next: ZPP_PartitionVertex = start;
     while (true) {
       const x = next.x;
       const y = next.y;
-      let ret1: Any;
+      let ret1: ZPP_GeomVert;
       if (ZPP_GeomVert.zpp_pool == null) {
         ret1 = new ZPP_GeomVert();
       } else {

@@ -7,7 +7,7 @@
  * Converted from nape-compiled.js lines 66681–66738.
  */
 
-type Any = any;
+import type { ZPP_CutVert } from "./ZPP_CutVert";
 
 export class ZPP_CutInt {
   // --- Static: Haxe metadata ---
@@ -21,20 +21,18 @@ export class ZPP_CutInt {
   time = 0.0;
   virtualint = false;
   vertex = false;
-  path0: Any = null;
-  end: Any = null;
-  start: Any = null;
-  path1: Any = null;
-
-  __class__: Any = ZPP_CutInt;
+  path0: ZPP_CutVert | null = null;
+  end: ZPP_CutVert | null = null;
+  start: ZPP_CutVert | null = null;
+  path1: ZPP_CutVert | null = null;
 
   /** Factory with pooling. */
   static get(
     time: number,
-    end: Any,
-    start: Any,
-    path0: Any,
-    path1: Any,
+    end: ZPP_CutVert | null,
+    start: ZPP_CutVert | null,
+    path0: ZPP_CutVert | null,
+    path1: ZPP_CutVert | null,
     virtualint = false,
     vertex = false,
   ): ZPP_CutInt {

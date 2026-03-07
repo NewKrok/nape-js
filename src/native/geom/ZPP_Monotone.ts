@@ -11,19 +11,18 @@ import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_PartitionedPoly } from "./ZPP_PartitionedPoly";
 import { ZNPList_ZPP_PartitionVertex, ZPP_Set_ZPP_PartitionVertex } from "../util/ZNPRegistry";
-
-type Any = any;
+import { ZNPList } from "../util/ZNPList";
+import { ZNPNode } from "../util/ZNPNode";
+import { ZPP_Set } from "../util/ZPP_Set";
 
 export class ZPP_Monotone {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "geom", "ZPP_Monotone"];
 
   // --- Static fields ---
-  static queue: Any = null;
-  static edges: Any = null;
+  static queue: ZNPList<ZPP_PartitionVertex> | null = null;
+  static edges: ZPP_Set<ZPP_PartitionVertex> | null = null;
   static sharedPPoly: ZPP_PartitionedPoly | null = null;
-
-  __class__: Any = ZPP_Monotone;
 
   // --- Static methods ---
 
@@ -78,26 +77,24 @@ export class ZPP_Monotone {
       qo.x += q.x * t1;
       qo.y += q.y * t1;
       const ret = po.x < qo.x || (po.x == qo.x && po.y < qo.y);
-      const o: Any = po;
-      if (o.outer != null) {
-        o.outer.zpp_inner = null;
-        o.outer = null;
+      if ((po as any).outer != null) {
+        (po as any).outer.zpp_inner = null;
+        (po as any).outer = null;
       }
-      o._isimmutable = null;
-      o._validate = null;
-      o._invalidate = null;
-      o.next = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = o;
-      const o1: Any = qo;
-      if (o1.outer != null) {
-        o1.outer.zpp_inner = null;
-        o1.outer = null;
+      po._isimmutable = null;
+      po._validate = null;
+      po._invalidate = null;
+      po.next = ZPP_Vec2.zpp_pool;
+      ZPP_Vec2.zpp_pool = po;
+      if ((qo as any).outer != null) {
+        (qo as any).outer.zpp_inner = null;
+        (qo as any).outer = null;
       }
-      o1._isimmutable = null;
-      o1._validate = null;
-      o1._invalidate = null;
-      o1.next = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = o1;
+      qo._isimmutable = null;
+      qo._validate = null;
+      qo._invalidate = null;
+      qo.next = ZPP_Vec2.zpp_pool;
+      ZPP_Vec2.zpp_pool = qo;
       return ret;
     }
   }
@@ -194,7 +191,7 @@ export class ZPP_Monotone {
     return ZPP_Monotone.sharedPPoly;
   }
 
-  static decompose(P: Any, poly: ZPP_PartitionedPoly | null): ZPP_PartitionedPoly {
+  static decompose(P: ZPP_PartitionVertex, poly: ZPP_PartitionedPoly | null): ZPP_PartitionedPoly {
     if (poly == null) {
       poly = new ZPP_PartitionedPoly(P);
     } else {
@@ -204,7 +201,7 @@ export class ZPP_Monotone {
       return poly;
     }
     if (ZPP_Monotone.queue == null) {
-      ZPP_Monotone.queue = new ZNPList_ZPP_PartitionVertex();
+      ZPP_Monotone.queue = new ZNPList_ZPP_PartitionVertex() as ZNPList<ZPP_PartitionVertex>;
     }
     const F = poly.vertices;
     const L = poly.vertices;
@@ -239,10 +236,10 @@ export class ZPP_Monotone {
     const xxlist = ZPP_Monotone.queue;
     if (xxlist.head != null && xxlist.head.next != null) {
       let head = xxlist.head;
-      let tail: Any;
-      let left: Any;
-      let right: Any;
-      let nxt: Any;
+      let tail: ZNPNode<ZPP_PartitionVertex> | null;
+      let left: ZNPNode<ZPP_PartitionVertex> | null;
+      let right: ZNPNode<ZPP_PartitionVertex> | null;
+      let nxt: ZNPNode<ZPP_PartitionVertex> | null;
       let listSize = 1;
       let numMerges: number;
       let leftSize: number;
@@ -270,7 +267,7 @@ export class ZPP_Monotone {
               nxt = left;
               left = left.next;
               --leftSize;
-            } else if (ZPP_Monotone.above(left.elt, right.elt)) {
+            } else if (ZPP_Monotone.above(left.elt!, right.elt!)) {
               nxt = left;
               left = left.next;
               --leftSize;
@@ -288,7 +285,7 @@ export class ZPP_Monotone {
           }
           left = right;
         }
-        tail.next = null;
+        tail!.next = null;
         listSize <<= 1;
         if (!(numMerges > 1)) {
           break;
@@ -301,9 +298,9 @@ export class ZPP_Monotone {
     // Initialize BST edge set
     if (ZPP_Monotone.edges == null) {
       if (ZPP_Set_ZPP_PartitionVertex.zpp_pool == null) {
-        ZPP_Monotone.edges = new ZPP_Set_ZPP_PartitionVertex();
+        ZPP_Monotone.edges = new ZPP_Set_ZPP_PartitionVertex() as ZPP_Set<ZPP_PartitionVertex>;
       } else {
-        ZPP_Monotone.edges = ZPP_Set_ZPP_PartitionVertex.zpp_pool;
+        ZPP_Monotone.edges = ZPP_Set_ZPP_PartitionVertex.zpp_pool as ZPP_Set<ZPP_PartitionVertex>;
         ZPP_Set_ZPP_PartitionVertex.zpp_pool = ZPP_Monotone.edges.next;
         ZPP_Monotone.edges.next = null;
       }
@@ -319,28 +316,28 @@ export class ZPP_Monotone {
           v.node = ZPP_Monotone.edges.insert(v);
           break;
         case 1: {
-          const e = v.prev;
+          const e = v.prev!;
           if (e.helper == null) {
             throw new Error("Fatal error (1): Polygon is not weakly-simple and clockwise");
           }
           if (e.helper.type == 2) {
             poly.add_diagonal(v, e.helper);
           }
-          ZPP_Monotone.edges.remove_node(e.node);
+          ZPP_Monotone.edges!.remove_node(e.node!);
           e.helper = null;
           break;
         }
         case 2: {
-          const e1 = v.prev;
+          const e1 = v.prev!;
           if (e1.helper == null) {
             throw new Error("Fatal error (3): Polygon is not weakly-simple and clockwise");
           }
           if (e1.helper.type == 2) {
             poly.add_diagonal(v, e1.helper);
           }
-          ZPP_Monotone.edges.remove_node(e1.node);
+          ZPP_Monotone.edges!.remove_node(e1.node!);
           e1.helper = null;
-          let ret: Any = null;
+          let ret: ZPP_PartitionVertex | null = null;
           if (!ZPP_Monotone.edges.empty()) {
             let set_ite = ZPP_Monotone.edges.parent;
             while (set_ite.prev != null) set_ite = set_ite.prev;
@@ -373,7 +370,7 @@ export class ZPP_Monotone {
           break;
         }
         case 3: {
-          let ret1: Any = null;
+          let ret1: ZPP_PartitionVertex | null = null;
           if (!ZPP_Monotone.edges.empty()) {
             let set_ite1 = ZPP_Monotone.edges.parent;
             while (set_ite1.prev != null) set_ite1 = set_ite1.prev;
@@ -419,7 +416,7 @@ export class ZPP_Monotone {
             v.node = ZPP_Monotone.edges.insert(v);
             v.helper = v;
           } else {
-            let ret2: Any = null;
+            let ret2: ZPP_PartitionVertex | null = null;
             if (!ZPP_Monotone.edges.empty()) {
               let set_ite2 = ZPP_Monotone.edges.parent;
               while (set_ite2.prev != null) set_ite2 = set_ite2.prev;
