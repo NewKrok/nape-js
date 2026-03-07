@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.svg" alt="nape-js logo" width="80" />
+</p>
+
 # @newkrok/nape-js
 
 [![npm version](https://img.shields.io/npm/v/@newkrok/nape-js.svg)](https://www.npmjs.com/package/@newkrok/nape-js)
