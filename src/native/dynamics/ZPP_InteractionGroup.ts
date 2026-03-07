@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 63367–63463, 135330–135331.
  */
 
-type Any = any;
-
 export class ZPP_InteractionGroup {
   // --- Static: type flags ---
   static SHAPE = 1;
@@ -18,13 +16,13 @@ export class ZPP_InteractionGroup {
   static __name__ = ["zpp_nape", "dynamics", "ZPP_InteractionGroup"];
 
   // --- Static: namespace references (set by compiled module) ---
-  static _zpp: Any = null;
+  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by InteractionGroup.ts) ---
-  static _wrapFn: ((zpp: ZPP_InteractionGroup) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_InteractionGroup) => any) | null = null;
 
   // --- Instance: public API wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: ignore flag (when true, shared group suppresses interaction) ---
   ignore = false;
@@ -33,18 +31,18 @@ export class ZPP_InteractionGroup {
   group: ZPP_InteractionGroup | null = null;
 
   // --- Instance: child groups ---
-  groups: Any = null;
-  wrap_groups: Any = null;
+  groups: any = null;
+  wrap_groups: any = null;
 
   // --- Instance: interactors in this group ---
-  interactors: Any = null;
-  wrap_interactors: Any = null;
+  interactors: any = null;
+  wrap_interactors: any = null;
 
   // --- Instance: depth in group hierarchy ---
   depth = 0;
 
   // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_InteractionGroup;
+
 
   constructor() {
     const zpp = ZPP_InteractionGroup._zpp;
@@ -112,13 +110,13 @@ export class ZPP_InteractionGroup {
   }
 
   /** Register an interactor in this group. */
-  addInteractor(intx: Any): void {
+  addInteractor(intx: any): void {
     this.interactors.add(intx);
   }
 
   /** Unregister an interactor from this group. */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  remInteractor(intx: Any, flag?: number): void {
+  remInteractor(intx: any, flag?: number): void {
     this.interactors.remove(intx);
   }
 }

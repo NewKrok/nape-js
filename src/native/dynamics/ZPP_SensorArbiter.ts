@@ -9,8 +9,6 @@
 
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
 
-type Any = any;
-
 export class ZPP_SensorArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
   static override __name__ = ["zpp_nape", "dynamics", "ZPP_SensorArbiter"];
@@ -23,7 +21,7 @@ export class ZPP_SensorArbiter extends ZPP_Arbiter {
   declare next: ZPP_SensorArbiter | null;
 
   // --- Instance: Haxe class reference ---
-  override __class__: Any = ZPP_SensorArbiter;
+
 
   constructor() {
     super();
@@ -39,7 +37,7 @@ export class ZPP_SensorArbiter extends ZPP_Arbiter {
 
   // ========== Assign ==========
 
-  assign(s1: Any, s2: Any, id: number, di: number): void {
+  assign(s1: any, s2: any, id: number, di: number): void {
     this.sup_assign(s1, s2, id, di);
   }
 

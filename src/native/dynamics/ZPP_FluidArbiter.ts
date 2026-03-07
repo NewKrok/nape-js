@@ -9,8 +9,6 @@
 
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
 
-type Any = any;
-
 export class ZPP_FluidArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
   static override __name__ = ["zpp_nape", "dynamics", "ZPP_FluidArbiter"];
@@ -20,7 +18,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
   static zpp_pool: ZPP_FluidArbiter | null = null;
 
   // --- Instance: outer wrapper reference ---
-  outer_zn: Any = null;
+  outer_zn: any = null;
 
   // --- Instance: linked list next (for pool) ---
   declare next: ZPP_FluidArbiter | null;
@@ -67,7 +65,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
   buoyy = 0.0;
 
   // --- Instance: lazy Vec2 position wrapper ---
-  wrap_position: Any = null;
+  wrap_position: any = null;
 
   // --- Instance: mutability flag ---
   mutable = false;
@@ -76,7 +74,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
   pre_dt = 0.0;
 
   // --- Instance: Haxe class reference ---
-  override __class__: Any = ZPP_FluidArbiter;
+
 
   constructor() {
     super();
@@ -128,7 +126,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
     this.wrap_position.zpp_inner.y = this.centroidy;
   }
 
-  position_invalidate(x: Any): void {
+  position_invalidate(x: any): void {
     this.centroidx = x.x;
     this.centroidy = x.y;
   }
@@ -137,7 +135,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
     const zpp = ZPP_Arbiter._zpp;
     const napeNs = ZPP_Arbiter._nape;
 
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -151,7 +149,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
     }
 
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -215,7 +213,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
 
   // ========== Assign ==========
 
-  assign(s1: Any, s2: Any, id: number, di: number): void {
+  assign(s1: any, s2: any, id: number, di: number): void {
     this.sup_assign(s1, s2, id, di);
     this.nx = 0;
     this.ny = 1;
@@ -260,7 +258,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
 
   // ========== Pre-step (physics solver) ==========
 
-  preStep(s: Any, dt: number): void {
+  preStep(s: any, dt: number): void {
     const napeNs = ZPP_Arbiter._nape;
 
     if (this.pre_dt == -1.0) {

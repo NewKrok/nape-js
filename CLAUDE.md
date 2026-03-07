@@ -379,10 +379,26 @@ in native/ code):
 - `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `simplify(P: ZPP_GeomVert): ZPP_GeomVert|null`;
   `XYPoint` interface for `lessval/less/distance` helpers; `dv: ZPP_SimplifyV|null`
 
-Count: ~64 files remain in `src/native/` (dynamics/, shape/, callbacks/, phys/, space/, constraint/,
+**Native dynamics/ files done** (this session):
+- `ZPP_Arbiter.ts` — `_nape`/`_zpp`/`outer`/`b1`/`b2`/`ws1`/`ws2`/`pair`/`colarb`/`fluidarb`/`sensorarb`/`types` → `any`;
+  `__class__` removed; method params/locals → `any`
+- `ZPP_Contact.ts` — `outer`/`wrap_position`/`arbiter` → `any`; `__class__` removed;
+  `wrapper()`/`getposition()` locals → `any`
+- `ZPP_IContact.ts` — `__class__` removed (no other `Any` usages)
+- `ZPP_ColArbiter.ts` — `outer_zn`/`s1`/`s2`/`wrap_contacts`/`wrap_normal`/`ptype`/`__ref_edge*`/`c1`/`oc1`/`c2`/`oc2` → `any`;
+  `__class__` removed; private helper params → `any`
+- `ZPP_FluidArbiter.ts` — `outer_zn`/`wrap_position` → `any`; `__class__` removed; `preStep`/`assign` params → `any`
+- `ZPP_SensorArbiter.ts` — `__class__` removed; `assign` params → `any`
+- `ZPP_InteractionFilter.ts` — `_nape`/`_zpp`/`_wrapFn`/`outer`/`shapes`/`wrap_shapes`/`userData` → `any`; `__class__` removed
+- `ZPP_InteractionGroup.ts` — `_zpp`/`_wrapFn`/`outer`/`groups`/`wrap_groups`/`interactors`/`wrap_interactors` → `any`; `__class__` removed
+- `ZPP_SpaceArbiterList.ts` — `_nape`/`_zpp`/`zpp_inner`/`space`/`ite_*` → `any`; `__class__` removed;
+  immutable override methods → `any`
+- 4 test files updated: removed `__class__` assertions from ZPP_Contact, ZPP_IContact, ZPP_InteractionFilter, ZPP_InteractionGroup
+
+Count: ~55 files remain in `src/native/` (shape/, callbacks/, phys/, space/, constraint/,
 and remaining geom/ files: ZPP_Ray, ZPP_Simple, ZPP_Cutter, ZPP_MarchingSquares, etc.)
 
-Remaining: native ZPP classes (~64 files) — lower priority.
+Remaining: native ZPP classes (~55 files) — lower priority.
 
 ### Priority 26: Tree shaking
 

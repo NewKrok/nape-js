@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 63255–63366, 135329.
  */
 
-type Any = any;
-
 export class ZPP_InteractionFilter {
   // --- Static: object pool ---
   static zpp_pool: ZPP_InteractionFilter | null = null;
@@ -17,11 +15,11 @@ export class ZPP_InteractionFilter {
   static __name__ = ["zpp_nape", "dynamics", "ZPP_InteractionFilter"];
 
   // --- Static: namespace references (set by compiled module) ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by InteractionFilter.ts) ---
-  static _wrapFn: ((zpp: ZPP_InteractionFilter) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_InteractionFilter) => any) | null = null;
 
   // --- Instance: collision bitmasks ---
   collisionGroup = 1;
@@ -36,27 +34,27 @@ export class ZPP_InteractionFilter {
   fluidMask = -1;
 
   // --- Instance: shape tracking ---
-  shapes: Any = null;
-  wrap_shapes: Any = null;
+  shapes: any = null;
+  wrap_shapes: any = null;
 
   // --- Instance: public API wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: user data ---
-  userData: Any = null;
+  userData: any = null;
 
   // --- Instance: pool linked list ---
   next: ZPP_InteractionFilter | null = null;
 
   // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_InteractionFilter;
+
 
   constructor() {
     this.shapes = new ZPP_InteractionFilter._zpp.util.ZNPList_ZPP_Shape();
   }
 
   /** Create/return the public nape.dynamics.InteractionFilter wrapper. */
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_InteractionFilter._wrapFn) {
         this.outer = ZPP_InteractionFilter._wrapFn(this);
@@ -82,11 +80,11 @@ export class ZPP_InteractionFilter {
     this.shapes = new ZPP_InteractionFilter._zpp.util.ZNPList_ZPP_Shape();
   }
 
-  addShape(shape: Any): void {
+  addShape(shape: any): void {
     this.shapes.add(shape);
   }
 
-  remShape(shape: Any): void {
+  remShape(shape: any): void {
     this.shapes.remove(shape);
   }
 
