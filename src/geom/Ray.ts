@@ -195,7 +195,7 @@ export class Ray {
     if (this.zpp_inner.userData == null) {
       this.zpp_inner.userData = {};
     }
-    return this.zpp_inner.userData;
+    return this.zpp_inner.userData as Record<string, unknown>;
   }
 
   // ---------------------------------------------------------------------------
