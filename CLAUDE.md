@@ -362,60 +362,56 @@ in native/ code):
 - `_nape`/`_zpp` static namespace refs → always `any` (dynamic dispatch)
 - `_wrapFn` callbacks → `((zpp: ZPP_Foo) => any) | null` (typed input, `any` output)
 - `__class__: Any = ClassName` instance fields → removed entirely (P21 dead code)
-- Corresponding `__class__` test assertions removed from 20 test files
+- Corresponding `__class__` test assertions removed from affected test files
+- ZNPList/ZNPNode/ZPP_Set fields typed with generics where the element type is known:
+  `bodylisteners: any` (ZNPList_ZPP_BodyListener is a dynamic class) but `.elt` → `ZPP_BodyListener`
+- Handler callbacks typed with concrete param types where possible:
+  `handler: ((val: ZPP_CbType, included: boolean, added: boolean) => void) | null`
+- **When removing `any`: prefer concrete types or generics over `any`** — use `any` only when:
+  - circular ESM import would result (outer/wrap refs)
+  - the type is a dynamic ZNPList/ZNPNode/ZPP_Set subclass created at runtime via `_zpp.util.*`
+  - the field is user-facing `userData` → use `unknown` instead
 
-**Additional native geom files done** (previous sessions):
+**Native geom/ files done:**
 - `ZPP_SimpleSeg.ts` — `left/right: ZPP_SimpleVert`, `vertices: ZPP_Set<ZPP_SimpleVert>`,
   `prev: ZPP_SimpleSeg|null`, `node: ZPP_Set<ZPP_SimpleSeg>|null`; `__class__` removed
-- `ZPP_CutInt.ts` — `path0/path1/start/end: ZPP_CutVert|null`; `__class__` removed;
-  test updated (removed `__class__` assertion, factory args updated to `null`)
-- `ZPP_SimpleSweep.ts` — `tree: ZPP_Set<ZPP_SimpleSeg>|null`; `add/remove/intersect/intersection`
-  typed with `ZPP_SimpleSeg`; `intersection()` returns `ZPP_SimpleEvent|null`
-- `ZPP_PartitionedPoly.ts` — `sharedPPList: ZNPList<ZPP_PartitionedPoly>`, `sharedGVList: ZNPList<ZPP_GeomVert>`;
-  `extract_partitions/pull_partitions/extract/pull` fully typed; `p = p as Any` → `p = null!`
-- `ZPP_Monotone.ts` — `queue: ZNPList<ZPP_PartitionVertex>`, `edges: ZPP_Set<ZPP_PartitionVertex>`;
-  merge sort locals typed as `ZNPNode<ZPP_PartitionVertex>|null`; pool-return uses `(x as any).outer`
-  (ZPP_Vec2.outer is always `any` — circular import prevention)
-- `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `simplify(P: ZPP_GeomVert): ZPP_GeomVert|null`;
-  `XYPoint` interface for `lessval/less/distance` helpers; `dv: ZPP_SimplifyV|null`
+- `ZPP_CutInt.ts` — `path0/path1/start/end: ZPP_CutVert|null`; `__class__` removed
+- `ZPP_SimpleSweep.ts` — `tree: ZPP_Set<ZPP_SimpleSeg>|null`; typed methods with `ZPP_SimpleSeg`
+- `ZPP_PartitionedPoly.ts` — `sharedPPList: ZNPList<ZPP_PartitionedPoly>`, `sharedGVList: ZNPList<ZPP_GeomVert>`
+- `ZPP_Monotone.ts` — `queue: ZNPList<ZPP_PartitionVertex>`, `edges: ZPP_Set<ZPP_PartitionVertex>`
+- `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `XYPoint` interface for helpers
+- `ZPP_Simple.ts` — all static fields typed (`FastHash2_Boolfalse`, `ZPP_Set<*>`, `ZNPList<*>`)
+- `ZPP_MarchingSquares.ts` — `isos/ints/map` typed (`ZNPArray2_Float`, `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair`)
+- `ZPP_Cutter.ts` — `P: ZPP_GeomVert|null`; locals `ZPP_CutVert|null`
 
-**Native dynamics/ files done** (previous sessions):
-- `ZPP_Arbiter.ts` — `_nape`/`_zpp`/`outer`/`b1`/`b2`/`ws1`/`ws2`/`pair`/`colarb`/`fluidarb`/`sensorarb`/`types` → `any`;
-  `__class__` removed; method params/locals → `any`
-- `ZPP_Contact.ts` — `outer`/`wrap_position`/`arbiter` → `any`; `__class__` removed;
-  `wrapper()`/`getposition()` locals → `any`
-- `ZPP_IContact.ts` — `__class__` removed (no other `Any` usages)
-- `ZPP_ColArbiter.ts` — `outer_zn`/`s1`/`s2`/`wrap_contacts`/`wrap_normal`/`ptype`/`__ref_edge*`/`c1`/`oc1`/`c2`/`oc2` → `any`;
-  `__class__` removed; private helper params → `any`
-- `ZPP_FluidArbiter.ts` — `outer_zn`/`wrap_position` → `any`; `__class__` removed; `preStep`/`assign` params → `any`
-- `ZPP_SensorArbiter.ts` — `__class__` removed; `assign` params → `any`
-- `ZPP_InteractionFilter.ts` — `_nape`/`_zpp`/`_wrapFn`/`outer`/`shapes`/`wrap_shapes`/`userData` → `any`; `__class__` removed
-- `ZPP_InteractionGroup.ts` — `_zpp`/`_wrapFn`/`outer`/`groups`/`wrap_groups`/`interactors`/`wrap_interactors` → `any`; `__class__` removed
-- `ZPP_SpaceArbiterList.ts` — `_nape`/`_zpp`/`zpp_inner`/`space`/`ite_*` → `any`; `__class__` removed;
-  immutable override methods → `any`
-- 4 test files updated: removed `__class__` assertions from ZPP_Contact, ZPP_IContact, ZPP_InteractionFilter, ZPP_InteractionGroup
+**Native util/ files done:**
+- `ZNPList.ts` — typed `_NodeClass` with `ZNPNodeClass<T>` interface + `ZNPListConstructor<T>`
+- `ZPP_Set.ts` — typed `zpp_pool`/constructor with `ZPP_SetConstructor<T>` interface
+- `ZPP_ContactList.ts` — `inner: ZPP_Contact`, `at_ite/push_ite: ZPP_Contact|null`
+- `ZPP_Vec2List.ts` — `inner: ZNPList<unknown>`
+- `ZPP_Ray.ts` — `userData: unknown`, `aabbtest/aabbsect(a: ZPP_AABB)`, invalidate callbacks `(x: ZPP_Vec2)`
+- `ZPP_MixVec2List.ts` — `type Any` removed; `ensureVec2Wrapper(zpp: ZPP_Vec2)`; `prototype.__class__` removed
 
-**Additional native util+geom files done** (this session):
-- `ZNPList.ts` — typed `_NodeClass` with `ZNPNodeClass<T>` interface, `constructor` cast with
-  `ZNPListConstructor<T>`; removed `__class__` field
-- `ZPP_Set.ts` — typed `zpp_pool`/constructor cast with `ZPP_SetConstructor<T>` interface;
-  removed `__class__` field
-- `ZPP_ContactList.ts` — typed `inner: ZPP_Contact`, `at_ite/push_ite: ZPP_Contact|null`;
-  `get()` param typed; removed `__class__` field
-- `ZPP_Vec2List.ts` — typed `inner: ZNPList<unknown>`; `get()` param typed; removed `__class__` field
-- `ZPP_Ray.ts` — typed `userData: unknown`, `aabbtest/aabbsect(a: ZPP_AABB)`, invalidate
-  callbacks `(x: ZPP_Vec2)`; `direction/origin: any` (circular); removed `__class__` field
-- `ZPP_Simple.ts` — typed all static fields (`FastHash2_Boolfalse`, `ZPP_Set<*>`, `ZNPList<*>`);
-  `decompose/clip_polygon/isSimple` params and locals typed; merge sort nodes as `ZNPNode<ZPP_SimpleEvent>`
-- `ZPP_MarchingSquares.ts` — typed `isos/ints/map` static fields (`ZNPArray2_Float`,
-  `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair`); `run/output/link*/marchSquare/_buildPoly*`
-  params typed; `_zpp/_nape: any`; removed `__class__` field
-- `ZPP_Cutter.ts` — typed `P: ZPP_GeomVert|null`; local `verts/start/pre/start1: ZPP_CutVert|null`;
-  `virtualint*: boolean`; stack/merge-sort vars remain `any`; removed static `__class__`
+**Native dynamics/ files done:**
+- `ZPP_Arbiter.ts`, `ZPP_Contact.ts`, `ZPP_IContact.ts`, `ZPP_ColArbiter.ts`, `ZPP_FluidArbiter.ts`,
+  `ZPP_SensorArbiter.ts`, `ZPP_InteractionFilter.ts`, `ZPP_InteractionGroup.ts`, `ZPP_SpaceArbiterList.ts`
+  — all `type Any` + `__class__` removed; fields typed or justified `any`
 
-Count: 43 files remain in `src/native/` (shape/, callbacks/, phys/, space/, constraint/)
+**Native callbacks/ files done (8 files):**
+- `ZPP_Listener.ts` — `type Any` removed; `types/events: any[]`; `_initEnums(nape: any, ZPP_Flags: any)`
+- `ZPP_BodyListener.ts` — `type Any` + `__class__` removed; `handler/options/outer_zn: any`
+- `ZPP_ConstraintListener.ts` — `type Any` + `__class__` removed; same as BodyListener
+- `ZPP_Callback.ts` — `type Any` + `__class__` removed; `int1/int2/set/body/constraint: any`
+- `ZPP_CbSetPair.ts` — `type Any` + `__class__` removed; `a/b/listeners: any`
+- `ZPP_CbType.ts` — `type Any` + `__class__` removed; `addint/addbody/addconstraint` params
+  typed as `ZPP_InteractionListener`/`ZPP_BodyListener`/`ZPP_ConstraintListener`; `ANY_*: ZPP_CbType|null`;
+  `userData: unknown`; list fields remain `any` (dynamic ZNPList subclasses)
+- `ZPP_OptionType.ts` — `type Any` + `__class__` removed; `handler: ((val: ZPP_CbType, included: boolean, added: boolean) => void)|null`;
+  `nonemptyintersection` and `insertOrdered` locals typed as `ZPP_CbType`; `set()` uses `!==`
 
-Remaining: native ZPP classes (~43 files) — lower priority.
+Count: 34 files remain in `src/native/` (shape/4, callbacks/2, phys/5, space/10, constraint/9)
+
+Remaining callbacks/: `ZPP_CbSet.ts`, `ZPP_InteractionListener.ts`
 
 ### Priority 26: Tree shaking
 

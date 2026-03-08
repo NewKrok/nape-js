@@ -37,7 +37,6 @@ describe("ZPP_Callback", () => {
       expect(cb.pre_swapped).toBe(false);
       expect(cb.body).toBeNull();
       expect(cb.constraint).toBeNull();
-      expect(cb.__class__).toBe(ZPP_Callback);
     });
   });
 

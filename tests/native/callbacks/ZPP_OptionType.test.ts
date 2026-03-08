@@ -23,7 +23,6 @@ describe("ZPP_OptionType", () => {
       expect(ot.handler).toBeNull();
       expect(ot.wrap_includes).toBeNull();
       expect(ot.wrap_excludes).toBeNull();
-      expect(ot.__class__).toBe(ZPP_OptionType);
     });
   });
 

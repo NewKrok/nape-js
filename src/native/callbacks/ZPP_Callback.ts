@@ -7,15 +7,13 @@
  * Converted from nape-compiled.js lines 44587–44794, 133299–133300.
  */
 
-type Any = any;
-
 export class ZPP_Callback {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "callbacks", "ZPP_Callback"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: pool + internal flag ---
   static internal = false;
@@ -28,28 +26,26 @@ export class ZPP_Callback {
   static _createPreCb: (() => any) | null = null;
 
   // --- Instance ---
-  outer_body: Any = null;
-  outer_con: Any = null;
-  outer_int: Any = null;
+  outer_body: any = null;
+  outer_con: any = null;
+  outer_int: any = null;
   event = 0;
-  listener: Any = null;
-  space: Any = null;
+  listener: any = null;
+  space: any = null;
   index = 0;
   next: ZPP_Callback | null = null;
   prev: ZPP_Callback | null = null;
   length = 0;
-  int1: Any = null;
-  int2: Any = null;
-  set: Any = null;
-  wrap_arbiters: Any = null;
-  pre_arbiter: Any = null;
+  int1: any = null;
+  int2: any = null;
+  set: any = null;
+  wrap_arbiters: any = null;
+  pre_arbiter: any = null;
   pre_swapped = false;
-  body: Any = null;
-  constraint: Any = null;
+  body: any = null;
+  constraint: any = null;
 
-  __class__: Any = ZPP_Callback;
-
-  wrapper_body(): Any {
+  wrapper_body(): any {
     if (this.outer_body == null) {
       ZPP_Callback.internal = true;
       this.outer_body = ZPP_Callback._createBodyCb!();
@@ -59,7 +55,7 @@ export class ZPP_Callback {
     return this.outer_body;
   }
 
-  wrapper_con(): Any {
+  wrapper_con(): any {
     if (this.outer_con == null) {
       ZPP_Callback.internal = true;
       this.outer_con = ZPP_Callback._createConCb!();
@@ -69,7 +65,7 @@ export class ZPP_Callback {
     return this.outer_con;
   }
 
-  wrapper_int(): Any {
+  wrapper_int(): any {
     const zpp = ZPP_Callback._zpp;
     if (this.outer_int == null) {
       ZPP_Callback.internal = true;
@@ -189,13 +185,13 @@ export class ZPP_Callback {
   }
 
   at(i: number): ZPP_Callback {
-    let ret: Any = this.next;
+    let ret: any = this.next;
     while (i-- != 0) ret = ret.next;
     return ret;
   }
 
   rev_at(i: number): ZPP_Callback {
-    let ret: Any = this.prev;
+    let ret: any = this.prev;
     while (i-- != 0) ret = ret.prev;
     return ret;
   }
