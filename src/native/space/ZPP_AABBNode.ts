@@ -10,8 +10,6 @@
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 
-type Any = any;
-
 export class ZPP_AABBNode {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_AABBNode"];
@@ -21,7 +19,7 @@ export class ZPP_AABBNode {
 
   // --- Instance: AABB and shape ---
   aabb: ZPP_AABB | null = null;
-  shape: Any = null;
+  shape: any = null; // circular: ZPP_Shape
   dyn = false;
 
   // --- Instance: tree structure ---
@@ -44,9 +42,6 @@ export class ZPP_AABBNode {
   snext: ZPP_AABBNode | null = null;
   synced = false;
   first_sync = false;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_AABBNode;
 
   // ========== Pool callbacks ==========
 

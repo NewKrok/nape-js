@@ -7,23 +7,18 @@
  * Converted from nape-compiled.js lines 34154–34298.
  */
 
-type Any = any;
-
 export class ZPP_CbSetManager {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_CbSetManager"];
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
+  static _zpp: any = null;
 
   // --- Instance fields ---
-  cbsets: Any = null;
-  space: Any = null;
+  cbsets: any = null; // ZPP_Set_ZPP_CbSet — dynamic class
+  space: any = null;  // ZPP_Space — circular
 
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_CbSetManager;
-
-  constructor(space: Any) {
+  constructor(space: any) {
     const ZPP_Set_CbSet = ZPP_CbSetManager._zpp.util.ZPP_Set_ZPP_CbSet;
     if (ZPP_Set_CbSet.zpp_pool == null) {
       this.cbsets = new ZPP_Set_CbSet();
@@ -36,12 +31,12 @@ export class ZPP_CbSetManager {
     this.space = space;
   }
 
-  get(cbTypes: Any): Any {
+  get(cbTypes: any): any {
     if (cbTypes.head == null) {
       return null;
     }
     const ZPP_CbSet = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSet;
-    let fake: Any;
+    let fake: any;
     if (ZPP_CbSet.zpp_pool == null) {
       fake = new ZPP_CbSet();
     } else {
@@ -52,7 +47,7 @@ export class ZPP_CbSetManager {
     const faketypes = fake.cbTypes;
     fake.cbTypes = cbTypes;
     const res = this.cbsets.find_weak(fake);
-    let ret: Any;
+    let ret: any;
     if (res != null) {
       ret = res.data;
     } else {
@@ -78,7 +73,7 @@ export class ZPP_CbSetManager {
     return ret;
   }
 
-  remove(set: Any): void {
+  remove(set: any): void {
     const ZPP_CbSetPair = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSetPair;
     this.cbsets.remove(set);
     while (set.cbpairs.head != null) {
@@ -119,10 +114,10 @@ export class ZPP_CbSetManager {
     }
   }
 
-  pair(a: Any, b: Any): Any {
+  pair(a: any, b: any): any {
     const ZPP_CbSet = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSet;
     const ZPP_CbSetPair = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSetPair;
-    let ret: Any = null;
+    let ret: any = null;
     const pairs = a.cbpairs.length < b.cbpairs.length ? a.cbpairs : b.cbpairs;
     let cx_ite = pairs.head;
     while (cx_ite != null) {
@@ -134,7 +129,7 @@ export class ZPP_CbSetManager {
       cx_ite = cx_ite.next;
     }
     if (ret == null) {
-      let ret1: Any;
+      let ret1: any;
       if (ZPP_CbSetPair.zpp_pool == null) {
         ret1 = new ZPP_CbSetPair();
       } else {
@@ -163,7 +158,7 @@ export class ZPP_CbSetManager {
     return ret;
   }
 
-  valid_listener(i: Any): boolean {
+  valid_listener(i: any): boolean {
     return i.space == this.space;
   }
 }

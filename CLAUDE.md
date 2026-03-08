@@ -426,6 +426,19 @@ Count: 23 files remain in `src/native/` (space/10, constraint/9, callbacks/2→a
 - `ZPP_Compound.ts` — `type Any` + `__class__` removed; `userData: unknown`; all list/space/wrapper fields remain `any` (circular/dynamic)
 - `ZPP_Body.ts` — `type Any` + `__class__` removed; all Vec2 wrapper/list/space/component fields remain `any` (circular/dynamic)
 
+**Native space/ files done (8 of 10):**
+- `ZPP_AABBNode.ts` — `type Any` + `__class__` removed; `shape: any` (circular ZPP_Shape); `aabb: ZPP_AABB`
+- `ZPP_AABBPair.ts` — `type Any` + `__class__` removed; `n1/n2/arb: any` (circular)
+- `ZPP_SweepData.ts` — `type Any` + `__class__` removed; `aabb/shape: any` (circular)
+- `ZPP_Component.ts` — `type Any` + `__class__` removed; `body/constraint/island: any` (circular)
+- `ZPP_Island.ts` — `type Any` + `__class__` removed; linked list methods fully typed with `ZPP_Component`; `comps/_zpp: any` (dynamic/namespace)
+- `ZPP_CallbackSet.ts` — `type Any` + `__class__` removed; `COLLISIONstate` etc. typed as `number|null`; arbiter methods `any` (dynamic ZNPList)
+- `ZPP_CbSetManager.ts` — `type Any` + `__class__` removed; all fields/params `any` (dynamic _zpp dispatch)
+- `ZPP_Broadphase.ts` — `type Any` + `__class__` removed; all fields/params `any` (circular/dynamic _zpp/_nape dispatch)
+
+Count: 2 files remain in `src/native/space/` (ZPP_DynAABBPhase, ZPP_SweepPhase, ZPP_AABBTree — actually 3)
+plus 11 constraint/ files.
+
 ### Priority 26: Tree shaking
 
 **Effort: L | Impact: large (bundle selectivity) | Risk: high**

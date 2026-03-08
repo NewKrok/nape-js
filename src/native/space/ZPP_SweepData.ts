@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 47755–47781.
  */
 
-type Any = any;
-
 export class ZPP_SweepData {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_SweepData"];
@@ -17,13 +15,10 @@ export class ZPP_SweepData {
   static zpp_pool: ZPP_SweepData | null = null;
 
   // --- Instance fields ---
-  aabb: Any = null;
-  shape: Any = null;
+  aabb: any = null; // ZPP_AABB — circular
+  shape: any = null; // ZPP_Shape — circular
   prev: ZPP_SweepData | null = null;
   next: ZPP_SweepData | null = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_SweepData;
 
   // ========== Pool callbacks ==========
 

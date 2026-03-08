@@ -10,34 +10,29 @@
  * Converted from nape-compiled.js lines 25280–26724.
  */
 
-type Any = any;
-
 export class ZPP_Broadphase {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_Broadphase"];
 
   // --- Static: lazy namespace references ---
-  static _zpp: Any = null;
-  static _nape: Any = null;
+  static _zpp: any = null;
+  static _nape: any = null;
 
   // --- Instance fields ---
-  space: Any = null;
+  space: any = null;     // ZPP_Space — circular
   is_sweep: boolean = false;
-  sweep: Any = null;
-  dynab: Any = null;
-  aabbShape: Any = null;
-  matrix: Any = null;
-  circShape: Any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Broadphase;
+  sweep: any = null;     // ZPP_SweepPhase — circular
+  dynab: any = null;     // ZPP_DynAABBPhase — circular
+  aabbShape: any = null; // ZPP_Shape — circular
+  matrix: any = null;    // ZPP_Mat23 — circular
+  circShape: any = null; // ZPP_Shape — circular
 
   /**
    * Initialize instance fields on a target object.
    * Used by child class constructors (both TS and compiled) since
    * ES6 class constructors can't be called with .call().
    */
-  static _initFields(self: Any): void {
+  static _initFields(self: any): void {
     self.space = null;
     self.is_sweep = false;
     self.sweep = null;
@@ -49,7 +44,7 @@ export class ZPP_Broadphase {
 
   // ========== insert / remove / sync ==========
 
-  insert(shape: Any): void {
+  insert(shape: any): void {
     if (this.is_sweep) {
       this.sweep.__insert(shape);
     } else {
@@ -57,7 +52,7 @@ export class ZPP_Broadphase {
     }
   }
 
-  remove(shape: Any): void {
+  remove(shape: any): void {
     if (this.is_sweep) {
       this.sweep.__remove(shape);
     } else {
@@ -65,7 +60,7 @@ export class ZPP_Broadphase {
     }
   }
 
-  sync(shape: Any): void {
+  sync(shape: any): void {
     if (this.is_sweep) {
       if (!this.sweep.space.continuous) {
         if (shape.zip_aabb) {
@@ -387,23 +382,23 @@ export class ZPP_Broadphase {
 
   // ========== broadphase / clear (overridden by subclasses) ==========
 
-  broadphase(_space: Any, _discrete: boolean): void {}
+  broadphase(_space: any, _discrete: boolean): void {}
 
   clear(): void {}
 
   // ========== Spatial queries (overridden by subclasses) ==========
 
-  shapesUnderPoint(_x: number, _y: number, _filter: Any, _output: Any): Any {
+  shapesUnderPoint(_x: number, _y: number, _filter: any, _output: any): any {
     return null;
   }
 
-  bodiesUnderPoint(_x: number, _y: number, _filter: Any, _output: Any): Any {
+  bodiesUnderPoint(_x: number, _y: number, _filter: any, _output: any): any {
     return null;
   }
 
   // ========== updateAABBShape ==========
 
-  updateAABBShape(aabb: Any): void {
+  updateAABBShape(aabb: any): void {
     const zpp = ZPP_Broadphase._zpp;
     const nape = ZPP_Broadphase._nape;
 
@@ -708,22 +703,22 @@ export class ZPP_Broadphase {
   // ========== shapesInAABB / bodiesInAABB (overridden by subclasses) ==========
 
   shapesInAABB(
-    _aabb: Any,
+    _aabb: any,
     _strict: boolean,
     _containment: boolean,
-    _filter: Any,
-    _output: Any,
-  ): Any {
+    _filter: any,
+    _output: any,
+  ): any {
     return null;
   }
 
   bodiesInAABB(
-    _aabb: Any,
+    _aabb: any,
     _strict: boolean,
     _containment: boolean,
-    _filter: Any,
-    _output: Any,
-  ): Any {
+    _filter: any,
+    _output: any,
+  ): any {
     return null;
   }
 
@@ -752,7 +747,7 @@ export class ZPP_Broadphase {
       if (x1 !== x1 || y1 !== y1) {
         throw new Error("Error: Vec2 components cannot be NaN");
       }
-      let ret: Any;
+      let ret: any;
       if (zpp.util.ZPP_PubPool.poolVec2 == null) {
         ret = new nape.geom.Vec2();
       } else {
@@ -765,7 +760,7 @@ export class ZPP_Broadphase {
         }
       }
       if (ret.zpp_inner == null) {
-        let ret1: Any;
+        let ret1: any;
         if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
           ret1 = new zpp.geom.ZPP_Vec2();
         } else {
@@ -1045,9 +1040,9 @@ export class ZPP_Broadphase {
     _y: number,
     _r: number,
     _containment: boolean,
-    _filter: Any,
-    _output: Any,
-  ): Any {
+    _filter: any,
+    _output: any,
+  ): any {
     return null;
   }
 
@@ -1056,15 +1051,15 @@ export class ZPP_Broadphase {
     _y: number,
     _r: number,
     _containment: boolean,
-    _filter: Any,
-    _output: Any,
-  ): Any {
+    _filter: any,
+    _output: any,
+  ): any {
     return null;
   }
 
   // ========== validateShape ==========
 
-  validateShape(s: Any): void {
+  validateShape(s: any): void {
     if (s.type == 1) {
       const _this = s.polygon;
       if (_this.zip_gaxi) {
@@ -1362,21 +1357,21 @@ export class ZPP_Broadphase {
 
   // ========== shapesInShape / bodiesInShape (overridden by subclasses) ==========
 
-  shapesInShape(_shape: Any, _containment: boolean, _filter: Any, _output: Any): Any {
+  shapesInShape(_shape: any, _containment: boolean, _filter: any, _output: any): any {
     return null;
   }
 
-  bodiesInShape(_shape: Any, _containment: boolean, _filter: Any, _output: Any): Any {
+  bodiesInShape(_shape: any, _containment: boolean, _filter: any, _output: any): any {
     return null;
   }
 
   // ========== rayCast / rayMultiCast (overridden by subclasses) ==========
 
-  rayCast(_ray: Any, _inner: boolean, _filter: Any): Any {
+  rayCast(_ray: any, _inner: boolean, _filter: any): any {
     return null;
   }
 
-  rayMultiCast(_ray: Any, _inner: boolean, _filter: Any, _output: Any): Any {
+  rayMultiCast(_ray: any, _inner: boolean, _filter: any, _output: any): any {
     return null;
   }
 }

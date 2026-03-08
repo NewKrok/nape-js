@@ -8,8 +8,6 @@
  * Converted from nape-compiled.js lines 33540–33585.
  */
 
-type Any = any;
-
 export class ZPP_Component {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_Component"];
@@ -26,19 +24,16 @@ export class ZPP_Component {
 
   // --- Instance: body/constraint reference ---
   isBody = false;
-  body: Any = null;
-  constraint: Any = null;
+  body: any = null;       // ZPP_Body — circular
+  constraint: any = null; // ZPP_Constraint — circular
 
   // --- Instance: island reference ---
-  island: Any = null;
+  island: any = null; // ZPP_Island — circular
 
   // --- Instance: sleeping/waking state ---
   sleeping = false;
   waket = 0;
   woken = false;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Component;
 
   // ========== Pool callbacks ==========
 
