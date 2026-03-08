@@ -418,9 +418,13 @@ in native/ code):
 **Native phys/ files done (partial):**
 - `ZPP_Material.ts` — `type Any` + `__class__` removed; `shapes/wrap_shapes: any` (dynamic ZNPList), `outer: any` (circular)
 
-Count: 27 files remain in `src/native/` (phys/4, space/10, constraint/9, callbacks/2→already done)
+Count: 23 files remain in `src/native/` (space/10, constraint/9, callbacks/2→already done)
 
-Remaining phys/: `ZPP_Body.ts`, `ZPP_Compound.ts`, `ZPP_FluidProperties.ts`, `ZPP_Interactor.ts`
+**Native phys/ files done (all 4):**
+- `ZPP_FluidProperties.ts` — `type Any` + `__class__` removed; `userData: unknown`; Vec2/ZNPList/outer fields remain `any`
+- `ZPP_Interactor.ts` — `type Any` + `__class__` removed; `userData: unknown`; ishape/ibody/icompound/outer_i/cbTypes/cbsets remain `any` (circular/dynamic)
+- `ZPP_Compound.ts` — `type Any` + `__class__` removed; `userData: unknown`; all list/space/wrapper fields remain `any` (circular/dynamic)
+- `ZPP_Body.ts` — `type Any` + `__class__` removed; all Vec2 wrapper/list/space/component fields remain `any` (circular/dynamic)
 
 ### Priority 26: Tree shaking
 

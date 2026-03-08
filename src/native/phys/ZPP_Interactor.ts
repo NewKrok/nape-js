@@ -11,8 +11,6 @@
 import { ZPP_ID } from "../util/ZPP_ID";
 import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
 
-type Any = any;
-
 export class ZPP_Interactor {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "phys", "ZPP_Interactor"];
@@ -22,23 +20,21 @@ export class ZPP_Interactor {
    * _nape = the `nape` public namespace
    * _zpp = the `zpp_nape` internal namespace
    */
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Instance fields ---
-  outer_i: Any = null;
+  outer_i: any = null; // Interactor wrapper — circular import prevention
   id: number = 0;
-  userData: Any = null;
-  ishape: Any = null;
-  ibody: Any = null;
-  icompound: Any = null;
-  wrap_cbTypes: Any = null;
-  cbSet: Any = null;
-  cbTypes: Any = null;
-  group: Any = null;
-  cbsets: Any = null;
-
-  __class__: Any = ZPP_Interactor;
+  userData: unknown = null;
+  ishape: any = null; // ZPP_Shape — circular import prevention
+  ibody: any = null; // ZPP_Body — circular import prevention
+  icompound: any = null; // ZPP_Compound — circular import prevention
+  wrap_cbTypes: any = null; // CbTypeList wrapper — circular import prevention
+  cbSet: any = null; // ZPP_CbSet
+  cbTypes: any = null; // ZNPList_ZPP_CbType — dynamic subclass
+  group: any = null; // ZPP_InteractionGroup — circular import prevention
+  cbsets: any = null; // ZNPList_ZPP_CallbackSet — dynamic subclass
 
   constructor() {
     ZPP_Interactor.initFields(this);
@@ -49,7 +45,7 @@ export class ZPP_Interactor {
    * Called by child classes (ZPP_Body, ZPP_Compound, ZPP_Shape)
    * instead of ZPP_Interactor.call(this).
    */
-  static initFields(inst: Any): void {
+  static initFields(inst: any): void {
     const zpp = ZPP_Interactor._zpp;
     inst.wrap_cbTypes = null;
     inst.cbSet = null;
@@ -69,11 +65,11 @@ export class ZPP_Interactor {
 
   // --- Static methods ---
 
-  static get(i1: Any, i2: Any): Any {
+  static get(i1: any, i2: any): any {
     const id = i1.id < i2.id ? i1.id : i2.id;
     const di = i1.id < i2.id ? i2.id : i1.id;
     const xs = i1.cbsets.length < i2.cbsets.length ? i1.cbsets : i2.cbsets;
-    let ret: Any = null;
+    let ret: any = null;
     let cx_ite = xs.head;
     while (cx_ite != null) {
       const x = cx_ite.elt;
@@ -86,7 +82,7 @@ export class ZPP_Interactor {
     return ret;
   }
 
-  static int_callback(set: Any, x: Any, cb: Any): void {
+  static int_callback(set: any, x: any, cb: any): void {
     const o1 = set.int1;
     const o2 = set.int2;
     let tmp: boolean;
@@ -168,7 +164,7 @@ export class ZPP_Interactor {
     }
   }
 
-  private _getSpace(): Any {
+  private _getSpace(): any {
     if (this.ishape != null) {
       return this.ishape.body == null ? null : this.ishape.body.space;
     } else if (this.ibody != null) {
@@ -178,7 +174,7 @@ export class ZPP_Interactor {
     }
   }
 
-  getSpace(): Any {
+  getSpace(): any {
     return this._getSpace();
   }
 
@@ -196,7 +192,7 @@ export class ZPP_Interactor {
     this.immutable_midstep("Interactor::cbTypes");
   }
 
-  wrap_cbTypes_subber(pcb: Any): void {
+  wrap_cbTypes_subber(pcb: any): void {
     const cb = pcb.zpp_inner;
     if (this.cbTypes.has(cb)) {
       const space = this._getSpace();
@@ -212,12 +208,12 @@ export class ZPP_Interactor {
     }
   }
 
-  wrap_cbTypes_adder(cb: Any): boolean {
+  wrap_cbTypes_adder(cb: any): boolean {
     this.insert_cbtype(cb.zpp_inner);
     return false;
   }
 
-  insert_cbtype(cb: Any): void {
+  insert_cbtype(cb: any): void {
     const zpp = ZPP_Interactor._zpp;
     if (!this.cbTypes.has(cb)) {
       const space = this._getSpace();
@@ -225,7 +221,7 @@ export class ZPP_Interactor {
         this.dealloc_cbSet();
         cb.interactors.add(this);
       }
-      let pre: Any = null;
+      let pre: any = null;
       let cx_ite = this.cbTypes.head;
       while (cx_ite != null) {
         const j = cx_ite.elt;
@@ -236,7 +232,7 @@ export class ZPP_Interactor {
         cx_ite = cx_ite.next;
       }
       const _this = this.cbTypes;
-      let ret: Any;
+      let ret: any;
       if (zpp.util.ZNPNode_ZPP_CbType.zpp_pool == null) {
         ret = new zpp.util.ZNPNode_ZPP_CbType();
       } else {
@@ -297,7 +293,7 @@ export class ZPP_Interactor {
     }
   }
 
-  setGroup(group: Any): void {
+  setGroup(group: any): void {
     if (this.group != group) {
       const inspace = this._getSpace() != null;
       if (inspace && this.group != null) {
@@ -334,9 +330,9 @@ export class ZPP_Interactor {
     }
   }
 
-  lookup_group(): Any {
+  lookup_group(): any {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    let cur: Any = this;
+    let cur: any = this;
     while (cur != null && cur.group == null) {
       if (cur.ishape != null) {
         cur = cur.ishape.body;
@@ -353,7 +349,7 @@ export class ZPP_Interactor {
     }
   }
 
-  copyto(ret: Any): void {
+  copyto(ret: any): void {
     const nape = ZPP_Interactor._nape;
     ret.zpp_inner_i.group = this.group;
     const _this = this.outer_i;
@@ -405,7 +401,7 @@ export class ZPP_Interactor {
   // --- Module initialization ---
   static _initialized = false;
 
-  static _init(zpp: Any, nape: Any): void {
+  static _init(zpp: any, nape: any): void {
     if (ZPP_Interactor._initialized) return;
     ZPP_Interactor._initialized = true;
     ZPP_Interactor._zpp = zpp;

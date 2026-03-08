@@ -9,53 +9,49 @@
 
 import { ZPP_Interactor } from "./ZPP_Interactor";
 
-type Any = any;
-
 export class ZPP_Compound {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "phys", "ZPP_Compound"];
-  static __super__: Any = null; // Set at _init time to ZPP_Interactor
+  static __super__: any = null; // Set at _init time to ZPP_Interactor
 
   /**
    * Namespace references, set by the compiled module after import.
    * _nape = the `nape` public namespace (for wrapper creation in copy())
    * _zpp = the `zpp_nape` internal namespace (for ZNPList_*, ZPP_BodyList, etc.)
    */
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   /**
    * Wrapper factory callback, registered by the modernized Compound class.
    * When set, wrapper() uses this instead of the compiled Compound constructor.
    */
-  static _wrapFn: ((zpp: ZPP_Compound) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Compound) => any) | null = null;
 
   // --- ZPP_Interactor fields (base class, not extracted) ---
-  outer_i: Any = null;
+  outer_i: any = null; // Interactor wrapper — circular import prevention
   id: number = 0;
-  userData: Any = null;
-  ishape: Any = null;
-  ibody: Any = null;
-  icompound: Any = null;
-  wrap_cbTypes: Any = null;
-  cbSet: Any = null;
-  cbTypes: Any = null;
-  group: Any = null;
-  cbsets: Any = null;
+  userData: unknown = null;
+  ishape: any = null; // ZPP_Shape — circular import prevention
+  ibody: any = null; // ZPP_Body — circular import prevention
+  icompound: any = null; // ZPP_Compound self-ref
+  wrap_cbTypes: any = null; // CbTypeList wrapper
+  cbSet: any = null; // ZPP_CbSet
+  cbTypes: any = null; // ZNPList_ZPP_CbType — dynamic subclass
+  group: any = null; // ZPP_InteractionGroup — circular import prevention
+  cbsets: any = null; // ZNPList_ZPP_CallbackSet — dynamic subclass
 
   // --- ZPP_Compound fields ---
-  outer: Any = null;
-  bodies: Any = null;
-  constraints: Any = null;
-  compounds: Any = null;
-  wrap_bodies: Any = null;
-  wrap_constraints: Any = null;
-  wrap_compounds: Any = null;
+  outer: any = null; // Compound wrapper — circular import prevention
+  bodies: any = null; // ZNPList_ZPP_Body — dynamic subclass
+  constraints: any = null; // ZNPList_ZPP_Constraint — dynamic subclass
+  compounds: any = null; // ZNPList_ZPP_Compound — dynamic subclass
+  wrap_bodies: any = null; // BodyList wrapper
+  wrap_constraints: any = null; // ConstraintList wrapper
+  wrap_compounds: any = null; // CompoundList wrapper
   depth: number = 0;
-  compound: Any = null; // parent ZPP_Compound
-  space: Any = null; // ZPP_Space
-
-  __class__: Any = ZPP_Compound;
+  compound: any = null; // parent ZPP_Compound — circular
+  space: any = null; // ZPP_Space — circular import prevention
 
   constructor() {
     const zpp = ZPP_Compound._zpp;
@@ -149,13 +145,13 @@ export class ZPP_Compound {
 
   // --- Helper: resolve ZPP inner from public API wrapper ---
   // Public API objects may be compiled (have .zpp_inner) or TS wrappers (have ._inner.zpp_inner)
-  private static _zppOf(x: Any): Any {
+  private static _zppOf(x: any): any {
     return x.zpp_inner ?? x._inner?.zpp_inner ?? x._inner;
   }
 
   // --- List adder/subber/modifiable callbacks ---
 
-  bodies_adder(x: Any): boolean {
+  bodies_adder(x: any): boolean {
     const z = ZPP_Compound._zppOf(x);
     if (z.compound !== this) {
       if (z.compound != null) {
@@ -172,7 +168,7 @@ export class ZPP_Compound {
     return false;
   }
 
-  bodies_subber(x: Any): void {
+  bodies_subber(x: any): void {
     const z = ZPP_Compound._zppOf(x);
     z.compound = null;
     if (this.space != null) {
@@ -184,7 +180,7 @@ export class ZPP_Compound {
     this.immutable_midstep("Compound::bodies");
   }
 
-  constraints_adder(x: Any): boolean {
+  constraints_adder(x: any): boolean {
     const z = ZPP_Compound._zppOf(x);
     if (z.compound !== this) {
       if (z.compound != null) {
@@ -201,7 +197,7 @@ export class ZPP_Compound {
     return false;
   }
 
-  constraints_subber(x: Any): void {
+  constraints_subber(x: any): void {
     const z = ZPP_Compound._zppOf(x);
     z.compound = null;
     if (this.space != null) {
@@ -213,10 +209,10 @@ export class ZPP_Compound {
     this.immutable_midstep("Compound::constraints");
   }
 
-  compounds_adder(x: Any): boolean {
+  compounds_adder(x: any): boolean {
     const z = ZPP_Compound._zppOf(x);
     // Check for cycles in the compound tree
-    let cur: Any = this as Any;
+    let cur: any = this as any;
     while (cur != null && cur !== z) {
       cur = cur.compound;
     }
@@ -244,7 +240,7 @@ export class ZPP_Compound {
     return false;
   }
 
-  compounds_subber(x: Any): void {
+  compounds_subber(x: any): void {
     const z = ZPP_Compound._zppOf(x);
     z.compound = null;
     z.depth = 1;
@@ -258,7 +254,7 @@ export class ZPP_Compound {
   }
 
   // --- Deep copy ---
-  copy(dict?: Any[], todo?: Any[]): Any {
+  copy(dict?: any[], todo?: any[]): any {
     const napeNs = ZPP_Compound._nape;
     const zpp = ZPP_Compound._zpp;
     const root = dict == null;
@@ -368,17 +364,17 @@ export class ZPP_Compound {
   __iaddedToSpace!: () => void;
   __iremovedFromSpace!: () => void;
   wake!: () => void;
-  getSpace!: () => Any;
+  getSpace!: () => any;
   setupcbTypes!: () => void;
   immutable_cbTypes!: () => void;
-  wrap_cbTypes_subber!: (pcb: Any) => void;
-  wrap_cbTypes_adder!: (cb: Any) => boolean;
-  insert_cbtype!: (cb: Any) => void;
+  wrap_cbTypes_subber!: (pcb: any) => void;
+  wrap_cbTypes_adder!: (cb: any) => boolean;
+  insert_cbtype!: (cb: any) => void;
   alloc_cbSet!: () => void;
   dealloc_cbSet!: () => void;
   immutable_midstep!: (name: string) => void;
-  copyto!: (ret: Any) => void;
-  lookup_group!: () => Any;
+  copyto!: (ret: any) => void;
+  lookup_group!: () => any;
 
   /**
    * Initialize prototype by copying ZPP_Interactor methods.
@@ -390,7 +386,7 @@ export class ZPP_Compound {
     // Copy ZPP_Interactor prototype methods (only those not already on ZPP_Compound)
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
       if (k !== "constructor" && k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)) {
-        (ZPP_Compound.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
+        (ZPP_Compound.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }
   }

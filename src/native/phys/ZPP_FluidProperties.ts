@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 87335–87523, 135403.
  */
 
-type Any = any;
-
 export class ZPP_FluidProperties {
   // --- Static: object pool ---
   static zpp_pool: ZPP_FluidProperties | null = null;
@@ -17,41 +15,38 @@ export class ZPP_FluidProperties {
   static __name__ = ["zpp_nape", "phys", "ZPP_FluidProperties"];
 
   // --- Static: namespace references (set by compiled module) ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by FluidProperties.ts) ---
-  static _wrapFn: ((zpp: ZPP_FluidProperties) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_FluidProperties) => any) | null = null;
 
   // --- Instance: fluid properties ---
   viscosity = 1;
   density = 1;
   gravityx = 0;
   gravityy = 0;
-  wrap_gravity: Any = null;
+  wrap_gravity: any = null; // Vec2 wrapper — circular import prevention
 
   // --- Instance: shape tracking ---
-  shapes: Any = null;
-  wrap_shapes: Any = null;
+  shapes: any = null; // ZNPList_ZPP_Shape — dynamic subclass
+  wrap_shapes: any = null;
 
   // --- Instance: public API wrapper ---
-  outer: Any = null;
+  outer: any = null; // circular import prevention
 
   // --- Instance: user data ---
-  userData: Any = null;
+  userData: unknown = null;
 
   // --- Instance: pool linked list ---
   next: ZPP_FluidProperties | null = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_FluidProperties;
 
   constructor() {
     this.shapes = new ZPP_FluidProperties._zpp.util.ZNPList_ZPP_Shape();
   }
 
   /** Create/return the public nape.phys.FluidProperties wrapper. */
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_FluidProperties._wrapFn) {
         this.outer = ZPP_FluidProperties._wrapFn(this);
@@ -77,11 +72,11 @@ export class ZPP_FluidProperties {
     this.shapes = new ZPP_FluidProperties._zpp.util.ZNPList_ZPP_Shape();
   }
 
-  addShape(shape: Any): void {
+  addShape(shape: any): void {
     this.shapes.add(shape);
   }
 
-  remShape(shape: Any): void {
+  remShape(shape: any): void {
     this.shapes.remove(shape);
   }
 
@@ -101,7 +96,7 @@ export class ZPP_FluidProperties {
   }
 
   /** Called when gravity Vec2 wrapper is invalidated (user set new gravity). */
-  gravity_invalidate(x: Any): void {
+  gravity_invalidate(x: any): void {
     this.gravityx = x.x;
     this.gravityy = x.y;
     this.invalidate();
@@ -126,7 +121,7 @@ export class ZPP_FluidProperties {
     }
 
     // Get or create a Vec2 from the public pool
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -141,7 +136,7 @@ export class ZPP_FluidProperties {
 
     if (ret.zpp_inner == null) {
       // Create inner Vec2
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
