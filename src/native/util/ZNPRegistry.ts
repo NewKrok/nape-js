@@ -30,6 +30,14 @@ export let ZPP_Set_ZPP_SimpleEvent: typeof ZPP_Set = null as any;
 export let ZPP_Set_ZPP_PartitionVertex: typeof ZPP_Set = null as any;
 export let ZPP_Set_ZPP_PartitionPair: typeof ZPP_Set = null as any;
 export let ZNPList_ZPP_SimpleEvent: typeof ZNPList = null as any;
+export let ZNPList_ZPP_CbType: typeof ZNPList = null as any;
+export let ZNPList_ZPP_InteractionListener: typeof ZNPList = null as any;
+export let ZNPList_ZPP_BodyListener: typeof ZNPList = null as any;
+export let ZNPList_ZPP_ConstraintListener: typeof ZNPList = null as any;
+export let ZNPList_ZPP_Constraint: typeof ZNPList = null as any;
+export let ZNPList_ZPP_Interactor: typeof ZNPList = null as any;
+export let ZNPList_ZPP_CbSet: typeof ZNPList = null as any;
+export let ZNPList_ZPP_CbSetPair: typeof ZNPList = null as any;
 
 // ---------------------------------------------------------------------------
 // Factory helpers
@@ -102,13 +110,13 @@ export function registerZNPClasses(zpp: any): void {
 
   // --- ZNPList classes ---
   const u = zpp.util;
-  zpp.util.ZNPList_ZPP_InteractionListener = createZNPList("ZPP_InteractionListener", u.ZNPNode_ZPP_InteractionListener);
-  zpp.util.ZNPList_ZPP_BodyListener        = createZNPList("ZPP_BodyListener",        u.ZNPNode_ZPP_BodyListener);
-  zpp.util.ZNPList_ZPP_ConstraintListener  = createZNPList("ZPP_ConstraintListener",  u.ZNPNode_ZPP_ConstraintListener);
-  zpp.util.ZNPList_ZPP_Constraint          = createZNPList("ZPP_Constraint",          u.ZNPNode_ZPP_Constraint);
-  zpp.util.ZNPList_ZPP_Interactor          = createZNPList("ZPP_Interactor",          u.ZNPNode_ZPP_Interactor);
-  zpp.util.ZNPList_ZPP_CbSet               = createZNPList("ZPP_CbSet",               u.ZNPNode_ZPP_CbSet);
-  zpp.util.ZNPList_ZPP_CbType              = createZNPList("ZPP_CbType",              u.ZNPNode_ZPP_CbType);
+  ZNPList_ZPP_InteractionListener = zpp.util.ZNPList_ZPP_InteractionListener = createZNPList("ZPP_InteractionListener", u.ZNPNode_ZPP_InteractionListener);
+  ZNPList_ZPP_BodyListener        = zpp.util.ZNPList_ZPP_BodyListener        = createZNPList("ZPP_BodyListener",        u.ZNPNode_ZPP_BodyListener);
+  ZNPList_ZPP_ConstraintListener  = zpp.util.ZNPList_ZPP_ConstraintListener  = createZNPList("ZPP_ConstraintListener",  u.ZNPNode_ZPP_ConstraintListener);
+  ZNPList_ZPP_Constraint          = zpp.util.ZNPList_ZPP_Constraint          = createZNPList("ZPP_Constraint",          u.ZNPNode_ZPP_Constraint);
+  ZNPList_ZPP_Interactor          = zpp.util.ZNPList_ZPP_Interactor          = createZNPList("ZPP_Interactor",          u.ZNPNode_ZPP_Interactor);
+  ZNPList_ZPP_CbSet               = zpp.util.ZNPList_ZPP_CbSet               = createZNPList("ZPP_CbSet",               u.ZNPNode_ZPP_CbSet);
+  ZNPList_ZPP_CbType              = zpp.util.ZNPList_ZPP_CbType              = createZNPList("ZPP_CbType",              u.ZNPNode_ZPP_CbType);
   zpp.util.ZNPList_ZPP_Vec2                = createZNPList("ZPP_Vec2",                u.ZNPNode_ZPP_Vec2);
   ZNPList_ZPP_Vec2 = zpp.util.ZNPList_ZPP_Vec2;
   zpp.util.ZNPList_ZPP_CallbackSet         = createZNPList("ZPP_CallbackSet",         u.ZNPNode_ZPP_CallbackSet);
@@ -116,7 +124,7 @@ export function registerZNPClasses(zpp: any): void {
   zpp.util.ZNPList_ZPP_Body                = createZNPList("ZPP_Body",                u.ZNPNode_ZPP_Body);
   zpp.util.ZNPList_ZPP_Compound            = createZNPList("ZPP_Compound",            u.ZNPNode_ZPP_Compound);
   zpp.util.ZNPList_ZPP_Arbiter             = createZNPList("ZPP_Arbiter",             u.ZNPNode_ZPP_Arbiter);
-  zpp.util.ZNPList_ZPP_CbSetPair           = createZNPList("ZPP_CbSetPair",           u.ZNPNode_ZPP_CbSetPair);
+  ZNPList_ZPP_CbSetPair = zpp.util.ZNPList_ZPP_CbSetPair = createZNPList("ZPP_CbSetPair", u.ZNPNode_ZPP_CbSetPair);
   zpp.util.ZNPList_ZPP_CutInt              = createZNPList("ZPP_CutInt",              u.ZNPNode_ZPP_CutInt);
   zpp.util.ZNPList_ZPP_CutVert             = createZNPList("ZPP_CutVert",             u.ZNPNode_ZPP_CutVert);
   zpp.util.ZNPList_ZPP_PartitionVertex     = createZNPList("ZPP_PartitionVertex",     u.ZNPNode_ZPP_PartitionVertex);
