@@ -84,11 +84,6 @@ describe("ZPP_MotorJoint", () => {
       expect(mj.maxForce).toBe(Infinity);
       expect(mj.pre_dt).toBe(-1.0);
     });
-
-    it("should set __class__ to ZPP_MotorJoint", () => {
-      const mj = new ZPP_MotorJoint();
-      expect(mj.__class__).toBe(ZPP_MotorJoint);
-    });
   });
 
   describe("activeBodies / inactiveBodies", () => {

@@ -11,15 +11,14 @@
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 
-type Any = any;
 
 export class ZPP_PulleyJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_PulleyJoint"];
   static __super__ = ZPP_Constraint;
-  static _wrapFn: ((zpp: ZPP_PulleyJoint) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_PulleyJoint) => any) | null = null;
   static _createFn: ((...args: any[]) => any) | null = null;
 
-  outer_zn: Any = null;
+  outer_zn: any = null;
   ratio = 1.0;
   jointMin = 0.0;
   jointMax = 0.0;
@@ -36,33 +35,33 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   cx3 = 0.0;
   cx4 = 0.0;
 
-  b1: Any = null;
+  b1: any = null;
   a1localx = 0.0;
   a1localy = 0.0;
   a1relx = 0.0;
   a1rely = 0.0;
-  wrap_a1: Any = null;
+  wrap_a1: any = null;
 
-  b2: Any = null;
+  b2: any = null;
   a2localx = 0.0;
   a2localy = 0.0;
   a2relx = 0.0;
   a2rely = 0.0;
-  wrap_a2: Any = null;
+  wrap_a2: any = null;
 
-  b3: Any = null;
+  b3: any = null;
   a3localx = 0.0;
   a3localy = 0.0;
   a3relx = 0.0;
   a3rely = 0.0;
-  wrap_a3: Any = null;
+  wrap_a3: any = null;
 
-  b4: Any = null;
+  b4: any = null;
   a4localx = 0.0;
   a4localy = 0.0;
   a4relx = 0.0;
   a4rely = 0.0;
-  wrap_a4: Any = null;
+  wrap_a4: any = null;
 
   kMass = 0.0;
   jAcc = 0.0;
@@ -71,7 +70,6 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   bias = 0.0;
   stepped = false;
 
-  override __class__: Any = ZPP_PulleyJoint;
 
   constructor() {
     super();
@@ -130,7 +128,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     return slack;
   }
 
-  bodyImpulse(b: Any): Any {
+  bodyImpulse(b: any): any {
     const napeNs = ZPP_Constraint._nape;
     if (this.stepped) {
       const ret = napeNs.geom.Vec3.get();
@@ -209,7 +207,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     this.wrap_a1.zpp_inner.y = this.a1localy;
   }
 
-  invalidate_a1(x: Any): void {
+  invalidate_a1(x: any): void {
     this.immutable_midstep("Constraint::" + "a1");
     this.a1localx = x.x;
     this.a1localy = x.y;
@@ -230,7 +228,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     if (x != x || y != y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -243,7 +241,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -314,7 +312,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     this.wrap_a2.zpp_inner.y = this.a2localy;
   }
 
-  invalidate_a2(x: Any): void {
+  invalidate_a2(x: any): void {
     this.immutable_midstep("Constraint::" + "a2");
     this.a2localx = x.x;
     this.a2localy = x.y;
@@ -335,7 +333,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     if (x != x || y != y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -348,7 +346,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -419,7 +417,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     this.wrap_a3.zpp_inner.y = this.a3localy;
   }
 
-  invalidate_a3(x: Any): void {
+  invalidate_a3(x: any): void {
     this.immutable_midstep("Constraint::" + "a3");
     this.a3localx = x.x;
     this.a3localy = x.y;
@@ -440,7 +438,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     if (x != x || y != y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -453,7 +451,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -524,7 +522,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     this.wrap_a4.zpp_inner.y = this.a4localy;
   }
 
-  invalidate_a4(x: Any): void {
+  invalidate_a4(x: any): void {
     this.immutable_midstep("Constraint::" + "a4");
     this.a4localx = x.x;
     this.a4localy = x.y;
@@ -545,7 +543,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     if (x != x || y != y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -558,7 +556,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -622,7 +620,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     this.wrap_a4.zpp_inner._invalidate = this.invalidate_a4.bind(this);
   }
 
-  override copy(dict: Any, todo: Any): Any {
+  override copy(dict: any, todo: any): any {
     const _this = this.outer_zn;
     if (_this.zpp_inner_zn.wrap_a1 == null) {
       _this.zpp_inner_zn.setup_a1();
@@ -1135,5 +1133,5 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
     return false;
   }
 
-  override draw(_g: Any): void {}
+  override draw(_g: any): void {}
 }

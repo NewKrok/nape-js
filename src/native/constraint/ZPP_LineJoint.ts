@@ -11,15 +11,14 @@
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 
-type Any = any;
 
 export class ZPP_LineJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_LineJoint"];
   static __super__ = ZPP_Constraint;
-  static _wrapFn: ((zpp: ZPP_LineJoint) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_LineJoint) => any) | null = null;
   static _createFn: ((...args: any[]) => any) | null = null;
 
-  outer_zn: Any = null;
+  outer_zn: any = null;
   scale = 0.0;
   jointMin = 0.0;
   jointMax = 0.0;
@@ -29,39 +28,38 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   cx1 = 0.0;
   cx2 = 0.0;
 
-  b1: Any = null;
+  b1: any = null;
   a1localx = 0.0;
   a1localy = 0.0;
   a1relx = 0.0;
   a1rely = 0.0;
-  wrap_a1: Any = null;
+  wrap_a1: any = null;
 
-  b2: Any = null;
+  b2: any = null;
   a2localx = 0.0;
   a2localy = 0.0;
   a2relx = 0.0;
   a2rely = 0.0;
-  wrap_a2: Any = null;
+  wrap_a2: any = null;
 
-  zip_n: Any = null;
+  zip_n: any = null;
   nlocalx = 0.0;
   nlocaly = 0.0;
   nrelx = 0.0;
   nrely = 0.0;
-  wrap_n: Any = null;
+  wrap_n: any = null;
 
   kMassa = 0.0;
   kMassb = 0.0;
   kMassc = 0.0;
   jAccx = 0.0;
   jAccy = 0.0;
-  jMax: Any = null;
-  gamma: Any = null;
+  jMax: any = null;
+  gamma: any = null;
   biasx = 0.0;
   biasy = 0.0;
   stepped = false;
 
-  override __class__: Any = ZPP_LineJoint;
 
   constructor() {
     super();
@@ -96,8 +94,8 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     x: number,
     y: number,
     validateFn: () => void,
-    invalidateFn: (v: Any) => void,
-  ): Any {
+    invalidateFn: (v: any) => void,
+  ): any {
     const napeNs = ZPP_Constraint._nape;
     const zpp = ZPP_Constraint._zpp;
 
@@ -111,7 +109,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
 
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
@@ -125,7 +123,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     }
 
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -197,7 +195,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     this.wrap_a1.zpp_inner.y = this.a1localy;
   }
 
-  invalidate_a1(x: Any): void {
+  invalidate_a1(x: any): void {
     this.immutable_midstep("Constraint::a1");
     this.a1localx = x.x;
     this.a1localy = x.y;
@@ -220,7 +218,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     this.wrap_a2.zpp_inner.y = this.a2localy;
   }
 
-  invalidate_a2(x: Any): void {
+  invalidate_a2(x: any): void {
     this.immutable_midstep("Constraint::a2");
     this.a2localx = x.x;
     this.a2localy = x.y;
@@ -243,7 +241,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     this.wrap_n.zpp_inner.y = this.nlocaly;
   }
 
-  invalidate_n(x: Any): void {
+  invalidate_n(x: any): void {
     this.immutable_midstep("Constraint::n");
     this.nlocalx = x.x;
     this.nlocaly = x.y;
@@ -273,7 +271,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
 
   // ---- Core constraint methods ----
 
-  bodyImpulse(b: Any): Any {
+  bodyImpulse(b: any): any {
     const napeNs = ZPP_Constraint._nape;
     if (this.stepped) {
       const jx = this.scale * this.nrelx * this.jAccy - this.nrely * this.jAccx;
@@ -310,7 +308,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     }
   }
 
-  override copy(dict: Any, todo: Any): Any {
+  override copy(dict: any, todo: any): any {
     const _this = this.outer_zn;
     if (_this.zpp_inner_zn.wrap_a1 == null) {
       _this.zpp_inner_zn.setup_a1();
@@ -760,5 +758,5 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     return false;
   }
 
-  override draw(_g: Any): void {}
+  override draw(_g: any): void {}
 }

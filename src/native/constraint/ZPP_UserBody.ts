@@ -4,17 +4,13 @@
  * Converted from nape-compiled.js lines 28038–28054.
  */
 
-type Any = any;
-
 export class ZPP_UserBody {
   static __name__ = ["zpp_nape", "constraint", "ZPP_UserBody"];
 
   cnt = 0;
-  body: Any = null;
+  body: any = null;
 
-  __class__: Any = ZPP_UserBody;
-
-  constructor(cnt: number, body: Any) {
+  constructor(cnt: number, body: any) {
     this.cnt = cnt;
     this.body = body;
   }

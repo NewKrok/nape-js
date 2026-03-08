@@ -11,21 +11,19 @@ import { getNape } from "../../core/engine";
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_CopyHelper } from "./ZPP_CopyHelper";
 
-type Any = any;
-
 export class ZPP_MotorJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_MotorJoint"];
-  static _wrapFn: ((zpp: ZPP_MotorJoint) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_MotorJoint) => any) | null = null;
   static _createFn: ((...args: any[]) => any) | null = null;
 
   // Joint-specific fields
-  outer_zn: Any = null;
+  outer_zn: any = null;
   ratio: number = 0.0;
   rate: number = 0.0;
 
   // Body references (ZPP_Body instances)
-  b1: Any = null;
-  b2: Any = null;
+  b1: any = null;
+  b2: any = null;
 
   // Solver fields
   kMass: number = 0.0;
@@ -33,7 +31,6 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
   jMax: number = 0.0;
   stepped: boolean = false;
 
-  override __class__: Any = ZPP_MotorJoint;
 
   constructor() {
     super();
@@ -42,7 +39,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
     this.__velocity = true;
   }
 
-  bodyImpulse(b: Any): Any {
+  bodyImpulse(b: any): any {
     const nape = getNape();
     if (this.stepped) {
       if (b == this.b1) {
@@ -77,7 +74,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
     }
   }
 
-  override copy(dict?: Any, todo?: Any): Any {
+  override copy(dict?: any, todo?: any): any {
     const ret = ZPP_MotorJoint._createFn!(null, null, this.rate, this.ratio);
     this.copyto(ret);
     if (dict != null && this.b1 != null) {
@@ -95,7 +92,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
         ret.zpp_inner.b1 = b.zpp_inner;
       } else {
         todo.push(
-          ZPP_CopyHelper.todo(this.b1.id, (b1: Any) => {
+          ZPP_CopyHelper.todo(this.b1.id, (b1: any) => {
             ret.zpp_inner.b1 = b1.zpp_inner;
           }),
         );
@@ -116,7 +113,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
         ret.zpp_inner.b2 = b2.zpp_inner;
       } else {
         todo.push(
-          ZPP_CopyHelper.todo(this.b2.id, (b3: Any) => {
+          ZPP_CopyHelper.todo(this.b2.id, (b3: any) => {
             ret.zpp_inner.b2 = b3.zpp_inner;
           }),
         );
@@ -159,7 +156,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
         xr = this.b1.component;
       } else {
         let obj = this.b1.component;
-        let stack: Any = null;
+        let stack: any = null;
         while (obj != obj.parent) {
           const nxt = obj.parent;
           obj.parent = stack;
@@ -178,7 +175,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
         yr = this.component;
       } else {
         let obj1 = this.component;
-        let stack1: Any = null;
+        let stack1: any = null;
         while (obj1 != obj1.parent) {
           const nxt2 = obj1.parent;
           obj1.parent = stack1;
@@ -209,7 +206,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
         xr1 = this.b2.component;
       } else {
         let obj2 = this.b2.component;
-        let stack2: Any = null;
+        let stack2: any = null;
         while (obj2 != obj2.parent) {
           const nxt4 = obj2.parent;
           obj2.parent = stack2;
@@ -228,7 +225,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
         yr1 = this.component;
       } else {
         let obj3 = this.component;
-        let stack3: Any = null;
+        let stack3: any = null;
         while (obj3 != obj3.parent) {
           const nxt6 = obj3.parent;
           obj3.parent = stack3;
@@ -255,7 +252,7 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
     }
   }
 
-  override pair_exists(id: Any, di: Any): boolean {
+  override pair_exists(id: any, di: any): boolean {
     if (!(this.b1.id == id && this.b2.id == di)) {
       if (this.b1.id == di) {
         return this.b2.id == id;

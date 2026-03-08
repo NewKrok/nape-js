@@ -14,7 +14,6 @@ describe("ZPP_CopyHelper", () => {
       expect(h.id).toBe(0);
       expect(h.bc).toBeNull();
       expect(h.cb).toBeNull();
-      expect(h.__class__).toBe(ZPP_CopyHelper);
     });
   });
 

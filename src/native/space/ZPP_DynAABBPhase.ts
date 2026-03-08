@@ -17,16 +17,15 @@ import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
 
-type Any = any;
 
 export class ZPP_DynAABBPhase {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_DynAABBPhase"];
-  static __super__: Any = null;
+  static __super__: any = null;
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
-  static _nape: Any = null;
+  static _zpp: any = null;
+  static _nape: any = null;
 
   // --- Static: constants ---
   static FATTEN = 3.0;
@@ -38,22 +37,22 @@ export class ZPP_DynAABBPhase {
   pairs: ZPP_AABBPair | null = null;
   syncs: ZPP_AABBNode | null = null;
   moves: ZPP_AABBNode | null = null;
-  treeStack: Any = null;
-  treeStack2: Any = null;
-  failed: Any = null;
-  openlist: Any = null;
-  space: Any = null;
+  treeStack: any = null;
+  treeStack2: any = null;
+  failed: any = null;
+  openlist: any = null;
+  space: any = null;
   is_sweep = false;
-  sweep: Any = null;
-  dynab: Any = null;
-  aabbShape: Any = null;
-  matrix: Any = null;
-  circShape: Any = null;
+  sweep: any = null;
+  dynab: any = null;
+  aabbShape: any = null;
+  matrix: any = null;
+  circShape: any = null;
 
   // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_DynAABBPhase;
+  __class__: any = ZPP_DynAABBPhase;
 
-  constructor(space: Any) {
+  constructor(space: any) {
     ZPP_Broadphase._initFields(this);
     this.space = space;
     this.is_sweep = false;
@@ -69,14 +68,14 @@ export class ZPP_DynAABBPhase {
     const parentProto = ZPP_DynAABBPhase._zpp.space.ZPP_Broadphase.prototype;
     Object.getOwnPropertyNames(parentProto).forEach((k) => {
       if (k !== "constructor" && !(k in ZPP_DynAABBPhase.prototype)) {
-        (ZPP_DynAABBPhase.prototype as Any)[k] = parentProto[k];
+        (ZPP_DynAABBPhase.prototype as any)[k] = parentProto[k];
       }
     });
   }
 
   // ========== dyn ==========
 
-  dyn(shape: Any): Any {
+  dyn(shape: any): any {
     if (shape.body.type == 1) {
       return false;
     } else {
@@ -86,7 +85,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== __insert ==========
 
-  __insert(shape: Any): Any {
+  __insert(shape: any): any {
     let node;
     if (ZPP_AABBNode.zpp_pool == null) {
       node = new ZPP_AABBNode();
@@ -115,7 +114,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== __remove ==========
 
-  __remove(shape: Any): Any {
+  __remove(shape: any): any {
     const node = shape.node;
     if (!node.first_sync) {
       if (node.dyn) {
@@ -227,7 +226,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== __sync ==========
 
-  __sync(shape: Any): Any {
+  __sync(shape: any): any {
     const node = shape.node;
     if (!node.synced) {
       if (!this.space.continuous) {
@@ -398,7 +397,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== sync_broadphase ==========
 
-  sync_broadphase(): Any {
+  sync_broadphase(): any {
     this.space.validation();
     if (this.syncs != null) {
       if (this.moves == null) {
@@ -1709,7 +1708,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== broadphase ==========
 
-  broadphase(space: Any, discrete: Any): Any {
+  broadphase(space: any, discrete: any): any {
     let node = this.syncs;
     while (node != null) {
       const shape = node.shape;
@@ -3007,7 +3006,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== clear ==========
 
-  clear(): Any {
+  clear(): any {
     while (this.syncs != null) {
       const next = this.syncs.snext;
       this.syncs.snext = null;
@@ -3121,7 +3120,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== shapesUnderPoint ==========
 
-  shapesUnderPoint(x: Any, y: Any, filter: Any, output: Any): Any {
+  shapesUnderPoint(x: any, y: any, filter: any, output: any): any {
     this.sync_broadphase();
     let ret;
     if (ZPP_Vec2.zpp_pool == null) {
@@ -3230,7 +3229,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== bodiesUnderPoint ==========
 
-  bodiesUnderPoint(x: Any, y: Any, filter: Any, output: Any): Any {
+  bodiesUnderPoint(x: any, y: any, filter: any, output: any): any {
     this.sync_broadphase();
     let ret;
     if (ZPP_Vec2.zpp_pool == null) {
@@ -3345,7 +3344,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== shapesInAABB ==========
 
-  shapesInAABB(aabb: Any, strict: Any, containment: Any, filter: Any, output: Any): Any {
+  shapesInAABB(aabb: any, strict: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
     this.updateAABBShape(aabb);
     const ab = this.aabbShape.zpp_inner.aabb;
@@ -3593,7 +3592,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== bodiesInAABB ==========
 
-  bodiesInAABB(aabb: Any, strict: Any, containment: Any, filter: Any, output: Any): Any {
+  bodiesInAABB(aabb: any, strict: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
     this.updateAABBShape(aabb);
     const ab = this.aabbShape.zpp_inner.aabb;
@@ -3885,7 +3884,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== shapesInCircle ==========
 
-  shapesInCircle(x: Any, y: Any, r: Any, containment: Any, filter: Any, output: Any): Any {
+  shapesInCircle(x: any, y: any, r: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
     this.updateCircShape(x, y, r);
     const ab = this.circShape.zpp_inner.aabb;
@@ -3983,7 +3982,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== bodiesInCircle ==========
 
-  bodiesInCircle(x: Any, y: Any, r: Any, containment: Any, filter: Any, output: Any): Any {
+  bodiesInCircle(x: any, y: any, r: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
     this.updateCircShape(x, y, r);
     const ab = this.circShape.zpp_inner.aabb;
@@ -4105,7 +4104,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== shapesInShape ==========
 
-  shapesInShape(shp: Any, containment: Any, filter: Any, output: Any): Any {
+  shapesInShape(shp: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
     this.validateShape(shp);
     const ab = shp.aabb;
@@ -4203,7 +4202,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== bodiesInShape ==========
 
-  bodiesInShape(shp: Any, containment: Any, filter: Any, output: Any): Any {
+  bodiesInShape(shp: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
     this.validateShape(shp);
     const ab = shp.aabb;
@@ -4319,7 +4318,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== rayCast ==========
 
-  rayCast(ray: Any, inner: Any, filter: Any): Any {
+  rayCast(ray: any, inner: any, filter: any): any {
     if (this.openlist == null) {
       this.openlist = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
     }
@@ -4529,7 +4528,7 @@ export class ZPP_DynAABBPhase {
 
   // ========== rayMultiCast ==========
 
-  rayMultiCast(ray: Any, inner: Any, filter: Any, output: Any): Any {
+  rayMultiCast(ray: any, inner: any, filter: any, output: any): any {
     if (this.openlist == null) {
       this.openlist = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
     }

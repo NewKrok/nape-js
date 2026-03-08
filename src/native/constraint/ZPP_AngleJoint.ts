@@ -11,15 +11,13 @@ import { getNape } from "../../core/engine";
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_CopyHelper } from "./ZPP_CopyHelper";
 
-type Any = any;
-
 export class ZPP_AngleJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_AngleJoint"];
-  static _wrapFn: ((zpp: ZPP_AngleJoint) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_AngleJoint) => any) | null = null;
   static _createFn: ((...args: any[]) => any) | null = null;
 
   // Joint-specific fields
-  outer_zn: Any = null;
+  outer_zn: any = null;
   ratio: number = 0.0;
   jointMin: number = 0.0;
   jointMax: number = 0.0;
@@ -28,8 +26,8 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   scale: number = 0.0;
 
   // Body references (ZPP_Body instances)
-  b1: Any = null;
-  b2: Any = null;
+  b1: any = null;
+  b2: any = null;
 
   // Solver fields
   kMass: number = 0.0;
@@ -39,7 +37,6 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   bias: number = 0.0;
   stepped: boolean = false;
 
-  override __class__: Any = ZPP_AngleJoint;
 
   constructor() {
     super();
@@ -67,7 +64,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     }
   }
 
-  bodyImpulse(b: Any): Any {
+  bodyImpulse(b: any): any {
     const nape = getNape();
     if (this.stepped) {
       if (b == this.b1) {
@@ -102,7 +99,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     }
   }
 
-  override copy(dict?: Any, todo?: Any): Any {
+  override copy(dict?: any, todo?: any): any {
     const ret = ZPP_AngleJoint._createFn!(
       null,
       null,
@@ -126,7 +123,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         ret.zpp_inner.b1 = b.zpp_inner;
       } else {
         todo.push(
-          ZPP_CopyHelper.todo(this.b1.id, (b1: Any) => {
+          ZPP_CopyHelper.todo(this.b1.id, (b1: any) => {
             ret.zpp_inner.b1 = b1.zpp_inner;
           }),
         );
@@ -147,7 +144,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         ret.zpp_inner.b2 = b2.zpp_inner;
       } else {
         todo.push(
-          ZPP_CopyHelper.todo(this.b2.id, (b3: Any) => {
+          ZPP_CopyHelper.todo(this.b2.id, (b3: any) => {
             ret.zpp_inner.b2 = b3.zpp_inner;
           }),
         );
@@ -192,7 +189,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         xr = this.b1.component;
       } else {
         let obj = this.b1.component;
-        let stack: Any = null;
+        let stack: any = null;
         while (obj != obj.parent) {
           const nxt = obj.parent;
           obj.parent = stack;
@@ -211,7 +208,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         yr = this.component;
       } else {
         let obj1 = this.component;
-        let stack1: Any = null;
+        let stack1: any = null;
         while (obj1 != obj1.parent) {
           const nxt2 = obj1.parent;
           obj1.parent = stack1;
@@ -242,7 +239,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         xr1 = this.b2.component;
       } else {
         let obj2 = this.b2.component;
-        let stack2: Any = null;
+        let stack2: any = null;
         while (obj2 != obj2.parent) {
           const nxt4 = obj2.parent;
           obj2.parent = stack2;
@@ -261,7 +258,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         yr1 = this.component;
       } else {
         let obj3 = this.component;
-        let stack3: Any = null;
+        let stack3: any = null;
         while (obj3 != obj3.parent) {
           const nxt6 = obj3.parent;
           obj3.parent = stack3;
@@ -288,7 +285,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     }
   }
 
-  override pair_exists(id: Any, di: Any): boolean {
+  override pair_exists(id: any, di: any): boolean {
     if (!(this.b1.id == id && this.b2.id == di)) {
       if (this.b1.id == di) {
         return this.b2.id == id;
@@ -463,14 +460,14 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     return false;
   }
 
-  override draw(_g: Any): void {}
+  override draw(_g: any): void {}
 
   // ========== Static helpers shared by all joints ==========
 
   /**
    * Small-angle-optimized body rotation. Used by all joints' applyImpulsePos.
    */
-  static _rotateBody(body: Any, dr: number): void {
+  static _rotateBody(body: any, dr: number): void {
     body.rot += dr;
     if (dr * dr > 0.0001) {
       body.axisx = Math.sin(body.rot);
@@ -488,9 +485,9 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   /**
    * Dict-lookup / deferred-todo body copying. Used by all joints' copy().
    */
-  static _copyBody(dict: Any, todo: Any, srcBody: Any, ret: Any, field: string): void {
+  static _copyBody(dict: any, todo: any, srcBody: any, ret: any, field: string): void {
     if (dict != null && srcBody != null) {
-      let b: Any = null;
+      let b: any = null;
       for (let _g = 0; _g < dict.length; _g++) {
         const idc = dict[_g];
         if (idc.id == srcBody.id) {
@@ -502,7 +499,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         ret.zpp_inner_zn[field] = b.zpp_inner;
       } else {
         todo.push(
-          ZPP_CopyHelper.todo(srcBody.id, function (body: Any) {
+          ZPP_CopyHelper.todo(srcBody.id, function (body: any) {
             ret.zpp_inner_zn[field] = body.zpp_inner;
           }),
         );

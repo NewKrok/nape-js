@@ -13,14 +13,13 @@
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_UserBody } from "./ZPP_UserBody";
 
-type Any = any;
 
 export class ZPP_UserConstraint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_UserConstraint"];
   static __super__ = ZPP_Constraint;
 
   // Outer public-API wrapper (UserConstraint)
-  outer_zn: Any = null;
+  outer_zn: any = null;
 
   // Array of ZPP_UserBody entries — bodies referenced by this constraint
   bodies: ZPP_UserBody[] = null!;
@@ -59,7 +58,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
   Keff: number[] = null!;
 
   // Reusable Vec3 for impulse accumulation (kept alive across steps)
-  vec3: Any = null;
+  vec3: any = null;
 
   // Jacobian / working impulse vector [dim]
   J: number[] = null!;
@@ -67,7 +66,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
   // Previous accumulated impulse (for delta impulse calculation) [dim]
   jOld: number[] = null!;
 
-  override __class__: Any = ZPP_UserConstraint;
+  override __class__: any = ZPP_UserConstraint;
 
   constructor(dim: number, velonly: boolean) {
     super();
@@ -95,14 +94,14 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
   // ---------------------------------------------------------------------------
   // Invalidation forwarding
 
-  bindVec2_invalidate(_: Any): void {
+  bindVec2_invalidate(_: any): void {
     this.outer_zn.__invalidate();
   }
 
   // ---------------------------------------------------------------------------
   // Body management
 
-  addBody(b: Any): void {
+  addBody(b: any): void {
     let match: ZPP_UserBody | null = null;
     for (const x of this.bodies) {
       if (x.body === b) {
@@ -122,7 +121,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
     }
   }
 
-  remBody(b: Any): boolean {
+  remBody(b: any): boolean {
     let match: ZPP_UserBody | null = null;
     const bl = this.bodies.length | 0;
     let i = 0;
@@ -152,7 +151,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
   // ---------------------------------------------------------------------------
   // Impulse query
 
-  bodyImpulse(b: Any): Any {
+  bodyImpulse(b: any): any {
     for (let i = 0; i < this.dim; i++) {
       this.J[i] = this.jAcc[i];
     }
@@ -185,7 +184,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
   // ---------------------------------------------------------------------------
   // Copy
 
-  copy(_dict: Any, _todo: Any): Any {
+  copy(_dict: any, _todo: any): any {
     const ret = this.outer_zn.__copy();
     this.copyto(ret);
     throw new Error("not done yet");
@@ -223,12 +222,12 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
     for (const b of this.bodies) {
       if (b.body.type === 2) {
         // Find root of b.body.component
-        let xr: Any;
+        let xr: any;
         if (b.body.component === b.body.component.parent) {
           xr = b.body.component;
         } else {
-          let obj: Any = b.body.component;
-          let stack: Any = null;
+          let obj: any = b.body.component;
+          let stack: any = null;
           while (obj !== obj.parent) {
             const nxt = obj.parent;
             obj.parent = stack;
@@ -244,12 +243,12 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
         }
 
         // Find root of this.component
-        let yr: Any;
+        let yr: any;
         if (this.component === this.component.parent) {
           yr = this.component;
         } else {
-          let obj1: Any = this.component;
-          let stack1: Any = null;
+          let obj1: any = this.component;
+          let stack1: any = null;
           while (obj1 !== obj1.parent) {
             const nxt2 = obj1.parent;
             obj1.parent = stack1;
@@ -649,7 +648,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
   // ---------------------------------------------------------------------------
   // Debug draw forwarding
 
-  draw(g: Any): void {
+  draw(g: any): void {
     this.outer_zn.__draw(g);
   }
 }

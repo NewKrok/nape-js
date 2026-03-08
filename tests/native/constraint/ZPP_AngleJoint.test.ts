@@ -91,11 +91,6 @@ describe("ZPP_AngleJoint", () => {
       expect(aj.maxForce).toBe(Infinity);
       expect(aj.pre_dt).toBe(-1.0);
     });
-
-    it("should set __class__ to ZPP_AngleJoint", () => {
-      const aj = new ZPP_AngleJoint();
-      expect(aj.__class__).toBe(ZPP_AngleJoint);
-    });
   });
 
   describe("is_slack", () => {
