@@ -12,16 +12,13 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
 export class MassMode {
   static __name__ = ["nape", "phys", "MassMode"];
 
-  static DEFAULT: MassMode | null = null;
-  static FIXED: MassMode | null = null;
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate MassMode derp!");
     }
   }
 
-  static get_DEFAULT(): MassMode {
+  static get DEFAULT(): MassMode {
     if (ZPP_Flags.MassMode_DEFAULT == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.MassMode_DEFAULT = new MassMode();
@@ -30,7 +27,7 @@ export class MassMode {
     return ZPP_Flags.MassMode_DEFAULT;
   }
 
-  static get_FIXED(): MassMode {
+  static get FIXED(): MassMode {
     if (ZPP_Flags.MassMode_FIXED == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.MassMode_FIXED = new MassMode();
@@ -40,8 +37,8 @@ export class MassMode {
   }
 
   toString(): string {
-    if (this === MassMode.get_DEFAULT()) return "DEFAULT";
-    if (this === MassMode.get_FIXED()) return "FIXED";
+    if (this === ZPP_Flags.MassMode_DEFAULT) return "DEFAULT";
+    if (this === ZPP_Flags.MassMode_FIXED) return "FIXED";
     return "";
   }
 }

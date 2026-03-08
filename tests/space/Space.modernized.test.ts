@@ -315,21 +315,6 @@ describe("Space (modernized)", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Backward-compat get_/set_ methods
-  // ---------------------------------------------------------------------------
-
-  it("should have backward-compat get_/set_ for worldLinearDrag", () => {
-    const space = new Space() as any;
-    space.set_worldLinearDrag(0.03);
-    expect(space.get_worldLinearDrag()).toBeCloseTo(0.03);
-  });
-
-  it("should have backward-compat get_/set_ for sortContacts", () => {
-    const space = new Space() as any;
-    space.set_sortContacts(true);
-    expect(space.get_sortContacts()).toBe(true);
-  });
-
   // ---------------------------------------------------------------------------
   // _wrap
   // ---------------------------------------------------------------------------

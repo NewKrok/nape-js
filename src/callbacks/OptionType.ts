@@ -48,15 +48,6 @@ export class OptionType {
     return this.zpp_inner.wrap_excludes;
   }
 
-  // Compiled code compat accessors
-  get_includes(): object {
-    return this.includes;
-  }
-
-  get_excludes(): object {
-    return this.excludes;
-  }
-
   // ---------------------------------------------------------------------------
   // Methods
   // ---------------------------------------------------------------------------

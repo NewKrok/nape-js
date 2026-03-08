@@ -82,22 +82,21 @@ describe("MarchingSquares", () => {
     const cellsize = new Vec2(10, 10);
     const result = MarchingSquares.run(circleIso, bounds, cellsize);
     expect(result).toBeDefined();
-    // GeomPolyList is compiled, check it has get_length
-    expect(typeof result.get_length).toBe("function");
+    expect(typeof result.length).not.toBe("undefined");
   });
 
   it("should produce at least one polygon for a circle iso", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, 10);
     const result = MarchingSquares.run(circleIso, bounds, cellsize);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   it("should produce polygons for a half-plane iso", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(10, 10);
     const result = MarchingSquares.run(halfPlaneIso, bounds, cellsize);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   it("should return empty result when iso is always positive (outside)", () => {
@@ -105,7 +104,7 @@ describe("MarchingSquares", () => {
     const cellsize = new Vec2(5, 5);
     // Always positive = no surface
     const result = MarchingSquares.run(() => 100, bounds, cellsize);
-    expect(result.get_length()).toBe(0);
+    expect(result.length).toBe(0);
   });
 
   // --- Quality parameter ---
@@ -114,14 +113,14 @@ describe("MarchingSquares", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(20, 20);
     const result = MarchingSquares.run(circleIso, bounds, cellsize, 0);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   it("should work with quality 1", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(20, 20);
     const result = MarchingSquares.run(circleIso, bounds, cellsize, 1);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   // --- Combine parameter ---
@@ -130,7 +129,7 @@ describe("MarchingSquares", () => {
     const bounds = new AABB(0, 0, 100, 100);
     const cellsize = new Vec2(20, 20);
     const result = MarchingSquares.run(circleIso, bounds, cellsize, 2, null, false);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   it("should produce more polygons with combine=false than combine=true", () => {
@@ -138,7 +137,7 @@ describe("MarchingSquares", () => {
     const cellsize = new Vec2(20, 20);
     const combined = MarchingSquares.run(circleIso, bounds, cellsize, 2, null, true);
     const uncombined = MarchingSquares.run(circleIso, bounds, cellsize, 2, null, false);
-    expect(uncombined.get_length()).toBeGreaterThanOrEqual(combined.get_length());
+    expect(uncombined.length).toBeGreaterThanOrEqual(combined.length);
   });
 
   // --- Subgrid ---
@@ -148,7 +147,7 @@ describe("MarchingSquares", () => {
     const cellsize = new Vec2(10, 10);
     const subgrid = new Vec2(50, 50);
     const result = MarchingSquares.run(circleIso, bounds, cellsize, 2, subgrid);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   // --- Output parameter ---
@@ -160,7 +159,7 @@ describe("MarchingSquares", () => {
     const output = new nape.geom.GeomPolyList();
     const result = MarchingSquares.run(circleIso, bounds, cellsize, 2, null, true, output);
     expect(result).toBe(output);
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   // --- Weak Vec2 disposal ---

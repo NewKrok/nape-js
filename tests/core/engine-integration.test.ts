@@ -52,7 +52,7 @@ describe("Engine integration — property accessors on compiled objects", () => 
 
   it("Body property accessors should return defined values", () => {
     const body = new nape.phys.Body(nape.phys.BodyType.DYNAMIC);
-    body.get_shapes().add(new nape.shape.Circle(10));
+    body.shapes.add(new nape.shape.Circle(10));
 
     // These would return undefined if Object.defineProperty captured
     // getter references before the functions were defined
@@ -84,11 +84,10 @@ describe("Engine integration — property accessors on compiled objects", () => 
     // Own property (defined on Circle.prototype)
     expect(circle.radius).toBe(15);
 
-    // Inherited Shape properties accessible via getter methods
-    expect(circle.get_type()).toBeDefined();
-    expect(circle.get_material()).toBeDefined();
-    expect(circle.get_filter()).toBeDefined();
-    expect(circle.get_area()).toBeGreaterThan(0);
+    expect(circle.type).toBeDefined();
+    expect(circle.material).toBeDefined();
+    expect(circle.filter).toBeDefined();
+    expect(circle.area).toBeGreaterThan(0);
   });
 
   it("PivotJoint own property accessors should return defined values", () => {
@@ -107,10 +106,8 @@ describe("Engine integration — property accessors on compiled objects", () => 
     expect(joint.anchor1).toBeDefined();
     expect(joint.anchor2).toBeDefined();
 
-    // Inherited Constraint properties accessible via getter methods
-    // (defineProperty accessors don't propagate through for...in prototype copy)
-    expect(joint.get_stiff()).toBe(true);
-    expect(joint.get_active()).toBe(true);
+    expect(joint.stiff).toBe(true);
+    expect(joint.active).toBe(true);
   });
 });
 

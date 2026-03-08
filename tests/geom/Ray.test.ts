@@ -205,17 +205,4 @@ describe("Ray", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Backward-compat get_*/set_* methods
-  // ---------------------------------------------------------------------------
-
-  it("should support get_maxDistance/set_maxDistance", () => {
-    const ray = new Ray(new Vec2(0, 0), new Vec2(1, 0));
-    ray.set_maxDistance(42);
-    expect(ray.get_maxDistance()).toBe(42);
-  });
-
-  it("should support get_userData", () => {
-    const ray = new Ray(new Vec2(0, 0), new Vec2(1, 0));
-    expect(ray.get_userData()).toBeDefined();
-  });
 });

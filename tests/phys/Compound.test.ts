@@ -45,17 +45,17 @@ describe("Compound", () => {
 
   it("should start with empty bodies list", () => {
     const c = new Compound();
-    expect(c.bodies.get_length()).toBe(0);
+    expect(c.bodies.length).toBe(0);
   });
 
   it("should start with empty constraints list", () => {
     const c = new Compound();
-    expect(c.constraints.get_length()).toBe(0);
+    expect(c.constraints.length).toBe(0);
   });
 
   it("should start with empty compounds list", () => {
     const c = new Compound();
-    expect(c.compounds.get_length()).toBe(0);
+    expect(c.compounds.length).toBe(0);
   });
 
   it("should start with null compound and space", () => {
@@ -70,7 +70,7 @@ describe("Compound", () => {
       const b = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
       b.shapes.add(new Circle(10));
       c.bodies.add(b);
-      expect(c.bodies.get_length()).toBe(1);
+      expect(c.bodies.length).toBe(1);
     });
 
     it("should remove bodies from compound", () => {
@@ -79,7 +79,7 @@ describe("Compound", () => {
       b.shapes.add(new Circle(10));
       c.bodies.add(b);
       c.bodies.remove(b);
-      expect(c.bodies.get_length()).toBe(0);
+      expect(c.bodies.length).toBe(0);
     });
   });
 
@@ -88,7 +88,7 @@ describe("Compound", () => {
       const parent = new Compound();
       const child = new Compound();
       parent.compounds.add(child);
-      expect(parent.compounds.get_length()).toBe(1);
+      expect(parent.compounds.length).toBe(1);
     });
 
     it("should set compound property on child", () => {
@@ -132,7 +132,7 @@ describe("Compound", () => {
       c.space = space;
       // Bodies inside compounds are not in space.bodies (top-level only).
       // They are registered with the space engine via addBody but stay in the compound's list.
-      expect(c.bodies.get_length()).toBe(1);
+      expect(c.bodies.length).toBe(1);
       // The body should be live in the space (managed by physics engine)
       expect(space.liveBodies.length).toBeGreaterThan(0);
     });
@@ -216,7 +216,7 @@ describe("Compound", () => {
 
       const copy = c.copy();
       expect(copy).not.toBe(c);
-      expect(copy.bodies.get_length()).toBe(1);
+      expect(copy.bodies.length).toBe(1);
     });
   });
 

@@ -271,7 +271,7 @@ export class Shape extends Interactor {
         raw.clear();
       },
       get length(): number {
-        return raw.get_length();
+        return raw.length;
       },
     };
   }

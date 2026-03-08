@@ -125,13 +125,9 @@ ContactListCtor.prototype.zpp_inner = null;
 
 Object.defineProperty(ContactListCtor.prototype, "length", {
   get: function (this: any) {
-    return this.get_length();
+    return ensureLength(this.zpp_inner);
   },
 });
-
-ContactListCtor.prototype.get_length = function (this: any): number {
-  return ensureLength(this.zpp_inner);
-};
 
 ContactListCtor.prototype.has = function (this: any, obj: any): boolean {
   this.zpp_inner.valmod();
@@ -448,6 +444,22 @@ ContactListCtor.prototype.foreach = function (this: any, lambda: any): any {
     }
   }
   return this;
+};
+
+// ES6 iterable protocol — enables for...of and spread on ContactList.
+(ContactListCtor.prototype as any)[Symbol.iterator] = function (this: any) {
+  const it = ContactIterator.get(this);
+  return {
+    next(): IteratorResult<any> {
+      if (it.hasNext()) {
+        return { value: it.next(), done: false };
+      }
+      return { value: undefined, done: true };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
 };
 
 ContactListCtor.prototype.filter = function (this: any, lambda: any): any {

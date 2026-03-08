@@ -97,7 +97,7 @@ describe("NapeListFactory", () => {
       const nape = getNape();
       const list = new nape.callbacks.CbTypeList();
       expect(list.empty()).toBe(true);
-      expect(list.get_length()).toBe(0);
+      expect(list.length).toBe(0);
     });
 
     it("should push and retrieve CbTypes", () => {
@@ -105,7 +105,7 @@ describe("NapeListFactory", () => {
       const list = new nape.callbacks.CbTypeList();
       const ct = new CbType();
       list.push(ct);
-      expect(list.get_length()).toBe(1);
+      expect(list.length).toBe(1);
       expect(list.at(0)).toBe(ct);
     });
 
@@ -202,7 +202,7 @@ describe("NapeListFactory", () => {
       list.push(ct2);
 
       const copy = list.copy();
-      expect(copy.get_length()).toBe(2);
+      expect(copy.length).toBe(2);
       expect(copy.at(0)).toBe(ct1);
       expect(copy.at(1)).toBe(ct2);
     });
@@ -225,7 +225,7 @@ describe("NapeListFactory", () => {
       list2.push(ct2);
 
       list1.merge(list2);
-      expect(list1.get_length()).toBe(2);
+      expect(list1.length).toBe(2);
     });
   });
 
@@ -255,7 +255,7 @@ describe("NapeListFactory", () => {
       list.push(ct2);
 
       list.filter((_item: any) => false);
-      expect(list.get_length()).toBe(0);
+      expect(list.length).toBe(0);
     });
   });
 
@@ -270,7 +270,7 @@ describe("NapeListFactory", () => {
       const ct2 = new CbType();
 
       const list = nape.callbacks.CbTypeList.fromArray([ct1, ct2]);
-      expect(list.get_length()).toBe(2);
+      expect(list.length).toBe(2);
     });
 
     it("should throw on null array", () => {

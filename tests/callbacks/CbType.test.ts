@@ -77,24 +77,6 @@ describe("CbType", () => {
     }
   });
 
-  // --- get_ANY_* (compiled code compatibility) ---
-
-  it("should have get_ANY_BODY matching ANY_BODY", () => {
-    expect(CbType.get_ANY_BODY()).toBe(CbType.ANY_BODY);
-  });
-
-  it("should have get_ANY_SHAPE matching ANY_SHAPE", () => {
-    expect(CbType.get_ANY_SHAPE()).toBe(CbType.ANY_SHAPE);
-  });
-
-  it("should have get_ANY_CONSTRAINT matching ANY_CONSTRAINT", () => {
-    expect(CbType.get_ANY_CONSTRAINT()).toBe(CbType.ANY_CONSTRAINT);
-  });
-
-  it("should have get_ANY_COMPOUND matching ANY_COMPOUND", () => {
-    expect(CbType.get_ANY_COMPOUND()).toBe(CbType.ANY_COMPOUND);
-  });
-
   // --- id ---
 
   it("should have numeric id", () => {

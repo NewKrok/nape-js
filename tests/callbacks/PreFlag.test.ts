@@ -12,66 +12,59 @@ describe("PreFlag", () => {
   });
 
   it("should return ACCEPT singleton", () => {
-    const a = PreFlag.get_ACCEPT();
-    const b = PreFlag.get_ACCEPT();
+    const a = PreFlag.ACCEPT;
+    const b = PreFlag.ACCEPT;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(PreFlag);
   });
 
   it("should return IGNORE singleton", () => {
-    const a = PreFlag.get_IGNORE();
-    const b = PreFlag.get_IGNORE();
+    const a = PreFlag.IGNORE;
+    const b = PreFlag.IGNORE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(PreFlag);
   });
 
   it("should return ACCEPT_ONCE singleton", () => {
-    const a = PreFlag.get_ACCEPT_ONCE();
-    const b = PreFlag.get_ACCEPT_ONCE();
+    const a = PreFlag.ACCEPT_ONCE;
+    const b = PreFlag.ACCEPT_ONCE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(PreFlag);
   });
 
   it("should return IGNORE_ONCE singleton", () => {
-    const a = PreFlag.get_IGNORE_ONCE();
-    const b = PreFlag.get_IGNORE_ONCE();
+    const a = PreFlag.IGNORE_ONCE;
+    const b = PreFlag.IGNORE_ONCE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(PreFlag);
   });
 
   it("should return distinct instances for each type", () => {
-    expect(PreFlag.get_ACCEPT()).not.toBe(PreFlag.get_IGNORE());
-    expect(PreFlag.get_ACCEPT()).not.toBe(PreFlag.get_ACCEPT_ONCE());
-    expect(PreFlag.get_ACCEPT()).not.toBe(PreFlag.get_IGNORE_ONCE());
-    expect(PreFlag.get_IGNORE()).not.toBe(PreFlag.get_ACCEPT_ONCE());
-    expect(PreFlag.get_IGNORE()).not.toBe(PreFlag.get_IGNORE_ONCE());
-    expect(PreFlag.get_ACCEPT_ONCE()).not.toBe(PreFlag.get_IGNORE_ONCE());
+    expect(PreFlag.ACCEPT).not.toBe(PreFlag.IGNORE);
+    expect(PreFlag.ACCEPT).not.toBe(PreFlag.ACCEPT_ONCE);
+    expect(PreFlag.ACCEPT).not.toBe(PreFlag.IGNORE_ONCE);
+    expect(PreFlag.IGNORE).not.toBe(PreFlag.ACCEPT_ONCE);
+    expect(PreFlag.IGNORE).not.toBe(PreFlag.IGNORE_ONCE);
+    expect(PreFlag.ACCEPT_ONCE).not.toBe(PreFlag.IGNORE_ONCE);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    expect(ZPP_Flags.PreFlag_ACCEPT).toBe(PreFlag.get_ACCEPT());
+    expect(ZPP_Flags.PreFlag_ACCEPT).toBe(PreFlag.ACCEPT);
   });
 
   it("ACCEPT toString should return 'ACCEPT'", () => {
-    expect(PreFlag.get_ACCEPT().toString()).toBe("ACCEPT");
+    expect(PreFlag.ACCEPT.toString()).toBe("ACCEPT");
   });
 
   it("IGNORE toString should return 'IGNORE'", () => {
-    expect(PreFlag.get_IGNORE().toString()).toBe("IGNORE");
+    expect(PreFlag.IGNORE.toString()).toBe("IGNORE");
   });
 
   it("ACCEPT_ONCE toString should return 'ACCEPT_ONCE'", () => {
-    expect(PreFlag.get_ACCEPT_ONCE().toString()).toBe("ACCEPT_ONCE");
+    expect(PreFlag.ACCEPT_ONCE.toString()).toBe("ACCEPT_ONCE");
   });
 
   it("IGNORE_ONCE toString should return 'IGNORE_ONCE'", () => {
-    expect(PreFlag.get_IGNORE_ONCE().toString()).toBe("IGNORE_ONCE");
-  });
-
-  it("static getters should work (PreFlag.ACCEPT etc.)", () => {
-    expect(PreFlag.ACCEPT).toBe(PreFlag.get_ACCEPT());
-    expect(PreFlag.IGNORE).toBe(PreFlag.get_IGNORE());
-    expect(PreFlag.ACCEPT_ONCE).toBe(PreFlag.get_ACCEPT_ONCE());
-    expect(PreFlag.IGNORE_ONCE).toBe(PreFlag.get_IGNORE_ONCE());
+    expect(PreFlag.IGNORE_ONCE.toString()).toBe("IGNORE_ONCE");
   });
 });

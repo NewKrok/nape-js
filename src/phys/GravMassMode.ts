@@ -13,17 +13,13 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
 export class GravMassMode {
   static __name__ = ["nape", "phys", "GravMassMode"];
 
-  static DEFAULT: GravMassMode | null = null;
-  static FIXED: GravMassMode | null = null;
-  static SCALED: GravMassMode | null = null;
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate GravMassMode derp!");
     }
   }
 
-  static get_DEFAULT(): GravMassMode {
+  static get DEFAULT(): GravMassMode {
     if (ZPP_Flags.GravMassMode_DEFAULT == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.GravMassMode_DEFAULT = new GravMassMode();
@@ -32,7 +28,7 @@ export class GravMassMode {
     return ZPP_Flags.GravMassMode_DEFAULT;
   }
 
-  static get_FIXED(): GravMassMode {
+  static get FIXED(): GravMassMode {
     if (ZPP_Flags.GravMassMode_FIXED == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.GravMassMode_FIXED = new GravMassMode();
@@ -41,7 +37,7 @@ export class GravMassMode {
     return ZPP_Flags.GravMassMode_FIXED;
   }
 
-  static get_SCALED(): GravMassMode {
+  static get SCALED(): GravMassMode {
     if (ZPP_Flags.GravMassMode_SCALED == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.GravMassMode_SCALED = new GravMassMode();
@@ -51,9 +47,9 @@ export class GravMassMode {
   }
 
   toString(): string {
-    if (this === GravMassMode.get_DEFAULT()) return "DEFAULT";
-    if (this === GravMassMode.get_FIXED()) return "FIXED";
-    if (this === GravMassMode.get_SCALED()) return "SCALED";
+    if (this === ZPP_Flags.GravMassMode_DEFAULT) return "DEFAULT";
+    if (this === ZPP_Flags.GravMassMode_FIXED) return "FIXED";
+    if (this === ZPP_Flags.GravMassMode_SCALED) return "SCALED";
     return "";
   }
 }

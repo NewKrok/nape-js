@@ -130,13 +130,9 @@ Vec2ListCtor.prototype.zpp_inner = null;
 
 Object.defineProperty(Vec2ListCtor.prototype, "length", {
   get: function (this: any) {
-    return this.get_length();
+    return this.zpp_gl();
   },
 });
-
-Vec2ListCtor.prototype.get_length = function (this: any): number {
-  return this.zpp_gl();
-};
 
 Vec2ListCtor.prototype.zpp_gl = function (this: any): number {
   this.zpp_inner.valmod();
@@ -475,6 +471,22 @@ Vec2ListCtor.prototype.foreach = function (this: any, lambda: any): any {
     }
   }
   return this;
+};
+
+// ES6 iterable protocol — enables for...of and spread on Vec2List.
+(Vec2ListCtor.prototype as any)[Symbol.iterator] = function (this: any) {
+  const it = Vec2Iterator.get(this);
+  return {
+    next(): IteratorResult<any> {
+      if (it.hasNext()) {
+        return { value: it.next(), done: false };
+      }
+      return { value: undefined, done: true };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
 };
 
 Vec2ListCtor.prototype.filter = function (this: any, lambda: any): any {

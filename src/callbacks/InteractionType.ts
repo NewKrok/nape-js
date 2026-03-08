@@ -24,21 +24,6 @@ export class InteractionType {
   // --- Static getters for convenient access ---
 
   static get COLLISION(): InteractionType {
-    return InteractionType.get_COLLISION();
-  }
-  static get SENSOR(): InteractionType {
-    return InteractionType.get_SENSOR();
-  }
-  static get FLUID(): InteractionType {
-    return InteractionType.get_FLUID();
-  }
-  static get ANY(): InteractionType {
-    return InteractionType.get_ANY();
-  }
-
-  // --- Lazy singleton accessors (used by compiled code) ---
-
-  static get_COLLISION(): InteractionType {
     if (ZPP_Flags.InteractionType_COLLISION == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.InteractionType_COLLISION = new InteractionType();
@@ -46,8 +31,7 @@ export class InteractionType {
     }
     return ZPP_Flags.InteractionType_COLLISION;
   }
-
-  static get_SENSOR(): InteractionType {
+  static get SENSOR(): InteractionType {
     if (ZPP_Flags.InteractionType_SENSOR == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.InteractionType_SENSOR = new InteractionType();
@@ -55,8 +39,7 @@ export class InteractionType {
     }
     return ZPP_Flags.InteractionType_SENSOR;
   }
-
-  static get_FLUID(): InteractionType {
+  static get FLUID(): InteractionType {
     if (ZPP_Flags.InteractionType_FLUID == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.InteractionType_FLUID = new InteractionType();
@@ -64,8 +47,7 @@ export class InteractionType {
     }
     return ZPP_Flags.InteractionType_FLUID;
   }
-
-  static get_ANY(): InteractionType {
+  static get ANY(): InteractionType {
     if (ZPP_Flags.InteractionType_ANY == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.InteractionType_ANY = new InteractionType();
@@ -75,10 +57,10 @@ export class InteractionType {
   }
 
   toString(): string {
-    if (this === InteractionType.get_COLLISION()) return "COLLISION";
-    if (this === InteractionType.get_SENSOR()) return "SENSOR";
-    if (this === InteractionType.get_FLUID()) return "FLUID";
-    if (this === InteractionType.get_ANY()) return "ANY";
+    if (this === ZPP_Flags.InteractionType_COLLISION) return "COLLISION";
+    if (this === ZPP_Flags.InteractionType_SENSOR) return "SENSOR";
+    if (this === ZPP_Flags.InteractionType_FLUID) return "FLUID";
+    if (this === ZPP_Flags.InteractionType_ANY) return "ANY";
     return "";
   }
 }

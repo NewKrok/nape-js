@@ -14,17 +14,13 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
 export class ArbiterType {
   static __name__ = ["nape", "dynamics", "ArbiterType"];
 
-  static COLLISION: ArbiterType | null = null;
-  static SENSOR: ArbiterType | null = null;
-  static FLUID: ArbiterType | null = null;
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ArbiterType derp!");
     }
   }
 
-  static get_COLLISION(): ArbiterType {
+  static get COLLISION(): ArbiterType {
     if (ZPP_Flags.ArbiterType_COLLISION == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ArbiterType_COLLISION = new ArbiterType();
@@ -33,7 +29,7 @@ export class ArbiterType {
     return ZPP_Flags.ArbiterType_COLLISION;
   }
 
-  static get_SENSOR(): ArbiterType {
+  static get SENSOR(): ArbiterType {
     if (ZPP_Flags.ArbiterType_SENSOR == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ArbiterType_SENSOR = new ArbiterType();
@@ -42,7 +38,7 @@ export class ArbiterType {
     return ZPP_Flags.ArbiterType_SENSOR;
   }
 
-  static get_FLUID(): ArbiterType {
+  static get FLUID(): ArbiterType {
     if (ZPP_Flags.ArbiterType_FLUID == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ArbiterType_FLUID = new ArbiterType();
@@ -52,9 +48,9 @@ export class ArbiterType {
   }
 
   toString(): string {
-    if (this === ArbiterType.get_COLLISION()) return "COLLISION";
-    if (this === ArbiterType.get_SENSOR()) return "SENSOR";
-    if (this === ArbiterType.get_FLUID()) return "FLUID";
+    if (this === ZPP_Flags.ArbiterType_COLLISION) return "COLLISION";
+    if (this === ZPP_Flags.ArbiterType_SENSOR) return "SENSOR";
+    if (this === ZPP_Flags.ArbiterType_FLUID) return "FLUID";
     return "";
   }
 }

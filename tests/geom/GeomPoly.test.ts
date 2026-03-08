@@ -367,7 +367,7 @@ describe("GeomPoly", () => {
   it("should decompose convex polygon", () => {
     const p = square();
     const result = p.convexDecomposition();
-    expect(result.get_length()).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   // --- Inflate ---

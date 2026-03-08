@@ -12,33 +12,32 @@ describe("InertiaMode", () => {
   });
 
   it("should return DEFAULT singleton", () => {
-    const a = InertiaMode.get_DEFAULT();
-    const b = InertiaMode.get_DEFAULT();
+    const a = InertiaMode.DEFAULT;
+    const b = InertiaMode.DEFAULT;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(InertiaMode);
   });
 
   it("should return FIXED singleton", () => {
-    const a = InertiaMode.get_FIXED();
-    const b = InertiaMode.get_FIXED();
+    const a = InertiaMode.FIXED;
+    const b = InertiaMode.FIXED;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(InertiaMode);
   });
 
   it("should return distinct instances for each mode", () => {
-    expect(InertiaMode.get_DEFAULT()).not.toBe(InertiaMode.get_FIXED());
+    expect(InertiaMode.DEFAULT).not.toBe(InertiaMode.FIXED);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    const def = InertiaMode.get_DEFAULT();
-    expect(ZPP_Flags.InertiaMode_DEFAULT).toBe(def);
+    expect(ZPP_Flags.InertiaMode_DEFAULT).toBe(InertiaMode.DEFAULT);
   });
 
   it("DEFAULT toString should return 'DEFAULT'", () => {
-    expect(InertiaMode.get_DEFAULT().toString()).toBe("DEFAULT");
+    expect(InertiaMode.DEFAULT.toString()).toBe("DEFAULT");
   });
 
   it("FIXED toString should return 'FIXED'", () => {
-    expect(InertiaMode.get_FIXED().toString()).toBe("FIXED");
+    expect(InertiaMode.FIXED.toString()).toBe("FIXED");
   });
 });

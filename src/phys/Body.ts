@@ -214,7 +214,29 @@ export class Body extends Interactor {
     return ZPP_Body.types[this.zpp_inner.type];
   }
   set type(value: BodyType) {
-    this.set_type(value);
+    const zpp = this.zpp_inner;
+    zpp.immutable_midstep("Body::type");
+    if (zpp.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (ZPP_Body.types[zpp.type] !== value) {
+      if (value == null) {
+        throw new Error("Error: Cannot use null BodyType");
+      }
+      const nape = getNape();
+      const ntype = _bodyTypeToInt(value, nape);
+      if (ntype === 1 && zpp.space != null) {
+        zpp.velx = 0;
+        zpp.vely = 0;
+        zpp.angvel = 0;
+      }
+      zpp.invalidate_type();
+      if (zpp.space != null) {
+        zpp.space.transmitType(zpp, ntype);
+      } else {
+        zpp.type = ntype;
+      }
+    }
   }
 
   isStatic(): boolean {
@@ -238,14 +260,38 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_pos;
   }
   set position(value: Vec2) {
-    this.set_position(value);
+    _setVec2Prop(
+      "position",
+      this.zpp_inner.wrap_pos,
+      value,
+      () => this.zpp_inner.setupPosition(),
+      () => this.zpp_inner.wrap_pos,
+    );
+    if (this.zpp_inner.wrap_pos == null) {
+      this.zpp_inner.setupPosition();
+    }
   }
 
   get rotation(): number {
     return this.zpp_inner.rot;
   }
   set rotation(value: number) {
-    this.set_rotation(value);
+    const zpp = this.zpp_inner;
+    zpp.immutable_midstep("Body::rotation");
+    if (zpp.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (zpp.type === 1 && zpp.space != null) {
+      throw new Error("Error: Static objects cannot be rotated once inside a Space");
+    }
+    if (zpp.rot !== value) {
+      if (value !== value) {
+        throw new Error("Error: Body::rotation cannot be NaN");
+      }
+      zpp.rot = value;
+      zpp.invalidate_rot();
+      zpp.wake();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -259,14 +305,36 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_vel;
   }
   set velocity(value: Vec2) {
-    this.set_velocity(value);
+    _setVec2Prop(
+      "velocity",
+      this.zpp_inner.wrap_vel,
+      value,
+      () => this.zpp_inner.setupVelocity(),
+      () => this.zpp_inner.wrap_vel,
+    );
+    if (this.zpp_inner.wrap_vel == null) {
+      this.zpp_inner.setupVelocity();
+    }
   }
 
   get angularVel(): number {
     return this.zpp_inner.angvel;
   }
   set angularVel(value: number) {
-    this.set_angularVel(value);
+    const zpp = this.zpp_inner;
+    if (zpp.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (zpp.angvel !== value) {
+      if (value !== value) {
+        throw new Error("Error: Body::angularVel cannot be NaN");
+      }
+      if (zpp.type === 1) {
+        throw new Error("Error: A static object cannot be given a velocity");
+      }
+      zpp.angvel = value;
+      zpp.wake();
+    }
   }
 
   get kinematicVel(): Vec2 {
@@ -276,14 +344,33 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_kinvel;
   }
   set kinematicVel(value: Vec2) {
-    this.set_kinematicVel(value);
+    _setVec2Prop(
+      "kinematicVel",
+      this.zpp_inner.wrap_kinvel,
+      value,
+      () => this.zpp_inner.setupkinvel(),
+      () => this.zpp_inner.wrap_kinvel,
+    );
+    if (this.zpp_inner.wrap_kinvel == null) {
+      this.zpp_inner.setupkinvel();
+    }
   }
 
   get kinAngVel(): number {
     return this.zpp_inner.kinangvel;
   }
   set kinAngVel(value: number) {
-    this.set_kinAngVel(value);
+    const zpp = this.zpp_inner;
+    if (zpp.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (zpp.kinangvel !== value) {
+      if (value !== value) {
+        throw new Error("Error: Body::kinAngVel cannot be NaN");
+      }
+      zpp.kinangvel = value;
+      zpp.wake();
+    }
   }
 
   get surfaceVel(): Vec2 {
@@ -293,7 +380,16 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_svel;
   }
   set surfaceVel(value: Vec2) {
-    this.set_surfaceVel(value);
+    _setVec2Prop(
+      "surfaceVel",
+      this.zpp_inner.wrap_svel,
+      value,
+      () => this.zpp_inner.setupsvel(),
+      () => this.zpp_inner.wrap_svel,
+    );
+    if (this.zpp_inner.wrap_svel == null) {
+      this.zpp_inner.setupsvel();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -307,14 +403,36 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_force;
   }
   set force(value: Vec2) {
-    this.set_force(value);
+    _setVec2Prop(
+      "force",
+      this.zpp_inner.wrap_force,
+      value,
+      () => this.zpp_inner.setupForce(),
+      () => this.zpp_inner.wrap_force,
+    );
+    if (this.zpp_inner.wrap_force == null) {
+      this.zpp_inner.setupForce();
+    }
   }
 
   get torque(): number {
     return this.zpp_inner.torque;
   }
   set torque(value: number) {
-    this.set_torque(value);
+    const zpp = this.zpp_inner;
+    if (zpp.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (zpp.type !== 2) {
+      throw new Error("Error: Non-dynamic body cannot have torque applied.");
+    }
+    if (value !== value) {
+      throw new Error("Error: Body::torque cannot be NaN");
+    }
+    if (zpp.torque !== value) {
+      zpp.torque = value;
+      zpp.wake();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -322,17 +440,65 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   get mass(): number {
-    return this.get_mass();
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world has no mass");
+    }
+    this.zpp_inner.validate_mass();
+    if (this.zpp_inner.massMode === 0 && this.zpp_inner.shapes.head == null) {
+      throw new Error(
+        "Error: Given current mass mode, Body::mass only makes sense if it contains shapes",
+      );
+    }
+    return this.zpp_inner.cmass;
   }
   set mass(value: number) {
-    this.set_mass(value);
+    this.zpp_inner.immutable_midstep("Body::mass");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value !== value) {
+      throw new Error("Error: Mass cannot be NaN");
+    }
+    if (value <= 0) {
+      throw new Error("Error: Mass must be strictly positive");
+    }
+    if (value >= Infinity) {
+      throw new Error("Error: Mass cannot be infinite, use allowMovement = false instead");
+    }
+    this.zpp_inner.massMode = 1;
+    this.zpp_inner.cmass = value;
+    this.zpp_inner.invalidate_mass();
   }
 
   get inertia(): number {
-    return this.get_inertia();
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world has no inertia");
+    }
+    this.zpp_inner.validate_inertia();
+    if (this.zpp_inner.inertiaMode === 0 && this.zpp_inner.shapes.head == null) {
+      throw new Error(
+        "Error: Given current inertia mode flag, Body::inertia only makes sense if Body contains Shapes",
+      );
+    }
+    return this.zpp_inner.cinertia;
   }
   set inertia(value: number) {
-    this.set_inertia(value);
+    this.zpp_inner.immutable_midstep("Body::inertia");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value !== value) {
+      throw new Error("Error: Inertia cannot be NaN");
+    }
+    if (value <= 0) {
+      throw new Error("Error: Inertia must be strictly positive");
+    }
+    if (value >= Infinity) {
+      throw new Error("Error: Inertia cannot be infinite, use allowRotation = false instead");
+    }
+    this.zpp_inner.inertiaMode = 1;
+    this.zpp_inner.cinertia = value;
+    this.zpp_inner.invalidate_inertia();
   }
 
   get constraintMass(): number {
@@ -350,17 +516,54 @@ export class Body extends Interactor {
   }
 
   get gravMass(): number {
-    return this.get_gravMass();
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world has no gravMass");
+    }
+    this.zpp_inner.validate_gravMass();
+    if (this.zpp_inner.shapes.head == null) {
+      if (this.zpp_inner.massMode === 0 && this.zpp_inner.gravMassMode !== 1) {
+        throw new Error(
+          "Error: Given current mass/gravMass modes; Body::gravMass only makes sense if it contains Shapes",
+        );
+      }
+    }
+    return this.zpp_inner.gravMass;
   }
   set gravMass(value: number) {
-    this.set_gravMass(value);
+    this.zpp_inner.immutable_midstep("Body::gravMass");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value !== value) {
+      throw new Error("Error: gravMass cannot be NaN");
+    }
+    this.zpp_inner.gravMassMode = 1;
+    this.zpp_inner.gravMass = value;
+    this.zpp_inner.invalidate_gravMass();
   }
 
   get gravMassScale(): number {
-    return this.get_gravMassScale();
+    this.zpp_inner.validate_gravMassScale();
+    if (this.zpp_inner.shapes.head == null) {
+      if (this.zpp_inner.massMode === 0 && this.zpp_inner.gravMassMode !== 2) {
+        throw new Error(
+          "Error: Given current mass/gravMass modes; Body::gravMassScale only makes sense if it contains Shapes",
+        );
+      }
+    }
+    return this.zpp_inner.gravMassScale;
   }
   set gravMassScale(value: number) {
-    this.set_gravMassScale(value);
+    this.zpp_inner.immutable_midstep("Body::gravMassScale");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value !== value) {
+      throw new Error("Error: gravMassScale cannot be NaN");
+    }
+    this.zpp_inner.gravMassMode = 2;
+    this.zpp_inner.gravMassScale = value;
+    this.zpp_inner.invalidate_gravMassScale();
   }
 
   // ---------------------------------------------------------------------------
@@ -385,14 +588,26 @@ export class Body extends Interactor {
     return !this.zpp_inner.nomove;
   }
   set allowMovement(value: boolean) {
-    this.set_allowMovement(value);
+    this.zpp_inner.immutable_midstep(
+      "Body::" + (value == null ? "null" : "" + value),
+    );
+    if (!this.zpp_inner.nomove !== value) {
+      this.zpp_inner.nomove = !value;
+      this.zpp_inner.invalidate_mass();
+    }
   }
 
   get allowRotation(): boolean {
     return !this.zpp_inner.norotate;
   }
   set allowRotation(value: boolean) {
-    this.set_allowRotation(value);
+    this.zpp_inner.immutable_midstep(
+      "Body::" + (value == null ? "null" : "" + value),
+    );
+    if (!this.zpp_inner.norotate !== value) {
+      this.zpp_inner.norotate = !value;
+      this.zpp_inner.invalidate_inertia();
+    }
   }
 
   get isSleeping(): boolean {
@@ -417,433 +632,7 @@ export class Body extends Interactor {
     return Space._wrap(this.zpp_inner.space.outer);
   }
   set space(value: Space | null) {
-    this.set_space(value != null ? ((value as any)._inner ?? value) : null);
-  }
-
-  get compound(): Compound | null {
-    if (this.zpp_inner.compound == null) return null;
-    return this.zpp_inner.compound.outer;
-  }
-  set compound(value: Compound | null) {
-    this.set_compound(value);
-  }
-
-  get bounds(): AABB {
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no bounds");
-    }
-    return AABB._wrap(this.zpp_inner.aabb.wrapper());
-  }
-
-  get constraintVelocity(): Vec2 {
-    if (this.zpp_inner.wrapcvel == null) {
-      this.zpp_inner.setup_cvel();
-    }
-    return this.zpp_inner.wrapcvel;
-  }
-
-  get localCOM(): Vec2 {
-    return this.get_localCOM();
-  }
-
-  get worldCOM(): Vec2 {
-    return this.get_worldCOM();
-  }
-
-  // ---------------------------------------------------------------------------
-  // Mode getters/setters
-  // ---------------------------------------------------------------------------
-
-  get massMode(): MassMode {
-    return this.get_massMode();
-  }
-  set massMode(value: MassMode) {
-    this.set_massMode(value);
-  }
-
-  get inertiaMode(): InertiaMode {
-    return this.get_inertiaMode();
-  }
-  set inertiaMode(value: InertiaMode) {
-    this.set_inertiaMode(value);
-  }
-
-  get gravMassMode(): GravMassMode {
-    return this.get_gravMassMode();
-  }
-  set gravMassMode(value: GravMassMode) {
-    this.set_gravMassMode(value);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Copy
-  // ---------------------------------------------------------------------------
-
-  copy(): Body {
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world cannot be copied");
-    }
-    return this.zpp_inner.copy();
-  }
-
-  // ---------------------------------------------------------------------------
-  // toString
-  // ---------------------------------------------------------------------------
-
-  override toString(): string {
-    const zpp = this.zpp_inner;
-    const prefix = zpp.world
-      ? "(space::world"
-      : "(" + (zpp.type === 2 ? "dynamic" : zpp.type === 1 ? "static" : "kinematic");
-    return prefix + ")#" + (this as any).zpp_inner_i.id;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Compiled-code compatibility (get_*/set_* methods)
-  // ---------------------------------------------------------------------------
-
-  get_type(): BodyType {
-    return ZPP_Body.types[this.zpp_inner.type];
-  }
-
-  set_type(type: BodyType): BodyType {
-    const zpp = this.zpp_inner;
-    zpp.immutable_midstep("Body::type");
-    if (zpp.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (ZPP_Body.types[zpp.type] !== type) {
-      if (type == null) {
-        throw new Error("Error: Cannot use null BodyType");
-      }
-      const nape = getNape();
-      const ntype = _bodyTypeToInt(type, nape);
-      if (ntype === 1 && zpp.space != null) {
-        zpp.velx = 0;
-        zpp.vely = 0;
-        zpp.angvel = 0;
-      }
-      zpp.invalidate_type();
-      if (zpp.space != null) {
-        zpp.space.transmitType(zpp, ntype);
-      } else {
-        zpp.type = ntype;
-      }
-    }
-    return ZPP_Body.types[zpp.type];
-  }
-
-  get_shapes(): object {
-    return this.zpp_inner.wrap_shapes;
-  }
-
-  get_isBullet(): boolean {
-    return this.zpp_inner.bulletEnabled;
-  }
-  set_isBullet(v: boolean): boolean {
-    this.zpp_inner.bulletEnabled = v;
-    return v;
-  }
-
-  get_disableCCD(): boolean {
-    return this.zpp_inner.disableCCD;
-  }
-  set_disableCCD(v: boolean): boolean {
-    this.zpp_inner.disableCCD = v;
-    return v;
-  }
-
-  get_position(): Vec2 {
-    if (this.zpp_inner.wrap_pos == null) {
-      this.zpp_inner.setupPosition();
-    }
-    return this.zpp_inner.wrap_pos;
-  }
-
-  set_position(position: Vec2): Vec2 {
-    _setVec2Prop(
-      "position",
-      this.zpp_inner.wrap_pos,
-      position,
-      () => this.zpp_inner.setupPosition(),
-      () => this.zpp_inner.wrap_pos,
-    );
-    if (this.zpp_inner.wrap_pos == null) {
-      this.zpp_inner.setupPosition();
-    }
-    return this.zpp_inner.wrap_pos;
-  }
-
-  get_velocity(): Vec2 {
-    if (this.zpp_inner.wrap_vel == null) {
-      this.zpp_inner.setupVelocity();
-    }
-    return this.zpp_inner.wrap_vel;
-  }
-
-  set_velocity(velocity: Vec2): Vec2 {
-    _setVec2Prop(
-      "velocity",
-      this.zpp_inner.wrap_vel,
-      velocity,
-      () => this.zpp_inner.setupVelocity(),
-      () => this.zpp_inner.wrap_vel,
-    );
-    if (this.zpp_inner.wrap_vel == null) {
-      this.zpp_inner.setupVelocity();
-    }
-    return this.zpp_inner.wrap_vel;
-  }
-
-  get_rotation(): number {
-    return this.zpp_inner.rot;
-  }
-
-  set_rotation(rotation: number): number {
-    const zpp = this.zpp_inner;
-    zpp.immutable_midstep("Body::rotation");
-    if (zpp.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (zpp.type === 1 && zpp.space != null) {
-      throw new Error("Error: Static objects cannot be rotated once inside a Space");
-    }
-    if (zpp.rot !== rotation) {
-      if (rotation !== rotation) {
-        throw new Error("Error: Body::rotation cannot be NaN");
-      }
-      zpp.rot = rotation;
-      zpp.invalidate_rot();
-      zpp.wake();
-    }
-    return zpp.rot;
-  }
-
-  get_angularVel(): number {
-    return this.zpp_inner.angvel;
-  }
-
-  set_angularVel(angularVel: number): number {
-    const zpp = this.zpp_inner;
-    if (zpp.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (zpp.angvel !== angularVel) {
-      if (angularVel !== angularVel) {
-        throw new Error("Error: Body::angularVel cannot be NaN");
-      }
-      if (zpp.type === 1) {
-        throw new Error("Error: A static object cannot be given a velocity");
-      }
-      zpp.angvel = angularVel;
-      zpp.wake();
-    }
-    return zpp.angvel;
-  }
-
-  get_kinematicVel(): Vec2 {
-    if (this.zpp_inner.wrap_kinvel == null) {
-      this.zpp_inner.setupkinvel();
-    }
-    return this.zpp_inner.wrap_kinvel;
-  }
-
-  set_kinematicVel(kinematicVel: Vec2): Vec2 {
-    _setVec2Prop(
-      "kinematicVel",
-      this.zpp_inner.wrap_kinvel,
-      kinematicVel,
-      () => this.zpp_inner.setupkinvel(),
-      () => this.zpp_inner.wrap_kinvel,
-    );
-    if (this.zpp_inner.wrap_kinvel == null) {
-      this.zpp_inner.setupkinvel();
-    }
-    return this.zpp_inner.wrap_kinvel;
-  }
-
-  get_kinAngVel(): number {
-    return this.zpp_inner.kinangvel;
-  }
-
-  set_kinAngVel(kinAngVel: number): number {
-    const zpp = this.zpp_inner;
-    if (zpp.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (zpp.kinangvel !== kinAngVel) {
-      if (kinAngVel !== kinAngVel) {
-        throw new Error("Error: Body::kinAngVel cannot be NaN");
-      }
-      zpp.kinangvel = kinAngVel;
-      zpp.wake();
-    }
-    return zpp.kinangvel;
-  }
-
-  get_surfaceVel(): Vec2 {
-    if (this.zpp_inner.wrap_svel == null) {
-      this.zpp_inner.setupsvel();
-    }
-    return this.zpp_inner.wrap_svel;
-  }
-
-  set_surfaceVel(surfaceVel: Vec2): Vec2 {
-    _setVec2Prop(
-      "surfaceVel",
-      this.zpp_inner.wrap_svel,
-      surfaceVel,
-      () => this.zpp_inner.setupsvel(),
-      () => this.zpp_inner.wrap_svel,
-    );
-    if (this.zpp_inner.wrap_svel == null) {
-      this.zpp_inner.setupsvel();
-    }
-    return this.zpp_inner.wrap_svel;
-  }
-
-  get_force(): Vec2 {
-    if (this.zpp_inner.wrap_force == null) {
-      this.zpp_inner.setupForce();
-    }
-    return this.zpp_inner.wrap_force;
-  }
-
-  set_force(force: Vec2): Vec2 {
-    _setVec2Prop(
-      "force",
-      this.zpp_inner.wrap_force,
-      force,
-      () => this.zpp_inner.setupForce(),
-      () => this.zpp_inner.wrap_force,
-    );
-    if (this.zpp_inner.wrap_force == null) {
-      this.zpp_inner.setupForce();
-    }
-    return this.zpp_inner.wrap_force;
-  }
-
-  get_torque(): number {
-    return this.zpp_inner.torque;
-  }
-
-  set_torque(torque: number): number {
-    const zpp = this.zpp_inner;
-    if (zpp.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (zpp.type !== 2) {
-      throw new Error("Error: Non-dynamic body cannot have torque applied.");
-    }
-    if (torque !== torque) {
-      throw new Error("Error: Body::torque cannot be NaN");
-    }
-    if (zpp.torque !== torque) {
-      zpp.torque = torque;
-      zpp.wake();
-    }
-    return zpp.torque;
-  }
-
-  get_bounds(): AABB {
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no bounds");
-    }
-    return this.zpp_inner.aabb.wrapper();
-  }
-
-  get_constraintVelocity(): Vec2 {
-    if (this.zpp_inner.wrapcvel == null) {
-      this.zpp_inner.setup_cvel();
-    }
-    return this.zpp_inner.wrapcvel;
-  }
-
-  get_constraintMass(): number {
-    if (!this.zpp_inner.world) {
-      this.zpp_inner.validate_mass();
-    }
-    return this.zpp_inner.smass;
-  }
-
-  get_constraintInertia(): number {
-    if (!this.zpp_inner.world) {
-      this.zpp_inner.validate_inertia();
-    }
-    return this.zpp_inner.sinertia;
-  }
-
-  get_allowMovement(): boolean {
-    return !this.zpp_inner.nomove;
-  }
-
-  set_allowMovement(allowMovement: boolean): boolean {
-    this.zpp_inner.immutable_midstep(
-      "Body::" + (allowMovement == null ? "null" : "" + allowMovement),
-    );
-    if (!this.zpp_inner.nomove !== allowMovement) {
-      this.zpp_inner.nomove = !allowMovement;
-      this.zpp_inner.invalidate_mass();
-    }
-    return !this.zpp_inner.nomove;
-  }
-
-  get_allowRotation(): boolean {
-    return !this.zpp_inner.norotate;
-  }
-
-  set_allowRotation(allowRotation: boolean): boolean {
-    this.zpp_inner.immutable_midstep(
-      "Body::" + (allowRotation == null ? "null" : "" + allowRotation),
-    );
-    if (!this.zpp_inner.norotate !== allowRotation) {
-      this.zpp_inner.norotate = !allowRotation;
-      this.zpp_inner.invalidate_inertia();
-    }
-    return !this.zpp_inner.norotate;
-  }
-
-  get_isSleeping(): boolean {
-    if (this.zpp_inner.space == null) {
-      throw new Error(
-        "Error: isSleeping makes no sense if the object is not contained within a Space",
-      );
-    }
-    return this.zpp_inner.component.sleeping;
-  }
-
-  get_compound(): Compound | null {
-    if (this.zpp_inner.compound == null) return null;
-    return this.zpp_inner.compound.outer;
-  }
-
-  set_compound(compound: Compound | null): Compound | null {
-    const currentCompound = this.zpp_inner.compound == null
-      ? null
-      : this.zpp_inner.compound.outer;
-    if (currentCompound !== compound) {
-      if (currentCompound != null) {
-        currentCompound.zpp_inner.wrap_bodies.remove(this);
-      }
-      if (compound != null) {
-        const list = compound.zpp_inner.wrap_bodies;
-        if (list.zpp_inner.reverse_flag) {
-          list.push(this);
-        } else {
-          list.unshift(this);
-        }
-      }
-    }
-    if (this.zpp_inner.compound == null) return null;
-    return this.zpp_inner.compound.outer;
-  }
-
-  get_space(): Space | null {
-    if (this.zpp_inner.space == null) return null;
-    return this.zpp_inner.space.outer;
-  }
-
-  set_space(space: Space | null): Space | null {
+    const space = value != null ? ((value as any)._inner ?? value) : null;
     if (this.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set",
@@ -868,276 +657,46 @@ export class Body extends Interactor {
         }
       }
     }
-    if (this.zpp_inner.space == null) return null;
-    return this.zpp_inner.space.outer;
   }
 
-  get_arbiters(): any {
-    if (this.zpp_inner.wrap_arbiters == null) {
-      this.zpp_inner.wrap_arbiters = ZPP_ArbiterList.get(this.zpp_inner.arbiters, true);
-    }
-    return this.zpp_inner.wrap_arbiters;
+  get compound(): Compound | null {
+    if (this.zpp_inner.compound == null) return null;
+    return this.zpp_inner.compound.outer;
   }
-
-  get_constraints(): any {
-    if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
-        this.zpp_inner.constraints,
-        true,
-      );
-    }
-    return this.zpp_inner.wrap_constraints;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Mass / Inertia mode getters/setters
-  // ---------------------------------------------------------------------------
-
-  get_massMode(): MassMode {
-    const nape = getNape();
-    const d = _ensureFlag("MassMode_DEFAULT", () => new nape.phys.MassMode());
-    const f = _ensureFlag("MassMode_FIXED", () => new nape.phys.MassMode());
-    return [d, f][this.zpp_inner.massMode];
-  }
-
-  set_massMode(massMode: MassMode): MassMode {
-    const nape = getNape();
-    this.zpp_inner.immutable_midstep("Body::massMode");
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (massMode == null) {
-      throw new Error("Error: cannot use null massMode");
-    }
-    const d = _ensureFlag("MassMode_DEFAULT", () => new nape.phys.MassMode());
-    this.zpp_inner.massMode = massMode === d ? 0 : 1;
-    this.zpp_inner.invalidate_mass();
-    const f = _ensureFlag("MassMode_FIXED", () => new nape.phys.MassMode());
-    return [d, f][this.zpp_inner.massMode];
-  }
-
-  get_mass(): number {
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no mass");
-    }
-    this.zpp_inner.validate_mass();
-    if (this.zpp_inner.massMode === 0 && this.zpp_inner.shapes.head == null) {
-      throw new Error(
-        "Error: Given current mass mode, Body::mass only makes sense if it contains shapes",
-      );
-    }
-    return this.zpp_inner.cmass;
-  }
-
-  set_mass(mass: number): number {
-    this.zpp_inner.immutable_midstep("Body::mass");
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (mass !== mass) {
-      throw new Error("Error: Mass cannot be NaN");
-    }
-    if (mass <= 0) {
-      throw new Error("Error: Mass must be strictly positive");
-    }
-    if (mass >= Infinity) {
-      throw new Error("Error: Mass cannot be infinite, use allowMovement = false instead");
-    }
-    this.zpp_inner.massMode = 1;
-    this.zpp_inner.cmass = mass;
-    this.zpp_inner.invalidate_mass();
-    // Return the validated mass
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no mass");
-    }
-    this.zpp_inner.validate_mass();
-    if (this.zpp_inner.massMode === 0 && this.zpp_inner.shapes.head == null) {
-      throw new Error(
-        "Error: Given current mass mode, Body::mass only makes sense if it contains shapes",
-      );
-    }
-    return this.zpp_inner.cmass;
-  }
-
-  get_gravMassMode(): GravMassMode {
-    const nape = getNape();
-    const d = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
-    const f = _ensureFlag("GravMassMode_FIXED", () => new nape.phys.GravMassMode());
-    const s = _ensureFlag("GravMassMode_SCALED", () => new nape.phys.GravMassMode());
-    return [d, f, s][this.zpp_inner.gravMassMode];
-  }
-
-  set_gravMassMode(gravMassMode: GravMassMode): GravMassMode {
-    const nape = getNape();
-    this.zpp_inner.immutable_midstep("Body::gravMassMode");
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (gravMassMode == null) {
-      throw new Error("Error: Cannot use null gravMassMode");
-    }
-    const s = _ensureFlag("GravMassMode_SCALED", () => new nape.phys.GravMassMode());
-    if (gravMassMode === s) {
-      this.zpp_inner.gravMassMode = 2;
-    } else {
-      const d = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
-      this.zpp_inner.gravMassMode = gravMassMode === d ? 0 : 1;
-    }
-    this.zpp_inner.invalidate_gravMass();
-    // Return the resolved mode — note: compiled code uses massMode here, this matches that behavior
-    const d2 = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
-    const f2 = _ensureFlag("GravMassMode_FIXED", () => new nape.phys.GravMassMode());
-    const s2 = _ensureFlag("GravMassMode_SCALED", () => new nape.phys.GravMassMode());
-    return [d2, f2, s2][this.zpp_inner.massMode];
-  }
-
-  get_gravMass(): number {
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no gravMass");
-    }
-    this.zpp_inner.validate_gravMass();
-    if (this.zpp_inner.shapes.head == null) {
-      if (this.zpp_inner.massMode === 0 && this.zpp_inner.gravMassMode !== 1) {
-        throw new Error(
-          "Error: Given current mass/gravMass modes; Body::gravMass only makes sense if it contains Shapes",
-        );
+  set compound(value: Compound | null) {
+    const currentCompound = this.zpp_inner.compound == null
+      ? null
+      : this.zpp_inner.compound.outer;
+    if (currentCompound !== value) {
+      if (currentCompound != null) {
+        currentCompound.zpp_inner.wrap_bodies.remove(this);
+      }
+      if (value != null) {
+        const list = value.zpp_inner.wrap_bodies;
+        if (list.zpp_inner.reverse_flag) {
+          list.push(this);
+        } else {
+          list.unshift(this);
+        }
       }
     }
-    return this.zpp_inner.gravMass;
   }
 
-  set_gravMass(gravMass: number): number {
-    this.zpp_inner.immutable_midstep("Body::gravMass");
+  get bounds(): AABB {
     if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
+      throw new Error("Error: Space::world has no bounds");
     }
-    if (gravMass !== gravMass) {
-      throw new Error("Error: gravMass cannot be NaN");
-    }
-    this.zpp_inner.gravMassMode = 1;
-    this.zpp_inner.gravMass = gravMass;
-    this.zpp_inner.invalidate_gravMass();
-    // Return
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no gravMass");
-    }
-    this.zpp_inner.validate_gravMass();
-    if (this.zpp_inner.shapes.head == null) {
-      if (this.zpp_inner.massMode === 0 && this.zpp_inner.gravMassMode !== 1) {
-        throw new Error(
-          "Error: Given current mass/gravMass modes; Body::gravMass only makes sense if it contains Shapes",
-        );
-      }
-    }
-    return this.zpp_inner.gravMass;
+    return AABB._wrap(this.zpp_inner.aabb.wrapper());
   }
 
-  get_gravMassScale(): number {
-    this.zpp_inner.validate_gravMassScale();
-    if (this.zpp_inner.shapes.head == null) {
-      if (this.zpp_inner.massMode === 0 && this.zpp_inner.gravMassMode !== 2) {
-        throw new Error(
-          "Error: Given current mass/gravMass modes; Body::gravMassScale only makes sense if it contains Shapes",
-        );
-      }
+  get constraintVelocity(): Vec2 {
+    if (this.zpp_inner.wrapcvel == null) {
+      this.zpp_inner.setup_cvel();
     }
-    return this.zpp_inner.gravMassScale;
+    return this.zpp_inner.wrapcvel;
   }
 
-  set_gravMassScale(gravMassScale: number): number {
-    this.zpp_inner.immutable_midstep("Body::gravMassScale");
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (gravMassScale !== gravMassScale) {
-      throw new Error("Error: gravMassScale cannot be NaN");
-    }
-    this.zpp_inner.gravMassMode = 2;
-    this.zpp_inner.gravMassScale = gravMassScale;
-    this.zpp_inner.invalidate_gravMassScale();
-    // Return
-    this.zpp_inner.validate_gravMassScale();
-    if (this.zpp_inner.shapes.head == null) {
-      if (this.zpp_inner.massMode === 0 && this.zpp_inner.gravMassMode !== 2) {
-        throw new Error(
-          "Error: Given current mass/gravMass modes; Body::gravMassScale only makes sense if it contains Shapes",
-        );
-      }
-    }
-    return this.zpp_inner.gravMassScale;
-  }
-
-  get_inertiaMode(): InertiaMode {
-    const nape = getNape();
-    const d = _ensureFlag("InertiaMode_DEFAULT", () => new nape.phys.InertiaMode());
-    const f = _ensureFlag("InertiaMode_FIXED", () => new nape.phys.InertiaMode());
-    return [d, f][this.zpp_inner.inertiaMode];
-  }
-
-  set_inertiaMode(inertiaMode: InertiaMode): InertiaMode {
-    const nape = getNape();
-    this.zpp_inner.immutable_midstep("Body::inertiaMode");
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (inertiaMode == null) {
-      throw new Error("Error: Cannot use null InertiaMode");
-    }
-    const f = _ensureFlag("InertiaMode_FIXED", () => new nape.phys.InertiaMode());
-    this.zpp_inner.inertiaMode = inertiaMode === f ? 1 : 0;
-    this.zpp_inner.invalidate_inertia();
-    const d = _ensureFlag("InertiaMode_DEFAULT", () => new nape.phys.InertiaMode());
-    return [d, f][this.zpp_inner.inertiaMode];
-  }
-
-  get_inertia(): number {
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no inertia");
-    }
-    this.zpp_inner.validate_inertia();
-    if (this.zpp_inner.inertiaMode === 0 && this.zpp_inner.shapes.head == null) {
-      throw new Error(
-        "Error: Given current inertia mode flag, Body::inertia only makes sense if Body contains Shapes",
-      );
-    }
-    return this.zpp_inner.cinertia;
-  }
-
-  set_inertia(inertia: number): number {
-    this.zpp_inner.immutable_midstep("Body::inertia");
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world is immutable");
-    }
-    if (inertia !== inertia) {
-      throw new Error("Error: Inertia cannot be NaN");
-    }
-    if (inertia <= 0) {
-      throw new Error("Error: Inertia must be strictly positive");
-    }
-    if (inertia >= Infinity) {
-      throw new Error("Error: Inertia cannot be infinite, use allowRotation = false instead");
-    }
-    this.zpp_inner.inertiaMode = 1;
-    this.zpp_inner.cinertia = inertia;
-    this.zpp_inner.invalidate_inertia();
-    // Return
-    if (this.zpp_inner.world) {
-      throw new Error("Error: Space::world has no inertia");
-    }
-    this.zpp_inner.validate_inertia();
-    if (this.zpp_inner.inertiaMode === 0 && this.zpp_inner.shapes.head == null) {
-      throw new Error(
-        "Error: Given current inertia mode flag, Body::inertia only makes sense if Body contains Shapes",
-      );
-    }
-    return this.zpp_inner.cinertia;
-  }
-
-  // ---------------------------------------------------------------------------
-  // localCOM / worldCOM
-  // ---------------------------------------------------------------------------
-
-  get_localCOM(): Vec2 {
+  get localCOM(): Vec2 {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no localCOM");
     }
@@ -1151,7 +710,7 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_localCOM;
   }
 
-  get_worldCOM(): Vec2 {
+  get worldCOM(): Vec2 {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no worldCOM");
     }
@@ -1163,6 +722,99 @@ export class Body extends Interactor {
       ret.zpp_inner._validate = () => this.zpp_inner.getworldCOM();
     }
     return this.zpp_inner.wrap_worldCOM;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Mode getters/setters
+  // ---------------------------------------------------------------------------
+
+  get massMode(): MassMode {
+    const nape = getNape();
+    const d = _ensureFlag("MassMode_DEFAULT", () => new nape.phys.MassMode());
+    const f = _ensureFlag("MassMode_FIXED", () => new nape.phys.MassMode());
+    return [d, f][this.zpp_inner.massMode];
+  }
+  set massMode(value: MassMode) {
+    const nape = getNape();
+    this.zpp_inner.immutable_midstep("Body::massMode");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value == null) {
+      throw new Error("Error: cannot use null massMode");
+    }
+    const d = _ensureFlag("MassMode_DEFAULT", () => new nape.phys.MassMode());
+    this.zpp_inner.massMode = value === d ? 0 : 1;
+    this.zpp_inner.invalidate_mass();
+  }
+
+  get inertiaMode(): InertiaMode {
+    const nape = getNape();
+    const d = _ensureFlag("InertiaMode_DEFAULT", () => new nape.phys.InertiaMode());
+    const f = _ensureFlag("InertiaMode_FIXED", () => new nape.phys.InertiaMode());
+    return [d, f][this.zpp_inner.inertiaMode];
+  }
+  set inertiaMode(value: InertiaMode) {
+    const nape = getNape();
+    this.zpp_inner.immutable_midstep("Body::inertiaMode");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value == null) {
+      throw new Error("Error: Cannot use null InertiaMode");
+    }
+    const f = _ensureFlag("InertiaMode_FIXED", () => new nape.phys.InertiaMode());
+    this.zpp_inner.inertiaMode = value === f ? 1 : 0;
+    this.zpp_inner.invalidate_inertia();
+  }
+
+  get gravMassMode(): GravMassMode {
+    const nape = getNape();
+    const d = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
+    const f = _ensureFlag("GravMassMode_FIXED", () => new nape.phys.GravMassMode());
+    const s = _ensureFlag("GravMassMode_SCALED", () => new nape.phys.GravMassMode());
+    return [d, f, s][this.zpp_inner.gravMassMode];
+  }
+  set gravMassMode(value: GravMassMode) {
+    const nape = getNape();
+    this.zpp_inner.immutable_midstep("Body::gravMassMode");
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world is immutable");
+    }
+    if (value == null) {
+      throw new Error("Error: Cannot use null gravMassMode");
+    }
+    const s = _ensureFlag("GravMassMode_SCALED", () => new nape.phys.GravMassMode());
+    if (value === s) {
+      this.zpp_inner.gravMassMode = 2;
+    } else {
+      const d = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
+      this.zpp_inner.gravMassMode = value === d ? 0 : 1;
+    }
+    this.zpp_inner.invalidate_gravMass();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Copy
+  // ---------------------------------------------------------------------------
+
+  copy(): Body {
+    if (this.zpp_inner.world) {
+      throw new Error("Error: Space::world cannot be copied");
+    }
+    return this.zpp_inner.copy();
+  }
+
+  // ---------------------------------------------------------------------------
+  // toString
+  // ---------------------------------------------------------------------------
+
+  override toString(): string {
+    const zpp = this.zpp_inner;
+    const prefix = zpp.world
+      ? "(space::world"
+      : "(" + (zpp.type === 2 ? "dynamic" : zpp.type === 1 ? "static" : "kinematic");
+    return prefix + ")#" + (this as any).zpp_inner_i.id;
   }
 
   // ---------------------------------------------------------------------------
@@ -1477,12 +1129,38 @@ export class Body extends Interactor {
     const del = this.zpp_inner.wrap_pos.sub(centre);
     del.rotate(angle);
     const position = centre.add(del, true);
-    this.set_position(position);
+    // inline set_position
+    _setVec2Prop(
+      "position",
+      this.zpp_inner.wrap_pos,
+      position,
+      () => this.zpp_inner.setupPosition(),
+      () => this.zpp_inner.wrap_pos,
+    );
     if (this.zpp_inner.wrap_pos == null) {
       this.zpp_inner.setupPosition();
     }
     del.dispose();
-    this.set_rotation(this.zpp_inner.rot + angle);
+    // inline set_rotation
+    {
+      const newRot = this.zpp_inner.rot + angle;
+      const zpp = this.zpp_inner;
+      zpp.immutable_midstep("Body::rotation");
+      if (zpp.world) {
+        throw new Error("Error: Space::world is immutable");
+      }
+      if (zpp.type === 1 && zpp.space != null) {
+        throw new Error("Error: Static objects cannot be rotated once inside a Space");
+      }
+      if (zpp.rot !== newRot) {
+        if (newRot !== newRot) {
+          throw new Error("Error: Body::rotation cannot be NaN");
+        }
+        zpp.rot = newRot;
+        zpp.invalidate_rot();
+        zpp.wake();
+      }
+    }
     centre.zpp_inner.weak = weak;
     _disposeWeakVec2(centre);
     return this;
@@ -1637,7 +1315,7 @@ export class Body extends Interactor {
 
   rollingImpulse(body: Body | null = null, freshOnly: boolean = false): number {
     let ret = 0;
-    const arbList = this.get_arbiters();
+    const arbList = this._getArbiters();
     const iter = arbList.iterator();
     while (true) {
       iter.zpp_inner.zpp_inner.valmod();
@@ -1709,7 +1387,7 @@ export class Body extends Interactor {
     let rety = 0;
     let retz = 0;
     // Sum arbiter impulses (skip SENSOR)
-    const arbList = this.get_arbiters();
+    const arbList = this._getArbiters();
     const iter = arbList.iterator();
     while (true) {
       iter.zpp_inner.zpp_inner.valmod();
@@ -1765,7 +1443,7 @@ export class Body extends Interactor {
     let msum = 0.0;
     const jsum = Vec2.get(0, 0);
     // Sum arbiter impulses
-    const arbList = this.get_arbiters();
+    const arbList = this._getArbiters();
     const iter = arbList.iterator();
     while (true) {
       iter.zpp_inner.zpp_inner.valmod();
@@ -1789,7 +1467,7 @@ export class Body extends Interactor {
       imp3.dispose();
     }
     // Sum constraint impulses
-    const consList = this.get_constraints();
+    const consList = this._getConstraints();
     const _this9 = consList;
     _this9.zpp_inner.valmod();
     const _g1 = getNape().constraint.ConstraintIterator.get(_this9);
@@ -1824,7 +1502,7 @@ export class Body extends Interactor {
     const jx = _readVec2X(jsum);
     const jy = _readVec2Y(jsum);
     const jlen = Math.sqrt(jx * jx + jy * jy);
-    const cmass = this.get_mass();
+    const cmass = this.mass;
     const ret = (msum - jlen) / (cmass * this.zpp_inner.space.pre_dt);
     jsum.dispose();
     return ret;
@@ -1834,6 +1512,23 @@ export class Body extends Interactor {
   // Private helpers
   // ---------------------------------------------------------------------------
 
+  private _getArbiters(): any {
+    if (this.zpp_inner.wrap_arbiters == null) {
+      this.zpp_inner.wrap_arbiters = ZPP_ArbiterList.get(this.zpp_inner.arbiters, true);
+    }
+    return this.zpp_inner.wrap_arbiters;
+  }
+
+  private _getConstraints(): any {
+    if (this.zpp_inner.wrap_constraints == null) {
+      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
+        this.zpp_inner.constraints,
+        true,
+      );
+    }
+    return this.zpp_inner.wrap_constraints;
+  }
+
   private _arbiterImpulseQuery(
     arbType: number,
     getImpulse: (arb: Arbiter) => Vec3,
@@ -1842,7 +1537,7 @@ export class Body extends Interactor {
     let retx = 0;
     let rety = 0;
     let retz = 0;
-    const arbList = this.get_arbiters();
+    const arbList = this._getArbiters();
     const iter = arbList.iterator();
     while (true) {
       iter.zpp_inner.zpp_inner.valmod();

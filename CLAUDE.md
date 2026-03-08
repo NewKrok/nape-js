@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2294 tests across 125 files
+npm test             # vitest — 2269 tests across 125 files
 npm run lint         # eslint + prettier
 ```
 
@@ -487,15 +487,23 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
 - `HaxeError`, `$bind`, `jsBoot.__string_rec` — migrated into `ZPPRegistry.ts` / native classes
 - `Reflect`, `Std`, `StringTools` — no callers remained; removed completely
 
-### Priority 28: User-facing API improvements
+### ✅ Priority 28: User-facing API improvements — DONE (28a + 28c)
 
-**Effort: M | Impact: DX | Risk: low**
+- **28a** ✅ — `Symbol.iterator` added uniformly to all List types:
+  `Vec2List`, `ContactList`, `GeomVertexIterator` now support `for...of` and spread.
+  Factory-generated lists already had it. `ZPP_MixVec2List` fixed: `length` getter
+  re-applied via `Object.defineProperty` after `for...in` prototype copy.
+- **28c** ✅ — All Haxe-style `get_*()`/`set_*()` backward-compat methods deleted:
+  - 500+ instance methods removed from `Body`, `Compound`, `Space`, `Constraint`,
+    all 7 joints, `OptionType`, `Vec2List`, `ContactList`, `NapeListFactory`
+  - All static `get_FOO()` methods removed from all 14 enum classes
+    (`BodyType`, `ShapeType`, `ArbiterType`, `CbEvent`, `InteractionType`,
+    `ListenerType`, `PreFlag`, `GravMassMode`, `InertiaMode`, `MassMode`,
+    `Winding`, `ValidationResult`, `Broadphase`, `CbType`)
+  - Tests and benchmarks updated to use native TS getters/setters
+  - Bundle size: 991 KB → 979 KB
 
-- **28a** — Verify `Symbol.iterator` works uniformly on all List types
-  (`GeomVertexIterator`, `Vec2List`, `ContactList`, factory-generated lists)
-- **28b** — Enable `strictNullChecks: true` in `tsconfig.json` (requires P25 first)
-- **28c** — Audit `get_*()` / `set_*()` Haxe-style accessor methods on public API:
-  deprecate any that are exported in `index.ts` in favour of native TS getters/setters
+- **28b** — Enable `strictNullChecks: true` in `tsconfig.json` ⬜ Pending
 
 ### Priority 29: Missing test coverage
 
@@ -525,7 +533,7 @@ P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
 | P25 — `Any` → real types | XL | **largest** | medium | ✅ Done |
 | P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
-| P28 — API ergonomics | M | DX | low | ⬜ Pending |
+| P28 — API ergonomics (28a+28c done, 28b pending) | M | DX | low | 🔶 Partial |
 | P29 — Test coverage | M | safety | none | ⬜ Pending |
 
 

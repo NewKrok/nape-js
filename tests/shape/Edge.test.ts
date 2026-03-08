@@ -29,12 +29,12 @@ describe("Edge", () => {
     const { poly } = makeBoxInBody();
     const edges = poly.edges;
     expect(edges).toBeDefined();
-    expect(edges.get_length()).toBeGreaterThan(0);
+    expect(edges.length).toBeGreaterThan(0);
   });
 
   it("should have correct number of edges for a box (4)", () => {
     const { poly } = makeBoxInBody();
-    expect(poly.edges.get_length()).toBe(4);
+    expect(poly.edges.length).toBe(4);
   });
 
   // ---------------------------------------------------------------------------

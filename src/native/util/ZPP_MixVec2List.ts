@@ -57,10 +57,18 @@ function ZPP_MixVec2ListCtor(this: any): void {
 (ZPP_MixVec2ListCtor as any).__name__ = ["zpp_nape", "util", "ZPP_MixVec2List"];
 (ZPP_MixVec2ListCtor as any).__super__ = Vec2ListCtor;
 
-// Inherit all Vec2List prototype methods
+// Inherit all Vec2List prototype methods (enumerable only — for...in misses
+// non-enumerable properties like the `length` getter defined via Object.defineProperty)
 for (const k in (Vec2ListCtor as any).prototype) {
   (ZPP_MixVec2ListCtor as any).prototype[k] = (Vec2ListCtor as any).prototype[k];
 }
+// Re-apply the non-enumerable `length` getter so it is available on this subclass.
+Object.defineProperty((ZPP_MixVec2ListCtor as any).prototype, "length", {
+  get: function (this: any) {
+    return this.zpp_gl();
+  },
+  configurable: true,
+});
 
 // ---------------------------------------------------------------------------
 // Instance field defaults

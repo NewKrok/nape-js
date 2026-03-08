@@ -12,38 +12,33 @@ describe("ShapeType", () => {
   });
 
   it("should return CIRCLE singleton", () => {
-    const a = ShapeType.get_CIRCLE();
-    const b = ShapeType.get_CIRCLE();
+    const a = ShapeType.CIRCLE;
+    const b = ShapeType.CIRCLE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(ShapeType);
   });
 
   it("should return POLYGON singleton", () => {
-    const a = ShapeType.get_POLYGON();
-    const b = ShapeType.get_POLYGON();
+    const a = ShapeType.POLYGON;
+    const b = ShapeType.POLYGON;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(ShapeType);
   });
 
   it("should return distinct instances for each type", () => {
-    expect(ShapeType.get_CIRCLE()).not.toBe(ShapeType.get_POLYGON());
+    expect(ShapeType.CIRCLE).not.toBe(ShapeType.POLYGON);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    expect(ZPP_Flags.ShapeType_CIRCLE).toBe(ShapeType.get_CIRCLE());
-    expect(ZPP_Flags.ShapeType_POLYGON).toBe(ShapeType.get_POLYGON());
+    expect(ZPP_Flags.ShapeType_CIRCLE).toBe(ShapeType.CIRCLE);
+    expect(ZPP_Flags.ShapeType_POLYGON).toBe(ShapeType.POLYGON);
   });
 
   it("CIRCLE toString should return 'CIRCLE'", () => {
-    expect(ShapeType.get_CIRCLE().toString()).toBe("CIRCLE");
+    expect(ShapeType.CIRCLE.toString()).toBe("CIRCLE");
   });
 
   it("POLYGON toString should return 'POLYGON'", () => {
-    expect(ShapeType.get_POLYGON().toString()).toBe("POLYGON");
-  });
-
-  it("static getters should work (ShapeType.CIRCLE etc.)", () => {
-    expect(ShapeType.CIRCLE).toBe(ShapeType.get_CIRCLE());
-    expect(ShapeType.POLYGON).toBe(ShapeType.get_POLYGON());
+    expect(ShapeType.POLYGON.toString()).toBe("POLYGON");
   });
 });

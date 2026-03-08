@@ -309,21 +309,6 @@ describe("PulleyJoint (modernized)", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Backward-compat get_/set_ methods
-  // ---------------------------------------------------------------------------
-
-  it("should have backward-compat get_/set_ for jointMin", () => {
-    const joint = makeJoint() as any;
-    joint.set_jointMin(75);
-    expect(joint.get_jointMin()).toBeCloseTo(75);
-  });
-
-  it("should have backward-compat get_/set_ for ratio", () => {
-    const joint = makeJoint() as any;
-    joint.set_ratio(3.0);
-    expect(joint.get_ratio()).toBeCloseTo(3.0);
-  });
-
   // ---------------------------------------------------------------------------
   // Simulation
   // ---------------------------------------------------------------------------

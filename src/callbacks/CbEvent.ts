@@ -27,30 +27,6 @@ export class CbEvent {
   // --- Static getters for convenient access (CbEvent.BEGIN etc.) ---
 
   static get BEGIN(): CbEvent {
-    return CbEvent.get_BEGIN();
-  }
-  static get ONGOING(): CbEvent {
-    return CbEvent.get_ONGOING();
-  }
-  static get END(): CbEvent {
-    return CbEvent.get_END();
-  }
-  static get WAKE(): CbEvent {
-    return CbEvent.get_WAKE();
-  }
-  static get SLEEP(): CbEvent {
-    return CbEvent.get_SLEEP();
-  }
-  static get BREAK(): CbEvent {
-    return CbEvent.get_BREAK();
-  }
-  static get PRE(): CbEvent {
-    return CbEvent.get_PRE();
-  }
-
-  // --- Lazy singleton accessors (used by compiled code) ---
-
-  static get_BEGIN(): CbEvent {
     if (ZPP_Flags.CbEvent_BEGIN == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_BEGIN = new CbEvent();
@@ -58,8 +34,7 @@ export class CbEvent {
     }
     return ZPP_Flags.CbEvent_BEGIN;
   }
-
-  static get_ONGOING(): CbEvent {
+  static get ONGOING(): CbEvent {
     if (ZPP_Flags.CbEvent_ONGOING == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_ONGOING = new CbEvent();
@@ -67,8 +42,7 @@ export class CbEvent {
     }
     return ZPP_Flags.CbEvent_ONGOING;
   }
-
-  static get_END(): CbEvent {
+  static get END(): CbEvent {
     if (ZPP_Flags.CbEvent_END == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_END = new CbEvent();
@@ -76,8 +50,7 @@ export class CbEvent {
     }
     return ZPP_Flags.CbEvent_END;
   }
-
-  static get_WAKE(): CbEvent {
+  static get WAKE(): CbEvent {
     if (ZPP_Flags.CbEvent_WAKE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_WAKE = new CbEvent();
@@ -85,8 +58,7 @@ export class CbEvent {
     }
     return ZPP_Flags.CbEvent_WAKE;
   }
-
-  static get_SLEEP(): CbEvent {
+  static get SLEEP(): CbEvent {
     if (ZPP_Flags.CbEvent_SLEEP == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_SLEEP = new CbEvent();
@@ -94,8 +66,7 @@ export class CbEvent {
     }
     return ZPP_Flags.CbEvent_SLEEP;
   }
-
-  static get_BREAK(): CbEvent {
+  static get BREAK(): CbEvent {
     if (ZPP_Flags.CbEvent_BREAK == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_BREAK = new CbEvent();
@@ -103,8 +74,7 @@ export class CbEvent {
     }
     return ZPP_Flags.CbEvent_BREAK;
   }
-
-  static get_PRE(): CbEvent {
+  static get PRE(): CbEvent {
     if (ZPP_Flags.CbEvent_PRE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.CbEvent_PRE = new CbEvent();
@@ -114,13 +84,13 @@ export class CbEvent {
   }
 
   toString(): string {
-    if (this === CbEvent.get_BEGIN()) return "BEGIN";
-    if (this === CbEvent.get_ONGOING()) return "ONGOING";
-    if (this === CbEvent.get_END()) return "END";
-    if (this === CbEvent.get_WAKE()) return "WAKE";
-    if (this === CbEvent.get_SLEEP()) return "SLEEP";
-    if (this === CbEvent.get_BREAK()) return "BREAK";
-    if (this === CbEvent.get_PRE()) return "PRE";
+    if (this === ZPP_Flags.CbEvent_BEGIN) return "BEGIN";
+    if (this === ZPP_Flags.CbEvent_ONGOING) return "ONGOING";
+    if (this === ZPP_Flags.CbEvent_END) return "END";
+    if (this === ZPP_Flags.CbEvent_WAKE) return "WAKE";
+    if (this === ZPP_Flags.CbEvent_SLEEP) return "SLEEP";
+    if (this === ZPP_Flags.CbEvent_BREAK) return "BREAK";
+    if (this === ZPP_Flags.CbEvent_PRE) return "PRE";
     return "";
   }
 }

@@ -12,16 +12,13 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
 export class InertiaMode {
   static __name__ = ["nape", "phys", "InertiaMode"];
 
-  static DEFAULT: InertiaMode | null = null;
-  static FIXED: InertiaMode | null = null;
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate InertiaMode derp!");
     }
   }
 
-  static get_DEFAULT(): InertiaMode {
+  static get DEFAULT(): InertiaMode {
     if (ZPP_Flags.InertiaMode_DEFAULT == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.InertiaMode_DEFAULT = new InertiaMode();
@@ -30,7 +27,7 @@ export class InertiaMode {
     return ZPP_Flags.InertiaMode_DEFAULT;
   }
 
-  static get_FIXED(): InertiaMode {
+  static get FIXED(): InertiaMode {
     if (ZPP_Flags.InertiaMode_FIXED == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.InertiaMode_FIXED = new InertiaMode();
@@ -40,8 +37,8 @@ export class InertiaMode {
   }
 
   toString(): string {
-    if (this === InertiaMode.get_DEFAULT()) return "DEFAULT";
-    if (this === InertiaMode.get_FIXED()) return "FIXED";
+    if (this === ZPP_Flags.InertiaMode_DEFAULT) return "DEFAULT";
+    if (this === ZPP_Flags.InertiaMode_FIXED) return "FIXED";
     return "";
   }
 }

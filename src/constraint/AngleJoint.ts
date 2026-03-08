@@ -258,46 +258,6 @@ export class AngleJoint extends Constraint {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Backward-compat get_*/set_* methods for compiled code
-  // ---------------------------------------------------------------------------
-
-  /** @internal */ get_body1(): Body | null {
-    return this.body1;
-  }
-  /** @internal */ set_body1(v: Body | null): Body | null {
-    this.body1 = v;
-    return this.body1;
-  }
-  /** @internal */ get_body2(): Body | null {
-    return this.body2;
-  }
-  /** @internal */ set_body2(v: Body | null): Body | null {
-    this.body2 = v;
-    return this.body2;
-  }
-  /** @internal */ get_jointMin(): number {
-    return this.jointMin;
-  }
-  /** @internal */ set_jointMin(v: number): number {
-    this.jointMin = v;
-    return this.zpp_inner.jointMin;
-  }
-  /** @internal */ get_jointMax(): number {
-    return this.jointMax;
-  }
-  /** @internal */ set_jointMax(v: number): number {
-    this.jointMax = v;
-    return this.zpp_inner.jointMax;
-  }
-  /** @internal */ get_ratio(): number {
-    return this.ratio;
-  }
-  /** @internal */ set_ratio(v: number): number {
-    this.ratio = v;
-    return this.zpp_inner.ratio;
-  }
-
   /** @internal backward compat alias for zpp_inner */
   get zpp_inner_zn(): ZPP_AngleJoint {
     return this.zpp_inner;

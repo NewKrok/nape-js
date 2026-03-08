@@ -108,16 +108,6 @@ describe("DistanceJoint (modernized)", () => {
     expect(joint.zpp_inner_zn).toBe(joint.zpp_inner);
   });
 
-  it("should provide backward-compat get_*/set_* methods", () => {
-    const joint = new DistanceJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 10, 50);
-    expect(joint.get_jointMin()).toBeCloseTo(10);
-    expect(joint.get_jointMax()).toBeCloseTo(50);
-    joint.set_jointMin(20);
-    joint.set_jointMax(80);
-    expect(joint.jointMin).toBeCloseTo(20);
-    expect(joint.jointMax).toBeCloseTo(80);
-  });
-
   it("should visitBodies correctly", () => {
     const b1 = new Body(BodyType.DYNAMIC);
     const b2 = new Body(BodyType.DYNAMIC);

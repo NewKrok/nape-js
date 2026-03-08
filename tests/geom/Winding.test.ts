@@ -12,46 +12,45 @@ describe("Winding", () => {
   });
 
   it("should return UNDEFINED singleton", () => {
-    const a = Winding.get_UNDEFINED();
-    const b = Winding.get_UNDEFINED();
+    const a = Winding.UNDEFINED;
+    const b = Winding.UNDEFINED;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(Winding);
   });
 
   it("should return CLOCKWISE singleton", () => {
-    const a = Winding.get_CLOCKWISE();
-    const b = Winding.get_CLOCKWISE();
+    const a = Winding.CLOCKWISE;
+    const b = Winding.CLOCKWISE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(Winding);
   });
 
   it("should return ANTICLOCKWISE singleton", () => {
-    const a = Winding.get_ANTICLOCKWISE();
-    const b = Winding.get_ANTICLOCKWISE();
+    const a = Winding.ANTICLOCKWISE;
+    const b = Winding.ANTICLOCKWISE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(Winding);
   });
 
   it("should return distinct instances for each value", () => {
-    expect(Winding.get_UNDEFINED()).not.toBe(Winding.get_CLOCKWISE());
-    expect(Winding.get_UNDEFINED()).not.toBe(Winding.get_ANTICLOCKWISE());
-    expect(Winding.get_CLOCKWISE()).not.toBe(Winding.get_ANTICLOCKWISE());
+    expect(Winding.UNDEFINED).not.toBe(Winding.CLOCKWISE);
+    expect(Winding.UNDEFINED).not.toBe(Winding.ANTICLOCKWISE);
+    expect(Winding.CLOCKWISE).not.toBe(Winding.ANTICLOCKWISE);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    const undef = Winding.get_UNDEFINED();
-    expect(ZPP_Flags.Winding_UNDEFINED).toBe(undef);
+    expect(ZPP_Flags.Winding_UNDEFINED).toBe(Winding.UNDEFINED);
   });
 
   it("UNDEFINED toString should return 'UNDEFINED'", () => {
-    expect(Winding.get_UNDEFINED().toString()).toBe("UNDEFINED");
+    expect(Winding.UNDEFINED.toString()).toBe("UNDEFINED");
   });
 
   it("CLOCKWISE toString should return 'CLOCKWISE'", () => {
-    expect(Winding.get_CLOCKWISE().toString()).toBe("CLOCKWISE");
+    expect(Winding.CLOCKWISE.toString()).toBe("CLOCKWISE");
   });
 
   it("ANTICLOCKWISE toString should return 'ANTICLOCKWISE'", () => {
-    expect(Winding.get_ANTICLOCKWISE().toString()).toBe("ANTICLOCKWISE");
+    expect(Winding.ANTICLOCKWISE.toString()).toBe("ANTICLOCKWISE");
   });
 });

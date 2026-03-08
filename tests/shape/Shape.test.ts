@@ -323,38 +323,6 @@ describe("Shape", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Backward-compat get_* methods
-  // ---------------------------------------------------------------------------
-
-  it("should have get_type() method", () => {
-    const c = new Circle(10);
-    expect(c.get_type()).toBeDefined();
-    expect(c.get_type().toString()).toBe("CIRCLE");
-  });
-
-  it("should have get_material() method", () => {
-    const c = new Circle(10);
-    expect(c.get_material()).toBeDefined();
-  });
-
-  it("should have get_filter() method", () => {
-    const c = new Circle(10);
-    expect(c.get_filter()).toBeDefined();
-  });
-
-  it("should have get_area() method", () => {
-    const c = new Circle(10);
-    expect(c.get_area()).toBeCloseTo(Math.PI * 100, 0);
-  });
-
-  it("should have get_bounds() method", () => {
-    const body = new Body();
-    const c = new Circle(10);
-    body.shapes.add(c);
-    expect(c.get_bounds()).toBeDefined();
-  });
-
-  // ---------------------------------------------------------------------------
   // Space integration
   // ---------------------------------------------------------------------------
 

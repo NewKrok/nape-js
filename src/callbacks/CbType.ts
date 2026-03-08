@@ -46,26 +46,6 @@ export class CbType {
   }
 
   // ---------------------------------------------------------------------------
-  // Static: get_* accessors (used by compiled code)
-  // ---------------------------------------------------------------------------
-
-  static get_ANY_BODY(): CbType {
-    return ZPP_CbType.ANY_BODY as any;
-  }
-
-  static get_ANY_CONSTRAINT(): CbType {
-    return ZPP_CbType.ANY_CONSTRAINT as any;
-  }
-
-  static get_ANY_SHAPE(): CbType {
-    return ZPP_CbType.ANY_SHAPE as any;
-  }
-
-  static get_ANY_COMPOUND(): CbType {
-    return ZPP_CbType.ANY_COMPOUND as any;
-  }
-
-  // ---------------------------------------------------------------------------
   // Properties
   // ---------------------------------------------------------------------------
 
