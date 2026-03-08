@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 87523–87601, 135477–135481.
  */
 
-type Any = any;
-
 export class ZPP_Material {
   // --- Static: object pool (linked list via `next`) ---
   static zpp_pool: ZPP_Material | null = null;
@@ -27,14 +25,14 @@ export class ZPP_Material {
    * _nape  = the `nape` public namespace (for wrapper creation)
    * _zpp   = the `zpp_nape` internal namespace (for ZNPList_ZPP_Shape)
    */
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   /**
    * Wrapper factory callback, registered by the modernized Material class.
    * When set, wrapper() uses this instead of creating a compiled Material.
    */
-  static _wrapFn: ((zpp: ZPP_Material) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Material) => any) | null = null;
 
   // --- Instance: material properties ---
   elasticity = 0;
@@ -44,27 +42,24 @@ export class ZPP_Material {
   rollingFriction = 0.01;
 
   // --- Instance: shape tracking ---
-  shapes: Any = null;
-  wrap_shapes: Any = null;
+  shapes: any = null;
+  wrap_shapes: any = null;
 
   // --- Instance: public API wrapper reference ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: user data ---
-  userData: Any = null;
+  userData: any = null;
 
   // --- Instance: pool linked list ---
   next: ZPP_Material | null = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Material;
 
   constructor() {
     this.shapes = new ZPP_Material._zpp.util.ZNPList_ZPP_Shape();
   }
 
   /** Create/return the public nape.phys.Material wrapper for this internal object. */
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Material._wrapFn) {
         this.outer = ZPP_Material._wrapFn(this);
@@ -94,12 +89,12 @@ export class ZPP_Material {
   }
 
   /** Register a shape that uses this material. */
-  addShape(shape: Any): void {
+  addShape(shape: any): void {
     this.shapes.add(shape);
   }
 
   /** Unregister a shape that no longer uses this material. */
-  remShape(shape: Any): void {
+  remShape(shape: any): void {
     this.shapes.remove(shape);
   }
 

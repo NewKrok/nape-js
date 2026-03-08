@@ -409,9 +409,18 @@ in native/ code):
 - `ZPP_OptionType.ts` — `type Any` + `__class__` removed; `handler: ((val: ZPP_CbType, included: boolean, added: boolean) => void)|null`;
   `nonemptyintersection` and `insertOrdered` locals typed as `ZPP_CbType`; `set()` uses `!==`
 
-Count: 34 files remain in `src/native/` (shape/4, callbacks/2, phys/5, space/10, constraint/9)
+**Native shape/ files done:**
+- `ZPP_Edge.ts` — `type Any` + `__class__` removed; fields remain `any` (outer/wrap = circular, polygon/vertex refs = dynamic)
+- `ZPP_Circle.ts` — `type Any` + `__class__` removed; `(this as any)._initShape()`, `dstProto as any` retained
+- `ZPP_Shape.ts` — `type Any` + `__class__` removed; `(ZPP_Shape.prototype as any)[k]` kept for prototype copy loop
+- `ZPP_Polygon.ts` — `type Any` + `__class__` removed; `dstProto as any` kept for prototype copy loop
 
-Remaining callbacks/: `ZPP_CbSet.ts`, `ZPP_InteractionListener.ts`
+**Native phys/ files done (partial):**
+- `ZPP_Material.ts` — `type Any` + `__class__` removed; `shapes/wrap_shapes: any` (dynamic ZNPList), `outer: any` (circular)
+
+Count: 27 files remain in `src/native/` (phys/4, space/10, constraint/9, callbacks/2→already done)
+
+Remaining phys/: `ZPP_Body.ts`, `ZPP_Compound.ts`, `ZPP_FluidProperties.ts`, `ZPP_Interactor.ts`
 
 ### Priority 26: Tree shaking
 

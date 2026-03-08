@@ -7,33 +7,28 @@
  * Converted from nape-compiled.js lines 41496–41827.
  */
 
-type Any = any;
-
 export class ZPP_Circle {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "shape", "ZPP_Circle"];
-  static __super__: Any = null;
+  static __super__: any = null;
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: init guard ---
   static _initialized = false;
 
   // --- Instance: circle-specific ---
   radius = 0;
-  outer_zn: Any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Circle;
+  outer_zn: any = null;
 
   // --- Stub declarations for methods inherited from ZPP_Shape/ZPP_Interactor ---
-  body: Any;
+  body: any;
   type!: number;
-  circle: Any;
-  polygon: Any;
-  aabb: Any;
+  circle: any;
+  polygon: any;
+  aabb: any;
   localCOMx!: number;
   localCOMy!: number;
   worldCOMx!: number;
@@ -47,24 +42,24 @@ export class ZPP_Circle {
   angDrag!: number;
   sweepCoef!: number;
   sweepRadius!: number;
-  material: Any;
-  filter: Any;
-  wrap_localCOM: Any;
-  outer: Any;
-  outer_i: Any;
-  space: Any;
+  material: any;
+  filter: any;
+  wrap_localCOM: any;
+  outer: any;
+  outer_i: any;
+  space: any;
   invalidate_area_inertia!: () => void;
   invalidate_angDrag!: () => void;
   invalidate_localCOM!: () => void;
   immutable_midstep!: (name: string) => void;
-  setMaterial!: (mat: Any) => void;
-  setFilter!: (filt: Any) => void;
-  insert_cbtype!: (cb: Any) => void;
+  setMaterial!: (mat: any) => void;
+  setFilter!: (filt: any) => void;
+  insert_cbtype!: (cb: any) => void;
   constructor() {
     this.radius = 0;
     this.outer_zn = null;
     // Call ZPP_Shape initializer (type=0 for circle)
-    (this as Any)._initShape(0);
+    (this as any)._initShape(0);
     this.circle = this;
     this.zip_localCOM = false;
   }
@@ -77,7 +72,7 @@ export class ZPP_Circle {
     ZPP_Circle.__super__ = zpp.shape.ZPP_Shape;
 
     const srcProto = zpp.shape.ZPP_Shape.prototype;
-    const dstProto = ZPP_Circle.prototype as Any;
+    const dstProto = ZPP_Circle.prototype as any;
 
     // Copy enumerable inherited properties (e.g., ZPP_Interactor methods)
     for (const k in srcProto) {
@@ -116,7 +111,7 @@ export class ZPP_Circle {
     this.wrap_localCOM.zpp_inner.y = this.localCOMy;
   }
 
-  localCOM_invalidate(x: Any): void {
+  localCOM_invalidate(x: any): void {
     this.localCOMx = x.x;
     this.localCOMy = x.y;
     this.invalidate_localCOM();
@@ -141,7 +136,7 @@ export class ZPP_Circle {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -154,7 +149,7 @@ export class ZPP_Circle {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -271,7 +266,7 @@ export class ZPP_Circle {
     }
   }
 
-  __transform(m: Any): void {
+  __transform(m: any): void {
     let det = m.zpp_inner.a * m.zpp_inner.d - m.zpp_inner.b * m.zpp_inner.c;
     if (det < 0) {
       det = -det;
@@ -285,7 +280,7 @@ export class ZPP_Circle {
     this.invalidate_localCOM();
   }
 
-  __copy(): Any {
+  __copy(): any {
     const nape = ZPP_Circle._nape;
     const ret = new nape.shape.Circle(this.radius).zpp_inner_zn;
     ret.localCOMx = this.localCOMx;

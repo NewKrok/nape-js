@@ -42,10 +42,6 @@ describe("ZPP_Edge", () => {
       expect(e.gp1).toBeNull();
     });
 
-    it("should set __class__ reference", () => {
-      const e = new ZPP_Edge();
-      expect(e.__class__).toBe(ZPP_Edge);
-    });
   });
 
   // --- Pool management ---
