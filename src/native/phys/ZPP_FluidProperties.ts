@@ -36,7 +36,7 @@ export class ZPP_FluidProperties {
   outer: any = null; // circular import prevention
 
   // --- Instance: user data ---
-  userData: unknown = null;
+  userData: Record<string, unknown> | null = null;
 
   // --- Instance: pool linked list ---
   next: ZPP_FluidProperties | null = null;

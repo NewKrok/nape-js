@@ -116,4 +116,3 @@ export class FluidArbiter extends Arbiter {
 }
 
 // Self-register in the compiled namespace
-ZPP_Arbiter._createFluidArb = () => new FluidArbiter();

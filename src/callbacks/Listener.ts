@@ -7,7 +7,6 @@
  * Fully modernized from nape-compiled.js lines 231–433.
  */
 
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import { CbEvent } from "./CbEvent";
@@ -177,6 +176,3 @@ export class Listener {
   }
 }
 
-// Self-register in the compiled namespace
-const nape = getNape();
-nape.callbacks.Listener = Listener;

@@ -148,8 +148,3 @@ export class MarchingSquares {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled MarchingSquares)
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.geom.MarchingSquares = MarchingSquares;

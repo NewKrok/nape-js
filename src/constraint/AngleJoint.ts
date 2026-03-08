@@ -322,4 +322,3 @@ ZPP_AngleJoint._wrapFn = (zpp: ZPP_AngleJoint): AngleJoint => {
   });
 };
 
-ZPP_AngleJoint._createFn = (...args: any[]) => new (AngleJoint as any)(...args);

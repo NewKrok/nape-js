@@ -31,5 +31,3 @@ export class ConstraintCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(ConstraintCallback as any).__super__ = Callback;
-ZPP_Callback._createConCb = () => new ConstraintCallback();

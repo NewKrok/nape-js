@@ -73,6 +73,5 @@ export class BodyType {
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
-
 nape.phys.BodyType = BodyType;
 ensureEnumsReady();

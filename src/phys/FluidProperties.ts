@@ -515,5 +515,6 @@ ZPP_FluidProperties._wrapFn = (zpp: ZPP_FluidProperties): FluidProperties => {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace (replaces compiled FluidProperties)
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.phys.FluidProperties = FluidProperties;
+const _napeFluid = getNape();
+_napeFluid.phys.FluidProperties = FluidProperties;
+

@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -46,8 +45,3 @@ export class Broadphase {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.space.Broadphase = Broadphase;

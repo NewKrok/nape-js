@@ -498,12 +498,4 @@ Vec2ListCtor.prototype.filter = function (this: any, lambda: any): any {
 };
 
 
-// ---------------------------------------------------------------------------
-// Register in nape namespace
-// ---------------------------------------------------------------------------
-
-const nape = getNape();
-nape.geom.Vec2Iterator = Vec2Iterator;
-nape.geom.Vec2List = Vec2ListCtor;
-
 export { Vec2ListCtor as Vec2List, Vec2Iterator };

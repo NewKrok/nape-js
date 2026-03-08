@@ -129,6 +129,5 @@ export class CbEvent {
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
-
 nape.callbacks.CbEvent = CbEvent;
 ensureEnumsReady();

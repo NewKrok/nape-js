@@ -75,3 +75,4 @@ export class ValidationResult {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.shape.ValidationResult = ValidationResult;
+

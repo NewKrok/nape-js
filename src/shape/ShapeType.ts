@@ -59,6 +59,5 @@ export class ShapeType {
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
-
 nape.shape.ShapeType = ShapeType;
 ensureEnumsReady();

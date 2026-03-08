@@ -13,14 +13,14 @@ Public API wrappers (src/{phys,shape,constraint,callbacks,dynamics,geom,space}/)
         ↕
 Internal ZPP_* classes (src/native/)
         ↕
-Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + HaxeShims.ts)
+Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 ```
 
 ### Build & Test
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2358 tests across 126 files
+npm test             # vitest — 2294 tests across 125 files
 npm run lint         # eslint + prettier
 ```
 
@@ -453,26 +453,32 @@ Count: 23 files remain in `src/native/` (space/10, constraint/9, callbacks/2→a
 
 **`type Any = any` fully eliminated from entire `src/` codebase. All 2294 tests pass.**
 
-### Priority 26: Tree shaking
+### ✅ Priority 26: Tree shaking — DONE
 
-**Effort: L | Impact: large (bundle selectivity) | Risk: high**
+All nape-namespace assignments and factory-callback wiring centralized in `src/core/bootstrap.ts`.
+Individual modules no longer self-register, so bundlers can shake unused exports.
 
-Blocker: `"sideEffects": true` is required because every public API module registers itself
-as a side effect (`nape.phys.Body = Body` at module bottom).
+**What changed:**
+- **`src/core/bootstrap.ts`** created — single place for all `nape.xxx = Foo` assignments,
+  `_createFn` / `_createBodyCb` / `_createColArb` callbacks, `_bindBodyWrapForInteractor` etc.
+- **50+ public API modules** stripped of self-register blocks (`nape.xxx = Foo` + `getNape()`)
+- **`engine.ts`** cleaned — all side-effect imports removed; only `getNape()` + `ensureEnumsReady` remain
+- **`index.ts`** and **`tests/setup.ts`** import `bootstrap.ts` as first side-effect
+- **`package.json`**: `"sideEffects": true` → `["dist/index.js", "dist/index.cjs", "src/core/engine.ts", "src/core/bootstrap.ts"]`
 
-Target architecture:
-```typescript
-// Centralized bootstrap file (src/core/bootstrap.ts):
-import { Body } from "../phys/Body";
-import { ZPP_Body } from "../native/phys/ZPP_Body";
-ZPP_Body._wrapFn = (zpp) => new Body(zpp);
-// ... all registrations here
+**Notes:**
+- `_wrapFn` callbacks (joint pool/wrap logic) remain in their modules — they use `getOrCreate`
+  and extra field setup that is correct only in the module context. `_createFn` is in bootstrap.
+- ZPP list backing classes (`ZPP_PublicList`, `ZPP_MixVec2List`, etc.) still self-register via
+  `getNape()` at module load — these are side-effect imports in bootstrap.ts.
+- True per-class tree shaking is limited by `ZPPRegistry.ts` statically importing all ZPP classes.
+  Full granular shaking would require lazy ZPP registration (future work).
 
-// package.json:
-"sideEffects": ["src/core/engine.ts", "src/core/bootstrap.ts"]
-```
-This allows `import { Vec2 } from "nape-js"` without pulling in Space/Body/Constraints.
-Prerequisite: Priority 23 (direct ZPP imports) and Priority 24 (namespace reduction) done first.
+**Also fixed (discovered during build):**
+- `ZPP_FluidProperties.userData: unknown` → `Record<string, unknown> | null`
+- `ZPP_CbType.userData: unknown` → `Record<string, unknown> | null`
+- `ZPP_Body.ts`: 2 leftover `Any` → `any` (P25 remnant)
+- `CbType.ts` `ANY_*` getters use `as any` cast; `toString()` compares `this as any` to `ZPP_CbType`
 
 ### ✅ Priority 27: HaxeShims.ts final audit — DONE
 
@@ -505,13 +511,9 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
 ### Execution order
 
 ```
-P21 → P22 → P23 → P24 → P27 (all done ✅)
-                ↓
-          P25 (Any → types, in progress)  ←→  P28 (API ergonomics)
-                ↓
-          P26 (tree shaking)
-                ↓
-          P29 (tests)
+P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
+                                ↓
+                          P28 (API ergonomics)  ←→  P29 (tests)
 ```
 
 | Priority | Effort | Impact | Risk | Status |
@@ -521,7 +523,7 @@ P21 → P22 → P23 → P24 → P27 (all done ✅)
 | P23 — `__zpp` → direct imports | M | large | medium | ✅ Done |
 | P24 — Namespace reduction | S | medium | low | ✅ Done |
 | P25 — `Any` → real types | XL | **largest** | medium | ✅ Done |
-| P26 — Tree shaking | L | large | high | ⬜ Pending |
+| P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
 | P28 — API ergonomics | M | DX | low | ⬜ Pending |
 | P29 — Test coverage | M | safety | none | ⬜ Pending |

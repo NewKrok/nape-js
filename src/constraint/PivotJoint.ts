@@ -321,4 +321,3 @@ ZPP_PivotJoint._wrapFn = (zpp: ZPP_PivotJoint): PivotJoint => {
 };
 
 
-ZPP_PivotJoint._createFn = (...args: any[]) => new (PivotJoint as any)(...args);

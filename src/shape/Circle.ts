@@ -188,24 +188,5 @@ export class Circle extends Shape {
 _bindCircleWrap((inner) => Circle._wrap(inner));
 
 const nape = getNape();
-
-// Replace the compiled Circle with our TS class
 nape.shape.Circle = Circle;
 
-// Copy compiled Shape prototype methods for backward compat.
-// Use `in` to check the full prototype chain — methods already defined on
-// Shape.prototype or Interactor.prototype (e.g. toString) must not be overwritten.
-const compiledShapeProto = nape.shape.Shape.prototype;
-for (const k in compiledShapeProto) {
-  if (!(k in Circle.prototype)) {
-    (Circle.prototype as any)[k] = compiledShapeProto[k];
-  }
-}
-
-// Also copy compiled Interactor prototype methods
-const compiledInteractorProto = nape.phys.Interactor.prototype;
-for (const k in compiledInteractorProto) {
-  if (!(k in Circle.prototype)) {
-    (Circle.prototype as any)[k] = compiledInteractorProto[k];
-  }
-}

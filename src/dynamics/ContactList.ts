@@ -473,12 +473,4 @@ ContactListCtor.prototype.filter = function (this: any, lambda: any): any {
 };
 
 
-// ---------------------------------------------------------------------------
-// Register in nape namespace
-// ---------------------------------------------------------------------------
-
-const nape = getNape();
-nape.dynamics.ContactIterator = ContactIterator;
-nape.dynamics.ContactList = ContactListCtor;
-
 export { ContactListCtor as ContactList, ContactIterator };

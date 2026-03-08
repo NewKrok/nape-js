@@ -63,6 +63,5 @@ export class ArbiterType {
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
-
 nape.dynamics.ArbiterType = ArbiterType;
 ensureEnumsReady();

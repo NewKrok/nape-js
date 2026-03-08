@@ -865,9 +865,3 @@ export class Space {
   /** @internal */ get_elapsedTime(): number { return this.elapsedTime; }
 }
 
-// ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
-// ---------------------------------------------------------------------------
-
-const nape = getNape();
-nape.space.Space = Space;

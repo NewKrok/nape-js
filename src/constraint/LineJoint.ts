@@ -410,4 +410,3 @@ ZPP_LineJoint._wrapFn = (zpp: ZPP_LineJoint): LineJoint => {
 };
 
 
-ZPP_LineJoint._createFn = (...args: any[]) => new (LineJoint as any)(...args);

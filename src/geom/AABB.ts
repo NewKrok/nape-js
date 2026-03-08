@@ -477,8 +477,3 @@ ZPP_AABB._wrapFn = (zpp: ZPP_AABB): AABB => {
   });
 };
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled AABB)
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.geom.AABB = AABB;

@@ -38,7 +38,7 @@ export class ZPP_CbType {
   // --- Instance ---
   // outer: public CbType wrapper — any (circular import prevention)
   outer: any = null;
-  userData: unknown = null;
+  userData: Record<string, unknown> | null = null;
   id = 0;
 
   // Callback sets that include this type — ZNPList_ZPP_CbSet (dynamic class, any)

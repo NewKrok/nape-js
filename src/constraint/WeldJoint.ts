@@ -344,4 +344,3 @@ ZPP_WeldJoint._wrapFn = (zpp: ZPP_WeldJoint): WeldJoint => {
 };
 
 
-ZPP_WeldJoint._createFn = (...args: any[]) => new (WeldJoint as any)(...args);

@@ -44,5 +44,3 @@ export class InteractionCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(InteractionCallback as any).__super__ = Callback;
-ZPP_Callback._createIntCb = () => new InteractionCallback();

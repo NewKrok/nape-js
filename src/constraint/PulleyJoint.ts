@@ -578,4 +578,3 @@ ZPP_PulleyJoint._wrapFn = (zpp: ZPP_PulleyJoint): PulleyJoint => {
 };
 
 
-ZPP_PulleyJoint._createFn = (...args: any[]) => new (PulleyJoint as any)(...args);

@@ -136,8 +136,3 @@ ZPP_InteractionGroup._wrapFn = (zpp: ZPP_InteractionGroup): InteractionGroup => 
   });
 };
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled InteractionGroup)
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.dynamics.InteractionGroup = InteractionGroup;

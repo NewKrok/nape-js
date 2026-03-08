@@ -398,4 +398,3 @@ ZPP_DistanceJoint._wrapFn = (zpp: ZPP_DistanceJoint): DistanceJoint => {
   });
 };
 
-ZPP_DistanceJoint._createFn = (...args: any[]) => new (DistanceJoint as any)(...args);

@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_Vec3 } from "../native/geom/ZPP_Vec3";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
@@ -262,8 +261,3 @@ ZPP_Vec3._wrapFn = (zpp: ZPP_Vec3): Vec3 => {
   });
 };
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled Vec3)
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.geom.Vec3 = Vec3;

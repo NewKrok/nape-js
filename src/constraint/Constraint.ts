@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Body } from "../phys/Body";
 import { Space } from "../space/Space";
@@ -404,8 +403,3 @@ export class Constraint {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Self-register: replace compiled nape.constraint.Constraint with TS class
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.constraint.Constraint = Constraint;

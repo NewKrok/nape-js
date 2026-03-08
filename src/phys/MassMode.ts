@@ -51,3 +51,4 @@ export class MassMode {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.MassMode = MassMode;
+

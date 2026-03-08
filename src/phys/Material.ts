@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import type { NapeInner } from "../geom/Vec2";
@@ -288,8 +287,3 @@ ZPP_Material._wrapFn = (zpp: ZPP_Material): Material => {
   });
 };
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled Material)
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.phys.Material = Material;

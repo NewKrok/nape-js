@@ -1901,10 +1901,8 @@ function _invalidateShapes(cur: ZPP_Body): void {
 // ---------------------------------------------------------------------------
 // Self-register in the compiled namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-
-// Replace the compiled Body with our TS class
-nape.phys.Body = Body;
+const _napeBody = getNape();
+_napeBody.phys.Body = Body;
 
 // Bind Body._wrap into Interactor so Interactor._wrap can dispatch without circular import.
 _bindBodyWrapForInteractor((inner) => Body._wrap(inner));

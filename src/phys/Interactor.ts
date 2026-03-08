@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { InteractionGroup } from "../dynamics/InteractionGroup";
 import type { NapeInner, Writable } from "../geom/Vec2";
@@ -168,8 +167,3 @@ export class Interactor {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.phys.Interactor = Interactor;

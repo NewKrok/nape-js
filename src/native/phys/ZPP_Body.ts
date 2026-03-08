@@ -1548,8 +1548,8 @@ export class ZPP_Body {
   wrap_cbTypes_subber!: (pcb: any) => void;
   wrap_cbTypes_adder!: (cb: any) => void;
   setGroup!: (group: any) => void;
-  lookup_group!: () => Any;
-  getSpace!: () => Any;
+  lookup_group!: () => any;
+  getSpace!: () => any;
   isShape!: () => boolean;
   isBody!: () => boolean;
   isCompound!: () => boolean;
@@ -1567,7 +1567,7 @@ export class ZPP_Body {
     // Copy ZPP_Interactor prototype methods onto ZPP_Body
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
       if (k !== "constructor" && k !== "__class__" && !(k in ZPP_Body.prototype)) {
-        (ZPP_Body.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
+        (ZPP_Body.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }
   }

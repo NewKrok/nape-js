@@ -1,9 +1,8 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "./Body";
 import { Space } from "../space/Space";
-import { Interactor, _bindCompoundWrapForInteractor } from "./Interactor";
+import { Interactor } from "./Interactor";
 import { ZPP_Compound } from "../native/phys/ZPP_Compound";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import type { Constraint } from "../constraint/Constraint";
@@ -340,13 +339,6 @@ ZPP_Compound._wrapFn = (zpp: ZPP_Compound): Compound => {
     return c;
   });
 };
-
-// Bind Compound._wrap into Interactor so Interactor._wrap can dispatch.
-_bindCompoundWrapForInteractor((inner) => Compound._wrap(inner));
-
-// Self-register in the compiled namespace
-const nape = getNape();
-nape.phys.Compound = Compound;
 
 // Also define the ES5-style property accessors that compiled code expects
 Object.defineProperty(Compound.prototype, "bodies", {

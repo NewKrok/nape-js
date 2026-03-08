@@ -88,3 +88,4 @@ export class InteractionType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.InteractionType = InteractionType;
+

@@ -276,4 +276,3 @@ export class CollisionArbiter extends Arbiter {
 }
 
 // Self-register in the compiled namespace
-ZPP_Arbiter._createColArb = () => new CollisionArbiter();

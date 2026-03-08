@@ -7,6 +7,9 @@
  * in tests, this setup file provides the equivalent side-effect imports.
  */
 
+// Bootstrap: centralized nape-namespace registrations and factory callbacks
+import "../src/core/bootstrap";
+
 // Callback subclasses
 import "../src/callbacks/BodyCallback";
 import "../src/callbacks/ConstraintCallback";

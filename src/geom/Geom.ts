@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import type { Vec2 } from "./Vec2";
 import type { Shape } from "../shape/Shape";
 import type { Body } from "../phys/Body";
@@ -210,6 +209,3 @@ export class Geom {
   }
 }
 
-// Self-register in the compiled namespace
-const nape = getNape();
-nape.geom.Geom = Geom;
