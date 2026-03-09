@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { FluidProperties } from "../../src/phys/FluidProperties";
+import { Vec2 } from "../../src/geom/Vec2";
 import { ZPP_FluidProperties } from "../../src/native/phys/ZPP_FluidProperties";
 
 describe("FluidProperties", () => {
@@ -88,6 +89,60 @@ describe("FluidProperties", () => {
     }).toThrow("must be >= 0");
   });
 
+  it("should not invalidate when setting same viscosity", () => {
+    const fp = new FluidProperties(1.0, 5.0);
+    fp.viscosity = 5.0;
+    expect(fp.viscosity).toBeCloseTo(5.0);
+  });
+
+  // --- gravity property ---
+
+  it("should get gravity (initially null)", () => {
+    const fp = new FluidProperties();
+    expect(fp.gravity).toBeNull();
+  });
+
+  it("should set gravity via Vec2", () => {
+    const fp = new FluidProperties();
+    fp.gravity = new Vec2(0, -100);
+    const g = fp.gravity;
+    expect(g).not.toBeNull();
+    expect(g.x).toBeCloseTo(0);
+    expect(g.y).toBeCloseTo(-100);
+  });
+
+  it("should update gravity values", () => {
+    const fp = new FluidProperties();
+    fp.gravity = new Vec2(0, -100);
+    fp.gravity = new Vec2(10, -50);
+    expect(fp.gravity.x).toBeCloseTo(10);
+    expect(fp.gravity.y).toBeCloseTo(-50);
+  });
+
+  it("should clear gravity internally", () => {
+    const fp = new FluidProperties();
+    fp.gravity = new Vec2(0, -100);
+    expect(fp.gravity).not.toBeNull();
+    // Clear gravity via internal state (full dispose path needs zpp_nape bootstrap)
+    fp.zpp_inner.wrap_gravity = null;
+    expect(fp.gravity).toBeNull();
+  });
+
+  it("should copy gravity when set", () => {
+    const fp = new FluidProperties(2.0, 0.5);
+    fp.gravity = new Vec2(0, -200);
+    const copy = fp.copy();
+    expect(copy.gravity).not.toBeNull();
+    expect(copy.gravity.x).toBeCloseTo(0);
+    expect(copy.gravity.y).toBeCloseTo(-200);
+  });
+
+  it("should copy without gravity", () => {
+    const fp = new FluidProperties(2.0, 0.5);
+    const copy = fp.copy();
+    expect(copy.gravity).toBeNull();
+  });
+
   // --- userData ---
 
   it("should lazily create userData object", () => {
@@ -102,6 +157,10 @@ describe("FluidProperties", () => {
     fp.userData.key = 42;
     expect(fp.userData.key).toBe(42);
   });
+
+  // --- shapes ---
+  // Note: shapes getter requires full zpp_nape bootstrap (ZPP_ShapeList),
+  // which is available in integration tests but not in isolated unit tests.
 
   // --- copy ---
 
@@ -127,6 +186,12 @@ describe("FluidProperties", () => {
     expect(fp.userData.hello).toBe("world");
   });
 
+  it("should copy as FluidProperties instance", () => {
+    const fp = new FluidProperties(1.0, 1.0);
+    const copy = fp.copy();
+    expect(copy).toBeInstanceOf(FluidProperties);
+  });
+
   // --- toString ---
 
   it("should return string representation", () => {
@@ -135,6 +200,13 @@ describe("FluidProperties", () => {
     expect(str).toContain("density:");
     expect(str).toContain("viscosity:");
     expect(str).toContain("gravity:");
+  });
+
+  it("should include values in toString", () => {
+    const fp = new FluidProperties(3.0, 0.7);
+    const str = fp.toString();
+    expect(str).toContain("3");
+    expect(str).toContain("0.7");
   });
 
   // --- zpp_inner / _inner ---
