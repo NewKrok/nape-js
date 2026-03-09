@@ -67,7 +67,7 @@ export function drawBody(ctx, body, showOutlines = true) {
       }
     } else if (shape.isPolygon()) {
       const verts = shape.castPolygon.localVerts;
-      const len = verts.get_length();
+      const len = verts.length;
       if (len < 3) continue;
 
       ctx.beginPath();
@@ -98,11 +98,11 @@ export function drawBody(ctx, body, showOutlines = true) {
  */
 export function drawConstraints(ctx, space) {
   try {
-    const rawConstraints = space._inner.get_constraints();
-    const cLen = rawConstraints.get_length();
+    const rawConstraints = space.constraints;
+    const cLen = rawConstraints.length;
     for (let i = 0; i < cLen; i++) {
       const c = rawConstraints.at(i);
-      if (c.get_body1 && c.get_body2) {
+      if (c.body1 != null && c.body2 != null) {
         try {
           const b1 = c.body1;
           const b2 = c.body2;

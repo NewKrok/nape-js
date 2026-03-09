@@ -129,7 +129,7 @@ function buildThreeMeshes() {
         geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
       } else if (shape.isPolygon()) {
         const verts = shape.castPolygon.localVerts;
-        const len = verts.get_length();
+        const len = verts.length;
         if (len < 3) continue;
         const pts = [];
         for (let i = 0; i < len; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
@@ -278,7 +278,7 @@ function drawBody(body) {
       ctx.strokeStyle = stroke + "55"; ctx.stroke();
     } else if (shape.isPolygon()) {
       const verts = shape.castPolygon.localVerts;
-      const len = verts.get_length();
+      const len = verts.length;
       if (len < 3) continue;
       ctx.beginPath();
       ctx.moveTo(verts.at(0).x, verts.at(0).y);
@@ -297,8 +297,8 @@ function drawGrid() {
 }
 function drawConstraintLines() {
   try {
-    const raw = space._inner.get_constraints();
-    for (let i = 0; i < raw.get_length(); i++) {
+    const raw = space.constraints;
+    for (let i = 0; i < raw.length; i++) {
       const c = raw.at(i);
       if (c.body1 && c.body2) {
         ctx.beginPath();
@@ -559,7 +559,7 @@ function createMesh(body) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) {
+    for (let i = 0; i < verts.length; i++) {
       pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     }
     const shape2d = new THREE.Shape(pts);
@@ -703,7 +703,7 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    for (let i = 0; i < verts.length; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     const s = new THREE.Shape(pts);
     geom = new THREE.ExtrudeGeometry(s, { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
     geom.translate(0, 0, -15);
@@ -1108,7 +1108,7 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    for (let i = 0; i < verts.length; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     const s = new THREE.Shape(pts);
     geom = new THREE.ExtrudeGeometry(s, { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
     geom.translate(0, 0, -15);
@@ -1369,7 +1369,7 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    for (let i = 0; i < verts.length; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
     geom.translate(0, 0, -15);
   }
@@ -1812,7 +1812,7 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    for (let i = 0; i < verts.length; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
     geom.translate(0, 0, -15);
   }
@@ -1989,7 +1989,7 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    for (let i = 0; i < verts.length; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
     geom.translate(0, 0, -15);
   }
@@ -2276,7 +2276,7 @@ function addMesh(body, color) {
   } else {
     const verts = shape.castPolygon.localVerts;
     const pts = [];
-    for (let i = 0; i < verts.get_length(); i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
+    for (let i = 0; i < verts.length; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
     geom = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 });
     geom.translate(0, 0, -15);
   }
@@ -2462,7 +2462,7 @@ function loop() {
           geom = new THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
         } else if (shape.isPolygon()) {
           const verts = shape.castPolygon.localVerts;
-          const len = verts.get_length();
+          const len = verts.length;
           if (len < 3) continue;
           const pts = [];
           for (let i = 0; i < len; i++) pts.push(new THREE.Vector2(verts.at(i).x, verts.at(i).y));
