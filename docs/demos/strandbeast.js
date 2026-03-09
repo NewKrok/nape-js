@@ -147,7 +147,7 @@ export default {
   step(_space, W, _H) {
     if (!this._motor || !this._chassis) return;
     const x = this._chassis.position.x;
-    const margin = 120;
+    const margin = 220;
     const speed = this._motorSpeed;
     if (x < margin && speed < 0) {
       this._motorSpeed = Math.abs(speed);
