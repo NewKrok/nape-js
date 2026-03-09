@@ -14,28 +14,27 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Collide } from "../geom/ZPP_Collide";
 
-type Any = any;
 
 export class ZPP_SweepPhase {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_SweepPhase"];
-  static __super__: Any = null;
+  static __super__: any = null;
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
-  static _nape: Any = null;
+  static _zpp: any = null;
+  static _nape: any = null;
 
   // --- Instance fields ---
-  failed: Any = null;
+  failed: any = null;
   list: ZPP_SweepData | null = null;
-  space: Any = null;
+  space: any = null;
   is_sweep = false;
-  sweep: Any = null;
+  sweep: any = null;
 
   // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_SweepPhase;
+  __class__: any = ZPP_SweepPhase;
 
-  constructor(space: Any) {
+  constructor(space: any) {
     // Initialize parent fields (ZPP_Broadphase is an ES6 class, can't use .call())
     const ZPP_Broadphase = ZPP_SweepPhase._zpp.space.ZPP_Broadphase;
     ZPP_Broadphase._initFields(this);
@@ -52,14 +51,14 @@ export class ZPP_SweepPhase {
     // Use Object.getOwnPropertyNames since ES6 class methods are non-enumerable
     Object.getOwnPropertyNames(parentProto).forEach((k) => {
       if (k !== "constructor" && !(k in ZPP_SweepPhase.prototype)) {
-        (ZPP_SweepPhase.prototype as Any)[k] = parentProto[k];
+        (ZPP_SweepPhase.prototype as any)[k] = parentProto[k];
       }
     });
   }
 
   // ========== Insert / Remove ==========
 
-  __insert(shape: Any): void {
+  __insert(shape: any): void {
     let dat: ZPP_SweepData;
     if (ZPP_SweepData.zpp_pool == null) {
       dat = new ZPP_SweepData();
@@ -78,7 +77,7 @@ export class ZPP_SweepPhase {
     this.list = dat;
   }
 
-  __remove(shape: Any): void {
+  __remove(shape: any): void {
     const dat = shape.sweep as ZPP_SweepData;
     if (dat.prev == null) {
       this.list = dat.next;
@@ -99,7 +98,7 @@ export class ZPP_SweepPhase {
 
   // ========== Sync (AABB update for shape) ==========
 
-  __sync(shape: Any): void {
+  __sync(shape: any): void {
     if (!this.space.continuous) {
       if (shape.zip_aabb) {
         if (shape.body != null) {
@@ -250,7 +249,7 @@ export class ZPP_SweepPhase {
   // ========== Broadphase sorting ==========
 
   sync_broadphase(): void {
-    (this as Any).space.validation();
+    (this as any).space.validation();
     if (this.list != null) {
       let a: ZPP_SweepData | null = this.list.next;
       while (a != null) {
@@ -314,7 +313,7 @@ export class ZPP_SweepPhase {
 
   // ========== Broadphase pair detection ==========
 
-  broadphase(space: Any, discrete: boolean): void {
+  broadphase(space: any, discrete: boolean): void {
     if (this.list != null) {
       // Insertion sort pass
       let a: ZPP_SweepData | null = this.list.next;
@@ -397,10 +396,10 @@ export class ZPP_SweepPhase {
 
   // ========== Spatial queries: shapes/bodies under point ==========
 
-  shapesUnderPoint(x: number, y: number, filter: Any, output: Any): Any {
+  shapesUnderPoint(x: number, y: number, filter: any, output: any): any {
     this.sync_broadphase();
 
-    let ret: Any;
+    let ret: any;
     if (ZPP_Vec2.zpp_pool == null) {
       ret = new ZPP_Vec2();
     } else {
@@ -416,7 +415,7 @@ export class ZPP_SweepPhase {
 
     const ret1 = output == null ? new ZPP_SweepPhase._nape.shape.ShapeList() : output;
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.minx > x) a = a.next;
     while (a != null && a.aabb.minx <= x) {
       if (a.aabb.maxx >= x && a.aabb.miny <= y && a.aabb.maxy >= y) {
@@ -458,10 +457,10 @@ export class ZPP_SweepPhase {
     return ret1;
   }
 
-  bodiesUnderPoint(x: number, y: number, filter: Any, output: Any): Any {
+  bodiesUnderPoint(x: number, y: number, filter: any, output: any): any {
     this.sync_broadphase();
 
-    let ret: Any;
+    let ret: any;
     if (ZPP_Vec2.zpp_pool == null) {
       ret = new ZPP_Vec2();
     } else {
@@ -477,7 +476,7 @@ export class ZPP_SweepPhase {
 
     const ret1 = output == null ? new ZPP_SweepPhase._nape.phys.BodyList() : output;
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.minx > x) a = a.next;
     while (a != null && a.aabb.minx <= x) {
       if (a.aabb.maxx >= x && a.aabb.miny <= y && a.aabb.maxy >= y) {
@@ -524,13 +523,13 @@ export class ZPP_SweepPhase {
 
   // ========== Spatial queries: shapes/bodies in AABB ==========
 
-  shapesInAABB(aabb: Any, strict: boolean, containment: boolean, filter: Any, output: Any): Any {
+  shapesInAABB(aabb: any, strict: boolean, containment: boolean, filter: any, output: any): any {
     this.sync_broadphase();
-    (this as Any).updateAABBShape(aabb);
-    const ab = (this as Any).aabbShape.zpp_inner.aabb;
+    (this as any).updateAABBShape(aabb);
+    const ab = (this as any).aabbShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_SweepPhase._nape.shape.ShapeList() : output;
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.maxx < ab.minx) a = a.next;
     while (a != null && a.aabb.minx <= ab.maxx) {
       const shape = a.shape;
@@ -546,7 +545,7 @@ export class ZPP_SweepPhase {
       if (tmp) {
         if (strict) {
           if (containment) {
-            if (ZPP_Collide.containTest((this as Any).aabbShape.zpp_inner, shape)) {
+            if (ZPP_Collide.containTest((this as any).aabbShape.zpp_inner, shape)) {
               ret.push(shape.outer);
             }
           } else {
@@ -561,7 +560,7 @@ export class ZPP_SweepPhase {
                 ab.minx <= _this1.maxx &&
                 _this1.minx <= ab.maxx
               ) {
-                if (ZPP_Collide.testCollide_safe(shape, (this as Any).aabbShape.zpp_inner)) {
+                if (ZPP_Collide.testCollide_safe(shape, (this as any).aabbShape.zpp_inner)) {
                   ret.push(shape.outer);
                 }
               }
@@ -591,16 +590,16 @@ export class ZPP_SweepPhase {
     return ret;
   }
 
-  bodiesInAABB(aabb: Any, strict: boolean, containment: boolean, filter: Any, output: Any): Any {
+  bodiesInAABB(aabb: any, strict: boolean, containment: boolean, filter: any, output: any): any {
     this.sync_broadphase();
-    (this as Any).updateAABBShape(aabb);
-    const ab = (this as Any).aabbShape.zpp_inner.aabb;
+    (this as any).updateAABBShape(aabb);
+    const ab = (this as any).aabbShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_SweepPhase._nape.phys.BodyList() : output;
     if (this.failed == null) {
       this.failed = new ZPP_SweepPhase._nape.phys.BodyList();
     }
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.maxx < ab.minx) a = a.next;
     while (a != null && a.aabb.minx <= ab.maxx) {
       const shape = a.shape;
@@ -625,7 +624,7 @@ export class ZPP_SweepPhase {
           if (strict) {
             if (containment) {
               if (!this.failed.has(body)) {
-                const col = ZPP_Collide.containTest((this as Any).aabbShape.zpp_inner, shape);
+                const col = ZPP_Collide.containTest((this as any).aabbShape.zpp_inner, shape);
                 if (!ret.has(body) && col) {
                   ret.push(body);
                 } else if (!col) {
@@ -635,7 +634,7 @@ export class ZPP_SweepPhase {
               }
             } else if (
               !ret.has(body) &&
-              ZPP_Collide.testCollide_safe(shape, (this as Any).aabbShape.zpp_inner)
+              ZPP_Collide.testCollide_safe(shape, (this as any).aabbShape.zpp_inner)
             ) {
               ret.push(body);
             }
@@ -682,15 +681,15 @@ export class ZPP_SweepPhase {
     y: number,
     r: number,
     containment: boolean,
-    filter: Any,
-    output: Any,
-  ): Any {
+    filter: any,
+    output: any,
+  ): any {
     this.sync_broadphase();
-    (this as Any).updateCircShape(x, y, r);
-    const ab = (this as Any).circShape.zpp_inner.aabb;
+    (this as any).updateCircShape(x, y, r);
+    const ab = (this as any).circShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_SweepPhase._nape.shape.ShapeList() : output;
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.maxx < ab.minx) a = a.next;
     while (a != null && a.aabb.minx <= ab.maxx) {
       const _this = a.aabb;
@@ -712,10 +711,10 @@ export class ZPP_SweepPhase {
         }
         if (tmp) {
           if (containment) {
-            if (ZPP_Collide.containTest((this as Any).circShape.zpp_inner, shape)) {
+            if (ZPP_Collide.containTest((this as any).circShape.zpp_inner, shape)) {
               ret.push(shape.outer);
             }
-          } else if (ZPP_Collide.testCollide_safe(shape, (this as Any).circShape.zpp_inner)) {
+          } else if (ZPP_Collide.testCollide_safe(shape, (this as any).circShape.zpp_inner)) {
             ret.push(shape.outer);
           }
         }
@@ -730,18 +729,18 @@ export class ZPP_SweepPhase {
     y: number,
     r: number,
     containment: boolean,
-    filter: Any,
-    output: Any,
-  ): Any {
+    filter: any,
+    output: any,
+  ): any {
     this.sync_broadphase();
-    (this as Any).updateCircShape(x, y, r);
-    const ab = (this as Any).circShape.zpp_inner.aabb;
+    (this as any).updateCircShape(x, y, r);
+    const ab = (this as any).circShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_SweepPhase._nape.phys.BodyList() : output;
     if (this.failed == null) {
       this.failed = new ZPP_SweepPhase._nape.phys.BodyList();
     }
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.maxx < ab.minx) a = a.next;
     while (a != null && a.aabb.minx <= ab.maxx) {
       const _this = a.aabb;
@@ -765,7 +764,7 @@ export class ZPP_SweepPhase {
         if (tmp) {
           if (containment) {
             if (!this.failed.has(body)) {
-              const col = ZPP_Collide.containTest((this as Any).circShape.zpp_inner, shape);
+              const col = ZPP_Collide.containTest((this as any).circShape.zpp_inner, shape);
               if (!ret.has(body) && col) {
                 ret.push(body);
               } else if (!col) {
@@ -775,7 +774,7 @@ export class ZPP_SweepPhase {
             }
           } else if (
             !ret.has(body) &&
-            ZPP_Collide.testCollide_safe(shape, (this as Any).circShape.zpp_inner)
+            ZPP_Collide.testCollide_safe(shape, (this as any).circShape.zpp_inner)
           ) {
             ret.push(body);
           }
@@ -789,13 +788,13 @@ export class ZPP_SweepPhase {
 
   // ========== Spatial queries: shapes/bodies in shape ==========
 
-  shapesInShape(shape: Any, containment: boolean, filter: Any, output: Any): Any {
+  shapesInShape(shape: any, containment: boolean, filter: any, output: any): any {
     this.sync_broadphase();
-    (this as Any).validateShape(shape);
+    (this as any).validateShape(shape);
     const ab = shape.aabb;
     const ret = output == null ? new ZPP_SweepPhase._nape.shape.ShapeList() : output;
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.maxx < ab.minx) a = a.next;
     while (a != null && a.aabb.minx <= ab.maxx) {
       const _this = a.aabb;
@@ -830,16 +829,16 @@ export class ZPP_SweepPhase {
     return ret;
   }
 
-  bodiesInShape(shape: Any, containment: boolean, filter: Any, output: Any): Any {
+  bodiesInShape(shape: any, containment: boolean, filter: any, output: any): any {
     this.sync_broadphase();
-    (this as Any).validateShape(shape);
+    (this as any).validateShape(shape);
     const ab = shape.aabb;
     const ret = output == null ? new ZPP_SweepPhase._nape.phys.BodyList() : output;
     if (this.failed == null) {
       this.failed = new ZPP_SweepPhase._nape.phys.BodyList();
     }
 
-    let a: Any = this.list;
+    let a: any = this.list;
     while (a != null && a.aabb.maxx < ab.minx) a = a.next;
     while (a != null && a.aabb.minx <= ab.maxx) {
       const _this = a.aabb;
@@ -884,15 +883,15 @@ export class ZPP_SweepPhase {
 
   // ========== Raycasting ==========
 
-  rayCast(ray: Any, inner: boolean, filter: Any): Any {
+  rayCast(ray: any, inner: boolean, filter: any): any {
     this.sync_broadphase();
     ray.validate_dir();
     const rayab = ray.rayAABB();
     let mint = ray.maxdist;
-    let minres: Any = null;
+    let minres: any = null;
 
     if (ray.dirx == 0) {
-      let a: Any = this.list;
+      let a: any = this.list;
       while (a != null && a.aabb.minx <= rayab.minx) {
         let tmp: boolean;
         const _this = a.aabb;
@@ -938,8 +937,8 @@ export class ZPP_SweepPhase {
         a = a.next;
       }
     } else if (ray.dirx < 0) {
-      let a1: Any = this.list;
-      let b: Any = null;
+      let a1: any = this.list;
+      let b: any = null;
       while (a1 != null && a1.aabb.minx <= rayab.maxx) {
         b = a1;
         a1 = a1.next;
@@ -990,7 +989,7 @@ export class ZPP_SweepPhase {
         a1 = a1.prev;
       }
     } else {
-      let a2: Any = this.list;
+      let a2: any = this.list;
       while (
         a2 != null &&
         a2.aabb.minx <= rayab.maxx &&
@@ -1056,14 +1055,14 @@ export class ZPP_SweepPhase {
     return minres;
   }
 
-  rayMultiCast(ray: Any, inner: boolean, filter: Any, output: Any): Any {
+  rayMultiCast(ray: any, inner: boolean, filter: any, output: any): any {
     this.sync_broadphase();
     ray.validate_dir();
     const rayab = ray.rayAABB();
     const ret = output == null ? new ZPP_SweepPhase._nape.geom.RayResultList() : output;
 
     if (ray.dirx == 0) {
-      let a: Any = this.list;
+      let a: any = this.list;
       while (a != null && a.aabb.minx <= rayab.minx) {
         let tmp: boolean;
         const _this = a.aabb;
@@ -1097,8 +1096,8 @@ export class ZPP_SweepPhase {
         a = a.next;
       }
     } else if (ray.dirx < 0) {
-      let a1: Any = this.list;
-      let b: Any = null;
+      let a1: any = this.list;
+      let b: any = null;
       while (a1 != null && a1.aabb.minx <= rayab.maxx) {
         b = a1;
         a1 = a1.next;
@@ -1137,7 +1136,7 @@ export class ZPP_SweepPhase {
         a1 = a1.prev;
       }
     } else {
-      let a2: Any = this.list;
+      let a2: any = this.list;
       while (a2 != null && a2.aabb.minx <= rayab.maxx) {
         let tmp2: boolean;
         const _this4 = a2.aabb;

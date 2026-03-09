@@ -45,7 +45,6 @@ describe("ZPP_Material", () => {
       expect(m.userData).toBeNull();
       expect(m.next).toBeNull();
       expect(m.wrap_shapes).toBeNull();
-      expect(m.__class__).toBe(ZPP_Material);
     });
   });
 

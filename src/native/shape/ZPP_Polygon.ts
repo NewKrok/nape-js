@@ -9,28 +9,26 @@
 
 import { ZPP_Edge } from "./ZPP_Edge";
 
-type Any = any;
-
 export class ZPP_Polygon {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "shape", "ZPP_Polygon"];
-  static __super__: Any = null;
+  static __super__: any = null;
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: init guard ---
   static _initialized = false;
 
   // --- Instance: polygon-specific ---
-  outer_zn: Any = null;
-  lverts: Any = null;
-  wrap_lverts: Any = null;
-  gverts: Any = null;
-  wrap_gverts: Any = null;
-  edges: Any = null;
-  wrap_edges: Any = null;
+  outer_zn: any = null;
+  lverts: any = null;
+  wrap_lverts: any = null;
+  gverts: any = null;
+  wrap_gverts: any = null;
+  edges: any = null;
+  wrap_edges: any = null;
   edgeCnt = 0;
   reverse_flag = false;
 
@@ -41,17 +39,14 @@ export class ZPP_Polygon {
   zip_gaxi = false;
   zip_valid = false;
   zip_sanitation = false;
-  validation: Any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Polygon;
+  validation: any = null;
 
   // --- Stub declarations for methods inherited from ZPP_Shape/ZPP_Interactor ---
-  body: Any;
+  body: any;
   type!: number;
-  circle: Any;
-  polygon: Any;
-  aabb: Any;
+  circle: any;
+  polygon: any;
+  aabb: any;
   localCOMx!: number;
   localCOMy!: number;
   worldCOMx!: number;
@@ -67,11 +62,11 @@ export class ZPP_Polygon {
   angDrag!: number;
   sweepCoef!: number;
   sweepRadius!: number;
-  material: Any;
-  filter: Any;
-  wrap_localCOM: Any;
-  outer: Any;
-  outer_i: Any;
+  material: any;
+  filter: any;
+  wrap_localCOM: any;
+  outer: any;
+  outer_i: any;
   invalidate_area_inertia!: () => void;
   invalidate_angDrag!: () => void;
   invalidate_localCOM!: () => void;
@@ -80,9 +75,9 @@ export class ZPP_Polygon {
   validate_localCOM!: () => void;
   immutable_midstep!: (name: string) => void;
   wake!: () => void;
-  setMaterial!: (m: Any) => void;
-  setFilter!: (f: Any) => void;
-  insert_cbtype!: (cb: Any) => void;
+  setMaterial!: (m: any) => void;
+  setFilter!: (f: any) => void;
+  insert_cbtype!: (cb: any) => void;
 
   constructor() {
     this.zip_sanitation = false;
@@ -103,7 +98,7 @@ export class ZPP_Polygon {
 
     const zpp = ZPP_Polygon._zpp;
     // Call ZPP_Shape initializer (type=1 for polygon)
-    (this as Any)._initShape(1);
+    (this as any)._initShape(1);
     this.polygon = this;
     this.lverts = new zpp.geom.ZPP_Vec2();
     this.gverts = new zpp.geom.ZPP_Vec2();
@@ -119,7 +114,7 @@ export class ZPP_Polygon {
     ZPP_Polygon.__super__ = zpp.shape.ZPP_Shape;
 
     const srcProto = zpp.shape.ZPP_Shape.prototype;
-    const dstProto = ZPP_Polygon.prototype as Any;
+    const dstProto = ZPP_Polygon.prototype as any;
 
     // Copy enumerable inherited properties (e.g., ZPP_Interactor methods)
     for (const k in srcProto) {
@@ -144,7 +139,7 @@ export class ZPP_Polygon {
 
   // --- Vertex list callbacks ---
 
-  lverts_pa_invalidate(_x: Any): void {
+  lverts_pa_invalidate(_x: any): void {
     this.invalidate_lverts();
   }
 
@@ -165,13 +160,13 @@ export class ZPP_Polygon {
     this._validateGverts();
   }
 
-  lverts_post_adder(x: Any): void {
+  lverts_post_adder(x: any): void {
     const zpp = ZPP_Polygon._zpp;
     x.zpp_inner._invalidate = this.lverts_pa_invalidate.bind(this);
     x.zpp_inner._isimmutable = this.lverts_pa_immutable.bind(this);
 
-    let ite: Any = null;
-    let ite2: Any = null;
+    let ite: any = null;
+    let ite2: any = null;
     let cx_ite = this.lverts.next;
     while (cx_ite != null) {
       if (cx_ite === x.zpp_inner) {
@@ -184,7 +179,7 @@ export class ZPP_Polygon {
     }
 
     // Allocate a gvert
-    let vec: Any;
+    let vec: any;
     if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
       vec = new zpp.geom.ZPP_Vec2();
     } else {
@@ -240,11 +235,11 @@ export class ZPP_Polygon {
     vec._validate = this.gverts_pa_validate.bind(this);
   }
 
-  lverts_subber(x: Any): void {
+  lverts_subber(x: any): void {
     this.cleanup_lvert(x.zpp_inner);
   }
 
-  lverts_invalidate(_: Any): void {
+  lverts_invalidate(_: any): void {
     this.invalidate_lverts();
   }
 
@@ -487,10 +482,10 @@ export class ZPP_Polygon {
   }
 
   // --- Vertex cleanup ---
-  cleanup_lvert(x: Any): void {
+  cleanup_lvert(x: any): void {
     const zpp = ZPP_Polygon._zpp;
-    let ite: Any = null;
-    let ite2: Any = null;
+    let ite: any = null;
+    let ite2: any = null;
     let cx_ite = this.lverts.next;
     while (cx_ite != null) {
       if (cx_ite === x) {
@@ -551,7 +546,7 @@ export class ZPP_Polygon {
     if (this.lverts.next.next.next == null) return;
 
     // Remove duplicate vertices
-    let pre: Any = null;
+    let pre: any = null;
     let cur = this.lverts.next;
     while (cur != null) {
       const nxt = cur.next == null ? this.lverts.next : cur.next;
@@ -613,7 +608,7 @@ export class ZPP_Polygon {
   }
 
   // --- Validity check ---
-  valid(): Any {
+  valid(): any {
     const nape = ZPP_Polygon._nape;
     const zpp = ZPP_Polygon._zpp;
     if (this.zip_valid) {
@@ -780,7 +775,7 @@ export class ZPP_Polygon {
   }
 
   /** Helper: check if two edges (u1→v1) and (a→b) do NOT intersect */
-  private _checkNoIntersection(u1: Any, v1: Any, a: Any, b: Any, nape: Any): boolean {
+  private _checkNoIntersection(u1: any, v1: any, a: any, b: any, nape: any): boolean {
     const sx = u1.x - a.x;
     const sy = u1.y - a.y;
     const vx = v1.x - u1.x;
@@ -1094,7 +1089,7 @@ export class ZPP_Polygon {
     this.validate_localCOM();
   }
 
-  localCOM_invalidate(x: Any): void {
+  localCOM_invalidate(x: any): void {
     this.validate_localCOM();
     const delx = x.x - this.localCOMx;
     const dely = x.y - this.localCOMy;
@@ -1115,7 +1110,7 @@ export class ZPP_Polygon {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -1128,7 +1123,7 @@ export class ZPP_Polygon {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -1187,7 +1182,7 @@ export class ZPP_Polygon {
     this.invalidate_lverts();
   }
 
-  __transform(mat: Any): void {
+  __transform(mat: any): void {
     let cx_ite = this.lverts.next;
     while (cx_ite != null) {
       const t = mat.zpp_inner.a * cx_ite.x + mat.zpp_inner.b * cx_ite.y + mat.zpp_inner.tx;
@@ -1198,7 +1193,7 @@ export class ZPP_Polygon {
     this.invalidate_lverts();
   }
 
-  __copy(): Any {
+  __copy(): any {
     const nape = ZPP_Polygon._nape;
     if (this.outer_zn.zpp_inner_zn.wrap_lverts == null) {
       this.outer_zn.zpp_inner_zn.getlverts();
@@ -1206,7 +1201,7 @@ export class ZPP_Polygon {
     // Convert Vec2List to Array<Vec2> since the compiled Polygon constructor's
     // Vec2List branch was removed during list extraction.
     const lverts = this.outer_zn.zpp_inner_zn.wrap_lverts;
-    const arr: Any[] = [];
+    const arr: any[] = [];
     const iter = lverts.iterator();
     while (iter.hasNext()) {
       arr.push(iter.next());

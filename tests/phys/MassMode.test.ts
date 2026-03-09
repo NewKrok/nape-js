@@ -12,33 +12,32 @@ describe("MassMode", () => {
   });
 
   it("should return DEFAULT singleton", () => {
-    const a = MassMode.get_DEFAULT();
-    const b = MassMode.get_DEFAULT();
+    const a = MassMode.DEFAULT;
+    const b = MassMode.DEFAULT;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(MassMode);
   });
 
   it("should return FIXED singleton", () => {
-    const a = MassMode.get_FIXED();
-    const b = MassMode.get_FIXED();
+    const a = MassMode.FIXED;
+    const b = MassMode.FIXED;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(MassMode);
   });
 
   it("should return distinct instances for each mode", () => {
-    expect(MassMode.get_DEFAULT()).not.toBe(MassMode.get_FIXED());
+    expect(MassMode.DEFAULT).not.toBe(MassMode.FIXED);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    const def = MassMode.get_DEFAULT();
-    expect(ZPP_Flags.MassMode_DEFAULT).toBe(def);
+    expect(ZPP_Flags.MassMode_DEFAULT).toBe(MassMode.DEFAULT);
   });
 
   it("DEFAULT toString should return 'DEFAULT'", () => {
-    expect(MassMode.get_DEFAULT().toString()).toBe("DEFAULT");
+    expect(MassMode.DEFAULT.toString()).toBe("DEFAULT");
   });
 
   it("FIXED toString should return 'FIXED'", () => {
-    expect(MassMode.get_FIXED().toString()).toBe("FIXED");
+    expect(MassMode.FIXED.toString()).toBe("FIXED");
   });
 });

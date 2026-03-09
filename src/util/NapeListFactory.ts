@@ -145,19 +145,19 @@ export function createListClasses(spec: ListSpec): {
 
   TypedList.prototype.zpp_inner = null;
 
-  // get_length + length property
-  TypedList.prototype.get_length = function (this: Any): number {
-    this.zpp_inner.valmod();
-    if (this.zpp_inner.zip_length) {
-      this.zpp_inner.zip_length = false;
-      this.zpp_inner.user_length = this.zpp_inner.inner.length;
+  // Internal length helper (not exposed on the prototype as get_length)
+  function _getLength(list: Any): number {
+    list.zpp_inner.valmod();
+    if (list.zpp_inner.zip_length) {
+      list.zpp_inner.zip_length = false;
+      list.zpp_inner.user_length = list.zpp_inner.inner.length;
     }
-    return this.zpp_inner.user_length;
-  };
+    return list.zpp_inner.user_length;
+  }
 
   Object.defineProperty(TypedList.prototype, "length", {
     get: function (this: Any) {
-      return this.get_length();
+      return _getLength(this);
     },
   });
 
@@ -168,11 +168,11 @@ export function createListClasses(spec: ListSpec): {
 
   TypedList.prototype.at = function (this: Any, index: number): Any {
     this.zpp_inner.valmod();
-    if (index < 0 || index >= this.get_length()) {
+    if (index < 0 || index >= _getLength(this)) {
       throw new Error("Error: Index out of bounds");
     }
     if (this.zpp_inner.reverse_flag) {
-      index = this.get_length() - 1 - index;
+      index = _getLength(this) - 1 - index;
     }
     if (index < this.zpp_inner.at_index || this.zpp_inner.at_ite == null) {
       this.zpp_inner.at_index = index;
@@ -201,7 +201,7 @@ export function createListClasses(spec: ListSpec): {
           this.zpp_inner.push_ite =
             this.zpp_inner.inner.head == null
               ? null
-              : this.zpp_inner.inner.iterator_at(this.get_length() - 1);
+              : this.zpp_inner.inner.iterator_at(_getLength(this) - 1);
         }
         this.zpp_inner.push_ite = this.zpp_inner.inner.insert(
           this.zpp_inner.push_ite,
@@ -229,7 +229,7 @@ export function createListClasses(spec: ListSpec): {
           this.zpp_inner.push_ite =
             this.zpp_inner.inner.head == null
               ? null
-              : this.zpp_inner.inner.iterator_at(this.get_length() - 1);
+              : this.zpp_inner.inner.iterator_at(_getLength(this) - 1);
         }
         this.zpp_inner.push_ite = this.zpp_inner.inner.insert(
           this.zpp_inner.push_ite,
@@ -270,10 +270,10 @@ export function createListClasses(spec: ListSpec): {
         this.zpp_inner.at_ite = null;
       }
       let ite: Any;
-      if (this.get_length() == 1) {
+      if (_getLength(this) == 1) {
         ite = null;
       } else {
-        ite = this.zpp_inner.inner.iterator_at(this.get_length() - 2);
+        ite = this.zpp_inner.inner.iterator_at(_getLength(this) - 2);
       }
       ret = ite == null ? this.zpp_inner.inner.head.elt : ite.next.elt;
       const retx = wrapElement(ret);
@@ -303,10 +303,10 @@ export function createListClasses(spec: ListSpec): {
         this.zpp_inner.at_ite = null;
       }
       let ite: Any;
-      if (this.get_length() == 1) {
+      if (_getLength(this) == 1) {
         ite = null;
       } else {
-        ite = this.zpp_inner.inner.iterator_at(this.get_length() - 2);
+        ite = this.zpp_inner.inner.iterator_at(_getLength(this) - 2);
       }
       ret = ite == null ? this.zpp_inner.inner.head.elt : ite.next.elt;
       const retx = wrapElement(ret);
@@ -456,7 +456,7 @@ export function createListClasses(spec: ListSpec): {
       throw new Error("Error: Cannot select elements of list with null");
     }
     let i = 0;
-    while (i < this.get_length()) {
+    while (i < _getLength(this)) {
       const x = this.at(i);
       try {
         if (lambda(x)) {

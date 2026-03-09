@@ -12,33 +12,32 @@ describe("Broadphase", () => {
   });
 
   it("should return DYNAMIC_AABB_TREE singleton", () => {
-    const a = Broadphase.get_DYNAMIC_AABB_TREE();
-    const b = Broadphase.get_DYNAMIC_AABB_TREE();
+    const a = Broadphase.DYNAMIC_AABB_TREE;
+    const b = Broadphase.DYNAMIC_AABB_TREE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(Broadphase);
   });
 
   it("should return SWEEP_AND_PRUNE singleton", () => {
-    const a = Broadphase.get_SWEEP_AND_PRUNE();
-    const b = Broadphase.get_SWEEP_AND_PRUNE();
+    const a = Broadphase.SWEEP_AND_PRUNE;
+    const b = Broadphase.SWEEP_AND_PRUNE;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(Broadphase);
   });
 
   it("should return distinct instances for each type", () => {
-    expect(Broadphase.get_DYNAMIC_AABB_TREE()).not.toBe(Broadphase.get_SWEEP_AND_PRUNE());
+    expect(Broadphase.DYNAMIC_AABB_TREE).not.toBe(Broadphase.SWEEP_AND_PRUNE);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    const tree = Broadphase.get_DYNAMIC_AABB_TREE();
-    expect(ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE).toBe(tree);
+    expect(ZPP_Flags.Broadphase_DYNAMIC_AABB_TREE).toBe(Broadphase.DYNAMIC_AABB_TREE);
   });
 
   it("DYNAMIC_AABB_TREE toString should return 'DYNAMIC_AABB_TREE'", () => {
-    expect(Broadphase.get_DYNAMIC_AABB_TREE().toString()).toBe("DYNAMIC_AABB_TREE");
+    expect(Broadphase.DYNAMIC_AABB_TREE.toString()).toBe("DYNAMIC_AABB_TREE");
   });
 
   it("SWEEP_AND_PRUNE toString should return 'SWEEP_AND_PRUNE'", () => {
-    expect(Broadphase.get_SWEEP_AND_PRUNE().toString()).toBe("SWEEP_AND_PRUNE");
+    expect(Broadphase.SWEEP_AND_PRUNE.toString()).toBe("SWEEP_AND_PRUNE");
   });
 });

@@ -10,35 +10,31 @@
 
 import { ZPP_ID } from "../util/ZPP_ID";
 
-type Any = any;
-
 export class ZPP_Listener {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "callbacks", "ZPP_Listener"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: internal flag (prevents direct instantiation from public API) ---
   static internal = false;
 
   // --- Static: types and events arrays (initialized at engine init time) ---
-  static types: Any[] = [];
-  static events: Any[] = [];
+  static types: any[] = [];
+  static events: any[] = [];
 
   // --- Instance ---
-  space: Any = null;
-  interaction: Any = null;
-  constraint: Any = null;
-  body: Any = null;
+  space: any = null;
+  interaction: any = null;
+  constraint: any = null;
+  body: any = null;
   precedence = 0;
   event = 0;
   type = 0;
   id = 0;
-  outer: Any = null;
-
-  __class__: Any = ZPP_Listener;
+  outer: any = null;
 
   constructor() {
     this.id = ZPP_ID.Listener();
@@ -67,7 +63,7 @@ export class ZPP_Listener {
    * Initialize singleton enum arrays. Called once from compiled factory after
    * nape.callbacks.ListenerType and nape.callbacks.CbEvent stubs exist.
    */
-  static _initEnums(nape: Any, ZPP_Flags: Any): void {
+  static _initEnums(nape: any, ZPP_Flags: any): void {
     // ListenerType singletons
     const mkLT = () => { ZPP_Flags.internal = true; const o = new nape.callbacks.ListenerType(); ZPP_Flags.internal = false; return o; };
     if (ZPP_Flags.ListenerType_BODY == null) ZPP_Flags.ListenerType_BODY = mkLT();

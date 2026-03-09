@@ -286,19 +286,19 @@ describe("ZPP_Polygon (via public API)", () => {
     it("box should have 4 local vertices", () => {
       const p = new Polygon(Polygon.box(100, 50));
       const verts = p.localVerts;
-      expect(verts.get_length()).toBe(4);
+      expect(verts.length).toBe(4);
     });
 
     it("regular hexagon should have 6 local vertices", () => {
       const p = new Polygon(Polygon.regular(50, 50, 6));
       const verts = p.localVerts;
-      expect(verts.get_length()).toBe(6);
+      expect(verts.length).toBe(6);
     });
 
     it("regular triangle should have 3 local vertices", () => {
       const p = new Polygon(Polygon.regular(50, 50, 3));
       const verts = p.localVerts;
-      expect(verts.get_length()).toBe(3);
+      expect(verts.length).toBe(3);
     });
   });
 
@@ -306,13 +306,13 @@ describe("ZPP_Polygon (via public API)", () => {
     it("box should have 4 edges", () => {
       const p = new Polygon(Polygon.box(100, 50));
       const edges = p.edges;
-      expect(edges.get_length()).toBe(4);
+      expect(edges.length).toBe(4);
     });
 
     it("triangle should have 3 edges", () => {
       const p = new Polygon(Polygon.regular(50, 50, 3));
       const edges = p.edges;
-      expect(edges.get_length()).toBe(3);
+      expect(edges.length).toBe(3);
     });
   });
 
@@ -321,13 +321,13 @@ describe("ZPP_Polygon (via public API)", () => {
       const p = new Polygon(Polygon.box(100, 50));
       const v = p.validity();
       expect(v).toBeDefined();
-      expect(v).toBe(ValidationResult.get_VALID());
+      expect(v).toBe(ValidationResult.VALID);
     });
 
     it("regular polygon should be valid", () => {
       const p = new Polygon(Polygon.regular(50, 50, 5));
       const v = p.validity();
-      expect(v).toBe(ValidationResult.get_VALID());
+      expect(v).toBe(ValidationResult.VALID);
     });
   });
 
@@ -337,7 +337,7 @@ describe("ZPP_Polygon (via public API)", () => {
       const p = new Polygon(Polygon.box(100, 50));
       body.shapes.add(p);
       const wv = p.worldVerts;
-      expect(wv.get_length()).toBe(4);
+      expect(wv.length).toBe(4);
     });
   });
 
@@ -380,7 +380,7 @@ describe("ZPP_Polygon (via public API)", () => {
 
     it("regular creates a regular polygon with specified sides", () => {
       const p = new Polygon(Polygon.regular(30, 30, 8));
-      expect(p.localVerts.get_length()).toBe(8);
+      expect(p.localVerts.length).toBe(8);
     });
   });
 });

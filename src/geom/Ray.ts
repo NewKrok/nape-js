@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2 } from "./Vec2";
 import { AABB } from "./AABB";
@@ -244,9 +243,3 @@ export class Ray {
   /** @internal */ get_userData(): Record<string, unknown> { return this.userData; }
 }
 
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
-
-const nape = getNape();
-nape.geom.Ray = Ray;

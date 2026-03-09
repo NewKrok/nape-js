@@ -95,15 +95,6 @@ describe("LineJoint (modernized)", () => {
     expect(visited).toHaveLength(2);
   });
 
-  it("should provide backward-compat methods", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
-    expect(joint.zpp_inner_zn).toBe(joint.zpp_inner);
-    expect(joint.get_jointMin()).toBeCloseTo(-10);
-    expect(joint.get_jointMax()).toBeCloseTo(10);
-    joint.set_jointMin(-20);
-    expect(joint.jointMin).toBeCloseTo(-20);
-  });
-
   it("should work with _wrap from ZPP instance", () => {
     const zpp = new ZPP_LineJoint();
     zpp.jointMin = -30;

@@ -7,8 +7,6 @@
  * Converted from nape-compiled.js lines 41828–42175.
  */
 
-type Any = any;
-
 export class ZPP_Edge {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "shape", "ZPP_Edge"];
@@ -20,30 +18,30 @@ export class ZPP_Edge {
   static internal = false;
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: wrapper factory ---
-  static _wrapFn: ((zpp: ZPP_Edge) => Any) | null = null;
+  static _wrapFn: ((zpp: ZPP_Edge) => any) | null = null;
 
   // --- Instance: pool linked list ---
   next: ZPP_Edge | null = null;
 
   // --- Instance: parent polygon ---
-  polygon: Any = null;
+  polygon: any = null;
 
   // --- Instance: public API wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: local normal ---
   lnormx = 0;
   lnormy = 0;
-  wrap_lnorm: Any = null;
+  wrap_lnorm: any = null;
 
   // --- Instance: world normal ---
   gnormx = 0;
   gnormy = 0;
-  wrap_gnorm: Any = null;
+  wrap_gnorm: any = null;
 
   // --- Instance: edge length ---
   length = 0;
@@ -53,17 +51,14 @@ export class ZPP_Edge {
   gprojection = 0;
 
   // --- Instance: vertex references ---
-  lp0: Any = null;
-  gp0: Any = null;
-  lp1: Any = null;
-  gp1: Any = null;
+  lp0: any = null;
+  gp0: any = null;
+  lp1: any = null;
+  gp1: any = null;
 
   // --- Instance: tangent projections ---
   tp0 = 0;
   tp1 = 0;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Edge;
 
   constructor() {
     this.lnormx = 0;
@@ -81,7 +76,7 @@ export class ZPP_Edge {
 
   alloc(): void {}
 
-  wrapper(): Any {
+  wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Edge._wrapFn) {
         this.outer = ZPP_Edge._wrapFn(this);
@@ -126,7 +121,7 @@ export class ZPP_Edge {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -139,7 +134,7 @@ export class ZPP_Edge {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {
@@ -171,7 +166,7 @@ export class ZPP_Edge {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -184,7 +179,7 @@ export class ZPP_Edge {
       }
     }
     if (ret.zpp_inner == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
         ret1 = new zpp.geom.ZPP_Vec2();
       } else {

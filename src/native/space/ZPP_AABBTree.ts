@@ -10,8 +10,6 @@
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_AABBNode } from "./ZPP_AABBNode";
 
-type Any = any;
-
 export class ZPP_AABBTree {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_AABBTree"];
@@ -29,9 +27,6 @@ export class ZPP_AABBTree {
   // --- Instance: tree root ---
   root: ZPP_AABBNode | null = null;
 
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_AABBTree;
-
   // ========== clear ==========
 
   clear(): void {
@@ -42,7 +37,7 @@ export class ZPP_AABBTree {
     this.root.next = stack;
     stack = this.root;
     while (stack != null) {
-      const ret = stack;
+      const ret: ZPP_AABBNode = stack;
       stack = ret.next;
       ret.next = null;
       const node = ret;
@@ -657,8 +652,8 @@ export class ZPP_AABBTree {
           if (node.child1 == null || node.height < 2) {
             node = node;
           } else {
-            const b = node.child1;
-            const c = node.child2!;
+            const b: ZPP_AABBNode = node.child1!;
+            const c: ZPP_AABBNode = node.child2!;
             const balance = c.height - b.height;
             if (balance > 1) {
               const f = c.child1!;
@@ -794,9 +789,10 @@ export class ZPP_AABBTree {
               node = node;
             }
           }
-          const child1 = node.child1!;
-          const child2 = node.child2!;
-          const _this8 = node.aabb!;
+          const n = node as ZPP_AABBNode;
+          const child1 = n.child1!;
+          const child2 = n.child2!;
+          const _this8 = n.aabb!;
           const a8 = child1.aabb!;
           const b9 = child2.aabb!;
           _this8.minx = a8.minx < b9.minx ? a8.minx : b9.minx;
@@ -805,8 +801,8 @@ export class ZPP_AABBTree {
           _this8.maxy = a8.maxy > b9.maxy ? a8.maxy : b9.maxy;
           const x8 = child1.height;
           const y8 = child2.height;
-          node.height = 1 + (x8 > y8 ? x8 : y8);
-          node = node.parent;
+          n.height = 1 + (x8 > y8 ? x8 : y8);
+          node = n.parent;
         }
       } else {
         this.root = sibling;
@@ -873,8 +869,8 @@ export class ZPP_AABBTree {
           if (node.child1 == null || node.height < 2) {
             node = node;
           } else {
-            const b = node.child1;
-            const c = node.child2!;
+            const b: ZPP_AABBNode = node.child1!;
+            const c: ZPP_AABBNode = node.child2!;
             const balance = c.height - b.height;
             if (balance > 1) {
               const f = c.child1!;
@@ -1010,9 +1006,10 @@ export class ZPP_AABBTree {
               node = node;
             }
           }
-          const child1 = node.child1!;
-          const child2 = node.child2!;
-          const _this8 = node.aabb!;
+          const n = node as ZPP_AABBNode;
+          const child1 = n.child1!;
+          const child2 = n.child2!;
+          const _this8 = n.aabb!;
           const a8 = child1.aabb!;
           const b9 = child2.aabb!;
           _this8.minx = a8.minx < b9.minx ? a8.minx : b9.minx;
@@ -1021,8 +1018,8 @@ export class ZPP_AABBTree {
           _this8.maxy = a8.maxy > b9.maxy ? a8.maxy : b9.maxy;
           const x8 = child1.height;
           const y8 = child2.height;
-          node.height = 1 + (x8 > y8 ? x8 : y8);
-          node = node.parent;
+          n.height = 1 + (x8 > y8 ? x8 : y8);
+          node = n.parent;
         }
       } else {
         this.root = sibling;

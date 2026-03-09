@@ -702,5 +702,6 @@ ZPP_Vec2._wrapFn = (zpp: ZPP_Vec2): Vec2 => {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace (replaces compiled Vec2)
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.geom.Vec2 = Vec2;
+const _napeVec2 = getNape();
+_napeVec2.geom.Vec2 = Vec2;
+

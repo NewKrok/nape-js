@@ -8,6 +8,8 @@
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
+import { ZPP_Shape } from "../shape/ZPP_Shape";
+import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
 
 export class ZPP_ToiEvent {
   // --- Static: Haxe metadata ---
@@ -19,9 +21,9 @@ export class ZPP_ToiEvent {
   // --- Instance fields ---
   next: ZPP_ToiEvent | null = null;
   toi: number = 0.0;
-  s1: object | null = null;
-  s2: object | null = null;
-  arbiter: object | null = null;
+  s1: ZPP_Shape | null = null;
+  s2: ZPP_Shape | null = null;
+  arbiter: ZPP_ColArbiter | null = null;
   frozen1: boolean = false;
   frozen2: boolean = false;
   c1: ZPP_Vec2;

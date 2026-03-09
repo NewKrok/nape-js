@@ -26,7 +26,7 @@ export class FastHash2_Hashable2_Boolfalse {
       let n = this.table[i];
       if (n == null) continue;
       while (n != null) {
-        const t = n.hnext;
+        const t: Hashable2_Boolfalse | null = n.hnext;
         n.hnext = null;
         n = t;
       }

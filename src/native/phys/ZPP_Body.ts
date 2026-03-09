@@ -13,32 +13,30 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Interactor } from "./ZPP_Interactor";
 
-type Any = any;
-
 export class ZPP_Body {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "phys", "ZPP_Body"];
-  static __super__: Any = null; // Set at _init time to ZPP_Interactor
+  static __super__: any = null; // Set at _init time to ZPP_Interactor
 
   /**
    * Namespace references, set by the compiled module after import.
    * _nape = the `nape` public namespace
    * _zpp = the `zpp_nape` internal namespace
    */
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static fields ---
-  static types: Any[] = []; // [null, STATIC, DYNAMIC, KINEMATIC] BodyType singletons
-  static bodystack: Any = null;
-  static bodyset: Any = null;
+  static types: any[] = []; // [null, STATIC, DYNAMIC, KINEMATIC] BodyType singletons
+  static bodystack: any = null;
+  static bodyset: any = null;
   static cur_graph_depth: number = 0;
 
-  static bodysetlt(a: Any, b: Any): boolean {
+  static bodysetlt(a: any, b: any): boolean {
     return a.id < b.id;
   }
 
-  static __static(): Any {
+  static __static(): any {
     const nape = ZPP_Body._nape;
     const zpp = ZPP_Body._zpp;
     if (zpp.util.ZPP_Flags.BodyType_STATIC == null) {
@@ -57,37 +55,37 @@ export class ZPP_Body {
   }
 
   // --- ZPP_Interactor fields (base class, not extracted) ---
-  outer_i: Any = null;
+  outer_i: any = null;
   id: number = 0;
-  userData: Any = null;
-  ishape: Any = null;
-  ibody: Any = null;
-  icompound: Any = null;
-  wrap_cbTypes: Any = null;
-  cbSet: Any = null;
-  cbTypes: Any = null;
-  group: Any = null;
-  cbsets: Any = null;
+  userData: any = null;
+  ishape: any = null;
+  ibody: any = null;
+  icompound: any = null;
+  wrap_cbTypes: any = null;
+  cbSet: any = null;
+  cbTypes: any = null;
+  group: any = null;
+  cbsets: any = null;
 
   // --- ZPP_Body own fields ---
-  outer: Any = null;
+  outer: any = null;
   world: boolean = false;
   type: number = 0;
 
   // Compound reference
-  compound: Any = null;
+  compound: any = null;
 
   // Shape list
-  shapes: Any = null;
-  wrap_shapes: Any = null;
+  shapes: any = null;
+  wrap_shapes: any = null;
 
   // Space and connections
-  space: Any = null;
-  arbiters: Any = null;
-  wrap_arbiters: Any = null;
-  constraints: Any = null;
-  wrap_constraints: Any = null;
-  component: Any = null;
+  space: any = null;
+  arbiters: any = null;
+  wrap_arbiters: any = null;
+  constraints: any = null;
+  wrap_constraints: any = null;
+  component: any = null;
   graph_depth: number = 0;
 
   // Sweep / CCD
@@ -104,30 +102,30 @@ export class ZPP_Body {
   pre_posy: number = 0;
   posx: number = 0;
   posy: number = 0;
-  wrap_pos: Any = null;
+  wrap_pos: any = null;
 
   // Velocity
   velx: number = 0;
   vely: number = 0;
-  wrap_vel: Any = null;
+  wrap_vel: any = null;
 
   // Force
   forcex: number = 0;
   forcey: number = 0;
-  wrap_force: Any = null;
+  wrap_force: any = null;
 
   // Kinematic velocity
   kinvelx: number = 0;
   kinvely: number = 0;
-  wrap_kinvel: Any = null;
+  wrap_kinvel: any = null;
 
   // Surface velocity
   svelx: number = 0;
   svely: number = 0;
-  wrap_svel: Any = null;
+  wrap_svel: any = null;
 
   // Composite velocity wrapper
-  wrapcvel: Any = null;
+  wrapcvel: any = null;
 
   // Angular
   angvel: number = 0;
@@ -180,10 +178,8 @@ export class ZPP_Body {
   worldCOMx: number = 0;
   worldCOMy: number = 0;
   zip_worldCOM: boolean = false;
-  wrap_localCOM: Any = null;
-  wrap_worldCOM: Any = null;
-
-  __class__: Any = ZPP_Body;
+  wrap_localCOM: any = null;
+  wrap_worldCOM: any = null;
 
   constructor() {
     const zpp = ZPP_Body._zpp;
@@ -300,14 +296,14 @@ export class ZPP_Body {
     }
   }
 
-  connectedBodies_cont(b: Any): void {
+  connectedBodies_cont(b: any): void {
     if (ZPP_Body.bodyset.try_insert_bool(b.zpp_inner)) {
       ZPP_Body.bodystack.add(b.zpp_inner);
       b.zpp_inner.graph_depth = ZPP_Body.cur_graph_depth + 1;
     }
   }
 
-  connectedBodies(depth: number, output: Any): Any {
+  connectedBodies(depth: number, output: any): any {
     const nape = ZPP_Body._nape;
 
     if (ZPP_Body.bodyset == null) {
@@ -375,7 +371,7 @@ export class ZPP_Body {
     return ret;
   }
 
-  interactingBodies(type: number, output: Any): Any {
+  interactingBodies(type: number, output: any): any {
     const nape = ZPP_Body._nape;
     const zpp = ZPP_Body._zpp;
 
@@ -506,7 +502,7 @@ export class ZPP_Body {
     }
   }
 
-  sweepValidate(s: Any): void {
+  sweepValidate(s: any): void {
     if (s.type === 0) {
       // Circle
       s.worldCOMx = this.posx + (this.axisy * s.localCOMx - this.axisx * s.localCOMy);
@@ -566,7 +562,7 @@ export class ZPP_Body {
     this.zip_worldCOM = true;
   }
 
-  pos_invalidate(pos: Any): void {
+  pos_invalidate(pos: any): void {
     this.immutable_midstep("Body::position");
     if (this.type === 1 && this.space != null) {
       throw new Error("Error: Cannot move a static object once inside a Space");
@@ -584,7 +580,7 @@ export class ZPP_Body {
     this.wrap_pos.zpp_inner.y = this.posy;
   }
 
-  vel_invalidate(vel: Any): void {
+  vel_invalidate(vel: any): void {
     if (this.type === 1) {
       throw new Error("Error: Static body cannot have its velocity set.");
     }
@@ -598,7 +594,7 @@ export class ZPP_Body {
     this.wrap_vel.zpp_inner.y = this.vely;
   }
 
-  kinvel_invalidate(vel: Any): void {
+  kinvel_invalidate(vel: any): void {
     this.kinvelx = vel.x;
     this.kinvely = vel.y;
     this.wake();
@@ -609,7 +605,7 @@ export class ZPP_Body {
     this.wrap_kinvel.zpp_inner.y = this.kinvely;
   }
 
-  svel_invalidate(vel: Any): void {
+  svel_invalidate(vel: any): void {
     this.svelx = vel.x;
     this.svely = vel.y;
     this.wake();
@@ -620,7 +616,7 @@ export class ZPP_Body {
     this.wrap_svel.zpp_inner.y = this.svely;
   }
 
-  force_invalidate(force: Any): void {
+  force_invalidate(force: any): void {
     if (this.type !== 2) {
       throw new Error("Error: Non-dynamic body cannot have force applied.");
     }
@@ -639,16 +635,16 @@ export class ZPP_Body {
   private _setupVec2Wrapper(
     x: number,
     y: number,
-    _invalidateFn: ((vec: Any) => void) | null,
+    _invalidateFn: ((vec: any) => void) | null,
     _validateFn: (() => void) | null,
-  ): Any {
+  ): any {
     const nape = ZPP_Body._nape;
 
     if (x != x || y != y) {
       throw new Error("Error: Vec2 components cannot be NaN");
     }
 
-    let ret: Any;
+    let ret: any;
     if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
@@ -996,7 +992,7 @@ export class ZPP_Body {
     }
   }
 
-  private _validateCircleAABB(circle: Any): void {
+  private _validateCircleAABB(circle: any): void {
     if (circle.zip_worldCOM) {
       if (circle.body != null) {
         circle.zip_worldCOM = false;
@@ -1026,7 +1022,7 @@ export class ZPP_Body {
     circle.aabb.maxy = circle.worldCOMy + r;
   }
 
-  private _validatePolygonAABB(poly: Any): void {
+  private _validatePolygonAABB(poly: any): void {
     if (poly.zip_gverts) {
       if (poly.body != null) {
         poly.zip_gverts = false;
@@ -1081,7 +1077,7 @@ export class ZPP_Body {
     this.zip_worldCOM = true;
   }
 
-  private _computePolygonLocalCOM(poly: Any): void {
+  private _computePolygonLocalCOM(poly: any): void {
     if (poly.lverts.next == null) {
       throw new Error("Error: An empty polygon has no meaningful localCOM");
     }
@@ -1291,7 +1287,7 @@ export class ZPP_Body {
 
   // ---- Shape management ----
 
-  shapes_adder(s: Any): boolean {
+  shapes_adder(s: any): boolean {
     if (s.zpp_inner.body !== this) {
       if (s.zpp_inner.body != null) {
         s.zpp_inner.body.wrap_shapes.remove(s);
@@ -1324,7 +1320,7 @@ export class ZPP_Body {
     }
   }
 
-  shapes_subber(s: Any): void {
+  shapes_subber(s: any): void {
     if (this.space != null) {
       this.space.removed_shape(s.zpp_inner);
     }
@@ -1332,7 +1328,7 @@ export class ZPP_Body {
     s.zpp_inner.removedFromBody();
   }
 
-  shapes_invalidate(_param: Any): void {
+  shapes_invalidate(_param: any): void {
     this.invalidate_shapes();
   }
 
@@ -1347,7 +1343,7 @@ export class ZPP_Body {
 
   addedToSpace(): void {
     const zpp = ZPP_Body._zpp;
-    let component: Any;
+    let component: any;
     if (zpp.space.ZPP_Component.zpp_pool == null) {
       component = new zpp.space.ZPP_Component();
     } else {
@@ -1393,12 +1389,12 @@ export class ZPP_Body {
     this.__iremovedFromSpace();
   }
 
-  private _removeArbiterFromList(list: Any, arb: Any, zpp: Any): void {
-    let pre: Any = null;
+  private _removeArbiterFromList(list: any, arb: any, zpp: any): void {
+    let pre: any = null;
     let cur = list.head;
     while (cur != null) {
       if (cur.elt === arb) {
-        let old: Any;
+        let old: any;
         if (pre == null) {
           old = list.head;
           list.head = old.next;
@@ -1428,7 +1424,7 @@ export class ZPP_Body {
 
   // ---- Copy ----
 
-  copy(): Any {
+  copy(): any {
     const nape = ZPP_Body._nape;
     const ret = new nape.phys.Body().zpp_inner;
     ret.type = this.type;
@@ -1543,17 +1539,17 @@ export class ZPP_Body {
   __iaddedToSpace!: () => void;
   __iremovedFromSpace!: () => void;
   immutable_midstep!: (name: string) => void;
-  copyto!: (ret: Any) => void;
-  insert_cbtype!: (cb: Any) => void;
+  copyto!: (ret: any) => void;
+  insert_cbtype!: (cb: any) => void;
   alloc_cbSet!: () => void;
   dealloc_cbSet!: () => void;
   setupcbTypes!: () => void;
   immutable_cbTypes!: () => void;
-  wrap_cbTypes_subber!: (pcb: Any) => void;
-  wrap_cbTypes_adder!: (cb: Any) => void;
-  setGroup!: (group: Any) => void;
-  lookup_group!: () => Any;
-  getSpace!: () => Any;
+  wrap_cbTypes_subber!: (pcb: any) => void;
+  wrap_cbTypes_adder!: (cb: any) => void;
+  setGroup!: (group: any) => void;
+  lookup_group!: () => any;
+  getSpace!: () => any;
   isShape!: () => boolean;
   isBody!: () => boolean;
   isCompound!: () => boolean;
@@ -1561,7 +1557,7 @@ export class ZPP_Body {
   // ---- Module initialization ----
   static _initialized = false;
 
-  static _init(zpp: Any, nape: Any): void {
+  static _init(zpp: any, nape: any): void {
     if (ZPP_Body._initialized) return;
     ZPP_Body._initialized = true;
     ZPP_Body._zpp = zpp;
@@ -1571,7 +1567,7 @@ export class ZPP_Body {
     // Copy ZPP_Interactor prototype methods onto ZPP_Body
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
       if (k !== "constructor" && k !== "__class__" && !(k in ZPP_Body.prototype)) {
-        (ZPP_Body.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
+        (ZPP_Body.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }
   }
@@ -1579,7 +1575,7 @@ export class ZPP_Body {
   /**
    * Initialize BodyType singleton enums. Called once from compiled factory.
    */
-  static _initEnums(nape: Any, ZPP_Flags: Any): void {
+  static _initEnums(nape: any, ZPP_Flags: any): void {
     const mk = () => { ZPP_Flags.internal = true; const o = new nape.phys.BodyType(); ZPP_Flags.internal = false; return o; };
     if (ZPP_Flags.BodyType_STATIC == null) ZPP_Flags.BodyType_STATIC = mk();
     if (ZPP_Flags.BodyType_DYNAMIC == null) ZPP_Flags.BodyType_DYNAMIC = mk();

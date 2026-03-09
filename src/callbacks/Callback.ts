@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import type { CbEvent } from "./CbEvent";
@@ -36,8 +35,3 @@ export class Callback {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.callbacks.Callback = Callback;

@@ -93,14 +93,6 @@ describe("WeldJoint (modernized)", () => {
     expect(visited).toContain(b2);
   });
 
-  it("should provide backward-compat methods", () => {
-    const joint = new WeldJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 0.5);
-    expect(joint.zpp_inner_zn).toBe(joint.zpp_inner);
-    expect(joint.get_phase()).toBeCloseTo(0.5);
-    joint.set_phase(1.0);
-    expect(joint.phase).toBeCloseTo(1.0);
-  });
-
   it("should work with _wrap from ZPP instance", () => {
     const zpp = new ZPP_WeldJoint();
     zpp.phase = 1.5;

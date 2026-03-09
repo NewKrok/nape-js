@@ -14,18 +14,13 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
 export class ValidationResult {
   static __name__ = ["nape", "shape", "ValidationResult"];
 
-  static VALID: ValidationResult | null = null;
-  static DEGENERATE: ValidationResult | null = null;
-  static CONCAVE: ValidationResult | null = null;
-  static SELF_INTERSECTING: ValidationResult | null = null;
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ValidationResult derp!");
     }
   }
 
-  static get_VALID(): ValidationResult {
+  static get VALID(): ValidationResult {
     if (ZPP_Flags.ValidationResult_VALID == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ValidationResult_VALID = new ValidationResult();
@@ -34,7 +29,7 @@ export class ValidationResult {
     return ZPP_Flags.ValidationResult_VALID;
   }
 
-  static get_DEGENERATE(): ValidationResult {
+  static get DEGENERATE(): ValidationResult {
     if (ZPP_Flags.ValidationResult_DEGENERATE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ValidationResult_DEGENERATE = new ValidationResult();
@@ -43,7 +38,7 @@ export class ValidationResult {
     return ZPP_Flags.ValidationResult_DEGENERATE;
   }
 
-  static get_CONCAVE(): ValidationResult {
+  static get CONCAVE(): ValidationResult {
     if (ZPP_Flags.ValidationResult_CONCAVE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ValidationResult_CONCAVE = new ValidationResult();
@@ -52,7 +47,7 @@ export class ValidationResult {
     return ZPP_Flags.ValidationResult_CONCAVE;
   }
 
-  static get_SELF_INTERSECTING(): ValidationResult {
+  static get SELF_INTERSECTING(): ValidationResult {
     if (ZPP_Flags.ValidationResult_SELF_INTERSECTING == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ValidationResult_SELF_INTERSECTING = new ValidationResult();
@@ -62,10 +57,10 @@ export class ValidationResult {
   }
 
   toString(): string {
-    if (this === ValidationResult.get_VALID()) return "VALID";
-    if (this === ValidationResult.get_DEGENERATE()) return "DEGENERATE";
-    if (this === ValidationResult.get_CONCAVE()) return "CONCAVE";
-    if (this === ValidationResult.get_SELF_INTERSECTING()) return "SELF_INTERSECTING";
+    if (this === ZPP_Flags.ValidationResult_VALID) return "VALID";
+    if (this === ZPP_Flags.ValidationResult_DEGENERATE) return "DEGENERATE";
+    if (this === ZPP_Flags.ValidationResult_CONCAVE) return "CONCAVE";
+    if (this === ZPP_Flags.ValidationResult_SELF_INTERSECTING) return "SELF_INTERSECTING";
     return "";
   }
 }
@@ -75,3 +70,4 @@ export class ValidationResult {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.shape.ValidationResult = ValidationResult;
+

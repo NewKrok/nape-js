@@ -9,7 +9,7 @@ import { Body } from "../phys/Body";
 import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
-import { Interactor, _bindShapeWrapForInteractor } from "../phys/Interactor";
+import { Interactor } from "../phys/Interactor";
 // Side-effect import: ShapeType.ts must execute to fix singleton prototypes
 import "./ShapeType";
 import type { ShapeType } from "./ShapeType";
@@ -271,7 +271,7 @@ export class Shape extends Interactor {
         raw.clear();
       },
       get length(): number {
-        return raw.get_length();
+        return raw.length;
       },
     };
   }
@@ -542,9 +542,6 @@ export class Shape extends Interactor {
   }
 }
 
-// Bind Shape._wrap into Interactor so Interactor._wrap can dispatch without circular import.
-_bindShapeWrapForInteractor((inner) => Shape._wrap(inner));
-
 /** Lightweight typed interface for the callback type set on a shape. */
 export interface CbTypeSet {
   readonly _inner: NapeInner;
@@ -555,13 +552,3 @@ export interface CbTypeSet {
   readonly length: number;
 }
 
-// ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
-// ---------------------------------------------------------------------------
-
-// NOTE: Shape extends Interactor. Both import engine.ts, so importing Shape from
-// engine.ts creates a circular ESM dep (engine → Shape → Interactor → engine).
-// Shape cannot be side-effect imported from engine.ts. Instead, it self-registers
-// here, and is loaded via index.ts or the test setup file.
-const nape = getNape();
-nape.shape.Shape = Shape;

@@ -35,7 +35,6 @@ describe("ZPP_CbSetPair", () => {
       expect(p.next).toBeNull();
       expect(p.zip_listeners).toBe(false);
       expect(p.listeners).toBeInstanceOf(MockZNPList);
-      expect(p.__class__).toBe(ZPP_CbSetPair);
     });
   });
 

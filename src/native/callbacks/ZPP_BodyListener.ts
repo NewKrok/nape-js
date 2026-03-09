@@ -9,18 +9,14 @@
 
 import { ZPP_Listener } from "./ZPP_Listener";
 
-type Any = any;
-
 export class ZPP_BodyListener extends ZPP_Listener {
   static __name__ = ["zpp_nape", "callbacks", "ZPP_BodyListener"];
 
-  handler: Any = null;
-  options: Any = null;
-  outer_zn: Any = null;
+  handler: any = null;
+  options: any = null;
+  outer_zn: any = null;
 
-  __class__: Any = ZPP_BodyListener;
-
-  constructor(options: Any, event: number, handler: Any) {
+  constructor(options: any, event: number, handler: any) {
     super();
     this.event = event;
     this.handler = handler;
@@ -37,12 +33,12 @@ export class ZPP_BodyListener extends ZPP_Listener {
 
   addedToSpace(): void {
     const zpp = ZPP_Listener._zpp;
-    this.options.handler = (cb: Any, included: boolean, added: boolean) =>
+    this.options.handler = (cb: any, included: boolean, added: boolean) =>
       this.cbtype_change(cb, included, added);
     let cx_ite = this.options.includes.head;
     while (cx_ite != null) {
       const cb = cx_ite.elt;
-      let pre: Any = null;
+      let pre: any = null;
       let cx_ite1 = cb.bodylisteners.head;
       while (cx_ite1 != null) {
         const j = cx_ite1.elt;
@@ -53,7 +49,7 @@ export class ZPP_BodyListener extends ZPP_Listener {
         cx_ite1 = cx_ite1.next;
       }
       const _this = cb.bodylisteners;
-      let ret: Any;
+      let ret: any;
       if (zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool == null) {
         ret = new zpp.util.ZNPNode_ZPP_BodyListener();
       } else {
@@ -98,7 +94,7 @@ export class ZPP_BodyListener extends ZPP_Listener {
     this.options.handler = null;
   }
 
-  cbtype_change(cb: Any, included: boolean, added: boolean): void {
+  cbtype_change(cb: any, included: boolean, added: boolean): void {
     this.removedFromSpace();
     const _this = this.options;
     if (included) {

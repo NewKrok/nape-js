@@ -260,8 +260,3 @@ ZPP_InteractionFilter._wrapFn = (zpp: ZPP_InteractionFilter): InteractionFilter 
   });
 };
 
-// ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled InteractionFilter)
-// ---------------------------------------------------------------------------
-const nape = getNape();
-nape.dynamics.InteractionFilter = InteractionFilter;

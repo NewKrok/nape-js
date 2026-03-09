@@ -3,7 +3,21 @@
   "version": "3.4.7",
   "description": "Nape Physics Engine - Modern TypeScript wrapper for 2D physics simulation",
   "type": "module",
-  "sideEffects": true,
+  "sideEffects": [
+    "dist/index.js",
+    "dist/index.cjs",
+    "src/core/engine.ts",
+    "src/core/bootstrap.ts",
+    "src/util/registerLists.ts",
+    "src/geom/Vec2List.ts",
+    "src/dynamics/ContactList.ts",
+    "src/geom/GeomVertexIterator.ts",
+    "src/native/util/ZPP_Vec2List.ts",
+    "src/native/util/ZPP_ContactList.ts",
+    "src/native/util/ZPP_PublicList.ts",
+    "src/native/util/ZPP_MixVec2List.ts",
+    "src/native/geom/ZPP_GeomVertexIterator.ts"
+  ],
   "engines": {
     "node": ">=18"
   },

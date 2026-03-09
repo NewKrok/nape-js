@@ -12,66 +12,59 @@ describe("InteractionType", () => {
   });
 
   it("should return COLLISION singleton", () => {
-    const a = InteractionType.get_COLLISION();
-    const b = InteractionType.get_COLLISION();
+    const a = InteractionType.COLLISION;
+    const b = InteractionType.COLLISION;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(InteractionType);
   });
 
   it("should return SENSOR singleton", () => {
-    const a = InteractionType.get_SENSOR();
-    const b = InteractionType.get_SENSOR();
+    const a = InteractionType.SENSOR;
+    const b = InteractionType.SENSOR;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(InteractionType);
   });
 
   it("should return FLUID singleton", () => {
-    const a = InteractionType.get_FLUID();
-    const b = InteractionType.get_FLUID();
+    const a = InteractionType.FLUID;
+    const b = InteractionType.FLUID;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(InteractionType);
   });
 
   it("should return ANY singleton", () => {
-    const a = InteractionType.get_ANY();
-    const b = InteractionType.get_ANY();
+    const a = InteractionType.ANY;
+    const b = InteractionType.ANY;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(InteractionType);
   });
 
   it("should return distinct instances for each type", () => {
-    expect(InteractionType.get_COLLISION()).not.toBe(InteractionType.get_SENSOR());
-    expect(InteractionType.get_COLLISION()).not.toBe(InteractionType.get_FLUID());
-    expect(InteractionType.get_COLLISION()).not.toBe(InteractionType.get_ANY());
-    expect(InteractionType.get_SENSOR()).not.toBe(InteractionType.get_FLUID());
-    expect(InteractionType.get_SENSOR()).not.toBe(InteractionType.get_ANY());
-    expect(InteractionType.get_FLUID()).not.toBe(InteractionType.get_ANY());
+    expect(InteractionType.COLLISION).not.toBe(InteractionType.SENSOR);
+    expect(InteractionType.COLLISION).not.toBe(InteractionType.FLUID);
+    expect(InteractionType.COLLISION).not.toBe(InteractionType.ANY);
+    expect(InteractionType.SENSOR).not.toBe(InteractionType.FLUID);
+    expect(InteractionType.SENSOR).not.toBe(InteractionType.ANY);
+    expect(InteractionType.FLUID).not.toBe(InteractionType.ANY);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    expect(ZPP_Flags.InteractionType_COLLISION).toBe(InteractionType.get_COLLISION());
+    expect(ZPP_Flags.InteractionType_COLLISION).toBe(InteractionType.COLLISION);
   });
 
   it("COLLISION toString should return 'COLLISION'", () => {
-    expect(InteractionType.get_COLLISION().toString()).toBe("COLLISION");
+    expect(InteractionType.COLLISION.toString()).toBe("COLLISION");
   });
 
   it("SENSOR toString should return 'SENSOR'", () => {
-    expect(InteractionType.get_SENSOR().toString()).toBe("SENSOR");
+    expect(InteractionType.SENSOR.toString()).toBe("SENSOR");
   });
 
   it("FLUID toString should return 'FLUID'", () => {
-    expect(InteractionType.get_FLUID().toString()).toBe("FLUID");
+    expect(InteractionType.FLUID.toString()).toBe("FLUID");
   });
 
   it("ANY toString should return 'ANY'", () => {
-    expect(InteractionType.get_ANY().toString()).toBe("ANY");
-  });
-
-  it("static getters should work (InteractionType.COLLISION etc.)", () => {
-    expect(InteractionType.COLLISION).toBe(InteractionType.get_COLLISION());
-    expect(InteractionType.SENSOR).toBe(InteractionType.get_SENSOR());
-    expect(InteractionType.FLUID).toBe(InteractionType.get_FLUID());
-    expect(InteractionType.ANY).toBe(InteractionType.get_ANY());
+    expect(InteractionType.ANY.toString()).toBe("ANY");
   });
 });

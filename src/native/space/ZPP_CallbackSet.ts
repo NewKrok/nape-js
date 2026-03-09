@@ -8,8 +8,6 @@
  * Converted from nape-compiled.js lines 33586–34153.
  */
 
-type Any = any;
-
 export class ZPP_CallbackSet {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_CallbackSet"];
@@ -18,24 +16,24 @@ export class ZPP_CallbackSet {
   static zpp_pool: ZPP_CallbackSet | null = null;
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
+  static _zpp: any = null;
 
   // --- Instance: pair identification ---
   id = 0;
   di = 0;
-  int1: Any = null;
-  int2: Any = null;
+  int1: any = null; // ZPP_Interactor — circular
+  int2: any = null; // ZPP_Interactor — circular
 
   // --- Instance: arbiter list ---
-  arbiters: Any = null;
+  arbiters: any = null; // ZNPList_ZPP_Arbiter — dynamic class
 
   // --- Instance: interaction state ---
-  COLLISIONstate: Any = null;
-  COLLISIONstamp: Any = null;
-  SENSORstate: Any = null;
-  SENSORstamp: Any = null;
-  FLUIDstate: Any = null;
-  FLUIDstamp: Any = null;
+  COLLISIONstate: number | null = null;
+  COLLISIONstamp: number | null = null;
+  SENSORstate: number | null = null;
+  SENSORstamp: number | null = null;
+  FLUIDstate: number | null = null;
+  FLUIDstamp: number | null = null;
 
   // --- Instance: linked list (ZNPList pattern) ---
   length = 0;
@@ -48,16 +46,13 @@ export class ZPP_CallbackSet {
   freed = false;
   lazydel = false;
 
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_CallbackSet;
-
   constructor() {
     this.arbiters = new ZPP_CallbackSet._zpp.util.ZNPList_ZPP_Arbiter();
   }
 
   // ========== Static factory ==========
 
-  static get(i1: Any, i2: Any): ZPP_CallbackSet {
+  static get(i1: any, i2: any): ZPP_CallbackSet {
     let ret: ZPP_CallbackSet;
     if (ZPP_CallbackSet.zpp_pool == null) {
       ret = new ZPP_CallbackSet();
@@ -471,7 +466,7 @@ export class ZPP_CallbackSet {
 
   // ========== Arbiter management ==========
 
-  add_arb(x: Any): boolean {
+  add_arb(x: any): boolean {
     let ret = false;
     let cx_ite = this.arbiters.head;
     while (cx_ite != null) {
@@ -484,7 +479,7 @@ export class ZPP_CallbackSet {
     }
     if (!ret) {
       const _this = this.arbiters;
-      let ret1: Any;
+      let ret1: any;
       const ZNPNode = ZPP_CallbackSet._zpp.util.ZNPNode_ZPP_Arbiter;
       if (ZNPNode.zpp_pool == null) {
         ret1 = new ZNPNode();
@@ -505,15 +500,15 @@ export class ZPP_CallbackSet {
     }
   }
 
-  try_remove_arb(x: Any): boolean {
+  try_remove_arb(x: any): boolean {
     const _this = this.arbiters;
-    let pre: Any = null;
+    let pre: any = null;
     let cur = _this.head;
     let ret = false;
     while (cur != null) {
       if (cur.elt == x) {
-        let old: Any;
-        let ret1: Any;
+        let old: any;
+        let ret1: any;
         if (pre == null) {
           old = _this.head;
           ret1 = old.next;
@@ -546,14 +541,14 @@ export class ZPP_CallbackSet {
     return ret;
   }
 
-  remove_arb(x: Any): void {
+  remove_arb(x: any): void {
     const _this = this.arbiters;
-    let pre: Any = null;
+    let pre: any = null;
     let cur = _this.head;
     while (cur != null) {
       if (cur.elt == x) {
-        let old: Any;
-        let ret1: Any;
+        let old: any;
+        let ret1: any;
         if (pre == null) {
           old = _this.head;
           ret1 = old.next;

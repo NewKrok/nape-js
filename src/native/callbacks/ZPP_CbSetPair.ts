@@ -7,26 +7,22 @@
  * Converted from nape-compiled.js lines 45135–45319.
  */
 
-type Any = any;
-
 export class ZPP_CbSetPair {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "callbacks", "ZPP_CbSetPair"];
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
+  static _zpp: any = null;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_CbSetPair | null = null;
 
   // --- Instance ---
-  a: Any = null;
-  b: Any = null;
+  a: any = null;
+  b: any = null;
   next: ZPP_CbSetPair | null = null;
   zip_listeners = false;
-  listeners: Any = null;
-
-  __class__: Any = ZPP_CbSetPair;
+  listeners: any = null;
 
   constructor() {
     const zpp = ZPP_CbSetPair._zpp;
@@ -34,7 +30,7 @@ export class ZPP_CbSetPair {
   }
 
   /** Factory with pooling. Orders a/b by CbSet.setlt. */
-  static get(a: Any, b: Any): ZPP_CbSetPair {
+  static get(a: any, b: any): ZPP_CbSetPair {
     const zpp = ZPP_CbSetPair._zpp;
     let ret: ZPP_CbSetPair;
     if (ZPP_CbSetPair.zpp_pool == null) {
@@ -79,7 +75,7 @@ export class ZPP_CbSetPair {
   }
 
   /** Check if a listener is compatible with both sets in this pair. */
-  compatible(i: Any): boolean {
+  compatible(i: any): boolean {
     let tmp: boolean;
     const _this = i.options1;
     const xs = this.a.cbTypes;
@@ -191,7 +187,7 @@ export class ZPP_CbSetPair {
     return this.listeners.head == null;
   }
 
-  single_intersection(i: Any): boolean {
+  single_intersection(i: any): boolean {
     const ite = this.listeners.head;
     if (ite != null && ite.elt == i) {
       return ite.next == null;
@@ -200,7 +196,7 @@ export class ZPP_CbSetPair {
     }
   }
 
-  forall(event: number, cb: (listener: Any) => void): void {
+  forall(event: number, cb: (listener: any) => void): void {
     let cx_ite = this.listeners.head;
     while (cx_ite != null) {
       const x = cx_ite.elt;

@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner } from "./Vec2";
 import { ZPP_ConvexRayResult } from "../native/geom/ZPP_ConvexRayResult";
@@ -95,6 +94,3 @@ export class ConvexResult {
 // Register factory callback so ZPP_ConvexRayResult can create ConvexResult without circular import
 ZPP_ConvexRayResult._createConvexResult = () => new ConvexResult();
 
-// Self-register in the compiled namespace
-const nape = getNape();
-nape.geom.ConvexResult = ConvexResult;

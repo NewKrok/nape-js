@@ -115,6 +115,23 @@ GeomVertexIteratorCtor.prototype.next = function (this: any): any {
 };
 
 
+// ES6 iterable protocol — GeomVertexIterator is itself an iterator, so returning
+// `this` makes it work directly in for...of loops (e.g. Polygon.getVertexIterator()).
+(GeomVertexIteratorCtor.prototype as any)[Symbol.iterator] = function (this: any) {
+  return {
+    _it: this,
+    next(this: any): IteratorResult<any> {
+      if (this._it.hasNext()) {
+        return { value: this._it.next(), done: false };
+      }
+      return { value: undefined, done: true };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+};
+
 // ---------------------------------------------------------------------------
 // Register in nape namespace
 // ---------------------------------------------------------------------------

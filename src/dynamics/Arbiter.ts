@@ -220,5 +220,6 @@ export class Arbiter {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.dynamics.Arbiter = Arbiter;
+const _napeArbiter = getNape();
+_napeArbiter.dynamics.Arbiter = Arbiter;
+

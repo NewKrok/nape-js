@@ -35,7 +35,6 @@ describe("ZPP_FluidProperties", () => {
       expect(fp.outer).toBeNull();
       expect(fp.userData).toBeNull();
       expect(fp.next).toBeNull();
-      expect(fp.__class__).toBe(ZPP_FluidProperties);
     });
   });
 

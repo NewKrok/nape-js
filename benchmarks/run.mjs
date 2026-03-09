@@ -129,21 +129,21 @@ function setupRawSimulation(count) {
     const space = new napeRaw.space.Space(new napeRaw.geom.Vec2(0, 600));
 
     const floor = new napeRaw.phys.Body(
-      napeRaw.phys.BodyType.get_STATIC(),
+      napeRaw.phys.BodyType.STATIC,
       new napeRaw.geom.Vec2(0, 500),
     );
-    floor.get_shapes().add(new napeRaw.shape.Polygon(napeRaw.shape.Polygon.box(2000, 20)));
-    floor.set_space(space);
+    floor.shapes.add(new napeRaw.shape.Polygon(napeRaw.shape.Polygon.box(2000, 20)));
+    floor.space = space;
 
     for (let i = 0; i < count; i++) {
       const x = (Math.random() - 0.5) * 800;
       const y = -Math.random() * 500;
       const body = new napeRaw.phys.Body(
-        napeRaw.phys.BodyType.get_DYNAMIC(),
+        napeRaw.phys.BodyType.DYNAMIC,
         new napeRaw.geom.Vec2(x, y),
       );
-      body.get_shapes().add(new napeRaw.shape.Polygon(napeRaw.shape.Polygon.box(15, 15)));
-      body.set_space(space);
+      body.shapes.add(new napeRaw.shape.Polygon(napeRaw.shape.Polygon.box(15, 15)));
+      body.space = space;
     }
 
     return space;
@@ -200,12 +200,12 @@ const rawResult = bench(
   (space) => {
     space.step(1 / 60, 8, 3);
     // Read positions (simulates rendering)
-    const bodies = space.get_bodies();
-    for (let i = 0; i < bodies.get_length(); i++) {
+    const bodies = space.bodies;
+    for (let i = 0; i < bodies.length; i++) {
       const b = bodies.at(i);
-      b.get_position().get_x();
-      b.get_position().get_y();
-      b.get_rotation();
+      b.position.x;
+      b.position.y;
+      b.rotation;
     }
   },
 );

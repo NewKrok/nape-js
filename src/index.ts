@@ -2,6 +2,9 @@
 declare const __PACKAGE_VERSION__: string;
 export const VERSION: string = __PACKAGE_VERSION__;
 
+// Bootstrap: centralized nape-namespace registrations and factory callbacks
+import "./core/bootstrap";
+
 // Core
 export { getNape } from "./core/engine";
 

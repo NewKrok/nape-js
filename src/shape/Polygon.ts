@@ -322,22 +322,5 @@ export class Polygon extends Shape {
 _bindPolygonWrap((inner) => Polygon._wrap(inner));
 
 const nape = getNape();
-
-// Replace the compiled Polygon with our TS class
 nape.shape.Polygon = Polygon;
 
-// Copy compiled Shape prototype methods for backward compat.
-const compiledShapeProto = nape.shape.Shape.prototype;
-for (const k in compiledShapeProto) {
-  if (!(k in Polygon.prototype)) {
-    (Polygon.prototype as any)[k] = compiledShapeProto[k];
-  }
-}
-
-// Also copy compiled Interactor prototype methods
-const compiledInteractorProto = nape.phys.Interactor.prototype;
-for (const k in compiledInteractorProto) {
-  if (!(k in Polygon.prototype)) {
-    (Polygon.prototype as any)[k] = compiledInteractorProto[k];
-  }
-}

@@ -30,7 +30,7 @@ export class ZPP_SimpleSeg {
       this.vertices = new ZPP_Set_ZPP_SimpleVert();
     } else {
       this.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool as ZPP_Set<ZPP_SimpleVert>;
-      ZPP_Set_ZPP_SimpleVert.zpp_pool = this.vertices.next;
+      ZPP_Set_ZPP_SimpleVert.zpp_pool = this.vertices.next as ZPP_Set<unknown>;
       this.vertices.next = null;
     }
     this.vertices.lt = (a: ZPP_SimpleVert, b: ZPP_SimpleVert) => this.less_xy(a, b);

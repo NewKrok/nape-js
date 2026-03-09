@@ -53,7 +53,6 @@ describe("ZPP_CbSet", () => {
       expect(s.count).toBe(0);
       expect(s.next).toBeNull();
       expect(s.manager).toBeNull();
-      expect(s.__class__).toBe(ZPP_CbSet);
     });
   });
 

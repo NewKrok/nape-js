@@ -356,35 +356,6 @@ export class LineJoint extends Constraint {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Backward-compat get_*/set_* methods for compiled code
-  // ---------------------------------------------------------------------------
-
-  /** @internal */ get_body1(): Body | null { return this.body1; }
-  /** @internal */ set_body1(v: Body | null): Body | null { this.body1 = v; return this.body1; }
-  /** @internal */ get_body2(): Body | null { return this.body2; }
-  /** @internal */ set_body2(v: Body | null): Body | null { this.body2 = v; return this.body2; }
-  /** @internal */ get_anchor1(): Vec2 { return this.anchor1; }
-  /** @internal */ set_anchor1(v: Vec2): Vec2 { this.anchor1 = v; return this.anchor1; }
-  /** @internal */ get_anchor2(): Vec2 { return this.anchor2; }
-  /** @internal */ set_anchor2(v: Vec2): Vec2 { this.anchor2 = v; return this.anchor2; }
-  /** @internal */ get_direction(): Vec2 { return this.direction; }
-  /** @internal */ set_direction(v: Vec2): Vec2 { this.direction = v; return this.direction; }
-  /** @internal */ get_jointMin(): number {
-    return this.jointMin;
-  }
-  /** @internal */ set_jointMin(v: number): number {
-    this.jointMin = v;
-    return this.zpp_inner.jointMin;
-  }
-  /** @internal */ get_jointMax(): number {
-    return this.jointMax;
-  }
-  /** @internal */ set_jointMax(v: number): number {
-    this.jointMax = v;
-    return this.zpp_inner.jointMax;
-  }
-
   /** @internal backward compat alias for zpp_inner */
   get zpp_inner_zn(): ZPP_LineJoint {
     return this.zpp_inner;
@@ -410,4 +381,3 @@ ZPP_LineJoint._wrapFn = (zpp: ZPP_LineJoint): LineJoint => {
 };
 
 
-ZPP_LineJoint._createFn = (...args: any[]) => new (LineJoint as any)(...args);

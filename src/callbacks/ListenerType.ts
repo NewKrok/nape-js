@@ -15,18 +15,13 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
 export class ListenerType {
   static __name__ = ["nape", "callbacks", "ListenerType"];
 
-  static BODY: ListenerType | null = null;
-  static CONSTRAINT: ListenerType | null = null;
-  static INTERACTION: ListenerType | null = null;
-  static PRE: ListenerType | null = null;
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ListenerType derp!");
     }
   }
 
-  static get_BODY(): ListenerType {
+  static get BODY(): ListenerType {
     if (ZPP_Flags.ListenerType_BODY == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ListenerType_BODY = new ListenerType();
@@ -35,7 +30,7 @@ export class ListenerType {
     return ZPP_Flags.ListenerType_BODY;
   }
 
-  static get_CONSTRAINT(): ListenerType {
+  static get CONSTRAINT(): ListenerType {
     if (ZPP_Flags.ListenerType_CONSTRAINT == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ListenerType_CONSTRAINT = new ListenerType();
@@ -44,7 +39,7 @@ export class ListenerType {
     return ZPP_Flags.ListenerType_CONSTRAINT;
   }
 
-  static get_INTERACTION(): ListenerType {
+  static get INTERACTION(): ListenerType {
     if (ZPP_Flags.ListenerType_INTERACTION == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ListenerType_INTERACTION = new ListenerType();
@@ -53,7 +48,7 @@ export class ListenerType {
     return ZPP_Flags.ListenerType_INTERACTION;
   }
 
-  static get_PRE(): ListenerType {
+  static get PRE(): ListenerType {
     if (ZPP_Flags.ListenerType_PRE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ListenerType_PRE = new ListenerType();
@@ -63,10 +58,10 @@ export class ListenerType {
   }
 
   toString(): string {
-    if (this === ListenerType.get_BODY()) return "BODY";
-    if (this === ListenerType.get_CONSTRAINT()) return "CONSTRAINT";
-    if (this === ListenerType.get_INTERACTION()) return "INTERACTION";
-    if (this === ListenerType.get_PRE()) return "PRE";
+    if (this === ZPP_Flags.ListenerType_BODY) return "BODY";
+    if (this === ZPP_Flags.ListenerType_CONSTRAINT) return "CONSTRAINT";
+    if (this === ZPP_Flags.ListenerType_INTERACTION) return "INTERACTION";
+    if (this === ZPP_Flags.ListenerType_PRE) return "PRE";
     return "";
   }
 }

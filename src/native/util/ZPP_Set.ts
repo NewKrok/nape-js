@@ -307,7 +307,7 @@ export class ZPP_Set<T> {
         if (cur.prev != null) cur = cur.prev;
         else if (cur.next != null) cur = cur.next;
         else {
-          const ret = cur.parent;
+          const ret: ZPP_Set<T> | null = cur.parent;
           if (ret != null) {
             if (cur == ret.prev) ret.prev = null;
             else ret.next = null;
@@ -329,7 +329,7 @@ export class ZPP_Set<T> {
       else if (cur.next != null) cur = cur.next;
       else {
         lambda(cur.data!);
-        const ret = cur.parent;
+        const ret: ZPP_Set<T> | null = cur.parent;
         if (ret != null) {
           if (cur == ret.prev) ret.prev = null;
           else ret.next = null;

@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
@@ -225,6 +224,3 @@ ZPP_Contact._wrapFn = (zpp: ZPP_Contact): Contact => {
   return c;
 };
 
-// Self-register in the compiled namespace
-const nape = getNape();
-nape.dynamics.Contact = Contact;

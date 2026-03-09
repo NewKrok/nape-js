@@ -8,7 +8,7 @@
  * Converted from nape-compiled.js lines 33175–33539.
  */
 
-type Any = any;
+import { ZPP_Component } from "./ZPP_Component";
 
 export class ZPP_Island {
   // --- Static: Haxe metadata ---
@@ -18,22 +18,19 @@ export class ZPP_Island {
   static zpp_pool: ZPP_Island | null = null;
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
+  static _zpp: any = null;
 
   // --- Instance: linked list (ZNPList pattern for ZPP_Component) ---
   length = 0;
   pushmod = false;
   modified = false;
   _inuse = false;
-  next: Any = null;
+  next: ZPP_Component | null = null;
 
   // --- Instance: island-specific fields ---
-  comps: Any = null;
+  comps: any = null; // ZNPList_ZPP_Component — dynamic class
   sleep = false;
   waket = 0;
-
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Island;
 
   constructor() {
     this.comps = new ZPP_Island._zpp.util.ZNPList_ZPP_Component();
@@ -45,17 +42,17 @@ export class ZPP_Island {
     return this;
   }
 
-  begin(): Any {
+  begin(): ZPP_Component | null {
     return this.next;
   }
 
-  setbegin(i: Any): void {
+  setbegin(i: ZPP_Component | null): void {
     this.next = i;
     this.modified = true;
     this.pushmod = true;
   }
 
-  add(o: Any): Any {
+  add(o: ZPP_Component): ZPP_Component {
     o._inuse = true;
     const temp = o;
     temp.next = this.next;
@@ -65,7 +62,7 @@ export class ZPP_Island {
     return o;
   }
 
-  inlined_add(o: Any): Any {
+  inlined_add(o: ZPP_Component): ZPP_Component {
     o._inuse = true;
     const temp = o;
     temp.next = this.next;
@@ -75,7 +72,7 @@ export class ZPP_Island {
     return o;
   }
 
-  addAll(x: Any): void {
+  addAll(x: ZPP_Island): void {
     let cx_ite = x.next;
     while (cx_ite != null) {
       const i = cx_ite;
@@ -84,7 +81,7 @@ export class ZPP_Island {
     }
   }
 
-  insert(cur: Any, o: Any): Any {
+  insert(cur: ZPP_Component | null, o: ZPP_Component): ZPP_Component {
     o._inuse = true;
     const temp = o;
     if (cur == null) {
@@ -99,7 +96,7 @@ export class ZPP_Island {
     return temp;
   }
 
-  inlined_insert(cur: Any, o: Any): Any {
+  inlined_insert(cur: ZPP_Component | null, o: ZPP_Component): ZPP_Component {
     o._inuse = true;
     const temp = o;
     if (cur == null) {
@@ -115,7 +112,7 @@ export class ZPP_Island {
   }
 
   pop(): void {
-    const ret = this.next;
+    const ret = this.next!;
     this.next = ret.next;
     ret._inuse = false;
     if (this.next == null) {
@@ -126,7 +123,7 @@ export class ZPP_Island {
   }
 
   inlined_pop(): void {
-    const ret = this.next;
+    const ret = this.next!;
     this.next = ret.next;
     ret._inuse = false;
     if (this.next == null) {
@@ -136,34 +133,34 @@ export class ZPP_Island {
     this.length--;
   }
 
-  pop_unsafe(): Any {
-    const ret = this.next;
+  pop_unsafe(): ZPP_Component {
+    const ret = this.next!;
     this.pop();
     return ret;
   }
 
-  inlined_pop_unsafe(): Any {
-    const ret = this.next;
+  inlined_pop_unsafe(): ZPP_Component {
+    const ret = this.next!;
     this.pop();
     return ret;
   }
 
-  remove(obj: Any): void {
-    let pre: Any = null;
-    let cur: Any = this.next;
+  remove(obj: ZPP_Component): void {
+    let pre: ZPP_Component | null = null;
+    let cur: ZPP_Component | null = this.next;
     while (cur != null) {
       if (cur == obj) {
-        let old: Any;
-        let ret: Any;
+        let old: ZPP_Component;
+        let ret: ZPP_Component | null;
         if (pre == null) {
-          old = this.next;
+          old = this.next!;
           ret = old.next;
           this.next = ret;
           if (this.next == null) {
             this.pushmod = true;
           }
         } else {
-          old = pre.next;
+          old = pre.next!;
           ret = old.next;
           pre.next = ret;
           if (ret == null) {
@@ -181,9 +178,9 @@ export class ZPP_Island {
     }
   }
 
-  try_remove(obj: Any): boolean {
-    let pre: Any = null;
-    let cur: Any = this.next;
+  try_remove(obj: ZPP_Component): boolean {
+    let pre: ZPP_Component | null = null;
+    let cur: ZPP_Component | null = this.next;
     let ret = false;
     while (cur != null) {
       if (cur == obj) {
@@ -197,22 +194,22 @@ export class ZPP_Island {
     return ret;
   }
 
-  inlined_remove(obj: Any): void {
-    let pre: Any = null;
-    let cur: Any = this.next;
+  inlined_remove(obj: ZPP_Component): void {
+    let pre: ZPP_Component | null = null;
+    let cur: ZPP_Component | null = this.next;
     while (cur != null) {
       if (cur == obj) {
-        let old: Any;
-        let ret: Any;
+        let old: ZPP_Component;
+        let ret: ZPP_Component | null;
         if (pre == null) {
-          old = this.next;
+          old = this.next!;
           ret = old.next;
           this.next = ret;
           if (this.next == null) {
             this.pushmod = true;
           }
         } else {
-          old = pre.next;
+          old = pre.next!;
           ret = old.next;
           pre.next = ret;
           if (ret == null) {
@@ -230,23 +227,23 @@ export class ZPP_Island {
     }
   }
 
-  inlined_try_remove(obj: Any): boolean {
-    let pre: Any = null;
-    let cur: Any = this.next;
+  inlined_try_remove(obj: ZPP_Component): boolean {
+    let pre: ZPP_Component | null = null;
+    let cur: ZPP_Component | null = this.next;
     let ret = false;
     while (cur != null) {
       if (cur == obj) {
-        let old: Any;
-        let ret1: Any;
+        let old: ZPP_Component;
+        let ret1: ZPP_Component | null;
         if (pre == null) {
-          old = this.next;
+          old = this.next!;
           ret1 = old.next;
           this.next = ret1;
           if (this.next == null) {
             this.pushmod = true;
           }
         } else {
-          old = pre.next;
+          old = pre.next!;
           ret1 = old.next;
           pre.next = ret1;
           if (ret1 == null) {
@@ -266,18 +263,18 @@ export class ZPP_Island {
     return ret;
   }
 
-  erase(pre: Any): Any {
-    let old: Any;
-    let ret: Any;
+  erase(pre: ZPP_Component | null): ZPP_Component | null {
+    let old: ZPP_Component;
+    let ret: ZPP_Component | null;
     if (pre == null) {
-      old = this.next;
+      old = this.next!;
       ret = old.next;
       this.next = ret;
       if (this.next == null) {
         this.pushmod = true;
       }
     } else {
-      old = pre.next;
+      old = pre.next!;
       ret = old.next;
       pre.next = ret;
       if (ret == null) {
@@ -291,18 +288,18 @@ export class ZPP_Island {
     return ret;
   }
 
-  inlined_erase(pre: Any): Any {
-    let old: Any;
-    let ret: Any;
+  inlined_erase(pre: ZPP_Component | null): ZPP_Component | null {
+    let old: ZPP_Component;
+    let ret: ZPP_Component | null;
     if (pre == null) {
-      old = this.next;
+      old = this.next!;
       ret = old.next;
       this.next = ret;
       if (this.next == null) {
         this.pushmod = true;
       }
     } else {
-      old = pre.next;
+      old = pre.next!;
       ret = old.next;
       pre.next = ret;
       if (ret == null) {
@@ -316,17 +313,17 @@ export class ZPP_Island {
     return ret;
   }
 
-  splice(pre: Any, n: number): Any {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
+  splice(pre: ZPP_Component | null, n: number): ZPP_Component | null {
+    while (n-- > 0 && pre!.next != null) this.erase(pre);
+    return pre!.next;
   }
 
   clear(): void {}
   inlined_clear(): void {}
 
   reverse(): void {
-    let cur: Any = this.next;
-    let pre: Any = null;
+    let cur: ZPP_Component | null = this.next;
+    let pre: ZPP_Component | null = null;
     while (cur != null) {
       const nx = cur.next;
       cur.next = pre;
@@ -346,9 +343,9 @@ export class ZPP_Island {
     return this.length;
   }
 
-  has(obj: Any): boolean {
+  has(obj: ZPP_Component): boolean {
     let ret = false;
-    let cx_ite = this.next;
+    let cx_ite: ZPP_Component | null = this.next;
     while (cx_ite != null) {
       const npite = cx_ite;
       if (npite == obj) {
@@ -360,9 +357,9 @@ export class ZPP_Island {
     return ret;
   }
 
-  inlined_has(obj: Any): boolean {
+  inlined_has(obj: ZPP_Component): boolean {
     let ret = false;
-    let cx_ite = this.next;
+    let cx_ite: ZPP_Component | null = this.next;
     while (cx_ite != null) {
       const npite = cx_ite;
       if (npite == obj) {
@@ -374,12 +371,12 @@ export class ZPP_Island {
     return ret;
   }
 
-  front(): Any {
+  front(): ZPP_Component | null {
     return this.next;
   }
 
-  back(): Any {
-    let ret = this.next;
+  back(): ZPP_Component | null {
+    let ret: ZPP_Component | null = this.next;
     let cur = ret;
     while (cur != null) {
       ret = cur;
@@ -388,13 +385,13 @@ export class ZPP_Island {
     return ret;
   }
 
-  iterator_at(ind: number): Any {
-    let ret = this.next;
+  iterator_at(ind: number): ZPP_Component | null {
+    let ret: ZPP_Component | null = this.next;
     while (ind-- > 0 && ret != null) ret = ret.next;
     return ret;
   }
 
-  at(ind: number): Any {
+  at(ind: number): ZPP_Component | null {
     const it = this.iterator_at(ind);
     if (it != null) {
       return it;

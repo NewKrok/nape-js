@@ -9,7 +9,6 @@
 
 import { ZPP_ID } from "../util/ZPP_ID";
 
-type Any = any;
 
 export class ZPP_Constraint {
   // --- Static: Haxe metadata ---
@@ -20,15 +19,15 @@ export class ZPP_Constraint {
    * _nape = the `nape` public namespace (for CbTypeIterator in copyto)
    * _zpp = the `zpp_nape` internal namespace (for ZNPList_*, ZPP_CbSet, etc.)
    */
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Instance fields ---
-  outer: Any = null;
+  outer: any = null;
   id: number = 0;
-  userData: Any = null;
-  compound: Any = null;
-  space: Any = null;
+  userData: any = null;
+  compound: any = null;
+  space: any = null;
   active: boolean = false;
   stiff: boolean = false;
   frequency: number = 0.0;
@@ -38,15 +37,15 @@ export class ZPP_Constraint {
   breakUnderForce: boolean = false;
   breakUnderError: boolean = false;
   removeOnBreak: boolean = false;
-  component: Any = null;
+  component: any = null;
   ignore: boolean = false;
   __velocity: boolean = false;
-  cbTypes: Any = null;
-  cbSet: Any = null;
-  wrap_cbTypes: Any = null;
+  cbTypes: any = null;
+  cbSet: any = null;
+  wrap_cbTypes: any = null;
   pre_dt: number = -1.0;
 
-  __class__: Any = ZPP_Constraint;
+  __class__: any = ZPP_Constraint;
 
   constructor() {
     this._initBase();
@@ -85,9 +84,9 @@ export class ZPP_Constraint {
   forest(): void {}
   broken(): void {}
   warmStart(): void {}
-  draw(_g: Any): void {}
+  draw(_g: any): void {}
 
-  pair_exists(_id: Any, _di: Any): boolean {
+  pair_exists(_id: any, _di: any): boolean {
     return false;
   }
 
@@ -103,7 +102,7 @@ export class ZPP_Constraint {
     return false;
   }
 
-  copy(_dict?: Any, _todo?: Any): Any {
+  copy(_dict?: any, _todo?: any): any {
     return null;
   }
 
@@ -128,7 +127,7 @@ export class ZPP_Constraint {
     this.immutable_midstep("Constraint::cbTypes");
   }
 
-  wrap_cbTypes_subber(pcb: Any): void {
+  wrap_cbTypes_subber(pcb: any): void {
     const cb = pcb.zpp_inner;
     if (this.cbTypes.has(cb)) {
       if (this.space != null) {
@@ -143,19 +142,19 @@ export class ZPP_Constraint {
     }
   }
 
-  wrap_cbTypes_adder(cb: Any): boolean {
+  wrap_cbTypes_adder(cb: any): boolean {
     this.insert_cbtype(cb.zpp_inner);
     return false;
   }
 
-  insert_cbtype(cb: Any): void {
+  insert_cbtype(cb: any): void {
     const zpp = ZPP_Constraint._zpp;
     if (!this.cbTypes.has(cb)) {
       if (this.space != null) {
         this.dealloc_cbSet();
         cb.constraints.add(this);
       }
-      let pre: Any = null;
+      let pre: any = null;
       let cx_ite = this.cbTypes.head;
       while (cx_ite != null) {
         const j = cx_ite.elt;
@@ -296,7 +295,7 @@ export class ZPP_Constraint {
   }
 
   // --- Copy support ---
-  copyto(ret: Any): void {
+  copyto(ret: any): void {
     const nape = ZPP_Constraint._nape;
 
     const me = this.outer;
@@ -447,12 +446,12 @@ export class ZPP_Constraint {
 
   // --- Static helpers for union-find (used by all joint subclasses) ---
 
-  static _findRoot(comp: Any): Any {
+  static _findRoot(comp: any): any {
     if (comp == comp.parent) {
       return comp;
     }
     let obj = comp;
-    let stack: Any = null;
+    let stack: any = null;
     while (obj != obj.parent) {
       const nxt = obj.parent;
       obj.parent = stack;
@@ -467,7 +466,7 @@ export class ZPP_Constraint {
     return obj;
   }
 
-  static _unionComponents(a: Any, b: Any): void {
+  static _unionComponents(a: any, b: any): void {
     const xr = ZPP_Constraint._findRoot(a);
     const yr = ZPP_Constraint._findRoot(b);
     if (xr != yr) {

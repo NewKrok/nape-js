@@ -12,24 +12,22 @@ import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Material } from "../phys/ZPP_Material";
 import { ZPP_Interactor } from "../phys/ZPP_Interactor";
 
-type Any = any;
-
 export class ZPP_Shape {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "shape", "ZPP_Shape"];
-  static __super__: Any = null;
+  static __super__: any = null;
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Static: shape type enum lookup (populated by _initEnums) ---
-  static types: Any[] = [];
+  static types: any[] = [];
 
   /**
    * Initialize ShapeType singleton enums. Called once from compiled factory.
    */
-  static _initEnums(nape: Any, ZPP_Flags: Any): void {
+  static _initEnums(nape: any, ZPP_Flags: any): void {
     const mk = () => { ZPP_Flags.internal = true; const o = new nape.shape.ShapeType(); ZPP_Flags.internal = false; return o; };
     if (ZPP_Flags.ShapeType_CIRCLE == null) ZPP_Flags.ShapeType_CIRCLE = mk();
     if (ZPP_Flags.ShapeType_POLYGON == null) ZPP_Flags.ShapeType_POLYGON = mk();
@@ -40,10 +38,10 @@ export class ZPP_Shape {
   static _initialized = false;
 
   // --- Instance: public wrapper ---
-  outer: Any = null;
+  outer: any = null;
 
   // --- Instance: body reference ---
-  body: Any = null;
+  body: any = null;
 
   // --- Instance: shape type (0=circle, 1=polygon) ---
   type = 0;
@@ -66,8 +64,8 @@ export class ZPP_Shape {
   worldCOMx = 0;
   worldCOMy = 0;
   zip_worldCOM = false;
-  wrap_localCOM: Any = null;
-  wrap_worldCOM: Any = null;
+  wrap_localCOM: any = null;
+  wrap_worldCOM: any = null;
 
   // --- Instance: sweep radius ---
   sweepRadius = 0;
@@ -75,40 +73,37 @@ export class ZPP_Shape {
   sweepCoef = 0;
 
   // --- Instance: circle/polygon subtype references ---
-  circle: Any = null;
-  polygon: Any = null;
+  circle: any = null;
+  polygon: any = null;
 
   // --- Instance: material/filter/fluid ---
-  refmaterial: Any = null;
-  material: Any = null;
-  filter: Any = null;
-  fluidProperties: Any = null;
+  refmaterial: any = null;
+  material: any = null;
+  filter: any = null;
+  fluidProperties: any = null;
   fluidEnabled = false;
   sensorEnabled = false;
 
   // --- Instance: broadphase ---
-  sweep: Any = null;
-  node: Any = null;
-  pairs: Any = null;
+  sweep: any = null;
+  node: any = null;
+  pairs: any = null;
 
   // --- Instance: AABB ---
-  aabb: Any = null;
+  aabb: any = null;
   zip_aabb = false;
 
-  // --- Instance: Haxe class reference ---
-  __class__: Any = ZPP_Shape;
-
   // --- Interactor fields (re-declared, set by _initShape via ZPP_Interactor.call) ---
-  ishape: Any = null;
+  ishape: any = null;
 
   // --- Stub declarations for methods inherited from ZPP_Interactor ---
   wake!: () => void;
   immutable_midstep!: (name: string) => void;
-  copyto!: (ret: Any) => void;
-  insert_cbtype!: (cb: Any) => void;
+  copyto!: (ret: any) => void;
+  insert_cbtype!: (cb: any) => void;
   __iaddedToSpace!: () => void;
   __iremovedFromSpace!: () => void;
-  userData: Any = null;
+  userData: any = null;
 
   constructor(type?: number) {
     if (type !== undefined) {
@@ -168,7 +163,7 @@ export class ZPP_Shape {
     // Copy ZPP_Interactor prototype methods onto ZPP_Shape prototype
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
       if (k !== "constructor" && k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)) {
-        (ZPP_Shape.prototype as Any)[k] = (ZPP_Interactor.prototype as Any)[k];
+        (ZPP_Shape.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }
   }
@@ -383,7 +378,7 @@ export class ZPP_Shape {
   }
 
   // --- Material/filter/fluid setters ---
-  setMaterial(material: Any): void {
+  setMaterial(material: any): void {
     if (this.material !== material) {
       if (this.body != null && this.body.space != null) {
         if (this.material != null) {
@@ -401,7 +396,7 @@ export class ZPP_Shape {
     }
   }
 
-  setFilter(filter: Any): void {
+  setFilter(filter: any): void {
     if (this.filter !== filter) {
       if (this.body != null && this.body.space != null) {
         if (this.filter != null) {
@@ -416,7 +411,7 @@ export class ZPP_Shape {
     }
   }
 
-  setFluid(fluid: Any): void {
+  setFluid(fluid: any): void {
     if (this.fluidProperties !== fluid) {
       if (this.body != null && this.body.space != null) {
         if (this.fluidProperties != null) {
@@ -470,9 +465,9 @@ export class ZPP_Shape {
   }
 
   // --- Copy ---
-  copy(): Any {
+  copy(): any {
     const zpp = ZPP_Shape._zpp;
-    const ret: Any = this.type === 0 ? this.circle.__copy() : this.polygon.__copy();
+    const ret: any = this.type === 0 ? this.circle.__copy() : this.polygon.__copy();
     if (!this.zip_area_inertia) {
       ret.area = this.area;
       ret.inertia = this.inertia;

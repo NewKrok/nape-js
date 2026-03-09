@@ -64,18 +64,6 @@ describe("OptionType", () => {
     expect(ot.excludes).toBe(ot.excludes);
   });
 
-  // --- get_includes / get_excludes (compiled code compat) ---
-
-  it("should have get_includes matching includes getter", () => {
-    const ot = new OptionType();
-    expect(ot.get_includes()).toBe(ot.includes);
-  });
-
-  it("should have get_excludes matching excludes getter", () => {
-    const ot = new OptionType();
-    expect(ot.get_excludes()).toBe(ot.excludes);
-  });
-
   // --- including ---
 
   it("should include a CbType", () => {

@@ -12,14 +12,13 @@ import { getNape } from "../../core/engine";
 import { Vec2List as Vec2ListCtor } from "../../geom/Vec2List";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 
-type Any = any;
-
 // ---------------------------------------------------------------------------
 // Helper: ensure a ZPP_Vec2 has a public Vec2 wrapper.
 // Same logic as ensureVec2Wrapper in Vec2List.ts.
+// Returns the public Vec2 wrapper (any — circular import prevention).
 // ---------------------------------------------------------------------------
 
-function ensureVec2Wrapper(zpp: Any): Any {
+function ensureVec2Wrapper(zpp: ZPP_Vec2): any {
   if (zpp.outer == null) {
     const nape = getNape();
     zpp.outer = new nape.geom.Vec2();
@@ -42,44 +41,52 @@ function ensureVec2Wrapper(zpp: Any): Any {
 // ZPP_MixVec2List constructor function (Haxe-compatible, extends Vec2ListCtor)
 // ---------------------------------------------------------------------------
 
-function ZPP_MixVec2ListCtor(this: Any): void {
+function ZPP_MixVec2ListCtor(this: any): void {
   this.at_index = 0;
   this.at_ite = null;
   this.zip_length = false;
   this._length = 0;
   this.inner = null;
-  (Vec2ListCtor as Any).call(this); // sets this.zpp_inner = new ZPP_Vec2List()
+  (Vec2ListCtor as any).call(this); // sets this.zpp_inner = new ZPP_Vec2List()
   this.at_ite = null;
   this.at_index = 0;
   this.zip_length = true;
   this._length = 0;
 }
 
-(ZPP_MixVec2ListCtor as Any).__name__ = ["zpp_nape", "util", "ZPP_MixVec2List"];
-(ZPP_MixVec2ListCtor as Any).__super__ = Vec2ListCtor;
+(ZPP_MixVec2ListCtor as any).__name__ = ["zpp_nape", "util", "ZPP_MixVec2List"];
+(ZPP_MixVec2ListCtor as any).__super__ = Vec2ListCtor;
 
-// Inherit all Vec2List prototype methods
-for (const k in (Vec2ListCtor as Any).prototype) {
-  (ZPP_MixVec2ListCtor as Any).prototype[k] = (Vec2ListCtor as Any).prototype[k];
+// Inherit all Vec2List prototype methods (enumerable only — for...in misses
+// non-enumerable properties like the `length` getter defined via Object.defineProperty)
+for (const k in (Vec2ListCtor as any).prototype) {
+  (ZPP_MixVec2ListCtor as any).prototype[k] = (Vec2ListCtor as any).prototype[k];
 }
+// Re-apply the non-enumerable `length` getter so it is available on this subclass.
+Object.defineProperty((ZPP_MixVec2ListCtor as any).prototype, "length", {
+  get: function (this: any) {
+    return this.zpp_gl();
+  },
+  configurable: true,
+});
 
 // ---------------------------------------------------------------------------
 // Instance field defaults
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.inner = null;
-(ZPP_MixVec2ListCtor as Any).prototype._length = 0;
-(ZPP_MixVec2ListCtor as Any).prototype.zip_length = false;
-(ZPP_MixVec2ListCtor as Any).prototype.at_ite = null;
-(ZPP_MixVec2ListCtor as Any).prototype.at_index = 0;
+(ZPP_MixVec2ListCtor as any).prototype.inner = null;
+(ZPP_MixVec2ListCtor as any).prototype._length = 0;
+(ZPP_MixVec2ListCtor as any).prototype.zip_length = false;
+(ZPP_MixVec2ListCtor as any).prototype.at_ite = null;
+(ZPP_MixVec2ListCtor as any).prototype.at_index = 0;
 
 // ---------------------------------------------------------------------------
 // Static factory
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).get = function (list: Any, immutable?: boolean): Any {
+(ZPP_MixVec2ListCtor as any).get = function (list: any, immutable?: boolean): any {
   if (immutable == null) immutable = false;
-  const ret = new (ZPP_MixVec2ListCtor as Any)();
+  const ret = new (ZPP_MixVec2ListCtor as any)();
   ret.inner = list;
   ret.zpp_inner.immutable = immutable;
   return ret;
@@ -89,7 +96,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: zpp_gl — compute length by traversing inner.next chain
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.zpp_gl = function (this: Any): number {
+(ZPP_MixVec2ListCtor as any).prototype.zpp_gl = function (this: any): number {
   this.zpp_vm();
   if (this.zip_length) {
     this._length = 0;
@@ -107,7 +114,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: zpp_vm — validate zpp_inner and check inner.modified
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.zpp_vm = function (this: Any): void {
+(ZPP_MixVec2ListCtor as any).prototype.zpp_vm = function (this: any): void {
   this.zpp_inner.validate();
   if (this.inner.modified) {
     this.zip_length = true;
@@ -120,7 +127,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: at — index into inner.next chain with cached cursor
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.at = function (this: Any, index: number): Any {
+(ZPP_MixVec2ListCtor as any).prototype.at = function (this: any, index: number): any {
   this.zpp_vm();
   if (index < 0 || index >= this.zpp_gl()) {
     throw new Error("Error: Index out of bounds");
@@ -143,7 +150,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: push — append to inner list (or prepend when reversed)
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.push = function (this: Any, obj: Any): boolean {
+(ZPP_MixVec2ListCtor as any).prototype.push = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -172,7 +179,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: unshift — prepend to inner list (or append when reversed)
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.unshift = function (this: Any, obj: Any): boolean {
+(ZPP_MixVec2ListCtor as any).prototype.unshift = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -201,7 +208,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: pop — remove from end (or front when reversed)
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.pop = function (this: Any): Any {
+(ZPP_MixVec2ListCtor as any).prototype.pop = function (this: any): any {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -210,7 +217,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
     throw new Error("Error: Cannot remove from empty list");
   }
   this.zpp_vm();
-  let ret: Any;
+  let ret: any;
   if (this.zpp_inner.reverse_flag) {
     ret = this.inner.next; // first element = visible end when reversed
     const retx = ensureVec2Wrapper(ret);
@@ -242,7 +249,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: shift — remove from front (or back when reversed)
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.shift = function (this: Any): Any {
+(ZPP_MixVec2ListCtor as any).prototype.shift = function (this: any): any {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -251,7 +258,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
     throw new Error("Error: Cannot remove from empty list");
   }
   this.zpp_vm();
-  let ret: Any;
+  let ret: any;
   if (this.zpp_inner.reverse_flag) {
     if (this.at_ite != null && this.at_ite.next == null) {
       this.at_ite = null;
@@ -283,7 +290,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: remove — remove by Vec2 public wrapper
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.remove = function (this: Any, obj: Any): boolean {
+(ZPP_MixVec2ListCtor as any).prototype.remove = function (this: any, obj: any): boolean {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -314,7 +321,7 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 // Override: clear — loop calling pop/shift
 // ---------------------------------------------------------------------------
 
-(ZPP_MixVec2ListCtor as Any).prototype.clear = function (this: Any): void {
+(ZPP_MixVec2ListCtor as any).prototype.clear = function (this: any): void {
   if (this.zpp_inner.immutable) {
     throw new Error("Error: Vec2List is immutable");
   }
@@ -332,6 +339,5 @@ for (const k in (Vec2ListCtor as Any).prototype) {
 const nape = getNape();
 const zpp = nape.__zpp;
 zpp.util.ZPP_MixVec2List = ZPP_MixVec2ListCtor;
-(ZPP_MixVec2ListCtor as Any).prototype.__class__ = ZPP_MixVec2ListCtor;
 
 export { ZPP_MixVec2ListCtor as ZPP_MixVec2List };

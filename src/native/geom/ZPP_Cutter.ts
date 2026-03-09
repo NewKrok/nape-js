@@ -87,8 +87,8 @@ export class ZPP_Cutter {
         c.next = null;
       }
       c.vert = p;
-      c.posx = c.vert.x;
-      c.posy = c.vert.y;
+      c.posx = p!.x;
+      c.posy = p!.y;
       c.value = c.posy * dx - c.posx * dy + crx;
       c.positive = c.value > 0;
       if (c.value == 0) {
@@ -100,11 +100,11 @@ export class ZPP_Cutter {
       } else {
         obj.prev = verts;
         obj.next = verts.next;
-        verts.next.prev = obj;
+        verts.next!.prev = obj;
         verts.next = obj;
       }
       verts = obj;
-      p = p.next;
+      p = p!.next;
       if (!(p != P)) {
         break;
       }
@@ -121,7 +121,7 @@ export class ZPP_Cutter {
             start = p1;
             break;
           }
-          nite = nite.next;
+          nite = nite.next!;
           if (!(nite != L)) {
             break;
           }
@@ -142,34 +142,34 @@ export class ZPP_Cutter {
       let pre: ZPP_CutVert | null = null;
       let p2 = start;
       while (true) {
-        if (p2.value != 0.0 && (pre == null || p2 == pre.next)) {
+        if (p2!.value != 0.0 && (pre == null || p2 == pre.next)) {
           pre = p2;
-          p2 = p2.next;
+          p2 = p2!.next;
           if (!(p2 != start)) {
             break;
           } else {
             continue;
           }
         }
-        const prod = pre.value * p2.value;
+        const prod = pre!.value * p2!.value;
         if (prod == 0) {
-          p2 = p2.next;
+          p2 = p2!.next;
           if (!(p2 != start)) {
             break;
           } else {
             continue;
           }
         }
-        const a = pre.next;
+        const a = pre!.next;
         let positive: boolean;
         if (prod > 0) {
-          positive = pre.positive;
+          positive = pre!.positive;
         } else {
-          const b = a.next;
+          const b = a!.next;
           let midx: number;
           let midy: number;
-          midx = a.posx + b.posx;
-          midy = a.posy + b.posy;
+          midx = a!.posx + b!.posx;
+          midy = a!.posy + b!.posy;
           const t2 = 0.5;
           midx *= t2;
           midy *= t2;
@@ -183,12 +183,12 @@ export class ZPP_Cutter {
             while (true) {
               const p3 = nite1;
               const q = p3.prev;
-              if (((p3.y < y && q.y >= y) || (q.y < y && p3.y >= y)) && (p3.x <= x || q.x <= x)) {
-                if (p3.x + ((y - p3.y) / (q.y - p3.y)) * (q.x - p3.x) < x) {
+              if (((p3.y < y && q!.y >= y) || (q!.y < y && p3.y >= y)) && (p3.x <= x || q!.x <= x)) {
+                if (p3.x + ((y - p3.y) / (q!.y - p3.y)) * (q!.x - p3.x) < x) {
                   ret = !ret;
                 }
               }
-              nite1 = nite1.next;
+              nite1 = nite1.next!;
               if (!(nite1 != L1)) {
                 break;
               }
@@ -203,36 +203,36 @@ export class ZPP_Cutter {
           while (true) {
             const q1 = nite2;
             q1.positive = positive;
-            nite2 = nite2.next;
+            nite2 = nite2.next!;
             if (!(nite2 != L2)) {
               break;
             }
           }
         }
         pre = p2;
-        p2 = p2.next;
+        p2 = p2!.next;
         if (!(p2 != start)) {
           break;
         }
       }
       while (true) {
-        if (p2.value != 0.0 && (pre == null || p2 == pre.next)) {
+        if (p2!.value != 0.0 && (pre == null || p2 == pre!.next)) {
           break;
         }
-        const prod1 = pre.value * p2.value;
+        const prod1 = pre!.value * p2!.value;
         if (prod1 == 0) {
           break;
         }
-        const a1 = pre.next;
+        const a1 = pre!.next;
         let positive1: boolean;
         if (prod1 > 0) {
-          positive1 = pre.positive;
+          positive1 = pre!.positive;
         } else {
-          const b1 = a1.next;
+          const b1 = a1!.next;
           let midx1: number;
           let midy1: number;
-          midx1 = a1.posx + b1.posx;
-          midy1 = a1.posy + b1.posy;
+          midx1 = a1!.posx + b1!.posx;
+          midy1 = a1!.posy + b1!.posy;
           const t3 = 0.5;
           midx1 *= t3;
           midy1 *= t3;
@@ -247,14 +247,14 @@ export class ZPP_Cutter {
               const p4 = nite3;
               const q2 = p4.prev;
               if (
-                ((p4.y < y1 && q2.y >= y1) || (q2.y < y1 && p4.y >= y1)) &&
-                (p4.x <= x1 || q2.x <= x1)
+                ((p4.y < y1 && q2!.y >= y1) || (q2!.y < y1 && p4.y >= y1)) &&
+                (p4.x <= x1 || q2!.x <= x1)
               ) {
-                if (p4.x + ((y1 - p4.y) / (q2.y - p4.y)) * (q2.x - p4.x) < x1) {
+                if (p4.x + ((y1 - p4.y) / (q2!.y - p4.y)) * (q2!.x - p4.x) < x1) {
                   ret1 = !ret1;
                 }
               }
-              nite3 = nite3.next;
+              nite3 = nite3.next!;
               if (!(nite3 != L3)) {
                 break;
               }
@@ -269,7 +269,7 @@ export class ZPP_Cutter {
           while (true) {
             const q3 = nite4;
             q3.positive = positive1;
-            nite4 = nite4.next;
+            nite4 = nite4.next!;
             if (!(nite4 != L4)) {
               break;
             }
@@ -284,7 +284,7 @@ export class ZPP_Cutter {
     if (ZPP_Cutter.paths == null) {
       ZPP_Cutter.paths = new zpp_nape.util.ZNPList_ZPP_CutVert();
     }
-    let start1: ZPP_CutVert | null = null;
+    let start1: ZPP_GeomVert | null = null;
     const x2 = verts.posx;
     const y2 = verts.posy;
     let ret2: ZPP_GeomVert;
@@ -299,14 +299,8 @@ export class ZPP_Cutter {
     ret2.x = x2;
     ret2.y = y2;
     const obj1 = ret2;
-    if (start1 == null) {
-      start1 = obj1.prev = obj1.next = obj1;
-    } else {
-      obj1.next = start1;
-      obj1.prev = start1.prev;
-      start1.prev.next = obj1;
-      start1.prev = obj1;
-    }
+    obj1.prev = obj1.next = obj1;
+    start1 = obj1;
     const origin = start1;
     let ret3: ZPP_CutVert;
     if (ZPP_CutVert.zpp_pool == null) {
@@ -325,8 +319,8 @@ export class ZPP_Cutter {
     let i = verts;
     while (true) {
       const j = i.next;
-      const x3 = j.posx;
-      const y3 = j.posy;
+      const x3 = j!.posx;
+      const y3 = j!.posy;
       let ret4: ZPP_GeomVert;
       if (ZPP_GeomVert.zpp_pool == null) {
         ret4 = new ZPP_GeomVert();
@@ -339,19 +333,20 @@ export class ZPP_Cutter {
       ret4.x = x3;
       ret4.y = y3;
       const pj = ret4;
-      if (i.positive == j.positive) {
+      if (i.positive == j!.positive) {
         const obj2 = pj;
         if (start1 == null) {
-          start1 = obj2.prev = obj2.next = obj2;
+          obj2.prev = obj2.next = obj2;
+          start1 = obj2;
         } else {
           obj2.next = start1;
           obj2.prev = start1.prev;
-          start1.prev.next = obj2;
+          start1.prev!.next = obj2;
           start1.prev = obj2;
         }
       } else {
-        const ux = j.posx - i.posx;
-        const uy = j.posy - i.posy;
+        const ux = j!.posx - i.posx;
+        const uy = j!.posy - i.posy;
         let denom = dy * ux - dx * uy;
         denom = 1 / denom;
         const pax = px - i.posx;
@@ -381,18 +376,19 @@ export class ZPP_Cutter {
           tmp.add(ret5);
           const obj3 = pj;
           if (start1 == null) {
-            start1 = obj3.prev = obj3.next = obj3;
+            obj3.prev = obj3.next = obj3;
+            start1 = obj3;
           } else {
             obj3.next = start1;
             obj3.prev = start1.prev;
-            start1.prev.next = obj3;
+            start1.prev!.next = obj3;
             start1.prev = obj3;
           }
         } else if (i.value == 0) {
-          const endof = start1.prev;
+          const endof = start1!.prev;
           start1 = null;
-          const x4 = endof.x;
-          const y4 = endof.y;
+          const x4 = endof!.x;
+          const y4 = endof!.y;
           let ret6: ZPP_GeomVert;
           if (ZPP_GeomVert.zpp_pool == null) {
             ret6 = new ZPP_GeomVert();
@@ -405,21 +401,16 @@ export class ZPP_Cutter {
           ret6.x = x4;
           ret6.y = y4;
           const obj4 = ret6;
-          if (start1 == null) {
-            start1 = obj4.prev = obj4.next = obj4;
-          } else {
-            obj4.next = start1;
-            obj4.prev = start1.prev;
-            start1.prev.next = obj4;
-            start1.prev = obj4;
-          }
+          obj4.prev = obj4.next = obj4;
+          start1 = obj4;
           const obj5 = pj;
           if (start1 == null) {
-            start1 = obj5.prev = obj5.next = obj5;
+            obj5.prev = obj5.next = obj5;
+            start1 = obj5;
           } else {
             obj5.next = start1;
             obj5.prev = start1.prev;
-            start1.prev.next = obj5;
+            start1.prev!.next = obj5;
             start1.prev = obj5;
           }
           const prepath = ZPP_Cutter.paths.head.elt;
@@ -459,20 +450,21 @@ export class ZPP_Cutter {
           ret8.time = s;
           ret8.vertex = false;
           tmp2.add(ret8);
-        } else if (j.value == 0) {
+        } else if (j!.value == 0) {
           const obj6 = pj;
           if (start1 == null) {
-            start1 = obj6.prev = obj6.next = obj6;
+            obj6.prev = obj6.next = obj6;
+            start1 = obj6;
           } else {
             obj6.next = start1;
             obj6.prev = start1.prev;
-            start1.prev.next = obj6;
+            start1.prev!.next = obj6;
             start1.prev = obj6;
           }
-          const endof1 = start1.prev;
+          const endof1 = start1!.prev;
           start1 = null;
-          const x5 = j.posx;
-          const y5 = j.posy;
+          const x5 = j!.posx;
+          const y5 = j!.posy;
           let ret9: ZPP_GeomVert;
           if (ZPP_GeomVert.zpp_pool == null) {
             ret9 = new ZPP_GeomVert();
@@ -485,14 +477,8 @@ export class ZPP_Cutter {
           ret9.x = x5;
           ret9.y = y5;
           const obj7 = ret9;
-          if (start1 == null) {
-            start1 = obj7.prev = obj7.next = obj7;
-          } else {
-            obj7.next = start1;
-            obj7.prev = start1.prev;
-            start1.prev.next = obj7;
-            start1.prev = obj7;
-          }
+          obj7.prev = obj7.next = obj7;
+          start1 = obj7;
           const prepath1 = ZPP_Cutter.paths.head.elt;
           const tmp3 = ZPP_Cutter.paths;
           let ret10: ZPP_CutVert;
@@ -552,14 +538,15 @@ export class ZPP_Cutter {
           ret12.y = qy;
           const obj8 = ret12;
           if (start1 == null) {
-            start1 = obj8.prev = obj8.next = obj8;
+            obj8.prev = obj8.next = obj8;
+            start1 = obj8;
           } else {
             obj8.next = start1;
             obj8.prev = start1.prev;
-            start1.prev.next = obj8;
+            start1.prev!.next = obj8;
             start1.prev = obj8;
           }
-          const endof2 = start1.prev;
+          const endof2 = start1!.prev;
           start1 = null;
           let ret13: ZPP_GeomVert;
           if (ZPP_GeomVert.zpp_pool == null) {
@@ -573,21 +560,16 @@ export class ZPP_Cutter {
           ret13.x = qx;
           ret13.y = qy;
           const obj9 = ret13;
-          if (start1 == null) {
-            start1 = obj9.prev = obj9.next = obj9;
-          } else {
-            obj9.next = start1;
-            obj9.prev = start1.prev;
-            start1.prev.next = obj9;
-            start1.prev = obj9;
-          }
+          obj9.prev = obj9.next = obj9;
+          start1 = obj9;
           const obj10 = pj;
           if (start1 == null) {
-            start1 = obj10.prev = obj10.next = obj10;
+            obj10.prev = obj10.next = obj10;
+            start1 = obj10;
           } else {
             obj10.next = start1;
             obj10.prev = start1.prev;
-            start1.prev.next = obj10;
+            start1.prev!.next = obj10;
             start1.prev = obj10;
           }
           const prepath2 = ZPP_Cutter.paths.head.elt;
@@ -629,16 +611,16 @@ export class ZPP_Cutter {
           tmp6.add(ret15);
         }
       }
-      i = i.next;
+      i = i.next!;
       if (!(i != verts)) {
         break;
       }
     }
-    const endof3 = start1.prev;
-    endof3.next.prev = origin.prev;
-    origin.prev.next = endof3.next;
-    endof3.next = origin;
-    origin.prev = endof3;
+    const endof3 = start1!.prev;
+    endof3!.next!.prev = origin!.prev;
+    origin!.prev!.next = endof3!.next;
+    endof3!.next = origin;
+    origin!.prev = endof3;
     const lastpath = ZPP_Cutter.paths.head.elt;
     let xr: any;
     if (firstpath == firstpath.parent) {
@@ -1670,9 +1652,9 @@ export class ZPP_Cutter {
         ZPP_CutVert.zpp_pool = o39;
         verts = null;
       } else {
-        const retnodes5 = verts.next;
-        verts.prev.next = verts.next;
-        verts.next.prev = verts.prev;
+        const retnodes5: ZPP_CutVert | null = verts.next;
+        verts.prev!.next = verts.next;
+        verts.next!.prev = verts.prev;
         verts.next = verts.prev = null;
         const o40 = verts;
         o40.vert = null;

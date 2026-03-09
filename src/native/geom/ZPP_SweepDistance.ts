@@ -9,18 +9,21 @@
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
+import { ZPP_ToiEvent } from "./ZPP_ToiEvent";
+import { ZPP_Body } from "../phys/ZPP_Body";
+import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { getNape } from "../../core/engine";
 
 export class ZPP_SweepDistance {
   static __name__ = ["zpp_nape", "geom", "ZPP_SweepDistance"];
 
-  static dynamicSweep(toi, timeStep, lowerBound, negRadius, userAPI) {
+  static dynamicSweep(toi: ZPP_ToiEvent, timeStep: number, lowerBound: number, negRadius: number, userAPI: boolean) {
     const napeNs = getNape();
     if (userAPI == null) {
       userAPI = false;
     }
-    const s1 = toi.s1;
-    const s2 = toi.s2;
+    const s1 = toi.s1!;
+    const s2 = toi.s2!;
     const b1 = s1.body;
     const b2 = s2.body;
     let deltax = 0.0;
@@ -1245,10 +1248,10 @@ export class ZPP_SweepDistance {
     }
     toi.toi = curTOI;
   }
-  static staticSweep(toi, timeStep, lowerBound, negRadius) {
+  static staticSweep(toi: ZPP_ToiEvent, timeStep: number, lowerBound: number, negRadius: number) {
     const napeNs = getNape();
-    const s1 = toi.s1;
-    const s2 = toi.s2;
+    const s1 = toi.s1!;
+    const s2 = toi.s2!;
     const b1 = s1.body;
     const b2 = s2.body;
     let deltax = 0.0;
@@ -2312,7 +2315,7 @@ export class ZPP_SweepDistance {
     }
     toi.toi = curTOI;
   }
-  static distanceBody(b1, b2, w1, w2) {
+  static distanceBody(b1: ZPP_Body, b2: ZPP_Body, w1: ZPP_Vec2, w2: ZPP_Vec2) {
     const napeNs = getNape();
     let t1;
     if (ZPP_Vec2.zpp_pool == null) {
@@ -2828,7 +2831,7 @@ export class ZPP_SweepDistance {
     ZPP_Vec2.zpp_pool = o2;
     return min;
   }
-  static distance(s1, s2, w1, w2, axis, upperBound) {
+  static distance(s1: ZPP_Shape, s2: ZPP_Shape, w1: ZPP_Vec2, w2: ZPP_Vec2, axis: ZPP_Vec2, upperBound: number | null) {
     const napeNs = getNape();
     if (upperBound == null) {
       upperBound = 1e100;

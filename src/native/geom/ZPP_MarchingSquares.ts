@@ -417,7 +417,7 @@ export class ZPP_MarchingSquares {
               ? pd.prev
               : pd.prev.prev;
 
-          const _thisMap = ZPP_MarchingSquares.map;
+          const _thisMap = ZPP_MarchingSquares.map!;
           _thisMap.list[y1 * _thisMap.width + x1] = pp;
 
           let tmp: boolean;
@@ -480,7 +480,7 @@ export class ZPP_MarchingSquares {
       let pre1: ZPP_MarchSpan | null = null;
 
       for (let x2 = 0; x2 < xn; x2++) {
-        const _thisMap2 = ZPP_MarchingSquares.map;
+        const _thisMap2 = ZPP_MarchingSquares.map!;
         const b = _thisMap2.list[y2 * _thisMap2.width + x2];
         if (b == null) {
           pre1 = null;
@@ -498,7 +498,7 @@ export class ZPP_MarchingSquares {
           continue;
         }
 
-        const _thisMap3 = ZPP_MarchingSquares.map;
+        const _thisMap3 = ZPP_MarchingSquares.map!;
         const a = _thisMap3.list[(y2 - 1) * _thisMap3.width + x2];
         if (a == null) {
           pre1 = null;
@@ -539,7 +539,7 @@ export class ZPP_MarchingSquares {
     // Output combined polygons
     for (let y3 = 0; y3 < yn; y3++) {
       for (let x3 = 0; x3 < xn; x3++) {
-        const _thisMap4 = ZPP_MarchingSquares.map;
+        const _thisMap4 = ZPP_MarchingSquares.map!;
         const p = _thisMap4.list[y3 * _thisMap4.width + x3];
         if (p == null) {
           continue;
@@ -591,8 +591,8 @@ export class ZPP_MarchingSquares {
         let nite: ZPP_GeomVert = F;
         while (true) {
           const v = nite;
-          area += v.x * (v.next.y - v.prev.y);
-          nite = nite.next;
+          area += v.x * (v.next!.y - v.prev!.y);
+          nite = nite.next!;
           if (!(nite != L)) {
             break;
           }
@@ -619,10 +619,11 @@ export class ZPP_MarchingSquares {
 
     const gp = nape.geom.GeomPoly.get();
     gp.zpp_inner.vertices = poly;
-    if (ret.zpp_inner.reverse_flag) {
-      ret.push(gp);
+    const retAny = ret as any;
+    if (retAny.zpp_inner.reverse_flag) {
+      retAny.push(gp);
     } else {
-      ret.unshift(gp);
+      retAny.unshift(gp);
     }
   }
 
@@ -634,9 +635,9 @@ export class ZPP_MarchingSquares {
     if (kind == 0) {
       return poly;
     } else if (kind == 3) {
-      return poly.next.next;
+      return poly!.next!.next;
     } else {
-      return poly.next;
+      return poly!.next;
     }
   }
 
@@ -645,7 +646,7 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   linkleft(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
     if ((key & 1) == 0) {
-      return poly.prev;
+      return poly!.prev;
     } else {
       return poly;
     }
@@ -656,9 +657,9 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   linkdown(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
     if ((key & 128) == 0) {
-      return poly.prev;
+      return poly!.prev;
     } else {
-      return poly.prev.prev;
+      return poly!.prev!.prev;
     }
   }
 

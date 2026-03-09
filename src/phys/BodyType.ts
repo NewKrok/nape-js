@@ -23,18 +23,6 @@ export class BodyType {
   // --- Static getters for convenient access (BodyType.DYNAMIC etc.) ---
 
   static get STATIC(): BodyType {
-    return BodyType.get_STATIC();
-  }
-  static get DYNAMIC(): BodyType {
-    return BodyType.get_DYNAMIC();
-  }
-  static get KINEMATIC(): BodyType {
-    return BodyType.get_KINEMATIC();
-  }
-
-  // --- Lazy singleton accessors (used by compiled code) ---
-
-  static get_STATIC(): BodyType {
     if (ZPP_Flags.BodyType_STATIC == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.BodyType_STATIC = new BodyType();
@@ -42,8 +30,7 @@ export class BodyType {
     }
     return ZPP_Flags.BodyType_STATIC;
   }
-
-  static get_DYNAMIC(): BodyType {
+  static get DYNAMIC(): BodyType {
     if (ZPP_Flags.BodyType_DYNAMIC == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.BodyType_DYNAMIC = new BodyType();
@@ -51,8 +38,7 @@ export class BodyType {
     }
     return ZPP_Flags.BodyType_DYNAMIC;
   }
-
-  static get_KINEMATIC(): BodyType {
+  static get KINEMATIC(): BodyType {
     if (ZPP_Flags.BodyType_KINEMATIC == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.BodyType_KINEMATIC = new BodyType();
@@ -62,9 +48,9 @@ export class BodyType {
   }
 
   toString(): string {
-    if (this === BodyType.get_STATIC()) return "STATIC";
-    if (this === BodyType.get_DYNAMIC()) return "DYNAMIC";
-    if (this === BodyType.get_KINEMATIC()) return "KINEMATIC";
+    if (this === ZPP_Flags.BodyType_STATIC) return "STATIC";
+    if (this === ZPP_Flags.BodyType_DYNAMIC) return "DYNAMIC";
+    if (this === ZPP_Flags.BodyType_KINEMATIC) return "KINEMATIC";
     return "";
   }
 }
@@ -73,6 +59,5 @@ export class BodyType {
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
-
 nape.phys.BodyType = BodyType;
 ensureEnumsReady();

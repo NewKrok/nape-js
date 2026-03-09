@@ -836,38 +836,8 @@ export class Space {
   }
 
   toString(): string {
-    return `Space(bodies=${(this.bodies as any).get_length()})`;
+    return `Space(bodies=${(this.bodies as any).length})`;
   }
 
-  // ---------------------------------------------------------------------------
-  // Backward-compat get_*/set_* methods
-  // ---------------------------------------------------------------------------
-
-  /** @internal */ get_userData(): Record<string, unknown> { return this.userData; }
-  /** @internal */ get_gravity(): Vec2 { return this.gravity; }
-  /** @internal */ set_gravity(v: Vec2): Vec2 { this.gravity = v; return this.gravity; }
-  /** @internal */ get_broadphase(): Broadphase { return this.broadphase; }
-  /** @internal */ get_sortContacts(): boolean { return this.sortContacts; }
-  /** @internal */ set_sortContacts(v: boolean): boolean { this.sortContacts = v; return this.sortContacts; }
-  /** @internal */ get_worldAngularDrag(): number { return this.worldAngularDrag; }
-  /** @internal */ set_worldAngularDrag(v: number): number { this.worldAngularDrag = v; return this.worldAngularDrag; }
-  /** @internal */ get_worldLinearDrag(): number { return this.worldLinearDrag; }
-  /** @internal */ set_worldLinearDrag(v: number): number { this.worldLinearDrag = v; return this.worldLinearDrag; }
-  /** @internal */ get_compounds(): object { return this.compounds; }
-  /** @internal */ get_bodies(): object { return this.bodies; }
-  /** @internal */ get_liveBodies(): object { return this.liveBodies; }
-  /** @internal */ get_constraints(): object { return this.constraints; }
-  /** @internal */ get_liveConstraints(): object { return this.liveConstraints; }
-  /** @internal */ get_world(): Body { return this.world; }
-  /** @internal */ get_arbiters(): object { return this.arbiters; }
-  /** @internal */ get_listeners(): object { return this.listeners; }
-  /** @internal */ get_timeStamp(): number { return this.timeStamp; }
-  /** @internal */ get_elapsedTime(): number { return this.elapsedTime; }
 }
 
-// ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
-// ---------------------------------------------------------------------------
-
-const nape = getNape();
-nape.space.Space = Space;

@@ -20,7 +20,7 @@ export class NapeList<T> implements Iterable<T> {
 
   /** Number of elements in the list. */
   get length(): number {
-    return this._inner.get_length();
+    return this._inner.length;
   }
 
   /** Get element at index. */

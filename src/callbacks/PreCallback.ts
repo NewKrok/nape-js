@@ -47,5 +47,3 @@ export class PreCallback extends Callback {
 // ---------------------------------------------------------------------------
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
-(PreCallback as any).__super__ = Callback;
-ZPP_Callback._createPreCb = () => new PreCallback();

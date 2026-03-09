@@ -73,7 +73,7 @@ describe("Arbiter", () => {
   it("should have a type property returning ArbiterType", () => {
     const { space } = createCollisionScene();
     const arb = space.arbiters.at(0);
-    expect(arb.type).toBe(ArbiterType.get_COLLISION());
+    expect(arb.type).toBe(ArbiterType.COLLISION);
   });
 
   it("should have isSleeping property", () => {
@@ -122,7 +122,7 @@ describe("CollisionArbiter", () => {
     const arb = space.arbiters.at(0);
     const colArb = arb.collisionArbiter;
     expect(colArb.contacts).toBeDefined();
-    expect(colArb.contacts.get_length()).toBeGreaterThan(0);
+    expect(colArb.contacts.length).toBeGreaterThan(0);
   });
 
   it("should expose collision normal", () => {

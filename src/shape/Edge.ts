@@ -224,8 +224,3 @@ ZPP_Edge._wrapFn = (zpp: ZPP_Edge) =>
     raw.outer = e;
     return e;
   });
-
-const nape = getNape();
-
-// Replace the compiled Edge with our TS class
-nape.shape.Edge = Edge;

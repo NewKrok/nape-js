@@ -42,7 +42,6 @@ describe("ZPP_CbType", () => {
       const ct = new ZPP_CbType();
       expect(ct.outer).toBeNull();
       expect(ct.userData).toBeNull();
-      expect(ct.__class__).toBe(ZPP_CbType);
     });
   });
 

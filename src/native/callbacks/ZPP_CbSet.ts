@@ -8,41 +8,44 @@
  * Converted from nape-compiled.js lines 44594–45134, 132797.
  */
 
-type Any = any;
+import { ZNPList } from "../util/ZNPList";
+import { ZPP_CbType } from "./ZPP_CbType";
+import { ZPP_InteractionListener } from "./ZPP_InteractionListener";
+import { ZPP_BodyListener } from "./ZPP_BodyListener";
+import { ZPP_ConstraintListener } from "./ZPP_ConstraintListener";
 
 export class ZPP_CbSet {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "callbacks", "ZPP_CbSet"];
 
   // --- Static: namespace references ---
-  static _zpp: Any = null;
+  static _zpp: any = null;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_CbSet | null = null;
 
   // --- Instance ---
-  cbTypes: Any = null;
+  // Initialized in constructor — guaranteed non-null after construction
+  cbTypes!: ZNPList<ZPP_CbType>;
   count = 0;
   next: ZPP_CbSet | null = null;
   id = 0;
-  manager: Any = null;
-  cbpairs: Any = null;
+  manager: any = null;   // ZPP_CbManager (no dedicated TS class)
+  cbpairs: any = null;   // ZNPList_ZPP_CbSetPair (ZPP_CbSetPair has no TS type)
 
-  listeners: Any = null;
+  listeners!: ZNPList<ZPP_InteractionListener>;
   zip_listeners = false;
 
-  bodylisteners: Any = null;
+  bodylisteners!: ZNPList<ZPP_BodyListener>;
   zip_bodylisteners = false;
 
-  conlisteners: Any = null;
+  conlisteners!: ZNPList<ZPP_ConstraintListener>;
   zip_conlisteners = false;
 
-  interactors: Any = null;
-  wrap_interactors: Any = null;
-  constraints: Any = null;
-  wrap_constraints: Any = null;
-
-  __class__: Any = ZPP_CbSet;
+  interactors: any = null;     // ZNPList_ZPP_Interactor (ZPP_Interactor has no TS type)
+  wrap_interactors: any = null;
+  constraints: any = null;     // ZNPList_ZPP_Constraint
+  wrap_constraints: any = null;
 
   constructor() {
     const zpp = ZPP_CbSet._zpp;
@@ -66,8 +69,8 @@ export class ZPP_CbSet {
     let i = a.cbTypes.head;
     let j = b.cbTypes.head;
     while (i != null && j != null) {
-      const ca = i.elt;
-      const cb = j.elt;
+      const ca = i.elt!;
+      const cb = j.elt!;
       if (ca.id < cb.id) return true;
       if (cb.id < ca.id) return false;
       i = i.next;
@@ -81,7 +84,7 @@ export class ZPP_CbSet {
   }
 
   /** Factory with pooling. Populates cbTypes from given list. */
-  static get(cbTypes: Any): ZPP_CbSet {
+  static get(cbTypes: any): ZPP_CbSet {
     let ret: ZPP_CbSet;
     if (ZPP_CbSet.zpp_pool == null) {
       ret = new ZPP_CbSet();
@@ -90,7 +93,7 @@ export class ZPP_CbSet {
       ZPP_CbSet.zpp_pool = ret.next;
       ret.next = null;
     }
-    let ite: Any = null;
+    let ite: any = null;
     let cx_ite = cbTypes.head;
     while (cx_ite != null) {
       const cb = cx_ite.elt;
@@ -102,7 +105,7 @@ export class ZPP_CbSet {
   }
 
   /** Check if a listener is compatible with sets a and b. */
-  static compatible(i: Any, a: ZPP_CbSet, b: ZPP_CbSet): boolean {
+  static compatible(i: any, a: ZPP_CbSet, b: ZPP_CbSet): boolean {
     let tmp: boolean;
     const _this = i.options1;
     const xs = a.cbTypes;
@@ -141,9 +144,9 @@ export class ZPP_CbSet {
   }
 
   /** Helper: find or create a CbSetPair for sets a and b. */
-  private static findOrCreatePair(a: ZPP_CbSet, b: ZPP_CbSet): Any {
+  private static findOrCreatePair(a: ZPP_CbSet, b: ZPP_CbSet): any {
     const zpp = ZPP_CbSet._zpp;
-    let ret: Any = null;
+    let ret: any = null;
     const pairs = a.cbpairs.length < b.cbpairs.length ? a.cbpairs : b.cbpairs;
     let cx_ite = pairs.head;
     while (cx_ite != null) {
@@ -155,7 +158,7 @@ export class ZPP_CbSet {
       cx_ite = cx_ite.next;
     }
     if (ret == null) {
-      let ret1: Any;
+      let ret1: any;
       if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
         ret1 = new zpp.callbacks.ZPP_CbSetPair();
       } else {
@@ -189,7 +192,7 @@ export class ZPP_CbSet {
     return ret.listeners.head == null;
   }
 
-  static single_intersection(a: ZPP_CbSet, b: ZPP_CbSet, i: Any): boolean {
+  static single_intersection(a: ZPP_CbSet, b: ZPP_CbSet, i: any): boolean {
     const ret = ZPP_CbSet.findOrCreatePair(a, b);
     const ite = ret.listeners.head;
     if (ite != null && ite.elt == i) {
@@ -199,11 +202,11 @@ export class ZPP_CbSet {
     }
   }
 
-  static find_all(a: ZPP_CbSet, b: ZPP_CbSet, event: number, cb: (listener: Any) => void): void {
+  static find_all(a: ZPP_CbSet, b: ZPP_CbSet, event: number, cb: (listener: ZPP_InteractionListener) => void): void {
     const ret = ZPP_CbSet.findOrCreatePair(a, b);
     let cx_ite1 = ret.listeners.head;
     while (cx_ite1 != null) {
-      const x = cx_ite1.elt;
+      const x = cx_ite1.elt!;
       if (x.event == event) {
         cb(x);
       }
@@ -247,12 +250,12 @@ export class ZPP_CbSet {
     this.listeners.clear();
     let cx_ite = this.cbTypes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      let npre: Any = null;
-      let nite = this.listeners.head;
+      const cb = cx_ite.elt!;
+      let npre: any = null;
+      let nite: any = this.listeners.head;
       let cite = cb.listeners.head;
       while (cite != null) {
-        const cx = cite.elt;
+        const cx = cite.elt!;
         if (nite != null && nite.elt == cx) {
           cite = cite.next;
           npre = nite;
@@ -260,7 +263,7 @@ export class ZPP_CbSet {
         } else {
           let tmp: boolean;
           if (nite != null) {
-            const b = nite.elt;
+            const b = nite.elt!;
             tmp = cx.precedence > b.precedence || (cx.precedence == b.precedence && cx.id > b.id);
           } else {
             tmp = true;
@@ -268,7 +271,7 @@ export class ZPP_CbSet {
           if (tmp) {
             if (cx.space == this.manager.space) {
               const _this = this.listeners;
-              let ret: Any;
+              let ret: any;
               if (zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
                 ret = new zpp.util.ZNPNode_ZPP_InteractionListener();
               } else {
@@ -316,12 +319,12 @@ export class ZPP_CbSet {
     this.bodylisteners.clear();
     let cx_ite = this.cbTypes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      let npre: Any = null;
-      let nite = this.bodylisteners.head;
+      const cb = cx_ite.elt!;
+      let npre: any = null;
+      let nite: any = this.bodylisteners.head;
       let cite = cb.bodylisteners.head;
       while (cite != null) {
-        const cx = cite.elt;
+        const cx = cite.elt!;
         if (nite != null && nite.elt == cx) {
           cite = cite.next;
           npre = nite;
@@ -329,7 +332,7 @@ export class ZPP_CbSet {
         } else {
           let tmp: boolean;
           if (nite != null) {
-            const b = nite.elt;
+            const b = nite.elt!;
             tmp = cx.precedence > b.precedence || (cx.precedence == b.precedence && cx.id > b.id);
           } else {
             tmp = true;
@@ -341,7 +344,7 @@ export class ZPP_CbSet {
               cx.space == this.manager.space
             ) {
               const _this1 = this.bodylisteners;
-              let ret: Any;
+              let ret: any;
               if (zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool == null) {
                 ret = new zpp.util.ZNPNode_ZPP_BodyListener();
               } else {
@@ -389,12 +392,12 @@ export class ZPP_CbSet {
     this.conlisteners.clear();
     let cx_ite = this.cbTypes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      let npre: Any = null;
-      let nite = this.conlisteners.head;
+      const cb = cx_ite.elt!;
+      let npre: any = null;
+      let nite: any = this.conlisteners.head;
       let cite = cb.conlisteners.head;
       while (cite != null) {
-        const cx = cite.elt;
+        const cx = cite.elt!;
         if (nite != null && nite.elt == cx) {
           cite = cite.next;
           npre = nite;
@@ -402,7 +405,7 @@ export class ZPP_CbSet {
         } else {
           let tmp: boolean;
           if (nite != null) {
-            const b = nite.elt;
+            const b = nite.elt!;
             tmp = cx.precedence > b.precedence || (cx.precedence == b.precedence && cx.id > b.id);
           } else {
             tmp = true;
@@ -414,7 +417,7 @@ export class ZPP_CbSet {
               cx.space == this.manager.space
             ) {
               const _this1 = this.conlisteners;
-              let ret: Any;
+              let ret: any;
               if (zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
                 ret = new zpp.util.ZNPNode_ZPP_ConstraintListener();
               } else {
@@ -461,19 +464,19 @@ export class ZPP_CbSet {
     }
   }
 
-  addConstraint(con: Any): void {
+  addConstraint(con: any): void {
     this.constraints.add(con);
   }
 
-  addInteractor(intx: Any): void {
+  addInteractor(intx: any): void {
     this.interactors.add(intx);
   }
 
-  remConstraint(con: Any): void {
+  remConstraint(con: any): void {
     this.constraints.remove(con);
   }
 
-  remInteractor(intx: Any): void {
+  remInteractor(intx: any): void {
     this.interactors.remove(intx);
   }
 
@@ -485,7 +488,7 @@ export class ZPP_CbSet {
     this.conlisteners.clear();
     this.zip_conlisteners = true;
     while (this.cbTypes.head != null) {
-      const cb = this.cbTypes.pop_unsafe();
+      const cb = this.cbTypes.pop_unsafe()!;
       cb.cbsets.remove(this);
     }
   }

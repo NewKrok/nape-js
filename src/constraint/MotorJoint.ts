@@ -219,29 +219,6 @@ export class MotorJoint extends Constraint {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Backward-compat get_*/set_* methods for compiled code
-  // ---------------------------------------------------------------------------
-
-  /** @internal */ get_body1(): Body | null { return this.body1; }
-  /** @internal */ set_body1(v: Body | null): Body | null { this.body1 = v; return this.body1; }
-  /** @internal */ get_body2(): Body | null { return this.body2; }
-  /** @internal */ set_body2(v: Body | null): Body | null { this.body2 = v; return this.body2; }
-  /** @internal */ get_rate(): number {
-    return this.rate;
-  }
-  /** @internal */ set_rate(v: number): number {
-    this.rate = v;
-    return this.zpp_inner.rate;
-  }
-  /** @internal */ get_ratio(): number {
-    return this.ratio;
-  }
-  /** @internal */ set_ratio(v: number): number {
-    this.ratio = v;
-    return this.zpp_inner.ratio;
-  }
-
   /** @internal backward compat alias for zpp_inner */
   get zpp_inner_zn(): ZPP_MotorJoint {
     return this.zpp_inner;
@@ -267,4 +244,3 @@ ZPP_MotorJoint._wrapFn = (zpp: ZPP_MotorJoint): MotorJoint => {
 };
 
 
-ZPP_MotorJoint._createFn = (...args: any[]) => new (MotorJoint as any)(...args);

@@ -13,14 +13,14 @@ Public API wrappers (src/{phys,shape,constraint,callbacks,dynamics,geom,space}/)
         ↕
 Internal ZPP_* classes (src/native/)
         ↕
-Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + HaxeShims.ts)
+Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 ```
 
 ### Build & Test
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2358 tests across 126 files
+npm test             # vitest — 2269 tests across 125 files
 npm run lint         # eslint + prettier
 ```
 
@@ -292,7 +292,7 @@ in native/ code):
 
 ## Modernization Pattern
 
-### Priority 25: `type Any = any` → real TypeScript types (in progress)
+### ✅ Priority 25: `type Any = any` → real TypeScript types — DONE
 
 **Effort: XL | Impact: largest | Risk: medium**
 
@@ -362,81 +362,123 @@ in native/ code):
 - `_nape`/`_zpp` static namespace refs → always `any` (dynamic dispatch)
 - `_wrapFn` callbacks → `((zpp: ZPP_Foo) => any) | null` (typed input, `any` output)
 - `__class__: Any = ClassName` instance fields → removed entirely (P21 dead code)
-- Corresponding `__class__` test assertions removed from 20 test files
+- Corresponding `__class__` test assertions removed from affected test files
+- ZNPList/ZNPNode/ZPP_Set fields typed with generics where the element type is known:
+  `bodylisteners: any` (ZNPList_ZPP_BodyListener is a dynamic class) but `.elt` → `ZPP_BodyListener`
+- Handler callbacks typed with concrete param types where possible:
+  `handler: ((val: ZPP_CbType, included: boolean, added: boolean) => void) | null`
+- **When removing `any`: prefer concrete types or generics over `any`** — use `any` only when:
+  - circular ESM import would result (outer/wrap refs)
+  - the type is a dynamic ZNPList/ZNPNode/ZPP_Set subclass created at runtime via `_zpp.util.*`
+  - the field is user-facing `userData` → use `unknown` instead
 
-**Additional native geom files done** (previous sessions):
+**Native geom/ files done:**
 - `ZPP_SimpleSeg.ts` — `left/right: ZPP_SimpleVert`, `vertices: ZPP_Set<ZPP_SimpleVert>`,
   `prev: ZPP_SimpleSeg|null`, `node: ZPP_Set<ZPP_SimpleSeg>|null`; `__class__` removed
-- `ZPP_CutInt.ts` — `path0/path1/start/end: ZPP_CutVert|null`; `__class__` removed;
-  test updated (removed `__class__` assertion, factory args updated to `null`)
-- `ZPP_SimpleSweep.ts` — `tree: ZPP_Set<ZPP_SimpleSeg>|null`; `add/remove/intersect/intersection`
-  typed with `ZPP_SimpleSeg`; `intersection()` returns `ZPP_SimpleEvent|null`
-- `ZPP_PartitionedPoly.ts` — `sharedPPList: ZNPList<ZPP_PartitionedPoly>`, `sharedGVList: ZNPList<ZPP_GeomVert>`;
-  `extract_partitions/pull_partitions/extract/pull` fully typed; `p = p as Any` → `p = null!`
-- `ZPP_Monotone.ts` — `queue: ZNPList<ZPP_PartitionVertex>`, `edges: ZPP_Set<ZPP_PartitionVertex>`;
-  merge sort locals typed as `ZNPNode<ZPP_PartitionVertex>|null`; pool-return uses `(x as any).outer`
-  (ZPP_Vec2.outer is always `any` — circular import prevention)
-- `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `simplify(P: ZPP_GeomVert): ZPP_GeomVert|null`;
-  `XYPoint` interface for `lessval/less/distance` helpers; `dv: ZPP_SimplifyV|null`
+- `ZPP_CutInt.ts` — `path0/path1/start/end: ZPP_CutVert|null`; `__class__` removed
+- `ZPP_SimpleSweep.ts` — `tree: ZPP_Set<ZPP_SimpleSeg>|null`; typed methods with `ZPP_SimpleSeg`
+- `ZPP_PartitionedPoly.ts` — `sharedPPList: ZNPList<ZPP_PartitionedPoly>`, `sharedGVList: ZNPList<ZPP_GeomVert>`
+- `ZPP_Monotone.ts` — `queue: ZNPList<ZPP_PartitionVertex>`, `edges: ZPP_Set<ZPP_PartitionVertex>`
+- `ZPP_Simplify.ts` — `stack: ZNPList<ZPP_SimplifyP>|null`; `XYPoint` interface for helpers
+- `ZPP_Simple.ts` — all static fields typed (`FastHash2_Boolfalse`, `ZPP_Set<*>`, `ZNPList<*>`)
+- `ZPP_MarchingSquares.ts` — `isos/ints/map` typed (`ZNPArray2_Float`, `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair`)
+- `ZPP_Cutter.ts` — `P: ZPP_GeomVert|null`; locals `ZPP_CutVert|null`
 
-**Native dynamics/ files done** (previous sessions):
-- `ZPP_Arbiter.ts` — `_nape`/`_zpp`/`outer`/`b1`/`b2`/`ws1`/`ws2`/`pair`/`colarb`/`fluidarb`/`sensorarb`/`types` → `any`;
-  `__class__` removed; method params/locals → `any`
-- `ZPP_Contact.ts` — `outer`/`wrap_position`/`arbiter` → `any`; `__class__` removed;
-  `wrapper()`/`getposition()` locals → `any`
-- `ZPP_IContact.ts` — `__class__` removed (no other `Any` usages)
-- `ZPP_ColArbiter.ts` — `outer_zn`/`s1`/`s2`/`wrap_contacts`/`wrap_normal`/`ptype`/`__ref_edge*`/`c1`/`oc1`/`c2`/`oc2` → `any`;
-  `__class__` removed; private helper params → `any`
-- `ZPP_FluidArbiter.ts` — `outer_zn`/`wrap_position` → `any`; `__class__` removed; `preStep`/`assign` params → `any`
-- `ZPP_SensorArbiter.ts` — `__class__` removed; `assign` params → `any`
-- `ZPP_InteractionFilter.ts` — `_nape`/`_zpp`/`_wrapFn`/`outer`/`shapes`/`wrap_shapes`/`userData` → `any`; `__class__` removed
-- `ZPP_InteractionGroup.ts` — `_zpp`/`_wrapFn`/`outer`/`groups`/`wrap_groups`/`interactors`/`wrap_interactors` → `any`; `__class__` removed
-- `ZPP_SpaceArbiterList.ts` — `_nape`/`_zpp`/`zpp_inner`/`space`/`ite_*` → `any`; `__class__` removed;
-  immutable override methods → `any`
-- 4 test files updated: removed `__class__` assertions from ZPP_Contact, ZPP_IContact, ZPP_InteractionFilter, ZPP_InteractionGroup
+**Native util/ files done:**
+- `ZNPList.ts` — typed `_NodeClass` with `ZNPNodeClass<T>` interface + `ZNPListConstructor<T>`
+- `ZPP_Set.ts` — typed `zpp_pool`/constructor with `ZPP_SetConstructor<T>` interface
+- `ZPP_ContactList.ts` — `inner: ZPP_Contact`, `at_ite/push_ite: ZPP_Contact|null`
+- `ZPP_Vec2List.ts` — `inner: ZNPList<unknown>`
+- `ZPP_Ray.ts` — `userData: unknown`, `aabbtest/aabbsect(a: ZPP_AABB)`, invalidate callbacks `(x: ZPP_Vec2)`
+- `ZPP_MixVec2List.ts` — `type Any` removed; `ensureVec2Wrapper(zpp: ZPP_Vec2)`; `prototype.__class__` removed
 
-**Additional native util+geom files done** (this session):
-- `ZNPList.ts` — typed `_NodeClass` with `ZNPNodeClass<T>` interface, `constructor` cast with
-  `ZNPListConstructor<T>`; removed `__class__` field
-- `ZPP_Set.ts` — typed `zpp_pool`/constructor cast with `ZPP_SetConstructor<T>` interface;
-  removed `__class__` field
-- `ZPP_ContactList.ts` — typed `inner: ZPP_Contact`, `at_ite/push_ite: ZPP_Contact|null`;
-  `get()` param typed; removed `__class__` field
-- `ZPP_Vec2List.ts` — typed `inner: ZNPList<unknown>`; `get()` param typed; removed `__class__` field
-- `ZPP_Ray.ts` — typed `userData: unknown`, `aabbtest/aabbsect(a: ZPP_AABB)`, invalidate
-  callbacks `(x: ZPP_Vec2)`; `direction/origin: any` (circular); removed `__class__` field
-- `ZPP_Simple.ts` — typed all static fields (`FastHash2_Boolfalse`, `ZPP_Set<*>`, `ZNPList<*>`);
-  `decompose/clip_polygon/isSimple` params and locals typed; merge sort nodes as `ZNPNode<ZPP_SimpleEvent>`
-- `ZPP_MarchingSquares.ts` — typed `isos/ints/map` static fields (`ZNPArray2_Float`,
-  `ZNPArray2_ZPP_GeomVert`, `ZNPArray2_ZPP_MarchPair`); `run/output/link*/marchSquare/_buildPoly*`
-  params typed; `_zpp/_nape: any`; removed `__class__` field
-- `ZPP_Cutter.ts` — typed `P: ZPP_GeomVert|null`; local `verts/start/pre/start1: ZPP_CutVert|null`;
-  `virtualint*: boolean`; stack/merge-sort vars remain `any`; removed static `__class__`
+**Native dynamics/ files done:**
+- `ZPP_Arbiter.ts`, `ZPP_Contact.ts`, `ZPP_IContact.ts`, `ZPP_ColArbiter.ts`, `ZPP_FluidArbiter.ts`,
+  `ZPP_SensorArbiter.ts`, `ZPP_InteractionFilter.ts`, `ZPP_InteractionGroup.ts`, `ZPP_SpaceArbiterList.ts`
+  — all `type Any` + `__class__` removed; fields typed or justified `any`
 
-Count: 43 files remain in `src/native/` (shape/, callbacks/, phys/, space/, constraint/)
+**Native callbacks/ files done (8 files):**
+- `ZPP_Listener.ts` — `type Any` removed; `types/events: any[]`; `_initEnums(nape: any, ZPP_Flags: any)`
+- `ZPP_BodyListener.ts` — `type Any` + `__class__` removed; `handler/options/outer_zn: any`
+- `ZPP_ConstraintListener.ts` — `type Any` + `__class__` removed; same as BodyListener
+- `ZPP_Callback.ts` — `type Any` + `__class__` removed; `int1/int2/set/body/constraint: any`
+- `ZPP_CbSetPair.ts` — `type Any` + `__class__` removed; `a/b/listeners: any`
+- `ZPP_CbType.ts` — `type Any` + `__class__` removed; `addint/addbody/addconstraint` params
+  typed as `ZPP_InteractionListener`/`ZPP_BodyListener`/`ZPP_ConstraintListener`; `ANY_*: ZPP_CbType|null`;
+  `userData: unknown`; list fields remain `any` (dynamic ZNPList subclasses)
+- `ZPP_OptionType.ts` — `type Any` + `__class__` removed; `handler: ((val: ZPP_CbType, included: boolean, added: boolean) => void)|null`;
+  `nonemptyintersection` and `insertOrdered` locals typed as `ZPP_CbType`; `set()` uses `!==`
 
-Remaining: native ZPP classes (~43 files) — lower priority.
+**Native shape/ files done:**
+- `ZPP_Edge.ts` — `type Any` + `__class__` removed; fields remain `any` (outer/wrap = circular, polygon/vertex refs = dynamic)
+- `ZPP_Circle.ts` — `type Any` + `__class__` removed; `(this as any)._initShape()`, `dstProto as any` retained
+- `ZPP_Shape.ts` — `type Any` + `__class__` removed; `(ZPP_Shape.prototype as any)[k]` kept for prototype copy loop
+- `ZPP_Polygon.ts` — `type Any` + `__class__` removed; `dstProto as any` kept for prototype copy loop
 
-### Priority 26: Tree shaking
+**Native phys/ files done (partial):**
+- `ZPP_Material.ts` — `type Any` + `__class__` removed; `shapes/wrap_shapes: any` (dynamic ZNPList), `outer: any` (circular)
 
-**Effort: L | Impact: large (bundle selectivity) | Risk: high**
+Count: 23 files remain in `src/native/` (space/10, constraint/9, callbacks/2→already done)
 
-Blocker: `"sideEffects": true` is required because every public API module registers itself
-as a side effect (`nape.phys.Body = Body` at module bottom).
+**Native phys/ files done (all 4):**
+- `ZPP_FluidProperties.ts` — `type Any` + `__class__` removed; `userData: unknown`; Vec2/ZNPList/outer fields remain `any`
+- `ZPP_Interactor.ts` — `type Any` + `__class__` removed; `userData: unknown`; ishape/ibody/icompound/outer_i/cbTypes/cbsets remain `any` (circular/dynamic)
+- `ZPP_Compound.ts` — `type Any` + `__class__` removed; `userData: unknown`; all list/space/wrapper fields remain `any` (circular/dynamic)
+- `ZPP_Body.ts` — `type Any` + `__class__` removed; all Vec2 wrapper/list/space/component fields remain `any` (circular/dynamic)
 
-Target architecture:
-```typescript
-// Centralized bootstrap file (src/core/bootstrap.ts):
-import { Body } from "../phys/Body";
-import { ZPP_Body } from "../native/phys/ZPP_Body";
-ZPP_Body._wrapFn = (zpp) => new Body(zpp);
-// ... all registrations here
+**Native space/ files done (8 of 10):**
+- `ZPP_AABBNode.ts` — `type Any` + `__class__` removed; `shape: any` (circular ZPP_Shape); `aabb: ZPP_AABB`
+- `ZPP_AABBPair.ts` — `type Any` + `__class__` removed; `n1/n2/arb: any` (circular)
+- `ZPP_SweepData.ts` — `type Any` + `__class__` removed; `aabb/shape: any` (circular)
+- `ZPP_Component.ts` — `type Any` + `__class__` removed; `body/constraint/island: any` (circular)
+- `ZPP_Island.ts` — `type Any` + `__class__` removed; linked list methods fully typed with `ZPP_Component`; `comps/_zpp: any` (dynamic/namespace)
+- `ZPP_CallbackSet.ts` — `type Any` + `__class__` removed; `COLLISIONstate` etc. typed as `number|null`; arbiter methods `any` (dynamic ZNPList)
+- `ZPP_CbSetManager.ts` — `type Any` + `__class__` removed; all fields/params `any` (dynamic _zpp dispatch)
+- `ZPP_Broadphase.ts` — `type Any` + `__class__` removed; all fields/params `any` (circular/dynamic _zpp/_nape dispatch)
 
-// package.json:
-"sideEffects": ["src/core/engine.ts", "src/core/bootstrap.ts"]
-```
-This allows `import { Vec2 } from "nape-js"` without pulling in Space/Body/Constraints.
-Prerequisite: Priority 23 (direct ZPP imports) and Priority 24 (namespace reduction) done first.
+**Native space/ files done (all 4 remaining):**
+- `ZPP_AABBTree.ts` — `type Any` + `__class__` removed; `ret: ZPP_AABBNode` annotation; `node as ZPP_AABBNode` cast in while loop
+- `ZPP_DynAABBPhase.ts` — `type Any` + `__class__` removed; all fields/params `any` (circular/dynamic)
+- `ZPP_SweepPhase.ts` — `type Any` + `__class__` removed; `list: ZPP_SweepData|null` typed; remaining `any` legitimately dynamic
+- `ZPP_Space.ts` — `type Any` + `__class__` removed; all fields/params `any` (circular/dynamic engine internals)
+
+**Native constraint/ files done (all 11):**
+- `ZPP_CopyHelper.ts` — `type Any` + `__class__` removed; `bc/cb: any`
+- `ZPP_UserBody.ts` — `type Any` + `__class__` removed; `body: any` (circular ZPP_Body)
+- `ZPP_AngleJoint.ts`, `ZPP_MotorJoint.ts`, `ZPP_DistanceJoint.ts`, `ZPP_PivotJoint.ts`,
+  `ZPP_WeldJoint.ts`, `ZPP_LineJoint.ts`, `ZPP_PulleyJoint.ts` — `type Any` + `override __class__` removed; `Any` → `any`
+- `ZPP_Constraint.ts`, `ZPP_UserConstraint.ts` — `type Any` + `__class__` removed; `Any` → `any`
+- 3 test files updated: removed `__class__` assertions from `ZPP_AngleJoint.test.ts`,
+  `ZPP_MotorJoint.test.ts`, `ZPP_CopyHelper.test.ts`
+
+**`type Any = any` fully eliminated from entire `src/` codebase. All 2294 tests pass.**
+
+### ✅ Priority 26: Tree shaking — DONE
+
+All nape-namespace assignments and factory-callback wiring centralized in `src/core/bootstrap.ts`.
+Individual modules no longer self-register, so bundlers can shake unused exports.
+
+**What changed:**
+- **`src/core/bootstrap.ts`** created — single place for all `nape.xxx = Foo` assignments,
+  `_createFn` / `_createBodyCb` / `_createColArb` callbacks, `_bindBodyWrapForInteractor` etc.
+- **50+ public API modules** stripped of self-register blocks (`nape.xxx = Foo` + `getNape()`)
+- **`engine.ts`** cleaned — all side-effect imports removed; only `getNape()` + `ensureEnumsReady` remain
+- **`index.ts`** and **`tests/setup.ts`** import `bootstrap.ts` as first side-effect
+- **`package.json`**: `"sideEffects": true` → `["dist/index.js", "dist/index.cjs", "src/core/engine.ts", "src/core/bootstrap.ts"]`
+
+**Notes:**
+- `_wrapFn` callbacks (joint pool/wrap logic) remain in their modules — they use `getOrCreate`
+  and extra field setup that is correct only in the module context. `_createFn` is in bootstrap.
+- ZPP list backing classes (`ZPP_PublicList`, `ZPP_MixVec2List`, etc.) still self-register via
+  `getNape()` at module load — these are side-effect imports in bootstrap.ts.
+- True per-class tree shaking is limited by `ZPPRegistry.ts` statically importing all ZPP classes.
+  Full granular shaking would require lazy ZPP registration (future work).
+
+**Also fixed (discovered during build):**
+- `ZPP_FluidProperties.userData: unknown` → `Record<string, unknown> | null`
+- `ZPP_CbType.userData: unknown` → `Record<string, unknown> | null`
+- `ZPP_Body.ts`: 2 leftover `Any` → `any` (P25 remnant)
+- `CbType.ts` `ANY_*` getters use `as any` cast; `toString()` compares `this as any` to `ZPP_CbType`
 
 ### ✅ Priority 27: HaxeShims.ts final audit — DONE
 
@@ -445,15 +487,49 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
 - `HaxeError`, `$bind`, `jsBoot.__string_rec` — migrated into `ZPPRegistry.ts` / native classes
 - `Reflect`, `Std`, `StringTools` — no callers remained; removed completely
 
-### Priority 28: User-facing API improvements
+### ✅ Priority 28: User-facing API improvements — DONE (28a + 28c)
 
-**Effort: M | Impact: DX | Risk: low**
+- **28a** ✅ — `Symbol.iterator` added uniformly to all List types:
+  `Vec2List`, `ContactList`, `GeomVertexIterator` now support `for...of` and spread.
+  Factory-generated lists already had it. `ZPP_MixVec2List` fixed: `length` getter
+  re-applied via `Object.defineProperty` after `for...in` prototype copy.
+- **28c** ✅ — All Haxe-style `get_*()`/`set_*()` backward-compat methods deleted:
+  - 500+ instance methods removed from `Body`, `Compound`, `Space`, `Constraint`,
+    all 7 joints, `OptionType`, `Vec2List`, `ContactList`, `NapeListFactory`
+  - All static `get_FOO()` methods removed from all 14 enum classes
+    (`BodyType`, `ShapeType`, `ArbiterType`, `CbEvent`, `InteractionType`,
+    `ListenerType`, `PreFlag`, `GravMassMode`, `InertiaMode`, `MassMode`,
+    `Winding`, `ValidationResult`, `Broadphase`, `CbType`)
+  - Tests and benchmarks updated to use native TS getters/setters
+  - Bundle size: 991 KB → 979 KB
 
-- **28a** — Verify `Symbol.iterator` works uniformly on all List types
-  (`GeomVertexIterator`, `Vec2List`, `ContactList`, factory-generated lists)
-- **28b** — Enable `strictNullChecks: true` in `tsconfig.json` (requires P25 first)
-- **28c** — Audit `get_*()` / `set_*()` Haxe-style accessor methods on public API:
-  deprecate any that are exported in `index.ts` in favour of native TS getters/setters
+- **28b** — Fix all `strictNullChecks` errors (already ON via `strict: true`) 🔶 In progress
+
+  `strictNullChecks` was already enabled via `strict: true`. The task is fixing the ~2400 pre-existing
+  errors that were silently ignored by tsup (which skips type-checking).
+
+  **Fixed (11 of 14 files):**
+  - `ZPP_Set.ts` — `const ret: ZPP_Set<T> | null` explicit annotations (circular initializer)
+  - `FastHash2_Hashable2_Boolfalse.ts` — `const t: Hashable2_Boolfalse | null`
+  - `ZPP_ToiEvent.ts` — `s1/s2: ZPP_Shape | null`, `arbiter: ZPP_ColArbiter | null` (was `object`)
+  - `ZPP_SweepDistance.ts` — all 4 methods typed: `ZPP_ToiEvent`, `number`, `boolean`, `ZPP_Body`,
+    `ZPP_Shape`, `ZPP_Vec2`; imported `ZPP_ToiEvent`, `ZPP_Body`, `ZPP_Shape`
+  - `ZPP_Collide.ts` — all 7 static methods typed: `ZPP_Shape`, `ZPP_Body`, `ZPP_GeomVert`,
+    `ZPP_ColArbiter`, `ZPP_FluidArbiter`, `boolean`; self-referencing vars annotated; `!` assertions
+  - `ZPP_Component.ts` — `_inuse: boolean = false` field added (was missing)
+  - `ZPP_Space.ts` — missing `false` arg to `dynamicSweep` (was `undefined`)
+  - `ZPP_SimpleSeg.ts` — `zpp_pool` cast to `ZPP_Set<unknown>` (generic invariance)
+  - `ZPP_Island.ts` — fixed via `_inuse` field added to `ZPP_Component`
+  - `ZPP_Simplify.ts` — `!` assertions for ring-list invariants; `retnodes: ZPP_SimplifyV | null`
+  - `ZPP_PartitionedPoly.ts` — `!` assertions + explicit nullable var types throughout
+  - `ZPP_MarchingSquares.ts` — `!` on map access; dynamic ZNP list methods cast to `any`
+  - `ZPP_Monotone.ts` — nullable head var type; `!` on RB-tree traversal; `ZPP_Set<unknown>` cast
+  - `ZPP_Cutter.ts` + `ZPP_CutInt.ts` — `!` throughout; fixed `ZPP_CutInt.end/start` types
+
+  **Remaining (3 files, ~2023 errors):**
+  - `ZPP_DynAABBPhase.ts` — 1588 errors (largest file, heavy `any` dispatch)
+  - `ZPP_SimpleSweep.ts` — 227 errors
+  - `ZPP_Simple.ts` — 208 errors
 
 ### Priority 29: Missing test coverage
 
@@ -469,13 +545,9 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
 ### Execution order
 
 ```
-P21 → P22 → P23 → P24 → P27 (all done ✅)
-                ↓
-          P25 (Any → types, in progress)  ←→  P28 (API ergonomics)
-                ↓
-          P26 (tree shaking)
-                ↓
-          P29 (tests)
+P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
+                                ↓
+                          P28 (API ergonomics)  ←→  P29 (tests)
 ```
 
 | Priority | Effort | Impact | Risk | Status |
@@ -484,10 +556,10 @@ P21 → P22 → P23 → P24 → P27 (all done ✅)
 | P22 — Minification | XS | **large** | none | ✅ Done |
 | P23 — `__zpp` → direct imports | M | large | medium | ✅ Done |
 | P24 — Namespace reduction | S | medium | low | ✅ Done |
-| P25 — `Any` → real types | XL | **largest** | medium | 🔄 In progress |
-| P26 — Tree shaking | L | large | high | ⬜ Pending |
+| P25 — `Any` → real types | XL | **largest** | medium | ✅ Done |
+| P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
-| P28 — API ergonomics | M | DX | low | ⬜ Pending |
+| P28 — API ergonomics (28a+28c done, 28b in progress) | M | DX | low | 🔶 Partial |
 | P29 — Test coverage | M | safety | none | ⬜ Pending |
 
 

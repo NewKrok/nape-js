@@ -7,25 +7,27 @@
  * Converted from nape-compiled.js lines 51337–51655.
  */
 
-type Any = any;
+import { ZPP_CbType } from "./ZPP_CbType";
 
 export class ZPP_OptionType {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "callbacks", "ZPP_OptionType"];
 
   // --- Static: namespace references ---
-  static _nape: Any = null;
-  static _zpp: Any = null;
+  static _nape: any = null;
+  static _zpp: any = null;
 
   // --- Instance ---
-  outer: Any = null;
-  handler: ((val: Any, included: boolean, added: boolean) => void) | null = null;
-  includes: Any = null;
-  excludes: Any = null;
-  wrap_includes: Any = null;
-  wrap_excludes: Any = null;
-
-  __class__: Any = ZPP_OptionType;
+  // outer: public OptionType wrapper — any (circular import prevention)
+  outer: any = null;
+  // handler: called when include/exclude lists change (set by listener subclasses)
+  handler: ((val: ZPP_CbType, included: boolean, added: boolean) => void) | null = null;
+  // includes/excludes: ZNPList_ZPP_CbType — dynamic class, any
+  includes: any = null;
+  excludes: any = null;
+  // public CbTypeList wrappers — any (circular import prevention)
+  wrap_includes: any = null;
+  wrap_excludes: any = null;
 
   constructor() {
     const zpp = ZPP_OptionType._zpp;
@@ -34,7 +36,7 @@ export class ZPP_OptionType {
   }
 
   /** Coerce a value to OptionType (null → new, OptionType → pass-through, CbType → including). */
-  static argument(val: Any): Any {
+  static argument(val: any): any {
     const napeNs = ZPP_OptionType._nape;
     if (val == null) {
       return new napeNs.callbacks.OptionType();
@@ -55,15 +57,15 @@ export class ZPP_OptionType {
     this.wrap_excludes = zpp.util.ZPP_CbTypeList.get(this.excludes, true);
   }
 
-  excluded(xs: Any): boolean {
+  excluded(xs: any): boolean {
     return this.nonemptyintersection(xs, this.excludes);
   }
 
-  included(xs: Any): boolean {
+  included(xs: any): boolean {
     return this.nonemptyintersection(xs, this.includes);
   }
 
-  compatible(xs: Any): boolean {
+  compatible(xs: any): boolean {
     if (this.nonemptyintersection(xs, this.includes)) {
       return !this.nonemptyintersection(xs, this.excludes);
     } else {
@@ -71,15 +73,18 @@ export class ZPP_OptionType {
     }
   }
 
-  /** Check whether two sorted-by-id lists share any element. */
-  nonemptyintersection(xs: Any, ys: Any): boolean {
+  /**
+   * Check whether two sorted-by-id ZNPList_ZPP_CbType lists share any element.
+   * Both xs and ys are ZNPList_ZPP_CbType (dynamic class) — their nodes carry ZPP_CbType elements.
+   */
+  nonemptyintersection(xs: any, ys: any): boolean {
     let ret = false;
     let xite = xs.head;
     let eite = ys.head;
     while (eite != null && xite != null) {
-      const ex = eite.elt;
-      const xi = xite.elt;
-      if (ex == xi) {
+      const ex: ZPP_CbType = eite.elt;
+      const xi: ZPP_CbType = xite.elt;
+      if (ex === xi) {
         ret = true;
         break;
       } else if (ex.id < xi.id) {
@@ -91,18 +96,18 @@ export class ZPP_OptionType {
     return ret;
   }
 
-  /** Insert into the ordered include or exclude list, using pool nodes. */
-  private insertOrdered(list: Any, val: Any): void {
+  /** Insert a ZPP_CbType into a sorted ZNPList_ZPP_CbType (ordered by id ascending). */
+  private insertOrdered(list: any, val: ZPP_CbType): void {
     const zpp = ZPP_OptionType._zpp;
-    let pre: Any = null;
+    let pre: any = null;
     let cx_ite = list.head;
     while (cx_ite != null) {
-      const j = cx_ite.elt;
+      const j: ZPP_CbType = cx_ite.elt;
       if (val.id < j.id) break;
       pre = cx_ite;
       cx_ite = cx_ite.next;
     }
-    let ret: Any;
+    let ret: any;
     if (zpp.util.ZNPNode_ZPP_CbType.zpp_pool == null) {
       ret = new zpp.util.ZNPNode_ZPP_CbType();
     } else {
@@ -122,7 +127,7 @@ export class ZPP_OptionType {
     list.length++;
   }
 
-  effect_change(val: Any, included: boolean, added: boolean): void {
+  effect_change(val: ZPP_CbType, included: boolean, added: boolean): void {
     if (included) {
       if (added) {
         this.insertOrdered(this.includes, val);
@@ -136,8 +141,8 @@ export class ZPP_OptionType {
     }
   }
 
-  append_type(list: Any, val: Any): void {
-    if (list == this.includes) {
+  append_type(list: any, val: ZPP_CbType): void {
+    if (list === this.includes) {
       if (!this.includes.has(val)) {
         if (!this.excludes.has(val)) {
           if (this.handler != null) {
@@ -167,18 +172,18 @@ export class ZPP_OptionType {
   }
 
   set(options: ZPP_OptionType): this {
-    if (options != (this as Any)) {
+    if (options !== (this as any)) {
       while (this.includes.head != null) this.append_type(this.excludes, this.includes.head.elt);
       while (this.excludes.head != null) this.append_type(this.includes, this.excludes.head.elt);
       let cx_ite = options.excludes.head;
       while (cx_ite != null) {
-        const i = cx_ite.elt;
+        const i: ZPP_CbType = cx_ite.elt;
         this.append_type(this.excludes, i);
         cx_ite = cx_ite.next;
       }
       let cx_ite1 = options.includes.head;
       while (cx_ite1 != null) {
-        const i1 = cx_ite1.elt;
+        const i1: ZPP_CbType = cx_ite1.elt;
         this.append_type(this.includes, i1);
         cx_ite1 = cx_ite1.next;
       }
@@ -186,14 +191,14 @@ export class ZPP_OptionType {
     return this;
   }
 
-  append(list: Any, val: Any): void {
+  append(list: any, val: any): void {
     const napeNs = ZPP_OptionType._nape;
     if (val == null) {
       throw new Error("Error: Cannot append null, only CbType and CbType list values");
     }
     if (val instanceof napeNs.callbacks.CbType) {
       const cb = val;
-      this.append_type(list, cb.zpp_inner);
+      this.append_type(list, cb.zpp_inner as ZPP_CbType);
     } else if (val instanceof napeNs.callbacks.CbTypeList) {
       const cbs = val;
       cbs.zpp_inner.valmod();
@@ -220,10 +225,10 @@ export class ZPP_OptionType {
         if (!tmp) break;
         _g.zpp_critical = false;
         const cb1 = _g.zpp_inner.at(_g.zpp_i++);
-        this.append_type(list, cb1.zpp_inner);
+        this.append_type(list, cb1.zpp_inner as ZPP_CbType);
       }
     } else if (val instanceof Array) {
-      const cbs1 = val;
+      const cbs1 = val as any[];
       let _g1 = 0;
       while (_g1 < cbs1.length) {
         const cb2 = cbs1[_g1];
@@ -232,7 +237,7 @@ export class ZPP_OptionType {
           throw new Error("Error: Cannot append non-CbType or CbType list value");
         }
         const cbx = cb2;
-        this.append_type(list, cbx.zpp_inner);
+        this.append_type(list, cbx.zpp_inner as ZPP_CbType);
       }
     } else {
       throw new Error("Error: Cannot append non-CbType or CbType list value");

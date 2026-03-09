@@ -22,15 +22,6 @@ export class ShapeType {
   // --- Static getters for convenient access ---
 
   static get CIRCLE(): ShapeType {
-    return ShapeType.get_CIRCLE();
-  }
-  static get POLYGON(): ShapeType {
-    return ShapeType.get_POLYGON();
-  }
-
-  // --- Lazy singleton accessors (used by compiled code) ---
-
-  static get_CIRCLE(): ShapeType {
     if (ZPP_Flags.ShapeType_CIRCLE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ShapeType_CIRCLE = new ShapeType();
@@ -38,8 +29,7 @@ export class ShapeType {
     }
     return ZPP_Flags.ShapeType_CIRCLE;
   }
-
-  static get_POLYGON(): ShapeType {
+  static get POLYGON(): ShapeType {
     if (ZPP_Flags.ShapeType_POLYGON == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.ShapeType_POLYGON = new ShapeType();
@@ -49,8 +39,8 @@ export class ShapeType {
   }
 
   toString(): string {
-    if (this === ShapeType.get_CIRCLE()) return "CIRCLE";
-    if (this === ShapeType.get_POLYGON()) return "POLYGON";
+    if (this === ZPP_Flags.ShapeType_CIRCLE) return "CIRCLE";
+    if (this === ZPP_Flags.ShapeType_POLYGON) return "POLYGON";
     return "";
   }
 }
@@ -59,6 +49,5 @@ export class ShapeType {
 // Register this class in the compiled namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
-
 nape.shape.ShapeType = ShapeType;
 ensureEnumsReady();

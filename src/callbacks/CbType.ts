@@ -30,39 +30,19 @@ export class CbType {
   // ---------------------------------------------------------------------------
 
   static get ANY_BODY(): CbType {
-    return ZPP_CbType.ANY_BODY;
+    return ZPP_CbType.ANY_BODY as any;
   }
 
   static get ANY_CONSTRAINT(): CbType {
-    return ZPP_CbType.ANY_CONSTRAINT;
+    return ZPP_CbType.ANY_CONSTRAINT as any;
   }
 
   static get ANY_SHAPE(): CbType {
-    return ZPP_CbType.ANY_SHAPE;
+    return ZPP_CbType.ANY_SHAPE as any;
   }
 
   static get ANY_COMPOUND(): CbType {
-    return ZPP_CbType.ANY_COMPOUND;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Static: get_* accessors (used by compiled code)
-  // ---------------------------------------------------------------------------
-
-  static get_ANY_BODY(): CbType {
-    return ZPP_CbType.ANY_BODY;
-  }
-
-  static get_ANY_CONSTRAINT(): CbType {
-    return ZPP_CbType.ANY_CONSTRAINT;
-  }
-
-  static get_ANY_SHAPE(): CbType {
-    return ZPP_CbType.ANY_SHAPE;
-  }
-
-  static get_ANY_COMPOUND(): CbType {
-    return ZPP_CbType.ANY_COMPOUND;
+    return ZPP_CbType.ANY_COMPOUND as any;
   }
 
   // ---------------------------------------------------------------------------
@@ -115,13 +95,13 @@ export class CbType {
   }
 
   toString(): string {
-    if (this === ZPP_CbType.ANY_BODY) {
+    if ((this as any) === ZPP_CbType.ANY_BODY) {
       return "ANY_BODY";
-    } else if (this === ZPP_CbType.ANY_SHAPE) {
+    } else if ((this as any) === ZPP_CbType.ANY_SHAPE) {
       return "ANY_SHAPE";
-    } else if (this === ZPP_CbType.ANY_COMPOUND) {
+    } else if ((this as any) === ZPP_CbType.ANY_COMPOUND) {
       return "ANY_COMPOUND";
-    } else if (this === ZPP_CbType.ANY_CONSTRAINT) {
+    } else if ((this as any) === ZPP_CbType.ANY_CONSTRAINT) {
       return "ANY_CONSTRAINT";
     } else {
       return "CbType#" + this.zpp_inner.id;
@@ -149,7 +129,7 @@ export class CbType {
 }
 
 // Self-register in the compiled namespace
-const nape = getNape();
-nape.callbacks.CbType = CbType;
+const _napeForCbType = getNape();
+_napeForCbType.callbacks.CbType = CbType;
 ensureEnumsReady();
 

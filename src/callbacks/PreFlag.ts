@@ -23,21 +23,6 @@ export class PreFlag {
   // --- Static getters for convenient access ---
 
   static get ACCEPT(): PreFlag {
-    return PreFlag.get_ACCEPT();
-  }
-  static get IGNORE(): PreFlag {
-    return PreFlag.get_IGNORE();
-  }
-  static get ACCEPT_ONCE(): PreFlag {
-    return PreFlag.get_ACCEPT_ONCE();
-  }
-  static get IGNORE_ONCE(): PreFlag {
-    return PreFlag.get_IGNORE_ONCE();
-  }
-
-  // --- Lazy singleton accessors (used by compiled code) ---
-
-  static get_ACCEPT(): PreFlag {
     if (ZPP_Flags.PreFlag_ACCEPT == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.PreFlag_ACCEPT = new PreFlag();
@@ -45,8 +30,7 @@ export class PreFlag {
     }
     return ZPP_Flags.PreFlag_ACCEPT;
   }
-
-  static get_IGNORE(): PreFlag {
+  static get IGNORE(): PreFlag {
     if (ZPP_Flags.PreFlag_IGNORE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.PreFlag_IGNORE = new PreFlag();
@@ -54,8 +38,7 @@ export class PreFlag {
     }
     return ZPP_Flags.PreFlag_IGNORE;
   }
-
-  static get_ACCEPT_ONCE(): PreFlag {
+  static get ACCEPT_ONCE(): PreFlag {
     if (ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.PreFlag_ACCEPT_ONCE = new PreFlag();
@@ -63,8 +46,7 @@ export class PreFlag {
     }
     return ZPP_Flags.PreFlag_ACCEPT_ONCE;
   }
-
-  static get_IGNORE_ONCE(): PreFlag {
+  static get IGNORE_ONCE(): PreFlag {
     if (ZPP_Flags.PreFlag_IGNORE_ONCE == null) {
       ZPP_Flags.internal = true;
       ZPP_Flags.PreFlag_IGNORE_ONCE = new PreFlag();
@@ -74,10 +56,10 @@ export class PreFlag {
   }
 
   toString(): string {
-    if (this === PreFlag.get_ACCEPT()) return "ACCEPT";
-    if (this === PreFlag.get_IGNORE()) return "IGNORE";
-    if (this === PreFlag.get_ACCEPT_ONCE()) return "ACCEPT_ONCE";
-    if (this === PreFlag.get_IGNORE_ONCE()) return "IGNORE_ONCE";
+    if (this === ZPP_Flags.PreFlag_ACCEPT) return "ACCEPT";
+    if (this === ZPP_Flags.PreFlag_IGNORE) return "IGNORE";
+    if (this === ZPP_Flags.PreFlag_ACCEPT_ONCE) return "ACCEPT_ONCE";
+    if (this === ZPP_Flags.PreFlag_IGNORE_ONCE) return "IGNORE_ONCE";
     return "";
   }
 }
@@ -87,3 +69,4 @@ export class PreFlag {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.PreFlag = PreFlag;
+

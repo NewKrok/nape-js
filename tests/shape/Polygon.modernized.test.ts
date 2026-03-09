@@ -139,7 +139,7 @@ describe("Polygon (modernized)", () => {
     const p = new Polygon(Polygon.box(100, 50));
     const lv = p.localVerts;
     expect(lv).toBeDefined();
-    expect(lv.get_length()).toBe(4);
+    expect(lv.length).toBe(4);
   });
 
   it("should expose worldVerts when attached to body in space", () => {
@@ -152,7 +152,7 @@ describe("Polygon (modernized)", () => {
 
     const wv = p.worldVerts;
     expect(wv).toBeDefined();
-    expect(wv.get_length()).toBe(4);
+    expect(wv.length).toBe(4);
   });
 
   it("should expose edges", () => {

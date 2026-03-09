@@ -1,9 +1,8 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
 import { Body } from "./Body";
 import { Space } from "../space/Space";
-import { Interactor, _bindCompoundWrapForInteractor } from "./Interactor";
+import { Interactor } from "./Interactor";
 import { ZPP_Compound } from "../native/phys/ZPP_Compound";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import type { Constraint } from "../constraint/Constraint";
@@ -158,12 +157,12 @@ export class Compound extends Interactor {
       throw new Error("Error: lambda cannot be null for Compound::visitBodies");
     }
     const bodies = this.zpp_inner.wrap_bodies;
-    const bLen = bodies.get_length();
+    const bLen = bodies.length;
     for (let i = 0; i < bLen; i++) {
       lambda(bodies.at(i));
     }
     const compounds = this.zpp_inner.wrap_compounds;
-    const cLen = compounds.get_length();
+    const cLen = compounds.length;
     for (let i = 0; i < cLen; i++) {
       compounds.at(i).visitBodies(lambda);
     }
@@ -175,12 +174,12 @@ export class Compound extends Interactor {
       throw new Error("Error: lambda cannot be null for Compound::visitConstraints");
     }
     const constraints = this.zpp_inner.wrap_constraints;
-    const cLen = constraints.get_length();
+    const cLen = constraints.length;
     for (let i = 0; i < cLen; i++) {
       lambda(constraints.at(i));
     }
     const compounds = this.zpp_inner.wrap_compounds;
-    const compLen = compounds.get_length();
+    const compLen = compounds.length;
     for (let i = 0; i < compLen; i++) {
       compounds.at(i).visitConstraints(lambda);
     }
@@ -192,7 +191,7 @@ export class Compound extends Interactor {
       throw new Error("Error: lambda cannot be null for Compound::visitConstraints");
     }
     const compounds = this.zpp_inner.wrap_compounds;
-    const compLen = compounds.get_length();
+    const compLen = compounds.length;
     for (let i = 0; i < compLen; i++) {
       const c = compounds.at(i);
       lambda(c);
@@ -294,38 +293,6 @@ export class Compound extends Interactor {
     return "Compound" + this.zpp_inner.id;
   }
 
-  // ---------------------------------------------------------------------------
-  // Compiled-code compatibility methods
-  // These are called by compiled code that accesses nape.phys.Compound prototype.
-  // ---------------------------------------------------------------------------
-
-  get_bodies(): object {
-    return this.zpp_inner.wrap_bodies;
-  }
-  get_constraints(): object {
-    return this.zpp_inner.wrap_constraints;
-  }
-  get_compounds(): object {
-    return this.zpp_inner.wrap_compounds;
-  }
-  get_compound(): Compound | null {
-    if (this.zpp_inner.compound == null) return null;
-    return this.zpp_inner.compound.outer;
-  }
-  set_compound(compound: Compound | null): Compound | null {
-    this.compound = compound;
-    if (this.zpp_inner.compound == null) return null;
-    return this.zpp_inner.compound.outer;
-  }
-  get_space(): Space | null {
-    if (this.zpp_inner.space == null) return null;
-    return this.zpp_inner.space.outer;
-  }
-  set_space(space: Space | null): Space | null {
-    this.space = space != null ? Space._wrap(space) : null;
-    if (this.zpp_inner.space == null) return null;
-    return this.zpp_inner.space.outer;
-  }
 }
 
 // Register _wrapFn callback on ZPP_Compound
@@ -340,13 +307,6 @@ ZPP_Compound._wrapFn = (zpp: ZPP_Compound): Compound => {
     return c;
   });
 };
-
-// Bind Compound._wrap into Interactor so Interactor._wrap can dispatch.
-_bindCompoundWrapForInteractor((inner) => Compound._wrap(inner));
-
-// Self-register in the compiled namespace
-const nape = getNape();
-nape.phys.Compound = Compound;
 
 // Also define the ES5-style property accessors that compiled code expects
 Object.defineProperty(Compound.prototype, "bodies", {

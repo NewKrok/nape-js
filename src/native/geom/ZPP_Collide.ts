@@ -8,6 +8,11 @@
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
+import { ZPP_GeomVert } from "./ZPP_GeomVert";
+import { ZPP_Shape } from "../shape/ZPP_Shape";
+import { ZPP_Body } from "../phys/ZPP_Body";
+import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
+import { ZPP_FluidArbiter } from "../dynamics/ZPP_FluidArbiter";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 import { getNape } from "../../core/engine";
 
@@ -28,12 +33,12 @@ export class ZPP_Collide {
   /** Internal list for flow collision segments (ZNPList_ZPP_Vec2). */
   static flowsegs: any = null;
 
-  static circleContains(c, p) {
+  static circleContains(c: any, p: any) {
     const dx = p.x - c.worldCOMx;
     const dy = p.y - c.worldCOMy;
     return dx * dx + dy * dy < c.radius * c.radius;
   }
-  static polyContains(s, p) {
+  static polyContains(s: any, p: any) {
     let retvar;
     retvar = true;
     let cx_ite = s.edges.head;
@@ -49,14 +54,14 @@ export class ZPP_Collide {
     }
     return retvar;
   }
-  static shapeContains(s, p) {
+  static shapeContains(s: ZPP_Shape, p: ZPP_Vec2) {
     if (s.type == 0) {
       return ZPP_Collide.circleContains(s.circle, p);
     } else {
       return ZPP_Collide.polyContains(s.polygon, p);
     }
   }
-  static bodyContains(b, p) {
+  static bodyContains(b: ZPP_Body, p: ZPP_Vec2) {
     let retvar;
     retvar = false;
     let cx_ite = b.shapes.head;
@@ -70,7 +75,7 @@ export class ZPP_Collide {
     }
     return retvar;
   }
-  static containTest(s1, s2) {
+  static containTest(s1: ZPP_Shape, s2: ZPP_Shape) {
     const _this = s1.aabb;
     const x = s2.aabb;
     if (
@@ -154,7 +159,7 @@ export class ZPP_Collide {
       return false;
     }
   }
-  static contactCollide(s1, s2, arb, rev) {
+  static contactCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_ColArbiter, rev: boolean) {
     const napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
@@ -1079,7 +1084,7 @@ export class ZPP_Collide {
       }
     }
   }
-  static testCollide_safe(s1, s2) {
+  static testCollide_safe(s1: ZPP_Shape, s2: ZPP_Shape) {
     const _napeNs = getNape();
     if (s2.type == 0) {
       const t = s1;
@@ -1088,7 +1093,7 @@ export class ZPP_Collide {
     }
     return ZPP_Collide.testCollide(s1, s2);
   }
-  static testCollide(s1, s2) {
+  static testCollide(s1: ZPP_Shape, s2: ZPP_Shape) {
     const _napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
@@ -1195,7 +1200,7 @@ export class ZPP_Collide {
       return distSqr2 <= minDist2 * minDist2;
     }
   }
-  static flowCollide(s1, s2, arb) {
+  static flowCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_FluidArbiter) {
     const napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
@@ -2396,16 +2401,16 @@ export class ZPP_Collide {
                       state = 2;
                     }
                   } else if (state == 2) {
-                    let vi2 = vi1.next;
+                    let vi2: ZPP_GeomVert | null = vi1.next;
                     if (vi2 == null) {
                       vi2 = s2.polygon.gverts.next;
                     }
                     let u10 = vi1;
                     state = 0;
-                    const beg_ite2 = vi2;
-                    let cx_ite12 = vi2;
+                    const beg_ite2: ZPP_GeomVert | null = vi2;
+                    let cx_ite12: ZPP_GeomVert | null = vi2;
                     while (true) {
-                      const v17 = cx_ite12;
+                      const v17 = cx_ite12!;
                       let vind2 = vind + 1;
                       if (vind2 == s2.polygon.edgeCnt) {
                         vind2 = 0;
@@ -2548,14 +2553,14 @@ export class ZPP_Collide {
                       u10 = v17;
                       vi1 = cx_ite12;
                       vind = vind2;
-                      cx_ite12 = cx_ite12.next;
+                      cx_ite12 = cx_ite12!.next;
                       if (cx_ite12 == null) {
                         cx_ite12 = s2.polygon.gverts.next;
                       }
                       break;
                     }
                     while (cx_ite12 != beg_ite2) {
-                      const v18 = cx_ite12;
+                      const v18 = cx_ite12!;
                       let vind21 = vind + 1;
                       if (vind21 == s2.polygon.edgeCnt) {
                         vind21 = 0;
@@ -2698,7 +2703,7 @@ export class ZPP_Collide {
                       u10 = v18;
                       vi1 = cx_ite12;
                       vind = vind21;
-                      cx_ite12 = cx_ite12.next;
+                      cx_ite12 = cx_ite12!.next;
                       if (cx_ite12 == null) {
                         cx_ite12 = s2.polygon.gverts.next;
                       }

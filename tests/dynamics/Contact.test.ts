@@ -77,7 +77,7 @@ describe("Contact", () => {
       const arb = space.arbiters.at(0);
       const colArb = arb.collisionArbiter;
       const contacts = colArb.contacts;
-      expect(contacts.get_length()).toBeGreaterThan(0);
+      expect(contacts.length).toBeGreaterThan(0);
     });
 
     it("should expose position as Vec2", () => {

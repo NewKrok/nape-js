@@ -12,46 +12,45 @@ describe("GravMassMode", () => {
   });
 
   it("should return DEFAULT singleton", () => {
-    const a = GravMassMode.get_DEFAULT();
-    const b = GravMassMode.get_DEFAULT();
+    const a = GravMassMode.DEFAULT;
+    const b = GravMassMode.DEFAULT;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(GravMassMode);
   });
 
   it("should return FIXED singleton", () => {
-    const a = GravMassMode.get_FIXED();
-    const b = GravMassMode.get_FIXED();
+    const a = GravMassMode.FIXED;
+    const b = GravMassMode.FIXED;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(GravMassMode);
   });
 
   it("should return SCALED singleton", () => {
-    const a = GravMassMode.get_SCALED();
-    const b = GravMassMode.get_SCALED();
+    const a = GravMassMode.SCALED;
+    const b = GravMassMode.SCALED;
     expect(a).toBe(b);
     expect(a).toBeInstanceOf(GravMassMode);
   });
 
   it("should return distinct instances for each mode", () => {
-    expect(GravMassMode.get_DEFAULT()).not.toBe(GravMassMode.get_FIXED());
-    expect(GravMassMode.get_DEFAULT()).not.toBe(GravMassMode.get_SCALED());
-    expect(GravMassMode.get_FIXED()).not.toBe(GravMassMode.get_SCALED());
+    expect(GravMassMode.DEFAULT).not.toBe(GravMassMode.FIXED);
+    expect(GravMassMode.DEFAULT).not.toBe(GravMassMode.SCALED);
+    expect(GravMassMode.FIXED).not.toBe(GravMassMode.SCALED);
   });
 
   it("should store singletons in ZPP_Flags", () => {
-    const def = GravMassMode.get_DEFAULT();
-    expect(ZPP_Flags.GravMassMode_DEFAULT).toBe(def);
+    expect(ZPP_Flags.GravMassMode_DEFAULT).toBe(GravMassMode.DEFAULT);
   });
 
   it("DEFAULT toString should return 'DEFAULT'", () => {
-    expect(GravMassMode.get_DEFAULT().toString()).toBe("DEFAULT");
+    expect(GravMassMode.DEFAULT.toString()).toBe("DEFAULT");
   });
 
   it("FIXED toString should return 'FIXED'", () => {
-    expect(GravMassMode.get_FIXED().toString()).toBe("FIXED");
+    expect(GravMassMode.FIXED.toString()).toBe("FIXED");
   });
 
   it("SCALED toString should return 'SCALED'", () => {
-    expect(GravMassMode.get_SCALED().toString()).toBe("SCALED");
+    expect(GravMassMode.SCALED.toString()).toBe("SCALED");
   });
 });
