@@ -259,4 +259,3 @@ ZPP_InteractionFilter._wrapFn = (zpp: ZPP_InteractionFilter): InteractionFilter 
     return f;
   });
 };
-

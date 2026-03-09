@@ -41,7 +41,6 @@ describe("ZPP_InteractionFilter", () => {
       expect(f.userData).toBeNull();
       expect(f.next).toBeNull();
       expect(f.wrap_shapes).toBeNull();
-
     });
   });
 

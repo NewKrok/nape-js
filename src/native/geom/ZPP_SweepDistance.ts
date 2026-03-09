@@ -17,7 +17,13 @@ import { getNape } from "../../core/engine";
 export class ZPP_SweepDistance {
   static __name__ = ["zpp_nape", "geom", "ZPP_SweepDistance"];
 
-  static dynamicSweep(toi: ZPP_ToiEvent, timeStep: number, lowerBound: number, negRadius: number, userAPI: boolean) {
+  static dynamicSweep(
+    toi: ZPP_ToiEvent,
+    timeStep: number,
+    lowerBound: number,
+    negRadius: number,
+    userAPI: boolean,
+  ) {
     const napeNs = getNape();
     if (userAPI == null) {
       userAPI = false;
@@ -2831,7 +2837,14 @@ export class ZPP_SweepDistance {
     ZPP_Vec2.zpp_pool = o2;
     return min;
   }
-  static distance(s1: ZPP_Shape, s2: ZPP_Shape, w1: ZPP_Vec2, w2: ZPP_Vec2, axis: ZPP_Vec2, upperBound: number | null) {
+  static distance(
+    s1: ZPP_Shape,
+    s2: ZPP_Shape,
+    w1: ZPP_Vec2,
+    w2: ZPP_Vec2,
+    axis: ZPP_Vec2,
+    upperBound: number | null,
+  ) {
     const napeNs = getNape();
     if (upperBound == null) {
       upperBound = 1e100;

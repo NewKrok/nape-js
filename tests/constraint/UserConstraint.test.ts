@@ -21,17 +21,35 @@ class TestConstraint extends UserConstraint {
     this.body1 = body1;
   }
 
-  get body1(): Body | null { return this._body1; }
-  set body1(value: Body | null) { this._body1 = this.__registerBody(this._body1, value); }
+  get body1(): Body | null {
+    return this._body1;
+  }
+  set body1(value: Body | null) {
+    this._body1 = this.__registerBody(this._body1, value);
+  }
 
-  __copy() { return new TestConstraint(this._body1); }
-  __validate() { this.validateCalled = true; }
-  __prepare() { this.prepareCalled = true; }
-  __position(err: number[]) { for (let i = 0; i < err.length; i++) err[i] = 0; }
-  __velocity(err: number[]) { for (let i = 0; i < err.length; i++) err[i] = 0; }
-  __eff_mass(eff: number[]) { eff[0] = (this._body1 as Any)?.zpp_inner?.imass ?? 1; }
+  __copy() {
+    return new TestConstraint(this._body1);
+  }
+  __validate() {
+    this.validateCalled = true;
+  }
+  __prepare() {
+    this.prepareCalled = true;
+  }
+  __position(err: number[]) {
+    for (let i = 0; i < err.length; i++) err[i] = 0;
+  }
+  __velocity(err: number[]) {
+    for (let i = 0; i < err.length; i++) err[i] = 0;
+  }
+  __eff_mass(eff: number[]) {
+    eff[0] = (this._body1 as Any)?.zpp_inner?.imass ?? 1;
+  }
   __impulse(imp: number[], _body: Body, out: Any) {
-    out.zpp_inner.x = imp[0]; out.zpp_inner.y = 0; out.zpp_inner.z = 0;
+    out.zpp_inner.x = imp[0];
+    out.zpp_inner.y = 0;
+    out.zpp_inner.z = 0;
   }
 }
 
@@ -50,12 +68,22 @@ class TwoBodyConstraint extends UserConstraint {
     this.body2 = body2;
   }
 
-  get body1(): Body | null { return this._body1; }
-  set body1(value: Body | null) { this._body1 = this.__registerBody(this._body1, value); }
-  get body2(): Body | null { return this._body2; }
-  set body2(value: Body | null) { this._body2 = this.__registerBody(this._body2, value); }
+  get body1(): Body | null {
+    return this._body1;
+  }
+  set body1(value: Body | null) {
+    this._body1 = this.__registerBody(this._body1, value);
+  }
+  get body2(): Body | null {
+    return this._body2;
+  }
+  set body2(value: Body | null) {
+    this._body2 = this.__registerBody(this._body2, value);
+  }
 
-  __copy() { return new TwoBodyConstraint(this._body1, this._body2, this.targetDistance); }
+  __copy() {
+    return new TwoBodyConstraint(this._body1, this._body2, this.targetDistance);
+  }
 
   __position(err: number[]) {
     const b1 = (this._body1 as Any).zpp_inner;
@@ -71,7 +99,10 @@ class TwoBodyConstraint extends UserConstraint {
     const dx = b2.posx - b1.posx;
     const dy = b2.posy - b1.posy;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist === 0) { err[0] = 0; return; }
+    if (dist === 0) {
+      err[0] = 0;
+      return;
+    }
     const nx = dx / dist;
     const ny = dy / dist;
     err[0] = (b2.velx - b1.velx) * nx + (b2.vely - b1.vely) * ny;
@@ -90,7 +121,9 @@ class TwoBodyConstraint extends UserConstraint {
     const dy = b2.posy - b1.posy;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist === 0) {
-      out.zpp_inner.x = 0; out.zpp_inner.y = 0; out.zpp_inner.z = 0;
+      out.zpp_inner.x = 0;
+      out.zpp_inner.y = 0;
+      out.zpp_inner.z = 0;
       return;
     }
     const nx = dx / dist;
@@ -177,8 +210,9 @@ describe("UserConstraint", () => {
 
   it("should throw on bodyImpulse with unlinked body", () => {
     const c = new TestConstraint(new Body(BodyType.DYNAMIC, new Vec2(0, 0)));
-    expect(() => c.bodyImpulse(new Body(BodyType.DYNAMIC, new Vec2(50, 50))))
-      .toThrow("Body is not linked to this constraint");
+    expect(() => c.bodyImpulse(new Body(BodyType.DYNAMIC, new Vec2(50, 50)))).toThrow(
+      "Body is not linked to this constraint",
+    );
   });
 
   it("should return impulse as a MatMN", () => {

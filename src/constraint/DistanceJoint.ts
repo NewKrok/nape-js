@@ -7,7 +7,6 @@ import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_DistanceJoint } from "../native/constraint/ZPP_DistanceJoint";
 
-
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
   if ((v as any).zpp_disp) {
@@ -409,4 +408,3 @@ ZPP_DistanceJoint._wrapFn = (zpp: ZPP_DistanceJoint): DistanceJoint => {
     return j;
   });
 };
-

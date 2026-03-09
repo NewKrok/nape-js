@@ -874,4 +874,3 @@ ZPP_Vec2._wrapFn = (zpp: ZPP_Vec2): Vec2 => {
 // ---------------------------------------------------------------------------
 const _napeVec2 = getNape();
 _napeVec2.geom.Vec2 = Vec2;
-

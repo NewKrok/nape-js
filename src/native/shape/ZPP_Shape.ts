@@ -28,7 +28,12 @@ export class ZPP_Shape {
    * Initialize ShapeType singleton enums. Called once from compiled factory.
    */
   static _initEnums(nape: any, ZPP_Flags: any): void {
-    const mk = () => { ZPP_Flags.internal = true; const o = new nape.shape.ShapeType(); ZPP_Flags.internal = false; return o; };
+    const mk = () => {
+      ZPP_Flags.internal = true;
+      const o = new nape.shape.ShapeType();
+      ZPP_Flags.internal = false;
+      return o;
+    };
     if (ZPP_Flags.ShapeType_CIRCLE == null) ZPP_Flags.ShapeType_CIRCLE = mk();
     if (ZPP_Flags.ShapeType_POLYGON == null) ZPP_Flags.ShapeType_POLYGON = mk();
     ZPP_Shape.types = [ZPP_Flags.ShapeType_CIRCLE, ZPP_Flags.ShapeType_POLYGON];
@@ -162,7 +167,11 @@ export class ZPP_Shape {
 
     // Copy ZPP_Interactor prototype methods onto ZPP_Shape prototype
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
-      if (k !== "constructor" && k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)) {
+      if (
+        k !== "constructor" &&
+        k !== "__class__" &&
+        !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)
+      ) {
         (ZPP_Shape.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }

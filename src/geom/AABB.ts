@@ -522,4 +522,3 @@ ZPP_AABB._wrapFn = (zpp: ZPP_AABB): AABB => {
     return a;
   });
 };
-

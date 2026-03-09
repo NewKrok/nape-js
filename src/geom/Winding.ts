@@ -1,7 +1,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
-
 /**
  * Polygon winding order.
  *
@@ -60,4 +59,3 @@ export class Winding {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.Winding = Winding;
-

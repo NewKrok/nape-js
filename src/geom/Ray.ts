@@ -268,12 +268,28 @@ export class Ray {
   // Backward-compat get_*/set_* methods for compiled code
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_origin(): Vec2 { return this.origin; }
-  /** @internal */ set_origin(v: Vec2): Vec2 { this.origin = v; return this.origin; }
-  /** @internal */ get_direction(): Vec2 { return this.direction; }
-  /** @internal */ set_direction(v: Vec2): Vec2 { this.direction = v; return this.direction; }
-  /** @internal */ get_maxDistance(): number { return this.maxDistance; }
-  /** @internal */ set_maxDistance(v: number): number { this.maxDistance = v; return this.zpp_inner.maxdist; }
-  /** @internal */ get_userData(): Record<string, unknown> { return this.userData; }
+  /** @internal */ get_origin(): Vec2 {
+    return this.origin;
+  }
+  /** @internal */ set_origin(v: Vec2): Vec2 {
+    this.origin = v;
+    return this.origin;
+  }
+  /** @internal */ get_direction(): Vec2 {
+    return this.direction;
+  }
+  /** @internal */ set_direction(v: Vec2): Vec2 {
+    this.direction = v;
+    return this.direction;
+  }
+  /** @internal */ get_maxDistance(): number {
+    return this.maxDistance;
+  }
+  /** @internal */ set_maxDistance(v: number): number {
+    this.maxDistance = v;
+    return this.zpp_inner.maxdist;
+  }
+  /** @internal */ get_userData(): Record<string, unknown> {
+    return this.userData;
+  }
 }
-

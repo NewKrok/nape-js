@@ -77,4 +77,3 @@ export class PreFlag {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.PreFlag = PreFlag;
-

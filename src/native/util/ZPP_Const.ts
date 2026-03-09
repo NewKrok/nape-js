@@ -20,5 +20,4 @@ export class ZPP_Const {
   static NEGINF(): number {
     return -Infinity;
   }
-
 }

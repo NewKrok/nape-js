@@ -33,7 +33,6 @@ export class ZPP_PartitionVertex {
   mag = 0;
   id = 0;
 
-
   constructor() {
     this.id = ZPP_PartitionVertex.nextId++;
     this.diagonals = new ZNPList_ZPP_PartitionVertex();

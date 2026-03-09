@@ -29,7 +29,6 @@ export class ZPP_MarchPair {
   spanr: any = null;
   next: ZPP_MarchPair | null = null;
 
-
   free(): void {
     this.p1 = this.p2 = this.pr = this.pd = null;
     this.span1 = this.span2 = this.spanr = null;

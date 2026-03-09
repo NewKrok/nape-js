@@ -127,11 +127,7 @@ describe("FluidArbiter", () => {
   });
 
   it("has correct __name__", () => {
-    expect(FluidArbiter.__name__).toEqual([
-      "nape",
-      "dynamics",
-      "FluidArbiter",
-    ]);
+    expect(FluidArbiter.__name__).toEqual(["nape", "dynamics", "FluidArbiter"]);
   });
 
   // -------------------------------------------------------------------------
@@ -243,8 +239,7 @@ describe("FluidArbiter", () => {
       const { captured, capturedArbBase, ball } = createFluidScene();
       expect(captured).not.toBeNull();
       expect(capturedArbBase).not.toBeNull();
-      const body =
-        capturedArbBase!.body1 === ball ? ball : capturedArbBase!.body2;
+      const body = capturedArbBase!.body1 === ball ? ball : capturedArbBase!.body2;
       const imp = captured!.buoyancyImpulse(body);
       expect(imp).toBeDefined();
       expect(typeof imp.x).toBe("number");
@@ -256,8 +251,7 @@ describe("FluidArbiter", () => {
       const { captured, capturedArbBase, ball } = createFluidScene();
       expect(captured).not.toBeNull();
       expect(capturedArbBase).not.toBeNull();
-      const body =
-        capturedArbBase!.body1 === ball ? ball : capturedArbBase!.body2;
+      const body = capturedArbBase!.body1 === ball ? ball : capturedArbBase!.body2;
       const imp = captured!.dragImpulse(body);
       expect(imp).toBeDefined();
       expect(typeof imp.x).toBe("number");
@@ -267,8 +261,7 @@ describe("FluidArbiter", () => {
       const { captured, capturedArbBase, ball } = createFluidScene();
       expect(captured).not.toBeNull();
       expect(capturedArbBase).not.toBeNull();
-      const body =
-        capturedArbBase!.body1 === ball ? ball : capturedArbBase!.body2;
+      const body = capturedArbBase!.body1 === ball ? ball : capturedArbBase!.body2;
       const imp = captured!.totalImpulse(body);
       expect(imp).toBeDefined();
       expect(typeof imp.x).toBe("number");

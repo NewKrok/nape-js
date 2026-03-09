@@ -30,8 +30,7 @@ export class Space {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
 
-    const gravityInner =
-      gravity == null ? null : gravity.zpp_inner;
+    const gravityInner = gravity == null ? null : gravity.zpp_inner;
     this.zpp_inner = new ZPP_Space(gravityInner, broadphase);
     this.zpp_inner.outer = this;
 
@@ -229,11 +228,7 @@ export class Space {
    * @param positionIterations - Number of position solver iterations (minimum 1).
    * @throws If `deltaTime` is NaN, non-positive, or any iteration count is less than 1.
    */
-  step(
-    deltaTime: number,
-    velocityIterations: number = 10,
-    positionIterations: number = 10,
-  ): void {
+  step(deltaTime: number, velocityIterations: number = 10, positionIterations: number = 10): void {
     if (deltaTime !== deltaTime) {
       throw new Error("Error: deltaTime cannot be NaN");
     }
@@ -255,9 +250,7 @@ export class Space {
    */
   clear(): void {
     if (this.zpp_inner.midstep) {
-      throw new Error(
-        "Error: Space::clear() cannot be called during space step()",
-      );
+      throw new Error("Error: Space::clear() cannot be called during space step()");
     }
     this.zpp_inner.clear();
   }
@@ -273,9 +266,7 @@ export class Space {
    */
   visitBodies(lambda: (body: Body) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Space::visitBodies",
-      );
+      throw new Error("Error: lambda cannot be null for Space::visitBodies");
     }
     const nape = getNape();
     // Iterate bodies
@@ -334,9 +325,7 @@ export class Space {
    */
   visitConstraints(lambda: (constraint: Constraint) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Space::visitConstraints",
-      );
+      throw new Error("Error: lambda cannot be null for Space::visitConstraints");
     }
     const nape = getNape();
     // Iterate constraints
@@ -395,9 +384,7 @@ export class Space {
    */
   visitCompounds(lambda: (compound: Compound) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Space::visitCompounds",
-      );
+      throw new Error("Error: lambda cannot be null for Space::visitCompounds");
     }
     const nape = getNape();
     const compList = this.zpp_inner.wrap_compounds;
@@ -439,17 +426,15 @@ export class Space {
    */
   interactionType(shape1: Shape, shape2: Shape): InteractionType | null {
     if (shape1 == null || shape2 == null) {
-      throw new Error(
-        "Error: Cannot evaluate interaction type for null shapes",
-      );
+      throw new Error("Error: Cannot evaluate interaction type for null shapes");
     }
     const s1 = (shape1 as any).zpp_inner;
     const s2 = (shape2 as any).zpp_inner;
-    if ((s1.body != null ? s1.body.outer : null) == null ||
-        (s2.body != null ? s2.body.outer : null) == null) {
-      throw new Error(
-        "Error: Cannot evaluate interaction type for shapes not part of a Body",
-      );
+    if (
+      (s1.body != null ? s1.body.outer : null) == null ||
+      (s2.body != null ? s2.body.outer : null) == null
+    ) {
+      throw new Error("Error: Cannot evaluate interaction type for shapes not part of a Body");
     }
     const b1 = s1.body;
     const b2 = s2.body;
@@ -517,8 +502,7 @@ export class Space {
     // Determine interaction type
     const f1 = s1.filter;
     const f2 = s2.filter;
-    const bothZeroMass =
-      b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0;
+    const bothZeroMass = b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0;
 
     // Sensor?
     if (
@@ -574,11 +558,7 @@ export class Space {
    * @returns A ShapeList of matching shapes.
    * @throws If `point` is null or disposed.
    */
-  shapesUnderPoint(
-    point: Vec2,
-    filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+  shapesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: object | null): object {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -590,8 +570,7 @@ export class Space {
     const x = inner.x;
     if (inner._validate != null) inner._validate();
     const y = inner.y;
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     const ret = this.zpp_inner.shapesUnderPoint(x, y, filterInner, output);
     if (inner.weak) point.dispose();
     return ret;
@@ -605,11 +584,7 @@ export class Space {
    * @returns A BodyList of matching bodies.
    * @throws If `point` is null or disposed.
    */
-  bodiesUnderPoint(
-    point: Vec2,
-    filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+  bodiesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: object | null): object {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -621,8 +596,7 @@ export class Space {
     const x = inner.x;
     if (inner._validate != null) inner._validate();
     const y = inner.y;
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     const ret = this.zpp_inner.bodiesUnderPoint(x, y, filterInner, output);
     if (inner.weak) point.dispose();
     return ret;
@@ -653,8 +627,7 @@ export class Space {
     if (zi.maxx - zi.minx == 0 || zi.maxy - zi.miny == 0) {
       throw new Error("Error: Cannot evaluate shapes in degenerate AABB :/");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.shapesInAABB(aabb, strict, containment, filterInner, output);
   }
 
@@ -683,8 +656,7 @@ export class Space {
     if (zi.maxx - zi.minx == 0 || zi.maxy - zi.miny == 0) {
       throw new Error("Error: Cannot evaluate objects in degenerate AABB :/");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.bodiesInAABB(aabb, strict, containment, filterInner, output);
   }
 
@@ -717,11 +689,8 @@ export class Space {
     if (radius <= 0) {
       throw new Error("Error: Circle radius must be strictly positive");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
-    const ret = this.zpp_inner.shapesInCircle(
-      position, radius, containment, filterInner, output,
-    );
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
+    const ret = this.zpp_inner.shapesInCircle(position, radius, containment, filterInner, output);
     if (position.zpp_inner?.weak) position.dispose();
     return ret;
   }
@@ -755,11 +724,8 @@ export class Space {
     if (radius <= 0) {
       throw new Error("Error: Circle radius must be strictly positive");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
-    const ret = this.zpp_inner.bodiesInCircle(
-      position, radius, containment, filterInner, output,
-    );
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
+    const ret = this.zpp_inner.bodiesInCircle(position, radius, containment, filterInner, output);
     if (position.zpp_inner?.weak) position.dispose();
     return ret;
   }
@@ -784,9 +750,7 @@ export class Space {
     }
     const szpp = (shape as any).zpp_inner;
     if ((szpp.body != null ? szpp.body.outer : null) == null) {
-      throw new Error(
-        "Error: Query shape needs to be inside a Body to be well defined :)",
-      );
+      throw new Error("Error: Query shape needs to be inside a Body to be well defined :)");
     }
     if (szpp.type == 1) {
       const res = szpp.polygon.valid();
@@ -799,8 +763,7 @@ export class Space {
         throw new Error("Error: Polygon query shape is invalid : " + res.toString());
       }
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.shapesInShape(szpp, containment, filterInner, output);
   }
 
@@ -824,9 +787,7 @@ export class Space {
     }
     const szpp = (shape as any).zpp_inner;
     if ((szpp.body != null ? szpp.body.outer : null) == null) {
-      throw new Error(
-        "Error: Query shape needs to be inside a Body to be well defined :)",
-      );
+      throw new Error("Error: Query shape needs to be inside a Body to be well defined :)");
     }
     if (szpp.type == 1) {
       const res = szpp.polygon.valid();
@@ -839,8 +800,7 @@ export class Space {
         throw new Error("Error: Polygon query shape is invalid : " + res.toString());
       }
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.bodiesInShape(szpp, containment, filterInner, output);
   }
 
@@ -992,11 +952,7 @@ export class Space {
    * @returns The closest RayResult, or null if nothing was hit.
    * @throws If `ray` is null.
    */
-  rayCast(
-    ray: Ray,
-    inner: boolean = false,
-    filter?: InteractionFilter | null,
-  ): object | null {
+  rayCast(ray: Ray, inner: boolean = false, filter?: InteractionFilter | null): object | null {
     if (ray == null) {
       throw new Error("Error: Cannot cast null ray :)");
     }
@@ -1031,6 +987,4 @@ export class Space {
   toString(): string {
     return `Space(bodies=${(this.bodies as any).length})`;
   }
-
 }
-

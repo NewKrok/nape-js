@@ -8,7 +8,6 @@
  * Converted from nape-compiled.js lines 33689–35033.
  */
 
-
 import { ZPP_SimpleVert } from "./ZPP_SimpleVert";
 import { ZPP_SimpleSeg } from "./ZPP_SimpleSeg";
 import { ZPP_SimpleEvent } from "./ZPP_SimpleEvent";
@@ -19,7 +18,13 @@ import { FastHash2_Hashable2_Boolfalse } from "../util/FastHash2_Hashable2_Boolf
 import { ZNPNode } from "../util/ZNPNode";
 import { ZNPList } from "../util/ZNPList";
 import { ZPP_Set } from "../util/ZPP_Set";
-import { ZNPList_ZPP_GeomVert, ZNPList_ZPP_SimpleVert, ZNPList_ZPP_SimpleEvent, ZPP_Set_ZPP_SimpleVert, ZPP_Set_ZPP_SimpleEvent } from "../util/ZNPRegistry";
+import {
+  ZNPList_ZPP_GeomVert,
+  ZNPList_ZPP_SimpleVert,
+  ZNPList_ZPP_SimpleEvent,
+  ZPP_Set_ZPP_SimpleVert,
+  ZPP_Set_ZPP_SimpleEvent,
+} from "../util/ZNPRegistry";
 
 export class ZPP_Simple {
   static __name__ = ["zpp_nape", "geom", "ZPP_Simple"];
@@ -33,7 +38,6 @@ export class ZPP_Simple {
   static list_queue: ZNPList<ZPP_SimpleEvent> | null = null;
 
   static decompose(poly: ZPP_GeomVert | null, rets: ZNPList<ZPP_GeomVert>): ZNPList<ZPP_GeomVert> {
-    
     if (ZPP_Simple.sweep == null) {
       ZPP_Simple.sweep = new ZPP_SimpleSweep();
       ZPP_Simple.inthash = new FastHash2_Hashable2_Boolfalse();

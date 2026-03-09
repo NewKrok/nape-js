@@ -9,7 +9,6 @@
 
 import { ZPP_ID } from "../util/ZPP_ID";
 
-
 export class ZPP_Constraint {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "constraint", "ZPP_Constraint"];

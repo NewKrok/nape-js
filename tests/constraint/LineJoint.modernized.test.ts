@@ -10,14 +10,30 @@ import { ZPP_LineJoint } from "../../src/native/constraint/ZPP_LineJoint";
 
 describe("LineJoint (modernized)", () => {
   it("should use ZPP_LineJoint directly", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -100, 100);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(1, 0),
+      -100,
+      100,
+    );
     expect(joint.zpp_inner).toBeInstanceOf(ZPP_LineJoint);
     expect(joint.zpp_inner.outer).toBe(joint);
     expect(joint.zpp_inner.outer_zn).toBe(joint);
   });
 
   it("should set anchor and direction on ZPP", () => {
-    const joint = new LineJoint(null, null, new Vec2(5, 10), new Vec2(15, 20), new Vec2(0, 1), -50, 50);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(5, 10),
+      new Vec2(15, 20),
+      new Vec2(0, 1),
+      -50,
+      50,
+    );
     expect(joint.zpp_inner.a1localx).toBeCloseTo(5);
     expect(joint.zpp_inner.a1localy).toBeCloseTo(10);
     expect(joint.zpp_inner.a2localx).toBeCloseTo(15);
@@ -27,7 +43,15 @@ describe("LineJoint (modernized)", () => {
   });
 
   it("should get/set anchor1, anchor2, and direction", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(1, 0),
+      -10,
+      10,
+    );
     joint.anchor1 = new Vec2(3, 4);
     expect(joint.anchor1.x).toBeCloseTo(3);
     expect(joint.anchor1.y).toBeCloseTo(4);
@@ -41,7 +65,15 @@ describe("LineJoint (modernized)", () => {
   });
 
   it("should get/set jointMin and jointMax", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(1, 0),
+      -10,
+      10,
+    );
     expect(joint.jointMin).toBeCloseTo(-10);
     expect(joint.jointMax).toBeCloseTo(10);
     joint.jointMin = -20;
@@ -51,14 +83,30 @@ describe("LineJoint (modernized)", () => {
   });
 
   it("should throw on NaN jointMin", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(1, 0),
+      -10,
+      10,
+    );
     expect(() => {
       joint.jointMin = NaN;
     }).toThrow("NaN");
   });
 
   it("should throw on NaN jointMax", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(1, 0),
+      -10,
+      10,
+    );
     expect(() => {
       joint.jointMax = NaN;
     }).toThrow("NaN");
@@ -79,7 +127,15 @@ describe("LineJoint (modernized)", () => {
   });
 
   it("should return impulse as MatMN(2,1)", () => {
-    const joint = new LineJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
+    const joint = new LineJoint(
+      null,
+      null,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(1, 0),
+      -10,
+      10,
+    );
     const imp = joint.impulse();
     expect(imp).toBeDefined();
     expect(imp.zpp_inner.m).toBe(2);

@@ -20,6 +20,5 @@ describe("ZPP_GeomPoly", () => {
       const gp = new ZPP_GeomPoly(outerObj);
       expect(gp.outer).toBe(outerObj);
     });
-
   });
 });

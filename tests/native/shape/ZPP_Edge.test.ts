@@ -41,7 +41,6 @@ describe("ZPP_Edge", () => {
       expect(e.lp1).toBeNull();
       expect(e.gp1).toBeNull();
     });
-
   });
 
   // --- Pool management ---

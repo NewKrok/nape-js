@@ -37,7 +37,6 @@ export function _bindPolygonWrap(fn: SubclassWrapFn): void {
   _polygonWrap = fn;
 }
 
-
 /**
  * Base class for physics shapes (Circle, Polygon). Never instantiated directly — use
  * `new Circle(...)` or `Polygon.box(...)` etc.
@@ -55,7 +54,13 @@ export class Shape extends Interactor {
     // Dispatch to concrete subclass wrapper based on runtime type.
     // Check both TS method (isCircle/isPolygon) and compiled field (zpp_inner.type)
     // because compiled objects may not have the TS methods on their prototype.
-    const type = inner.isCircle ? (inner.isCircle() ? 0 : inner.isPolygon?.() ? 1 : -1) : inner.zpp_inner?.type ?? -1;
+    const type = inner.isCircle
+      ? inner.isCircle()
+        ? 0
+        : inner.isPolygon?.()
+          ? 1
+          : -1
+      : (inner.zpp_inner?.type ?? -1);
     if (type === 0 && _circleWrap) return _circleWrap(inner);
     if (type === 1 && _polygonWrap) return _polygonWrap(inner);
 
@@ -395,9 +400,7 @@ export class Shape extends Interactor {
       if (d * d < nape.Config.epsilon * nape.Config.epsilon) {
         zpp.circle.__scale(scaleX, scaleY);
       } else {
-        throw new Error(
-          "Error: Cannot perform a non equal scaling on a Circle",
-        );
+        throw new Error("Error: Cannot perform a non equal scaling on a Circle");
       }
     } else {
       zpp.polygon.__scale(scaleX, scaleY);
@@ -452,17 +455,13 @@ export class Shape extends Interactor {
     }
     const mat = matrix._inner ?? matrix;
     if ((mat as any).singular()) {
-      throw new Error(
-        "Error: Cannot transform Shape by a singular matrix",
-      );
+      throw new Error("Error: Cannot transform Shape by a singular matrix");
     }
     if (zpp.type === 0) {
       if ((mat as any).equiorthogonal()) {
         zpp.circle.__transform(mat);
       } else {
-        throw new Error(
-          "Error: Cannot transform Circle by a non equiorthogonal matrix",
-        );
+        throw new Error("Error: Cannot transform Circle by a non equiorthogonal matrix");
       }
     } else {
       zpp.polygon.__transform(mat);
@@ -517,28 +516,72 @@ export class Shape extends Interactor {
   // Backward-compat get_*/set_* methods — compiled code and tests use these
   // ---------------------------------------------------------------------------
 
-  /** @internal */ get_type(): ShapeType { return this.type; }
-  /** @internal */ get_body(): Body { return this.body; }
-  /** @internal */ set_body(v: Body | null): void { this.body = v; }
-  /** @internal */ get_castCircle(): Shape | null { return this.castCircle; }
-  /** @internal */ get_castPolygon(): Shape | null { return this.castPolygon; }
-  /** @internal */ get_worldCOM(): Vec2 { return this.worldCOM; }
-  /** @internal */ get_localCOM(): Vec2 { return this.localCOM; }
-  /** @internal */ set_localCOM(v: Vec2): void { this.localCOM = v; }
-  /** @internal */ get_area(): number { return this.area; }
-  /** @internal */ get_inertia(): number { return this.inertia; }
-  /** @internal */ get_angDrag(): number { return this.angDrag; }
-  /** @internal */ get_material(): Material { return this.material; }
-  /** @internal */ set_material(v: Material): void { this.material = v; }
-  /** @internal */ get_filter(): InteractionFilter { return this.filter; }
-  /** @internal */ set_filter(v: InteractionFilter): void { this.filter = v; }
-  /** @internal */ get_fluidProperties(): FluidProperties { return this.fluidProperties; }
-  /** @internal */ set_fluidProperties(v: FluidProperties): void { this.fluidProperties = v; }
-  /** @internal */ get_fluidEnabled(): boolean { return this.fluidEnabled; }
-  /** @internal */ set_fluidEnabled(v: boolean): void { this.fluidEnabled = v; }
-  /** @internal */ get_sensorEnabled(): boolean { return this.sensorEnabled; }
-  /** @internal */ set_sensorEnabled(v: boolean): void { this.sensorEnabled = v; }
-  /** @internal */ get_bounds(): AABB { return this.bounds; }
+  /** @internal */ get_type(): ShapeType {
+    return this.type;
+  }
+  /** @internal */ get_body(): Body {
+    return this.body;
+  }
+  /** @internal */ set_body(v: Body | null): void {
+    this.body = v;
+  }
+  /** @internal */ get_castCircle(): Shape | null {
+    return this.castCircle;
+  }
+  /** @internal */ get_castPolygon(): Shape | null {
+    return this.castPolygon;
+  }
+  /** @internal */ get_worldCOM(): Vec2 {
+    return this.worldCOM;
+  }
+  /** @internal */ get_localCOM(): Vec2 {
+    return this.localCOM;
+  }
+  /** @internal */ set_localCOM(v: Vec2): void {
+    this.localCOM = v;
+  }
+  /** @internal */ get_area(): number {
+    return this.area;
+  }
+  /** @internal */ get_inertia(): number {
+    return this.inertia;
+  }
+  /** @internal */ get_angDrag(): number {
+    return this.angDrag;
+  }
+  /** @internal */ get_material(): Material {
+    return this.material;
+  }
+  /** @internal */ set_material(v: Material): void {
+    this.material = v;
+  }
+  /** @internal */ get_filter(): InteractionFilter {
+    return this.filter;
+  }
+  /** @internal */ set_filter(v: InteractionFilter): void {
+    this.filter = v;
+  }
+  /** @internal */ get_fluidProperties(): FluidProperties {
+    return this.fluidProperties;
+  }
+  /** @internal */ set_fluidProperties(v: FluidProperties): void {
+    this.fluidProperties = v;
+  }
+  /** @internal */ get_fluidEnabled(): boolean {
+    return this.fluidEnabled;
+  }
+  /** @internal */ set_fluidEnabled(v: boolean): void {
+    this.fluidEnabled = v;
+  }
+  /** @internal */ get_sensorEnabled(): boolean {
+    return this.sensorEnabled;
+  }
+  /** @internal */ set_sensorEnabled(v: boolean): void {
+    this.sensorEnabled = v;
+  }
+  /** @internal */ get_bounds(): AABB {
+    return this.bounds;
+  }
 
   // ---------------------------------------------------------------------------
   // Internal helpers
@@ -602,4 +645,3 @@ export interface CbTypeSet {
   clear(): void;
   readonly length: number;
 }
-

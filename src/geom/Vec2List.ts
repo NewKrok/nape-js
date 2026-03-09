@@ -15,7 +15,6 @@ import { ZPP_Vec2List } from "../native/util/ZPP_Vec2List";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
-
 // ---------------------------------------------------------------------------
 // Helper: Ensure a ZPP_Vec2 has a public Vec2 wrapper. If the ZPP_Vec2
 // already has a wrapper (`outer`), just return it. Otherwise create a new
@@ -100,7 +99,6 @@ Vec2Iterator.prototype.next = function (this: any): any {
   this.zpp_critical = false;
   return this.zpp_inner.at(this.zpp_i++);
 };
-
 
 // ---------------------------------------------------------------------------
 // Vec2List
@@ -188,10 +186,7 @@ Vec2ListCtor.prototype.push = function (this: any, obj: any): boolean {
           ? null
           : this.zpp_inner.inner.iterator_at(this.zpp_gl() - 1);
       }
-      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(
-        this.zpp_inner.push_ite,
-        obj.zpp_inner,
-      );
+      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(this.zpp_inner.push_ite, obj.zpp_inner);
     }
     this.zpp_inner.invalidate();
     if (this.zpp_inner.post_adder != null) {
@@ -215,10 +210,7 @@ Vec2ListCtor.prototype.unshift = function (this: any, obj: any): boolean {
           ? null
           : this.zpp_inner.inner.iterator_at(this.zpp_gl() - 1);
       }
-      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(
-        this.zpp_inner.push_ite,
-        obj.zpp_inner,
-      );
+      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(this.zpp_inner.push_ite, obj.zpp_inner);
     } else {
       this.zpp_inner.inner.add(obj.zpp_inner);
     }
@@ -253,10 +245,7 @@ Vec2ListCtor.prototype.pop = function (this: any): any {
     if (this.zpp_inner.at_ite != null && this.zpp_inner.at_ite.next == null) {
       this.zpp_inner.at_ite = null;
     }
-    const ite =
-      this.zpp_gl() == 1
-        ? null
-        : this.zpp_inner.inner.iterator_at(this.zpp_gl() - 2);
+    const ite = this.zpp_gl() == 1 ? null : this.zpp_inner.inner.iterator_at(this.zpp_gl() - 2);
     ret = ite == null ? this.zpp_inner.inner.head.elt : ite.next.elt;
     const retx = ensureVec2Wrapper(ret);
     if (this.zpp_inner.subber != null) {
@@ -284,10 +273,7 @@ Vec2ListCtor.prototype.shift = function (this: any): any {
     if (this.zpp_inner.at_ite != null && this.zpp_inner.at_ite.next == null) {
       this.zpp_inner.at_ite = null;
     }
-    const ite =
-      this.zpp_gl() == 1
-        ? null
-        : this.zpp_inner.inner.iterator_at(this.zpp_gl() - 2);
+    const ite = this.zpp_gl() == 1 ? null : this.zpp_inner.inner.iterator_at(this.zpp_gl() - 2);
     ret = ite == null ? this.zpp_inner.inner.head.elt : ite.next.elt;
     const retx = ensureVec2Wrapper(ret);
     if (this.zpp_inner.subber != null) {
@@ -508,6 +494,5 @@ Vec2ListCtor.prototype.filter = function (this: any, lambda: any): any {
   }
   return this;
 };
-
 
 export { Vec2ListCtor as Vec2List, Vec2Iterator };

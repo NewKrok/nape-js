@@ -38,7 +38,8 @@ export class ZPP_PartitionedPoly {
 
   static getSharedPP(): ZNPList<ZPP_PartitionedPoly> {
     if (ZPP_PartitionedPoly.sharedPPList == null) {
-      ZPP_PartitionedPoly.sharedPPList = new ZNPList_ZPP_PartitionedPoly() as ZNPList<ZPP_PartitionedPoly>;
+      ZPP_PartitionedPoly.sharedPPList =
+        new ZNPList_ZPP_PartitionedPoly() as ZNPList<ZPP_PartitionedPoly>;
     }
     return ZPP_PartitionedPoly.sharedPPList;
   }
@@ -156,6 +157,7 @@ export class ZPP_PartitionedPoly {
           o.helper = null;
           o.next = ZPP_PartitionVertex.zpp_pool;
           ZPP_PartitionVertex.zpp_pool = o;
+          // eslint-disable-next-line no-useless-assignment
           p = null;
           p = null!;
         } else {
@@ -206,6 +208,7 @@ export class ZPP_PartitionedPoly {
             o2.helper = null;
             o2.next = ZPP_PartitionVertex.zpp_pool;
             ZPP_PartitionVertex.zpp_pool = o2;
+            // eslint-disable-next-line no-useless-assignment
             p = null;
             p = null!;
           } else {
@@ -297,7 +300,10 @@ export class ZPP_PartitionedPoly {
     return ret;
   }
 
-  pull_partitions(start: ZPP_PartitionVertex, ret: ZNPList<ZPP_PartitionedPoly>): ZPP_PartitionVertex {
+  pull_partitions(
+    start: ZPP_PartitionVertex,
+    ret: ZNPList<ZPP_PartitionedPoly>,
+  ): ZPP_PartitionVertex {
     let poly: ZPP_PartitionedPoly;
     if (ZPP_PartitionedPoly.zpp_pool == null) {
       poly = new ZPP_PartitionedPoly();

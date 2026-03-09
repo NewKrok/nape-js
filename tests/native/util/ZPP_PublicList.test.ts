@@ -101,7 +101,9 @@ describe("ZPP_PublicList (P15 modernized)", () => {
     const zpp = getNape().__zpp;
     const inst = new zpp.util.ZPP_ArbiterList();
     let called = false;
-    inst._invalidate = () => { called = true; };
+    inst._invalidate = () => {
+      called = true;
+    };
     inst.invalidate();
     expect(inst._invalidated).toBe(true);
     expect(called).toBe(true);
@@ -111,7 +113,9 @@ describe("ZPP_PublicList (P15 modernized)", () => {
     const zpp = getNape().__zpp;
     const inst = new zpp.util.ZPP_EdgeList();
     let called = false;
-    inst._modifiable = () => { called = true; };
+    inst._modifiable = () => {
+      called = true;
+    };
     inst.modify_test();
     expect(called).toBe(true);
   });

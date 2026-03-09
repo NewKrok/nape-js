@@ -292,7 +292,6 @@ export class Compound extends Interactor {
   override toString(): string {
     return "Compound" + this.zpp_inner.id;
   }
-
 }
 
 // Register _wrapFn callback on ZPP_Compound

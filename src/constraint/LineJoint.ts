@@ -7,7 +7,6 @@ import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_LineJoint } from "../native/constraint/ZPP_LineJoint";
 
-
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
   if ((v as any).zpp_disp) {
@@ -411,5 +410,3 @@ ZPP_LineJoint._wrapFn = (zpp: ZPP_LineJoint): LineJoint => {
     return j;
   });
 };
-
-

@@ -1,5 +1,4 @@
 import { Callback } from "./Callback";
-import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 import type { Arbiter } from "../dynamics/Arbiter";
 import type { Interactor } from "../phys/Interactor";
 

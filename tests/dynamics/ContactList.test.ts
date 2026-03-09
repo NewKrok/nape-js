@@ -129,9 +129,7 @@ describe("ContactList", () => {
     it("fromArray(null) should throw", () => {
       const nape = getNape();
       const ContactListCtor = nape.dynamics.ContactList;
-      expect(() => ContactListCtor.fromArray(null)).toThrow(
-        "Cannot convert null Array",
-      );
+      expect(() => ContactListCtor.fromArray(null)).toThrow("Cannot convert null Array");
     });
   });
 

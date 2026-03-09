@@ -286,4 +286,3 @@ ZPP_Material._wrapFn = (zpp: ZPP_Material): Material => {
     return m;
   });
 };
-

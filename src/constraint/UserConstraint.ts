@@ -6,7 +6,6 @@ import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 import { ZPP_UserConstraint } from "../native/constraint/ZPP_UserConstraint";
 
-
 /**
  * Base class for user-defined N-DOF constraints.
  *
@@ -210,4 +209,3 @@ export abstract class UserConstraint extends Constraint {
     this.zpp_inner = v;
   }
 }
-

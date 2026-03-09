@@ -223,4 +223,3 @@ ZPP_Contact._wrapFn = (zpp: ZPP_Contact): Contact => {
   zpp.outer = c;
   return c;
 };
-

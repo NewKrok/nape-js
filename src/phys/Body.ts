@@ -94,10 +94,7 @@ function _newVec2(x: number, y: number, weak: boolean): Vec2 {
  * Ensure a singleton enum flag is initialised. Returns the flag value.
  * This replaces the verbose repeated ZPP_Flags init pattern from compiled code.
  */
-function _ensureFlag<T>(
-  flagName: keyof typeof ZPP_Flags,
-  ctor: () => T,
-): T {
+function _ensureFlag<T>(flagName: keyof typeof ZPP_Flags, ctor: () => T): T {
   if ((ZPP_Flags as any)[flagName] == null) {
     ZPP_Flags.internal = true;
     (ZPP_Flags as any)[flagName] = ctor();
@@ -622,9 +619,7 @@ export class Body extends Interactor {
     return !this.zpp_inner.nomove;
   }
   set allowMovement(value: boolean) {
-    this.zpp_inner.immutable_midstep(
-      "Body::" + (value == null ? "null" : "" + value),
-    );
+    this.zpp_inner.immutable_midstep("Body::" + (value == null ? "null" : "" + value));
     if (!this.zpp_inner.nomove !== value) {
       this.zpp_inner.nomove = !value;
       this.zpp_inner.invalidate_mass();
@@ -636,9 +631,7 @@ export class Body extends Interactor {
     return !this.zpp_inner.norotate;
   }
   set allowRotation(value: boolean) {
-    this.zpp_inner.immutable_midstep(
-      "Body::" + (value == null ? "null" : "" + value),
-    );
+    this.zpp_inner.immutable_midstep("Body::" + (value == null ? "null" : "" + value));
     if (!this.zpp_inner.norotate !== value) {
       this.zpp_inner.norotate = !value;
       this.zpp_inner.invalidate_inertia();
@@ -706,9 +699,7 @@ export class Body extends Interactor {
     return this.zpp_inner.compound.outer;
   }
   set compound(value: Compound | null) {
-    const currentCompound = this.zpp_inner.compound == null
-      ? null
-      : this.zpp_inner.compound.outer;
+    const currentCompound = this.zpp_inner.compound == null ? null : this.zpp_inner.compound.outer;
     if (currentCompound !== value) {
       if (currentCompound != null) {
         currentCompound.zpp_inner.wrap_bodies.remove(this);
@@ -1104,11 +1095,7 @@ export class Body extends Interactor {
    * @returns `this` for chaining.
    * @throws If `targetPosition` is null or `deltaTime` is zero.
    */
-  setVelocityFromTarget(
-    targetPosition: Vec2,
-    targetRotation: number,
-    deltaTime: number,
-  ): Body {
+  setVelocityFromTarget(targetPosition: Vec2, targetRotation: number, deltaTime: number): Body {
     _checkVec2Disposed(targetPosition);
     if (targetPosition == null) {
       throw new Error("Cannot set velocity for null target position");
@@ -1450,7 +1437,11 @@ export class Body extends Interactor {
    * @param output - Optional existing list to accumulate results into.
    * @returns A BodyList of interacting bodies.
    */
-  interactingBodies(type: InteractionType | null = null, _depth: number = -1, output: object | null = null): object {
+  interactingBodies(
+    type: InteractionType | null = null,
+    _depth: number = -1,
+    output: object | null = null,
+  ): object {
     let arbiter_type: number;
     if (type == null) {
       arbiter_type = ZPP_Arbiter.COL | ZPP_Arbiter.SENSOR | ZPP_Arbiter.FLUID;
@@ -1764,10 +1755,7 @@ export class Body extends Interactor {
 
   private _getConstraints(): any {
     if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
-        this.zpp_inner.constraints,
-        true,
-      );
+      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(this.zpp_inner.constraints, true);
     }
     return this.zpp_inner.wrap_constraints;
   }

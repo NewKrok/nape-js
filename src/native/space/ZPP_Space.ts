@@ -30,7 +30,6 @@ import { ZPP_Component } from "./ZPP_Component";
 import { ZPP_CallbackSet } from "./ZPP_CallbackSet";
 import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 
-
 export class ZPP_Space {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_Space"];

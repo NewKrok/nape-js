@@ -16,7 +16,7 @@ export class ZPP_CbSetManager {
 
   // --- Instance fields ---
   cbsets: any = null; // ZPP_Set_ZPP_CbSet — dynamic class
-  space: any = null;  // ZPP_Space — circular
+  space: any = null; // ZPP_Space — circular
 
   constructor(space: any) {
     const ZPP_Set_CbSet = ZPP_CbSetManager._zpp.util.ZPP_Set_ZPP_CbSet;

@@ -13,7 +13,6 @@
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_UserBody } from "./ZPP_UserBody";
 
-
 export class ZPP_UserConstraint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_UserConstraint"];
   static __super__ = ZPP_Constraint;

@@ -135,4 +135,3 @@ export class FastHash2_Hashable2_Boolfalse {
     return (id * HASH_MULT + di) & TABLE_MASK;
   }
 }
-

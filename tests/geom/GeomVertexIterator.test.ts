@@ -7,18 +7,14 @@ describe("GeomVertexIterator", () => {
   describe("instantiation guard", () => {
     it("should throw when instantiated directly", () => {
       expect(() => new (GeomVertexIterator as any)()).toThrow(
-        "Cannot instantiate GeomVertexIterator"
+        "Cannot instantiate GeomVertexIterator",
       );
     });
   });
 
   describe("forward iteration via hasNext()/next()", () => {
     it("should iterate over all vertices of a triangle", () => {
-      const poly = new GeomPoly([
-        Vec2.get(0, 0),
-        Vec2.get(10, 0),
-        Vec2.get(10, 10),
-      ]);
+      const poly = new GeomPoly([Vec2.get(0, 0), Vec2.get(10, 0), Vec2.get(10, 10)]);
       const iter = poly.forwardIterator();
 
       const verts: Vec2[] = [];
@@ -47,11 +43,7 @@ describe("GeomVertexIterator", () => {
     });
 
     it("should return Vec2 instances", () => {
-      const poly = new GeomPoly([
-        Vec2.get(1, 2),
-        Vec2.get(3, 4),
-        Vec2.get(5, 6),
-      ]);
+      const poly = new GeomPoly([Vec2.get(1, 2), Vec2.get(3, 4), Vec2.get(5, 6)]);
       const iter = poly.forwardIterator();
 
       while (iter.hasNext()) {
@@ -122,11 +114,7 @@ describe("GeomVertexIterator", () => {
 
   describe("Symbol.iterator support", () => {
     it("should be iterable with for...of", () => {
-      const poly = new GeomPoly([
-        Vec2.get(0, 0),
-        Vec2.get(5, 0),
-        Vec2.get(5, 5),
-      ]);
+      const poly = new GeomPoly([Vec2.get(0, 0), Vec2.get(5, 0), Vec2.get(5, 5)]);
       const iter = poly.forwardIterator();
 
       const verts: Vec2[] = [];
@@ -139,12 +127,7 @@ describe("GeomVertexIterator", () => {
     });
 
     it("should support spread syntax", () => {
-      const poly = new GeomPoly([
-        Vec2.get(1, 1),
-        Vec2.get(2, 2),
-        Vec2.get(3, 3),
-        Vec2.get(4, 4),
-      ]);
+      const poly = new GeomPoly([Vec2.get(1, 1), Vec2.get(2, 2), Vec2.get(3, 3), Vec2.get(4, 4)]);
       const iter = poly.forwardIterator();
 
       const verts = [...iter];
@@ -154,11 +137,7 @@ describe("GeomVertexIterator", () => {
 
   describe("iterator disposal", () => {
     it("should dispose after full iteration", () => {
-      const poly = new GeomPoly([
-        Vec2.get(0, 0),
-        Vec2.get(1, 0),
-        Vec2.get(1, 1),
-      ]);
+      const poly = new GeomPoly([Vec2.get(0, 0), Vec2.get(1, 0), Vec2.get(1, 1)]);
       const iter = poly.forwardIterator();
 
       // Exhaust the iterator
@@ -171,11 +150,7 @@ describe("GeomVertexIterator", () => {
     });
 
     it("should throw on next() after disposal", () => {
-      const poly = new GeomPoly([
-        Vec2.get(0, 0),
-        Vec2.get(1, 0),
-        Vec2.get(1, 1),
-      ]);
+      const poly = new GeomPoly([Vec2.get(0, 0), Vec2.get(1, 0), Vec2.get(1, 1)]);
       const iter = poly.forwardIterator();
 
       while (iter.hasNext()) {

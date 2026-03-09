@@ -16,7 +16,6 @@ import { Vec2 } from "./Vec2";
 import { AABB } from "./AABB";
 import "./Winding"; // Side-effect: register Winding in namespace before GeomPoly methods use it
 
-
 /**
  * A polygon represented as a circular doubly-linked list of vertices.
  *
@@ -823,11 +822,7 @@ export class GeomPoly {
     output?: any,
   ): any {
     this._checkDisposed();
-    if (
-      !(this._isDegenRing()
-        ? true
-        : ZPP_Simple.isSimple(this.zpp_inner.vertices))
-    ) {
+    if (!(this._isDegenRing() ? true : ZPP_Simple.isSimple(this.zpp_inner.vertices))) {
       throw new Error("Error: Cut requires a truly simple polygon");
     }
     if (start == null || end == null) {
@@ -923,4 +918,3 @@ export class GeomPoly {
     return ret + "]";
   }
 }
-

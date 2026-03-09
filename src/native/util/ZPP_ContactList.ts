@@ -97,4 +97,3 @@ export class ZPP_ContactList {
     }
   }
 }
-

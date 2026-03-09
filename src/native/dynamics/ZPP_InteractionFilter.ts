@@ -48,7 +48,6 @@ export class ZPP_InteractionFilter {
 
   // --- Instance: Haxe class reference ---
 
-
   constructor() {
     this.shapes = new ZPP_InteractionFilter._zpp.util.ZNPList_ZPP_Shape();
   }

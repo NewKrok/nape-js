@@ -385,7 +385,11 @@ export class ZPP_Compound {
 
     // Copy ZPP_Interactor prototype methods (only those not already on ZPP_Compound)
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
-      if (k !== "constructor" && k !== "__class__" && !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)) {
+      if (
+        k !== "constructor" &&
+        k !== "__class__" &&
+        !Object.prototype.hasOwnProperty.call(ZPP_Compound.prototype, k)
+      ) {
         (ZPP_Compound.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }

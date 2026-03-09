@@ -33,7 +33,6 @@ export class ZPP_ToiEvent {
   failed: boolean = false;
   kinematic: boolean = false;
 
-
   constructor() {
     this.c1 = new ZPP_Vec2();
     this.c2 = new ZPP_Vec2();

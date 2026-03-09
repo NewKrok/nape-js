@@ -112,10 +112,7 @@ export class CbType {
   // InteractorList is factory-generated; no static TS type available
   get interactors(): object {
     if (this.zpp_inner.wrap_interactors == null) {
-      this.zpp_inner.wrap_interactors = ZPP_InteractorList.get(
-        this.zpp_inner.interactors,
-        true,
-      );
+      this.zpp_inner.wrap_interactors = ZPP_InteractorList.get(this.zpp_inner.interactors, true);
     }
     return this.zpp_inner.wrap_interactors;
   }
@@ -126,10 +123,7 @@ export class CbType {
   // ConstraintList is factory-generated; no static TS type available
   get constraints(): object {
     if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
-        this.zpp_inner.constraints,
-        true,
-      );
+      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(this.zpp_inner.constraints, true);
     }
     return this.zpp_inner.wrap_constraints;
   }
@@ -198,4 +192,3 @@ export class CbType {
 const _napeForCbType = getNape();
 _napeForCbType.callbacks.CbType = CbType;
 ensureEnumsReady();
-

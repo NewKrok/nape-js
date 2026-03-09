@@ -32,7 +32,6 @@ describe("ZPP_MarchSpan", () => {
       const span = new ZPP_MarchSpan();
       expect(span.next).toBeNull();
     });
-
   });
 
   describe("free", () => {

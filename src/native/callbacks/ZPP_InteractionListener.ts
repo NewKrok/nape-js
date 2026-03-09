@@ -280,31 +280,35 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     set.lt = zpp.callbacks.ZPP_CbSetPair.setlt;
 
     // Use CbTypeset on options1/options2 includes, generating CbSetset pairs
-    this.CbTypeset(this.options1.includes, this.options2.includes, (x: ZPP_CbType, y: ZPP_CbType) => {
-      this.CbSetset(x.cbsets, y.cbsets, (a: ZPP_CbSet, b: ZPP_CbSet) => {
-        a.validate();
-        b.validate();
-        if (zpp.callbacks.ZPP_CbSet.single_intersection(a, b, this)) {
-          let pair: any;
-          if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
-            pair = new zpp.callbacks.ZPP_CbSetPair();
-          } else {
-            pair = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
-            zpp.callbacks.ZPP_CbSetPair.zpp_pool = pair.next;
-            pair.next = null;
+    this.CbTypeset(
+      this.options1.includes,
+      this.options2.includes,
+      (x: ZPP_CbType, y: ZPP_CbType) => {
+        this.CbSetset(x.cbsets, y.cbsets, (a: ZPP_CbSet, b: ZPP_CbSet) => {
+          a.validate();
+          b.validate();
+          if (zpp.callbacks.ZPP_CbSet.single_intersection(a, b, this)) {
+            let pair: any;
+            if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
+              pair = new zpp.callbacks.ZPP_CbSetPair();
+            } else {
+              pair = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
+              zpp.callbacks.ZPP_CbSetPair.zpp_pool = pair.next;
+              pair.next = null;
+            }
+            pair.zip_listeners = true;
+            if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
+              pair.a = a;
+              pair.b = b;
+            } else {
+              pair.a = b;
+              pair.b = a;
+            }
+            set.try_insert(pair);
           }
-          pair.zip_listeners = true;
-          if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
-            pair.a = a;
-            pair.b = b;
-          } else {
-            pair.a = b;
-            pair.b = a;
-          }
-          set.try_insert(pair);
-        }
-      });
-    });
+        });
+      },
+    );
 
     // Walk the set tree and call freshListenerType/nullListenerType
     if (set.parent != null) {

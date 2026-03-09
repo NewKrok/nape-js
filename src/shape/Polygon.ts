@@ -9,7 +9,6 @@ import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 
-
 /**
  * A convex polygon physics shape.
  */
@@ -27,11 +26,7 @@ export class Polygon extends Shape {
    * @param material - Material to assign (uses default if omitted).
    * @param filter - InteractionFilter to assign (uses default if omitted).
    */
-  constructor(
-    localVerts?: Vec2[] | any,
-    material?: Material,
-    filter?: InteractionFilter,
-  ) {
+  constructor(localVerts?: Vec2[] | any, material?: Material, filter?: InteractionFilter) {
     super();
 
     const nape = getNape();
@@ -59,9 +54,7 @@ export class Polygon extends Shape {
           throw new Error("Error: Array<Vec2> contains non Vec2 objects");
         }
         if ((v as any).zpp_disp) {
-          throw new Error(
-            "Error: Vec2 has been disposed and cannot be used!",
-          );
+          throw new Error("Error: Vec2 has been disposed and cannot be used!");
         }
         if (zpp.wrap_lverts == null) zpp.getlverts();
         const inner = v.zpp_inner;
@@ -99,9 +92,7 @@ export class Polygon extends Shape {
           throw new Error("Error: Vec2List contains null objects");
         }
         if (v.zpp_disp) {
-          throw new Error(
-            "Error: Vec2 has been disposed and cannot be used!",
-          );
+          throw new Error("Error: Vec2 has been disposed and cannot be used!");
         }
         if (zpp.wrap_lverts == null) zpp.getlverts();
         const inner = v.zpp_inner;
@@ -220,13 +211,7 @@ export class Polygon extends Shape {
    * @param weak - If true, returned Vec2s are marked weak and will be auto-disposed.
    * @returns Array of four Vec2 corner vertices.
    */
-  static rect(
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    weak: boolean = false,
-  ): Vec2[] {
+  static rect(x: number, y: number, width: number, height: number, weak: boolean = false): Vec2[] {
     if (x !== x || y !== y || width !== width || height !== height) {
       throw new Error("Error: Polygon.rect cannot accept NaN arguments");
     }
@@ -248,11 +233,7 @@ export class Polygon extends Shape {
    * @param weak - If true, returned Vec2s are marked weak and will be auto-disposed.
    * @returns Array of four Vec2 corner vertices.
    */
-  static box(
-    width: number,
-    height: number = width,
-    weak: boolean = false,
-  ): Vec2[] {
+  static box(width: number, height: number = width, weak: boolean = false): Vec2[] {
     if (width !== width || height !== height) {
       throw new Error("Error: Polygon.box cannot accept NaN arguments");
     }
@@ -275,11 +256,7 @@ export class Polygon extends Shape {
     angleOffset: number = 0.0,
     weak: boolean = false,
   ): Vec2[] {
-    if (
-      xRadius !== xRadius ||
-      yRadius !== yRadius ||
-      angleOffset !== angleOffset
-    ) {
+    if (xRadius !== xRadius || yRadius !== yRadius || angleOffset !== angleOffset) {
       throw new Error("Error: Polygon.regular cannot accept NaN arguments");
     }
     const result: Vec2[] = [];
@@ -356,4 +333,3 @@ _bindPolygonWrap((inner) => Polygon._wrap(inner));
 
 const nape = getNape();
 nape.shape.Polygon = Polygon;
-

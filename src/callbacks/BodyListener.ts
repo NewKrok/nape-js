@@ -43,7 +43,12 @@ export class BodyListener extends Listener {
    * @param handler - Called with a {@link BodyCallback} each time the event fires.
    * @param precedence - Execution order relative to other listeners (higher = first). Default `0`.
    */
-  constructor(event: CbEvent, options: OptionType | CbType | null, handler: (cb: BodyCallback) => void, precedence = 0) {
+  constructor(
+    event: CbEvent,
+    options: OptionType | CbType | null,
+    handler: (cb: BodyCallback) => void,
+    precedence = 0,
+  ) {
     ZPP_Listener.internal = true;
     super();
     ZPP_Listener.internal = false;

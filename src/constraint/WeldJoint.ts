@@ -7,7 +7,6 @@ import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_WeldJoint } from "../native/constraint/ZPP_WeldJoint";
 
-
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
   if ((v as any).zpp_disp) {
@@ -353,5 +352,3 @@ ZPP_WeldJoint._wrapFn = (zpp: ZPP_WeldJoint): WeldJoint => {
     return j;
   });
 };
-
-

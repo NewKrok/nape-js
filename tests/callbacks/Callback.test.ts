@@ -68,7 +68,6 @@ describe("ConstraintCallback", () => {
     expect(cb).toBeInstanceOf(Callback);
     expect(cb).toBeInstanceOf(ConstraintCallback);
   });
-
 });
 
 describe("InteractionCallback", () => {
@@ -87,7 +86,6 @@ describe("InteractionCallback", () => {
     expect(cb).toBeInstanceOf(Callback);
     expect(cb).toBeInstanceOf(InteractionCallback);
   });
-
 });
 
 describe("PreCallback", () => {
@@ -106,6 +104,4 @@ describe("PreCallback", () => {
     expect(cb).toBeInstanceOf(Callback);
     expect(cb).toBeInstanceOf(PreCallback);
   });
-
 });
-

@@ -6,7 +6,6 @@ import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 import { ZPP_PulleyJoint } from "../native/constraint/ZPP_PulleyJoint";
 
-
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
   if ((v as any).zpp_disp) {
@@ -155,11 +154,7 @@ export class PulleyJoint extends Constraint {
   }
 
   /** @internal Helper to set an anchor during construction. */
-  private _setAnchorInit(
-    anchor: Vec2,
-    name: string,
-    set: (x: number, y: number) => void,
-  ): void {
+  private _setAnchorInit(anchor: Vec2, name: string, set: (x: number, y: number) => void): void {
     if ((anchor as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -174,8 +169,7 @@ export class PulleyJoint extends Constraint {
   static _wrap(inner: any): PulleyJoint {
     if (inner == null) return null!;
     if (inner instanceof PulleyJoint) return inner;
-    if (inner.zpp_inner?.outer instanceof PulleyJoint)
-      return inner.zpp_inner.outer;
+    if (inner.zpp_inner?.outer instanceof PulleyJoint) return inner.zpp_inner.outer;
 
     if (inner instanceof ZPP_PulleyJoint) {
       return getOrCreate(inner, (zpp: ZPP_PulleyJoint) => {
@@ -534,9 +528,7 @@ export class PulleyJoint extends Constraint {
       this.zpp_inner.b3 == null ||
       this.zpp_inner.b4 == null
     ) {
-      throw new Error(
-        "Error: Cannot compute slack for PulleyJoint if either body is null.",
-      );
+      throw new Error("Error: Cannot compute slack for PulleyJoint if either body is null.");
     }
     return this.zpp_inner.slack;
   }
@@ -583,8 +575,12 @@ export class PulleyJoint extends Constraint {
   }
 
   /** @internal backward compat alias for zpp_inner */
-  get zpp_inner_zn(): ZPP_PulleyJoint { return this.zpp_inner; }
-  set zpp_inner_zn(v: ZPP_PulleyJoint) { this.zpp_inner = v; }
+  get zpp_inner_zn(): ZPP_PulleyJoint {
+    return this.zpp_inner;
+  }
+  set zpp_inner_zn(v: ZPP_PulleyJoint) {
+    this.zpp_inner = v;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -601,5 +597,3 @@ ZPP_PulleyJoint._wrapFn = (zpp: ZPP_PulleyJoint): PulleyJoint => {
     return j;
   });
 };
-
-

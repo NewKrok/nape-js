@@ -10,7 +10,6 @@ import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 import { ZPP_Const } from "../native/util/ZPP_Const";
 
-
 /**
  * A circular physics shape. The simplest and most performant collision shape.
  */
@@ -54,14 +53,10 @@ export class Circle extends Shape {
         throw new Error("Error: Circle::radius cannot be NaN");
       }
       if (radius < nape.Config.epsilon) {
-        throw new Error(
-          "Error: Circle::radius (" + radius + ") must be > Config.epsilon",
-        );
+        throw new Error("Error: Circle::radius (" + radius + ") must be > Config.epsilon");
       }
       if (radius > ZPP_Const.FMAX) {
-        throw new Error(
-          "Error: Circle::radius (" + radius + ") must be < PR(Const).FMAX",
-        );
+        throw new Error("Error: Circle::radius (" + radius + ") must be < PR(Const).FMAX");
       }
       zpp.radius = radius;
       zpp.invalidate_radius();
@@ -169,14 +164,10 @@ export class Circle extends Shape {
         throw new Error("Error: Circle::radius cannot be NaN");
       }
       if (value < nape.Config.epsilon) {
-        throw new Error(
-          "Error: Circle::radius (" + value + ") must be > Config.epsilon",
-        );
+        throw new Error("Error: Circle::radius (" + value + ") must be > Config.epsilon");
       }
       if (value > ZPP_Const.FMAX) {
-        throw new Error(
-          "Error: Circle::radius (" + value + ") must be < PR(Const).FMAX",
-        );
+        throw new Error("Error: Circle::radius (" + value + ") must be < PR(Const).FMAX");
       }
       zpp.radius = value;
       zpp.invalidate_radius();
@@ -193,4 +184,3 @@ _bindCircleWrap((inner) => Circle._wrap(inner));
 
 const nape = getNape();
 nape.shape.Circle = Circle;
-

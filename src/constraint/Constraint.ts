@@ -6,7 +6,6 @@ import { MatMN } from "../geom/MatMN";
 import { Vec3 } from "../geom/Vec3";
 import { ZPP_Constraint } from "../native/constraint/ZPP_Constraint";
 
-
 /**
  * Base class for all physics constraints (joints).
  *
@@ -424,6 +423,4 @@ export class Constraint {
   toString(): string {
     return "{Constraint}";
   }
-
 }
-

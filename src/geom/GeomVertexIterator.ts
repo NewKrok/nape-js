@@ -12,7 +12,6 @@ import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
-
 function GeomVertexIteratorCtor(this: any) {
   if (!ZPP_GeomVertexIterator.internal) {
     throw new Error("Error: Cannot instantiate GeomVertexIterator");
@@ -108,12 +107,9 @@ GeomVertexIteratorCtor.prototype.next = function (this: any): any {
   }
 
   const result = vert.wrap;
-  this.zpp_inner.ptr = this.zpp_inner.forward
-    ? this.zpp_inner.ptr.next
-    : this.zpp_inner.ptr.prev;
+  this.zpp_inner.ptr = this.zpp_inner.forward ? this.zpp_inner.ptr.next : this.zpp_inner.ptr.prev;
   return result;
 };
-
 
 // ES6 iterable protocol — GeomVertexIterator is itself an iterator, so returning
 // `this` makes it work directly in for...of loops (e.g. Polygon.getVertexIterator()).

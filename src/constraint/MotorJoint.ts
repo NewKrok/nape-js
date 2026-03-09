@@ -6,7 +6,6 @@ import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_MotorJoint } from "../native/constraint/ZPP_MotorJoint";
 
-
 /**
  * Motor joint — drives the relative angular velocity between two bodies toward
  * a target `rate`, subject to `maxForce`.
@@ -277,5 +276,3 @@ ZPP_MotorJoint._wrapFn = (zpp: ZPP_MotorJoint): MotorJoint => {
     return j;
   });
 };
-
-

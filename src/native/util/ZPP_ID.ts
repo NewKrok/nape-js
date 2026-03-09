@@ -58,5 +58,4 @@ export class ZPP_ID {
   static InteractionGroup(): number {
     return ZPP_ID._InteractionGroup++;
   }
-
 }

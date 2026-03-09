@@ -165,18 +165,22 @@ export class Edge {
       return "Edge(object-pooled)";
     } else if (zpp.polygon.body == null) {
       zpp.polygon.validate_laxi();
-      return (
-        "{ localNormal : " +
-        "{ x: " + zpp.lnormx + " y: " + zpp.lnormy + " }" +
-        " }"
-      );
+      return "{ localNormal : " + "{ x: " + zpp.lnormx + " y: " + zpp.lnormy + " }" + " }";
     } else {
       zpp.polygon.validate_gaxi();
       return (
         "{ localNormal : " +
-        "{ x: " + zpp.lnormx + " y: " + zpp.lnormy + " }" +
+        "{ x: " +
+        zpp.lnormx +
+        " y: " +
+        zpp.lnormy +
+        " }" +
         " worldNormal : " +
-        "{ x: " + zpp.gnormx + " y: " + zpp.gnormy + " }" +
+        "{ x: " +
+        zpp.gnormx +
+        " y: " +
+        zpp.gnormy +
+        " }" +
         " }"
       );
     }

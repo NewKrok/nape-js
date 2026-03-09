@@ -182,10 +182,8 @@ export class ZPP_SimpleSweep {
         if (plrg1 == aplrg1) {
           return plrg1;
         }
-        const py =
-          ((this.sweepx - pl.x) / (pr.x - pl.x)) * (pr.y - pl.y) + pl.y;
-        const qy =
-          ((this.sweepx - ql.x) / (qr.x - ql.x)) * (qr.y - ql.y) + ql.y;
+        const py = ((this.sweepx - pl.x) / (pr.x - pl.x)) * (pr.y - pl.y) + pl.y;
+        const qy = ((this.sweepx - ql.x) / (qr.x - ql.x)) * (qr.y - ql.y) + ql.y;
         return py > qy;
       }
     }
@@ -229,22 +227,17 @@ export class ZPP_SimpleSweep {
     } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
       return false;
     } else {
-      const pl = p.left!; const pr = p.right!; const ql = q.left!; const qr = q.right!;
-      const lsign =
-        (ql.x - pl.x) * (pr.y - pl.y) -
-        (pr.x - pl.x) * (ql.y - pl.y);
-      const rsign =
-        (qr.x - pl.x) * (pr.y - pl.y) -
-        (pr.x - pl.x) * (qr.y - pl.y);
+      const pl = p.left!;
+      const pr = p.right!;
+      const ql = q.left!;
+      const qr = q.right!;
+      const lsign = (ql.x - pl.x) * (pr.y - pl.y) - (pr.x - pl.x) * (ql.y - pl.y);
+      const rsign = (qr.x - pl.x) * (pr.y - pl.y) - (pr.x - pl.x) * (qr.y - pl.y);
       if (lsign * rsign > 0) {
         return false;
       } else {
-        const lsign2 =
-          (pl.x - ql.x) * (qr.y - ql.y) -
-          (qr.x - ql.x) * (pl.y - ql.y);
-        const rsign2 =
-          (pr.x - ql.x) * (qr.y - ql.y) -
-          (qr.x - ql.x) * (pr.y - ql.y);
+        const lsign2 = (pl.x - ql.x) * (qr.y - ql.y) - (qr.x - ql.x) * (pl.y - ql.y);
+        const rsign2 = (pr.x - ql.x) * (qr.y - ql.y) - (qr.x - ql.x) * (pr.y - ql.y);
         if (lsign2 * rsign2 > 0) {
           return false;
         } else {
@@ -260,7 +253,10 @@ export class ZPP_SimpleSweep {
     } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
       return null;
     } else {
-      const pl = p.left!; const pr = p.right!; const ql = q.left!; const qr = q.right!;
+      const pl = p.left!;
+      const pr = p.right!;
+      const ql = q.left!;
+      const qr = q.right!;
       const ux = pr.x - pl.x;
       const uy = pr.y - pl.y;
       const vx = qr.x - ql.x;

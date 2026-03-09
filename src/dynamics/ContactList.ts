@@ -13,7 +13,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_ContactList } from "../native/util/ZPP_ContactList";
 
-
 // ---------------------------------------------------------------------------
 // Helper: count active contacts in the inner linked list
 // ---------------------------------------------------------------------------
@@ -95,7 +94,6 @@ ContactIterator.prototype.next = function (this: any): any {
   this.zpp_critical = false;
   return this.zpp_inner.at(this.zpp_i++);
 };
-
 
 // ---------------------------------------------------------------------------
 // ContactList
@@ -187,10 +185,7 @@ ContactListCtor.prototype.push = function (this: any, obj: any): boolean {
           this.zpp_inner.push_ite = this.zpp_inner.inner.iterator_at(len - 1);
         }
       }
-      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(
-        this.zpp_inner.push_ite,
-        obj.zpp_inner,
-      );
+      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(this.zpp_inner.push_ite, obj.zpp_inner);
     }
     this.zpp_inner.invalidate();
     if (this.zpp_inner.post_adder != null) {
@@ -217,10 +212,7 @@ ContactListCtor.prototype.unshift = function (this: any, obj: any): boolean {
           this.zpp_inner.push_ite = this.zpp_inner.inner.iterator_at(len - 1);
         }
       }
-      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(
-        this.zpp_inner.push_ite,
-        obj.zpp_inner,
-      );
+      this.zpp_inner.push_ite = this.zpp_inner.inner.insert(this.zpp_inner.push_ite, obj.zpp_inner);
     } else {
       this.zpp_inner.inner.add(obj.zpp_inner);
     }
@@ -483,6 +475,5 @@ ContactListCtor.prototype.filter = function (this: any, lambda: any): any {
   }
   return this;
 };
-
 
 export { ContactListCtor as ContactList, ContactIterator };

@@ -31,7 +31,6 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
   jMax: number = 0.0;
   stepped: boolean = false;
 
-
   constructor() {
     super();
     this.jAcc = 0;

@@ -126,4 +126,3 @@ export class OptionType {
 // Self-register in the compiled namespace
 const nape = getNape();
 nape.callbacks.OptionType = OptionType;
-

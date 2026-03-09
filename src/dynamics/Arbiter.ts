@@ -245,4 +245,3 @@ export class Arbiter {
 // Self-register in the compiled namespace
 const _napeArbiter = getNape();
 _napeArbiter.dynamics.Arbiter = Arbiter;
-

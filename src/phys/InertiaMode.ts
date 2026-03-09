@@ -48,4 +48,3 @@ export class InertiaMode {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.InertiaMode = InertiaMode;
-

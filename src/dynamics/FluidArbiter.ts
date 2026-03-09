@@ -1,7 +1,6 @@
 import { Vec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
-import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import type { Body } from "../phys/Body";
 
 /**

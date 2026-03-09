@@ -62,4 +62,3 @@ export class ZPP_GeomVertexIterator {
 
   alloc(): void {}
 }
-

@@ -185,71 +185,95 @@ describe("AABB", () => {
   it("should throw when setting min that would cause negative width", () => {
     const box = new AABB(10, 20, 30, 40);
     // max.x is 40, so min.x > 40 → negative width
-    expect(() => { box.min = new Vec2(50, 20); }).toThrow("negative width");
+    expect(() => {
+      box.min = new Vec2(50, 20);
+    }).toThrow("negative width");
   });
 
   it("should throw when setting min that would cause negative height", () => {
     const box = new AABB(10, 20, 30, 40);
     // max.y is 60, so min.y > 60 → negative height
-    expect(() => { box.min = new Vec2(10, 70); }).toThrow("negative height");
+    expect(() => {
+      box.min = new Vec2(10, 70);
+    }).toThrow("negative height");
   });
 
   it("should throw when setting max that would cause negative width", () => {
     const box = new AABB(10, 20, 30, 40);
     // min.x is 10, so max.x < 10 → negative width
-    expect(() => { box.max = new Vec2(5, 60); }).toThrow("negative width");
+    expect(() => {
+      box.max = new Vec2(5, 60);
+    }).toThrow("negative width");
   });
 
   it("should throw when setting max that would cause negative height", () => {
     const box = new AABB(10, 20, 30, 40);
     // min.y is 20, so max.y < 20 → negative height
-    expect(() => { box.max = new Vec2(40, 10); }).toThrow("negative height");
+    expect(() => {
+      box.max = new Vec2(40, 10);
+    }).toThrow("negative height");
   });
 
   it("should throw when setting null min", () => {
     const box = new AABB(10, 20, 30, 40);
-    expect(() => { box.min = null; }).toThrow("null");
+    expect(() => {
+      box.min = null;
+    }).toThrow("null");
   });
 
   it("should throw when setting null max", () => {
     const box = new AABB(10, 20, 30, 40);
-    expect(() => { box.max = null; }).toThrow("null");
+    expect(() => {
+      box.max = null;
+    }).toThrow("null");
   });
 
   it("should throw on immutable AABB x setter", () => {
     const box = new AABB(0, 0, 10, 10);
     box.zpp_inner._immutable = true;
-    expect(() => { box.x = 5; }).toThrow("immutable");
+    expect(() => {
+      box.x = 5;
+    }).toThrow("immutable");
   });
 
   it("should throw on immutable AABB y setter", () => {
     const box = new AABB(0, 0, 10, 10);
     box.zpp_inner._immutable = true;
-    expect(() => { box.y = 5; }).toThrow("immutable");
+    expect(() => {
+      box.y = 5;
+    }).toThrow("immutable");
   });
 
   it("should throw on immutable AABB width setter", () => {
     const box = new AABB(0, 0, 10, 10);
     box.zpp_inner._immutable = true;
-    expect(() => { box.width = 5; }).toThrow("immutable");
+    expect(() => {
+      box.width = 5;
+    }).toThrow("immutable");
   });
 
   it("should throw on immutable AABB height setter", () => {
     const box = new AABB(0, 0, 10, 10);
     box.zpp_inner._immutable = true;
-    expect(() => { box.height = 5; }).toThrow("immutable");
+    expect(() => {
+      box.height = 5;
+    }).toThrow("immutable");
   });
 
   it("should throw on immutable AABB min setter", () => {
     const box = new AABB(0, 0, 10, 10);
     box.zpp_inner._immutable = true;
-    expect(() => { box.min = new Vec2(1, 1); }).toThrow("immutable");
+    expect(() => {
+      box.min = new Vec2(1, 1);
+    }).toThrow("immutable");
   });
 
   it("should throw on immutable AABB max setter", () => {
     const box = new AABB(0, 0, 10, 10);
     box.zpp_inner._immutable = true;
-    expect(() => { box.max = new Vec2(1, 1); }).toThrow("immutable");
+    expect(() => {
+      box.max = new Vec2(1, 1);
+    }).toThrow("immutable");
   });
 
   // --- copy ---

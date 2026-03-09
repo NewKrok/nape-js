@@ -6,7 +6,6 @@ import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_AngleJoint } from "../native/constraint/ZPP_AngleJoint";
 
-
 /**
  * Constrains the relative angle between two bodies within a range.
  *
@@ -321,4 +320,3 @@ ZPP_AngleJoint._wrapFn = (zpp: ZPP_AngleJoint): AngleJoint => {
     return j;
   });
 };
-

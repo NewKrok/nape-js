@@ -37,4 +37,3 @@ export class ZNPArray2_ZPP_GeomVert extends ZNPArray2<any> {
 export class ZNPArray2_ZPP_MarchPair extends ZNPArray2<any> {
   static __name__ = ["zpp_nape", "util", "ZNPArray2_ZPP_MarchPair"];
 }
-

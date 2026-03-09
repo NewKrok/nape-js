@@ -1,7 +1,6 @@
 import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
-
 /**
  * Enumeration of interaction categories used to filter {@link InteractionListener}
  * and {@link PreListener} callbacks.
@@ -75,4 +74,3 @@ export class InteractionType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.InteractionType = InteractionType;
-

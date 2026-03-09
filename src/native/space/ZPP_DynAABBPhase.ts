@@ -17,7 +17,6 @@ import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
 
-
 export class ZPP_DynAABBPhase {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_DynAABBPhase"];
@@ -51,7 +50,6 @@ export class ZPP_DynAABBPhase {
 
   // --- Instance: Haxe class reference ---
   __class__: any = ZPP_DynAABBPhase;
-
 
   constructor(space: any) {
     ZPP_Broadphase._initFields(this);
@@ -808,7 +806,8 @@ export class ZPP_DynAABBPhase {
               let cost1;
               if (child11.child1 == null) {
                 const _this18 = ZPP_AABBTree.tmpaabb;
-                cost1 = (_this18!.maxx - _this18!.minx + (_this18!.maxy - _this18!.miny)) * 2 + icost;
+                cost1 =
+                  (_this18!.maxx - _this18!.minx + (_this18!.maxy - _this18!.miny)) * 2 + icost;
               } else {
                 const _this19 = child11.aabb;
                 const oarea = (_this19!.maxx - _this19!.minx + (_this19!.maxy - _this19!.miny)) * 2;
@@ -825,12 +824,15 @@ export class ZPP_DynAABBPhase {
               let cost2;
               if (child21!.child1 == null) {
                 const _this22 = ZPP_AABBTree.tmpaabb;
-                cost2 = (_this22!.maxx - _this22!.minx + (_this22!.maxy - _this22!.miny)) * 2 + icost;
+                cost2 =
+                  (_this22!.maxx - _this22!.minx + (_this22!.maxy - _this22!.miny)) * 2 + icost;
               } else {
                 const _this23 = child21!.aabb;
-                const oarea1 = (_this23!.maxx - _this23!.minx + (_this23!.maxy - _this23!.miny)) * 2;
+                const oarea1 =
+                  (_this23!.maxx - _this23!.minx + (_this23!.maxy - _this23!.miny)) * 2;
                 const _this24 = ZPP_AABBTree.tmpaabb;
-                const narea1 = (_this24!.maxx - _this24!.minx + (_this24!.maxy - _this24!.miny)) * 2;
+                const narea1 =
+                  (_this24!.maxx - _this24!.minx + (_this24!.maxy - _this24!.miny)) * 2;
                 cost2 = narea1 - oarea1 + icost;
               }
               if (cost < cost1 && cost < cost2) {
@@ -1463,12 +1465,15 @@ export class ZPP_DynAABBPhase {
               let cost11;
               if (child14.child1 == null) {
                 const _this53 = ZPP_AABBTree.tmpaabb;
-                cost11 = (_this53!.maxx - _this53!.minx + (_this53!.maxy - _this53!.miny)) * 2 + icost1;
+                cost11 =
+                  (_this53!.maxx - _this53!.minx + (_this53!.maxy - _this53!.miny)) * 2 + icost1;
               } else {
                 const _this54 = child14.aabb;
-                const oarea2 = (_this54!.maxx - _this54!.minx + (_this54!.maxy - _this54!.miny)) * 2;
+                const oarea2 =
+                  (_this54!.maxx - _this54!.minx + (_this54!.maxy - _this54!.miny)) * 2;
                 const _this55 = ZPP_AABBTree.tmpaabb;
-                const narea2 = (_this55!.maxx - _this55!.minx + (_this55!.maxy - _this55!.miny)) * 2;
+                const narea2 =
+                  (_this55!.maxx - _this55!.minx + (_this55!.maxy - _this55!.miny)) * 2;
                 cost11 = narea2 - oarea2 + icost1;
               }
               const _this56 = ZPP_AABBTree.tmpaabb;
@@ -1480,12 +1485,15 @@ export class ZPP_DynAABBPhase {
               let cost21;
               if (child24!.child1 == null) {
                 const _this57 = ZPP_AABBTree.tmpaabb;
-                cost21 = (_this57!.maxx - _this57!.minx + (_this57!.maxy - _this57!.miny)) * 2 + icost1;
+                cost21 =
+                  (_this57!.maxx - _this57!.minx + (_this57!.maxy - _this57!.miny)) * 2 + icost1;
               } else {
                 const _this58 = child24!.aabb;
-                const oarea3 = (_this58!.maxx - _this58!.minx + (_this58!.maxy - _this58!.miny)) * 2;
+                const oarea3 =
+                  (_this58!.maxx - _this58!.minx + (_this58!.maxy - _this58!.miny)) * 2;
                 const _this59 = ZPP_AABBTree.tmpaabb;
-                const narea3 = (_this59!.maxx - _this59!.minx + (_this59!.maxy - _this59!.miny)) * 2;
+                const narea3 =
+                  (_this59!.maxx - _this59!.minx + (_this59!.maxy - _this59!.miny)) * 2;
                 cost21 = narea3 - oarea3 + icost1;
               }
               if (cost3 < cost11 && cost3 < cost21) {
