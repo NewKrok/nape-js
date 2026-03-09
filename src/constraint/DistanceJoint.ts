@@ -36,13 +36,40 @@ function _disposeWeakVec2(v: Vec2): void {
 }
 
 /**
- * Constrains the distance between two anchor points on two bodies.
+ * Constrains the distance between two anchor points (one on each body) within a range.
+ *
+ * Enforces: `jointMin ≤ distance(anchor1, anchor2) ≤ jointMax`
+ *
+ * When `jointMin === jointMax` the distance is fixed (like a rigid rod).
+ * When `jointMin < jointMax` the joint acts as a slack rope / elastic band.
+ *
+ * Anchors are specified in each body's local coordinate space.
+ *
+ * @example
+ * ```ts
+ * // Attach two bodies with a fixed-length rod
+ * const joint = new DistanceJoint(
+ *   body1, body2,
+ *   Vec2.weak(0, 0),   // anchor on body1 (local)
+ *   Vec2.weak(0, 0),   // anchor on body2 (local)
+ *   50, 50,            // fixed distance
+ * );
+ * joint.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_DistanceJoint directly (extracted to TypeScript).
  */
 export class DistanceJoint extends Constraint {
   declare zpp_inner: ZPP_DistanceJoint;
 
+  /**
+   * @param body1 - First body, or `null` for a static world anchor.
+   * @param body2 - Second body, or `null` for a static world anchor.
+   * @param anchor1 - Anchor point in `body1`'s local space (disposed if weak).
+   * @param anchor2 - Anchor point in `body2`'s local space (disposed if weak).
+   * @param jointMin - Minimum allowed distance (must be `>= 0`).
+   * @param jointMax - Maximum allowed distance (must be `>= jointMin`).
+   */
   constructor(
     body1: Body | null,
     body2: Body | null,
@@ -145,6 +172,7 @@ export class DistanceJoint extends Constraint {
   // body1 / body2 — full constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** First body. `null` treats the anchor as a static world point. */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -179,6 +207,7 @@ export class DistanceJoint extends Constraint {
     }
   }
 
+  /** Second body. `null` treats the anchor as a static world point. */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -217,6 +246,7 @@ export class DistanceJoint extends Constraint {
   // Anchor properties — lazy Vec2 wrapper setup
   // ---------------------------------------------------------------------------
 
+  /** Anchor point on `body1` in local coordinates. Modifying this wakes the constraint. */
   get anchor1(): Vec2 {
     if (this.zpp_inner.wrap_a1 == null) {
       this.zpp_inner.setup_a1();
@@ -237,6 +267,7 @@ export class DistanceJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor point on `body2` in local coordinates. Modifying this wakes the constraint. */
   get anchor2(): Vec2 {
     if (this.zpp_inner.wrap_a2 == null) {
       this.zpp_inner.setup_a2();
@@ -261,6 +292,7 @@ export class DistanceJoint extends Constraint {
   // Joint-specific properties
   // ---------------------------------------------------------------------------
 
+  /** Minimum allowed distance between anchors (pixels, must be `>= 0`). */
   get jointMin(): number {
     return this.zpp_inner.jointMin;
   }
@@ -278,6 +310,7 @@ export class DistanceJoint extends Constraint {
     }
   }
 
+  /** Maximum allowed distance between anchors (pixels, must be `>= jointMin`). */
   get jointMax(): number {
     return this.zpp_inner.jointMax;
   }
@@ -299,6 +332,12 @@ export class DistanceJoint extends Constraint {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Returns `true` when the current distance is within `[jointMin, jointMax]`
+   * and no corrective impulse was applied last step.
+   *
+   * @throws if either body is `null`.
+   */
   isSlack(): boolean {
     if (this.zpp_inner.b1 == null || this.zpp_inner.b2 == null) {
       throw new Error("Error: Cannot compute slack for DistanceJoint if either body is null.");

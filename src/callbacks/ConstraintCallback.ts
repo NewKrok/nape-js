@@ -3,15 +3,17 @@ import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
 import type { Constraint } from "../constraint/Constraint";
 
 /**
- * Callback for constraint events (WAKE/SLEEP/BREAK).
+ * Callback object passed to {@link ConstraintListener} handlers.
  *
- * Cannot be instantiated directly — instances are created internally by the engine.
+ * Provides the constraint that triggered the event. Do not store this object
+ * beyond the handler scope — it is pooled and reused.
  *
  * Converted from nape-compiled.js lines 1262–1292.
  */
 export class ConstraintCallback extends Callback {
   static override __name__ = ["nape", "callbacks", "ConstraintCallback"];
 
+  /** The constraint that woke, fell asleep, or broke. */
   get constraint(): Constraint {
     return this.zpp_inner!.constraint.outer;
   }

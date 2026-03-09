@@ -5,7 +5,18 @@ import type { NapeInner } from "../geom/Vec2";
 import type { CbType } from "./CbType";
 
 /**
- * Composite callback option type — allows including and excluding CbTypes.
+ * Composite callback option type — combines include and exclude {@link CbType} lists
+ * to express complex listener filter conditions.
+ *
+ * An interaction satisfies an `OptionType` when the interactor has **at least one**
+ * of the included types and **none** of the excluded types.
+ *
+ * @example
+ * ```ts
+ * // Listen only for bodies that are "enemy" but not "boss"
+ * const filter = new OptionType(enemyType).excluding(bossType);
+ * const listener = new BodyListener(CbEvent.WAKE, filter, (cb) => { ... });
+ * ```
  *
  * Converted from nape-compiled.js lines 2647–2698.
  */
@@ -18,6 +29,12 @@ export class OptionType {
     return this;
   }
 
+  /**
+   * Creates an `OptionType` optionally seeded with initial include/exclude entries.
+   *
+   * @param includes - Initial type(s) to include.
+   * @param excludes - Initial type(s) to exclude.
+   */
   constructor(includes?: CbType | OptionType, excludes?: CbType | OptionType) {
     this.zpp_inner = new ZPP_OptionType();
     this.zpp_inner.outer = this;
@@ -33,6 +50,7 @@ export class OptionType {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** Live list of `CbType`s that an interactor must have at least one of. */
   // CbTypeList is factory-generated; no static TS type available
   get includes(): object {
     if (this.zpp_inner.wrap_includes == null) {
@@ -41,6 +59,7 @@ export class OptionType {
     return this.zpp_inner.wrap_includes;
   }
 
+  /** Live list of `CbType`s that an interactor must have none of. */
   get excludes(): object {
     if (this.zpp_inner.wrap_excludes == null) {
       this.zpp_inner.setup_excludes();
@@ -52,11 +71,21 @@ export class OptionType {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Adds `includes` to the include list and returns `this` for chaining.
+   *
+   * @param includes - `CbType` or `OptionType` whose types should be added to includes.
+   */
   including(includes: CbType | OptionType): this {
     this.zpp_inner.append(this.zpp_inner.includes, includes);
     return this;
   }
 
+  /**
+   * Adds `excludes` to the exclude list and returns `this` for chaining.
+   *
+   * @param excludes - `CbType` or `OptionType` whose types should be added to excludes.
+   */
   excluding(excludes: CbType | OptionType): this {
     this.zpp_inner.append(this.zpp_inner.excludes, excludes);
     return this;

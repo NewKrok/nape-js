@@ -27,6 +27,18 @@ export function cbEventToNumber(event: CbEvent): number {
   return -1;
 }
 
+/**
+ * Base class for all physics event listeners.
+ *
+ * Cannot be instantiated directly — use one of the concrete subclasses:
+ * {@link BodyListener}, {@link ConstraintListener}, {@link InteractionListener},
+ * or {@link PreListener}.
+ *
+ * Provides common properties (`type`, `event`, `precedence`, `space`) shared
+ * by all listener types.
+ *
+ * Fully modernized from nape-compiled.js lines 231–433.
+ */
 export class Listener {
   static __name__ = ["nape", "callbacks", "Listener"];
 
@@ -58,10 +70,17 @@ export class Listener {
     return null as unknown as Listener;
   }
 
+  /** The type of this listener (BODY, CONSTRAINT, INTERACTION, or PRE). */
   get type(): ListenerType {
     return ZPP_Listener.types[this.zpp_inner.type];
   }
 
+  /**
+   * The event this listener responds to.
+   *
+   * Valid values depend on the concrete listener type — see {@link CbEvent}.
+   * Changing this while the listener is assigned to a space re-registers it.
+   */
   get event(): CbEvent {
     return ZPP_Listener.events[this.zpp_inner.event];
   }
@@ -76,6 +95,12 @@ export class Listener {
     }
   }
 
+  /**
+   * Execution priority of this listener relative to other listeners for the
+   * same event. Higher values execute first.
+   *
+   * @defaultValue `0`
+   */
   get precedence(): number {
     return this.zpp_inner.precedence;
   }
@@ -87,6 +112,15 @@ export class Listener {
     }
   }
 
+  /**
+   * The space this listener is currently registered in, or `null` if not registered.
+   *
+   * Assign to register/unregister the listener in a space:
+   * ```ts
+   * listener.space = mySpace;  // register
+   * listener.space = null;     // unregister
+   * ```
+   */
   get space(): Space | null {
     if (this.zpp_inner.space == null) {
       return null;

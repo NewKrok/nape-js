@@ -6,8 +6,27 @@ import type { NapeInner } from "../geom/Vec2";
 import type { OptionType } from "./OptionType";
 
 /**
- * Callback type — used to tag interactors so that listeners
- * can filter which interactions they respond to.
+ * Callback type tag — used to label bodies, shapes, and constraints so that
+ * listeners can selectively respond to interactions involving specific objects.
+ *
+ * Objects can carry multiple `CbType`s (via their `cbTypes` list). Listeners
+ * match against those types using {@link OptionType} include/exclude filters,
+ * or using the built-in singletons (`ANY_BODY`, `ANY_SHAPE`, etc.).
+ *
+ * @example
+ * ```ts
+ * const playerType = new CbType();
+ * body.cbTypes.add(playerType);
+ *
+ * const listener = new InteractionListener(
+ *   CbEvent.BEGIN,
+ *   InteractionType.COLLISION,
+ *   playerType,
+ *   null,
+ *   (cb) => { console.log('player hit something'); },
+ * );
+ * space.listeners.add(listener);
+ * ```
  *
  * Converted from nape-compiled.js lines 689–770.
  */
@@ -29,18 +48,37 @@ export class CbType {
   // Static built-in types
   // ---------------------------------------------------------------------------
 
+  /**
+   * Built-in type automatically assigned to every {@link Body}.
+   * Use in listeners to respond to all bodies without a custom `CbType`.
+   */
   static get ANY_BODY(): CbType {
     return ZPP_CbType.ANY_BODY as any;
   }
 
+  /**
+   * Built-in type automatically assigned to every {@link Constraint}.
+   *
+   * **Note:** Constraints do NOT automatically carry `ANY_CONSTRAINT` in their
+   * `cbTypes` list — you must add a custom CbType manually if you want to filter
+   * constraint events.
+   */
   static get ANY_CONSTRAINT(): CbType {
     return ZPP_CbType.ANY_CONSTRAINT as any;
   }
 
+  /**
+   * Built-in type automatically assigned to every {@link Shape}.
+   * Use in listeners to respond to all shapes without a custom `CbType`.
+   */
   static get ANY_SHAPE(): CbType {
     return ZPP_CbType.ANY_SHAPE as any;
   }
 
+  /**
+   * Built-in type automatically assigned to every {@link Compound}.
+   * Use in listeners to respond to all compounds without a custom `CbType`.
+   */
   static get ANY_COMPOUND(): CbType {
     return ZPP_CbType.ANY_COMPOUND as any;
   }
@@ -49,10 +87,17 @@ export class CbType {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** Unique numeric identifier for this `CbType` instance. */
   get id(): number {
     return this.zpp_inner.id;
   }
 
+  /**
+   * Arbitrary user data attached to this `CbType`.
+   *
+   * Lazily initialized to `{}` on first access. Use to store application-level
+   * metadata associated with the type.
+   */
   get userData(): Record<string, unknown> {
     if (this.zpp_inner.userData == null) {
       this.zpp_inner.userData = {};
@@ -60,6 +105,10 @@ export class CbType {
     return this.zpp_inner.userData;
   }
 
+  /**
+   * Live list of all interactors (bodies/shapes/compounds) currently tagged
+   * with this `CbType`. Read-only.
+   */
   // InteractorList is factory-generated; no static TS type available
   get interactors(): object {
     if (this.zpp_inner.wrap_interactors == null) {
@@ -71,6 +120,9 @@ export class CbType {
     return this.zpp_inner.wrap_interactors;
   }
 
+  /**
+   * Live list of all constraints currently tagged with this `CbType`. Read-only.
+   */
   // ConstraintList is factory-generated; no static TS type available
   get constraints(): object {
     if (this.zpp_inner.wrap_constraints == null) {
@@ -86,10 +138,24 @@ export class CbType {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Creates a new {@link OptionType} that includes this type and also `includes`.
+   *
+   * Shorthand for `new OptionType(this).including(includes)`.
+   *
+   * @param includes - Additional `CbType` or `OptionType` to require.
+   */
   including(includes: CbType | OptionType): OptionType {
     return new (getNape().callbacks.OptionType)(this).including(includes);
   }
 
+  /**
+   * Creates a new {@link OptionType} that includes this type but excludes `excludes`.
+   *
+   * Shorthand for `new OptionType(this).excluding(excludes)`.
+   *
+   * @param excludes - `CbType` or `OptionType` to reject.
+   */
   excluding(excludes: CbType | OptionType): OptionType {
     return new (getNape().callbacks.OptionType)(this).excluding(excludes);
   }

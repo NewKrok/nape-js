@@ -36,14 +36,36 @@ function _disposeWeakVec2(v: Vec2): void {
 }
 
 /**
- * Weld joint — constrains two bodies to maintain a fixed relative
- * position and angle (like gluing them together).
+ * Weld joint — constrains two bodies to maintain a fixed relative position and
+ * relative angle, effectively gluing them together while still treating them as
+ * separate physics objects.
+ *
+ * The `phase` parameter sets the desired relative angle offset in radians.
+ * When `phase = 0` both bodies maintain the angle difference they had at the
+ * time the joint was created.
+ *
+ * @example
+ * ```ts
+ * const joint = new WeldJoint(
+ *   body1, body2,
+ *   Vec2.weak(10, 0),  // attach point on body1
+ *   Vec2.weak(-10, 0), // attach point on body2
+ * );
+ * joint.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_WeldJoint directly (extracted to TypeScript).
  */
 export class WeldJoint extends Constraint {
   declare zpp_inner: ZPP_WeldJoint;
 
+  /**
+   * @param body1 - First body, or `null` for a static world anchor.
+   * @param body2 - Second body, or `null` for a static world anchor.
+   * @param anchor1 - Anchor point in `body1`'s local space (disposed if weak).
+   * @param anchor2 - Anchor point in `body2`'s local space (disposed if weak).
+   * @param phase - Target relative angle offset in radians. Default `0.0`.
+   */
   constructor(
     body1: Body | null,
     body2: Body | null,
@@ -125,6 +147,7 @@ export class WeldJoint extends Constraint {
   // body1 / body2 — full constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** First body. `null` treats the anchor as a static world point. */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -159,6 +182,7 @@ export class WeldJoint extends Constraint {
     }
   }
 
+  /** Second body. `null` treats the anchor as a static world point. */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -197,6 +221,7 @@ export class WeldJoint extends Constraint {
   // Anchor properties — lazy Vec2 wrapper setup
   // ---------------------------------------------------------------------------
 
+  /** Anchor point on `body1` in local coordinates. */
   get anchor1(): Vec2 {
     if (this.zpp_inner.wrap_a1 == null) {
       this.zpp_inner.setup_a1();
@@ -217,6 +242,7 @@ export class WeldJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor point on `body2` in local coordinates. */
   get anchor2(): Vec2 {
     if (this.zpp_inner.wrap_a2 == null) {
       this.zpp_inner.setup_a2();
@@ -241,6 +267,11 @@ export class WeldJoint extends Constraint {
   // Joint-specific properties
   // ---------------------------------------------------------------------------
 
+  /**
+   * Target relative angle offset in radians.
+   * `0` means both bodies maintain their original angle difference.
+   * @defaultValue `0.0`
+   */
   get phase(): number {
     return this.zpp_inner.phase;
   }

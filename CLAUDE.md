@@ -157,9 +157,11 @@ methods/properties have no per-member documentation**. IDE autocomplete shows no
 
 **30b — Physics types** (`Body`, `Space`, `Shape`, `Circle`, `Polygon`): ✅ Done
 
-**30c — Callbacks & constraints** (`Listener`, `CbType`, all joints, `Arbiter` subtypes):
-- Document callback lifecycle (BEGIN/ONGOING/END semantics)
-- Document constraint limits, motor, spring params
+**30c — Callbacks & constraints** (`Listener`, `CbType`, all joints, `Arbiter` subtypes): ✅ Done
+
+- Documented callback lifecycle (BEGIN/ONGOING/END semantics)
+- Documented constraint limits, motor, spring params
+- Documented Arbiter subtypes (CollisionArbiter, FluidArbiter)
 
 **Tooling:** Consider adding `typedoc` as a dev dependency + `npm run docs` script.
 
@@ -245,7 +247,7 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
 | P28 — API ergonomics (28a+28b+28c) | M | DX | low | ✅ Done |
 | P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–2 done |
-| P30 — TSDoc documentation | L | DX | none | ⬜ Not started |
+| P30 — TSDoc documentation | L | DX | none | 🔶 30a+30b+30c done |
 | P31 — API ergonomics additions | M | DX | low | ⬜ Not started |
 | P32 — Internal accessor cleanup | S | small | low | ⬜ Not started |
 | P33 — Benchmark CI | M | medium | low | ⬜ Not started |

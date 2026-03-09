@@ -8,13 +8,34 @@ import { ZPP_MotorJoint } from "../native/constraint/ZPP_MotorJoint";
 
 
 /**
- * Motor joint — applies angular velocity to rotate bodies relative to each other.
+ * Motor joint — drives the relative angular velocity between two bodies toward
+ * a target `rate`, subject to `maxForce`.
+ *
+ * The motor enforces: `body2.angularVel - ratio * body1.angularVel → rate`
+ *
+ * This is a velocity-level constraint (not positional), so it does not enforce
+ * a particular relative angle — it continuously applies torque to reach `rate`.
+ * Use an {@link AngleJoint} in addition if you also need an angle limit.
+ *
+ * @example
+ * ```ts
+ * // Spin body2 at 2 rad/s relative to body1, limited to 500 N force
+ * const motor = new MotorJoint(body1, body2, 2.0);
+ * motor.maxForce = 500;
+ * motor.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_MotorJoint directly (extracted to TypeScript).
  */
 export class MotorJoint extends Constraint {
   declare zpp_inner: ZPP_MotorJoint;
 
+  /**
+   * @param body1 - First body, or `null` for a static world reference.
+   * @param body2 - Second body, or `null` for a static world reference.
+   * @param rate - Target relative angular velocity (rad/s). Default `0.0`.
+   * @param ratio - Gear ratio applied to `body1`'s angular velocity. Default `1.0`.
+   */
   constructor(body1: Body | null, body2: Body | null, rate: number = 0.0, ratio: number = 1.0) {
     super();
 
@@ -77,6 +98,7 @@ export class MotorJoint extends Constraint {
   // body1 / body2 — full constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** First body (its angular velocity is scaled by `ratio`). */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -111,6 +133,7 @@ export class MotorJoint extends Constraint {
     }
   }
 
+  /** Second body (driven toward the target angular velocity). */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -149,6 +172,12 @@ export class MotorJoint extends Constraint {
   // Joint-specific properties
   // ---------------------------------------------------------------------------
 
+  /**
+   * Target relative angular velocity in rad/s.
+   *
+   * Positive values rotate `body2` counter-clockwise relative to `body1`.
+   * @defaultValue `0.0`
+   */
   get rate(): number {
     return this.zpp_inner.rate;
   }
@@ -163,6 +192,12 @@ export class MotorJoint extends Constraint {
     }
   }
 
+  /**
+   * Gear ratio applied to `body1`'s angular velocity.
+   *
+   * The motor drives: `body2.angularVel - ratio * body1.angularVel → rate`
+   * @defaultValue `1.0`
+   */
   get ratio(): number {
     return this.zpp_inner.ratio;
   }

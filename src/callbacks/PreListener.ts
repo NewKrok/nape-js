@@ -17,11 +17,52 @@ import type { CbType } from "./CbType";
 import type { PreCallback } from "./PreCallback";
 import type { PreFlag } from "./PreFlag";
 
+/**
+ * Pre-interaction listener — called before collision resolution each step.
+ *
+ * The handler receives a {@link PreCallback} and returns a {@link PreFlag} that
+ * determines whether and how the interaction should be processed:
+ * - `PreFlag.ACCEPT` — resolve the interaction normally (default).
+ * - `PreFlag.IGNORE` — suppress the interaction permanently (until next `BEGIN`).
+ * - `PreFlag.ACCEPT_ONCE` — accept this step, then revert to default.
+ * - `PreFlag.IGNORE_ONCE` — ignore this step only.
+ *
+ * Returning `null` is equivalent to `ACCEPT`.
+ *
+ * The event is always {@link CbEvent.PRE} and cannot be changed.
+ *
+ * **Pure mode**: when `pure` is `true` the engine caches the handler result and
+ * does not re-invoke it until the result is reset. This is an optimisation — only
+ * use `pure` when the handler will always return the same flag for a given pair.
+ *
+ * @example
+ * ```ts
+ * const preListener = new PreListener(
+ *   InteractionType.COLLISION,
+ *   playerType,
+ *   onewayPlatformType,
+ *   (cb) => cb.arbiter.collisionArbiter!.normal.y > 0
+ *     ? PreFlag.ACCEPT
+ *     : PreFlag.IGNORE,
+ * );
+ * space.listeners.add(preListener);
+ * ```
+ *
+ * Fully modernized from nape-compiled.js lines 1142–1338.
+ */
 export class PreListener extends Listener {
   static __name__ = ["nape", "callbacks", "PreListener"];
 
   zpp_inner_zn: ZPP_InteractionListener;
 
+  /**
+   * @param interactionType - The kind of interaction to intercept (COLLISION, SENSOR, FLUID, or ANY).
+   * @param options1 - Filter for the first interactor, or `null` to match any.
+   * @param options2 - Filter for the second interactor, or `null` to match any.
+   * @param handler - Called each step; return a {@link PreFlag} to control the interaction.
+   * @param precedence - Execution order relative to other listeners (higher = first). Default `0`.
+   * @param pure - Enable caching of the handler result. Default `false`.
+   */
   constructor(
     interactionType: InteractionType,
     options1: OptionType | CbType | null,
@@ -61,6 +102,7 @@ export class PreListener extends Listener {
     }
   }
 
+  /** Filter for the first interactor. Order does not matter. */
   get options1(): OptionType {
     return this.zpp_inner_zn.options1.outer;
   }
@@ -69,6 +111,7 @@ export class PreListener extends Listener {
     this.zpp_inner_zn.options1.set((options1 as any).zpp_inner);
   }
 
+  /** Filter for the second interactor. Order does not matter. */
   get options2(): OptionType {
     return this.zpp_inner_zn.options2.outer;
   }
@@ -77,6 +120,10 @@ export class PreListener extends Listener {
     this.zpp_inner_zn.options2.set((options2 as any).zpp_inner);
   }
 
+  /**
+   * The handler called before each collision resolution step.
+   * Return a {@link PreFlag} to accept/ignore the interaction, or `null` to accept.
+   */
   get handler(): (cb: PreCallback) => PreFlag | null {
     return this.zpp_inner_zn.handlerp;
   }
@@ -89,6 +136,14 @@ export class PreListener extends Listener {
     this.zpp_inner_zn.wake();
   }
 
+  /**
+   * When `true`, the engine caches the handler return value and does not
+   * re-invoke the handler until the cached result is invalidated.
+   *
+   * Only use `pure` mode when the handler always returns the same flag for a
+   * given pair of interactors. Setting `pure` to `false` immediately invalidates
+   * any cached result.
+   */
   get pure(): boolean {
     return this.zpp_inner_zn.pure;
   }
@@ -100,6 +155,7 @@ export class PreListener extends Listener {
     this.zpp_inner_zn.pure = pure;
   }
 
+  /** The type of interaction this pre-listener intercepts (COLLISION, SENSOR, FLUID, or ANY). */
   get interactionType(): InteractionType | null {
     return numberToInteractionType(this.zpp_inner_zn.itype);
   }

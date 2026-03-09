@@ -13,11 +13,36 @@ import type { OptionType } from "./OptionType";
 import type { CbType } from "./CbType";
 import type { BodyCallback } from "./BodyCallback";
 
+/**
+ * Listener for body lifecycle events.
+ *
+ * Fires when a body matching the `options` filter wakes or sleeps.
+ *
+ * Valid events: {@link CbEvent.WAKE}, {@link CbEvent.SLEEP}.
+ *
+ * @example
+ * ```ts
+ * const listener = new BodyListener(
+ *   CbEvent.WAKE,
+ *   CbType.ANY_BODY,
+ *   (cb) => { console.log(cb.body, 'woke up'); },
+ * );
+ * space.listeners.add(listener);
+ * ```
+ *
+ * Fully modernized from nape-compiled.js lines 434–515.
+ */
 export class BodyListener extends Listener {
   static __name__ = ["nape", "callbacks", "BodyListener"];
 
   zpp_inner_zn: ZPP_BodyListener;
 
+  /**
+   * @param event - Must be `CbEvent.WAKE` or `CbEvent.SLEEP`.
+   * @param options - `CbType` or `OptionType` filter, or `null` to match all bodies.
+   * @param handler - Called with a {@link BodyCallback} each time the event fires.
+   * @param precedence - Execution order relative to other listeners (higher = first). Default `0`.
+   */
   constructor(event: CbEvent, options: OptionType | CbType | null, handler: (cb: BodyCallback) => void, precedence = 0) {
     ZPP_Listener.internal = true;
     super();
@@ -45,6 +70,10 @@ export class BodyListener extends Listener {
     this.zpp_inner.precedence = precedence;
   }
 
+  /**
+   * The filter used to match bodies. Returns an {@link OptionType} representing
+   * the current include/exclude configuration.
+   */
   get options(): OptionType {
     return this.zpp_inner_zn.options.outer;
   }
@@ -53,6 +82,7 @@ export class BodyListener extends Listener {
     this.zpp_inner_zn.options.set((options as any).zpp_inner);
   }
 
+  /** The callback function invoked when the event fires. Cannot be set to null. */
   get handler(): (cb: BodyCallback) => void {
     return this.zpp_inner_zn.handler;
   }

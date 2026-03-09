@@ -8,13 +8,37 @@ import { ZPP_AngleJoint } from "../native/constraint/ZPP_AngleJoint";
 
 
 /**
- * Constrains the relative angle between two bodies.
+ * Constrains the relative angle between two bodies within a range.
+ *
+ * The constraint enforces:
+ * `jointMin ≤ body2.rotation - ratio * body1.rotation ≤ jointMax`
+ *
+ * When `jointMin === jointMax` the relative angle is fixed exactly.
+ * When `jointMin < jointMax` the joint acts as a rotational limit.
+ *
+ * @example
+ * ```ts
+ * // Limit the angle between two bodies to ±45 degrees
+ * const joint = new AngleJoint(
+ *   body1, body2,
+ *   -Math.PI / 4,  // jointMin
+ *   Math.PI / 4,   // jointMax
+ * );
+ * joint.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_AngleJoint directly (extracted to TypeScript).
  */
 export class AngleJoint extends Constraint {
   declare zpp_inner: ZPP_AngleJoint;
 
+  /**
+   * @param body1 - First body, or `null` for a static anchor.
+   * @param body2 - Second body, or `null` for a static anchor.
+   * @param jointMin - Minimum allowed relative angle (radians).
+   * @param jointMax - Maximum allowed relative angle (radians).
+   * @param ratio - Gear ratio applied to `body1`'s rotation. Default `1.0`.
+   */
   constructor(
     body1: Body | null,
     body2: Body | null,
@@ -92,6 +116,7 @@ export class AngleJoint extends Constraint {
   // body1 / body2 — full constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** First body in the constraint. Setting `null` treats it as a static world-anchored reference. */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -126,6 +151,7 @@ export class AngleJoint extends Constraint {
     }
   }
 
+  /** Second body in the constraint. Setting `null` treats it as a static world-anchored reference. */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -164,6 +190,7 @@ export class AngleJoint extends Constraint {
   // Joint-specific properties
   // ---------------------------------------------------------------------------
 
+  /** Minimum allowed relative angle in radians (`jointMin ≤ jointMax`). */
   get jointMin(): number {
     return this.zpp_inner.jointMin;
   }
@@ -178,6 +205,7 @@ export class AngleJoint extends Constraint {
     }
   }
 
+  /** Maximum allowed relative angle in radians (`jointMin ≤ jointMax`). */
   get jointMax(): number {
     return this.zpp_inner.jointMax;
   }
@@ -192,6 +220,12 @@ export class AngleJoint extends Constraint {
     }
   }
 
+  /**
+   * Gear ratio applied to `body1`'s rotation.
+   *
+   * The constraint enforces `jointMin ≤ body2.rotation - ratio * body1.rotation ≤ jointMax`.
+   * @defaultValue `1.0`
+   */
   get ratio(): number {
     return this.zpp_inner.ratio;
   }
@@ -210,6 +244,12 @@ export class AngleJoint extends Constraint {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Returns `true` when the current relative angle is within `[jointMin, jointMax]`
+   * and no corrective impulse was applied last step.
+   *
+   * @throws if either body is `null`.
+   */
   isSlack(): boolean {
     if (this.zpp_inner.b1 == null || this.zpp_inner.b2 == null) {
       throw new Error("Error: Cannot compute slack for AngleJoint if either body is null.");

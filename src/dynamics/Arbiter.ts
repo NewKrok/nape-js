@@ -11,10 +11,20 @@ import type { FluidArbiter } from "./FluidArbiter";
 import type { PreFlag } from "../callbacks/PreFlag";
 
 /**
- * Represents an interaction arbiter between two shapes.
+ * Represents an active interaction between two shapes.
  *
- * Arbiters are pooled internally by the engine — they cannot be created directly.
- * Access arbiters via `Space.arbiters`, `Body.arbiters`, or callback handlers.
+ * Arbiters are created and pooled internally by the engine — they cannot be
+ * instantiated directly. Access them via:
+ * - `space.arbiters` — all active arbiters in the simulation
+ * - `body.arbiters` — arbiters involving a specific body
+ * - `InteractionCallback.arbiters` — arbiters in an interaction callback
+ * - `PreCallback.arbiter` — the arbiter in a pre-handler
+ *
+ * Use {@link Arbiter.collisionArbiter} or {@link Arbiter.fluidArbiter} to cast
+ * to a subtype for type-specific properties.
+ *
+ * **Warning:** do not hold references to `Arbiter` objects after the current
+ * simulation step — they are pooled and may be reused.
  *
  * Fully modernized — uses extracted ZPP_Arbiter directly.
  */
@@ -40,13 +50,19 @@ export class Arbiter {
   // Properties (read-only)
   // ---------------------------------------------------------------------------
 
-  /** Whether this arbiter is currently sleeping. */
+  /**
+   * Whether both interacting bodies are currently sleeping.
+   * Throws if the arbiter is not active.
+   */
   get isSleeping(): boolean {
     this._activeCheck();
     return this.zpp_inner.sleeping;
   }
 
-  /** The type of this arbiter (COLLISION, SENSOR, or FLUID). */
+  /**
+   * The interaction type of this arbiter.
+   * @see {@link ArbiterType}
+   */
   get type(): ArbiterType {
     return ZPP_Arbiter.types[this.zpp_inner.type];
   }
@@ -159,8 +175,15 @@ export class Arbiter {
   // ---------------------------------------------------------------------------
 
   /**
-   * Total impulse of this arbiter. Base implementation returns Vec3(0,0,0).
-   * Overridden by CollisionArbiter and FluidArbiter.
+   * Total impulse applied by this arbiter in the last step as `(fx, fy, torque)`.
+   *
+   * Pass a `body` to get the impulse applied specifically to that body.
+   * Pass `freshOnly = true` to include only new contact points (not persistent ones).
+   *
+   * Overridden by {@link CollisionArbiter} and {@link FluidArbiter}.
+   *
+   * @param body - One of the two interacting bodies, or `null` for the combined impulse.
+   * @param freshOnly - When `true`, only count fresh (new) contacts. Default `false`.
    */
   totalImpulse(body: Body | null = null, _freshOnly: boolean = false): Vec3 {
     this._activeCheck();

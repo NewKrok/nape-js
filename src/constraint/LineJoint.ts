@@ -36,14 +36,39 @@ function _disposeWeakVec2(v: Vec2): void {
 }
 
 /**
- * Line joint — constrains body2's anchor to slide along a line
- * defined by body1's anchor and direction.
+ * Line joint — constrains `body2`'s anchor to slide along a line defined by
+ * `body1`'s anchor and `direction`, within `[jointMin, jointMax]`.
+ *
+ * The direction is specified in `body1`'s local space. The joint allows one
+ * translational degree of freedom (along the line) and removes the other.
+ *
+ * @example
+ * ```ts
+ * // Allow body2 to slide vertically relative to body1
+ * const joint = new LineJoint(
+ *   body1, body2,
+ *   Vec2.weak(0, 0),    // anchor on body1
+ *   Vec2.weak(0, 0),    // anchor on body2
+ *   Vec2.weak(0, 1),    // direction (local to body1)
+ *   -50, 50,            // allowed travel range
+ * );
+ * joint.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_LineJoint directly (extracted to TypeScript).
  */
 export class LineJoint extends Constraint {
   declare zpp_inner: ZPP_LineJoint;
 
+  /**
+   * @param body1 - First body (defines the line), or `null` for a static world line.
+   * @param body2 - Second body (slides along the line), or `null` for a static anchor.
+   * @param anchor1 - Origin of the line in `body1`'s local space (disposed if weak).
+   * @param anchor2 - Anchor on `body2` in `body2`'s local space (disposed if weak).
+   * @param direction - Direction of the line in `body1`'s local space (disposed if weak).
+   * @param jointMin - Minimum allowed displacement along the line.
+   * @param jointMax - Maximum allowed displacement along the line.
+   */
   constructor(
     body1: Body | null,
     body2: Body | null,
@@ -149,6 +174,7 @@ export class LineJoint extends Constraint {
   // body1 / body2 — full constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** Body that defines the line's origin and direction. */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -183,6 +209,7 @@ export class LineJoint extends Constraint {
     }
   }
 
+  /** Body whose anchor slides along the line. */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -221,6 +248,7 @@ export class LineJoint extends Constraint {
   // Anchor & direction properties — lazy Vec2 wrapper setup
   // ---------------------------------------------------------------------------
 
+  /** Origin of the line on `body1` in local coordinates. */
   get anchor1(): Vec2 {
     if (this.zpp_inner.wrap_a1 == null) {
       this.zpp_inner.setup_a1();
@@ -241,6 +269,7 @@ export class LineJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor point on `body2` in local coordinates. */
   get anchor2(): Vec2 {
     if (this.zpp_inner.wrap_a2 == null) {
       this.zpp_inner.setup_a2();
@@ -261,6 +290,7 @@ export class LineJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Direction of the line in `body1`'s local space. Does not need to be normalised. */
   get direction(): Vec2 {
     if (this.zpp_inner.wrap_n == null) {
       this.zpp_inner.setup_n();
@@ -285,6 +315,7 @@ export class LineJoint extends Constraint {
   // Joint-specific properties
   // ---------------------------------------------------------------------------
 
+  /** Minimum displacement along the line direction. */
   get jointMin(): number {
     return this.zpp_inner.jointMin;
   }
@@ -299,6 +330,7 @@ export class LineJoint extends Constraint {
     }
   }
 
+  /** Maximum displacement along the line direction. */
   get jointMax(): number {
     return this.zpp_inner.jointMax;
   }

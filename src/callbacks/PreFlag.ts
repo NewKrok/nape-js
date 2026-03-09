@@ -2,12 +2,16 @@ import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
- * Return value flags for PreListener handlers.
+ * Return value for {@link PreListener} handlers — controls whether the interaction
+ * is resolved this step and in future steps.
  *
- * - `ACCEPT`      — accept the interaction
- * - `IGNORE`      — ignore the interaction
- * - `ACCEPT_ONCE` — accept once, then revert
- * - `IGNORE_ONCE` — ignore once, then revert
+ * - `ACCEPT`      — resolve the interaction (default if handler returns `null`)
+ * - `IGNORE`      — suppress the interaction permanently until the next `BEGIN`
+ * - `ACCEPT_ONCE` — accept this step only, then revert to the previous flag
+ * - `IGNORE_ONCE` — ignore this step only, then revert to the previous flag
+ *
+ * Use `IGNORE`/`ACCEPT` for stateful decisions (e.g., one-way platforms).
+ * Use `*_ONCE` variants for single-step overrides.
  *
  * Converted from nape-compiled.js lines 2504–2591.
  */
@@ -22,6 +26,7 @@ export class PreFlag {
 
   // --- Static getters for convenient access ---
 
+  /** Accept and resolve the interaction normally. */
   static get ACCEPT(): PreFlag {
     if (ZPP_Flags.PreFlag_ACCEPT == null) {
       ZPP_Flags.internal = true;
@@ -30,6 +35,7 @@ export class PreFlag {
     }
     return ZPP_Flags.PreFlag_ACCEPT;
   }
+  /** Suppress the interaction permanently until the next `BEGIN` event. */
   static get IGNORE(): PreFlag {
     if (ZPP_Flags.PreFlag_IGNORE == null) {
       ZPP_Flags.internal = true;
@@ -38,6 +44,7 @@ export class PreFlag {
     }
     return ZPP_Flags.PreFlag_IGNORE;
   }
+  /** Accept this step only; revert to the previous flag next step. */
   static get ACCEPT_ONCE(): PreFlag {
     if (ZPP_Flags.PreFlag_ACCEPT_ONCE == null) {
       ZPP_Flags.internal = true;
@@ -46,6 +53,7 @@ export class PreFlag {
     }
     return ZPP_Flags.PreFlag_ACCEPT_ONCE;
   }
+  /** Ignore this step only; revert to the previous flag next step. */
   static get IGNORE_ONCE(): PreFlag {
     if (ZPP_Flags.PreFlag_IGNORE_ONCE == null) {
       ZPP_Flags.internal = true;
