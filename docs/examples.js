@@ -1329,27 +1329,41 @@ const cards = EXAMPLES.map((example, idx) => {
   }
 
   function attachClickHandler(el) {
-    el.addEventListener("mousedown", (e) => {
-      if (!space) return;
-      gtag("event", "click", { event_category: "example_interaction", event_label: example.label });
+    // Prevent scroll/zoom on touch devices so the canvas receives all pointer events
+    el.style.touchAction = "none";
+    el.style.userSelect = "none";
+
+    let isDragging = false;
+
+    function getCanvasPos(e) {
       const rect = el.getBoundingClientRect();
       const sx = CW / rect.width;
       const sy = CH / rect.height;
-      const mx = (e.clientX - rect.left) * sx;
-      const my = (e.clientY - rect.top) * sy;
-      if (example.click) example.click(space, mx, my, CW, CH);
-    });
-    el.addEventListener("touchstart", (e) => {
+      return {
+        x: (e.clientX - rect.left) * sx,
+        y: (e.clientY - rect.top) * sy,
+      };
+    }
+
+    el.addEventListener("pointerdown", (e) => {
+      if (!space) return;
       e.preventDefault();
-      if (!space) return;
-      const touch = e.touches[0];
-      const rect = el.getBoundingClientRect();
-      const sx = CW / rect.width;
-      const sy = CH / rect.height;
-      const mx = (touch.clientX - rect.left) * sx;
-      const my = (touch.clientY - rect.top) * sy;
-      if (example.click) example.click(space, mx, my, CW, CH);
-    }, { passive: false });
+      el.setPointerCapture(e.pointerId);
+      isDragging = true;
+      gtag("event", "click", { event_category: "example_interaction", event_label: example.label });
+      const { x, y } = getCanvasPos(e);
+      if (example.click) example.click(space, x, y, CW, CH);
+    });
+
+    el.addEventListener("pointermove", (e) => {
+      if (!isDragging || !space) return;
+      e.preventDefault();
+      const { x, y } = getCanvasPos(e);
+      if (example.click) example.click(space, x, y, CW, CH);
+    });
+
+    el.addEventListener("pointerup", () => { isDragging = false; });
+    el.addEventListener("pointercancel", () => { isDragging = false; });
   }
 
   // Initial setup in 2D mode
