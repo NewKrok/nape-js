@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2523 tests across 138 files
+npm test             # vitest — 2677 tests across 138 files
 npm run lint         # eslint + prettier
 ```
 
@@ -551,8 +551,20 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
 - Fluid arbiters are transient — don't persist in `space.arbiters` after step; must capture inside ONGOING callback
 - WAKE events require a sleep→wake transition, not just initial addition to space
 
-**Step 2 — Expand thin existing test files:**
-- `Body.test.ts` (25%), `AABB.test.ts` (35%), `FluidProperties.test.ts` (25%), `Material.test.ts` (53%)
+**Step 2 done** — 4 thin test files expanded, +154 tests (2523 → 2677):
+- `Body.test.ts` (15→68): kinematicVel, kinAngVel, surfaceVel, force, torque, mass/inertia
+  (get/set/NaN/validation), gravMass, gravMassScale, disableCCD, isSleeping, massMode,
+  inertiaMode, gravMassMode, coordinate transforms (local↔world point/vector, round-trip),
+  applyImpulse, applyAngularImpulse, setVelocityFromTarget, integrate, translateShapes,
+  rotateShapes, scaleShapes, align, rotate, setShapeFilters, setShapeFluidProperties,
+  localCOM, worldCOM, constraintVelocity, compound, contains, type change, toString
+- `AABB.test.ts` (27→42): min/max Vec2 getters, min setter, negative width/height constraints,
+  null assignment errors, immutability checks for all setters, min/max consistency
+- `FluidProperties.test.ts` (20→30): gravity get/set/update/clear, copy with/without gravity,
+  viscosity no-op, toString values, copy instance type, _wrap, _inner
+- `Material.test.ts` (4→38): all constructor NaN/negative validations, all property setter
+  NaN/negative validations, density /1000 storage, no-op same value, userData lazy/persist/copy,
+  toString, all 6 preset factories (wood/steel/ice/rubber/glass/sand), _wrap, _inner
 
 **Step 3 — Space/broadphase integration tests:**
 - `ZPP_Space` (30%), `ZPP_DynAABBPhase` (16%), `ZPP_AABBTree` (4%)
@@ -575,7 +587,7 @@ P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
 | P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
 | P28 — API ergonomics (28a+28c done, 28b in progress) | M | DX | low | 🔶 Partial |
-| P29 — Test coverage (target ≥80%) | L | safety | none | 🔶 Step 1 done |
+| P29 — Test coverage (target ≥80%) | L | safety | none | 🔶 Steps 1–2 done |
 
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions
