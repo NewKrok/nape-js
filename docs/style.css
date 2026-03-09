@@ -443,12 +443,18 @@ a:hover { text-decoration: underline; }
 }
 
 /* Syntax highlighting (simple classes) */
-.code-panel-body .kw   { color: #ff7b72; }
-.code-panel-body .fn   { color: #d2a8ff; }
-.code-panel-body .str  { color: #a5d6ff; }
-.code-panel-body .num  { color: #79c0ff; }
-.code-panel-body .cm   { color: #8b949e; font-style: italic; }
-.code-panel-body .type { color: #7ee787; }
+.code-panel-body .kw,
+.card-code-panel .kw   { color: #ff7b72; }
+.code-panel-body .fn,
+.card-code-panel .fn   { color: #d2a8ff; }
+.code-panel-body .str,
+.card-code-panel .str  { color: #a5d6ff; }
+.code-panel-body .num,
+.card-code-panel .num  { color: #79c0ff; }
+.code-panel-body .cm,
+.card-code-panel .cm   { color: #8b949e; font-style: italic; }
+.code-panel-body .type,
+.card-code-panel .type { color: #7ee787; }
 
 /* Copy success toast */
 .copy-toast {
@@ -544,7 +550,10 @@ a:hover { text-decoration: underline; }
   color: var(--text-dim);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
 }
+/* Fixed width prevents layout shift from changing step values */
+.card-stats-step { min-width: 80px; }
 
 /* Card title row (title + code toggle button) */
 .card-title-row {
@@ -556,8 +565,13 @@ a:hover { text-decoration: underline; }
 }
 .card-title-row h3 { margin: 0; }
 
-.code-toggle-btn {
+.card-btn-group {
+  display: flex;
+  gap: 4px;
   flex-shrink: 0;
+}
+
+.code-toggle-btn {
   font-size: 0.72rem;
   padding: 2px 8px;
 }

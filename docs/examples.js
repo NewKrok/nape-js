@@ -6,6 +6,8 @@ import { VERSION } from "./nape-js.esm.js?v=3.4.5";
 import { installErrorOverlay } from "./renderer.js?v=3.4.5";
 import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js";
 
+const NAPE_CDN = "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
+
 // All demos (featured + examples)
 import falling     from "./demos/falling.js";
 import pyramid     from "./demos/pyramid.js";
@@ -40,12 +42,98 @@ const ALL_DEMOS = [
   softBody, oneWayPlatforms, collisionFiltering,
 ];
 
-const CW = 480;
-const CH = 280;
+const CW = 900;
+const CH = 500;
 
 // =========================================================================
 // Card factory
 // =========================================================================
+
+function openInCodePen(demo) {
+  const code = demo.code2d;
+  if (!code) return;
+
+  const RENDERER_2D = `// ── Renderer ────────────────────────────────────────────────────────────────
+const COLORS = [
+  { fill: "rgba(88,166,255,0.18)",  stroke: "#58a6ff" },
+  { fill: "rgba(210,153,34,0.18)",  stroke: "#d29922" },
+  { fill: "rgba(63,185,80,0.18)",   stroke: "#3fb950" },
+  { fill: "rgba(248,81,73,0.18)",   stroke: "#f85149" },
+  { fill: "rgba(163,113,247,0.18)", stroke: "#a371f7" },
+  { fill: "rgba(219,171,255,0.18)", stroke: "#dbabff" },
+];
+function bodyColor(body) {
+  if (body.isStatic()) return { fill: "rgba(120,160,200,0.15)", stroke: "#607888" };
+  const idx = (body.userData?._colorIdx ?? Math.abs(Math.round(body.position.x * 0.1))) % COLORS.length;
+  return COLORS[idx];
+}
+function drawBody(body) {
+  const px = body.position.x, py = body.position.y;
+  ctx.save(); ctx.translate(px, py); ctx.rotate(body.rotation);
+  const { fill, stroke } = bodyColor(body);
+  for (const shape of body.shapes) {
+    if (shape.isCircle()) {
+      const r = shape.castCircle.radius;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+    } else if (shape.isPolygon()) {
+      const verts = shape.castPolygon.localVerts;
+      const len = verts.length; if (len < 3) continue;
+      ctx.beginPath(); ctx.moveTo(verts.at(0).x, verts.at(0).y);
+      for (let i = 1; i < len; i++) ctx.lineTo(verts.at(i).x, verts.at(i).y);
+      ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+function addWalls() {
+  const t = 20;
+  const floor = new Body(BodyType.STATIC, new Vec2(W / 2, H - t / 2));
+  floor.shapes.add(new Polygon(Polygon.box(W, t))); floor.space = space;
+  const left = new Body(BodyType.STATIC, new Vec2(t / 2, H / 2));
+  left.shapes.add(new Polygon(Polygon.box(t, H))); left.space = space;
+  const right = new Body(BodyType.STATIC, new Vec2(W - t / 2, H / 2));
+  right.shapes.add(new Polygon(Polygon.box(t, H))); right.space = space;
+  const ceil = new Body(BodyType.STATIC, new Vec2(W / 2, t / 2));
+  ceil.shapes.add(new Polygon(Polygon.box(W, t))); ceil.space = space;
+}
+// ── End Renderer ─────────────────────────────────────────────────────────────
+
+`;
+
+  const html = `<canvas id="demoCanvas" width="900" height="500" style="background:#0a0e14;display:block;max-width:100%;border:1px solid #30363d;border-radius:8px"></canvas>`;
+  const css  = `body { margin: 20px; background: #0d1117; font-family: sans-serif; color: #e6edf3; }`;
+  const js   = `import {
+  Space, Body, BodyType, Vec2, Circle, Polygon,
+  PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
+  Material, InteractionFilter, InteractionGroup,
+  CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
+} from "${NAPE_CDN}";
+
+const canvas = document.getElementById("demoCanvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+${RENDERER_2D}${code}`;
+
+  const data = {
+    title: `nape-js — ${demo.label ?? demo.id}`,
+    description: `Interactive physics demo using nape-js TypeScript wrapper.\nhttps://github.com/NewKrok/nape-js`,
+    html, css, js, js_module: true,
+  };
+  const form  = document.createElement("form");
+  form.method = "POST";
+  form.action = "https://codepen.io/pen/define";
+  form.target = "_blank";
+  const input = document.createElement("input");
+  input.type  = "hidden";
+  input.name  = "data";
+  input.value = JSON.stringify(data);
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
 
 function createCard(demo) {
   // --- Card container ---
@@ -72,12 +160,13 @@ function createCard(demo) {
   statsBar.className = "card-stats";
   statsBar.hidden = true;
   const fpsEl    = document.createElement("span");
-  const stepEl   = document.createElement("span");
   const bodiesEl = document.createElement("span");
+  const stepEl   = document.createElement("span");
   fpsEl.textContent    = "FPS: —";
-  stepEl.textContent   = "Step: —";
   bodiesEl.textContent = "Bodies: —";
-  statsBar.append(fpsEl, " · ", stepEl, " · ", bodiesEl);
+  stepEl.className = "card-stats-step";
+  stepEl.textContent = "Step: —";
+  statsBar.append(fpsEl, " · ", bodiesEl, " · ", stepEl);
   card.appendChild(statsBar);
 
   runner.wireStats({ fps: fpsEl, step: stepEl, bodies: bodiesEl });
@@ -92,36 +181,49 @@ function createCard(demo) {
   const h3 = document.createElement("h3");
   h3.textContent = demo.label;
 
-  // View Code button (only if code2d is provided)
-  let codePanel = null;
+  // Action buttons (code toggle + codepen)
+  const btnGroup = document.createElement("div");
+  btnGroup.className = "card-btn-group";
+
+  // View Code button — always shown; fetches source if no code2d
+  const codeToggle = document.createElement("button");
+  codeToggle.className = "btn btn-small code-toggle-btn";
+  codeToggle.textContent = "{ } Code";
+
+  const codePanel = document.createElement("pre");
+  codePanel.className = "card-code-panel";
+  codePanel.hidden = true;
+
+  let rendered = false;
+  codeToggle.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    codePanel.hidden = !codePanel.hidden;
+    if (!codePanel.hidden && !rendered) {
+      rendered = true;
+      const source = demo.code2d ?? await fetch(`./demos/${demo.id}.js`).then(r => r.text());
+      codePanel.innerHTML = `<code>${highlightCode(source)}</code>`;
+    }
+  });
+
+  btnGroup.appendChild(codeToggle);
+
+  // CodePen button — only for demos with code2d
   if (demo.code2d) {
-    const codeToggle = document.createElement("button");
-    codeToggle.className = "btn btn-small code-toggle-btn";
-    codeToggle.textContent = "{ } Code";
-
-    codePanel = document.createElement("pre");
-    codePanel.className = "card-code-panel";
-    codePanel.hidden = true;
-
-    let rendered = false;
-    codeToggle.addEventListener("click", (e) => {
+    const codepenBtn = document.createElement("button");
+    codepenBtn.className = "btn btn-small btn-codepen";
+    codepenBtn.textContent = "CodePen";
+    codepenBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      codePanel.hidden = !codePanel.hidden;
-      if (!codePanel.hidden && !rendered) {
-        codePanel.innerHTML = `<code>${highlightCode(demo.code2d)}</code>`;
-        rendered = true;
-      }
+      openInCodePen(demo);
     });
-
-    titleRow.append(h3, codeToggle);
-  } else {
-    titleRow.appendChild(h3);
+    btnGroup.appendChild(codepenBtn);
   }
 
+  titleRow.append(h3, btnGroup);
   info.appendChild(titleRow);
 
   const p = document.createElement("p");
-  p.textContent = demo.desc ?? "";
+  p.innerHTML = demo.desc ?? "";
   info.appendChild(p);
 
   if (demo.tags?.length) {
@@ -136,7 +238,7 @@ function createCard(demo) {
   }
 
   card.appendChild(info);
-  if (codePanel) card.appendChild(codePanel);
+  card.appendChild(codePanel);
 
   // --- Play overlay click: load + start ---
   overlay.addEventListener("click", () => {
