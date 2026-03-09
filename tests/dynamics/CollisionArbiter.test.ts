@@ -91,11 +91,7 @@ describe("CollisionArbiter", () => {
   });
 
   it("has correct __name__", () => {
-    expect(CollisionArbiter.__name__).toEqual([
-      "nape",
-      "dynamics",
-      "CollisionArbiter",
-    ]);
+    expect(CollisionArbiter.__name__).toEqual(["nape", "dynamics", "CollisionArbiter"]);
   });
 
   // -------------------------------------------------------------------------

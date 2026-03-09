@@ -18,7 +18,6 @@ export class ZPP_SimpleEvent {
   node: any = null;
   next: ZPP_SimpleEvent | null = null;
 
-
   static swap_nodes(a: ZPP_SimpleEvent, b: ZPP_SimpleEvent): void {
     const t = a.node;
     a.node = b.node;

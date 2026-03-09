@@ -13,7 +13,10 @@ import { ZNPList_ZPP_SimplifyP } from "../util/ZNPRegistry";
 import { ZNPList } from "../util/ZNPList";
 
 /** Minimal interface for vertex-like objects with x, y coords. */
-interface XYPoint { x: number; y: number; }
+interface XYPoint {
+  x: number;
+  y: number;
+}
 
 export class ZPP_Simplify {
   static __name__ = ["zpp_nape", "geom", "ZPP_Simplify"];

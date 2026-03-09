@@ -34,5 +34,4 @@ export class ZPP_Math {
     else if (x > b) return b;
     else return x;
   }
-
 }

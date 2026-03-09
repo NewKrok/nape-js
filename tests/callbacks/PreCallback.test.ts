@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { PreListener } from "../../src/callbacks/PreListener";
-import { PreCallback } from "../../src/callbacks/PreCallback";
 import { Callback } from "../../src/callbacks/Callback";
 import { CbType } from "../../src/callbacks/CbType";
 import { InteractionType } from "../../src/callbacks/InteractionType";

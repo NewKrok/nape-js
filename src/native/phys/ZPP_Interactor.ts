@@ -184,8 +184,7 @@ export class ZPP_Interactor {
     this.wrap_cbTypes.zpp_inner.adder = this.wrap_cbTypes_adder.bind(this);
     this.wrap_cbTypes.zpp_inner.subber = this.wrap_cbTypes_subber.bind(this);
     this.wrap_cbTypes.zpp_inner.dontremove = true;
-    this.wrap_cbTypes.zpp_inner._modifiable =
-      this.immutable_cbTypes.bind(this);
+    this.wrap_cbTypes.zpp_inner._modifiable = this.immutable_cbTypes.bind(this);
   }
 
   immutable_cbTypes(): void {
@@ -319,9 +318,7 @@ export class ZPP_Interactor {
     if (this.ibody != null) {
       const _this = this.ibody;
       if (_this.space != null && _this.space.midstep) {
-        throw new Error(
-          "Error: " + n + " cannot be set during a space step()"
-        );
+        throw new Error("Error: " + n + " cannot be set during a space step()");
       }
     } else if (this.ishape != null) {
       this.ishape.__immutable_midstep(n);

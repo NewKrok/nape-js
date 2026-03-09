@@ -35,7 +35,6 @@ export class ZPP_SpaceArbiterList {
 
   // --- Instance: Haxe class reference ---
 
-
   constructor() {
     this.at_index_0 = 0;
     this.at_index_1 = 0;

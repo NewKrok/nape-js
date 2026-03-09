@@ -27,6 +27,15 @@ export class AABB {
     return this;
   }
 
+  /**
+   * Create an AABB at position (x, y) with the given width and height. All
+   * values default to 0.
+   *
+   * @param x - The x position of the left edge (default 0).
+   * @param y - The y position of the top edge (default 0).
+   * @param width - The width of the box (default 0). Must be ≥ 0.
+   * @param height - The height of the box (default 0). Must be ≥ 0.
+   */
   constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
     // NaN checks
     if (x !== x || y !== y) {
@@ -80,10 +89,12 @@ export class AABB {
   // Properties — scalar (x, y, width, height)
   // ---------------------------------------------------------------------------
 
+  /** The x position of the left edge (minx). Setting shifts the box horizontally. */
   get x(): number {
     this.zpp_inner.validate();
     return this.zpp_inner.minx;
   }
+  /** The x position of the left edge (minx). Setting shifts the box horizontally. */
   set x(x: number) {
     if (this.zpp_inner._immutable) {
       throw new Error("Error: AABB is immutable");
@@ -99,10 +110,12 @@ export class AABB {
     }
   }
 
+  /** The y position of the top edge (miny). Setting shifts the box vertically. */
   get y(): number {
     this.zpp_inner.validate();
     return this.zpp_inner.miny;
   }
+  /** The y position of the top edge (miny). Setting shifts the box vertically. */
   set y(y: number) {
     if (this.zpp_inner._immutable) {
       throw new Error("Error: AABB is immutable");
@@ -118,10 +131,12 @@ export class AABB {
     }
   }
 
+  /** Width of the box (maxx − minx). Must be ≥ 0. */
   get width(): number {
     this.zpp_inner.validate();
     return this.zpp_inner.maxx - this.zpp_inner.minx;
   }
+  /** Width of the box (maxx − minx). Must be ≥ 0. */
   set width(width: number) {
     if (this.zpp_inner._immutable) {
       throw new Error("Error: AABB is immutable");
@@ -140,10 +155,12 @@ export class AABB {
     }
   }
 
+  /** Height of the box (maxy − miny). Must be ≥ 0. */
   get height(): number {
     this.zpp_inner.validate();
     return this.zpp_inner.maxy - this.zpp_inner.miny;
   }
+  /** Height of the box (maxy − miny). Must be ≥ 0. */
   set height(height: number) {
     if (this.zpp_inner._immutable) {
       throw new Error("Error: AABB is immutable");
@@ -166,10 +183,19 @@ export class AABB {
   // Properties — Vec2 (min, max)
   // ---------------------------------------------------------------------------
 
+  /**
+   * The top-left corner as a Vec2 (minx, miny). The returned Vec2 is a live
+   * view; mutating it updates the AABB.
+   */
   get min(): any {
     this.zpp_inner.getmin();
     return this.zpp_inner.wrap_min;
   }
+  /**
+   * Set the top-left corner. The new min must not exceed the current max.
+   *
+   * @param min - A Vec2 whose components become the new (minx, miny).
+   */
   set min(min: any) {
     if (min != null && min.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -247,10 +273,20 @@ export class AABB {
     }
   }
 
+  /**
+   * The bottom-right corner as a Vec2 (maxx, maxy). The returned Vec2 is a
+   * live view; mutating it updates the AABB.
+   */
   get max(): any {
     this.zpp_inner.getmax();
     return this.zpp_inner.wrap_max;
   }
+  /**
+   * Set the bottom-right corner. The new max must not be below the current
+   * min.
+   *
+   * @param max - A Vec2 whose components become the new (maxx, maxy).
+   */
   set max(max: any) {
     if (max != null && max.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -452,6 +488,11 @@ export class AABB {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Return a new AABB with the same bounds.
+   *
+   * @returns A copy of this AABB.
+   */
   copy(): AABB {
     this.zpp_inner.validate();
     const inner = this.zpp_inner;
@@ -459,6 +500,11 @@ export class AABB {
     return ret.wrapper();
   }
 
+  /**
+   * String representation in the form `{ x: … y: … w: … h: … }`.
+   *
+   * @returns A human-readable string of this AABB's position and dimensions.
+   */
   toString(): string {
     this.zpp_inner.validate();
     return this.zpp_inner.toString();
@@ -476,4 +522,3 @@ ZPP_AABB._wrapFn = (zpp: ZPP_AABB): AABB => {
     return a;
   });
 };
-

@@ -24,7 +24,7 @@ export class ZPP_Component {
 
   // --- Instance: body/constraint reference ---
   isBody = false;
-  body: any = null;       // ZPP_Body — circular
+  body: any = null; // ZPP_Body — circular
   constraint: any = null; // ZPP_Constraint — circular
 
   // --- Instance: island reference ---

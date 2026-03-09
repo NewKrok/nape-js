@@ -7,12 +7,7 @@ import { Circle } from "../../src/shape/Circle";
 import { PulleyJoint } from "../../src/constraint/PulleyJoint";
 
 describe("PulleyJoint (modernized)", () => {
-  function makeJoint(opts?: {
-    bodies?: boolean;
-    min?: number;
-    max?: number;
-    ratio?: number;
-  }) {
+  function makeJoint(opts?: { bodies?: boolean; min?: number; max?: number; ratio?: number }) {
     const b = opts?.bodies !== false;
     const body1 = b ? new Body(BodyType.STATIC, new Vec2(0, 0)) : null;
     const body2 = b ? new Body(BodyType.DYNAMIC, new Vec2(0, 50)) : null;
@@ -38,82 +33,146 @@ describe("PulleyJoint (modernized)", () => {
   // ---------------------------------------------------------------------------
 
   it("should reject NaN jointMin", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-        NaN, 100,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          NaN,
+          100,
+        ),
     ).toThrow("NaN");
   });
 
   it("should reject negative jointMin", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-        -1, 100,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          -1,
+          100,
+        ),
     ).toThrow(">= 0");
   });
 
   it("should reject NaN jointMax", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-        0, NaN,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          0,
+          NaN,
+        ),
     ).toThrow("NaN");
   });
 
   it("should reject negative jointMax", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-        0, -5,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          0,
+          -5,
+        ),
     ).toThrow(">= 0");
   });
 
   it("should reject null anchor1", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        null as any, new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-        0, 100,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          null as any,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          0,
+          100,
+        ),
     ).toThrow("anchor1 cannot be null");
   });
 
   it("should reject null anchor2", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), null as any, new Vec2(0, 0), new Vec2(0, 0),
-        0, 100,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          null as any,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          0,
+          100,
+        ),
     ).toThrow("anchor2 cannot be null");
   });
 
   it("should reject null anchor3", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), new Vec2(0, 0), null as any, new Vec2(0, 0),
-        0, 100,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          null as any,
+          new Vec2(0, 0),
+          0,
+          100,
+        ),
     ).toThrow("anchor3 cannot be null");
   });
 
   it("should reject null anchor4", () => {
-    expect(() =>
-      new PulleyJoint(
-        null, null, null, null,
-        new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), null as any,
-        0, 100,
-      ),
+    expect(
+      () =>
+        new PulleyJoint(
+          null,
+          null,
+          null,
+          null,
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          new Vec2(0, 0),
+          null as any,
+          0,
+          100,
+        ),
     ).toThrow("anchor4 cannot be null");
   });
 
@@ -194,16 +253,24 @@ describe("PulleyJoint (modernized)", () => {
     const joint = makeJoint();
     joint.jointMin = 25;
     expect(joint.jointMin).toBeCloseTo(25);
-    expect(() => { joint.jointMin = NaN; }).toThrow("NaN");
-    expect(() => { joint.jointMin = -1; }).toThrow(">= 0");
+    expect(() => {
+      joint.jointMin = NaN;
+    }).toThrow("NaN");
+    expect(() => {
+      joint.jointMin = -1;
+    }).toThrow(">= 0");
   });
 
   it("should get/set jointMax with validation", () => {
     const joint = makeJoint();
     joint.jointMax = 200;
     expect(joint.jointMax).toBeCloseTo(200);
-    expect(() => { joint.jointMax = NaN; }).toThrow("NaN");
-    expect(() => { joint.jointMax = -1; }).toThrow(">= 0");
+    expect(() => {
+      joint.jointMax = NaN;
+    }).toThrow("NaN");
+    expect(() => {
+      joint.jointMax = -1;
+    }).toThrow(">= 0");
   });
 
   it("should get/set ratio", () => {
@@ -214,7 +281,9 @@ describe("PulleyJoint (modernized)", () => {
 
   it("should reject NaN ratio", () => {
     const joint = makeJoint();
-    expect(() => { joint.ratio = NaN; }).toThrow("NaN");
+    expect(() => {
+      joint.ratio = NaN;
+    }).toThrow("NaN");
   });
 
   // ---------------------------------------------------------------------------
@@ -243,9 +312,17 @@ describe("PulleyJoint (modernized)", () => {
     b4.space = space;
 
     const joint = new PulleyJoint(
-      b1, b2, b3, b4,
-      new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-      50, 150, 1.0,
+      b1,
+      b2,
+      b3,
+      b4,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      50,
+      150,
+      1.0,
     );
     joint.space = space;
 
@@ -276,9 +353,17 @@ describe("PulleyJoint (modernized)", () => {
   it("visitBodies should deduplicate shared bodies", () => {
     const shared = new Body(BodyType.DYNAMIC, new Vec2(0, 0));
     const joint = new PulleyJoint(
-      shared, shared, shared, shared,
-      new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-      0, 100, 1.0,
+      shared,
+      shared,
+      shared,
+      shared,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      0,
+      100,
+      1.0,
     );
     const visited: Body[] = [];
     joint.visitBodies((b) => visited.push(b));
@@ -329,9 +414,17 @@ describe("PulleyJoint (modernized)", () => {
     b4.space = space;
 
     const joint = new PulleyJoint(
-      b1, b2, b3, b4,
-      new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 0),
-      50, 150, 1.0,
+      b1,
+      b2,
+      b3,
+      b4,
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 0),
+      50,
+      150,
+      1.0,
     );
     joint.space = space;
 

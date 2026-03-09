@@ -39,7 +39,12 @@ import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_ContactList } from "../native/util/ZPP_ContactList";
 
 // --- Physics ---
-import { Interactor, _bindBodyWrapForInteractor, _bindCompoundWrapForInteractor, _bindShapeWrapForInteractor } from "../phys/Interactor";
+import {
+  Interactor,
+  _bindBodyWrapForInteractor,
+  _bindCompoundWrapForInteractor,
+  _bindShapeWrapForInteractor,
+} from "../phys/Interactor";
 import { Body } from "../phys/Body";
 import { BodyType } from "../phys/BodyType";
 import { Compound } from "../phys/Compound";

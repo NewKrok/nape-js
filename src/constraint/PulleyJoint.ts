@@ -6,7 +6,6 @@ import { Body } from "../phys/Body";
 import { Constraint } from "./Constraint";
 import { ZPP_PulleyJoint } from "../native/constraint/ZPP_PulleyJoint";
 
-
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
   if ((v as any).zpp_disp) {
@@ -35,14 +34,44 @@ function _disposeWeakVec2(v: Vec2): void {
 }
 
 /**
- * Pulley joint — constrains the weighted sum of distances between
- * four anchor points on four bodies.
+ * Pulley joint — constrains the weighted sum of two distances to remain within
+ * `[jointMin, jointMax]`:
+ *
+ * `jointMin ≤ distance(anchor1, anchor2) + ratio * distance(anchor3, anchor4) ≤ jointMax`
+ *
+ * This models a rope-and-pulley system where lifting one side lowers the other.
+ * All four anchors are in the local space of their respective bodies.
+ *
+ * @example
+ * ```ts
+ * // Classic pulley: as body2 moves away from anchor1, body4 moves toward anchor3
+ * const joint = new PulleyJoint(
+ *   body1, body2, body3, body4,
+ *   Vec2.weak(0,0), Vec2.weak(0,0),
+ *   Vec2.weak(0,0), Vec2.weak(0,0),
+ *   0, 200, // total rope length
+ * );
+ * joint.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_PulleyJoint directly (extracted to TypeScript).
  */
 export class PulleyJoint extends Constraint {
   declare zpp_inner: ZPP_PulleyJoint;
 
+  /**
+   * @param body1 - First body (pulley side 1), or `null` for a static anchor.
+   * @param body2 - Second body (pulley side 1), or `null` for a static anchor.
+   * @param body3 - Third body (pulley side 2), or `null` for a static anchor.
+   * @param body4 - Fourth body (pulley side 2), or `null` for a static anchor.
+   * @param anchor1 - Anchor on `body1` in local space (disposed if weak).
+   * @param anchor2 - Anchor on `body2` in local space (disposed if weak).
+   * @param anchor3 - Anchor on `body3` in local space (disposed if weak).
+   * @param anchor4 - Anchor on `body4` in local space (disposed if weak).
+   * @param jointMin - Minimum allowed total rope length (must be `>= 0`).
+   * @param jointMax - Maximum allowed total rope length (must be `>= jointMin`).
+   * @param ratio - Weight of the second distance segment. Default `1.0`.
+   */
   constructor(
     body1: Body | null,
     body2: Body | null,
@@ -125,11 +154,7 @@ export class PulleyJoint extends Constraint {
   }
 
   /** @internal Helper to set an anchor during construction. */
-  private _setAnchorInit(
-    anchor: Vec2,
-    name: string,
-    set: (x: number, y: number) => void,
-  ): void {
+  private _setAnchorInit(anchor: Vec2, name: string, set: (x: number, y: number) => void): void {
     if ((anchor as any)?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -144,8 +169,7 @@ export class PulleyJoint extends Constraint {
   static _wrap(inner: any): PulleyJoint {
     if (inner == null) return null!;
     if (inner instanceof PulleyJoint) return inner;
-    if (inner.zpp_inner?.outer instanceof PulleyJoint)
-      return inner.zpp_inner.outer;
+    if (inner.zpp_inner?.outer instanceof PulleyJoint) return inner.zpp_inner.outer;
 
     if (inner instanceof ZPP_PulleyJoint) {
       return getOrCreate(inner, (zpp: ZPP_PulleyJoint) => {
@@ -171,6 +195,7 @@ export class PulleyJoint extends Constraint {
   // Body properties — 4-body constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** First body of the first rope segment. `null` = static world point. */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -179,6 +204,7 @@ export class PulleyJoint extends Constraint {
     this._setBody1(value);
   }
 
+  /** Second body of the first rope segment. `null` = static world point. */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -187,6 +213,7 @@ export class PulleyJoint extends Constraint {
     this._setBody2(value);
   }
 
+  /** First body of the second rope segment. `null` = static world point. */
   get body3(): Body {
     if (this.zpp_inner.b3 == null) return null!;
     return Body._wrap(this.zpp_inner.b3);
@@ -195,6 +222,7 @@ export class PulleyJoint extends Constraint {
     this._setBody3(value);
   }
 
+  /** Second body of the second rope segment. `null` = static world point. */
   get body4(): Body {
     if (this.zpp_inner.b4 == null) return null!;
     return Body._wrap(this.zpp_inner.b4);
@@ -347,6 +375,7 @@ export class PulleyJoint extends Constraint {
   // Anchor properties — lazy Vec2 wrapper setup
   // ---------------------------------------------------------------------------
 
+  /** Anchor on `body1` in local coordinates. */
   get anchor1(): Vec2 {
     if (this.zpp_inner.wrap_a1 == null) this.zpp_inner.setup_a1();
     return this.zpp_inner.wrap_a1;
@@ -365,6 +394,7 @@ export class PulleyJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor on `body2` in local coordinates. */
   get anchor2(): Vec2 {
     if (this.zpp_inner.wrap_a2 == null) this.zpp_inner.setup_a2();
     return this.zpp_inner.wrap_a2;
@@ -383,6 +413,7 @@ export class PulleyJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor on `body3` in local coordinates. */
   get anchor3(): Vec2 {
     if (this.zpp_inner.wrap_a3 == null) this.zpp_inner.setup_a3();
     return this.zpp_inner.wrap_a3;
@@ -401,6 +432,7 @@ export class PulleyJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor on `body4` in local coordinates. */
   get anchor4(): Vec2 {
     if (this.zpp_inner.wrap_a4 == null) this.zpp_inner.setup_a4();
     return this.zpp_inner.wrap_a4;
@@ -423,6 +455,7 @@ export class PulleyJoint extends Constraint {
   // Joint-specific scalar properties
   // ---------------------------------------------------------------------------
 
+  /** Minimum allowed total rope length (must be `>= 0`). */
   get jointMin(): number {
     return this.zpp_inner.jointMin;
   }
@@ -440,6 +473,7 @@ export class PulleyJoint extends Constraint {
     }
   }
 
+  /** Maximum allowed total rope length (must be `>= jointMin`). */
   get jointMax(): number {
     return this.zpp_inner.jointMax;
   }
@@ -457,6 +491,12 @@ export class PulleyJoint extends Constraint {
     }
   }
 
+  /**
+   * Weight of the second rope segment in the total length sum.
+   *
+   * The constraint enforces: `distance(a1,a2) + ratio * distance(a3,a4)` within bounds.
+   * @defaultValue `1.0`
+   */
   get ratio(): number {
     return this.zpp_inner.ratio;
   }
@@ -475,6 +515,12 @@ export class PulleyJoint extends Constraint {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Returns `true` when the total rope length is within bounds and no corrective
+   * impulse was applied last step.
+   *
+   * @throws if any of the four bodies is `null`.
+   */
   isSlack(): boolean {
     if (
       this.zpp_inner.b1 == null ||
@@ -482,9 +528,7 @@ export class PulleyJoint extends Constraint {
       this.zpp_inner.b3 == null ||
       this.zpp_inner.b4 == null
     ) {
-      throw new Error(
-        "Error: Cannot compute slack for PulleyJoint if either body is null.",
-      );
+      throw new Error("Error: Cannot compute slack for PulleyJoint if either body is null.");
     }
     return this.zpp_inner.slack;
   }
@@ -531,8 +575,12 @@ export class PulleyJoint extends Constraint {
   }
 
   /** @internal backward compat alias for zpp_inner */
-  get zpp_inner_zn(): ZPP_PulleyJoint { return this.zpp_inner; }
-  set zpp_inner_zn(v: ZPP_PulleyJoint) { this.zpp_inner = v; }
+  get zpp_inner_zn(): ZPP_PulleyJoint {
+    return this.zpp_inner;
+  }
+  set zpp_inner_zn(v: ZPP_PulleyJoint) {
+    this.zpp_inner = v;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -549,5 +597,3 @@ ZPP_PulleyJoint._wrapFn = (zpp: ZPP_PulleyJoint): PulleyJoint => {
     return j;
   });
 };
-
-

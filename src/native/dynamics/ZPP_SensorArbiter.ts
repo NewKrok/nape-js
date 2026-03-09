@@ -22,7 +22,6 @@ export class ZPP_SensorArbiter extends ZPP_Arbiter {
 
   // --- Instance: Haxe class reference ---
 
-
   constructor() {
     super();
     this.next = null;

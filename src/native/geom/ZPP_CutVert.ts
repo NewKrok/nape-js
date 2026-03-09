@@ -26,7 +26,6 @@ export class ZPP_CutVert {
   rank = 0;
   used = false;
 
-
   /** Factory: create from pool, linked to a polygon vertex. */
   static path(poly: object): ZPP_CutVert {
     let ret: ZPP_CutVert;

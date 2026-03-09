@@ -119,9 +119,7 @@ describe("WeldJoint (modernized)", () => {
     }
 
     // b2 should be near origin since it's welded to the static body at (0,0)
-    const dist = Math.sqrt(
-      b2.position.x * b2.position.x + b2.position.y * b2.position.y,
-    );
+    const dist = Math.sqrt(b2.position.x * b2.position.x + b2.position.y * b2.position.y);
     expect(dist).toBeLessThan(10);
   });
 

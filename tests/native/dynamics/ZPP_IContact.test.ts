@@ -37,7 +37,6 @@ describe("ZPP_IContact", () => {
       expect(c.lr2x).toBe(0.0);
       expect(c.lr2y).toBe(0.0);
       // Haxe class reference
-
     });
   });
 

@@ -10,12 +10,15 @@
 export class ZPP_Convex {
   static __name__ = ["zpp_nape", "geom", "ZPP_Convex"];
 
-
   /**
    * Test if the angle at vertex b (from a→b→c) is an inner angle.
    * Returns true if the cross product (a-b) × (c-b) >= 0.
    */
-  static isinner(a: { x: number; y: number }, b: { x: number; y: number }, c: { x: number; y: number }): boolean {
+  static isinner(
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+    c: { x: number; y: number },
+  ): boolean {
     const ux = a.x - b.x;
     const uy = a.y - b.y;
     const vx = c.x - b.x;

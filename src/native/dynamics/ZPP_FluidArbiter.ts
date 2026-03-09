@@ -75,7 +75,6 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
 
   // --- Instance: Haxe class reference ---
 
-
   constructor() {
     super();
     this.pre_dt = 0.0;

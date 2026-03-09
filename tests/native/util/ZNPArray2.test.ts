@@ -78,11 +78,7 @@ describe("ZNPArray2_Float", () => {
 
 describe("ZNPArray2_ZPP_GeomVert", () => {
   it("should have correct __name__", () => {
-    expect(ZNPArray2_ZPP_GeomVert.__name__).toEqual([
-      "zpp_nape",
-      "util",
-      "ZNPArray2_ZPP_GeomVert",
-    ]);
+    expect(ZNPArray2_ZPP_GeomVert.__name__).toEqual(["zpp_nape", "util", "ZNPArray2_ZPP_GeomVert"]);
   });
 
   it("should work with object values", () => {

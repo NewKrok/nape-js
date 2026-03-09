@@ -67,8 +67,7 @@ export class Interactor {
     // Dispatch to concrete subclass wrapper based on runtime type
     if (inner.isBody && inner.isBody() && _bodyWrap) return _bodyWrap(inner);
     if (inner.isShape && inner.isShape() && _shapeWrap) return _shapeWrap(inner);
-    if (inner.isCompound && inner.isCompound() && _compoundWrap)
-      return _compoundWrap(inner);
+    if (inner.isCompound && inner.isCompound() && _compoundWrap) return _compoundWrap(inner);
 
     // Fallback: generic Interactor wrapper
     return getOrCreate(inner, (raw: NapeInner) => {
@@ -103,9 +102,7 @@ export class Interactor {
   }
   set group(value: InteractionGroup | null) {
     this.zpp_inner_i.immutable_midstep("Interactor::group");
-    this.zpp_inner_i.setGroup(
-      value == null ? null : (value as any).zpp_inner,
-    );
+    this.zpp_inner_i.setGroup(value == null ? null : (value as any).zpp_inner);
   }
 
   /** Callback types assigned to this interactor. */
@@ -166,4 +163,3 @@ export class Interactor {
     return "";
   }
 }
-

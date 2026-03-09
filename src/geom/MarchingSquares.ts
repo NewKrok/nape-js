@@ -7,7 +7,6 @@ import type { AABB } from "./AABB";
 // before ZPP_MarchingSquares.run() tries to access nape.geom.GeomPoly.get().
 import "./GeomPoly";
 
-
 /**
  * Isosurface extraction using the marching squares algorithm.
  *
@@ -147,4 +146,3 @@ export class MarchingSquares {
     return ret;
   }
 }
-

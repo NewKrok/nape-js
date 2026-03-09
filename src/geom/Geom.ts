@@ -6,7 +6,6 @@ import { ZPP_Geom } from "../native/geom/ZPP_Geom";
 import { ZPP_SweepDistance } from "../native/geom/ZPP_SweepDistance";
 import { ZPP_Collide } from "../native/geom/ZPP_Collide";
 
-
 /** Get the ZPP_Shape from a Shape (handles TS wrapper or compiled object). */
 function getZppShape(s: any): any {
   return s?.zpp_inner ?? s?._inner?.zpp_inner;
@@ -208,4 +207,3 @@ export class Geom {
     return ZPP_Collide.containTest(zs1, zs2);
   }
 }
-

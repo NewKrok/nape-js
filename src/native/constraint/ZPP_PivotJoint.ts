@@ -11,7 +11,6 @@
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 
-
 export class ZPP_PivotJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_PivotJoint"];
   static __super__ = ZPP_Constraint;
@@ -41,7 +40,6 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
   biasx = 0.0;
   biasy = 0.0;
   stepped = false;
-
 
   constructor() {
     super();

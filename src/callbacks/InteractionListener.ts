@@ -35,11 +35,45 @@ export function numberToInteractionType(itype: number): InteractionType | null {
   return null;
 }
 
+/**
+ * Listener for interaction events between two interactors.
+ *
+ * Fires when two objects matching `options1` and `options2` start, continue, or
+ * stop interacting with each other according to `interactionType`.
+ *
+ * Valid events: {@link CbEvent.BEGIN}, {@link CbEvent.ONGOING}, {@link CbEvent.END}.
+ *
+ * - `BEGIN` fires once when the interaction starts.
+ * - `ONGOING` fires every simulation step while the interaction persists.
+ * - `END` fires once when the interaction ends.
+ *
+ * @example
+ * ```ts
+ * const listener = new InteractionListener(
+ *   CbEvent.BEGIN,
+ *   InteractionType.COLLISION,
+ *   playerType,
+ *   groundType,
+ *   (cb) => { console.log('player landed'); },
+ * );
+ * space.listeners.add(listener);
+ * ```
+ *
+ * Fully modernized from nape-compiled.js lines 659–1091.
+ */
 export class InteractionListener extends Listener {
   static __name__ = ["nape", "callbacks", "InteractionListener"];
 
   zpp_inner_zn: ZPP_InteractionListener;
 
+  /**
+   * @param event - Must be `CbEvent.BEGIN`, `CbEvent.ONGOING`, or `CbEvent.END`.
+   * @param interactionType - The kind of interaction to listen for (COLLISION, SENSOR, FLUID, or ANY).
+   * @param options1 - Filter for the first interactor, or `null` to match any.
+   * @param options2 - Filter for the second interactor, or `null` to match any.
+   * @param handler - Called with an {@link InteractionCallback} each time the event fires.
+   * @param precedence - Execution order relative to other listeners (higher = first). Default `0`.
+   */
   constructor(
     event: CbEvent,
     interactionType: InteractionType,
@@ -96,6 +130,7 @@ export class InteractionListener extends Listener {
     }
   }
 
+  /** Filter for the first interactor. Order between `options1`/`options2` does not matter. */
   get options1(): OptionType {
     return this.zpp_inner_zn.options1.outer;
   }
@@ -104,6 +139,7 @@ export class InteractionListener extends Listener {
     this.zpp_inner_zn.options1.set((options1 as any).zpp_inner);
   }
 
+  /** Filter for the second interactor. Order between `options1`/`options2` does not matter. */
   get options2(): OptionType {
     return this.zpp_inner_zn.options2.outer;
   }
@@ -112,6 +148,7 @@ export class InteractionListener extends Listener {
     this.zpp_inner_zn.options2.set((options2 as any).zpp_inner);
   }
 
+  /** The callback function invoked when the event fires. Cannot be set to null. */
   get handler(): (cb: InteractionCallback) => void {
     return this.zpp_inner_zn.handleri;
   }
@@ -123,6 +160,7 @@ export class InteractionListener extends Listener {
     this.zpp_inner_zn.handleri = handler as (cb: any) => void;
   }
 
+  /** The type of interaction this listener responds to (COLLISION, SENSOR, FLUID, or ANY). */
   get interactionType(): InteractionType | null {
     return numberToInteractionType(this.zpp_inner_zn.itype);
   }
@@ -137,6 +175,10 @@ export class InteractionListener extends Listener {
     }
   }
 
+  /**
+   * When `true`, `ONGOING` callbacks are also fired while both interactors are sleeping.
+   * Default is `false` (callbacks are suppressed when both are asleep).
+   */
   get allowSleepingCallbacks(): boolean {
     return this.zpp_inner_zn.allowSleepingCallbacks;
   }

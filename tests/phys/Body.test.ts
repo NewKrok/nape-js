@@ -69,7 +69,9 @@ describe("Body", () => {
 
   it("should throw on NaN rotation", () => {
     const body = new Body();
-    expect(() => { body.rotation = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.rotation = NaN;
+    }).toThrow("NaN");
   });
 
   // --- Velocity ---
@@ -97,12 +99,16 @@ describe("Body", () => {
 
   it("should throw on NaN angularVel", () => {
     const body = new Body();
-    expect(() => { body.angularVel = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.angularVel = NaN;
+    }).toThrow("NaN");
   });
 
   it("should throw when setting angularVel on static body", () => {
     const body = new Body(BodyType.STATIC);
-    expect(() => { body.angularVel = 1; }).toThrow("static");
+    expect(() => {
+      body.angularVel = 1;
+    }).toThrow("static");
   });
 
   // --- Kinematic velocity ---
@@ -130,7 +136,9 @@ describe("Body", () => {
 
   it("should throw on NaN kinAngVel", () => {
     const body = new Body();
-    expect(() => { body.kinAngVel = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.kinAngVel = NaN;
+    }).toThrow("NaN");
   });
 
   // --- Surface velocity ---
@@ -177,12 +185,16 @@ describe("Body", () => {
   it("should throw on NaN torque", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.torque = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.torque = NaN;
+    }).toThrow("NaN");
   });
 
   it("should throw on non-dynamic torque", () => {
     const body = new Body(BodyType.STATIC);
-    expect(() => { body.torque = 1; }).toThrow("Non-dynamic");
+    expect(() => {
+      body.torque = 1;
+    }).toThrow("Non-dynamic");
   });
 
   // --- Mass & inertia ---
@@ -205,20 +217,28 @@ describe("Body", () => {
   it("should throw on NaN mass", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.mass = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.mass = NaN;
+    }).toThrow("NaN");
   });
 
   it("should throw on non-positive mass", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.mass = 0; }).toThrow("positive");
-    expect(() => { body.mass = -1; }).toThrow("positive");
+    expect(() => {
+      body.mass = 0;
+    }).toThrow("positive");
+    expect(() => {
+      body.mass = -1;
+    }).toThrow("positive");
   });
 
   it("should throw on infinite mass", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.mass = Infinity; }).toThrow("infinite");
+    expect(() => {
+      body.mass = Infinity;
+    }).toThrow("infinite");
   });
 
   it("should get inertia for body with shapes", () => {
@@ -239,19 +259,25 @@ describe("Body", () => {
   it("should throw on NaN inertia", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.inertia = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.inertia = NaN;
+    }).toThrow("NaN");
   });
 
   it("should throw on non-positive inertia", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.inertia = 0; }).toThrow("positive");
+    expect(() => {
+      body.inertia = 0;
+    }).toThrow("positive");
   });
 
   it("should throw on infinite inertia", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.inertia = Infinity; }).toThrow("infinite");
+    expect(() => {
+      body.inertia = Infinity;
+    }).toThrow("infinite");
   });
 
   it("should get constraintMass", () => {
@@ -289,7 +315,9 @@ describe("Body", () => {
   it("should throw on NaN gravMass", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.gravMass = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.gravMass = NaN;
+    }).toThrow("NaN");
   });
 
   // --- gravMassScale ---
@@ -304,7 +332,9 @@ describe("Body", () => {
   it("should throw on NaN gravMassScale", () => {
     const body = new Body();
     body.shapes.add(new Circle(10));
-    expect(() => { body.gravMassScale = NaN; }).toThrow("NaN");
+    expect(() => {
+      body.gravMassScale = NaN;
+    }).toThrow("NaN");
   });
 
   // --- disableCCD ---
@@ -400,7 +430,9 @@ describe("Body", () => {
 
   it("should throw on null massMode", () => {
     const body = new Body();
-    expect(() => { body.massMode = null as any; }).toThrow("null");
+    expect(() => {
+      body.massMode = null as any;
+    }).toThrow("null");
   });
 
   it("should get/set inertiaMode", () => {
@@ -421,7 +453,9 @@ describe("Body", () => {
 
   it("should throw on null inertiaMode", () => {
     const body = new Body();
-    expect(() => { body.inertiaMode = null as any; }).toThrow("null");
+    expect(() => {
+      body.inertiaMode = null as any;
+    }).toThrow("null");
   });
 
   it("should get/set gravMassMode", () => {
@@ -441,7 +475,9 @@ describe("Body", () => {
 
   it("should throw on null gravMassMode", () => {
     const body = new Body();
-    expect(() => { body.gravMassMode = null as any; }).toThrow("null");
+    expect(() => {
+      body.gravMassMode = null as any;
+    }).toThrow("null");
   });
 
   // --- Coordinate transforms ---
@@ -776,6 +812,8 @@ describe("Body", () => {
 
   it("should throw on null type", () => {
     const body = new Body();
-    expect(() => { body.type = null as any; }).toThrow("null");
+    expect(() => {
+      body.type = null as any;
+    }).toThrow("null");
   });
 });

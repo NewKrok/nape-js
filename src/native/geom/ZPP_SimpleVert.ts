@@ -22,7 +22,6 @@ export class ZPP_SimpleVert {
   next: ZPP_SimpleVert | null = null;
   node: any = null;
 
-
   constructor() {
     this.id = ZPP_ID.ZPP_SimpleVert();
     if (ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {

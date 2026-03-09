@@ -18,6 +18,15 @@ export class Mat23 {
     return this;
   }
 
+  /**
+   * Create a Mat23 with the given components. Defaults to the identity matrix `[1 0 0; 0 1 0]`.
+   * @param a - Component at row 0, col 0.
+   * @param b - Component at row 0, col 1.
+   * @param c - Component at row 1, col 0.
+   * @param d - Component at row 1, col 1.
+   * @param tx - Translation component along x.
+   * @param ty - Translation component along y.
+   */
   constructor(
     a: number = 1.0,
     b: number = 0.0,
@@ -44,6 +53,11 @@ export class Mat23 {
   // Static factories
   // ---------------------------------------------------------------------------
 
+  /**
+   * Create a pure rotation matrix for the given angle in radians.
+   * @param angle - Rotation angle in radians.
+   * @returns A new Mat23 representing the rotation.
+   */
   static rotation(angle: number): Mat23 {
     if (angle !== angle) {
       throw new Error("Error: Cannot create rotation matrix with NaN angle");
@@ -53,10 +67,22 @@ export class Mat23 {
     return new Mat23(cos, -sin, sin, cos, 0, 0);
   }
 
+  /**
+   * Create a pure translation matrix.
+   * @param tx - Translation along x.
+   * @param ty - Translation along y.
+   * @returns A new Mat23 representing the translation.
+   */
   static translation(tx: number, ty: number): Mat23 {
     return new Mat23(1, 0, 0, 1, tx, ty);
   }
 
+  /**
+   * Create a pure scale matrix.
+   * @param sx - Scale factor along x.
+   * @param sy - Scale factor along y.
+   * @returns A new Mat23 representing the scale.
+   */
   static scale(sx: number, sy: number): Mat23 {
     return new Mat23(sx, 0, 0, sy, 0, 0);
   }
@@ -88,48 +114,61 @@ export class Mat23 {
     this.zpp_inner.invalidate();
   }
 
+  /** Matrix component at row 0, col 0. The matrix layout is `[a b tx; c d ty]`. */
   get a(): number {
     return this.zpp_inner.a;
   }
+  /** Matrix component at row 0, col 0. The matrix layout is `[a b tx; c d ty]`. */
   set a(v: number) {
     this._setProp("a", v);
   }
 
+  /** Matrix component at row 0, col 1. The matrix layout is `[a b tx; c d ty]`. */
   get b(): number {
     return this.zpp_inner.b;
   }
+  /** Matrix component at row 0, col 1. The matrix layout is `[a b tx; c d ty]`. */
   set b(v: number) {
     this._setProp("b", v);
   }
 
+  /** Matrix component at row 1, col 0. The matrix layout is `[a b tx; c d ty]`. */
   get c(): number {
     return this.zpp_inner.c;
   }
+  /** Matrix component at row 1, col 0. The matrix layout is `[a b tx; c d ty]`. */
   set c(v: number) {
     this._setProp("c", v);
   }
 
+  /** Matrix component at row 1, col 1. The matrix layout is `[a b tx; c d ty]`. */
   get d(): number {
     return this.zpp_inner.d;
   }
+  /** Matrix component at row 1, col 1. The matrix layout is `[a b tx; c d ty]`. */
   set d(v: number) {
     this._setProp("d", v);
   }
 
+  /** Translation component along x. The matrix layout is `[a b tx; c d ty]`. */
   get tx(): number {
     return this.zpp_inner.tx;
   }
+  /** Translation component along x. The matrix layout is `[a b tx; c d ty]`. */
   set tx(v: number) {
     this._setProp("tx", v);
   }
 
+  /** Translation component along y. The matrix layout is `[a b tx; c d ty]`. */
   get ty(): number {
     return this.zpp_inner.ty;
   }
+  /** Translation component along y. The matrix layout is `[a b tx; c d ty]`. */
   set ty(v: number) {
     this._setProp("ty", v);
   }
 
+  /** The determinant of the linear 2×2 part (ad − bc). */
   get determinant(): number {
     return this.zpp_inner.a * this.zpp_inner.d - this.zpp_inner.b * this.zpp_inner.c;
   }
@@ -138,6 +177,10 @@ export class Mat23 {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Return a new Mat23 with the same components.
+   * @returns A deep copy of this matrix.
+   */
   copy(): Mat23 {
     return new Mat23(
       this.zpp_inner.a,
@@ -149,6 +192,11 @@ export class Mat23 {
     );
   }
 
+  /**
+   * Copy all components from another Mat23 into this one in-place.
+   * @param matrix - The source matrix to copy from.
+   * @returns `this` for chaining.
+   */
   set(matrix: Mat23): this {
     if (matrix == null) {
       throw new Error("Error: Cannot set form null matrix");
@@ -159,6 +207,16 @@ export class Mat23 {
     return this;
   }
 
+  /**
+   * Set all six components at once in-place.
+   * @param a - Component at row 0, col 0.
+   * @param b - Component at row 0, col 1.
+   * @param c - Component at row 1, col 0.
+   * @param d - Component at row 1, col 1.
+   * @param tx - Translation along x.
+   * @param ty - Translation along y.
+   * @returns `this` for chaining.
+   */
   setAs(
     a: number = 1.0,
     b: number = 0.0,
@@ -172,10 +230,18 @@ export class Mat23 {
     return this;
   }
 
+  /**
+   * Reset to the identity matrix in-place.
+   * @returns `this` for chaining.
+   */
   reset(): this {
     return this.setAs();
   }
 
+  /**
+   * Return `true` if the matrix is singular (non-invertible) within the engine's epsilon threshold.
+   * @returns `true` when the matrix cannot be safely inverted.
+   */
   singular(): boolean {
     const { a, b, c, d } = this.zpp_inner;
     const norm = a * a + b * b + c * c + d * d;
@@ -185,6 +251,11 @@ export class Mat23 {
     return norm > nape.Config.illConditionedThreshold * limit;
   }
 
+  /**
+   * Return the inverse of this matrix.
+   * @returns A new Mat23 that is the inverse of this one.
+   * @throws If the matrix is singular.
+   */
   inverse(): Mat23 {
     if (this.singular()) {
       throw new Error("Error: Matrix is singular and cannot be inverted");
@@ -201,11 +272,20 @@ export class Mat23 {
     );
   }
 
+  /**
+   * Return the transpose of this matrix.
+   * @returns A new Mat23 that is the transpose of this one.
+   */
   transpose(): Mat23 {
     const { a, b, c, d, tx, ty } = this.zpp_inner;
     return new Mat23(a, c, b, d, -a * tx - c * ty, -b * tx - d * ty);
   }
 
+  /**
+   * Return `matrix × this` (apply this matrix first, then `matrix`).
+   * @param matrix - The matrix to concatenate on the left.
+   * @returns A new Mat23 representing the combined transformation.
+   */
   concat(matrix: Mat23): Mat23 {
     if (matrix == null) {
       throw new Error("Error: Cannot concatenate with null Mat23");
@@ -222,6 +302,13 @@ export class Mat23 {
     );
   }
 
+  /**
+   * Transform a Vec2 by this matrix. If `noTranslation` is true, only the linear 2×2 part is applied.
+   * @param point - The Vec2 to transform.
+   * @param noTranslation - When true, the translation components (tx, ty) are ignored.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns A new Vec2 with the transformed coordinates.
+   */
   transform(point: Vec2, noTranslation: boolean = false, weak: boolean = false): Vec2 {
     if (point != null && point.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -251,6 +338,13 @@ export class Mat23 {
     return ret;
   }
 
+  /**
+   * Apply the inverse transformation to a Vec2. Throws if the matrix is singular.
+   * @param point - The Vec2 to transform.
+   * @param noTranslation - When true, the translation components (tx, ty) are ignored.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns A new Vec2 with the inverse-transformed coordinates.
+   */
   inverseTransform(point: Vec2, noTranslation: boolean = false, weak: boolean = false): Vec2 {
     if (point != null && point.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -287,6 +381,10 @@ export class Mat23 {
     return ret;
   }
 
+  /**
+   * Return `true` if the matrix is equiorthogonal (uniform scale, no shear).
+   * @returns `true` when the matrix has equal scale on both axes and no shear.
+   */
   equiorthogonal(): boolean {
     if (this.singular()) return false;
     const { a, b, c, d } = this.zpp_inner;
@@ -297,6 +395,10 @@ export class Mat23 {
     return diff * diff < nape.Config.epsilon;
   }
 
+  /**
+   * Return `true` if the matrix is orthogonal (unit-scale rotation, no shear).
+   * @returns `true` when the column vectors are orthonormal.
+   */
   orthogonal(): boolean {
     const { a, b, c, d } = this.zpp_inner;
     const nape = getNape();
@@ -351,6 +453,10 @@ export class Mat23 {
     return this;
   }
 
+  /**
+   * Adjust the matrix in-place to be equiorthogonal (uniform scale, no shear).
+   * @returns `this` for chaining.
+   */
   equiorthogonalise(): this {
     if (!this.equiorthogonal()) {
       return this._orthogonaliseImpl(true);
@@ -358,6 +464,10 @@ export class Mat23 {
     return this;
   }
 
+  /**
+   * Adjust the matrix in-place to be orthogonal (normalise column vectors).
+   * @returns `this` for chaining.
+   */
   orthogonalise(): this {
     if (!this.orthogonal()) {
       return this._orthogonaliseImpl(false);
@@ -365,6 +475,10 @@ export class Mat23 {
     return this;
   }
 
+  /**
+   * String representation `{ a: … b: … c: … d: … tx: … ty: … }`.
+   * @returns A human-readable string of the matrix components.
+   */
   toString(): string {
     const { a, b, c, d, tx, ty } = this.zpp_inner;
     return "{ a: " + a + " b: " + b + " c: " + c + " d: " + d + " tx: " + tx + " ty: " + ty + " }";
@@ -380,4 +494,3 @@ ZPP_Mat23._wrapFn = (zpp: ZPP_Mat23): Mat23 => {
     return m;
   });
 };
-

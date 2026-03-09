@@ -448,6 +448,8 @@ export class DemoRunner {
           new _THREE.Shape(pts),
           { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 },
         );
+        geom.applyMatrix4(new _THREE.Matrix4().makeScale(1, -1, 1));
+        geom.computeVertexNormals();
         geom.translate(0, 0, -15);
       }
       if (!geom) continue;
@@ -456,7 +458,7 @@ export class DemoRunner {
       const color = body.isStatic() ? 0x455a64 : MESH_COLORS[cIdx];
       const mesh  = new _THREE.Mesh(
         geom,
-        new _THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444 }),
+        new _THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444, side: _THREE.DoubleSide }),
       );
       this.#threeScene.add(mesh);
 

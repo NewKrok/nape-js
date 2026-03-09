@@ -12,7 +12,11 @@ import { ZPP_MarchPair } from "./ZPP_MarchPair";
 import { ZPP_MarchSpan } from "./ZPP_MarchSpan";
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
-import { ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair } from "../util/ZNPArray2";
+import {
+  ZNPArray2_Float,
+  ZNPArray2_ZPP_GeomVert,
+  ZNPArray2_ZPP_MarchPair,
+} from "../util/ZNPArray2";
 import { ZNPList } from "../util/ZNPList";
 
 export class ZPP_MarchingSquares {
@@ -34,7 +38,9 @@ export class ZPP_MarchingSquares {
     ZPP_MarchingSquares._nape = nape;
     // Initialize singleton + lookup table (was in compiled init block)
     ZPP_MarchingSquares.me = new ZPP_MarchingSquares();
-    ZPP_MarchingSquares.look_march = [-1, 224, 56, 216, 14, -1, 54, 214, 131, 99, -1, 91, 141, 109, 181, 85];
+    ZPP_MarchingSquares.look_march = [
+      -1, 224, 56, 216, 14, -1, 54, 214, 131, 99, -1, 91, 141, 109, 181, 85,
+    ];
   }
 
   // ---------------------------------------------------------------------------
@@ -278,16 +284,14 @@ export class ZPP_MarchingSquares {
 
     if (combine) {
       if (ZPP_MarchingSquares.map == null) {
-        ZPP_MarchingSquares.map =
-          new ZNPArray2_ZPP_MarchPair(xn, yn);
+        ZPP_MarchingSquares.map = new ZNPArray2_ZPP_MarchPair(xn, yn);
       } else {
         ZPP_MarchingSquares.map.resize(xn, yn, null);
       }
     }
 
     if (ZPP_MarchingSquares.isos == null) {
-      ZPP_MarchingSquares.isos =
-        new ZNPArray2_Float(xn + 1, yn + 1);
+      ZPP_MarchingSquares.isos = new ZNPArray2_Float(xn + 1, yn + 1);
     } else {
       ZPP_MarchingSquares.isos.resize(xn + 1, yn + 1, 0);
     }
@@ -333,8 +337,7 @@ export class ZPP_MarchingSquares {
     }
 
     if (ZPP_MarchingSquares.ints == null) {
-      ZPP_MarchingSquares.ints =
-        new ZNPArray2_ZPP_GeomVert(xn + 1, (yn << 1) + 1);
+      ZPP_MarchingSquares.ints = new ZNPArray2_ZPP_GeomVert(xn + 1, (yn << 1) + 1);
     } else {
       ZPP_MarchingSquares.ints.resize(xn + 1, (yn << 1) + 1, null);
     }
@@ -412,10 +415,7 @@ export class ZPP_MarchingSquares {
 
         if (combine) {
           const pd = pp.p2 != null && pp.okey2 != 14 ? pp.p2 : pp.p1;
-          pp.pd =
-            ((pd == pp.p2 ? pp.okey2 : pp.okey1) & 128) == 0
-              ? pd.prev
-              : pd.prev.prev;
+          pp.pd = ((pd == pp.p2 ? pp.okey2 : pp.okey1) & 128) == 0 ? pd.prev : pd.prev.prev;
 
           const _thisMap = ZPP_MarchingSquares.map!;
           _thisMap.list[y1 * _thisMap.width + x1] = pp;
@@ -963,8 +963,25 @@ export class ZPP_MarchingSquares {
       ret.okey1 = val;
 
       const result = this._buildPoly(
-        val, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-        fstx, fsty, sndx, sndy, iso, quality,
+        val,
+        isos,
+        ints,
+        x0,
+        y0,
+        x1,
+        y1,
+        xn,
+        yn,
+        v0,
+        v1,
+        v2,
+        v3,
+        fstx,
+        fsty,
+        sndx,
+        sndy,
+        iso,
+        quality,
       );
       ret.p1 = result.head;
       val = result.val;
@@ -994,8 +1011,25 @@ export class ZPP_MarchingSquares {
           ret.okey1 = val1;
 
           const result = this._buildPoly(
-            val1, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-            fstx, fsty, sndx, sndy, iso, quality,
+            val1,
+            isos,
+            ints,
+            x0,
+            y0,
+            x1,
+            y1,
+            xn,
+            yn,
+            v0,
+            v1,
+            v2,
+            v3,
+            fstx,
+            fsty,
+            sndx,
+            sndy,
+            iso,
+            quality,
           );
           ret.p1 = result.head;
           val1 = result.val;
@@ -1020,8 +1054,25 @@ export class ZPP_MarchingSquares {
           ret.okey1 = val2;
 
           const result1 = this._buildPoly(
-            val2, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-            fstx, fsty, sndx, sndy, iso, quality,
+            val2,
+            isos,
+            ints,
+            x0,
+            y0,
+            x1,
+            y1,
+            xn,
+            yn,
+            v0,
+            v1,
+            v2,
+            v3,
+            fstx,
+            fsty,
+            sndx,
+            sndy,
+            iso,
+            quality,
           );
           ret.p1 = result1.head;
           val2 = result1.val;
@@ -1039,8 +1090,26 @@ export class ZPP_MarchingSquares {
             ret.okey2 = val3;
 
             const result2 = this._buildPoly2(
-              val3, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-              fstx, fsty, sndx, sndy, iso, quality, ret,
+              val3,
+              isos,
+              ints,
+              x0,
+              y0,
+              x1,
+              y1,
+              xn,
+              yn,
+              v0,
+              v1,
+              v2,
+              v3,
+              fstx,
+              fsty,
+              sndx,
+              sndy,
+              iso,
+              quality,
+              ret,
             );
             val3 = result2.val;
             ret.key2 = val3;
@@ -1066,8 +1135,25 @@ export class ZPP_MarchingSquares {
             ret.okey1 = val4;
 
             const result3 = this._buildPoly(
-              val4, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-              fstx, fsty, sndx, sndy, iso, quality,
+              val4,
+              isos,
+              ints,
+              x0,
+              y0,
+              x1,
+              y1,
+              xn,
+              yn,
+              v0,
+              v1,
+              v2,
+              v3,
+              fstx,
+              fsty,
+              sndx,
+              sndy,
+              iso,
+              quality,
             );
             ret.p1 = result3.head;
             val4 = result3.val;
@@ -1096,8 +1182,25 @@ export class ZPP_MarchingSquares {
           ret.okey1 = val5;
 
           const result = this._buildPoly(
-            val5, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-            fstx, fsty, sndx, sndy, iso, quality,
+            val5,
+            isos,
+            ints,
+            x0,
+            y0,
+            x1,
+            y1,
+            xn,
+            yn,
+            v0,
+            v1,
+            v2,
+            v3,
+            fstx,
+            fsty,
+            sndx,
+            sndy,
+            iso,
+            quality,
           );
           ret.p1 = result.head;
           val5 = result.val;
@@ -1122,8 +1225,25 @@ export class ZPP_MarchingSquares {
           ret.okey1 = val6;
 
           const result1 = this._buildPoly(
-            val6, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-            fstx, fsty, sndx, sndy, iso, quality,
+            val6,
+            isos,
+            ints,
+            x0,
+            y0,
+            x1,
+            y1,
+            xn,
+            yn,
+            v0,
+            v1,
+            v2,
+            v3,
+            fstx,
+            fsty,
+            sndx,
+            sndy,
+            iso,
+            quality,
           );
           ret.p1 = result1.head;
           val6 = result1.val;
@@ -1141,8 +1261,26 @@ export class ZPP_MarchingSquares {
             ret.okey2 = val7;
 
             const result2 = this._buildPoly2(
-              val7, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-              fstx, fsty, sndx, sndy, iso, quality, ret,
+              val7,
+              isos,
+              ints,
+              x0,
+              y0,
+              x1,
+              y1,
+              xn,
+              yn,
+              v0,
+              v1,
+              v2,
+              v3,
+              fstx,
+              fsty,
+              sndx,
+              sndy,
+              iso,
+              quality,
+              ret,
             );
             val7 = result2.val;
             ret.key2 = val7;
@@ -1168,8 +1306,25 @@ export class ZPP_MarchingSquares {
             ret.okey1 = val8;
 
             const result3 = this._buildPoly(
-              val8, isos, ints, x0, y0, x1, y1, xn, yn, v0, v1, v2, v3,
-              fstx, fsty, sndx, sndy, iso, quality,
+              val8,
+              isos,
+              ints,
+              x0,
+              y0,
+              x1,
+              y1,
+              xn,
+              yn,
+              v0,
+              v1,
+              v2,
+              v3,
+              fstx,
+              fsty,
+              sndx,
+              sndy,
+              iso,
+              quality,
             );
             ret.p1 = result3.head;
             val8 = result3.val;

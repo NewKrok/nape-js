@@ -100,9 +100,7 @@ describe("FastHash2_Hashable2_Boolfalse", () => {
     it("should be registered in compiled namespace", async () => {
       const { getNape } = await import("../../../src/core/engine");
       const nape = getNape();
-      expect(nape.__zpp.util.FastHash2_Hashable2_Boolfalse).toBe(
-        FastHash2_Hashable2_Boolfalse,
-      );
+      expect(nape.__zpp.util.FastHash2_Hashable2_Boolfalse).toBe(FastHash2_Hashable2_Boolfalse);
     });
   });
 });

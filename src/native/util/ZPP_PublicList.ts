@@ -126,16 +126,31 @@ export let ZPP_InteractorList: ZPP_PublicListWithGet = null as any;
 export let ZPP_ArbiterList: ZPP_PublicListWithGet = null as any;
 
 // Register all 13 ZPP_*List specialisations.
-ZPP_ConstraintList = makeZPP_List("ZNPList_ZPP_Constraint",       "constraint", "ConstraintList",       "ZPP_ConstraintList");
-makeZPP_List("ZNPList_ZPP_Body",             "phys",       "BodyList",             "ZPP_BodyList");
-ZPP_InteractorList = makeZPP_List("ZNPList_ZPP_Interactor",       "phys",       "InteractorList",       "ZPP_InteractorList");
-makeZPP_List("ZNPList_ZPP_Compound",         "phys",       "CompoundList",         "ZPP_CompoundList");
-makeZPP_List("ZNPList_ZPP_Listener",         "callbacks",  "ListenerList",         "ZPP_ListenerList");
-makeZPP_List("ZNPList_ZPP_CbType",           "callbacks",  "CbTypeList",           "ZPP_CbTypeList");
-makeZPP_List("ZNPList_ZPP_GeomPoly",         "geom",       "GeomPolyList",         "ZPP_GeomPolyList");
-makeZPP_List("ZNPList_RayResult",            "geom",       "RayResultList",        "ZPP_RayResultList");
-makeZPP_List("ZNPList_ConvexResult",         "geom",       "ConvexResultList",     "ZPP_ConvexResultList");
-makeZPP_List("ZNPList_ZPP_Edge",             "shape",      "EdgeList",             "ZPP_EdgeList");
-makeZPP_List("ZNPList_ZPP_Shape",            "shape",      "ShapeList",            "ZPP_ShapeList");
-makeZPP_List("ZNPList_ZPP_InteractionGroup", "dynamics",   "InteractionGroupList", "ZPP_InteractionGroupList");
-ZPP_ArbiterList = makeZPP_List("ZNPList_ZPP_Arbiter",          "dynamics",   "ArbiterList",          "ZPP_ArbiterList");
+ZPP_ConstraintList = makeZPP_List(
+  "ZNPList_ZPP_Constraint",
+  "constraint",
+  "ConstraintList",
+  "ZPP_ConstraintList",
+);
+makeZPP_List("ZNPList_ZPP_Body", "phys", "BodyList", "ZPP_BodyList");
+ZPP_InteractorList = makeZPP_List(
+  "ZNPList_ZPP_Interactor",
+  "phys",
+  "InteractorList",
+  "ZPP_InteractorList",
+);
+makeZPP_List("ZNPList_ZPP_Compound", "phys", "CompoundList", "ZPP_CompoundList");
+makeZPP_List("ZNPList_ZPP_Listener", "callbacks", "ListenerList", "ZPP_ListenerList");
+makeZPP_List("ZNPList_ZPP_CbType", "callbacks", "CbTypeList", "ZPP_CbTypeList");
+makeZPP_List("ZNPList_ZPP_GeomPoly", "geom", "GeomPolyList", "ZPP_GeomPolyList");
+makeZPP_List("ZNPList_RayResult", "geom", "RayResultList", "ZPP_RayResultList");
+makeZPP_List("ZNPList_ConvexResult", "geom", "ConvexResultList", "ZPP_ConvexResultList");
+makeZPP_List("ZNPList_ZPP_Edge", "shape", "EdgeList", "ZPP_EdgeList");
+makeZPP_List("ZNPList_ZPP_Shape", "shape", "ShapeList", "ZPP_ShapeList");
+makeZPP_List(
+  "ZNPList_ZPP_InteractionGroup",
+  "dynamics",
+  "InteractionGroupList",
+  "ZPP_InteractionGroupList",
+);
+ZPP_ArbiterList = makeZPP_List("ZNPList_ZPP_Arbiter", "dynamics", "ArbiterList", "ZPP_ArbiterList");

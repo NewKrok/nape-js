@@ -14,7 +14,6 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Collide } from "../geom/ZPP_Collide";
 
-
 export class ZPP_SweepPhase {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_SweepPhase"];

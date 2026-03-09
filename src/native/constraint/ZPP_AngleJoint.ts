@@ -37,7 +37,6 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   bias: number = 0.0;
   stepped: boolean = false;
 
-
   constructor() {
     super();
     this.ratio = 1;
@@ -100,13 +99,7 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
   }
 
   override copy(dict?: any, todo?: any): any {
-    const ret = ZPP_AngleJoint._createFn!(
-      null,
-      null,
-      this.jointMin,
-      this.jointMax,
-      this.ratio,
-    );
+    const ret = ZPP_AngleJoint._createFn!(null, null, this.jointMin, this.jointMax, this.ratio);
     this.copyto(ret);
     if (dict != null && this.b1 != null) {
       let b = null;

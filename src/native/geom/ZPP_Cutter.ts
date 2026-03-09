@@ -35,7 +35,14 @@ export class ZPP_Cutter {
    * @param output  Optional GeomPolyList to append results to
    * @returns       GeomPolyList of resulting sub-polygons
    */
-  static run(P: ZPP_GeomVert | null, _start: any, _end: any, bstart: boolean, bend: boolean, output: any): any {
+  static run(
+    P: ZPP_GeomVert | null,
+    _start: any,
+    _end: any,
+    bstart: boolean,
+    bend: boolean,
+    output: any,
+  ): any {
     const napeNs = getNape();
     const zpp_nape = napeNs.__zpp;
 
@@ -183,7 +190,10 @@ export class ZPP_Cutter {
             while (true) {
               const p3 = nite1;
               const q = p3.prev;
-              if (((p3.y < y && q!.y >= y) || (q!.y < y && p3.y >= y)) && (p3.x <= x || q!.x <= x)) {
+              if (
+                ((p3.y < y && q!.y >= y) || (q!.y < y && p3.y >= y)) &&
+                (p3.x <= x || q!.x <= x)
+              ) {
                 if (p3.x + ((y - p3.y) / (q!.y - p3.y)) * (q!.x - p3.x) < x) {
                   ret = !ret;
                 }
@@ -284,6 +294,7 @@ export class ZPP_Cutter {
     if (ZPP_Cutter.paths == null) {
       ZPP_Cutter.paths = new zpp_nape.util.ZNPList_ZPP_CutVert();
     }
+    // eslint-disable-next-line no-useless-assignment
     let start1: ZPP_GeomVert | null = null;
     const x2 = verts.posx;
     const y2 = verts.posy;
@@ -386,6 +397,7 @@ export class ZPP_Cutter {
           }
         } else if (i.value == 0) {
           const endof = start1!.prev;
+          // eslint-disable-next-line no-useless-assignment
           start1 = null;
           const x4 = endof!.x;
           const y4 = endof!.y;
@@ -462,6 +474,7 @@ export class ZPP_Cutter {
             start1.prev = obj6;
           }
           const endof1 = start1!.prev;
+          // eslint-disable-next-line no-useless-assignment
           start1 = null;
           const x5 = j!.posx;
           const y5 = j!.posy;
@@ -547,6 +560,7 @@ export class ZPP_Cutter {
             start1.prev = obj8;
           }
           const endof2 = start1!.prev;
+          // eslint-disable-next-line no-useless-assignment
           start1 = null;
           let ret13: ZPP_GeomVert;
           if (ZPP_GeomVert.zpp_pool == null) {

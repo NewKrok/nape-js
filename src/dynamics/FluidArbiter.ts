@@ -1,14 +1,16 @@
 import { Vec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
-import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import type { Body } from "../phys/Body";
 
 /**
- * A fluid arbiter between two shapes with fluid interaction.
+ * An arbiter representing a fluid interaction between a fluid shape and a body.
  *
- * Provides access to buoyancy/drag impulses, overlap area, and position.
- * Some properties are mutable only in pre-handlers.
+ * Provides access to buoyancy and drag impulses, the overlap area, and the
+ * centre of overlap. Properties marked _mutable in pre-handler_ can only be
+ * set within a {@link PreListener} handler.
+ *
+ * Obtain via {@link Arbiter.fluidArbiter} or by casting from a callback arbiter.
  *
  * Fully modernized — uses extracted ZPP_FluidArbiter directly.
  */
@@ -24,7 +26,10 @@ export class FluidArbiter extends Arbiter {
   // Properties
   // ---------------------------------------------------------------------------
 
-  /** Centre of the overlap region. Mutable in pre-handler only. */
+  /**
+   * Centre of the overlap region between the fluid and the body shape.
+   * _Mutable in pre-handler only._
+   */
   get position(): Vec2 {
     this._activeCheck();
     if (this.zpp_inner.fluidarb.wrap_position == null) {
@@ -47,7 +52,11 @@ export class FluidArbiter extends Arbiter {
     pos.set(value);
   }
 
-  /** Area of the overlap region. Mutable in pre-handler only. */
+  /**
+   * Area of the overlap region in pixels². Used to compute buoyancy force.
+   * Must be strictly positive and finite.
+   * _Mutable in pre-handler only._
+   */
   get overlap(): number {
     this._activeCheck();
     return this.zpp_inner.fluidarb.overlap;
@@ -69,7 +78,10 @@ export class FluidArbiter extends Arbiter {
   // Impulse methods
   // ---------------------------------------------------------------------------
 
-  /** Buoyancy impulse applied by this fluid arbiter. */
+  /**
+   * Buoyancy impulse applied in the last step as `(fx, fy, torque)`.
+   * @param body - One of the two bodies, or `null` for the combined value.
+   */
   buoyancyImpulse(body: Body | null = null): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
@@ -83,7 +95,10 @@ export class FluidArbiter extends Arbiter {
     }
   }
 
-  /** Drag impulse applied by this fluid arbiter. */
+  /**
+   * Linear and angular drag impulse applied in the last step as `(fx, fy, torque)`.
+   * @param body - One of the two bodies, or `null` for the combined value.
+   */
   dragImpulse(body: Body | null = null): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);

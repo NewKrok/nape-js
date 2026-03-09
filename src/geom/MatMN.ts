@@ -17,6 +17,11 @@ export class MatMN {
     return this;
   }
 
+  /**
+   * Create a zero-filled M×N matrix. Both dimensions must be ≥ 1.
+   * @param rows - Number of rows (must be ≥ 1).
+   * @param cols - Number of columns (must be ≥ 1).
+   */
   constructor(rows: number, cols: number) {
     if (rows <= 0 || cols <= 0) {
       throw new Error("Error: MatMN::dimensions cannot be < 1");
@@ -48,10 +53,12 @@ export class MatMN {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** Number of rows. */
   get rows(): number {
     return this.zpp_inner.m;
   }
 
+  /** Number of columns. */
   get cols(): number {
     return this.zpp_inner.n;
   }
@@ -60,6 +67,12 @@ export class MatMN {
   // Element access
   // ---------------------------------------------------------------------------
 
+  /**
+   * Read the element at (row, col). Zero-based indices.
+   * @param row - Zero-based row index.
+   * @param col - Zero-based column index.
+   * @returns The element value at the given position.
+   */
   x(row: number, col: number): number {
     if (row < 0 || col < 0 || row >= this.zpp_inner.m || col >= this.zpp_inner.n) {
       throw new Error("Error: MatMN indices out of range");
@@ -67,6 +80,13 @@ export class MatMN {
     return this.zpp_inner.x[row * this.zpp_inner.n + col];
   }
 
+  /**
+   * Write `value` to the element at (row, col). Returns the written value.
+   * @param row - Zero-based row index.
+   * @param col - Zero-based column index.
+   * @param value - The value to write.
+   * @returns The written value.
+   */
   setx(row: number, col: number, value: number): number {
     if (row < 0 || col < 0 || row >= this.zpp_inner.m || col >= this.zpp_inner.n) {
       throw new Error("Error: MatMN indices out of range");
@@ -78,6 +98,10 @@ export class MatMN {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * String representation with rows separated by semicolons.
+   * @returns A human-readable string of the matrix elements.
+   */
   toString(): string {
     let ret = "{ ";
     let fst = true;
@@ -97,6 +121,10 @@ export class MatMN {
     return ret;
   }
 
+  /**
+   * Return a new transposed matrix (N×M).
+   * @returns A new MatMN that is the transpose of this one.
+   */
   transpose(): MatMN {
     const ret = new MatMN(this.zpp_inner.n, this.zpp_inner.m);
     for (let i = 0; i < this.zpp_inner.m; i++) {
@@ -107,6 +135,11 @@ export class MatMN {
     return ret;
   }
 
+  /**
+   * Return the matrix product `this × matrix`. Column count of this must equal row count of `matrix`.
+   * @param matrix - The right-hand matrix to multiply by.
+   * @returns A new MatMN representing the product.
+   */
   mul(matrix: MatMN): MatMN {
     const y = matrix;
     if (this.zpp_inner.n !== y.zpp_inner.m) {
@@ -131,4 +164,3 @@ export class MatMN {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.MatMN = MatMN;
-

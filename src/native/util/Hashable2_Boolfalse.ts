@@ -68,4 +68,3 @@ export class Hashable2_Boolfalse {
   free(): void {}
   alloc(): void {}
 }
-

@@ -57,12 +57,16 @@ describe("Ray", () => {
 
   it("should throw on setting null origin", () => {
     const ray = new Ray(new Vec2(0, 0), new Vec2(1, 0));
-    expect(() => { ray.origin = null!; }).toThrow("origin cannot be null");
+    expect(() => {
+      ray.origin = null!;
+    }).toThrow("origin cannot be null");
   });
 
   it("should throw on setting null direction", () => {
     const ray = new Ray(new Vec2(0, 0), new Vec2(1, 0));
-    expect(() => { ray.direction = null!; }).toThrow("direction cannot be null");
+    expect(() => {
+      ray.direction = null!;
+    }).toThrow("direction cannot be null");
   });
 
   it("should get and set maxDistance", () => {
@@ -78,7 +82,9 @@ describe("Ray", () => {
 
   it("should throw on NaN maxDistance", () => {
     const ray = new Ray(new Vec2(0, 0), new Vec2(1, 0));
-    expect(() => { ray.maxDistance = NaN; }).toThrow("maxDistance cannot be NaN");
+    expect(() => {
+      ray.maxDistance = NaN;
+    }).toThrow("maxDistance cannot be NaN");
   });
 
   it("should have userData", () => {

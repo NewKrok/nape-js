@@ -94,10 +94,7 @@ function _newVec2(x: number, y: number, weak: boolean): Vec2 {
  * Ensure a singleton enum flag is initialised. Returns the flag value.
  * This replaces the verbose repeated ZPP_Flags init pattern from compiled code.
  */
-function _ensureFlag<T>(
-  flagName: keyof typeof ZPP_Flags,
-  ctor: () => T,
-): T {
+function _ensureFlag<T>(flagName: keyof typeof ZPP_Flags, ctor: () => T): T {
   if ((ZPP_Flags as any)[flagName] == null) {
     ZPP_Flags.internal = true;
     (ZPP_Flags as any)[flagName] = ctor();
@@ -107,9 +104,7 @@ function _ensureFlag<T>(
 }
 
 /**
- * A rigid body in the physics simulation.
- *
- * Fully modernized — all methods implemented directly using ZPP_Body.
+ * A rigid body in the physics simulation. Add shapes to give it geometry, then add it to a `Space` to participate in simulation.
  */
 export class Body extends Interactor {
   static __name__ = ["nape", "phys", "Body"];
@@ -117,8 +112,13 @@ export class Body extends Interactor {
 
   /** Direct access to the extracted internal ZPP_Body. */
   zpp_inner!: ZPP_Body;
+  /** If true, this body is included in debug rendering. */
   debugDraw: boolean = true;
 
+  /**
+   * @param type - Body type (DYNAMIC by default).
+   * @param position - Initial world-space position (defaults to origin).
+   */
   constructor(type?: BodyType, position?: Vec2) {
     super();
 
@@ -210,6 +210,7 @@ export class Body extends Interactor {
   // Type
   // ---------------------------------------------------------------------------
 
+  /** The body type: DYNAMIC, STATIC, or KINEMATIC. Cannot be changed mid-step. */
   get type(): BodyType {
     return ZPP_Body.types[this.zpp_inner.type];
   }
@@ -239,12 +240,15 @@ export class Body extends Interactor {
     }
   }
 
+  /** Return true if this body is static. */
   isStatic(): boolean {
     return this.zpp_inner.type === 1;
   }
+  /** Return true if this body is dynamic. */
   isDynamic(): boolean {
     return this.zpp_inner.type === 2;
   }
+  /** Return true if this body is kinematic. */
   isKinematic(): boolean {
     return this.zpp_inner.type === 3;
   }
@@ -253,6 +257,7 @@ export class Body extends Interactor {
   // Position & rotation
   // ---------------------------------------------------------------------------
 
+  /** World-space position of the body's origin. Live Vec2 — mutating it moves the body. */
   get position(): Vec2 {
     if (this.zpp_inner.wrap_pos == null) {
       this.zpp_inner.setupPosition();
@@ -272,6 +277,10 @@ export class Body extends Interactor {
     }
   }
 
+  /**
+   * Rotation of the body in radians.
+   * @throws If set on a static body that is already in a space.
+   */
   get rotation(): number {
     return this.zpp_inner.rot;
   }
@@ -298,6 +307,7 @@ export class Body extends Interactor {
   // Velocity
   // ---------------------------------------------------------------------------
 
+  /** Linear velocity in world space (units/s). Live Vec2. Static bodies cannot have velocity. */
   get velocity(): Vec2 {
     if (this.zpp_inner.wrap_vel == null) {
       this.zpp_inner.setupVelocity();
@@ -317,6 +327,7 @@ export class Body extends Interactor {
     }
   }
 
+  /** Angular velocity in radians per second. */
   get angularVel(): number {
     return this.zpp_inner.angvel;
   }
@@ -337,6 +348,7 @@ export class Body extends Interactor {
     }
   }
 
+  /** Desired velocity for kinematic bodies; the engine tries to match this each step. */
   get kinematicVel(): Vec2 {
     if (this.zpp_inner.wrap_kinvel == null) {
       this.zpp_inner.setupkinvel();
@@ -356,6 +368,7 @@ export class Body extends Interactor {
     }
   }
 
+  /** Desired angular velocity for kinematic bodies. */
   get kinAngVel(): number {
     return this.zpp_inner.kinangvel;
   }
@@ -373,6 +386,7 @@ export class Body extends Interactor {
     }
   }
 
+  /** Surface velocity used in friction calculations. */
   get surfaceVel(): Vec2 {
     if (this.zpp_inner.wrap_svel == null) {
       this.zpp_inner.setupsvel();
@@ -396,6 +410,7 @@ export class Body extends Interactor {
   // Force & torque
   // ---------------------------------------------------------------------------
 
+  /** Accumulated force applied to this body for the current step (cleared after each step). */
   get force(): Vec2 {
     if (this.zpp_inner.wrap_force == null) {
       this.zpp_inner.setupForce();
@@ -415,6 +430,7 @@ export class Body extends Interactor {
     }
   }
 
+  /** Accumulated torque applied to this body for the current step (only for DYNAMIC bodies). */
   get torque(): number {
     return this.zpp_inner.torque;
   }
@@ -439,6 +455,10 @@ export class Body extends Interactor {
   // Mass & inertia
   // ---------------------------------------------------------------------------
 
+  /**
+   * Mass in kg. Must be finite and > 0. Setting switches massMode to FIXED.
+   * @throws If the body is the world body, or if no shapes are present in DEFAULT mass mode.
+   */
   get mass(): number {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no mass");
@@ -470,6 +490,10 @@ export class Body extends Interactor {
     this.zpp_inner.invalidate_mass();
   }
 
+  /**
+   * Moment of inertia. Must be finite and > 0. Setting switches inertiaMode to FIXED.
+   * @throws If the body is the world body, or if no shapes are present in DEFAULT inertia mode.
+   */
   get inertia(): number {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no inertia");
@@ -501,6 +525,7 @@ export class Body extends Interactor {
     this.zpp_inner.invalidate_inertia();
   }
 
+  /** Effective mass used by the constraint solver (accounts for allowMovement). */
   get constraintMass(): number {
     if (!this.zpp_inner.world) {
       this.zpp_inner.validate_mass();
@@ -508,6 +533,7 @@ export class Body extends Interactor {
     return this.zpp_inner.smass;
   }
 
+  /** Effective inertia used by the constraint solver (accounts for allowRotation). */
   get constraintInertia(): number {
     if (!this.zpp_inner.world) {
       this.zpp_inner.validate_inertia();
@@ -515,6 +541,7 @@ export class Body extends Interactor {
     return this.zpp_inner.sinertia;
   }
 
+  /** Gravitational mass. Defaults to the same as `mass`. */
   get gravMass(): number {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no gravMass");
@@ -542,6 +569,7 @@ export class Body extends Interactor {
     this.zpp_inner.invalidate_gravMass();
   }
 
+  /** Scale factor applied to gravMass relative to the dynamic mass. */
   get gravMassScale(): number {
     this.zpp_inner.validate_gravMassScale();
     if (this.zpp_inner.shapes.head == null) {
@@ -570,6 +598,7 @@ export class Body extends Interactor {
   // Flags
   // ---------------------------------------------------------------------------
 
+  /** If true, continuous collision detection (CCD) is enabled for this body. */
   get isBullet(): boolean {
     return this.zpp_inner.bulletEnabled;
   }
@@ -577,6 +606,7 @@ export class Body extends Interactor {
     this.zpp_inner.bulletEnabled = value;
   }
 
+  /** If true, CCD is disabled even if `isBullet` is set. */
   get disableCCD(): boolean {
     return this.zpp_inner.disableCCD;
   }
@@ -584,32 +614,34 @@ export class Body extends Interactor {
     this.zpp_inner.disableCCD = value;
   }
 
+  /** If false, translational motion is frozen (infinite effective mass). */
   get allowMovement(): boolean {
     return !this.zpp_inner.nomove;
   }
   set allowMovement(value: boolean) {
-    this.zpp_inner.immutable_midstep(
-      "Body::" + (value == null ? "null" : "" + value),
-    );
+    this.zpp_inner.immutable_midstep("Body::" + (value == null ? "null" : "" + value));
     if (!this.zpp_inner.nomove !== value) {
       this.zpp_inner.nomove = !value;
       this.zpp_inner.invalidate_mass();
     }
   }
 
+  /** If false, rotational motion is frozen (infinite effective inertia). */
   get allowRotation(): boolean {
     return !this.zpp_inner.norotate;
   }
   set allowRotation(value: boolean) {
-    this.zpp_inner.immutable_midstep(
-      "Body::" + (value == null ? "null" : "" + value),
-    );
+    this.zpp_inner.immutable_midstep("Body::" + (value == null ? "null" : "" + value));
     if (!this.zpp_inner.norotate !== value) {
       this.zpp_inner.norotate = !value;
       this.zpp_inner.invalidate_inertia();
     }
   }
 
+  /**
+   * True if the body is currently sleeping.
+   * @throws If the body is not in a Space.
+   */
   get isSleeping(): boolean {
     if (this.zpp_inner.space == null) {
       throw new Error(
@@ -623,10 +655,12 @@ export class Body extends Interactor {
   // Relationships
   // ---------------------------------------------------------------------------
 
+  /** List of shapes attached to this body. */
   get shapes(): NapeList<Shape> {
     return new NapeList(this.zpp_inner.wrap_shapes, Shape._wrap);
   }
 
+  /** The Space this body belongs to. Setting adds/removes it from the space. */
   get space(): Space {
     if (this.zpp_inner.space == null) return null as unknown as Space;
     return Space._wrap(this.zpp_inner.space.outer);
@@ -659,14 +693,13 @@ export class Body extends Interactor {
     }
   }
 
+  /** The Compound this body belongs to, or null. */
   get compound(): Compound | null {
     if (this.zpp_inner.compound == null) return null;
     return this.zpp_inner.compound.outer;
   }
   set compound(value: Compound | null) {
-    const currentCompound = this.zpp_inner.compound == null
-      ? null
-      : this.zpp_inner.compound.outer;
+    const currentCompound = this.zpp_inner.compound == null ? null : this.zpp_inner.compound.outer;
     if (currentCompound !== value) {
       if (currentCompound != null) {
         currentCompound.zpp_inner.wrap_bodies.remove(this);
@@ -682,6 +715,10 @@ export class Body extends Interactor {
     }
   }
 
+  /**
+   * World-space AABB enclosing all shapes.
+   * @throws If this is the world body.
+   */
   get bounds(): AABB {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no bounds");
@@ -689,6 +726,7 @@ export class Body extends Interactor {
     return AABB._wrap(this.zpp_inner.aabb.wrapper());
   }
 
+  /** Constraint-solved velocity (read-only view used by the solver). */
   get constraintVelocity(): Vec2 {
     if (this.zpp_inner.wrapcvel == null) {
       this.zpp_inner.setup_cvel();
@@ -696,6 +734,10 @@ export class Body extends Interactor {
     return this.zpp_inner.wrapcvel;
   }
 
+  /**
+   * Local-space centre of mass (read-only, lazy-computed from shapes).
+   * @throws If this is the world body.
+   */
   get localCOM(): Vec2 {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no localCOM");
@@ -710,6 +752,10 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_localCOM;
   }
 
+  /**
+   * World-space centre of mass (read-only, lazy-computed).
+   * @throws If this is the world body.
+   */
   get worldCOM(): Vec2 {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world has no worldCOM");
@@ -728,6 +774,7 @@ export class Body extends Interactor {
   // Mode getters/setters
   // ---------------------------------------------------------------------------
 
+  /** Controls how mass is computed: DEFAULT (from shapes) or FIXED (manually set). */
   get massMode(): MassMode {
     const nape = getNape();
     const d = _ensureFlag("MassMode_DEFAULT", () => new nape.phys.MassMode());
@@ -748,6 +795,7 @@ export class Body extends Interactor {
     this.zpp_inner.invalidate_mass();
   }
 
+  /** Controls how inertia is computed: DEFAULT or FIXED. */
   get inertiaMode(): InertiaMode {
     const nape = getNape();
     const d = _ensureFlag("InertiaMode_DEFAULT", () => new nape.phys.InertiaMode());
@@ -768,6 +816,7 @@ export class Body extends Interactor {
     this.zpp_inner.invalidate_inertia();
   }
 
+  /** Controls gravitational mass: DEFAULT, FIXED, or SCALED. */
   get gravMassMode(): GravMassMode {
     const nape = getNape();
     const d = _ensureFlag("GravMassMode_DEFAULT", () => new nape.phys.GravMassMode());
@@ -798,6 +847,11 @@ export class Body extends Interactor {
   // Copy
   // ---------------------------------------------------------------------------
 
+  /**
+   * Create a deep copy of this body (shapes, mass properties, etc.).
+   * @returns A new Body with identical configuration.
+   * @throws If this is the world body.
+   */
   copy(): Body {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world cannot be copied");
@@ -809,6 +863,10 @@ export class Body extends Interactor {
   // toString
   // ---------------------------------------------------------------------------
 
+  /**
+   * String identifier like `(dynamic)#42`.
+   * @returns A human-readable description of this body.
+   */
   override toString(): string {
     const zpp = this.zpp_inner;
     const prefix = zpp.world
@@ -821,6 +879,12 @@ export class Body extends Interactor {
   // Integration
   // ---------------------------------------------------------------------------
 
+  /**
+   * Manually integrate the body's position and rotation by `deltaTime` seconds (outside of `Space.step`).
+   * @param deltaTime - Time in seconds to integrate over.
+   * @returns `this` for chaining.
+   * @throws If `deltaTime` is NaN.
+   */
   integrate(deltaTime: number): Body {
     if (deltaTime !== deltaTime) {
       throw new Error("Cannot integrate by NaN time");
@@ -869,6 +933,12 @@ export class Body extends Interactor {
   // Transform methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Transform a point from local body space to world space.
+   * @param point - The point in local space.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns The transformed point in world space.
+   */
   localPointToWorld(point: Vec2, weak: boolean = false): Vec2 {
     _checkVec2Disposed(point);
     if (point == null) {
@@ -883,6 +953,12 @@ export class Body extends Interactor {
     return _newVec2(tempx + this.zpp_inner.posx, tempy + this.zpp_inner.posy, weak);
   }
 
+  /**
+   * Transform a point from world space to local body space.
+   * @param point - The point in world space.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns The transformed point in local space.
+   */
   worldPointToLocal(point: Vec2, weak: boolean = false): Vec2 {
     _checkVec2Disposed(point);
     if (point == null) {
@@ -897,6 +973,12 @@ export class Body extends Interactor {
     return _newVec2(tempx, tempy, weak);
   }
 
+  /**
+   * Rotate a vector from local body space to world space (no translation).
+   * @param vector - The vector in local space.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns The rotated vector in world space.
+   */
   localVectorToWorld(vector: Vec2, weak: boolean = false): Vec2 {
     _checkVec2Disposed(vector);
     if (vector == null) {
@@ -911,6 +993,12 @@ export class Body extends Interactor {
     return _newVec2(tempx, tempy, weak);
   }
 
+  /**
+   * Rotate a vector from world space to local body space (no translation).
+   * @param vector - The vector in world space.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns The rotated vector in local space.
+   */
   worldVectorToLocal(vector: Vec2, weak: boolean = false): Vec2 {
     _checkVec2Disposed(vector);
     if (vector == null) {
@@ -929,6 +1017,15 @@ export class Body extends Interactor {
   // Impulse application
   // ---------------------------------------------------------------------------
 
+  /**
+   * Apply a linear (and optionally angular) impulse to the body.
+   * If `pos` is given, it creates a torque about the body's centre.
+   * If `sleepable` is true, sleeping bodies are not woken.
+   * @param impulse - The linear impulse vector (world space).
+   * @param pos - Optional world-space point of application.
+   * @param sleepable - If true, the body will not be woken if sleeping.
+   * @returns `this` for chaining.
+   */
   applyImpulse(impulse: Vec2, pos?: Vec2, sleepable: boolean = false): Body {
     _checkVec2Disposed(impulse);
     if (pos != null) _checkVec2Disposed(pos);
@@ -966,6 +1063,12 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Apply a direct angular impulse (change in angular velocity × inertia).
+   * @param impulse - The angular impulse magnitude.
+   * @param sleepable - If true, the body will not be woken if sleeping.
+   * @returns `this` for chaining.
+   */
   applyAngularImpulse(impulse: number, sleepable: boolean = false): Body {
     if (this.zpp_inner.world) {
       throw new Error("Error: Space::world is immutable");
@@ -983,11 +1086,16 @@ export class Body extends Interactor {
     return this;
   }
 
-  setVelocityFromTarget(
-    targetPosition: Vec2,
-    targetRotation: number,
-    deltaTime: number,
-  ): Body {
+  /**
+   * Set linear and angular velocity so the body reaches the given target pose in `deltaTime` seconds.
+   * Useful for kinematic or manually driven bodies.
+   * @param targetPosition - Desired world-space position.
+   * @param targetRotation - Desired rotation in radians.
+   * @param deltaTime - Time in seconds over which to reach the target.
+   * @returns `this` for chaining.
+   * @throws If `targetPosition` is null or `deltaTime` is zero.
+   */
+  setVelocityFromTarget(targetPosition: Vec2, targetRotation: number, deltaTime: number): Body {
     _checkVec2Disposed(targetPosition);
     if (targetPosition == null) {
       throw new Error("Cannot set velocity for null target position");
@@ -1028,6 +1136,11 @@ export class Body extends Interactor {
   // Shape operations
   // ---------------------------------------------------------------------------
 
+  /**
+   * Translate all shapes attached to this body in local space by `translation`.
+   * @param translation - Offset vector in local space.
+   * @returns `this` for chaining.
+   */
   translateShapes(translation: Vec2): Body {
     this.zpp_inner.immutable_midstep("Body::translateShapes()");
     _checkVec2Disposed(translation);
@@ -1049,6 +1162,11 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Rotate all shapes attached to this body in local space by `angle` radians.
+   * @param angle - Rotation in radians.
+   * @returns `this` for chaining.
+   */
   rotateShapes(angle: number): Body {
     this.zpp_inner.immutable_midstep("Body::rotateShapes()");
     if (this.zpp_inner.world) {
@@ -1062,6 +1180,12 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Scale all shapes attached to this body in local space.
+   * @param scaleX - Horizontal scale factor.
+   * @param scaleY - Vertical scale factor.
+   * @returns `this` for chaining.
+   */
   scaleShapes(scaleX: number, scaleY: number): Body {
     this.zpp_inner.immutable_midstep("Body::scaleShapes()");
     if (this.zpp_inner.world) {
@@ -1075,6 +1199,11 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Apply an affine transform matrix to all shapes in local space.
+   * @param matrix - The 2D affine transformation matrix.
+   * @returns `this` for chaining.
+   */
   transformShapes(matrix: Mat23): Body {
     this.zpp_inner.immutable_midstep("Body::transformShapes()");
     if (this.zpp_inner.world) {
@@ -1088,6 +1217,11 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Translate all shapes and adjust the body position so the local centre of mass coincides with the body origin.
+   * @returns `this` for chaining.
+   * @throws If the body has no shapes.
+   */
   align(): Body {
     this.zpp_inner.immutable_midstep("Body::align()");
     if (this.zpp_inner.world) {
@@ -1113,6 +1247,14 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Rotate the body about a world-space pivot point by `angle` radians.
+   * Moves the body's position and increments its rotation.
+   * @param centre - World-space pivot point.
+   * @param angle - Rotation in radians.
+   * @returns `this` for chaining.
+   * @throws If `centre` is null or `angle` is NaN.
+   */
   rotate(centre: Vec2, angle: number): Body {
     _checkVec2Disposed(centre);
     if (centre == null) {
@@ -1166,6 +1308,11 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Set the same `Material` on every shape attached to this body.
+   * @param material - The material to apply.
+   * @returns `this` for chaining.
+   */
   setShapeMaterials(material: Material): Body {
     this.zpp_inner.immutable_midstep("Body::setShapeMaterials()");
     if (this.zpp_inner.world) {
@@ -1185,6 +1332,11 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Set the same `InteractionFilter` on every shape attached to this body.
+   * @param filter - The interaction filter to apply.
+   * @returns `this` for chaining.
+   */
   setShapeFilters(filter: InteractionFilter): Body {
     this.zpp_inner.immutable_midstep("Body::setShapeFilters()");
     if (this.zpp_inner.world) {
@@ -1204,6 +1356,11 @@ export class Body extends Interactor {
     return this;
   }
 
+  /**
+   * Set the same `FluidProperties` on every shape attached to this body.
+   * @param fluidProperties - The fluid properties to apply.
+   * @returns `this` for chaining.
+   */
   setShapeFluidProperties(fluidProperties: FluidProperties): Body {
     this.zpp_inner.immutable_midstep("Body::setShapeFluidProperties()");
     if (this.zpp_inner.world) {
@@ -1233,6 +1390,11 @@ export class Body extends Interactor {
   // contains
   // ---------------------------------------------------------------------------
 
+  /**
+   * Test whether a world-space point lies inside any shape attached to this body.
+   * @param point - The point to test in world space.
+   * @returns True if the point is inside at least one shape.
+   */
   contains(point: Vec2): boolean {
     _checkVec2Disposed(point);
     if (point == null) {
@@ -1258,11 +1420,28 @@ export class Body extends Interactor {
   // Connected/interacting bodies
   // ---------------------------------------------------------------------------
 
+  /**
+   * Return the set of bodies connected to this body via constraints.
+   * @param depth - Maximum traversal depth (-1 means unlimited).
+   * @param output - Optional existing list to accumulate results into.
+   * @returns A BodyList of connected bodies.
+   */
   connectedBodies(depth: number = -1, output: object | null = null): object {
     return this.zpp_inner.connectedBodies(depth, output);
   }
 
-  interactingBodies(type: InteractionType | null = null, _depth: number = -1, output: object | null = null): object {
+  /**
+   * Return the set of bodies currently interacting with this body via arbiters.
+   * @param type - Filter by interaction type (COLLISION, FLUID, SENSOR), or null for all.
+   * @param _depth - Unused; reserved for future use.
+   * @param output - Optional existing list to accumulate results into.
+   * @returns A BodyList of interacting bodies.
+   */
+  interactingBodies(
+    type: InteractionType | null = null,
+    _depth: number = -1,
+    output: object | null = null,
+  ): object {
     let arbiter_type: number;
     if (type == null) {
       arbiter_type = ZPP_Arbiter.COL | ZPP_Arbiter.SENSOR | ZPP_Arbiter.FLUID;
@@ -1289,6 +1468,12 @@ export class Body extends Interactor {
   // Impulse queries
   // ---------------------------------------------------------------------------
 
+  /**
+   * Sum of normal (penetration-resolving) impulses received from collision arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @param freshOnly - If true, only newly created arbiters are considered.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   normalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
@@ -1297,6 +1482,12 @@ export class Body extends Interactor {
     );
   }
 
+  /**
+   * Sum of tangent (friction) impulses received from collision arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @param freshOnly - If true, only newly created arbiters are considered.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   tangentImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
@@ -1305,6 +1496,12 @@ export class Body extends Interactor {
     );
   }
 
+  /**
+   * Sum of total contact impulses (normal + tangent) from collision arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @param freshOnly - If true, only newly created arbiters are considered.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   totalContactsImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.COL,
@@ -1313,6 +1510,12 @@ export class Body extends Interactor {
     );
   }
 
+  /**
+   * Sum of rolling (angular friction) impulses from collision arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @param freshOnly - If true, only newly created arbiters are considered.
+   * @returns The total rolling impulse scalar.
+   */
   rollingImpulse(body: Body | null = null, freshOnly: boolean = false): number {
     let ret = 0;
     const arbList = this._getArbiters();
@@ -1337,6 +1540,11 @@ export class Body extends Interactor {
     return ret;
   }
 
+  /**
+   * Sum of buoyancy impulses received from fluid arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   buoyancyImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
@@ -1345,6 +1553,11 @@ export class Body extends Interactor {
     );
   }
 
+  /**
+   * Sum of fluid drag impulses received from fluid arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   dragImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
@@ -1353,6 +1566,11 @@ export class Body extends Interactor {
     );
   }
 
+  /**
+   * Sum of total fluid impulses (buoyancy + drag) from fluid arbiters this step.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   totalFluidImpulse(body: Body | null = null): Vec3 {
     return this._arbiterImpulseQuery(
       ZPP_Arbiter.FLUID,
@@ -1361,6 +1579,10 @@ export class Body extends Interactor {
     );
   }
 
+  /**
+   * Sum of impulses applied to this body by all attached constraints this step.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   constraintsImpulse(): Vec3 {
     let retx = 0;
     let rety = 0;
@@ -1382,6 +1604,12 @@ export class Body extends Interactor {
     return Vec3.get(retx, rety, retz);
   }
 
+  /**
+   * Sum of all impulses (contacts + constraints) applied to this body this step, excluding sensor arbiters.
+   * @param body - If provided, only arbiters shared with `body` are summed.
+   * @param freshOnly - If true, only newly created contact arbiters are considered.
+   * @returns A Vec3 where x/y are the linear component and z is the angular component.
+   */
   totalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     let retx = 0;
     let rety = 0;
@@ -1434,6 +1662,12 @@ export class Body extends Interactor {
     return Vec3.get(retx, rety, retz);
   }
 
+  /**
+   * Compute a heuristic crush factor indicating how strongly this body is being compressed from multiple directions.
+   * A value near zero means balanced forces; larger values indicate compression.
+   * @returns The crush factor (dimensionless).
+   * @throws If the body is not in a Space.
+   */
   crushFactor(): number {
     if (this.zpp_inner.space == null) {
       throw new Error(
@@ -1521,10 +1755,7 @@ export class Body extends Interactor {
 
   private _getConstraints(): any {
     if (this.zpp_inner.wrap_constraints == null) {
-      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(
-        this.zpp_inner.constraints,
-        true,
-      );
+      this.zpp_inner.wrap_constraints = ZPP_ConstraintList.get(this.zpp_inner.constraints, true);
     }
     return this.zpp_inner.wrap_constraints;
   }

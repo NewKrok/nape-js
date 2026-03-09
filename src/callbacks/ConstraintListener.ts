@@ -13,12 +13,45 @@ import type { OptionType } from "./OptionType";
 import type { CbType } from "./CbType";
 import type { ConstraintCallback } from "./ConstraintCallback";
 
+/**
+ * Listener for constraint lifecycle events.
+ *
+ * Fires when a constraint matching the `options` filter wakes, sleeps, or breaks.
+ *
+ * Valid events: {@link CbEvent.WAKE}, {@link CbEvent.SLEEP}, {@link CbEvent.BREAK}.
+ *
+ * A `BREAK` event fires when the constraint exceeds its `maxForce` or `maxError` limit.
+ * If `removeOnBreak` is `true` on the constraint it is also removed from the space.
+ *
+ * @example
+ * ```ts
+ * const listener = new ConstraintListener(
+ *   CbEvent.BREAK,
+ *   myConstraintType,
+ *   (cb) => { console.log(cb.constraint, 'broke!'); },
+ * );
+ * space.listeners.add(listener);
+ * ```
+ *
+ * Fully modernized from nape-compiled.js lines 546–649.
+ */
 export class ConstraintListener extends Listener {
   static __name__ = ["nape", "callbacks", "ConstraintListener"];
 
   zpp_inner_zn: ZPP_ConstraintListener;
 
-  constructor(event: CbEvent, options: OptionType | CbType | null, handler: (cb: ConstraintCallback) => void, precedence = 0) {
+  /**
+   * @param event - Must be `CbEvent.WAKE`, `CbEvent.SLEEP`, or `CbEvent.BREAK`.
+   * @param options - `CbType` or `OptionType` filter, or `null` to match all constraints.
+   * @param handler - Called with a {@link ConstraintCallback} each time the event fires.
+   * @param precedence - Execution order relative to other listeners (higher = first). Default `0`.
+   */
+  constructor(
+    event: CbEvent,
+    options: OptionType | CbType | null,
+    handler: (cb: ConstraintCallback) => void,
+    precedence = 0,
+  ) {
     ZPP_Listener.internal = true;
     super();
     ZPP_Listener.internal = false;
@@ -53,6 +86,10 @@ export class ConstraintListener extends Listener {
     this.zpp_inner.precedence = precedence;
   }
 
+  /**
+   * The filter used to match constraints. Returns an {@link OptionType} representing
+   * the current include/exclude configuration.
+   */
   get options(): OptionType {
     return this.zpp_inner_zn.options.outer;
   }
@@ -61,6 +98,7 @@ export class ConstraintListener extends Listener {
     this.zpp_inner_zn.options.set((options as any).zpp_inner);
   }
 
+  /** The callback function invoked when the event fires. Cannot be set to null. */
   get handler(): (cb: ConstraintCallback) => void {
     return this.zpp_inner_zn.handler;
   }

@@ -13,7 +13,6 @@ import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 
-
 export class ZPP_DistanceJoint extends ZPP_Constraint {
   static override __name__ = ["zpp_nape", "constraint", "ZPP_DistanceJoint"];
   static __super__ = ZPP_Constraint;
@@ -47,7 +46,6 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
   gamma = 0.0;
   bias = 0.0;
   stepped = false;
-
 
   constructor() {
     super();

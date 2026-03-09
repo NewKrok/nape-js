@@ -98,4 +98,3 @@ export class ZPP_Vec2List {
     }
   }
 }
-

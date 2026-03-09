@@ -26,7 +26,6 @@ export class ZPP_PartitionPair {
   _inuse = false;
   next: ZPP_PartitionPair | null = null;
 
-
   // --- Static methods ---
 
   static get(a: any, b: any): ZPP_PartitionPair {

@@ -1,15 +1,18 @@
 import { Vec3 } from "../geom/Vec3";
 import { Arbiter } from "./Arbiter";
-import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import type { Vec2 } from "../geom/Vec2";
 import type { Edge } from "../shape/Edge";
 import type { Body } from "../phys/Body";
 
 /**
- * A collision arbiter between two shapes in contact.
+ * An arbiter representing a physical collision between two solid shapes.
  *
- * Provides access to contact points, collision normal, friction, elasticity,
- * and impulse information. Some properties are mutable only in pre-handlers.
+ * Provides access to contact points, collision normal, friction coefficients,
+ * elasticity, and impulse data. Properties marked _mutable in pre-handler_ can
+ * only be set within a {@link PreListener} handler.
+ *
+ * Obtain via {@link Arbiter.collisionArbiter} or by casting from a callback's
+ * arbiter list.
  *
  * Fully modernized — uses extracted ZPP_ColArbiter directly.
  */
@@ -25,6 +28,10 @@ export class CollisionArbiter extends Arbiter {
   // Properties (read-only)
   // ---------------------------------------------------------------------------
 
+  /**
+   * The list of active contact points between the two shapes.
+   * Contains 1 or 2 {@link Contact} objects depending on the collision geometry.
+   */
   // ContactList is a special-case list; no generic factory type
   get contacts(): object {
     this._activeCheck();
@@ -34,7 +41,10 @@ export class CollisionArbiter extends Arbiter {
     return this.zpp_inner.colarb.wrap_contacts;
   }
 
-  /** Collision normal vector. */
+  /**
+   * Collision normal vector pointing from `shape1` toward `shape2`.
+   * Read-only; available after the arbiter is active.
+   */
   get normal(): Vec2 {
     this._activeCheck();
     if (this.zpp_inner.colarb.wrap_normal == null) {
@@ -93,7 +103,14 @@ export class CollisionArbiter extends Arbiter {
   // Properties (mutable in pre-handler)
   // ---------------------------------------------------------------------------
 
-  /** Coefficient of restitution (elasticity). Mutable in pre-handler only. */
+  /**
+   * Coefficient of restitution (bounciness).
+   *
+   * Combined from the two shapes' `elasticity` values. Can be overridden
+   * inside a pre-handler. Must be `>= 0`.
+   *
+   * _Mutable in pre-handler only._
+   */
   get elasticity(): number {
     this._activeCheck();
     this.zpp_inner.colarb.validate_props();
@@ -113,7 +130,10 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.validate_props();
   }
 
-  /** Dynamic friction coefficient. Mutable in pre-handler only. */
+  /**
+   * Dynamic (kinetic) friction coefficient — applied when the contact is sliding.
+   * Combined from the two shapes' material values. _Mutable in pre-handler only._
+   */
   get dynamicFriction(): number {
     this._activeCheck();
     this.zpp_inner.colarb.validate_props();
@@ -133,7 +153,10 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.validate_props();
   }
 
-  /** Static friction coefficient. Mutable in pre-handler only. */
+  /**
+   * Static friction coefficient — applied when the contact is at rest.
+   * Combined from the two shapes' material values. _Mutable in pre-handler only._
+   */
   get staticFriction(): number {
     this._activeCheck();
     this.zpp_inner.colarb.validate_props();
@@ -153,7 +176,10 @@ export class CollisionArbiter extends Arbiter {
     this.zpp_inner.colarb.validate_props();
   }
 
-  /** Rolling friction coefficient. Mutable in pre-handler only. */
+  /**
+   * Rolling friction coefficient — resists rolling motion.
+   * Combined from the two shapes' material values. _Mutable in pre-handler only._
+   */
   get rollingFriction(): number {
     this._activeCheck();
     this.zpp_inner.colarb.validate_props();
@@ -197,14 +223,22 @@ export class CollisionArbiter extends Arbiter {
   // Impulse methods
   // ---------------------------------------------------------------------------
 
-  /** Normal impulse accumulated across all contacts. */
+  /**
+   * Impulse applied in the normal (collision) direction, summed over all contacts.
+   * @param body - One of the two bodies, or `null` for the combined value.
+   * @param freshOnly - Only include new contact points. Default `false`.
+   */
   normalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     return this._accumulateImpulse("normalImpulse", body, freshOnly);
   }
 
-  /** Tangent (friction) impulse accumulated across all contacts. */
+  /**
+   * Friction impulse applied in the tangent direction, summed over all contacts.
+   * @param body - One of the two bodies, or `null` for the combined value.
+   * @param freshOnly - Only include new contact points. Default `false`.
+   */
   tangentImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
@@ -218,7 +252,11 @@ export class CollisionArbiter extends Arbiter {
     return this._accumulateImpulse("totalImpulse", body, freshOnly);
   }
 
-  /** Rolling impulse for this collision. */
+  /**
+   * Rolling impulse applied by this collision.
+   * @param body - One of the two bodies, or `null` for the combined value.
+   * @param freshOnly - Only include new contact points. Default `false`.
+   */
   rollingImpulse(body: Body | null = null, freshOnly: boolean = false): number {
     this._activeCheck();
     if (body != null) this._checkBody(body);

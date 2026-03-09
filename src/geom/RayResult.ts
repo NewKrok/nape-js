@@ -99,4 +99,3 @@ export class RayResult {
 
 // Register factory callback so ZPP_ConvexRayResult can create RayResult without circular import
 ZPP_ConvexRayResult._createRayResult = () => new RayResult();
-

@@ -47,23 +47,13 @@ describe("PreListener", () => {
 
     it("throws when handler is null", () => {
       expect(() => {
-        new PreListener(
-          InteractionType.COLLISION,
-          CbType.ANY_BODY,
-          CbType.ANY_BODY,
-          null as any,
-        );
+        new PreListener(InteractionType.COLLISION, CbType.ANY_BODY, CbType.ANY_BODY, null as any);
       }).toThrow("PreListener must take a handler");
     });
 
     it("throws when interaction type is null", () => {
       expect(() => {
-        new PreListener(
-          null as any,
-          CbType.ANY_BODY,
-          CbType.ANY_BODY,
-          noop,
-        );
+        new PreListener(null as any, CbType.ANY_BODY, CbType.ANY_BODY, noop);
       }).toThrow("Cannot set listener interaction type to null");
     });
   });

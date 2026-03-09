@@ -130,5 +130,4 @@ export class ZPP_Flags {
   static id_ArbiterType_COLLISION = 1;
   static id_ArbiterType_SENSOR = 2;
   static id_ArbiterType_FLUID = 4;
-
 }

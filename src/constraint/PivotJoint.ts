@@ -7,7 +7,6 @@ import { Vec3 } from "../geom/Vec3";
 import { Constraint } from "./Constraint";
 import { ZPP_PivotJoint } from "../native/constraint/ZPP_PivotJoint";
 
-
 /** Read validated x from a Vec2 input. */
 function _readVec2X(v: Vec2): number {
   if ((v as any).zpp_disp) {
@@ -36,13 +35,37 @@ function _disposeWeakVec2(v: Vec2): void {
 }
 
 /**
- * A pivot (pin) joint that constrains two bodies to share an anchor point.
+ * A pivot (pin) joint that constrains two anchor points — one on each body — to
+ * remain coincident in world space.
+ *
+ * This is the most common joint type and is used to simulate hinges, pins, and
+ * revolute connections between bodies.
+ *
+ * The constraint eliminates 2 translational degrees of freedom but leaves
+ * rotation free.
+ *
+ * @example
+ * ```ts
+ * // Pin body2 to body1's local origin
+ * const joint = new PivotJoint(
+ *   body1, body2,
+ *   Vec2.weak(0, 0),  // anchor on body1 (local)
+ *   Vec2.weak(0, 0),  // anchor on body2 (local)
+ * );
+ * joint.space = space;
+ * ```
  *
  * Fully modernized — uses ZPP_PivotJoint directly (extracted to TypeScript).
  */
 export class PivotJoint extends Constraint {
   declare zpp_inner: ZPP_PivotJoint;
 
+  /**
+   * @param body1 - First body, or `null` for a static world anchor.
+   * @param body2 - Second body, or `null` for a static world anchor.
+   * @param anchor1 - Anchor point in `body1`'s local space (disposed if weak).
+   * @param anchor2 - Anchor point in `body2`'s local space (disposed if weak).
+   */
   constructor(body1: Body | null, body2: Body | null, anchor1: Vec2, anchor2: Vec2) {
     super();
 
@@ -108,6 +131,7 @@ export class PivotJoint extends Constraint {
   // body1 / body2 — full constraint-space integration
   // ---------------------------------------------------------------------------
 
+  /** First body. `null` treats the anchor as a static world point. */
   get body1(): Body {
     if (this.zpp_inner.b1 == null) return null!;
     return Body._wrap(this.zpp_inner.b1);
@@ -142,6 +166,7 @@ export class PivotJoint extends Constraint {
     }
   }
 
+  /** Second body. `null` treats the anchor as a static world point. */
   get body2(): Body {
     if (this.zpp_inner.b2 == null) return null!;
     return Body._wrap(this.zpp_inner.b2);
@@ -180,6 +205,7 @@ export class PivotJoint extends Constraint {
   // Anchor properties — lazy Vec2 wrapper setup
   // ---------------------------------------------------------------------------
 
+  /** Anchor point on `body1` in local coordinates. */
   get anchor1(): Vec2 {
     if (this.zpp_inner.wrap_a1 == null) {
       this.zpp_inner.setup_a1();
@@ -200,6 +226,7 @@ export class PivotJoint extends Constraint {
     _disposeWeakVec2(value);
   }
 
+  /** Anchor point on `body2` in local coordinates. */
   get anchor2(): Vec2 {
     if (this.zpp_inner.wrap_a2 == null) {
       this.zpp_inner.setup_a2();
@@ -286,5 +313,3 @@ ZPP_PivotJoint._wrapFn = (zpp: ZPP_PivotJoint): PivotJoint => {
     return j;
   });
 };
-
-

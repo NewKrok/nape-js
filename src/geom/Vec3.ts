@@ -33,6 +33,12 @@ export class Vec3 {
     return this;
   }
 
+  /**
+   * Create a Vec3 with the given components. Defaults to (0, 0, 0).
+   * @param x - The x component.
+   * @param y - The y component.
+   * @param z - The z component.
+   */
   constructor(x: number = 0, y: number = 0, z: number = 0) {
     const zpp = new ZPP_Vec3();
     this.zpp_inner = zpp;
@@ -89,7 +95,13 @@ export class Vec3 {
     return null as unknown as Vec3;
   }
 
-  /** Obtain a Vec3 from the object pool (or create a new one). */
+  /**
+   * Allocate a Vec3 from the public object pool, or create a new one if the pool is empty.
+   * @param x - Initial x component (default 0).
+   * @param y - Initial y component (default 0).
+   * @param z - Initial z component (default 0).
+   * @returns A Vec3 initialised with the given components.
+   */
   static get(x: number = 0, y: number = 0, z: number = 0): Vec3 {
     let ret: Vec3;
     if (ZPP_PubPool.poolVec3 == null) {
@@ -113,43 +125,52 @@ export class Vec3 {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** The x component. */
   get x(): number {
     this._checkDisposed();
     this.zpp_inner.validate();
     return this.zpp_inner.x;
   }
 
+  /** The x component. */
   set x(value: number) {
     this._checkDisposed();
     this._checkImmutable();
     this.zpp_inner.x = value;
   }
 
+  /** The y component. */
   get y(): number {
     this._checkDisposed();
     this.zpp_inner.validate();
     return this.zpp_inner.y;
   }
 
+  /** The y component. */
   set y(value: number) {
     this._checkDisposed();
     this._checkImmutable();
     this.zpp_inner.y = value;
   }
 
+  /** The z component. */
   get z(): number {
     this._checkDisposed();
     this.zpp_inner.validate();
     return this.zpp_inner.z;
   }
 
+  /** The z component. */
   set z(value: number) {
     this._checkDisposed();
     this._checkImmutable();
     this.zpp_inner.z = value;
   }
 
-  /** Magnitude of the 3D vector. */
+  /**
+   * Magnitude of the 3D vector.
+   * @returns The Euclidean length `sqrt(x² + y² + z²)`.
+   */
   get length(): number {
     this._checkDisposed();
     this.zpp_inner.validate();
@@ -157,7 +178,10 @@ export class Vec3 {
     return Math.sqrt(x * x + y * y + z * z);
   }
 
-  /** Setting length scales the vector to the given magnitude. */
+  /**
+   * Scale the vector to the given magnitude.
+   * @throws If the vector has zero length.
+   */
   set length(value: number) {
     this._checkDisposed();
     if (value !== value) {
@@ -180,7 +204,10 @@ export class Vec3 {
   // Instance methods
   // ---------------------------------------------------------------------------
 
-  /** Squared length — avoids a square root when only comparison is needed. */
+  /**
+   * Squared magnitude. Faster than `length` as it avoids a square root.
+   * @returns `x² + y² + z²`.
+   */
   lsq(): number {
     this._checkDisposed();
     this.zpp_inner.validate();
@@ -188,7 +215,11 @@ export class Vec3 {
     return x * x + y * y + z * z;
   }
 
-  /** Copy values from another Vec3 into this one (in-place). Returns this. */
+  /**
+   * Copy another Vec3's components into this one in-place.
+   * @param vector - The source Vec3 to copy from.
+   * @returns `this` for chaining.
+   */
   set(vector: Vec3): this {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -201,7 +232,13 @@ export class Vec3 {
     return this.setxyz(vector.zpp_inner.x, vector.zpp_inner.y, vector.zpp_inner.z);
   }
 
-  /** Set all three components at once (in-place). Returns this. */
+  /**
+   * Set all three components at once in-place.
+   * @param x - The new x component.
+   * @param y - The new y component.
+   * @param z - The new z component.
+   * @returns `this` for chaining.
+   */
   setxyz(x: number, y: number, z: number): this {
     this._checkDisposed();
     this._checkImmutable();
@@ -213,14 +250,21 @@ export class Vec3 {
     return this;
   }
 
-  /** Return the x,y components as a Vec2. */
+  /**
+   * Return the x and y components as a new Vec2.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns A new Vec2 containing this vector's x and y components.
+   */
   xy(weak: boolean = false): Vec2 {
     this._checkDisposed();
     this.zpp_inner.validate();
     return Vec2.get(this.zpp_inner.x, this.zpp_inner.y, weak);
   }
 
-  /** Release this Vec3 back to the object pool. */
+  /**
+   * Return this Vec3 to the object pool.
+   * @throws If this Vec3 has already been disposed.
+   */
   dispose(): void {
     if (this.zpp_disp) {
       throw new Error("Error: Vec3 has been disposed and cannot be used!");
@@ -238,6 +282,10 @@ export class Vec3 {
     this.zpp_disp = true;
   }
 
+  /**
+   * String representation `{ x: … y: … z: … }`.
+   * @returns A human-readable string of the three components.
+   */
   toString(): string {
     this._checkDisposed();
     this.zpp_inner.validate();
@@ -260,4 +308,3 @@ ZPP_Vec3._wrapFn = (zpp: ZPP_Vec3): Vec3 => {
     return v;
   });
 };
-

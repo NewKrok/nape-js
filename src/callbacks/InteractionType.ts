@@ -1,14 +1,14 @@
 import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
-
 /**
- * Interaction type filter for interaction listeners.
+ * Enumeration of interaction categories used to filter {@link InteractionListener}
+ * and {@link PreListener} callbacks.
  *
- * - `COLLISION` — collision interactions only
- * - `SENSOR`    — sensor interactions only
- * - `FLUID`     — fluid interactions only
- * - `ANY`       — any interaction type
+ * - `COLLISION` — physical collisions between solid shapes
+ * - `SENSOR`    — sensor (trigger) interactions where shapes overlap but don't resolve
+ * - `FLUID`     — fluid buoyancy/drag interactions
+ * - `ANY`       — all of the above
  *
  * Converted from nape-compiled.js lines 1785–1883.
  */
@@ -23,6 +23,7 @@ export class InteractionType {
 
   // --- Static getters for convenient access ---
 
+  /** Physical collision between solid shapes (default for most shapes). */
   static get COLLISION(): InteractionType {
     if (ZPP_Flags.InteractionType_COLLISION == null) {
       ZPP_Flags.internal = true;
@@ -31,6 +32,7 @@ export class InteractionType {
     }
     return ZPP_Flags.InteractionType_COLLISION;
   }
+  /** Sensor/trigger overlap — shapes overlap but collision is not resolved. */
   static get SENSOR(): InteractionType {
     if (ZPP_Flags.InteractionType_SENSOR == null) {
       ZPP_Flags.internal = true;
@@ -39,6 +41,7 @@ export class InteractionType {
     }
     return ZPP_Flags.InteractionType_SENSOR;
   }
+  /** Fluid buoyancy/drag interaction between a fluid shape and a body. */
   static get FLUID(): InteractionType {
     if (ZPP_Flags.InteractionType_FLUID == null) {
       ZPP_Flags.internal = true;
@@ -47,6 +50,7 @@ export class InteractionType {
     }
     return ZPP_Flags.InteractionType_FLUID;
   }
+  /** Matches all interaction types (COLLISION, SENSOR, and FLUID). */
   static get ANY(): InteractionType {
     if (ZPP_Flags.InteractionType_ANY == null) {
       ZPP_Flags.internal = true;
@@ -70,4 +74,3 @@ export class InteractionType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.InteractionType = InteractionType;
-

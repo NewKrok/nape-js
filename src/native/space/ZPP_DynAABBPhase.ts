@@ -17,7 +17,6 @@ import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
 
-
 export class ZPP_DynAABBPhase {
   // --- Static: Haxe metadata ---
   static __name__ = ["zpp_nape", "space", "ZPP_DynAABBPhase"];
@@ -135,11 +134,11 @@ export class ZPP_DynAABBPhase {
         cur = cur.snext;
       }
       if (pre == null) {
-        this.syncs = cur.snext;
+        this.syncs = cur!.snext;
       } else {
-        pre.snext = cur.snext;
+        pre.snext = cur!.snext;
       }
-      cur.snext = null;
+      cur!.snext = null;
       node.synced = false;
     }
     if (node.moved) {
@@ -153,11 +152,11 @@ export class ZPP_DynAABBPhase {
         cur1 = cur1.mnext;
       }
       if (pre1 == null) {
-        this.moves = cur1.mnext;
+        this.moves = cur1!.mnext;
       } else {
-        pre1.mnext = cur1.mnext;
+        pre1.mnext = cur1!.mnext;
       }
-      cur1.mnext = null;
+      cur1!.mnext = null;
       node.moved = false;
     }
     let pre2 = null;
@@ -410,32 +409,32 @@ export class ZPP_DynAABBPhase {
               tree.root = null;
             } else {
               const parent = node.parent;
-              const gparent = parent.parent;
-              const sibling = parent.child1 == node ? parent.child2 : parent.child1;
+              const gparent = parent!.parent;
+              const sibling = parent!.child1 == node ? parent!.child2 : parent!.child1;
               if (gparent != null) {
                 if (gparent.child1 == parent) {
                   gparent.child1 = sibling;
                 } else {
                   gparent.child2 = sibling;
                 }
-                sibling.parent = gparent;
+                sibling!.parent = gparent;
                 const o = parent;
-                o.height = -1;
-                const o1 = o.aabb;
-                if (o1.outer != null) {
-                  o1.outer.zpp_inner = null;
-                  o1.outer = null;
+                o!.height = -1;
+                const o1 = o!.aabb;
+                if (o1!.outer != null) {
+                  o1!.outer.zpp_inner = null;
+                  o1!.outer = null;
                 }
-                o1.wrap_min = o1.wrap_max = null;
-                o1._invalidate = null;
-                o1._validate = null;
-                o1.next = ZPP_AABB.zpp_pool;
+                o1!.wrap_min = o1!.wrap_max = null;
+                o1!._invalidate = null;
+                o1!._validate = null;
+                o1!.next = ZPP_AABB.zpp_pool;
                 ZPP_AABB.zpp_pool = o1;
-                o.child1 = o.child2 = o.parent = null;
-                o.next = null;
-                o.snext = null;
-                o.mnext = null;
-                o.next = ZPP_AABBNode.zpp_pool;
+                o!.child1 = o!.child2 = o!.parent = null;
+                o!.next = null;
+                o!.snext = null;
+                o!.mnext = null;
+                o!.next = ZPP_AABBNode.zpp_pool;
                 ZPP_AABBNode.zpp_pool = o;
                 let node1 = gparent;
                 while (node1 != null) {
@@ -444,72 +443,72 @@ export class ZPP_DynAABBPhase {
                   } else {
                     const b = node1.child1;
                     const c = node1.child2;
-                    const balance = c.height - b.height;
+                    const balance = c!.height - b.height;
                     if (balance > 1) {
-                      const f = c.child1;
-                      const g = c.child2;
-                      c.child1 = node1;
-                      c.parent = node1.parent;
+                      const f = c!.child1;
+                      const g = c!.child2;
+                      c!.child1 = node1;
+                      c!.parent = node1.parent;
                       node1.parent = c;
-                      if (c.parent != null) {
-                        if (c.parent.child1 == node1) {
-                          c.parent.child1 = c;
+                      if (c!.parent != null) {
+                        if (c!.parent.child1 == node1) {
+                          c!.parent.child1 = c;
                         } else {
-                          c.parent.child2 = c;
+                          c!.parent.child2 = c;
                         }
                       } else {
                         tree.root = c;
                       }
-                      if (f.height > g.height) {
-                        c.child2 = f;
+                      if (f!.height > g!.height) {
+                        c!.child2 = f;
                         node1.child2 = g;
-                        g.parent = node1;
+                        g!.parent = node1;
                         const _this = node1.aabb;
                         const a = b.aabb;
-                        const b1 = g.aabb;
-                        _this.minx = a.minx < b1.minx ? a.minx : b1.minx;
-                        _this.miny = a.miny < b1.miny ? a.miny : b1.miny;
-                        _this.maxx = a.maxx > b1.maxx ? a.maxx : b1.maxx;
-                        _this.maxy = a.maxy > b1.maxy ? a.maxy : b1.maxy;
-                        const _this1 = c.aabb;
+                        const b1 = g!.aabb;
+                        _this!.minx = a!.minx < b1!.minx ? a!.minx : b1!.minx;
+                        _this!.miny = a!.miny < b1!.miny ? a!.miny : b1!.miny;
+                        _this!.maxx = a!.maxx > b1!.maxx ? a!.maxx : b1!.maxx;
+                        _this!.maxy = a!.maxy > b1!.maxy ? a!.maxy : b1!.maxy;
+                        const _this1 = c!.aabb;
                         const a1 = node1.aabb;
-                        const b2 = f.aabb;
-                        _this1.minx = a1.minx < b2.minx ? a1.minx : b2.minx;
-                        _this1.miny = a1.miny < b2.miny ? a1.miny : b2.miny;
-                        _this1.maxx = a1.maxx > b2.maxx ? a1.maxx : b2.maxx;
-                        _this1.maxy = a1.maxy > b2.maxy ? a1.maxy : b2.maxy;
+                        const b2 = f!.aabb;
+                        _this1!.minx = a1!.minx < b2!.minx ? a1!.minx : b2!.minx;
+                        _this1!.miny = a1!.miny < b2!.miny ? a1!.miny : b2!.miny;
+                        _this1!.maxx = a1!.maxx > b2!.maxx ? a1!.maxx : b2!.maxx;
+                        _this1!.maxy = a1!.maxy > b2!.maxy ? a1!.maxy : b2!.maxy;
                         const x = b.height;
-                        const y = g.height;
+                        const y = g!.height;
                         node1.height = 1 + (x > y ? x : y);
                         const x1 = node1.height;
-                        const y1 = f.height;
-                        c.height = 1 + (x1 > y1 ? x1 : y1);
+                        const y1 = f!.height;
+                        c!.height = 1 + (x1 > y1 ? x1 : y1);
                       } else {
-                        c.child2 = g;
+                        c!.child2 = g;
                         node1.child2 = f;
-                        f.parent = node1;
+                        f!.parent = node1;
                         const _this2 = node1.aabb;
                         const a2 = b.aabb;
-                        const b3 = f.aabb;
-                        _this2.minx = a2.minx < b3.minx ? a2.minx : b3.minx;
-                        _this2.miny = a2.miny < b3.miny ? a2.miny : b3.miny;
-                        _this2.maxx = a2.maxx > b3.maxx ? a2.maxx : b3.maxx;
-                        _this2.maxy = a2.maxy > b3.maxy ? a2.maxy : b3.maxy;
-                        const _this3 = c.aabb;
+                        const b3 = f!.aabb;
+                        _this2!.minx = a2!.minx < b3!.minx ? a2!.minx : b3!.minx;
+                        _this2!.miny = a2!.miny < b3!.miny ? a2!.miny : b3!.miny;
+                        _this2!.maxx = a2!.maxx > b3!.maxx ? a2!.maxx : b3!.maxx;
+                        _this2!.maxy = a2!.maxy > b3!.maxy ? a2!.maxy : b3!.maxy;
+                        const _this3 = c!.aabb;
                         const a3 = node1.aabb;
-                        const b4 = g.aabb;
-                        _this3.minx = a3.minx < b4.minx ? a3.minx : b4.minx;
-                        _this3.miny = a3.miny < b4.miny ? a3.miny : b4.miny;
-                        _this3.maxx = a3.maxx > b4.maxx ? a3.maxx : b4.maxx;
-                        _this3.maxy = a3.maxy > b4.maxy ? a3.maxy : b4.maxy;
+                        const b4 = g!.aabb;
+                        _this3!.minx = a3!.minx < b4!.minx ? a3!.minx : b4!.minx;
+                        _this3!.miny = a3!.miny < b4!.miny ? a3!.miny : b4!.miny;
+                        _this3!.maxx = a3!.maxx > b4!.maxx ? a3!.maxx : b4!.maxx;
+                        _this3!.maxy = a3!.maxy > b4!.maxy ? a3!.maxy : b4!.maxy;
                         const x2 = b.height;
-                        const y2 = f.height;
+                        const y2 = f!.height;
                         node1.height = 1 + (x2 > y2 ? x2 : y2);
                         const x3 = node1.height;
-                        const y3 = g.height;
-                        c.height = 1 + (x3 > y3 ? x3 : y3);
+                        const y3 = g!.height;
+                        c!.height = 1 + (x3 > y3 ? x3 : y3);
                       }
-                      node1 = c;
+                      node1 = c!;
                     } else if (balance < -1) {
                       const f1 = b.child1;
                       const g1 = b.child2;
@@ -525,53 +524,53 @@ export class ZPP_DynAABBPhase {
                       } else {
                         tree.root = b;
                       }
-                      if (f1.height > g1.height) {
+                      if (f1!.height > g1!.height) {
                         b.child2 = f1;
                         node1.child1 = g1;
-                        g1.parent = node1;
+                        g1!.parent = node1;
                         const _this4 = node1.aabb;
-                        const a4 = c.aabb;
-                        const b5 = g1.aabb;
-                        _this4.minx = a4.minx < b5.minx ? a4.minx : b5.minx;
-                        _this4.miny = a4.miny < b5.miny ? a4.miny : b5.miny;
-                        _this4.maxx = a4.maxx > b5.maxx ? a4.maxx : b5.maxx;
-                        _this4.maxy = a4.maxy > b5.maxy ? a4.maxy : b5.maxy;
+                        const a4 = c!.aabb;
+                        const b5 = g1!.aabb;
+                        _this4!.minx = a4!.minx < b5!.minx ? a4!.minx : b5!.minx;
+                        _this4!.miny = a4!.miny < b5!.miny ? a4!.miny : b5!.miny;
+                        _this4!.maxx = a4!.maxx > b5!.maxx ? a4!.maxx : b5!.maxx;
+                        _this4!.maxy = a4!.maxy > b5!.maxy ? a4!.maxy : b5!.maxy;
                         const _this5 = b.aabb;
                         const a5 = node1.aabb;
-                        const b6 = f1.aabb;
-                        _this5.minx = a5.minx < b6.minx ? a5.minx : b6.minx;
-                        _this5.miny = a5.miny < b6.miny ? a5.miny : b6.miny;
-                        _this5.maxx = a5.maxx > b6.maxx ? a5.maxx : b6.maxx;
-                        _this5.maxy = a5.maxy > b6.maxy ? a5.maxy : b6.maxy;
-                        const x4 = c.height;
-                        const y4 = g1.height;
+                        const b6 = f1!.aabb;
+                        _this5!.minx = a5!.minx < b6!.minx ? a5!.minx : b6!.minx;
+                        _this5!.miny = a5!.miny < b6!.miny ? a5!.miny : b6!.miny;
+                        _this5!.maxx = a5!.maxx > b6!.maxx ? a5!.maxx : b6!.maxx;
+                        _this5!.maxy = a5!.maxy > b6!.maxy ? a5!.maxy : b6!.maxy;
+                        const x4 = c!.height;
+                        const y4 = g1!.height;
                         node1.height = 1 + (x4 > y4 ? x4 : y4);
                         const x5 = node1.height;
-                        const y5 = f1.height;
+                        const y5 = f1!.height;
                         b.height = 1 + (x5 > y5 ? x5 : y5);
                       } else {
                         b.child2 = g1;
                         node1.child1 = f1;
-                        f1.parent = node1;
+                        f1!.parent = node1;
                         const _this6 = node1.aabb;
-                        const a6 = c.aabb;
-                        const b7 = f1.aabb;
-                        _this6.minx = a6.minx < b7.minx ? a6.minx : b7.minx;
-                        _this6.miny = a6.miny < b7.miny ? a6.miny : b7.miny;
-                        _this6.maxx = a6.maxx > b7.maxx ? a6.maxx : b7.maxx;
-                        _this6.maxy = a6.maxy > b7.maxy ? a6.maxy : b7.maxy;
+                        const a6 = c!.aabb;
+                        const b7 = f1!.aabb;
+                        _this6!.minx = a6!.minx < b7!.minx ? a6!.minx : b7!.minx;
+                        _this6!.miny = a6!.miny < b7!.miny ? a6!.miny : b7!.miny;
+                        _this6!.maxx = a6!.maxx > b7!.maxx ? a6!.maxx : b7!.maxx;
+                        _this6!.maxy = a6!.maxy > b7!.maxy ? a6!.maxy : b7!.maxy;
                         const _this7 = b.aabb;
                         const a7 = node1.aabb;
-                        const b8 = g1.aabb;
-                        _this7.minx = a7.minx < b8.minx ? a7.minx : b8.minx;
-                        _this7.miny = a7.miny < b8.miny ? a7.miny : b8.miny;
-                        _this7.maxx = a7.maxx > b8.maxx ? a7.maxx : b8.maxx;
-                        _this7.maxy = a7.maxy > b8.maxy ? a7.maxy : b8.maxy;
-                        const x6 = c.height;
-                        const y6 = f1.height;
+                        const b8 = g1!.aabb;
+                        _this7!.minx = a7!.minx < b8!.minx ? a7!.minx : b8!.minx;
+                        _this7!.miny = a7!.miny < b8!.miny ? a7!.miny : b8!.miny;
+                        _this7!.maxx = a7!.maxx > b8!.maxx ? a7!.maxx : b8!.maxx;
+                        _this7!.maxy = a7!.maxy > b8!.maxy ? a7!.maxy : b8!.maxy;
+                        const x6 = c!.height;
+                        const y6 = f1!.height;
                         node1.height = 1 + (x6 > y6 ? x6 : y6);
                         const x7 = node1.height;
-                        const y7 = g1.height;
+                        const y7 = g1!.height;
                         b.height = 1 + (x7 > y7 ? x7 : y7);
                       }
                       node1 = b;
@@ -582,37 +581,37 @@ export class ZPP_DynAABBPhase {
                   const child1 = node1.child1;
                   const child2 = node1.child2;
                   const _this8 = node1.aabb;
-                  const a8 = child1.aabb;
-                  const b9 = child2.aabb;
-                  _this8.minx = a8.minx < b9.minx ? a8.minx : b9.minx;
-                  _this8.miny = a8.miny < b9.miny ? a8.miny : b9.miny;
-                  _this8.maxx = a8.maxx > b9.maxx ? a8.maxx : b9.maxx;
-                  _this8.maxy = a8.maxy > b9.maxy ? a8.maxy : b9.maxy;
-                  const x8 = child1.height;
-                  const y8 = child2.height;
+                  const a8 = child1!.aabb;
+                  const b9 = child2!.aabb;
+                  _this8!.minx = a8!.minx < b9!.minx ? a8!.minx : b9!.minx;
+                  _this8!.miny = a8!.miny < b9!.miny ? a8!.miny : b9!.miny;
+                  _this8!.maxx = a8!.maxx > b9!.maxx ? a8!.maxx : b9!.maxx;
+                  _this8!.maxy = a8!.maxy > b9!.maxy ? a8!.maxy : b9!.maxy;
+                  const x8 = child1!.height;
+                  const y8 = child2!.height;
                   node1.height = 1 + (x8 > y8 ? x8 : y8);
-                  node1 = node1.parent;
+                  node1 = node1.parent!;
                 }
               } else {
                 tree.root = sibling;
-                sibling.parent = null;
+                sibling!.parent = null;
                 const o2 = parent;
-                o2.height = -1;
-                const o3 = o2.aabb;
-                if (o3.outer != null) {
-                  o3.outer.zpp_inner = null;
-                  o3.outer = null;
+                o2!.height = -1;
+                const o3 = o2!.aabb;
+                if (o3!.outer != null) {
+                  o3!.outer.zpp_inner = null;
+                  o3!.outer = null;
                 }
-                o3.wrap_min = o3.wrap_max = null;
-                o3._invalidate = null;
-                o3._validate = null;
-                o3.next = ZPP_AABB.zpp_pool;
+                o3!.wrap_min = o3!.wrap_max = null;
+                o3!._invalidate = null;
+                o3!._validate = null;
+                o3!.next = ZPP_AABB.zpp_pool;
                 ZPP_AABB.zpp_pool = o3;
-                o2.child1 = o2.child2 = o2.parent = null;
-                o2.next = null;
-                o2.snext = null;
-                o2.mnext = null;
-                o2.next = ZPP_AABBNode.zpp_pool;
+                o2!.child1 = o2!.child2 = o2!.parent = null;
+                o2!.next = null;
+                o2!.snext = null;
+                o2!.mnext = null;
+                o2!.next = ZPP_AABBNode.zpp_pool;
                 ZPP_AABBNode.zpp_pool = o2;
               }
             }
@@ -770,10 +769,10 @@ export class ZPP_DynAABBPhase {
             }
           }
           const a9 = shape.aabb;
-          aabb.minx = a9.minx - 3.0;
-          aabb.miny = a9.miny - 3.0;
-          aabb.maxx = a9.maxx + 3.0;
-          aabb.maxy = a9.maxy + 3.0;
+          aabb!.minx = a9.minx - 3.0;
+          aabb!.miny = a9.miny - 3.0;
+          aabb!.maxx = a9.maxx + 3.0;
+          aabb!.maxy = a9.maxy + 3.0;
           const tree1 = (node.dyn = shape.body.type == 1 ? false : !shape.body.component.sleeping)
             ? this.dtree
             : this.stree;
@@ -787,55 +786,59 @@ export class ZPP_DynAABBPhase {
               const child11 = node2.child1;
               const child21 = node2.child2;
               const _this14 = node2.aabb;
-              const area1 = (_this14.maxx - _this14.minx + (_this14.maxy - _this14.miny)) * 2;
+              const area1 = (_this14!.maxx - _this14!.minx + (_this14!.maxy - _this14!.miny)) * 2;
               const _this15 = ZPP_AABBTree.tmpaabb;
               const a10 = node2.aabb;
-              _this15.minx = a10.minx < leafaabb.minx ? a10.minx : leafaabb.minx;
-              _this15.miny = a10.miny < leafaabb.miny ? a10.miny : leafaabb.miny;
-              _this15.maxx = a10.maxx > leafaabb.maxx ? a10.maxx : leafaabb.maxx;
-              _this15.maxy = a10.maxy > leafaabb.maxy ? a10.maxy : leafaabb.maxy;
+              _this15!.minx = a10!.minx < leafaabb!.minx ? a10!.minx : leafaabb!.minx;
+              _this15!.miny = a10!.miny < leafaabb!.miny ? a10!.miny : leafaabb!.miny;
+              _this15!.maxx = a10!.maxx > leafaabb!.maxx ? a10!.maxx : leafaabb!.maxx;
+              _this15!.maxy = a10!.maxy > leafaabb!.maxy ? a10!.maxy : leafaabb!.maxy;
               const _this16 = ZPP_AABBTree.tmpaabb;
-              const carea = (_this16.maxx - _this16.minx + (_this16.maxy - _this16.miny)) * 2;
+              const carea = (_this16!.maxx - _this16!.minx + (_this16!.maxy - _this16!.miny)) * 2;
               const cost = 2 * carea;
               const icost = 2 * (carea - area1);
               const _this17 = ZPP_AABBTree.tmpaabb;
               const b10 = child11.aabb;
-              _this17.minx = leafaabb.minx < b10.minx ? leafaabb.minx : b10.minx;
-              _this17.miny = leafaabb.miny < b10.miny ? leafaabb.miny : b10.miny;
-              _this17.maxx = leafaabb.maxx > b10.maxx ? leafaabb.maxx : b10.maxx;
-              _this17.maxy = leafaabb.maxy > b10.maxy ? leafaabb.maxy : b10.maxy;
+              _this17!.minx = leafaabb!.minx < b10!.minx ? leafaabb!.minx : b10!.minx;
+              _this17!.miny = leafaabb!.miny < b10!.miny ? leafaabb!.miny : b10!.miny;
+              _this17!.maxx = leafaabb!.maxx > b10!.maxx ? leafaabb!.maxx : b10!.maxx;
+              _this17!.maxy = leafaabb!.maxy > b10!.maxy ? leafaabb!.maxy : b10!.maxy;
               let cost1;
               if (child11.child1 == null) {
                 const _this18 = ZPP_AABBTree.tmpaabb;
-                cost1 = (_this18.maxx - _this18.minx + (_this18.maxy - _this18.miny)) * 2 + icost;
+                cost1 =
+                  (_this18!.maxx - _this18!.minx + (_this18!.maxy - _this18!.miny)) * 2 + icost;
               } else {
                 const _this19 = child11.aabb;
-                const oarea = (_this19.maxx - _this19.minx + (_this19.maxy - _this19.miny)) * 2;
+                const oarea = (_this19!.maxx - _this19!.minx + (_this19!.maxy - _this19!.miny)) * 2;
                 const _this20 = ZPP_AABBTree.tmpaabb;
-                const narea = (_this20.maxx - _this20.minx + (_this20.maxy - _this20.miny)) * 2;
+                const narea = (_this20!.maxx - _this20!.minx + (_this20!.maxy - _this20!.miny)) * 2;
                 cost1 = narea - oarea + icost;
               }
               const _this21 = ZPP_AABBTree.tmpaabb;
-              const b11 = child21.aabb;
-              _this21.minx = leafaabb.minx < b11.minx ? leafaabb.minx : b11.minx;
-              _this21.miny = leafaabb.miny < b11.miny ? leafaabb.miny : b11.miny;
-              _this21.maxx = leafaabb.maxx > b11.maxx ? leafaabb.maxx : b11.maxx;
-              _this21.maxy = leafaabb.maxy > b11.maxy ? leafaabb.maxy : b11.maxy;
+              const b11 = child21!.aabb;
+              _this21!.minx = leafaabb!.minx < b11!.minx ? leafaabb!.minx : b11!.minx;
+              _this21!.miny = leafaabb!.miny < b11!.miny ? leafaabb!.miny : b11!.miny;
+              _this21!.maxx = leafaabb!.maxx > b11!.maxx ? leafaabb!.maxx : b11!.maxx;
+              _this21!.maxy = leafaabb!.maxy > b11!.maxy ? leafaabb!.maxy : b11!.maxy;
               let cost2;
-              if (child21.child1 == null) {
+              if (child21!.child1 == null) {
                 const _this22 = ZPP_AABBTree.tmpaabb;
-                cost2 = (_this22.maxx - _this22.minx + (_this22.maxy - _this22.miny)) * 2 + icost;
+                cost2 =
+                  (_this22!.maxx - _this22!.minx + (_this22!.maxy - _this22!.miny)) * 2 + icost;
               } else {
-                const _this23 = child21.aabb;
-                const oarea1 = (_this23.maxx - _this23.minx + (_this23.maxy - _this23.miny)) * 2;
+                const _this23 = child21!.aabb;
+                const oarea1 =
+                  (_this23!.maxx - _this23!.minx + (_this23!.maxy - _this23!.miny)) * 2;
                 const _this24 = ZPP_AABBTree.tmpaabb;
-                const narea1 = (_this24.maxx - _this24.minx + (_this24.maxy - _this24.miny)) * 2;
+                const narea1 =
+                  (_this24!.maxx - _this24!.minx + (_this24!.maxy - _this24!.miny)) * 2;
                 cost2 = narea1 - oarea1 + icost;
               }
               if (cost < cost1 && cost < cost2) {
                 break;
               } else {
-                node2 = cost1 < cost2 ? child11 : child21;
+                node2 = cost1 < cost2 ? child11 : child21!;
               }
             }
             const sibling1 = node2;
@@ -861,10 +864,10 @@ export class ZPP_DynAABBPhase {
             nparent.parent = oparent;
             const _this25 = nparent.aabb;
             const b12 = sibling1.aabb;
-            _this25.minx = leafaabb.minx < b12.minx ? leafaabb.minx : b12.minx;
-            _this25.miny = leafaabb.miny < b12.miny ? leafaabb.miny : b12.miny;
-            _this25.maxx = leafaabb.maxx > b12.maxx ? leafaabb.maxx : b12.maxx;
-            _this25.maxy = leafaabb.maxy > b12.maxy ? leafaabb.maxy : b12.maxy;
+            _this25.minx = leafaabb!.minx < b12!.minx ? leafaabb!.minx : b12!.minx;
+            _this25.miny = leafaabb!.miny < b12!.miny ? leafaabb!.miny : b12!.miny;
+            _this25.maxx = leafaabb!.maxx > b12!.maxx ? leafaabb!.maxx : b12!.maxx;
+            _this25.maxy = leafaabb!.maxy > b12!.maxy ? leafaabb!.maxy : b12!.maxy;
             nparent.height = sibling1.height + 1;
             if (oparent != null) {
               if (oparent.child1 == sibling1) {
@@ -890,72 +893,72 @@ export class ZPP_DynAABBPhase {
               } else {
                 const b13 = node2.child1;
                 const c1 = node2.child2;
-                const balance1 = c1.height - b13.height;
+                const balance1 = c1!.height - b13.height;
                 if (balance1 > 1) {
-                  const f2 = c1.child1;
-                  const g3 = c1.child2;
-                  c1.child1 = node2;
-                  c1.parent = node2.parent;
+                  const f2 = c1!.child1;
+                  const g3 = c1!.child2;
+                  c1!.child1 = node2;
+                  c1!.parent = node2.parent;
                   node2.parent = c1;
-                  if (c1.parent != null) {
-                    if (c1.parent.child1 == node2) {
-                      c1.parent.child1 = c1;
+                  if (c1!.parent != null) {
+                    if (c1!.parent.child1 == node2) {
+                      c1!.parent.child1 = c1;
                     } else {
-                      c1.parent.child2 = c1;
+                      c1!.parent.child2 = c1;
                     }
                   } else {
                     tree1.root = c1;
                   }
-                  if (f2.height > g3.height) {
-                    c1.child2 = f2;
+                  if (f2!.height > g3!.height) {
+                    c1!.child2 = f2;
                     node2.child2 = g3;
-                    g3.parent = node2;
+                    g3!.parent = node2;
                     const _this26 = node2.aabb;
                     const a11 = b13.aabb;
-                    const b14 = g3.aabb;
-                    _this26.minx = a11.minx < b14.minx ? a11.minx : b14.minx;
-                    _this26.miny = a11.miny < b14.miny ? a11.miny : b14.miny;
-                    _this26.maxx = a11.maxx > b14.maxx ? a11.maxx : b14.maxx;
-                    _this26.maxy = a11.maxy > b14.maxy ? a11.maxy : b14.maxy;
-                    const _this27 = c1.aabb;
+                    const b14 = g3!.aabb;
+                    _this26!.minx = a11!.minx < b14!.minx ? a11!.minx : b14!.minx;
+                    _this26!.miny = a11!.miny < b14!.miny ? a11!.miny : b14!.miny;
+                    _this26!.maxx = a11!.maxx > b14!.maxx ? a11!.maxx : b14!.maxx;
+                    _this26!.maxy = a11!.maxy > b14!.maxy ? a11!.maxy : b14!.maxy;
+                    const _this27 = c1!.aabb;
                     const a12 = node2.aabb;
-                    const b15 = f2.aabb;
-                    _this27.minx = a12.minx < b15.minx ? a12.minx : b15.minx;
-                    _this27.miny = a12.miny < b15.miny ? a12.miny : b15.miny;
-                    _this27.maxx = a12.maxx > b15.maxx ? a12.maxx : b15.maxx;
-                    _this27.maxy = a12.maxy > b15.maxy ? a12.maxy : b15.maxy;
+                    const b15 = f2!.aabb;
+                    _this27!.minx = a12!.minx < b15!.minx ? a12!.minx : b15!.minx;
+                    _this27!.miny = a12!.miny < b15!.miny ? a12!.miny : b15!.miny;
+                    _this27!.maxx = a12!.maxx > b15!.maxx ? a12!.maxx : b15!.maxx;
+                    _this27!.maxy = a12!.maxy > b15!.maxy ? a12!.maxy : b15!.maxy;
                     const x9 = b13.height;
-                    const y9 = g3.height;
+                    const y9 = g3!.height;
                     node2.height = 1 + (x9 > y9 ? x9 : y9);
                     const x10 = node2.height;
-                    const y10 = f2.height;
-                    c1.height = 1 + (x10 > y10 ? x10 : y10);
+                    const y10 = f2!.height;
+                    c1!.height = 1 + (x10 > y10 ? x10 : y10);
                   } else {
-                    c1.child2 = g3;
+                    c1!.child2 = g3;
                     node2.child2 = f2;
-                    f2.parent = node2;
+                    f2!.parent = node2;
                     const _this28 = node2.aabb;
                     const a13 = b13.aabb;
-                    const b16 = f2.aabb;
-                    _this28.minx = a13.minx < b16.minx ? a13.minx : b16.minx;
-                    _this28.miny = a13.miny < b16.miny ? a13.miny : b16.miny;
-                    _this28.maxx = a13.maxx > b16.maxx ? a13.maxx : b16.maxx;
-                    _this28.maxy = a13.maxy > b16.maxy ? a13.maxy : b16.maxy;
-                    const _this29 = c1.aabb;
+                    const b16 = f2!.aabb;
+                    _this28!.minx = a13!.minx < b16!.minx ? a13!.minx : b16!.minx;
+                    _this28!.miny = a13!.miny < b16!.miny ? a13!.miny : b16!.miny;
+                    _this28!.maxx = a13!.maxx > b16!.maxx ? a13!.maxx : b16!.maxx;
+                    _this28!.maxy = a13!.maxy > b16!.maxy ? a13!.maxy : b16!.maxy;
+                    const _this29 = c1!.aabb;
                     const a14 = node2.aabb;
-                    const b17 = g3.aabb;
-                    _this29.minx = a14.minx < b17.minx ? a14.minx : b17.minx;
-                    _this29.miny = a14.miny < b17.miny ? a14.miny : b17.miny;
-                    _this29.maxx = a14.maxx > b17.maxx ? a14.maxx : b17.maxx;
-                    _this29.maxy = a14.maxy > b17.maxy ? a14.maxy : b17.maxy;
+                    const b17 = g3!.aabb;
+                    _this29!.minx = a14!.minx < b17!.minx ? a14!.minx : b17!.minx;
+                    _this29!.miny = a14!.miny < b17!.miny ? a14!.miny : b17!.miny;
+                    _this29!.maxx = a14!.maxx > b17!.maxx ? a14!.maxx : b17!.maxx;
+                    _this29!.maxy = a14!.maxy > b17!.maxy ? a14!.maxy : b17!.maxy;
                     const x11 = b13.height;
-                    const y11 = f2.height;
+                    const y11 = f2!.height;
                     node2.height = 1 + (x11 > y11 ? x11 : y11);
                     const x12 = node2.height;
-                    const y12 = g3.height;
-                    c1.height = 1 + (x12 > y12 ? x12 : y12);
+                    const y12 = g3!.height;
+                    c1!.height = 1 + (x12 > y12 ? x12 : y12);
                   }
-                  node2 = c1;
+                  node2 = c1!;
                 } else if (balance1 < -1) {
                   const f3 = b13.child1;
                   const g4 = b13.child2;
@@ -971,53 +974,53 @@ export class ZPP_DynAABBPhase {
                   } else {
                     tree1.root = b13;
                   }
-                  if (f3.height > g4.height) {
+                  if (f3!.height > g4!.height) {
                     b13.child2 = f3;
                     node2.child1 = g4;
-                    g4.parent = node2;
+                    g4!.parent = node2;
                     const _this30 = node2.aabb;
-                    const a15 = c1.aabb;
-                    const b18 = g4.aabb;
-                    _this30.minx = a15.minx < b18.minx ? a15.minx : b18.minx;
-                    _this30.miny = a15.miny < b18.miny ? a15.miny : b18.miny;
-                    _this30.maxx = a15.maxx > b18.maxx ? a15.maxx : b18.maxx;
-                    _this30.maxy = a15.maxy > b18.maxy ? a15.maxy : b18.maxy;
+                    const a15 = c1!.aabb;
+                    const b18 = g4!.aabb;
+                    _this30!.minx = a15!.minx < b18!.minx ? a15!.minx : b18!.minx;
+                    _this30!.miny = a15!.miny < b18!.miny ? a15!.miny : b18!.miny;
+                    _this30!.maxx = a15!.maxx > b18!.maxx ? a15!.maxx : b18!.maxx;
+                    _this30!.maxy = a15!.maxy > b18!.maxy ? a15!.maxy : b18!.maxy;
                     const _this31 = b13.aabb;
                     const a16 = node2.aabb;
-                    const b19 = f3.aabb;
-                    _this31.minx = a16.minx < b19.minx ? a16.minx : b19.minx;
-                    _this31.miny = a16.miny < b19.miny ? a16.miny : b19.miny;
-                    _this31.maxx = a16.maxx > b19.maxx ? a16.maxx : b19.maxx;
-                    _this31.maxy = a16.maxy > b19.maxy ? a16.maxy : b19.maxy;
-                    const x13 = c1.height;
-                    const y13 = g4.height;
+                    const b19 = f3!.aabb;
+                    _this31!.minx = a16!.minx < b19!.minx ? a16!.minx : b19!.minx;
+                    _this31!.miny = a16!.miny < b19!.miny ? a16!.miny : b19!.miny;
+                    _this31!.maxx = a16!.maxx > b19!.maxx ? a16!.maxx : b19!.maxx;
+                    _this31!.maxy = a16!.maxy > b19!.maxy ? a16!.maxy : b19!.maxy;
+                    const x13 = c1!.height;
+                    const y13 = g4!.height;
                     node2.height = 1 + (x13 > y13 ? x13 : y13);
                     const x14 = node2.height;
-                    const y14 = f3.height;
+                    const y14 = f3!.height;
                     b13.height = 1 + (x14 > y14 ? x14 : y14);
                   } else {
                     b13.child2 = g4;
                     node2.child1 = f3;
-                    f3.parent = node2;
+                    f3!.parent = node2;
                     const _this32 = node2.aabb;
-                    const a17 = c1.aabb;
-                    const b20 = f3.aabb;
-                    _this32.minx = a17.minx < b20.minx ? a17.minx : b20.minx;
-                    _this32.miny = a17.miny < b20.miny ? a17.miny : b20.miny;
-                    _this32.maxx = a17.maxx > b20.maxx ? a17.maxx : b20.maxx;
-                    _this32.maxy = a17.maxy > b20.maxy ? a17.maxy : b20.maxy;
+                    const a17 = c1!.aabb;
+                    const b20 = f3!.aabb;
+                    _this32!.minx = a17!.minx < b20!.minx ? a17!.minx : b20!.minx;
+                    _this32!.miny = a17!.miny < b20!.miny ? a17!.miny : b20!.miny;
+                    _this32!.maxx = a17!.maxx > b20!.maxx ? a17!.maxx : b20!.maxx;
+                    _this32!.maxy = a17!.maxy > b20!.maxy ? a17!.maxy : b20!.maxy;
                     const _this33 = b13.aabb;
                     const a18 = node2.aabb;
-                    const b21 = g4.aabb;
-                    _this33.minx = a18.minx < b21.minx ? a18.minx : b21.minx;
-                    _this33.miny = a18.miny < b21.miny ? a18.miny : b21.miny;
-                    _this33.maxx = a18.maxx > b21.maxx ? a18.maxx : b21.maxx;
-                    _this33.maxy = a18.maxy > b21.maxy ? a18.maxy : b21.maxy;
-                    const x15 = c1.height;
-                    const y15 = f3.height;
+                    const b21 = g4!.aabb;
+                    _this33!.minx = a18!.minx < b21!.minx ? a18!.minx : b21!.minx;
+                    _this33!.miny = a18!.miny < b21!.miny ? a18!.miny : b21!.miny;
+                    _this33!.maxx = a18!.maxx > b21!.maxx ? a18!.maxx : b21!.maxx;
+                    _this33!.maxy = a18!.maxy > b21!.maxy ? a18!.maxy : b21!.maxy;
+                    const x15 = c1!.height;
+                    const y15 = f3!.height;
                     node2.height = 1 + (x15 > y15 ? x15 : y15);
                     const x16 = node2.height;
-                    const y16 = g4.height;
+                    const y16 = g4!.height;
                     b13.height = 1 + (x16 > y16 ? x16 : y16);
                   }
                   node2 = b13;
@@ -1027,31 +1030,31 @@ export class ZPP_DynAABBPhase {
               }
               const child12 = node2.child1;
               const child22 = node2.child2;
-              const x17 = child12.height;
-              const y17 = child22.height;
+              const x17 = child12!.height;
+              const y17 = child22!.height;
               node2.height = 1 + (x17 > y17 ? x17 : y17);
               const _this34 = node2.aabb;
-              const a19 = child12.aabb;
-              const b22 = child22.aabb;
-              _this34.minx = a19.minx < b22.minx ? a19.minx : b22.minx;
-              _this34.miny = a19.miny < b22.miny ? a19.miny : b22.miny;
-              _this34.maxx = a19.maxx > b22.maxx ? a19.maxx : b22.maxx;
-              _this34.maxy = a19.maxy > b22.maxy ? a19.maxy : b22.maxy;
-              node2 = node2.parent;
+              const a19 = child12!.aabb;
+              const b22 = child22!.aabb;
+              _this34!.minx = a19!.minx < b22!.minx ? a19!.minx : b22!.minx;
+              _this34!.miny = a19!.miny < b22!.miny ? a19!.miny : b22!.miny;
+              _this34!.maxx = a19!.maxx > b22!.maxx ? a19!.maxx : b22!.maxx;
+              _this34!.maxy = a19!.maxy > b22!.maxy ? a19!.maxy : b22!.maxy;
+              node2 = node2.parent!;
             }
           }
           node.synced = false;
           node.moved = true;
           node.mnext = node.snext;
           node.snext = null;
-          node = node.mnext;
+          node = node.mnext!;
         }
         const t3 = this.syncs;
         this.syncs = this.moves;
         this.moves = t3;
       } else {
         while (this.syncs != null) {
-          const ret = this.syncs;
+          const ret: ZPP_AABBNode = this.syncs!;
           this.syncs = ret.snext;
           ret.snext = null;
           const node3 = ret;
@@ -1062,32 +1065,32 @@ export class ZPP_DynAABBPhase {
               tree2.root = null;
             } else {
               const parent1 = node3.parent;
-              const gparent1 = parent1.parent;
-              const sibling2 = parent1.child1 == node3 ? parent1.child2 : parent1.child1;
+              const gparent1 = parent1!.parent;
+              const sibling2 = parent1!.child1 == node3 ? parent1!.child2 : parent1!.child1;
               if (gparent1 != null) {
                 if (gparent1.child1 == parent1) {
                   gparent1.child1 = sibling2;
                 } else {
                   gparent1.child2 = sibling2;
                 }
-                sibling2.parent = gparent1;
+                sibling2!.parent = gparent1;
                 const o4 = parent1;
-                o4.height = -1;
-                const o5 = o4.aabb;
-                if (o5.outer != null) {
-                  o5.outer.zpp_inner = null;
-                  o5.outer = null;
+                o4!.height = -1;
+                const o5 = o4!.aabb;
+                if (o5!.outer != null) {
+                  o5!.outer.zpp_inner = null;
+                  o5!.outer = null;
                 }
-                o5.wrap_min = o5.wrap_max = null;
-                o5._invalidate = null;
-                o5._validate = null;
-                o5.next = ZPP_AABB.zpp_pool;
+                o5!.wrap_min = o5!.wrap_max = null;
+                o5!._invalidate = null;
+                o5!._validate = null;
+                o5!.next = ZPP_AABB.zpp_pool;
                 ZPP_AABB.zpp_pool = o5;
-                o4.child1 = o4.child2 = o4.parent = null;
-                o4.next = null;
-                o4.snext = null;
-                o4.mnext = null;
-                o4.next = ZPP_AABBNode.zpp_pool;
+                o4!.child1 = o4!.child2 = o4!.parent = null;
+                o4!.next = null;
+                o4!.snext = null;
+                o4!.mnext = null;
+                o4!.next = ZPP_AABBNode.zpp_pool;
                 ZPP_AABBNode.zpp_pool = o4;
                 let node4 = gparent1;
                 while (node4 != null) {
@@ -1096,72 +1099,72 @@ export class ZPP_DynAABBPhase {
                   } else {
                     const b23 = node4.child1;
                     const c2 = node4.child2;
-                    const balance2 = c2.height - b23.height;
+                    const balance2 = c2!.height - b23.height;
                     if (balance2 > 1) {
-                      const f4 = c2.child1;
-                      const g5 = c2.child2;
-                      c2.child1 = node4;
-                      c2.parent = node4.parent;
+                      const f4 = c2!.child1;
+                      const g5 = c2!.child2;
+                      c2!.child1 = node4;
+                      c2!.parent = node4.parent;
                       node4.parent = c2;
-                      if (c2.parent != null) {
-                        if (c2.parent.child1 == node4) {
-                          c2.parent.child1 = c2;
+                      if (c2!.parent != null) {
+                        if (c2!.parent.child1 == node4) {
+                          c2!.parent.child1 = c2;
                         } else {
-                          c2.parent.child2 = c2;
+                          c2!.parent.child2 = c2;
                         }
                       } else {
                         tree2.root = c2;
                       }
-                      if (f4.height > g5.height) {
-                        c2.child2 = f4;
+                      if (f4!.height > g5!.height) {
+                        c2!.child2 = f4;
                         node4.child2 = g5;
-                        g5.parent = node4;
+                        g5!.parent = node4;
                         const _this35 = node4.aabb;
                         const a20 = b23.aabb;
-                        const b24 = g5.aabb;
-                        _this35.minx = a20.minx < b24.minx ? a20.minx : b24.minx;
-                        _this35.miny = a20.miny < b24.miny ? a20.miny : b24.miny;
-                        _this35.maxx = a20.maxx > b24.maxx ? a20.maxx : b24.maxx;
-                        _this35.maxy = a20.maxy > b24.maxy ? a20.maxy : b24.maxy;
-                        const _this36 = c2.aabb;
+                        const b24 = g5!.aabb;
+                        _this35!.minx = a20!.minx < b24!.minx ? a20!.minx : b24!.minx;
+                        _this35!.miny = a20!.miny < b24!.miny ? a20!.miny : b24!.miny;
+                        _this35!.maxx = a20!.maxx > b24!.maxx ? a20!.maxx : b24!.maxx;
+                        _this35!.maxy = a20!.maxy > b24!.maxy ? a20!.maxy : b24!.maxy;
+                        const _this36 = c2!.aabb;
                         const a21 = node4.aabb;
-                        const b25 = f4.aabb;
-                        _this36.minx = a21.minx < b25.minx ? a21.minx : b25.minx;
-                        _this36.miny = a21.miny < b25.miny ? a21.miny : b25.miny;
-                        _this36.maxx = a21.maxx > b25.maxx ? a21.maxx : b25.maxx;
-                        _this36.maxy = a21.maxy > b25.maxy ? a21.maxy : b25.maxy;
+                        const b25 = f4!.aabb;
+                        _this36!.minx = a21!.minx < b25!.minx ? a21!.minx : b25!.minx;
+                        _this36!.miny = a21!.miny < b25!.miny ? a21!.miny : b25!.miny;
+                        _this36!.maxx = a21!.maxx > b25!.maxx ? a21!.maxx : b25!.maxx;
+                        _this36!.maxy = a21!.maxy > b25!.maxy ? a21!.maxy : b25!.maxy;
                         const x18 = b23.height;
-                        const y18 = g5.height;
+                        const y18 = g5!.height;
                         node4.height = 1 + (x18 > y18 ? x18 : y18);
                         const x19 = node4.height;
-                        const y19 = f4.height;
-                        c2.height = 1 + (x19 > y19 ? x19 : y19);
+                        const y19 = f4!.height;
+                        c2!.height = 1 + (x19 > y19 ? x19 : y19);
                       } else {
-                        c2.child2 = g5;
+                        c2!.child2 = g5;
                         node4.child2 = f4;
-                        f4.parent = node4;
+                        f4!.parent = node4;
                         const _this37 = node4.aabb;
                         const a22 = b23.aabb;
-                        const b26 = f4.aabb;
-                        _this37.minx = a22.minx < b26.minx ? a22.minx : b26.minx;
-                        _this37.miny = a22.miny < b26.miny ? a22.miny : b26.miny;
-                        _this37.maxx = a22.maxx > b26.maxx ? a22.maxx : b26.maxx;
-                        _this37.maxy = a22.maxy > b26.maxy ? a22.maxy : b26.maxy;
-                        const _this38 = c2.aabb;
+                        const b26 = f4!.aabb;
+                        _this37!.minx = a22!.minx < b26!.minx ? a22!.minx : b26!.minx;
+                        _this37!.miny = a22!.miny < b26!.miny ? a22!.miny : b26!.miny;
+                        _this37!.maxx = a22!.maxx > b26!.maxx ? a22!.maxx : b26!.maxx;
+                        _this37!.maxy = a22!.maxy > b26!.maxy ? a22!.maxy : b26!.maxy;
+                        const _this38 = c2!.aabb;
                         const a23 = node4.aabb;
-                        const b27 = g5.aabb;
-                        _this38.minx = a23.minx < b27.minx ? a23.minx : b27.minx;
-                        _this38.miny = a23.miny < b27.miny ? a23.miny : b27.miny;
-                        _this38.maxx = a23.maxx > b27.maxx ? a23.maxx : b27.maxx;
-                        _this38.maxy = a23.maxy > b27.maxy ? a23.maxy : b27.maxy;
+                        const b27 = g5!.aabb;
+                        _this38!.minx = a23!.minx < b27!.minx ? a23!.minx : b27!.minx;
+                        _this38!.miny = a23!.miny < b27!.miny ? a23!.miny : b27!.miny;
+                        _this38!.maxx = a23!.maxx > b27!.maxx ? a23!.maxx : b27!.maxx;
+                        _this38!.maxy = a23!.maxy > b27!.maxy ? a23!.maxy : b27!.maxy;
                         const x20 = b23.height;
-                        const y20 = f4.height;
+                        const y20 = f4!.height;
                         node4.height = 1 + (x20 > y20 ? x20 : y20);
                         const x21 = node4.height;
-                        const y21 = g5.height;
-                        c2.height = 1 + (x21 > y21 ? x21 : y21);
+                        const y21 = g5!.height;
+                        c2!.height = 1 + (x21 > y21 ? x21 : y21);
                       }
-                      node4 = c2;
+                      node4 = c2!;
                     } else if (balance2 < -1) {
                       const f5 = b23.child1;
                       const g6 = b23.child2;
@@ -1177,53 +1180,53 @@ export class ZPP_DynAABBPhase {
                       } else {
                         tree2.root = b23;
                       }
-                      if (f5.height > g6.height) {
+                      if (f5!.height > g6!.height) {
                         b23.child2 = f5;
                         node4.child1 = g6;
-                        g6.parent = node4;
+                        g6!.parent = node4;
                         const _this39 = node4.aabb;
-                        const a24 = c2.aabb;
-                        const b28 = g6.aabb;
-                        _this39.minx = a24.minx < b28.minx ? a24.minx : b28.minx;
-                        _this39.miny = a24.miny < b28.miny ? a24.miny : b28.miny;
-                        _this39.maxx = a24.maxx > b28.maxx ? a24.maxx : b28.maxx;
-                        _this39.maxy = a24.maxy > b28.maxy ? a24.maxy : b28.maxy;
+                        const a24 = c2!.aabb;
+                        const b28 = g6!.aabb;
+                        _this39!.minx = a24!.minx < b28!.minx ? a24!.minx : b28!.minx;
+                        _this39!.miny = a24!.miny < b28!.miny ? a24!.miny : b28!.miny;
+                        _this39!.maxx = a24!.maxx > b28!.maxx ? a24!.maxx : b28!.maxx;
+                        _this39!.maxy = a24!.maxy > b28!.maxy ? a24!.maxy : b28!.maxy;
                         const _this40 = b23.aabb;
                         const a25 = node4.aabb;
-                        const b29 = f5.aabb;
-                        _this40.minx = a25.minx < b29.minx ? a25.minx : b29.minx;
-                        _this40.miny = a25.miny < b29.miny ? a25.miny : b29.miny;
-                        _this40.maxx = a25.maxx > b29.maxx ? a25.maxx : b29.maxx;
-                        _this40.maxy = a25.maxy > b29.maxy ? a25.maxy : b29.maxy;
-                        const x22 = c2.height;
-                        const y22 = g6.height;
+                        const b29 = f5!.aabb;
+                        _this40!.minx = a25!.minx < b29!.minx ? a25!.minx : b29!.minx;
+                        _this40!.miny = a25!.miny < b29!.miny ? a25!.miny : b29!.miny;
+                        _this40!.maxx = a25!.maxx > b29!.maxx ? a25!.maxx : b29!.maxx;
+                        _this40!.maxy = a25!.maxy > b29!.maxy ? a25!.maxy : b29!.maxy;
+                        const x22 = c2!.height;
+                        const y22 = g6!.height;
                         node4.height = 1 + (x22 > y22 ? x22 : y22);
                         const x23 = node4.height;
-                        const y23 = f5.height;
+                        const y23 = f5!.height;
                         b23.height = 1 + (x23 > y23 ? x23 : y23);
                       } else {
                         b23.child2 = g6;
                         node4.child1 = f5;
-                        f5.parent = node4;
+                        f5!.parent = node4;
                         const _this41 = node4.aabb;
-                        const a26 = c2.aabb;
-                        const b30 = f5.aabb;
-                        _this41.minx = a26.minx < b30.minx ? a26.minx : b30.minx;
-                        _this41.miny = a26.miny < b30.miny ? a26.miny : b30.miny;
-                        _this41.maxx = a26.maxx > b30.maxx ? a26.maxx : b30.maxx;
-                        _this41.maxy = a26.maxy > b30.maxy ? a26.maxy : b30.maxy;
+                        const a26 = c2!.aabb;
+                        const b30 = f5!.aabb;
+                        _this41!.minx = a26!.minx < b30!.minx ? a26!.minx : b30!.minx;
+                        _this41!.miny = a26!.miny < b30!.miny ? a26!.miny : b30!.miny;
+                        _this41!.maxx = a26!.maxx > b30!.maxx ? a26!.maxx : b30!.maxx;
+                        _this41!.maxy = a26!.maxy > b30!.maxy ? a26!.maxy : b30!.maxy;
                         const _this42 = b23.aabb;
                         const a27 = node4.aabb;
-                        const b31 = g6.aabb;
-                        _this42.minx = a27.minx < b31.minx ? a27.minx : b31.minx;
-                        _this42.miny = a27.miny < b31.miny ? a27.miny : b31.miny;
-                        _this42.maxx = a27.maxx > b31.maxx ? a27.maxx : b31.maxx;
-                        _this42.maxy = a27.maxy > b31.maxy ? a27.maxy : b31.maxy;
-                        const x24 = c2.height;
-                        const y24 = f5.height;
+                        const b31 = g6!.aabb;
+                        _this42!.minx = a27!.minx < b31!.minx ? a27!.minx : b31!.minx;
+                        _this42!.miny = a27!.miny < b31!.miny ? a27!.miny : b31!.miny;
+                        _this42!.maxx = a27!.maxx > b31!.maxx ? a27!.maxx : b31!.maxx;
+                        _this42!.maxy = a27!.maxy > b31!.maxy ? a27!.maxy : b31!.maxy;
+                        const x24 = c2!.height;
+                        const y24 = f5!.height;
                         node4.height = 1 + (x24 > y24 ? x24 : y24);
                         const x25 = node4.height;
-                        const y25 = g6.height;
+                        const y25 = g6!.height;
                         b23.height = 1 + (x25 > y25 ? x25 : y25);
                       }
                       node4 = b23;
@@ -1234,37 +1237,37 @@ export class ZPP_DynAABBPhase {
                   const child13 = node4.child1;
                   const child23 = node4.child2;
                   const _this43 = node4.aabb;
-                  const a28 = child13.aabb;
-                  const b32 = child23.aabb;
-                  _this43.minx = a28.minx < b32.minx ? a28.minx : b32.minx;
-                  _this43.miny = a28.miny < b32.miny ? a28.miny : b32.miny;
-                  _this43.maxx = a28.maxx > b32.maxx ? a28.maxx : b32.maxx;
-                  _this43.maxy = a28.maxy > b32.maxy ? a28.maxy : b32.maxy;
-                  const x26 = child13.height;
-                  const y26 = child23.height;
+                  const a28 = child13!.aabb;
+                  const b32 = child23!.aabb;
+                  _this43!.minx = a28!.minx < b32!.minx ? a28!.minx : b32!.minx;
+                  _this43!.miny = a28!.miny < b32!.miny ? a28!.miny : b32!.miny;
+                  _this43!.maxx = a28!.maxx > b32!.maxx ? a28!.maxx : b32!.maxx;
+                  _this43!.maxy = a28!.maxy > b32!.maxy ? a28!.maxy : b32!.maxy;
+                  const x26 = child13!.height;
+                  const y26 = child23!.height;
                   node4.height = 1 + (x26 > y26 ? x26 : y26);
-                  node4 = node4.parent;
+                  node4 = node4.parent!;
                 }
               } else {
                 tree2.root = sibling2;
-                sibling2.parent = null;
+                sibling2!.parent = null;
                 const o6 = parent1;
-                o6.height = -1;
-                const o7 = o6.aabb;
-                if (o7.outer != null) {
-                  o7.outer.zpp_inner = null;
-                  o7.outer = null;
+                o6!.height = -1;
+                const o7 = o6!.aabb;
+                if (o7!.outer != null) {
+                  o7!.outer.zpp_inner = null;
+                  o7!.outer = null;
                 }
-                o7.wrap_min = o7.wrap_max = null;
-                o7._invalidate = null;
-                o7._validate = null;
-                o7.next = ZPP_AABB.zpp_pool;
+                o7!.wrap_min = o7!.wrap_max = null;
+                o7!._invalidate = null;
+                o7!._validate = null;
+                o7!.next = ZPP_AABB.zpp_pool;
                 ZPP_AABB.zpp_pool = o7;
-                o6.child1 = o6.child2 = o6.parent = null;
-                o6.next = null;
-                o6.snext = null;
-                o6.mnext = null;
-                o6.next = ZPP_AABBNode.zpp_pool;
+                o6!.child1 = o6!.child2 = o6!.parent = null;
+                o6!.next = null;
+                o6!.snext = null;
+                o6!.mnext = null;
+                o6!.next = ZPP_AABBNode.zpp_pool;
                 ZPP_AABBNode.zpp_pool = o6;
               }
             }
@@ -1424,17 +1427,17 @@ export class ZPP_DynAABBPhase {
             }
           }
           const a29 = shape1.aabb;
-          aabb1.minx = a29.minx - 3.0;
-          aabb1.miny = a29.miny - 3.0;
-          aabb1.maxx = a29.maxx + 3.0;
-          aabb1.maxy = a29.maxy + 3.0;
+          aabb1!.minx = a29.minx - 3.0;
+          aabb1!.miny = a29.miny - 3.0;
+          aabb1!.maxx = a29.maxx + 3.0;
+          aabb1!.maxy = a29.maxy + 3.0;
           const tree3 = (node3.dyn =
             shape1.body.type == 1 ? false : !shape1.body.component.sleeping)
             ? this.dtree
             : this.stree;
           if (tree3.root == null) {
             tree3.root = node3;
-            tree3.root.parent = null;
+            tree3.root!.parent = null;
           } else {
             const leafaabb1 = node3.aabb;
             let node5 = tree3.root;
@@ -1442,55 +1445,61 @@ export class ZPP_DynAABBPhase {
               const child14 = node5.child1;
               const child24 = node5.child2;
               const _this49 = node5.aabb;
-              const area3 = (_this49.maxx - _this49.minx + (_this49.maxy - _this49.miny)) * 2;
+              const area3 = (_this49!.maxx - _this49!.minx + (_this49!.maxy - _this49!.miny)) * 2;
               const _this50 = ZPP_AABBTree.tmpaabb;
               const a30 = node5.aabb;
-              _this50.minx = a30.minx < leafaabb1.minx ? a30.minx : leafaabb1.minx;
-              _this50.miny = a30.miny < leafaabb1.miny ? a30.miny : leafaabb1.miny;
-              _this50.maxx = a30.maxx > leafaabb1.maxx ? a30.maxx : leafaabb1.maxx;
-              _this50.maxy = a30.maxy > leafaabb1.maxy ? a30.maxy : leafaabb1.maxy;
+              _this50!.minx = a30!.minx < leafaabb1!.minx ? a30!.minx : leafaabb1!.minx;
+              _this50!.miny = a30!.miny < leafaabb1!.miny ? a30!.miny : leafaabb1!.miny;
+              _this50!.maxx = a30!.maxx > leafaabb1!.maxx ? a30!.maxx : leafaabb1!.maxx;
+              _this50!.maxy = a30!.maxy > leafaabb1!.maxy ? a30!.maxy : leafaabb1!.maxy;
               const _this51 = ZPP_AABBTree.tmpaabb;
-              const carea1 = (_this51.maxx - _this51.minx + (_this51.maxy - _this51.miny)) * 2;
+              const carea1 = (_this51!.maxx - _this51!.minx + (_this51!.maxy - _this51!.miny)) * 2;
               const cost3 = 2 * carea1;
               const icost1 = 2 * (carea1 - area3);
               const _this52 = ZPP_AABBTree.tmpaabb;
               const b33 = child14.aabb;
-              _this52.minx = leafaabb1.minx < b33.minx ? leafaabb1.minx : b33.minx;
-              _this52.miny = leafaabb1.miny < b33.miny ? leafaabb1.miny : b33.miny;
-              _this52.maxx = leafaabb1.maxx > b33.maxx ? leafaabb1.maxx : b33.maxx;
-              _this52.maxy = leafaabb1.maxy > b33.maxy ? leafaabb1.maxy : b33.maxy;
+              _this52!.minx = leafaabb1!.minx < b33!.minx ? leafaabb1!.minx : b33!.minx;
+              _this52!.miny = leafaabb1!.miny < b33!.miny ? leafaabb1!.miny : b33!.miny;
+              _this52!.maxx = leafaabb1!.maxx > b33!.maxx ? leafaabb1!.maxx : b33!.maxx;
+              _this52!.maxy = leafaabb1!.maxy > b33!.maxy ? leafaabb1!.maxy : b33!.maxy;
               let cost11;
               if (child14.child1 == null) {
                 const _this53 = ZPP_AABBTree.tmpaabb;
-                cost11 = (_this53.maxx - _this53.minx + (_this53.maxy - _this53.miny)) * 2 + icost1;
+                cost11 =
+                  (_this53!.maxx - _this53!.minx + (_this53!.maxy - _this53!.miny)) * 2 + icost1;
               } else {
                 const _this54 = child14.aabb;
-                const oarea2 = (_this54.maxx - _this54.minx + (_this54.maxy - _this54.miny)) * 2;
+                const oarea2 =
+                  (_this54!.maxx - _this54!.minx + (_this54!.maxy - _this54!.miny)) * 2;
                 const _this55 = ZPP_AABBTree.tmpaabb;
-                const narea2 = (_this55.maxx - _this55.minx + (_this55.maxy - _this55.miny)) * 2;
+                const narea2 =
+                  (_this55!.maxx - _this55!.minx + (_this55!.maxy - _this55!.miny)) * 2;
                 cost11 = narea2 - oarea2 + icost1;
               }
               const _this56 = ZPP_AABBTree.tmpaabb;
-              const b34 = child24.aabb;
-              _this56.minx = leafaabb1.minx < b34.minx ? leafaabb1.minx : b34.minx;
-              _this56.miny = leafaabb1.miny < b34.miny ? leafaabb1.miny : b34.miny;
-              _this56.maxx = leafaabb1.maxx > b34.maxx ? leafaabb1.maxx : b34.maxx;
-              _this56.maxy = leafaabb1.maxy > b34.maxy ? leafaabb1.maxy : b34.maxy;
+              const b34 = child24!.aabb;
+              _this56!.minx = leafaabb1!.minx < b34!.minx ? leafaabb1!.minx : b34!.minx;
+              _this56!.miny = leafaabb1!.miny < b34!.miny ? leafaabb1!.miny : b34!.miny;
+              _this56!.maxx = leafaabb1!.maxx > b34!.maxx ? leafaabb1!.maxx : b34!.maxx;
+              _this56!.maxy = leafaabb1!.maxy > b34!.maxy ? leafaabb1!.maxy : b34!.maxy;
               let cost21;
-              if (child24.child1 == null) {
+              if (child24!.child1 == null) {
                 const _this57 = ZPP_AABBTree.tmpaabb;
-                cost21 = (_this57.maxx - _this57.minx + (_this57.maxy - _this57.miny)) * 2 + icost1;
+                cost21 =
+                  (_this57!.maxx - _this57!.minx + (_this57!.maxy - _this57!.miny)) * 2 + icost1;
               } else {
-                const _this58 = child24.aabb;
-                const oarea3 = (_this58.maxx - _this58.minx + (_this58.maxy - _this58.miny)) * 2;
+                const _this58 = child24!.aabb;
+                const oarea3 =
+                  (_this58!.maxx - _this58!.minx + (_this58!.maxy - _this58!.miny)) * 2;
                 const _this59 = ZPP_AABBTree.tmpaabb;
-                const narea3 = (_this59.maxx - _this59.minx + (_this59.maxy - _this59.miny)) * 2;
+                const narea3 =
+                  (_this59!.maxx - _this59!.minx + (_this59!.maxy - _this59!.miny)) * 2;
                 cost21 = narea3 - oarea3 + icost1;
               }
               if (cost3 < cost11 && cost3 < cost21) {
                 break;
               } else {
-                node5 = cost11 < cost21 ? child14 : child24;
+                node5 = cost11 < cost21 ? child14 : child24!;
               }
             }
             const sibling3 = node5;
@@ -1516,10 +1525,10 @@ export class ZPP_DynAABBPhase {
             nparent1.parent = oparent1;
             const _this60 = nparent1.aabb;
             const b35 = sibling3.aabb;
-            _this60.minx = leafaabb1.minx < b35.minx ? leafaabb1.minx : b35.minx;
-            _this60.miny = leafaabb1.miny < b35.miny ? leafaabb1.miny : b35.miny;
-            _this60.maxx = leafaabb1.maxx > b35.maxx ? leafaabb1.maxx : b35.maxx;
-            _this60.maxy = leafaabb1.maxy > b35.maxy ? leafaabb1.maxy : b35.maxy;
+            _this60.minx = leafaabb1!.minx < b35!.minx ? leafaabb1!.minx : b35!.minx;
+            _this60.miny = leafaabb1!.miny < b35!.miny ? leafaabb1!.miny : b35!.miny;
+            _this60.maxx = leafaabb1!.maxx > b35!.maxx ? leafaabb1!.maxx : b35!.maxx;
+            _this60.maxy = leafaabb1!.maxy > b35!.maxy ? leafaabb1!.maxy : b35!.maxy;
             nparent1.height = sibling3.height + 1;
             if (oparent1 != null) {
               if (oparent1.child1 == sibling3) {
@@ -1545,72 +1554,72 @@ export class ZPP_DynAABBPhase {
               } else {
                 const b36 = node5.child1;
                 const c3 = node5.child2;
-                const balance3 = c3.height - b36.height;
+                const balance3 = c3!.height - b36.height;
                 if (balance3 > 1) {
-                  const f6 = c3.child1;
-                  const g8 = c3.child2;
-                  c3.child1 = node5;
-                  c3.parent = node5.parent;
+                  const f6 = c3!.child1;
+                  const g8 = c3!.child2;
+                  c3!.child1 = node5;
+                  c3!.parent = node5.parent;
                   node5.parent = c3;
-                  if (c3.parent != null) {
-                    if (c3.parent.child1 == node5) {
-                      c3.parent.child1 = c3;
+                  if (c3!.parent != null) {
+                    if (c3!.parent.child1 == node5) {
+                      c3!.parent.child1 = c3;
                     } else {
-                      c3.parent.child2 = c3;
+                      c3!.parent.child2 = c3;
                     }
                   } else {
                     tree3.root = c3;
                   }
-                  if (f6.height > g8.height) {
-                    c3.child2 = f6;
+                  if (f6!.height > g8!.height) {
+                    c3!.child2 = f6;
                     node5.child2 = g8;
-                    g8.parent = node5;
+                    g8!.parent = node5;
                     const _this61 = node5.aabb;
                     const a31 = b36.aabb;
-                    const b37 = g8.aabb;
-                    _this61.minx = a31.minx < b37.minx ? a31.minx : b37.minx;
-                    _this61.miny = a31.miny < b37.miny ? a31.miny : b37.miny;
-                    _this61.maxx = a31.maxx > b37.maxx ? a31.maxx : b37.maxx;
-                    _this61.maxy = a31.maxy > b37.maxy ? a31.maxy : b37.maxy;
-                    const _this62 = c3.aabb;
+                    const b37 = g8!.aabb;
+                    _this61!.minx = a31!.minx < b37!.minx ? a31!.minx : b37!.minx;
+                    _this61!.miny = a31!.miny < b37!.miny ? a31!.miny : b37!.miny;
+                    _this61!.maxx = a31!.maxx > b37!.maxx ? a31!.maxx : b37!.maxx;
+                    _this61!.maxy = a31!.maxy > b37!.maxy ? a31!.maxy : b37!.maxy;
+                    const _this62 = c3!.aabb;
                     const a32 = node5.aabb;
-                    const b38 = f6.aabb;
-                    _this62.minx = a32.minx < b38.minx ? a32.minx : b38.minx;
-                    _this62.miny = a32.miny < b38.miny ? a32.miny : b38.miny;
-                    _this62.maxx = a32.maxx > b38.maxx ? a32.maxx : b38.maxx;
-                    _this62.maxy = a32.maxy > b38.maxy ? a32.maxy : b38.maxy;
+                    const b38 = f6!.aabb;
+                    _this62!.minx = a32!.minx < b38!.minx ? a32!.minx : b38!.minx;
+                    _this62!.miny = a32!.miny < b38!.miny ? a32!.miny : b38!.miny;
+                    _this62!.maxx = a32!.maxx > b38!.maxx ? a32!.maxx : b38!.maxx;
+                    _this62!.maxy = a32!.maxy > b38!.maxy ? a32!.maxy : b38!.maxy;
                     const x27 = b36.height;
-                    const y27 = g8.height;
+                    const y27 = g8!.height;
                     node5.height = 1 + (x27 > y27 ? x27 : y27);
                     const x28 = node5.height;
-                    const y28 = f6.height;
-                    c3.height = 1 + (x28 > y28 ? x28 : y28);
+                    const y28 = f6!.height;
+                    c3!.height = 1 + (x28 > y28 ? x28 : y28);
                   } else {
-                    c3.child2 = g8;
+                    c3!.child2 = g8;
                     node5.child2 = f6;
-                    f6.parent = node5;
+                    f6!.parent = node5;
                     const _this63 = node5.aabb;
                     const a33 = b36.aabb;
-                    const b39 = f6.aabb;
-                    _this63.minx = a33.minx < b39.minx ? a33.minx : b39.minx;
-                    _this63.miny = a33.miny < b39.miny ? a33.miny : b39.miny;
-                    _this63.maxx = a33.maxx > b39.maxx ? a33.maxx : b39.maxx;
-                    _this63.maxy = a33.maxy > b39.maxy ? a33.maxy : b39.maxy;
-                    const _this64 = c3.aabb;
+                    const b39 = f6!.aabb;
+                    _this63!.minx = a33!.minx < b39!.minx ? a33!.minx : b39!.minx;
+                    _this63!.miny = a33!.miny < b39!.miny ? a33!.miny : b39!.miny;
+                    _this63!.maxx = a33!.maxx > b39!.maxx ? a33!.maxx : b39!.maxx;
+                    _this63!.maxy = a33!.maxy > b39!.maxy ? a33!.maxy : b39!.maxy;
+                    const _this64 = c3!.aabb;
                     const a34 = node5.aabb;
-                    const b40 = g8.aabb;
-                    _this64.minx = a34.minx < b40.minx ? a34.minx : b40.minx;
-                    _this64.miny = a34.miny < b40.miny ? a34.miny : b40.miny;
-                    _this64.maxx = a34.maxx > b40.maxx ? a34.maxx : b40.maxx;
-                    _this64.maxy = a34.maxy > b40.maxy ? a34.maxy : b40.maxy;
+                    const b40 = g8!.aabb;
+                    _this64!.minx = a34!.minx < b40!.minx ? a34!.minx : b40!.minx;
+                    _this64!.miny = a34!.miny < b40!.miny ? a34!.miny : b40!.miny;
+                    _this64!.maxx = a34!.maxx > b40!.maxx ? a34!.maxx : b40!.maxx;
+                    _this64!.maxy = a34!.maxy > b40!.maxy ? a34!.maxy : b40!.maxy;
                     const x29 = b36.height;
-                    const y29 = f6.height;
+                    const y29 = f6!.height;
                     node5.height = 1 + (x29 > y29 ? x29 : y29);
                     const x30 = node5.height;
-                    const y30 = g8.height;
-                    c3.height = 1 + (x30 > y30 ? x30 : y30);
+                    const y30 = g8!.height;
+                    c3!.height = 1 + (x30 > y30 ? x30 : y30);
                   }
-                  node5 = c3;
+                  node5 = c3!;
                 } else if (balance3 < -1) {
                   const f7 = b36.child1;
                   const g9 = b36.child2;
@@ -1626,53 +1635,53 @@ export class ZPP_DynAABBPhase {
                   } else {
                     tree3.root = b36;
                   }
-                  if (f7.height > g9.height) {
+                  if (f7!.height > g9!.height) {
                     b36.child2 = f7;
                     node5.child1 = g9;
-                    g9.parent = node5;
+                    g9!.parent = node5;
                     const _this65 = node5.aabb;
-                    const a35 = c3.aabb;
-                    const b41 = g9.aabb;
-                    _this65.minx = a35.minx < b41.minx ? a35.minx : b41.minx;
-                    _this65.miny = a35.miny < b41.miny ? a35.miny : b41.miny;
-                    _this65.maxx = a35.maxx > b41.maxx ? a35.maxx : b41.maxx;
-                    _this65.maxy = a35.maxy > b41.maxy ? a35.maxy : b41.maxy;
+                    const a35 = c3!.aabb;
+                    const b41 = g9!.aabb;
+                    _this65!.minx = a35!.minx < b41!.minx ? a35!.minx : b41!.minx;
+                    _this65!.miny = a35!.miny < b41!.miny ? a35!.miny : b41!.miny;
+                    _this65!.maxx = a35!.maxx > b41!.maxx ? a35!.maxx : b41!.maxx;
+                    _this65!.maxy = a35!.maxy > b41!.maxy ? a35!.maxy : b41!.maxy;
                     const _this66 = b36.aabb;
                     const a36 = node5.aabb;
-                    const b42 = f7.aabb;
-                    _this66.minx = a36.minx < b42.minx ? a36.minx : b42.minx;
-                    _this66.miny = a36.miny < b42.miny ? a36.miny : b42.miny;
-                    _this66.maxx = a36.maxx > b42.maxx ? a36.maxx : b42.maxx;
-                    _this66.maxy = a36.maxy > b42.maxy ? a36.maxy : b42.maxy;
-                    const x31 = c3.height;
-                    const y31 = g9.height;
+                    const b42 = f7!.aabb;
+                    _this66!.minx = a36!.minx < b42!.minx ? a36!.minx : b42!.minx;
+                    _this66!.miny = a36!.miny < b42!.miny ? a36!.miny : b42!.miny;
+                    _this66!.maxx = a36!.maxx > b42!.maxx ? a36!.maxx : b42!.maxx;
+                    _this66!.maxy = a36!.maxy > b42!.maxy ? a36!.maxy : b42!.maxy;
+                    const x31 = c3!.height;
+                    const y31 = g9!.height;
                     node5.height = 1 + (x31 > y31 ? x31 : y31);
                     const x32 = node5.height;
-                    const y32 = f7.height;
+                    const y32 = f7!.height;
                     b36.height = 1 + (x32 > y32 ? x32 : y32);
                   } else {
                     b36.child2 = g9;
                     node5.child1 = f7;
-                    f7.parent = node5;
+                    f7!.parent = node5;
                     const _this67 = node5.aabb;
-                    const a37 = c3.aabb;
-                    const b43 = f7.aabb;
-                    _this67.minx = a37.minx < b43.minx ? a37.minx : b43.minx;
-                    _this67.miny = a37.miny < b43.miny ? a37.miny : b43.miny;
-                    _this67.maxx = a37.maxx > b43.maxx ? a37.maxx : b43.maxx;
-                    _this67.maxy = a37.maxy > b43.maxy ? a37.maxy : b43.maxy;
+                    const a37 = c3!.aabb;
+                    const b43 = f7!.aabb;
+                    _this67!.minx = a37!.minx < b43!.minx ? a37!.minx : b43!.minx;
+                    _this67!.miny = a37!.miny < b43!.miny ? a37!.miny : b43!.miny;
+                    _this67!.maxx = a37!.maxx > b43!.maxx ? a37!.maxx : b43!.maxx;
+                    _this67!.maxy = a37!.maxy > b43!.maxy ? a37!.maxy : b43!.maxy;
                     const _this68 = b36.aabb;
                     const a38 = node5.aabb;
-                    const b44 = g9.aabb;
-                    _this68.minx = a38.minx < b44.minx ? a38.minx : b44.minx;
-                    _this68.miny = a38.miny < b44.miny ? a38.miny : b44.miny;
-                    _this68.maxx = a38.maxx > b44.maxx ? a38.maxx : b44.maxx;
-                    _this68.maxy = a38.maxy > b44.maxy ? a38.maxy : b44.maxy;
-                    const x33 = c3.height;
-                    const y33 = f7.height;
+                    const b44 = g9!.aabb;
+                    _this68!.minx = a38!.minx < b44!.minx ? a38!.minx : b44!.minx;
+                    _this68!.miny = a38!.miny < b44!.miny ? a38!.miny : b44!.miny;
+                    _this68!.maxx = a38!.maxx > b44!.maxx ? a38!.maxx : b44!.maxx;
+                    _this68!.maxy = a38!.maxy > b44!.maxy ? a38!.maxy : b44!.maxy;
+                    const x33 = c3!.height;
+                    const y33 = f7!.height;
                     node5.height = 1 + (x33 > y33 ? x33 : y33);
                     const x34 = node5.height;
-                    const y34 = g9.height;
+                    const y34 = g9!.height;
                     b36.height = 1 + (x34 > y34 ? x34 : y34);
                   }
                   node5 = b36;
@@ -1682,17 +1691,17 @@ export class ZPP_DynAABBPhase {
               }
               const child15 = node5.child1;
               const child25 = node5.child2;
-              const x35 = child15.height;
-              const y35 = child25.height;
+              const x35 = child15!.height;
+              const y35 = child25!.height;
               node5.height = 1 + (x35 > y35 ? x35 : y35);
               const _this69 = node5.aabb;
-              const a39 = child15.aabb;
-              const b45 = child25.aabb;
-              _this69.minx = a39.minx < b45.minx ? a39.minx : b45.minx;
-              _this69.miny = a39.miny < b45.miny ? a39.miny : b45.miny;
-              _this69.maxx = a39.maxx > b45.maxx ? a39.maxx : b45.maxx;
-              _this69.maxy = a39.maxy > b45.maxy ? a39.maxy : b45.maxy;
-              node5 = node5.parent;
+              const a39 = child15!.aabb;
+              const b45 = child25!.aabb;
+              _this69!.minx = a39!.minx < b45!.minx ? a39!.minx : b45!.minx;
+              _this69!.miny = a39!.miny < b45!.miny ? a39!.miny : b45!.miny;
+              _this69!.maxx = a39!.maxx > b45!.maxx ? a39!.maxx : b45!.maxx;
+              _this69!.maxy = a39!.maxy > b45!.maxy ? a39!.maxy : b45!.maxy;
+              node5 = node5.parent!;
             }
           }
           node3.synced = false;
@@ -1718,32 +1727,32 @@ export class ZPP_DynAABBPhase {
           tree.root = null;
         } else {
           const parent = node.parent;
-          const gparent = parent.parent;
-          const sibling = parent.child1 == node ? parent.child2 : parent.child1;
+          const gparent = parent!.parent;
+          const sibling = parent!.child1 == node ? parent!.child2 : parent!.child1;
           if (gparent != null) {
             if (gparent.child1 == parent) {
               gparent.child1 = sibling;
             } else {
               gparent.child2 = sibling;
             }
-            sibling.parent = gparent;
+            sibling!.parent = gparent;
             const o = parent;
-            o.height = -1;
-            const o1 = o.aabb;
-            if (o1.outer != null) {
-              o1.outer.zpp_inner = null;
-              o1.outer = null;
+            o!.height = -1;
+            const o1 = o!.aabb;
+            if (o1!.outer != null) {
+              o1!.outer.zpp_inner = null;
+              o1!.outer = null;
             }
-            o1.wrap_min = o1.wrap_max = null;
-            o1._invalidate = null;
-            o1._validate = null;
-            o1.next = ZPP_AABB.zpp_pool;
+            o1!.wrap_min = o1!.wrap_max = null;
+            o1!._invalidate = null;
+            o1!._validate = null;
+            o1!.next = ZPP_AABB.zpp_pool;
             ZPP_AABB.zpp_pool = o1;
-            o.child1 = o.child2 = o.parent = null;
-            o.next = null;
-            o.snext = null;
-            o.mnext = null;
-            o.next = ZPP_AABBNode.zpp_pool;
+            o!.child1 = o!.child2 = o!.parent = null;
+            o!.next = null;
+            o!.snext = null;
+            o!.mnext = null;
+            o!.next = ZPP_AABBNode.zpp_pool;
             ZPP_AABBNode.zpp_pool = o;
             let node1 = gparent;
             while (node1 != null) {
@@ -1752,72 +1761,72 @@ export class ZPP_DynAABBPhase {
               } else {
                 const b = node1.child1;
                 const c = node1.child2;
-                const balance = c.height - b.height;
+                const balance = c!.height - b.height;
                 if (balance > 1) {
-                  const f = c.child1;
-                  const g = c.child2;
-                  c.child1 = node1;
-                  c.parent = node1.parent;
+                  const f = c!.child1;
+                  const g = c!.child2;
+                  c!.child1 = node1;
+                  c!.parent = node1.parent;
                   node1.parent = c;
-                  if (c.parent != null) {
-                    if (c.parent.child1 == node1) {
-                      c.parent.child1 = c;
+                  if (c!.parent != null) {
+                    if (c!.parent.child1 == node1) {
+                      c!.parent.child1 = c;
                     } else {
-                      c.parent.child2 = c;
+                      c!.parent.child2 = c;
                     }
                   } else {
                     tree.root = c;
                   }
-                  if (f.height > g.height) {
-                    c.child2 = f;
+                  if (f!.height > g!.height) {
+                    c!.child2 = f;
                     node1.child2 = g;
-                    g.parent = node1;
+                    g!.parent = node1;
                     const _this = node1.aabb;
                     const a = b.aabb;
-                    const b1 = g.aabb;
-                    _this.minx = a.minx < b1.minx ? a.minx : b1.minx;
-                    _this.miny = a.miny < b1.miny ? a.miny : b1.miny;
-                    _this.maxx = a.maxx > b1.maxx ? a.maxx : b1.maxx;
-                    _this.maxy = a.maxy > b1.maxy ? a.maxy : b1.maxy;
-                    const _this1 = c.aabb;
+                    const b1 = g!.aabb;
+                    _this!.minx = a!.minx < b1!.minx ? a!.minx : b1!.minx;
+                    _this!.miny = a!.miny < b1!.miny ? a!.miny : b1!.miny;
+                    _this!.maxx = a!.maxx > b1!.maxx ? a!.maxx : b1!.maxx;
+                    _this!.maxy = a!.maxy > b1!.maxy ? a!.maxy : b1!.maxy;
+                    const _this1 = c!.aabb;
                     const a1 = node1.aabb;
-                    const b2 = f.aabb;
-                    _this1.minx = a1.minx < b2.minx ? a1.minx : b2.minx;
-                    _this1.miny = a1.miny < b2.miny ? a1.miny : b2.miny;
-                    _this1.maxx = a1.maxx > b2.maxx ? a1.maxx : b2.maxx;
-                    _this1.maxy = a1.maxy > b2.maxy ? a1.maxy : b2.maxy;
+                    const b2 = f!.aabb;
+                    _this1!.minx = a1!.minx < b2!.minx ? a1!.minx : b2!.minx;
+                    _this1!.miny = a1!.miny < b2!.miny ? a1!.miny : b2!.miny;
+                    _this1!.maxx = a1!.maxx > b2!.maxx ? a1!.maxx : b2!.maxx;
+                    _this1!.maxy = a1!.maxy > b2!.maxy ? a1!.maxy : b2!.maxy;
                     const x = b.height;
-                    const y = g.height;
+                    const y = g!.height;
                     node1.height = 1 + (x > y ? x : y);
                     const x1 = node1.height;
-                    const y1 = f.height;
-                    c.height = 1 + (x1 > y1 ? x1 : y1);
+                    const y1 = f!.height;
+                    c!.height = 1 + (x1 > y1 ? x1 : y1);
                   } else {
-                    c.child2 = g;
+                    c!.child2 = g;
                     node1.child2 = f;
-                    f.parent = node1;
+                    f!.parent = node1;
                     const _this2 = node1.aabb;
                     const a2 = b.aabb;
-                    const b3 = f.aabb;
-                    _this2.minx = a2.minx < b3.minx ? a2.minx : b3.minx;
-                    _this2.miny = a2.miny < b3.miny ? a2.miny : b3.miny;
-                    _this2.maxx = a2.maxx > b3.maxx ? a2.maxx : b3.maxx;
-                    _this2.maxy = a2.maxy > b3.maxy ? a2.maxy : b3.maxy;
-                    const _this3 = c.aabb;
+                    const b3 = f!.aabb;
+                    _this2!.minx = a2!.minx < b3!.minx ? a2!.minx : b3!.minx;
+                    _this2!.miny = a2!.miny < b3!.miny ? a2!.miny : b3!.miny;
+                    _this2!.maxx = a2!.maxx > b3!.maxx ? a2!.maxx : b3!.maxx;
+                    _this2!.maxy = a2!.maxy > b3!.maxy ? a2!.maxy : b3!.maxy;
+                    const _this3 = c!.aabb;
                     const a3 = node1.aabb;
-                    const b4 = g.aabb;
-                    _this3.minx = a3.minx < b4.minx ? a3.minx : b4.minx;
-                    _this3.miny = a3.miny < b4.miny ? a3.miny : b4.miny;
-                    _this3.maxx = a3.maxx > b4.maxx ? a3.maxx : b4.maxx;
-                    _this3.maxy = a3.maxy > b4.maxy ? a3.maxy : b4.maxy;
+                    const b4 = g!.aabb;
+                    _this3!.minx = a3!.minx < b4!.minx ? a3!.minx : b4!.minx;
+                    _this3!.miny = a3!.miny < b4!.miny ? a3!.miny : b4!.miny;
+                    _this3!.maxx = a3!.maxx > b4!.maxx ? a3!.maxx : b4!.maxx;
+                    _this3!.maxy = a3!.maxy > b4!.maxy ? a3!.maxy : b4!.maxy;
                     const x2 = b.height;
-                    const y2 = f.height;
+                    const y2 = f!.height;
                     node1.height = 1 + (x2 > y2 ? x2 : y2);
                     const x3 = node1.height;
-                    const y3 = g.height;
-                    c.height = 1 + (x3 > y3 ? x3 : y3);
+                    const y3 = g!.height;
+                    c!.height = 1 + (x3 > y3 ? x3 : y3);
                   }
-                  node1 = c;
+                  node1 = c!;
                 } else if (balance < -1) {
                   const f1 = b.child1;
                   const g1 = b.child2;
@@ -1833,53 +1842,53 @@ export class ZPP_DynAABBPhase {
                   } else {
                     tree.root = b;
                   }
-                  if (f1.height > g1.height) {
+                  if (f1!.height > g1!.height) {
                     b.child2 = f1;
                     node1.child1 = g1;
-                    g1.parent = node1;
+                    g1!.parent = node1;
                     const _this4 = node1.aabb;
-                    const a4 = c.aabb;
-                    const b5 = g1.aabb;
-                    _this4.minx = a4.minx < b5.minx ? a4.minx : b5.minx;
-                    _this4.miny = a4.miny < b5.miny ? a4.miny : b5.miny;
-                    _this4.maxx = a4.maxx > b5.maxx ? a4.maxx : b5.maxx;
-                    _this4.maxy = a4.maxy > b5.maxy ? a4.maxy : b5.maxy;
+                    const a4 = c!.aabb;
+                    const b5 = g1!.aabb;
+                    _this4!.minx = a4!.minx < b5!.minx ? a4!.minx : b5!.minx;
+                    _this4!.miny = a4!.miny < b5!.miny ? a4!.miny : b5!.miny;
+                    _this4!.maxx = a4!.maxx > b5!.maxx ? a4!.maxx : b5!.maxx;
+                    _this4!.maxy = a4!.maxy > b5!.maxy ? a4!.maxy : b5!.maxy;
                     const _this5 = b.aabb;
                     const a5 = node1.aabb;
-                    const b6 = f1.aabb;
-                    _this5.minx = a5.minx < b6.minx ? a5.minx : b6.minx;
-                    _this5.miny = a5.miny < b6.miny ? a5.miny : b6.miny;
-                    _this5.maxx = a5.maxx > b6.maxx ? a5.maxx : b6.maxx;
-                    _this5.maxy = a5.maxy > b6.maxy ? a5.maxy : b6.maxy;
-                    const x4 = c.height;
-                    const y4 = g1.height;
+                    const b6 = f1!.aabb;
+                    _this5!.minx = a5!.minx < b6!.minx ? a5!.minx : b6!.minx;
+                    _this5!.miny = a5!.miny < b6!.miny ? a5!.miny : b6!.miny;
+                    _this5!.maxx = a5!.maxx > b6!.maxx ? a5!.maxx : b6!.maxx;
+                    _this5!.maxy = a5!.maxy > b6!.maxy ? a5!.maxy : b6!.maxy;
+                    const x4 = c!.height;
+                    const y4 = g1!.height;
                     node1.height = 1 + (x4 > y4 ? x4 : y4);
                     const x5 = node1.height;
-                    const y5 = f1.height;
+                    const y5 = f1!.height;
                     b.height = 1 + (x5 > y5 ? x5 : y5);
                   } else {
                     b.child2 = g1;
                     node1.child1 = f1;
-                    f1.parent = node1;
+                    f1!.parent = node1;
                     const _this6 = node1.aabb;
-                    const a6 = c.aabb;
-                    const b7 = f1.aabb;
-                    _this6.minx = a6.minx < b7.minx ? a6.minx : b7.minx;
-                    _this6.miny = a6.miny < b7.miny ? a6.miny : b7.miny;
-                    _this6.maxx = a6.maxx > b7.maxx ? a6.maxx : b7.maxx;
-                    _this6.maxy = a6.maxy > b7.maxy ? a6.maxy : b7.maxy;
+                    const a6 = c!.aabb;
+                    const b7 = f1!.aabb;
+                    _this6!.minx = a6!.minx < b7!.minx ? a6!.minx : b7!.minx;
+                    _this6!.miny = a6!.miny < b7!.miny ? a6!.miny : b7!.miny;
+                    _this6!.maxx = a6!.maxx > b7!.maxx ? a6!.maxx : b7!.maxx;
+                    _this6!.maxy = a6!.maxy > b7!.maxy ? a6!.maxy : b7!.maxy;
                     const _this7 = b.aabb;
                     const a7 = node1.aabb;
-                    const b8 = g1.aabb;
-                    _this7.minx = a7.minx < b8.minx ? a7.minx : b8.minx;
-                    _this7.miny = a7.miny < b8.miny ? a7.miny : b8.miny;
-                    _this7.maxx = a7.maxx > b8.maxx ? a7.maxx : b8.maxx;
-                    _this7.maxy = a7.maxy > b8.maxy ? a7.maxy : b8.maxy;
-                    const x6 = c.height;
-                    const y6 = f1.height;
+                    const b8 = g1!.aabb;
+                    _this7!.minx = a7!.minx < b8!.minx ? a7!.minx : b8!.minx;
+                    _this7!.miny = a7!.miny < b8!.miny ? a7!.miny : b8!.miny;
+                    _this7!.maxx = a7!.maxx > b8!.maxx ? a7!.maxx : b8!.maxx;
+                    _this7!.maxy = a7!.maxy > b8!.maxy ? a7!.maxy : b8!.maxy;
+                    const x6 = c!.height;
+                    const y6 = f1!.height;
                     node1.height = 1 + (x6 > y6 ? x6 : y6);
                     const x7 = node1.height;
-                    const y7 = g1.height;
+                    const y7 = g1!.height;
                     b.height = 1 + (x7 > y7 ? x7 : y7);
                   }
                   node1 = b;
@@ -1890,37 +1899,37 @@ export class ZPP_DynAABBPhase {
               const child1 = node1.child1;
               const child2 = node1.child2;
               const _this8 = node1.aabb;
-              const a8 = child1.aabb;
-              const b9 = child2.aabb;
-              _this8.minx = a8.minx < b9.minx ? a8.minx : b9.minx;
-              _this8.miny = a8.miny < b9.miny ? a8.miny : b9.miny;
-              _this8.maxx = a8.maxx > b9.maxx ? a8.maxx : b9.maxx;
-              _this8.maxy = a8.maxy > b9.maxy ? a8.maxy : b9.maxy;
-              const x8 = child1.height;
-              const y8 = child2.height;
+              const a8 = child1!.aabb;
+              const b9 = child2!.aabb;
+              _this8!.minx = a8!.minx < b9!.minx ? a8!.minx : b9!.minx;
+              _this8!.miny = a8!.miny < b9!.miny ? a8!.miny : b9!.miny;
+              _this8!.maxx = a8!.maxx > b9!.maxx ? a8!.maxx : b9!.maxx;
+              _this8!.maxy = a8!.maxy > b9!.maxy ? a8!.maxy : b9!.maxy;
+              const x8 = child1!.height;
+              const y8 = child2!.height;
               node1.height = 1 + (x8 > y8 ? x8 : y8);
-              node1 = node1.parent;
+              node1 = node1.parent!;
             }
           } else {
             tree.root = sibling;
-            sibling.parent = null;
+            sibling!.parent = null;
             const o2 = parent;
-            o2.height = -1;
-            const o3 = o2.aabb;
-            if (o3.outer != null) {
-              o3.outer.zpp_inner = null;
-              o3.outer = null;
+            o2!.height = -1;
+            const o3 = o2!.aabb;
+            if (o3!.outer != null) {
+              o3!.outer.zpp_inner = null;
+              o3!.outer = null;
             }
-            o3.wrap_min = o3.wrap_max = null;
-            o3._invalidate = null;
-            o3._validate = null;
-            o3.next = ZPP_AABB.zpp_pool;
+            o3!.wrap_min = o3!.wrap_max = null;
+            o3!._invalidate = null;
+            o3!._validate = null;
+            o3!.next = ZPP_AABB.zpp_pool;
             ZPP_AABB.zpp_pool = o3;
-            o2.child1 = o2.child2 = o2.parent = null;
-            o2.next = null;
-            o2.snext = null;
-            o2.mnext = null;
-            o2.next = ZPP_AABBNode.zpp_pool;
+            o2!.child1 = o2!.child2 = o2!.parent = null;
+            o2!.next = null;
+            o2!.snext = null;
+            o2!.mnext = null;
+            o2!.next = ZPP_AABBNode.zpp_pool;
             ZPP_AABBNode.zpp_pool = o2;
           }
         }
@@ -2076,10 +2085,10 @@ export class ZPP_DynAABBPhase {
         }
       }
       const a9 = shape.aabb;
-      aabb.minx = a9.minx - 3.0;
-      aabb.miny = a9.miny - 3.0;
-      aabb.maxx = a9.maxx + 3.0;
-      aabb.maxy = a9.maxy + 3.0;
+      aabb!.minx = a9.minx - 3.0;
+      aabb!.miny = a9.miny - 3.0;
+      aabb!.maxx = a9.maxx + 3.0;
+      aabb!.maxy = a9.maxy + 3.0;
       const tree1 = (node.dyn = shape.body.type == 1 ? false : !shape.body.component.sleeping)
         ? this.dtree
         : this.stree;
@@ -2093,55 +2102,55 @@ export class ZPP_DynAABBPhase {
           const child11 = node2.child1;
           const child21 = node2.child2;
           const _this14 = node2.aabb;
-          const area1 = (_this14.maxx - _this14.minx + (_this14.maxy - _this14.miny)) * 2;
+          const area1 = (_this14!.maxx - _this14!.minx + (_this14!.maxy - _this14!.miny)) * 2;
           const _this15 = ZPP_AABBTree.tmpaabb;
           const a10 = node2.aabb;
-          _this15.minx = a10.minx < leafaabb.minx ? a10.minx : leafaabb.minx;
-          _this15.miny = a10.miny < leafaabb.miny ? a10.miny : leafaabb.miny;
-          _this15.maxx = a10.maxx > leafaabb.maxx ? a10.maxx : leafaabb.maxx;
-          _this15.maxy = a10.maxy > leafaabb.maxy ? a10.maxy : leafaabb.maxy;
+          _this15!.minx = a10!.minx < leafaabb!.minx ? a10!.minx : leafaabb!.minx;
+          _this15!.miny = a10!.miny < leafaabb!.miny ? a10!.miny : leafaabb!.miny;
+          _this15!.maxx = a10!.maxx > leafaabb!.maxx ? a10!.maxx : leafaabb!.maxx;
+          _this15!.maxy = a10!.maxy > leafaabb!.maxy ? a10!.maxy : leafaabb!.maxy;
           const _this16 = ZPP_AABBTree.tmpaabb;
-          const carea = (_this16.maxx - _this16.minx + (_this16.maxy - _this16.miny)) * 2;
+          const carea = (_this16!.maxx - _this16!.minx + (_this16!.maxy - _this16!.miny)) * 2;
           const cost = 2 * carea;
           const icost = 2 * (carea - area1);
           const _this17 = ZPP_AABBTree.tmpaabb;
           const b10 = child11.aabb;
-          _this17.minx = leafaabb.minx < b10.minx ? leafaabb.minx : b10.minx;
-          _this17.miny = leafaabb.miny < b10.miny ? leafaabb.miny : b10.miny;
-          _this17.maxx = leafaabb.maxx > b10.maxx ? leafaabb.maxx : b10.maxx;
-          _this17.maxy = leafaabb.maxy > b10.maxy ? leafaabb.maxy : b10.maxy;
+          _this17!.minx = leafaabb!.minx < b10!.minx ? leafaabb!.minx : b10!.minx;
+          _this17!.miny = leafaabb!.miny < b10!.miny ? leafaabb!.miny : b10!.miny;
+          _this17!.maxx = leafaabb!.maxx > b10!.maxx ? leafaabb!.maxx : b10!.maxx;
+          _this17!.maxy = leafaabb!.maxy > b10!.maxy ? leafaabb!.maxy : b10!.maxy;
           let cost1;
           if (child11.child1 == null) {
             const _this18 = ZPP_AABBTree.tmpaabb;
-            cost1 = (_this18.maxx - _this18.minx + (_this18.maxy - _this18.miny)) * 2 + icost;
+            cost1 = (_this18!.maxx - _this18!.minx + (_this18!.maxy - _this18!.miny)) * 2 + icost;
           } else {
             const _this19 = child11.aabb;
-            const oarea = (_this19.maxx - _this19.minx + (_this19.maxy - _this19.miny)) * 2;
+            const oarea = (_this19!.maxx - _this19!.minx + (_this19!.maxy - _this19!.miny)) * 2;
             const _this20 = ZPP_AABBTree.tmpaabb;
-            const narea = (_this20.maxx - _this20.minx + (_this20.maxy - _this20.miny)) * 2;
+            const narea = (_this20!.maxx - _this20!.minx + (_this20!.maxy - _this20!.miny)) * 2;
             cost1 = narea - oarea + icost;
           }
           const _this21 = ZPP_AABBTree.tmpaabb;
-          const b11 = child21.aabb;
-          _this21.minx = leafaabb.minx < b11.minx ? leafaabb.minx : b11.minx;
-          _this21.miny = leafaabb.miny < b11.miny ? leafaabb.miny : b11.miny;
-          _this21.maxx = leafaabb.maxx > b11.maxx ? leafaabb.maxx : b11.maxx;
-          _this21.maxy = leafaabb.maxy > b11.maxy ? leafaabb.maxy : b11.maxy;
+          const b11 = child21!.aabb;
+          _this21!.minx = leafaabb!.minx < b11!.minx ? leafaabb!.minx : b11!.minx;
+          _this21!.miny = leafaabb!.miny < b11!.miny ? leafaabb!.miny : b11!.miny;
+          _this21!.maxx = leafaabb!.maxx > b11!.maxx ? leafaabb!.maxx : b11!.maxx;
+          _this21!.maxy = leafaabb!.maxy > b11!.maxy ? leafaabb!.maxy : b11!.maxy;
           let cost2;
-          if (child21.child1 == null) {
+          if (child21!.child1 == null) {
             const _this22 = ZPP_AABBTree.tmpaabb;
-            cost2 = (_this22.maxx - _this22.minx + (_this22.maxy - _this22.miny)) * 2 + icost;
+            cost2 = (_this22!.maxx - _this22!.minx + (_this22!.maxy - _this22!.miny)) * 2 + icost;
           } else {
-            const _this23 = child21.aabb;
-            const oarea1 = (_this23.maxx - _this23.minx + (_this23.maxy - _this23.miny)) * 2;
+            const _this23 = child21!.aabb;
+            const oarea1 = (_this23!.maxx - _this23!.minx + (_this23!.maxy - _this23!.miny)) * 2;
             const _this24 = ZPP_AABBTree.tmpaabb;
-            const narea1 = (_this24.maxx - _this24.minx + (_this24.maxy - _this24.miny)) * 2;
+            const narea1 = (_this24!.maxx - _this24!.minx + (_this24!.maxy - _this24!.miny)) * 2;
             cost2 = narea1 - oarea1 + icost;
           }
           if (cost < cost1 && cost < cost2) {
             break;
           } else {
-            node2 = cost1 < cost2 ? child11 : child21;
+            node2 = cost1 < cost2 ? child11 : child21!;
           }
         }
         const sibling1 = node2;
@@ -2167,10 +2176,10 @@ export class ZPP_DynAABBPhase {
         nparent.parent = oparent;
         const _this25 = nparent.aabb;
         const b12 = sibling1.aabb;
-        _this25.minx = leafaabb.minx < b12.minx ? leafaabb.minx : b12.minx;
-        _this25.miny = leafaabb.miny < b12.miny ? leafaabb.miny : b12.miny;
-        _this25.maxx = leafaabb.maxx > b12.maxx ? leafaabb.maxx : b12.maxx;
-        _this25.maxy = leafaabb.maxy > b12.maxy ? leafaabb.maxy : b12.maxy;
+        _this25.minx = leafaabb!.minx < b12!.minx ? leafaabb!.minx : b12!.minx;
+        _this25.miny = leafaabb!.miny < b12!.miny ? leafaabb!.miny : b12!.miny;
+        _this25.maxx = leafaabb!.maxx > b12!.maxx ? leafaabb!.maxx : b12!.maxx;
+        _this25.maxy = leafaabb!.maxy > b12!.maxy ? leafaabb!.maxy : b12!.maxy;
         nparent.height = sibling1.height + 1;
         if (oparent != null) {
           if (oparent.child1 == sibling1) {
@@ -2196,72 +2205,72 @@ export class ZPP_DynAABBPhase {
           } else {
             const b13 = node2.child1;
             const c1 = node2.child2;
-            const balance1 = c1.height - b13.height;
+            const balance1 = c1!.height - b13.height;
             if (balance1 > 1) {
-              const f2 = c1.child1;
-              const g3 = c1.child2;
-              c1.child1 = node2;
-              c1.parent = node2.parent;
+              const f2 = c1!.child1;
+              const g3 = c1!.child2;
+              c1!.child1 = node2;
+              c1!.parent = node2.parent;
               node2.parent = c1;
-              if (c1.parent != null) {
-                if (c1.parent.child1 == node2) {
-                  c1.parent.child1 = c1;
+              if (c1!.parent != null) {
+                if (c1!.parent.child1 == node2) {
+                  c1!.parent.child1 = c1;
                 } else {
-                  c1.parent.child2 = c1;
+                  c1!.parent.child2 = c1;
                 }
               } else {
                 tree1.root = c1;
               }
-              if (f2.height > g3.height) {
-                c1.child2 = f2;
+              if (f2!.height > g3!.height) {
+                c1!.child2 = f2;
                 node2.child2 = g3;
-                g3.parent = node2;
+                g3!.parent = node2;
                 const _this26 = node2.aabb;
                 const a11 = b13.aabb;
-                const b14 = g3.aabb;
-                _this26.minx = a11.minx < b14.minx ? a11.minx : b14.minx;
-                _this26.miny = a11.miny < b14.miny ? a11.miny : b14.miny;
-                _this26.maxx = a11.maxx > b14.maxx ? a11.maxx : b14.maxx;
-                _this26.maxy = a11.maxy > b14.maxy ? a11.maxy : b14.maxy;
-                const _this27 = c1.aabb;
+                const b14 = g3!.aabb;
+                _this26!.minx = a11!.minx < b14!.minx ? a11!.minx : b14!.minx;
+                _this26!.miny = a11!.miny < b14!.miny ? a11!.miny : b14!.miny;
+                _this26!.maxx = a11!.maxx > b14!.maxx ? a11!.maxx : b14!.maxx;
+                _this26!.maxy = a11!.maxy > b14!.maxy ? a11!.maxy : b14!.maxy;
+                const _this27 = c1!.aabb;
                 const a12 = node2.aabb;
-                const b15 = f2.aabb;
-                _this27.minx = a12.minx < b15.minx ? a12.minx : b15.minx;
-                _this27.miny = a12.miny < b15.miny ? a12.miny : b15.miny;
-                _this27.maxx = a12.maxx > b15.maxx ? a12.maxx : b15.maxx;
-                _this27.maxy = a12.maxy > b15.maxy ? a12.maxy : b15.maxy;
+                const b15 = f2!.aabb;
+                _this27!.minx = a12!.minx < b15!.minx ? a12!.minx : b15!.minx;
+                _this27!.miny = a12!.miny < b15!.miny ? a12!.miny : b15!.miny;
+                _this27!.maxx = a12!.maxx > b15!.maxx ? a12!.maxx : b15!.maxx;
+                _this27!.maxy = a12!.maxy > b15!.maxy ? a12!.maxy : b15!.maxy;
                 const x9 = b13.height;
-                const y9 = g3.height;
+                const y9 = g3!.height;
                 node2.height = 1 + (x9 > y9 ? x9 : y9);
                 const x10 = node2.height;
-                const y10 = f2.height;
-                c1.height = 1 + (x10 > y10 ? x10 : y10);
+                const y10 = f2!.height;
+                c1!.height = 1 + (x10 > y10 ? x10 : y10);
               } else {
-                c1.child2 = g3;
+                c1!.child2 = g3;
                 node2.child2 = f2;
-                f2.parent = node2;
+                f2!.parent = node2;
                 const _this28 = node2.aabb;
                 const a13 = b13.aabb;
-                const b16 = f2.aabb;
-                _this28.minx = a13.minx < b16.minx ? a13.minx : b16.minx;
-                _this28.miny = a13.miny < b16.miny ? a13.miny : b16.miny;
-                _this28.maxx = a13.maxx > b16.maxx ? a13.maxx : b16.maxx;
-                _this28.maxy = a13.maxy > b16.maxy ? a13.maxy : b16.maxy;
-                const _this29 = c1.aabb;
+                const b16 = f2!.aabb;
+                _this28!.minx = a13!.minx < b16!.minx ? a13!.minx : b16!.minx;
+                _this28!.miny = a13!.miny < b16!.miny ? a13!.miny : b16!.miny;
+                _this28!.maxx = a13!.maxx > b16!.maxx ? a13!.maxx : b16!.maxx;
+                _this28!.maxy = a13!.maxy > b16!.maxy ? a13!.maxy : b16!.maxy;
+                const _this29 = c1!.aabb;
                 const a14 = node2.aabb;
-                const b17 = g3.aabb;
-                _this29.minx = a14.minx < b17.minx ? a14.minx : b17.minx;
-                _this29.miny = a14.miny < b17.miny ? a14.miny : b17.miny;
-                _this29.maxx = a14.maxx > b17.maxx ? a14.maxx : b17.maxx;
-                _this29.maxy = a14.maxy > b17.maxy ? a14.maxy : b17.maxy;
+                const b17 = g3!.aabb;
+                _this29!.minx = a14!.minx < b17!.minx ? a14!.minx : b17!.minx;
+                _this29!.miny = a14!.miny < b17!.miny ? a14!.miny : b17!.miny;
+                _this29!.maxx = a14!.maxx > b17!.maxx ? a14!.maxx : b17!.maxx;
+                _this29!.maxy = a14!.maxy > b17!.maxy ? a14!.maxy : b17!.maxy;
                 const x11 = b13.height;
-                const y11 = f2.height;
+                const y11 = f2!.height;
                 node2.height = 1 + (x11 > y11 ? x11 : y11);
                 const x12 = node2.height;
-                const y12 = g3.height;
-                c1.height = 1 + (x12 > y12 ? x12 : y12);
+                const y12 = g3!.height;
+                c1!.height = 1 + (x12 > y12 ? x12 : y12);
               }
-              node2 = c1;
+              node2 = c1!;
             } else if (balance1 < -1) {
               const f3 = b13.child1;
               const g4 = b13.child2;
@@ -2277,53 +2286,53 @@ export class ZPP_DynAABBPhase {
               } else {
                 tree1.root = b13;
               }
-              if (f3.height > g4.height) {
+              if (f3!.height > g4!.height) {
                 b13.child2 = f3;
                 node2.child1 = g4;
-                g4.parent = node2;
+                g4!.parent = node2;
                 const _this30 = node2.aabb;
-                const a15 = c1.aabb;
-                const b18 = g4.aabb;
-                _this30.minx = a15.minx < b18.minx ? a15.minx : b18.minx;
-                _this30.miny = a15.miny < b18.miny ? a15.miny : b18.miny;
-                _this30.maxx = a15.maxx > b18.maxx ? a15.maxx : b18.maxx;
-                _this30.maxy = a15.maxy > b18.maxy ? a15.maxy : b18.maxy;
+                const a15 = c1!.aabb;
+                const b18 = g4!.aabb;
+                _this30!.minx = a15!.minx < b18!.minx ? a15!.minx : b18!.minx;
+                _this30!.miny = a15!.miny < b18!.miny ? a15!.miny : b18!.miny;
+                _this30!.maxx = a15!.maxx > b18!.maxx ? a15!.maxx : b18!.maxx;
+                _this30!.maxy = a15!.maxy > b18!.maxy ? a15!.maxy : b18!.maxy;
                 const _this31 = b13.aabb;
                 const a16 = node2.aabb;
-                const b19 = f3.aabb;
-                _this31.minx = a16.minx < b19.minx ? a16.minx : b19.minx;
-                _this31.miny = a16.miny < b19.miny ? a16.miny : b19.miny;
-                _this31.maxx = a16.maxx > b19.maxx ? a16.maxx : b19.maxx;
-                _this31.maxy = a16.maxy > b19.maxy ? a16.maxy : b19.maxy;
-                const x13 = c1.height;
-                const y13 = g4.height;
+                const b19 = f3!.aabb;
+                _this31!.minx = a16!.minx < b19!.minx ? a16!.minx : b19!.minx;
+                _this31!.miny = a16!.miny < b19!.miny ? a16!.miny : b19!.miny;
+                _this31!.maxx = a16!.maxx > b19!.maxx ? a16!.maxx : b19!.maxx;
+                _this31!.maxy = a16!.maxy > b19!.maxy ? a16!.maxy : b19!.maxy;
+                const x13 = c1!.height;
+                const y13 = g4!.height;
                 node2.height = 1 + (x13 > y13 ? x13 : y13);
                 const x14 = node2.height;
-                const y14 = f3.height;
+                const y14 = f3!.height;
                 b13.height = 1 + (x14 > y14 ? x14 : y14);
               } else {
                 b13.child2 = g4;
                 node2.child1 = f3;
-                f3.parent = node2;
+                f3!.parent = node2;
                 const _this32 = node2.aabb;
-                const a17 = c1.aabb;
-                const b20 = f3.aabb;
-                _this32.minx = a17.minx < b20.minx ? a17.minx : b20.minx;
-                _this32.miny = a17.miny < b20.miny ? a17.miny : b20.miny;
-                _this32.maxx = a17.maxx > b20.maxx ? a17.maxx : b20.maxx;
-                _this32.maxy = a17.maxy > b20.maxy ? a17.maxy : b20.maxy;
+                const a17 = c1!.aabb;
+                const b20 = f3!.aabb;
+                _this32!.minx = a17!.minx < b20!.minx ? a17!.minx : b20!.minx;
+                _this32!.miny = a17!.miny < b20!.miny ? a17!.miny : b20!.miny;
+                _this32!.maxx = a17!.maxx > b20!.maxx ? a17!.maxx : b20!.maxx;
+                _this32!.maxy = a17!.maxy > b20!.maxy ? a17!.maxy : b20!.maxy;
                 const _this33 = b13.aabb;
                 const a18 = node2.aabb;
-                const b21 = g4.aabb;
-                _this33.minx = a18.minx < b21.minx ? a18.minx : b21.minx;
-                _this33.miny = a18.miny < b21.miny ? a18.miny : b21.miny;
-                _this33.maxx = a18.maxx > b21.maxx ? a18.maxx : b21.maxx;
-                _this33.maxy = a18.maxy > b21.maxy ? a18.maxy : b21.maxy;
-                const x15 = c1.height;
-                const y15 = f3.height;
+                const b21 = g4!.aabb;
+                _this33!.minx = a18!.minx < b21!.minx ? a18!.minx : b21!.minx;
+                _this33!.miny = a18!.miny < b21!.miny ? a18!.miny : b21!.miny;
+                _this33!.maxx = a18!.maxx > b21!.maxx ? a18!.maxx : b21!.maxx;
+                _this33!.maxy = a18!.maxy > b21!.maxy ? a18!.maxy : b21!.maxy;
+                const x15 = c1!.height;
+                const y15 = f3!.height;
                 node2.height = 1 + (x15 > y15 ? x15 : y15);
                 const x16 = node2.height;
-                const y16 = g4.height;
+                const y16 = g4!.height;
                 b13.height = 1 + (x16 > y16 ? x16 : y16);
               }
               node2 = b13;
@@ -2333,17 +2342,17 @@ export class ZPP_DynAABBPhase {
           }
           const child12 = node2.child1;
           const child22 = node2.child2;
-          const x17 = child12.height;
-          const y17 = child22.height;
+          const x17 = child12!.height;
+          const y17 = child22!.height;
           node2.height = 1 + (x17 > y17 ? x17 : y17);
           const _this34 = node2.aabb;
-          const a19 = child12.aabb;
-          const b22 = child22.aabb;
-          _this34.minx = a19.minx < b22.minx ? a19.minx : b22.minx;
-          _this34.miny = a19.miny < b22.miny ? a19.miny : b22.miny;
-          _this34.maxx = a19.maxx > b22.maxx ? a19.maxx : b22.maxx;
-          _this34.maxy = a19.maxy > b22.maxy ? a19.maxy : b22.maxy;
-          node2 = node2.parent;
+          const a19 = child12!.aabb;
+          const b22 = child22!.aabb;
+          _this34!.minx = a19!.minx < b22!.minx ? a19!.minx : b22!.minx;
+          _this34!.miny = a19!.miny < b22!.miny ? a19!.miny : b22!.miny;
+          _this34!.maxx = a19!.maxx > b22!.maxx ? a19!.maxx : b22!.maxx;
+          _this34!.maxy = a19!.maxy > b22!.maxy ? a19!.maxy : b22!.maxy;
+          node2 = node2.parent!;
         }
       }
       node.synced = false;
@@ -2370,7 +2379,7 @@ export class ZPP_DynAABBPhase {
         stack = this.dtree.root;
       }
       while (stack != null) {
-        const ret1 = stack;
+        const ret1: ZPP_AABBNode = stack!;
         stack = ret1.next;
         ret1.next = null;
         const node3 = ret1;
@@ -2382,10 +2391,10 @@ export class ZPP_DynAABBPhase {
           if (shape1.body != lshape.body && !(shape1.body.type == 1 && lshape.body.type == 1)) {
             const x18 = node3.aabb;
             if (
-              x18.miny <= ab.maxy &&
-              ab.miny <= x18.maxy &&
-              x18.minx <= ab.maxx &&
-              ab.minx <= x18.maxx
+              x18!.miny <= ab!.maxy &&
+              ab!.miny <= x18!.maxy &&
+              x18!.minx <= ab!.maxx &&
+              ab!.minx <= x18!.maxx
             ) {
               let id;
               let di;
@@ -2465,10 +2474,10 @@ export class ZPP_DynAABBPhase {
         } else {
           const x19 = node3.aabb;
           if (
-            x19.miny <= ab.maxy &&
-            ab.miny <= x19.maxy &&
-            x19.minx <= ab.maxx &&
-            ab.minx <= x19.maxx
+            x19!.miny <= ab!.maxy &&
+            ab!.miny <= x19!.maxy &&
+            x19!.minx <= ab!.maxx &&
+            ab!.minx <= x19!.maxx
           ) {
             if (node3.child1 != null) {
               node3.child1.next = stack;
@@ -2486,7 +2495,7 @@ export class ZPP_DynAABBPhase {
         stack = this.stree.root;
       }
       while (stack != null) {
-        const ret4 = stack;
+        const ret4: ZPP_AABBNode = stack!;
         stack = ret4.next;
         ret4.next = null;
         const node4 = ret4;
@@ -2498,10 +2507,10 @@ export class ZPP_DynAABBPhase {
           if (shape2.body != lshape.body && !(shape2.body.type == 1 && lshape.body.type == 1)) {
             const x20 = node4.aabb;
             if (
-              x20.miny <= ab.maxy &&
-              ab.miny <= x20.maxy &&
-              x20.minx <= ab.maxx &&
-              ab.minx <= x20.maxx
+              x20!.miny <= ab!.maxy &&
+              ab!.miny <= x20!.maxy &&
+              x20!.minx <= ab!.maxx &&
+              ab!.minx <= x20!.maxx
             ) {
               let id1;
               let di1;
@@ -2581,10 +2590,10 @@ export class ZPP_DynAABBPhase {
         } else {
           const x21 = node4.aabb;
           if (
-            x21.miny <= ab.maxy &&
-            ab.miny <= x21.maxy &&
-            x21.minx <= ab.maxx &&
-            ab.minx <= x21.maxx
+            x21!.miny <= ab!.maxy &&
+            ab!.miny <= x21!.maxy &&
+            x21!.minx <= ab!.maxx &&
+            ab!.minx <= x21!.maxx
           ) {
             if (node4.child1 != null) {
               node4.child1.next = stack;
@@ -2616,7 +2625,7 @@ export class ZPP_DynAABBPhase {
         stack1 = this.dtree.root;
       }
       while (stack1 != null) {
-        const ret8 = stack1;
+        const ret8: ZPP_AABBNode = stack1!;
         stack1 = ret8.next;
         ret8.next = null;
         const node5 = ret8;
@@ -2628,10 +2637,10 @@ export class ZPP_DynAABBPhase {
           if (shape3.body != lshape1.body && !(shape3.body.type == 1 && lshape1.body.type == 1)) {
             const x22 = node5.aabb;
             if (
-              x22.miny <= ab1.maxy &&
-              ab1.miny <= x22.maxy &&
-              x22.minx <= ab1.maxx &&
-              ab1.minx <= x22.maxx
+              x22!.miny <= ab1!.maxy &&
+              ab1!.miny <= x22!.maxy &&
+              x22!.minx <= ab1!.maxx &&
+              ab1!.minx <= x22!.maxx
             ) {
               let id2;
               let di2;
@@ -2711,10 +2720,10 @@ export class ZPP_DynAABBPhase {
         } else {
           const x23 = node5.aabb;
           if (
-            x23.miny <= ab1.maxy &&
-            ab1.miny <= x23.maxy &&
-            x23.minx <= ab1.maxx &&
-            ab1.minx <= x23.maxx
+            x23!.miny <= ab1!.maxy &&
+            ab1!.miny <= x23!.maxy &&
+            x23!.minx <= ab1!.maxx &&
+            ab1!.minx <= x23!.maxx
           ) {
             if (node5.child1 != null) {
               node5.child1.next = stack1;
@@ -2732,7 +2741,7 @@ export class ZPP_DynAABBPhase {
         stack1 = this.stree.root;
       }
       while (stack1 != null) {
-        const ret11 = stack1;
+        const ret11: ZPP_AABBNode = stack1!;
         stack1 = ret11.next;
         ret11.next = null;
         const node6 = ret11;
@@ -2744,10 +2753,10 @@ export class ZPP_DynAABBPhase {
           if (shape4.body != lshape1.body && !(shape4.body.type == 1 && lshape1.body.type == 1)) {
             const x24 = node6.aabb;
             if (
-              x24.miny <= ab1.maxy &&
-              ab1.miny <= x24.maxy &&
-              x24.minx <= ab1.maxx &&
-              ab1.minx <= x24.maxx
+              x24!.miny <= ab1!.maxy &&
+              ab1!.miny <= x24!.maxy &&
+              x24!.minx <= ab1!.maxx &&
+              ab1!.minx <= x24!.maxx
             ) {
               let id3;
               let di3;
@@ -2827,10 +2836,10 @@ export class ZPP_DynAABBPhase {
         } else {
           const x25 = node6.aabb;
           if (
-            x25.miny <= ab1.maxy &&
-            ab1.miny <= x25.maxy &&
-            x25.minx <= ab1.maxx &&
-            ab1.minx <= x25.maxx
+            x25!.miny <= ab1!.maxy &&
+            ab1!.miny <= x25!.maxy &&
+            x25!.minx <= ab1!.maxx &&
+            ab1!.minx <= x25!.maxx
           ) {
             if (node6.child1 != null) {
               node6.child1.next = stack1;
@@ -3346,7 +3355,7 @@ export class ZPP_DynAABBPhase {
 
   shapesInAABB(aabb: any, strict: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
-    this.updateAABBShape(aabb);
+    (this as any).updateAABBShape(aabb);
     const ab = this.aabbShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
@@ -3594,7 +3603,7 @@ export class ZPP_DynAABBPhase {
 
   bodiesInAABB(aabb: any, strict: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
-    this.updateAABBShape(aabb);
+    (this as any).updateAABBShape(aabb);
     const ab = this.aabbShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_DynAABBPhase._nape.phys.BodyList() : output;
     if (this.failed == null) {
@@ -3886,7 +3895,7 @@ export class ZPP_DynAABBPhase {
 
   shapesInCircle(x: any, y: any, r: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
-    this.updateCircShape(x, y, r);
+    (this as any).updateCircShape(x, y, r);
     const ab = this.circShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
@@ -3984,7 +3993,7 @@ export class ZPP_DynAABBPhase {
 
   bodiesInCircle(x: any, y: any, r: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
-    this.updateCircShape(x, y, r);
+    (this as any).updateCircShape(x, y, r);
     const ab = this.circShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_DynAABBPhase._nape.phys.BodyList() : output;
     if (this.failed == null) {
@@ -4106,7 +4115,7 @@ export class ZPP_DynAABBPhase {
 
   shapesInShape(shp: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
-    this.validateShape(shp);
+    (this as any).validateShape(shp);
     const ab = shp.aabb;
     const ret = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
@@ -4204,7 +4213,7 @@ export class ZPP_DynAABBPhase {
 
   bodiesInShape(shp: any, containment: any, filter: any, output: any): any {
     this.sync_broadphase();
-    this.validateShape(shp);
+    (this as any).validateShape(shp);
     const ab = shp.aabb;
     const ret = output == null ? new ZPP_DynAABBPhase._nape.phys.BodyList() : output;
     if (this.failed == null) {

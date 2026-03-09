@@ -71,7 +71,9 @@ describe("Material", () => {
 
   it("should throw on NaN elasticity setter", () => {
     const mat = new Material();
-    expect(() => { mat.elasticity = NaN; }).toThrow("elasticity cannot be NaN");
+    expect(() => {
+      mat.elasticity = NaN;
+    }).toThrow("elasticity cannot be NaN");
   });
 
   it("should allow negative elasticity", () => {
@@ -88,12 +90,16 @@ describe("Material", () => {
 
   it("should throw on NaN dynamicFriction setter", () => {
     const mat = new Material();
-    expect(() => { mat.dynamicFriction = NaN; }).toThrow("dynamicFriction cannot be NaN");
+    expect(() => {
+      mat.dynamicFriction = NaN;
+    }).toThrow("dynamicFriction cannot be NaN");
   });
 
   it("should throw on negative dynamicFriction setter", () => {
     const mat = new Material();
-    expect(() => { mat.dynamicFriction = -0.1; }).toThrow("negative");
+    expect(() => {
+      mat.dynamicFriction = -0.1;
+    }).toThrow("negative");
   });
 
   it("should get/set staticFriction", () => {
@@ -104,12 +110,16 @@ describe("Material", () => {
 
   it("should throw on NaN staticFriction setter", () => {
     const mat = new Material();
-    expect(() => { mat.staticFriction = NaN; }).toThrow("staticFriction cannot be NaN");
+    expect(() => {
+      mat.staticFriction = NaN;
+    }).toThrow("staticFriction cannot be NaN");
   });
 
   it("should throw on negative staticFriction setter", () => {
     const mat = new Material();
-    expect(() => { mat.staticFriction = -0.1; }).toThrow("negative");
+    expect(() => {
+      mat.staticFriction = -0.1;
+    }).toThrow("negative");
   });
 
   it("should get/set density", () => {
@@ -126,12 +136,16 @@ describe("Material", () => {
 
   it("should throw on NaN density setter", () => {
     const mat = new Material();
-    expect(() => { mat.density = NaN; }).toThrow("density cannot be NaN");
+    expect(() => {
+      mat.density = NaN;
+    }).toThrow("density cannot be NaN");
   });
 
   it("should throw on negative density setter", () => {
     const mat = new Material();
-    expect(() => { mat.density = -1; }).toThrow("positive");
+    expect(() => {
+      mat.density = -1;
+    }).toThrow("positive");
   });
 
   it("should get/set rollingFriction", () => {
@@ -142,12 +156,16 @@ describe("Material", () => {
 
   it("should throw on NaN rollingFriction setter", () => {
     const mat = new Material();
-    expect(() => { mat.rollingFriction = NaN; }).toThrow("rollingFriction cannot be NaN");
+    expect(() => {
+      mat.rollingFriction = NaN;
+    }).toThrow("rollingFriction cannot be NaN");
   });
 
   it("should throw on negative rollingFriction setter", () => {
     const mat = new Material();
-    expect(() => { mat.rollingFriction = -0.01; }).toThrow("negative");
+    expect(() => {
+      mat.rollingFriction = -0.01;
+    }).toThrow("negative");
   });
 
   // --- no-op when setting same value ---

@@ -56,7 +56,9 @@ describe("Space (modernized)", () => {
 
   it("should reject NaN worldLinearDrag", () => {
     const space = new Space();
-    expect(() => { space.worldLinearDrag = NaN; }).toThrow("NaN");
+    expect(() => {
+      space.worldLinearDrag = NaN;
+    }).toThrow("NaN");
   });
 
   it("should get/set worldAngularDrag", () => {
@@ -67,7 +69,9 @@ describe("Space (modernized)", () => {
 
   it("should reject NaN worldAngularDrag", () => {
     const space = new Space();
-    expect(() => { space.worldAngularDrag = NaN; }).toThrow("NaN");
+    expect(() => {
+      space.worldAngularDrag = NaN;
+    }).toThrow("NaN");
   });
 
   it("should get/set sortContacts", () => {

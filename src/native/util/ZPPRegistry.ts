@@ -108,7 +108,6 @@ import { ZPP_Space } from "../space/ZPP_Space";
 import { ZPP_SweepData } from "../space/ZPP_SweepData";
 import { ZPP_SweepPhase } from "../space/ZPP_SweepPhase";
 
-
 /**
  * Creates and returns the nape namespace object with all ZPP_* classes registered.
  * Previously called from nape-compiled.js; now fully self-contained (Priority 20).
@@ -255,7 +254,9 @@ export function registerZPPClasses(): any {
   zpp.geom.ZPP_Geom = ZPP_Geom;
 
   zpp.geom.ZPP_GeomVert = ZPP_GeomVert;
-  (ZPP_GeomVert as any)._createVec2Fn = function () { return new nape.geom.Vec2(); };
+  (ZPP_GeomVert as any)._createVec2Fn = function () {
+    return new nape.geom.Vec2();
+  };
 
   zpp.geom.ZPP_GeomPoly = ZPP_GeomPoly;
 

@@ -16,20 +16,21 @@ import type { InteractionType } from "../callbacks/InteractionType";
 import type { NapeInner as _NapeInner } from "../geom/Vec2";
 
 /**
- * The physics world. Add bodies and constraints, then call `step()` each frame.
- *
- * Fully modernized — uses ZPP_Space directly (extracted to TypeScript).
+ * The physics world. Add bodies, shapes, and constraints, then call `step()` each frame to advance the simulation.
  */
 export class Space {
   zpp_inner!: ZPP_Space;
 
+  /**
+   * @param gravity - Initial gravity vector (default (0, 0)).
+   * @param broadphase - Broadphase algorithm to use.
+   */
   constructor(gravity?: Vec2, broadphase?: Broadphase) {
     if (gravity != null && gravity.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
 
-    const gravityInner =
-      gravity == null ? null : gravity.zpp_inner;
+    const gravityInner = gravity == null ? null : gravity.zpp_inner;
     this.zpp_inner = new ZPP_Space(gravityInner, broadphase);
     this.zpp_inner.outer = this;
 
@@ -70,6 +71,7 @@ export class Space {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** Arbitrary user data attached to this Space. */
   get userData(): Record<string, unknown> {
     if (this.zpp_inner.userData == null) {
       this.zpp_inner.userData = {};
@@ -77,6 +79,10 @@ export class Space {
     return this.zpp_inner.userData;
   }
 
+  /**
+   * World gravity applied to all dynamic bodies each step. Live Vec2.
+   * @throws If set to null or a disposed Vec2.
+   */
   get gravity(): Vec2 {
     if (this.zpp_inner.wrap_gravity == null) {
       this.zpp_inner.getgravity();
@@ -100,6 +106,7 @@ export class Space {
     }
   }
 
+  /** The broadphase algorithm currently in use (SWEEP_AND_PRUNE or DYNAMIC_AABB_TREE). */
   get broadphase(): Broadphase {
     if (this.zpp_inner.bphase.is_sweep) {
       if (ZPP_Flags.Broadphase_SWEEP_AND_PRUNE == null) {
@@ -118,6 +125,7 @@ export class Space {
     }
   }
 
+  /** If true, contact points are sorted for determinism. Default: true. */
   get sortContacts(): boolean {
     return this.zpp_inner.sortcontacts;
   }
@@ -125,6 +133,10 @@ export class Space {
     this.zpp_inner.sortcontacts = value;
   }
 
+  /**
+   * Global angular drag coefficient applied to all bodies.
+   * @throws If set to NaN.
+   */
   get worldAngularDrag(): number {
     return this.zpp_inner.global_ang_drag;
   }
@@ -135,6 +147,10 @@ export class Space {
     this.zpp_inner.global_ang_drag = value;
   }
 
+  /**
+   * Global linear drag coefficient applied to all bodies.
+   * @throws If set to NaN.
+   */
   get worldLinearDrag(): number {
     return this.zpp_inner.global_lin_drag;
   }
@@ -145,30 +161,37 @@ export class Space {
     this.zpp_inner.global_lin_drag = value;
   }
 
+  /** Read-only list of all Compound objects in this space. */
   get compounds(): object {
     return this.zpp_inner.wrap_compounds;
   }
 
+  /** Read-only list of all Body objects directly in this space. */
   get bodies(): object {
     return this.zpp_inner.wrap_bodies;
   }
 
+  /** Read-only list of bodies that are awake and actively simulated. */
   get liveBodies(): object {
     return this.zpp_inner.wrap_live;
   }
 
+  /** Read-only list of all Constraint objects in this space. */
   get constraints(): object {
     return this.zpp_inner.wrap_constraints;
   }
 
+  /** Read-only list of active (awake) constraints. */
   get liveConstraints(): object {
     return this.zpp_inner.wrap_livecon;
   }
 
+  /** The static world body that acts as an immovable anchor for constraints. */
   get world(): Body {
     return Body._wrap(this.zpp_inner.__static);
   }
 
+  /** Read-only list of all active collision/fluid arbiters. */
   get arbiters(): object {
     if (this.zpp_inner.wrap_arbiters == null) {
       const ret = new ZPP_SpaceArbiterList();
@@ -178,14 +201,17 @@ export class Space {
     return this.zpp_inner.wrap_arbiters;
   }
 
+  /** Read-only list of all event listeners registered to this space. */
   get listeners(): object {
     return this.zpp_inner.wrap_listeners;
   }
 
+  /** Number of `step()` calls made so far. */
   get timeStamp(): number {
     return this.zpp_inner.stamp;
   }
 
+  /** Cumulative time simulated (sum of all `deltaTime` values passed to `step()`). */
   get elapsedTime(): number {
     return this.zpp_inner.time;
   }
@@ -194,11 +220,15 @@ export class Space {
   // Simulation
   // ---------------------------------------------------------------------------
 
-  step(
-    deltaTime: number,
-    velocityIterations: number = 10,
-    positionIterations: number = 10,
-  ): void {
+  /**
+   * Advance the simulation by `deltaTime` seconds.
+   * `velocityIterations` and `positionIterations` control solver accuracy (default 10 each).
+   * @param deltaTime - Time step in seconds; must be strictly positive and not NaN.
+   * @param velocityIterations - Number of velocity solver iterations (minimum 1).
+   * @param positionIterations - Number of position solver iterations (minimum 1).
+   * @throws If `deltaTime` is NaN, non-positive, or any iteration count is less than 1.
+   */
+  step(deltaTime: number, velocityIterations: number = 10, positionIterations: number = 10): void {
     if (deltaTime !== deltaTime) {
       throw new Error("Error: deltaTime cannot be NaN");
     }
@@ -214,11 +244,13 @@ export class Space {
     this.zpp_inner.step(deltaTime, velocityIterations, positionIterations);
   }
 
+  /**
+   * Remove all bodies, constraints, and compounds from this space.
+   * @throws If called during a `step()`.
+   */
   clear(): void {
     if (this.zpp_inner.midstep) {
-      throw new Error(
-        "Error: Space::clear() cannot be called during space step()",
-      );
+      throw new Error("Error: Space::clear() cannot be called during space step()");
     }
     this.zpp_inner.clear();
   }
@@ -227,11 +259,14 @@ export class Space {
   // Visitors
   // ---------------------------------------------------------------------------
 
+  /**
+   * Call `lambda` for every body in the space, including those inside compounds.
+   * @param lambda - Callback invoked with each Body.
+   * @throws If `lambda` is null.
+   */
   visitBodies(lambda: (body: Body) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Space::visitBodies",
-      );
+      throw new Error("Error: lambda cannot be null for Space::visitBodies");
     }
     const nape = getNape();
     // Iterate bodies
@@ -283,11 +318,14 @@ export class Space {
     }
   }
 
+  /**
+   * Call `lambda` for every constraint in the space, including those inside compounds.
+   * @param lambda - Callback invoked with each Constraint.
+   * @throws If `lambda` is null.
+   */
   visitConstraints(lambda: (constraint: Constraint) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Space::visitConstraints",
-      );
+      throw new Error("Error: lambda cannot be null for Space::visitConstraints");
     }
     const nape = getNape();
     // Iterate constraints
@@ -339,11 +377,14 @@ export class Space {
     }
   }
 
+  /**
+   * Call `lambda` for every compound in the space (recursively).
+   * @param lambda - Callback invoked with each Compound.
+   * @throws If `lambda` is null.
+   */
   visitCompounds(lambda: (compound: Compound) => void): void {
     if (lambda == null) {
-      throw new Error(
-        "Error: lambda cannot be null for Space::visitCompounds",
-      );
+      throw new Error("Error: lambda cannot be null for Space::visitCompounds");
     }
     const nape = getNape();
     const compList = this.zpp_inner.wrap_compounds;
@@ -376,19 +417,24 @@ export class Space {
   // Queries
   // ---------------------------------------------------------------------------
 
+  /**
+   * Determine the type of interaction between two shapes (COLLISION, FLUID, SENSOR, or null if they don't interact).
+   * @param shape1 - The first shape; must belong to a Body.
+   * @param shape2 - The second shape; must belong to a Body.
+   * @returns The InteractionType, or null if the shapes would not interact.
+   * @throws If either shape is null or not attached to a Body.
+   */
   interactionType(shape1: Shape, shape2: Shape): InteractionType | null {
     if (shape1 == null || shape2 == null) {
-      throw new Error(
-        "Error: Cannot evaluate interaction type for null shapes",
-      );
+      throw new Error("Error: Cannot evaluate interaction type for null shapes");
     }
     const s1 = (shape1 as any).zpp_inner;
     const s2 = (shape2 as any).zpp_inner;
-    if ((s1.body != null ? s1.body.outer : null) == null ||
-        (s2.body != null ? s2.body.outer : null) == null) {
-      throw new Error(
-        "Error: Cannot evaluate interaction type for shapes not part of a Body",
-      );
+    if (
+      (s1.body != null ? s1.body.outer : null) == null ||
+      (s2.body != null ? s2.body.outer : null) == null
+    ) {
+      throw new Error("Error: Cannot evaluate interaction type for shapes not part of a Body");
     }
     const b1 = s1.body;
     const b2 = s2.body;
@@ -456,8 +502,7 @@ export class Space {
     // Determine interaction type
     const f1 = s1.filter;
     const f2 = s2.filter;
-    const bothZeroMass =
-      b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0;
+    const bothZeroMass = b1.imass == 0 && b2.imass == 0 && b1.iinertia == 0 && b2.iinertia == 0;
 
     // Sensor?
     if (
@@ -505,11 +550,15 @@ export class Space {
     return null;
   }
 
-  shapesUnderPoint(
-    point: Vec2,
-    filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+  /**
+   * Return all shapes whose geometry contains the given world-space point.
+   * @param point - The world-space point to test.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing ShapeList to accumulate results into.
+   * @returns A ShapeList of matching shapes.
+   * @throws If `point` is null or disposed.
+   */
+  shapesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: object | null): object {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -521,18 +570,21 @@ export class Space {
     const x = inner.x;
     if (inner._validate != null) inner._validate();
     const y = inner.y;
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     const ret = this.zpp_inner.shapesUnderPoint(x, y, filterInner, output);
     if (inner.weak) point.dispose();
     return ret;
   }
 
-  bodiesUnderPoint(
-    point: Vec2,
-    filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+  /**
+   * Return all bodies that have at least one shape containing the given world-space point.
+   * @param point - The world-space point to test.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing BodyList to accumulate results into.
+   * @returns A BodyList of matching bodies.
+   * @throws If `point` is null or disposed.
+   */
+  bodiesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: object | null): object {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -544,13 +596,22 @@ export class Space {
     const x = inner.x;
     if (inner._validate != null) inner._validate();
     const y = inner.y;
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     const ret = this.zpp_inner.bodiesUnderPoint(x, y, filterInner, output);
     if (inner.weak) point.dispose();
     return ret;
   }
 
+  /**
+   * Return all shapes that overlap with the given AABB.
+   * @param aabb - The axis-aligned bounding box to test against.
+   * @param containment - If true, only shapes fully contained within the AABB are returned.
+   * @param strict - If true, exact shape geometry is tested; otherwise only AABBs are compared.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing ShapeList to accumulate results into.
+   * @returns A ShapeList of matching shapes.
+   * @throws If `aabb` is null or degenerate (zero width or height).
+   */
   shapesInAABB(
     aabb: AABB,
     containment: boolean = false,
@@ -566,11 +627,20 @@ export class Space {
     if (zi.maxx - zi.minx == 0 || zi.maxy - zi.miny == 0) {
       throw new Error("Error: Cannot evaluate shapes in degenerate AABB :/");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.shapesInAABB(aabb, strict, containment, filterInner, output);
   }
 
+  /**
+   * Return all bodies that have at least one shape overlapping the given AABB.
+   * @param aabb - The axis-aligned bounding box to test against.
+   * @param containment - If true, only shapes fully contained within the AABB count.
+   * @param strict - If true, exact shape geometry is tested; otherwise only AABBs are compared.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing BodyList to accumulate results into.
+   * @returns A BodyList of matching bodies.
+   * @throws If `aabb` is null or degenerate (zero width or height).
+   */
   bodiesInAABB(
     aabb: AABB,
     containment: boolean = false,
@@ -586,11 +656,20 @@ export class Space {
     if (zi.maxx - zi.minx == 0 || zi.maxy - zi.miny == 0) {
       throw new Error("Error: Cannot evaluate objects in degenerate AABB :/");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.bodiesInAABB(aabb, strict, containment, filterInner, output);
   }
 
+  /**
+   * Return all shapes that overlap with a circle defined by `position` and `radius`.
+   * @param position - World-space centre of the query circle.
+   * @param radius - Radius of the query circle; must be strictly positive and not NaN.
+   * @param containment - If true, only shapes fully contained within the circle are returned.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing ShapeList to accumulate results into.
+   * @returns A ShapeList of matching shapes.
+   * @throws If `position` is null/disposed, or `radius` is NaN or non-positive.
+   */
   shapesInCircle(
     position: Vec2,
     radius: number,
@@ -610,15 +689,22 @@ export class Space {
     if (radius <= 0) {
       throw new Error("Error: Circle radius must be strictly positive");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
-    const ret = this.zpp_inner.shapesInCircle(
-      position, radius, containment, filterInner, output,
-    );
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
+    const ret = this.zpp_inner.shapesInCircle(position, radius, containment, filterInner, output);
     if (position.zpp_inner?.weak) position.dispose();
     return ret;
   }
 
+  /**
+   * Return all bodies that have at least one shape overlapping a query circle.
+   * @param position - World-space centre of the query circle.
+   * @param radius - Radius of the query circle; must be strictly positive and not NaN.
+   * @param containment - If true, only shapes fully contained within the circle count.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing BodyList to accumulate results into.
+   * @returns A BodyList of matching bodies.
+   * @throws If `position` is null/disposed, or `radius` is NaN or non-positive.
+   */
   bodiesInCircle(
     position: Vec2,
     radius: number,
@@ -638,15 +724,21 @@ export class Space {
     if (radius <= 0) {
       throw new Error("Error: Circle radius must be strictly positive");
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
-    const ret = this.zpp_inner.bodiesInCircle(
-      position, radius, containment, filterInner, output,
-    );
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
+    const ret = this.zpp_inner.bodiesInCircle(position, radius, containment, filterInner, output);
     if (position.zpp_inner?.weak) position.dispose();
     return ret;
   }
 
+  /**
+   * Return all shapes in the space that overlap with `shape`.
+   * @param shape - The query shape; must be attached to a Body.
+   * @param containment - If true, only shapes fully contained within `shape` are returned.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing ShapeList to accumulate results into.
+   * @returns A ShapeList of overlapping shapes.
+   * @throws If `shape` is null, not attached to a Body, or is an invalid polygon.
+   */
   shapesInShape(
     shape: Shape,
     containment: boolean = false,
@@ -658,9 +750,7 @@ export class Space {
     }
     const szpp = (shape as any).zpp_inner;
     if ((szpp.body != null ? szpp.body.outer : null) == null) {
-      throw new Error(
-        "Error: Query shape needs to be inside a Body to be well defined :)",
-      );
+      throw new Error("Error: Query shape needs to be inside a Body to be well defined :)");
     }
     if (szpp.type == 1) {
       const res = szpp.polygon.valid();
@@ -673,11 +763,19 @@ export class Space {
         throw new Error("Error: Polygon query shape is invalid : " + res.toString());
       }
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.shapesInShape(szpp, containment, filterInner, output);
   }
 
+  /**
+   * Return all bodies in the space that have at least one shape overlapping `shape`.
+   * @param shape - The query shape; must be attached to a Body.
+   * @param containment - If true, only shapes fully contained within `shape` count.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing BodyList to accumulate results into.
+   * @returns A BodyList of overlapping bodies.
+   * @throws If `shape` is null, not attached to a Body, or is an invalid polygon.
+   */
   bodiesInShape(
     shape: Shape,
     containment: boolean = false,
@@ -689,9 +787,7 @@ export class Space {
     }
     const szpp = (shape as any).zpp_inner;
     if ((szpp.body != null ? szpp.body.outer : null) == null) {
-      throw new Error(
-        "Error: Query shape needs to be inside a Body to be well defined :)",
-      );
+      throw new Error("Error: Query shape needs to be inside a Body to be well defined :)");
     }
     if (szpp.type == 1) {
       const res = szpp.polygon.valid();
@@ -704,11 +800,19 @@ export class Space {
         throw new Error("Error: Polygon query shape is invalid : " + res.toString());
       }
     }
-    const filterInner =
-      filter == null ? null : (filter as any).zpp_inner ?? filter;
+    const filterInner = filter == null ? null : ((filter as any).zpp_inner ?? filter);
     return this.zpp_inner.bodiesInShape(szpp, containment, filterInner, output);
   }
 
+  /**
+   * Return all shapes in the space that overlap with any shape attached to `body`.
+   * Equivalent to calling `shapesInShape` for each of `body`'s shapes and merging results.
+   * @param body - The body whose shapes are used as the query region.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing ShapeList to accumulate results into.
+   * @returns A ShapeList of overlapping shapes.
+   * @throws If `body` is null.
+   */
   shapesInBody(body: Body, filter?: InteractionFilter | null, output?: object | null): object {
     if (body == null) {
       throw new Error("Error: Cannot evaluate shapes in null body");
@@ -741,6 +845,15 @@ export class Space {
     return ret;
   }
 
+  /**
+   * Return all bodies in the space that overlap with any shape attached to `body`.
+   * Equivalent to calling `bodiesInShape` for each of `body`'s shapes and merging results.
+   * @param body - The body whose shapes are used as the query region.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing BodyList to accumulate results into.
+   * @returns A BodyList of overlapping bodies.
+   * @throws If `body` is null.
+   */
   bodiesInBody(body: Body, filter?: InteractionFilter | null, output?: object | null): object {
     if (body == null) {
       throw new Error("Error: Cannot evaluate shapes in null body");
@@ -773,6 +886,15 @@ export class Space {
     return ret;
   }
 
+  /**
+   * Sweep `shape` along its current velocity for `deltaTime` seconds and return the first hit.
+   * @param shape - The shape to sweep; must belong to a Body.
+   * @param deltaTime - Duration of the sweep; must be non-negative.
+   * @param liveSweep - If true, other body velocities are considered during the sweep.
+   * @param filter - Optional interaction filter to restrict results.
+   * @returns The first RayResult hit, or null if nothing was struck.
+   * @throws If `shape` is null, not attached to a Body, or `deltaTime` is negative/NaN.
+   */
   convexCast(
     shape: Shape,
     deltaTime: number,
@@ -792,6 +914,16 @@ export class Space {
     return this.zpp_inner.convexCast(szpp, deltaTime, filter, liveSweep);
   }
 
+  /**
+   * Sweep `shape` along its current velocity for `deltaTime` seconds and return all hits.
+   * @param shape - The shape to sweep; must belong to a Body.
+   * @param deltaTime - Duration of the sweep; must be non-negative.
+   * @param liveSweep - If true, other body velocities are considered during the sweep.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing RayResultList to accumulate results into.
+   * @returns A RayResultList of all hits encountered during the sweep.
+   * @throws If `shape` is null, not attached to a Body, or `deltaTime` is negative/NaN.
+   */
   convexMultiCast(
     shape: Shape,
     deltaTime: number,
@@ -812,17 +944,30 @@ export class Space {
     return this.zpp_inner.convexMultiCast(szpp, deltaTime, filter, liveSweep, output);
   }
 
-  rayCast(
-    ray: Ray,
-    inner: boolean = false,
-    filter?: InteractionFilter | null,
-  ): object | null {
+  /**
+   * Cast a ray into the space and return the closest hit.
+   * @param ray - The ray to cast.
+   * @param inner - If true, shapes are tested from the inside as well (useful for concave queries).
+   * @param filter - Optional interaction filter to restrict results.
+   * @returns The closest RayResult, or null if nothing was hit.
+   * @throws If `ray` is null.
+   */
+  rayCast(ray: Ray, inner: boolean = false, filter?: InteractionFilter | null): object | null {
     if (ray == null) {
       throw new Error("Error: Cannot cast null ray :)");
     }
     return this.zpp_inner.rayCast(ray, inner, filter);
   }
 
+  /**
+   * Cast a ray into the space and return all hits.
+   * @param ray - The ray to cast.
+   * @param inner - If true, shapes are tested from the inside as well.
+   * @param filter - Optional interaction filter to restrict results.
+   * @param output - Optional existing RayResultList to accumulate results into.
+   * @returns A RayResultList of all shapes the ray intersected.
+   * @throws If `ray` is null.
+   */
   rayMultiCast(
     ray: Ray,
     inner: boolean = false,
@@ -835,9 +980,11 @@ export class Space {
     return this.zpp_inner.rayMultiCast(ray, inner, filter, output);
   }
 
+  /**
+   * Returns a brief string summary of this space.
+   * @returns A string in the form `Space(bodies=N)`.
+   */
   toString(): string {
     return `Space(bodies=${(this.bodies as any).length})`;
   }
-
 }
-

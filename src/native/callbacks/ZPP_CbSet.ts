@@ -30,8 +30,8 @@ export class ZPP_CbSet {
   count = 0;
   next: ZPP_CbSet | null = null;
   id = 0;
-  manager: any = null;   // ZPP_CbManager (no dedicated TS class)
-  cbpairs: any = null;   // ZNPList_ZPP_CbSetPair (ZPP_CbSetPair has no TS type)
+  manager: any = null; // ZPP_CbManager (no dedicated TS class)
+  cbpairs: any = null; // ZNPList_ZPP_CbSetPair (ZPP_CbSetPair has no TS type)
 
   listeners!: ZNPList<ZPP_InteractionListener>;
   zip_listeners = false;
@@ -42,9 +42,9 @@ export class ZPP_CbSet {
   conlisteners!: ZNPList<ZPP_ConstraintListener>;
   zip_conlisteners = false;
 
-  interactors: any = null;     // ZNPList_ZPP_Interactor (ZPP_Interactor has no TS type)
+  interactors: any = null; // ZNPList_ZPP_Interactor (ZPP_Interactor has no TS type)
   wrap_interactors: any = null;
-  constraints: any = null;     // ZNPList_ZPP_Constraint
+  constraints: any = null; // ZNPList_ZPP_Constraint
   wrap_constraints: any = null;
 
   constructor() {
@@ -202,7 +202,12 @@ export class ZPP_CbSet {
     }
   }
 
-  static find_all(a: ZPP_CbSet, b: ZPP_CbSet, event: number, cb: (listener: ZPP_InteractionListener) => void): void {
+  static find_all(
+    a: ZPP_CbSet,
+    b: ZPP_CbSet,
+    event: number,
+    cb: (listener: ZPP_InteractionListener) => void,
+  ): void {
     const ret = ZPP_CbSet.findOrCreatePair(a, b);
     let cx_ite1 = ret.listeners.head;
     while (cx_ite1 != null) {

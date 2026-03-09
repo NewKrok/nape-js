@@ -93,12 +93,7 @@ describe("Engine integration — property accessors on compiled objects", () => 
   it("PivotJoint own property accessors should return defined values", () => {
     const body1 = new nape.phys.Body(nape.phys.BodyType.DYNAMIC);
     const body2 = new nape.phys.Body(nape.phys.BodyType.DYNAMIC);
-    const joint = new PivotJoint(
-      body1,
-      body2,
-      new nape.geom.Vec2(0, 0),
-      new nape.geom.Vec2(0, 0),
-    );
+    const joint = new PivotJoint(body1, body2, new nape.geom.Vec2(0, 0), new nape.geom.Vec2(0, 0));
 
     // Own properties (defined on PivotJoint.prototype)
     expect(joint.body1).toBeDefined();

@@ -21,7 +21,6 @@ export class ZPP_Triangular {
   static stack: any = null;
   static edgeSet: any = null;
 
-
   // --- Static methods ---
 
   static lt(p: ZPP_PartitionVertex, q: ZPP_PartitionVertex): boolean {

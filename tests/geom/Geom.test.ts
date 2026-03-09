@@ -115,9 +115,7 @@ describe("Geom", () => {
       const out1 = new Vec2(0, 0);
       const out2 = new Vec2(0, 0);
 
-      expect(() => Geom.distanceBody(b1, b2, out1, out2)).toThrow(
-        "Bodies cannot be empty",
-      );
+      expect(() => Geom.distanceBody(b1, b2, out1, out2)).toThrow("Bodies cannot be empty");
     });
   });
 

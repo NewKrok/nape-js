@@ -39,4 +39,3 @@ export const Config = {
 
 const _napeConfig = getNape();
 _napeConfig.Config = Object.assign(_napeConfig.Config || {}, Config);
-

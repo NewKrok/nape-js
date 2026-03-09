@@ -43,7 +43,6 @@ export class ZPP_InteractionGroup {
 
   // --- Instance: Haxe class reference ---
 
-
   constructor() {
     const zpp = ZPP_InteractionGroup._zpp;
     this.groups = new zpp.util.ZNPList_ZPP_InteractionGroup();

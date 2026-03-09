@@ -19,12 +19,12 @@ export class ZPP_Broadphase {
   static _nape: any = null;
 
   // --- Instance fields ---
-  space: any = null;     // ZPP_Space — circular
+  space: any = null; // ZPP_Space — circular
   is_sweep: boolean = false;
-  sweep: any = null;     // ZPP_SweepPhase — circular
-  dynab: any = null;     // ZPP_DynAABBPhase — circular
+  sweep: any = null; // ZPP_SweepPhase — circular
+  dynab: any = null; // ZPP_DynAABBPhase — circular
   aabbShape: any = null; // ZPP_Shape — circular
-  matrix: any = null;    // ZPP_Mat23 — circular
+  matrix: any = null; // ZPP_Mat23 — circular
   circShape: any = null; // ZPP_Shape — circular
 
   /**

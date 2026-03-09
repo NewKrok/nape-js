@@ -336,9 +336,7 @@ describe("Vec2List", () => {
 
     it("should throw when lambda is null", () => {
       const list = makeList();
-      expect(() => list.foreach(null)).toThrow(
-        "Cannot execute null on list elements",
-      );
+      expect(() => list.foreach(null)).toThrow("Cannot execute null on list elements");
     });
   });
 
@@ -365,9 +363,7 @@ describe("Vec2List", () => {
 
     it("should throw when lambda is null", () => {
       const list = makeList();
-      expect(() => list.filter(null)).toThrow(
-        "Cannot select elements of list with null",
-      );
+      expect(() => list.filter(null)).toThrow("Cannot select elements of list with null");
     });
 
     it("should handle filtering all elements out", () => {
@@ -430,17 +426,13 @@ describe("Vec2List", () => {
     it("should throw on push when list is immutable", () => {
       const list = makeList();
       list.zpp_inner.immutable = true;
-      expect(() => list.push(new Vec2(1, 2))).toThrow(
-        "Vec2List is immutable",
-      );
+      expect(() => list.push(new Vec2(1, 2))).toThrow("Vec2List is immutable");
     });
 
     it("should throw on unshift when list is immutable", () => {
       const list = makeList();
       list.zpp_inner.immutable = true;
-      expect(() => list.unshift(new Vec2(1, 2))).toThrow(
-        "Vec2List is immutable",
-      );
+      expect(() => list.unshift(new Vec2(1, 2))).toThrow("Vec2List is immutable");
     });
 
     it("should throw on pop when list is immutable", () => {
