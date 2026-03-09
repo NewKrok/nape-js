@@ -2502,7 +2502,13 @@ function loop() {
 // Interaction
 // =========================================================================
 
-canvasWrap.addEventListener("mousedown", (e) => {
+// Prevent scroll/zoom on touch so the canvas receives all pointer events
+canvasWrap.style.touchAction = "none";
+canvasWrap.style.userSelect = "none";
+
+canvasWrap.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  canvasWrap.setPointerCapture(e.pointerId);
   mouseDown = true;
   const rect = canvasWrap.getBoundingClientRect();
   const { sx, sy } = getCanvasScale();
@@ -2511,7 +2517,7 @@ canvasWrap.addEventListener("mousedown", (e) => {
   DEMOS[currentDemo].click?.(mouseX, mouseY);
 });
 
-document.addEventListener("mousemove", (e) => {
+canvasWrap.addEventListener("pointermove", (e) => {
   if (!mouseDown) return;
   const rect = canvasWrap.getBoundingClientRect();
   const { sx, sy } = getCanvasScale();
@@ -2523,24 +2529,14 @@ document.addEventListener("mousemove", (e) => {
   DEMOS[currentDemo].drag?.(mouseX, mouseY);
 });
 
-document.addEventListener("mouseup", () => {
+canvasWrap.addEventListener("pointerup", () => {
   mouseDown = false;
   DEMOS[currentDemo].release?.();
 });
-canvasWrap.addEventListener("mouseleave", () => {
-  // only stop spawning shapes, don't end drag
-  if (currentDemo === "falling") mouseDown = false;
+canvasWrap.addEventListener("pointercancel", () => {
+  mouseDown = false;
+  DEMOS[currentDemo].release?.();
 });
-
-canvasWrap.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const rect = canvasWrap.getBoundingClientRect();
-  const { sx, sy } = getCanvasScale();
-  mouseX = (touch.clientX - rect.left) * sx;
-  mouseY = (touch.clientY - rect.top) * sy;
-  DEMOS[currentDemo].click?.(mouseX, mouseY);
-}, { passive: false });
 
 document.getElementById("demoTabs").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
