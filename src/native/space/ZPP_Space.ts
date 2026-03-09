@@ -4690,7 +4690,7 @@ export class ZPP_Space {
             this.pre_dt,
             0,
             ZPP_Space._nape.Config.collisionSlopCCD,
-            undefined,
+            false,
           );
         }
       }

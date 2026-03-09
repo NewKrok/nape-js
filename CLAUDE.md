@@ -503,7 +503,33 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
   - Tests and benchmarks updated to use native TS getters/setters
   - Bundle size: 991 KB → 979 KB
 
-- **28b** — Enable `strictNullChecks: true` in `tsconfig.json` ⬜ Pending
+- **28b** — Fix all `strictNullChecks` errors (already ON via `strict: true`) 🔶 In progress
+
+  `strictNullChecks` was already enabled via `strict: true`. The task is fixing the ~2400 pre-existing
+  errors that were silently ignored by tsup (which skips type-checking).
+
+  **Fixed (11 of 14 files):**
+  - `ZPP_Set.ts` — `const ret: ZPP_Set<T> | null` explicit annotations (circular initializer)
+  - `FastHash2_Hashable2_Boolfalse.ts` — `const t: Hashable2_Boolfalse | null`
+  - `ZPP_ToiEvent.ts` — `s1/s2: ZPP_Shape | null`, `arbiter: ZPP_ColArbiter | null` (was `object`)
+  - `ZPP_SweepDistance.ts` — all 4 methods typed: `ZPP_ToiEvent`, `number`, `boolean`, `ZPP_Body`,
+    `ZPP_Shape`, `ZPP_Vec2`; imported `ZPP_ToiEvent`, `ZPP_Body`, `ZPP_Shape`
+  - `ZPP_Collide.ts` — all 7 static methods typed: `ZPP_Shape`, `ZPP_Body`, `ZPP_GeomVert`,
+    `ZPP_ColArbiter`, `ZPP_FluidArbiter`, `boolean`; self-referencing vars annotated; `!` assertions
+  - `ZPP_Component.ts` — `_inuse: boolean = false` field added (was missing)
+  - `ZPP_Space.ts` — missing `false` arg to `dynamicSweep` (was `undefined`)
+  - `ZPP_SimpleSeg.ts` — `zpp_pool` cast to `ZPP_Set<unknown>` (generic invariance)
+  - `ZPP_Island.ts` — fixed via `_inuse` field added to `ZPP_Component`
+  - `ZPP_Simplify.ts` — `!` assertions for ring-list invariants; `retnodes: ZPP_SimplifyV | null`
+  - `ZPP_PartitionedPoly.ts` — `!` assertions + explicit nullable var types throughout
+  - `ZPP_MarchingSquares.ts` — `!` on map access; dynamic ZNP list methods cast to `any`
+  - `ZPP_Monotone.ts` — nullable head var type; `!` on RB-tree traversal; `ZPP_Set<unknown>` cast
+  - `ZPP_Cutter.ts` + `ZPP_CutInt.ts` — `!` throughout; fixed `ZPP_CutInt.end/start` types
+
+  **Remaining (3 files, ~2023 errors):**
+  - `ZPP_DynAABBPhase.ts` — 1588 errors (largest file, heavy `any` dispatch)
+  - `ZPP_SimpleSweep.ts` — 227 errors
+  - `ZPP_Simple.ts` — 208 errors
 
 ### Priority 29: Missing test coverage
 
@@ -533,7 +559,7 @@ P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
 | P25 — `Any` → real types | XL | **largest** | medium | ✅ Done |
 | P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
-| P28 — API ergonomics (28a+28c done, 28b pending) | M | DX | low | 🔶 Partial |
+| P28 — API ergonomics (28a+28c done, 28b in progress) | M | DX | low | 🔶 Partial |
 | P29 — Test coverage | M | safety | none | ⬜ Pending |
 
 

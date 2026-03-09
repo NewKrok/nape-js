@@ -235,7 +235,7 @@ export class ZPP_Monotone {
     // Merge sort the queue by above()
     const xxlist = ZPP_Monotone.queue;
     if (xxlist.head != null && xxlist.head.next != null) {
-      let head = xxlist.head;
+      let head: ZNPNode<ZPP_PartitionVertex> | null = xxlist.head;
       let tail: ZNPNode<ZPP_PartitionVertex> | null;
       let left: ZNPNode<ZPP_PartitionVertex> | null;
       let right: ZNPNode<ZPP_PartitionVertex> | null;
@@ -261,15 +261,15 @@ export class ZPP_Monotone {
           while (leftSize > 0 || (rightSize > 0 && right != null)) {
             if (leftSize == 0) {
               nxt = right;
-              right = right.next;
+              right = right!.next;
               --rightSize;
             } else if (rightSize == 0 || right == null) {
               nxt = left;
-              left = left.next;
+              left = left!.next;
               --leftSize;
-            } else if (ZPP_Monotone.above(left.elt!, right.elt!)) {
+            } else if (ZPP_Monotone.above(left!.elt!, right.elt!)) {
               nxt = left;
-              left = left.next;
+              left = left!.next;
               --leftSize;
             } else {
               nxt = right;
@@ -291,7 +291,7 @@ export class ZPP_Monotone {
           break;
         }
       }
-      xxlist.head = head;
+      xxlist.head = head!;
       xxlist.modified = true;
       xxlist.pushmod = true;
     }
@@ -301,7 +301,7 @@ export class ZPP_Monotone {
         ZPP_Monotone.edges = new ZPP_Set_ZPP_PartitionVertex() as ZPP_Set<ZPP_PartitionVertex>;
       } else {
         ZPP_Monotone.edges = ZPP_Set_ZPP_PartitionVertex.zpp_pool as ZPP_Set<ZPP_PartitionVertex>;
-        ZPP_Set_ZPP_PartitionVertex.zpp_pool = ZPP_Monotone.edges.next;
+        ZPP_Set_ZPP_PartitionVertex.zpp_pool = ZPP_Monotone.edges.next as ZPP_Set<unknown>;
         ZPP_Monotone.edges.next = null;
       }
       ZPP_Monotone.edges.lt = ZPP_PartitionVertex.edge_lt;
@@ -339,10 +339,10 @@ export class ZPP_Monotone {
           e1.helper = null;
           let ret: ZPP_PartitionVertex | null = null;
           if (!ZPP_Monotone.edges.empty()) {
-            let set_ite = ZPP_Monotone.edges.parent;
+            let set_ite = ZPP_Monotone.edges.parent!;
             while (set_ite.prev != null) set_ite = set_ite.prev;
             while (set_ite != null) {
-              const elt = set_ite.data;
+              const elt = set_ite.data!;
               if (!ZPP_PartitionVertex.vert_lt(elt, v)) {
                 ret = elt;
                 break;
@@ -353,7 +353,7 @@ export class ZPP_Monotone {
               } else {
                 while (set_ite.parent != null && set_ite == set_ite.parent.next)
                   set_ite = set_ite.parent;
-                set_ite = set_ite.parent;
+                set_ite = set_ite.parent!;
               }
             }
           }
@@ -372,10 +372,10 @@ export class ZPP_Monotone {
         case 3: {
           let ret1: ZPP_PartitionVertex | null = null;
           if (!ZPP_Monotone.edges.empty()) {
-            let set_ite1 = ZPP_Monotone.edges.parent;
+            let set_ite1 = ZPP_Monotone.edges.parent!;
             while (set_ite1.prev != null) set_ite1 = set_ite1.prev;
             while (set_ite1 != null) {
-              const elt1 = set_ite1.data;
+              const elt1 = set_ite1.data!;
               if (!ZPP_PartitionVertex.vert_lt(elt1, v)) {
                 ret1 = elt1;
                 break;
@@ -386,7 +386,7 @@ export class ZPP_Monotone {
               } else {
                 while (set_ite1.parent != null && set_ite1 == set_ite1.parent.next)
                   set_ite1 = set_ite1.parent;
-                set_ite1 = set_ite1.parent;
+                set_ite1 = set_ite1.parent!;
               }
             }
           }
@@ -403,7 +403,7 @@ export class ZPP_Monotone {
           break;
         }
         case 4: {
-          const pre = v.prev;
+          const pre = v.prev!;
           if (ZPP_Monotone.left_vertex(v)) {
             if (pre.helper == null) {
               throw new Error("Fatal error (5): Polygon is not weakly-simple and clockwise");
@@ -418,10 +418,10 @@ export class ZPP_Monotone {
           } else {
             let ret2: ZPP_PartitionVertex | null = null;
             if (!ZPP_Monotone.edges.empty()) {
-              let set_ite2 = ZPP_Monotone.edges.parent;
+              let set_ite2 = ZPP_Monotone.edges.parent!;
               while (set_ite2.prev != null) set_ite2 = set_ite2.prev;
               while (set_ite2 != null) {
-                const elt2 = set_ite2.data;
+                const elt2 = set_ite2.data!;
                 if (!ZPP_PartitionVertex.vert_lt(elt2, v)) {
                   ret2 = elt2;
                   break;
@@ -432,7 +432,7 @@ export class ZPP_Monotone {
                 } else {
                   while (set_ite2.parent != null && set_ite2 == set_ite2.parent.next)
                     set_ite2 = set_ite2.parent;
-                  set_ite2 = set_ite2.parent;
+                  set_ite2 = set_ite2.parent!;
                 }
               }
             }

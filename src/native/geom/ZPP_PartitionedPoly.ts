@@ -73,8 +73,8 @@ export class ZPP_PartitionedPoly {
       let nite = F;
       while (true) {
         const v = nite;
-        area += v.x * (v.next.y - v.prev.y);
-        nite = nite.next;
+        area += v.x * (v.next!.y - v.prev!.y);
+        nite = nite.next!;
         if (!(nite != L)) {
           break;
         }
@@ -129,7 +129,7 @@ export class ZPP_PartitionedPoly {
       }
       this.vertices = tmp;
       this.vertices.forced = p.forced;
-      p = p.next;
+      p = p.next!;
       if (!(p != P)) {
         break;
       }
@@ -209,7 +209,7 @@ export class ZPP_PartitionedPoly {
             p = null;
             p = null!;
           } else {
-            const retnodes1 = p!.next;
+            const retnodes1: ZPP_PartitionVertex | null = p!.next;
             p!.prev!.next = p!.next;
             p!.next!.prev = p!.prev;
             p!.next = p!.prev = null;
@@ -285,7 +285,7 @@ export class ZPP_PartitionedPoly {
       let pre: ZNPNode<ZPP_PartitionedPoly> | null = null;
       let cx_ite = ret.head;
       while (cx_ite != null) {
-        const p = cx_ite.elt;
+        const p = cx_ite.elt!;
         if (p.remove_collinear_vertices()) {
           ret.erase(pre);
           continue;
@@ -436,7 +436,7 @@ export class ZPP_PartitionedPoly {
       } else {
         obj.prev = poly;
         obj.next = poly.next;
-        poly.next.prev = obj;
+        poly.next!.prev = obj;
         poly.next = obj;
       }
       poly = obj;
@@ -465,8 +465,8 @@ export class ZPP_PartitionedPoly {
       let nite = F;
       while (true) {
         const v = nite;
-        area += v.x * (v.next.y - v.prev.y);
-        nite = nite.next;
+        area += v.x * (v.next!.y - v.prev!.y);
+        nite = nite.next!;
         if (!(nite != L)) {
           break;
         }
@@ -474,28 +474,28 @@ export class ZPP_PartitionedPoly {
     }
     const area1 = area * 0.5;
     if (area1 * area1 >= getNape().Config.epsilon * getNape().Config.epsilon) {
-      let p = poly;
+      let p: ZPP_GeomVert | null = poly;
       let skip = true;
       while (skip || p != poly) {
         skip = false;
-        const dx = p.x - p.next.x;
-        const dy = p.y - p.next.y;
+        const dx = p!.x - p!.next!.x;
+        const dy = p!.y - p!.next!.y;
         if (dx * dx + dy * dy < getNape().Config.epsilon * getNape().Config.epsilon) {
           if (p == poly) {
-            poly = p.next;
+            poly = p!.next;
             skip = true;
           }
-          if (p.forced) {
-            p.next.forced = true;
+          if (p!.forced) {
+            p!.next!.forced = true;
           }
           if (p != null && p.prev == p) {
             p.next = p.prev = null;
             p = null;
           } else {
-            const retnodes = p.next;
-            p.prev.next = p.next;
-            p.next.prev = p.prev;
-            p.next = p.prev = null;
+            const retnodes: ZPP_GeomVert | null = p!.next;
+            p!.prev!.next = p!.next;
+            p!.next!.prev = p!.prev;
+            p!.next = p!.prev = null;
             p = retnodes;
           }
           if (p == null) {
@@ -503,7 +503,7 @@ export class ZPP_PartitionedPoly {
             break;
           }
         } else {
-          p = p.next;
+          p = p!.next;
         }
       }
       if (poly != null) {
@@ -514,27 +514,27 @@ export class ZPP_PartitionedPoly {
           skip = true;
           while (skip || p != poly) {
             skip = false;
-            const pre = p.prev;
-            const ux = p.x - pre.x;
-            const uy = p.y - pre.y;
-            const vx = p.next.x - p.x;
-            const vy = p.next.y - p.y;
+            const pre = p!.prev!;
+            const ux = p!.x - pre.x;
+            const uy = p!.y - pre.y;
+            const vx = p!.next!.x - p!.x;
+            const vy = p!.next!.y - p!.y;
             const crs = vy * ux - vx * uy;
             if (crs * crs >= getNape().Config.epsilon * getNape().Config.epsilon) {
-              p = p.next;
+              p = p!.next;
             } else {
               if (p == poly) {
-                poly = p.next;
+                poly = p!.next;
                 skip = true;
               }
               if (p != null && p.prev == p) {
                 p.next = p.prev = null;
                 p = null;
               } else {
-                const retnodes1 = p.next;
-                p.prev.next = p.next;
-                p.next.prev = p.prev;
-                p.next = p.prev = null;
+                const retnodes1: ZPP_GeomVert | null = p!.next;
+                p!.prev!.next = p!.next;
+                p!.next!.prev = p!.prev;
+                p!.next = p!.prev = null;
                 p = retnodes1;
               }
               removed = true;

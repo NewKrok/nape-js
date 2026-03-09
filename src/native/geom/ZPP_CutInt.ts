@@ -8,6 +8,7 @@
  */
 
 import type { ZPP_CutVert } from "./ZPP_CutVert";
+import type { ZPP_GeomVert } from "./ZPP_GeomVert";
 
 export class ZPP_CutInt {
   // --- Static: Haxe metadata ---
@@ -22,15 +23,15 @@ export class ZPP_CutInt {
   virtualint = false;
   vertex = false;
   path0: ZPP_CutVert | null = null;
-  end: ZPP_CutVert | null = null;
-  start: ZPP_CutVert | null = null;
+  end: ZPP_GeomVert | null = null;
+  start: ZPP_GeomVert | null = null;
   path1: ZPP_CutVert | null = null;
 
   /** Factory with pooling. */
   static get(
     time: number,
-    end: ZPP_CutVert | null,
-    start: ZPP_CutVert | null,
+    end: ZPP_GeomVert | null,
+    start: ZPP_GeomVert | null,
     path0: ZPP_CutVert | null,
     path1: ZPP_CutVert | null,
     virtualint = false,

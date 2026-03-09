@@ -106,7 +106,7 @@ export class ZPP_Simplify {
       } else {
         obj.prev = ret;
         obj.next = ret.next;
-        ret.next.prev = obj;
+        ret.next!.prev = obj;
         ret.next = obj;
       }
       ret = obj;
@@ -121,7 +121,7 @@ export class ZPP_Simplify {
           max = ret;
         }
       }
-      cur = cur.next;
+      cur = cur.next!;
       if (!(cur != P)) {
         break;
       }
@@ -240,14 +240,14 @@ export class ZPP_Simplify {
       ZPP_SimplifyP.zpp_pool = o;
       let dmax = epsilon;
       let dv: ZPP_SimplifyV | null = null;
-      let ite = min1.next;
+      let ite = min1!.next;
       while (ite != max1) {
-        const dist = ZPP_Simplify.distance(ite, min1, max1);
+        const dist = ZPP_Simplify.distance(ite!, min1!, max1!);
         if (dist > dmax) {
           dmax = dist;
           dv = ite;
         }
-        ite = ite.next;
+        ite = ite!.next;
       }
       if (dv != null) {
         dv.flag = true;
@@ -299,7 +299,7 @@ export class ZPP_Simplify {
         } else {
           obj1.prev = retp;
           obj1.next = retp.next;
-          retp.next.prev = obj1;
+          retp.next!.prev = obj1;
           retp.next = obj1;
         }
         retp = obj1;
@@ -311,7 +311,7 @@ export class ZPP_Simplify {
         ZPP_SimplifyV.zpp_pool = ret!;
         ret = null!;
       } else {
-        const retnodes = ret!.next;
+        const retnodes: ZPP_SimplifyV | null = ret!.next;
         ret!.prev!.next = ret!.next;
         ret!.next!.prev = ret!.prev;
         ret!.next = ret!.prev = null;

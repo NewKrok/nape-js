@@ -35,6 +35,9 @@ export class ZPP_Component {
   waket = 0;
   woken = false;
 
+  // --- Instance: list membership flag ---
+  _inuse = false;
+
   // ========== Pool callbacks ==========
 
   free(): void {
