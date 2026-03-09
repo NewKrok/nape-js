@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2269 tests across 125 files
+npm test             # vitest — 2523 tests across 138 files
 npm run lint         # eslint + prettier
 ```
 
@@ -531,16 +531,34 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
   - `ZPP_SimpleSweep.ts` — 227 errors
   - `ZPP_Simple.ts` — 208 errors
 
-### Priority 29: Missing test coverage
+### ✅ Priority 29: Missing test coverage — DONE (Step 1)
 
 **Effort: M | Impact: safety | Risk: zero**
 
-16 missing test files, priority order:
-1. `tests/core/engine.test.ts` — `getNape()` lazy init, `ensureEnumsReady`
-2. `tests/geom/Vec2List.test.ts`, `tests/dynamics/ContactList.test.ts`, `tests/geom/GeomVertexIterator.test.ts`
-3. `tests/callbacks/BodyCallback.test.ts`, `tests/dynamics/CollisionArbiter.test.ts`, `tests/dynamics/FluidArbiter.test.ts`
-4. `tests/callbacks/Listener.test.ts`, `tests/callbacks/ConstraintListener.test.ts`, `tests/callbacks/PreListener.test.ts`
-5. `tests/constraint/Constraint.test.ts` (integration)
+13 missing public API test files created, adding 254 new tests (2269 → 2523 tests, 125 → 138 files):
+
+1. `tests/core/engine.test.ts` (11 tests) — `getNape()` lazy init, namespace structure, singleton, `ensureEnumsReady` idempotency
+2. `tests/geom/Vec2List.test.ts` (49 tests) — push/pop/shift/unshift/at/has/remove/clear, iteration, copy, merge, fromArray
+3. `tests/geom/GeomVertexIterator.test.ts` (11 tests) — vertex iteration via `GeomPoly.forwardIterator()`, for...of, disposal
+4. `tests/dynamics/ContactList.test.ts` (31 tests) — empty list ops + integration with collision contacts
+5. `tests/dynamics/CollisionArbiter.test.ts` (26 tests) — normal, contacts, radius, friction, elasticity, impulses, reference edges
+6. `tests/dynamics/FluidArbiter.test.ts` (21 tests) — buoyancy/drag/total impulse, position/overlap, PreListener mutability
+7. `tests/callbacks/BodyCallback.test.ts` (7 tests) — SLEEP callback integration, callback properties
+8. `tests/callbacks/ConstraintCallback.test.ts` (8 tests) — SLEEP/BREAK/WAKE events with custom CbType
+9. `tests/callbacks/InteractionCallback.test.ts` (9 tests) — BEGIN collision callback, int1/int2 properties
+10. `tests/callbacks/PreCallback.test.ts` (6 tests) — PRE handler, int1/int2, arbiter, swapped, PreFlag.IGNORE
+11. `tests/callbacks/Listener.test.ts` (30 tests) — base class via subclasses, cbEventToNumber, type/event/precedence/space
+12. `tests/callbacks/ConstraintListener.test.ts` (19 tests) — WAKE/SLEEP/BREAK events, invalid event rejection, options/handler
+13. `tests/callbacks/PreListener.test.ts` (25 tests) — COLLISION/SENSOR/FLUID types, pure getter/setter, handler null guards
+
+**Key patterns discovered:**
+- Constraints do NOT auto-register `CbType.ANY_CONSTRAINT` — must use custom CbType + `(joint.cbTypes as any).add(ct)`
+- Fluid arbiters are transient — don't persist in `space.arbiters` after step; must capture inside ONGOING callback
+- WAKE events require a sleep→wake transition, not just initial addition to space
+
+**Remaining coverage gaps (future work):**
+- Expand thin test files: `Body.test.ts` (25%), `AABB.test.ts` (35%), `FluidProperties.test.ts` (25%), `Material.test.ts` (53%)
+- Space integration tests: `ZPP_Space` (30%), `ZPP_DynAABBPhase` (16%), `ZPP_AABBTree` (4%)
 
 ### Execution order
 
@@ -560,7 +578,7 @@ P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
 | P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
 | P28 — API ergonomics (28a+28c done, 28b in progress) | M | DX | low | 🔶 Partial |
-| P29 — Test coverage | M | safety | none | ⬜ Pending |
+| P29 — Test coverage (Step 1: 13 API test files) | M | safety | none | ✅ Done |
 
 
 When extracting a class from compiled code, follow this pattern. Use recent extractions
