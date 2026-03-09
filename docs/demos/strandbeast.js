@@ -6,9 +6,17 @@ export default {
   label: "Strand Beast",
   featured: true,
   featuredOrder: 8,
-  desc: 'A Theo Jansen-style walking mechanism with 6 legs (3 phase-offset pairs) driven by a <code>MotorJoint</code> crank. <b>Click</b> to drop a ball.',
+  desc: 'A Theo Jansen-style walking mechanism with 6 legs (3 phase-offset pairs) driven by a <code>MotorJoint</code> crank. Reverses direction at the walls. <b>Click</b> to drop a ball.',
+
+  _motor: null,
+  _chassis: null,
+  _motorSpeed: 2.0,
+  _W: 0,
+  _t: 20,
 
   setup(space, W, H) {
+    this._W = W;
+    this._motorSpeed = 2.0;
     space.gravity = new Vec2(0, 400);
 
     addWalls(space, W, H);
@@ -63,7 +71,10 @@ export default {
 
     // Motor drives the wheel relative to chassis
     new PivotJoint(chassis, wheel, new Vec2(0, 0), new Vec2(0, 0)).space = space;
-    new MotorJoint(chassis, wheel, 2.0).space = space;
+    const motor = new MotorJoint(chassis, wheel, this._motorSpeed, 1.0);
+    motor.space = space;
+    this._motor = motor;
+    this._chassis = chassis;
 
     // Pre-computed rest lengths (invariant across all legs/phases)
     const D12 = Math.sqrt((P2X - P5X) * (P2X - P5X) + (P2Y - P5Y) * (P2Y - P5Y)) * S;
@@ -130,6 +141,20 @@ export default {
     for (const phase of phases) {
       createLeg(1, phase);   // right
       createLeg(-1, phase);  // left
+    }
+  },
+
+  step(_space, W, _H) {
+    if (!this._motor || !this._chassis) return;
+    const x = this._chassis.position.x;
+    const margin = 120;
+    const speed = this._motorSpeed;
+    if (x < margin && speed < 0) {
+      this._motorSpeed = Math.abs(speed);
+      this._motor.rate = this._motorSpeed;
+    } else if (x > W - margin && speed > 0) {
+      this._motorSpeed = -Math.abs(speed);
+      this._motor.rate = this._motorSpeed;
     }
   },
 
