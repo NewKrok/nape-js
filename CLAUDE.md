@@ -153,13 +153,9 @@ test files expanded with deep property, validation, and round-trip coverage.
 Current state: class-level JSDoc exists on all 68 public classes, but **~95% of public
 methods/properties have no per-member documentation**. IDE autocomplete shows no hints.
 
-**30a — Core geometry types** (`Vec2`, `AABB`, `Ray`, `Mat23`, `MatMN`, `Vec3`):
-- All constructor params, getters, setters, static factories documented
-- Include `@example` blocks for common use cases
+**30a — Core geometry types** (`Vec2`, `AABB`, `Ray`, `Mat23`, `MatMN`, `Vec3`): ✅ Done
 
-**30b — Physics types** (`Body`, `Space`, `Shape`, `Circle`, `Polygon`, `Compound`):
-- Document all property semantics (units, coordinate system, valid ranges)
-- Document `step()`, broadphase, sleep/wake behavior
+**30b — Physics types** (`Body`, `Space`, `Shape`, `Circle`, `Polygon`): ✅ Done
 
 **30c — Callbacks & constraints** (`Listener`, `CbType`, all joints, `Arbiter` subtypes):
 - Document callback lifecycle (BEGIN/ONGOING/END semantics)

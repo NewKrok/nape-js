@@ -46,6 +46,12 @@ export class Ray {
     return this;
   }
 
+  /**
+   * Create a Ray from an origin point and a direction vector.
+   * Both must be non-null, non-disposed Vec2s.
+   * @param origin - The start point of the ray in world coordinates.
+   * @param direction - The direction vector (need not be unit length).
+   */
   constructor(origin: Vec2, direction: Vec2) {
     // Validate origin
     if (origin?.zpp_disp) {
@@ -106,6 +112,13 @@ export class Ray {
   // Static factories
   // ---------------------------------------------------------------------------
 
+  /**
+   * Create a Ray from a line segment.
+   * The ray origin is `start`, direction is `end − start`, and `maxDistance` is the segment length.
+   * @param start - The start point of the segment.
+   * @param end - The end point of the segment.
+   * @returns A new Ray spanning the segment.
+   */
   static fromSegment(start: Vec2, end: Vec2): Ray {
     if (start?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -148,10 +161,12 @@ export class Ray {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** The ray's start point in world coordinates. */
   get origin(): Vec2 {
     return this.zpp_inner.origin;
   }
 
+  /** The ray's start point in world coordinates. */
   set origin(value: Vec2) {
     if (value?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -163,10 +178,12 @@ export class Ray {
     _disposeWeakVec2(value);
   }
 
+  /** The ray's direction vector (need not be unit length; the engine normalises internally). */
   get direction(): Vec2 {
     return this.zpp_inner.direction;
   }
 
+  /** The ray's direction vector (need not be unit length; the engine normalises internally). */
   set direction(value: Vec2) {
     if (value?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -179,10 +196,12 @@ export class Ray {
     _disposeWeakVec2(value);
   }
 
+  /** Maximum travel distance for raycasting queries. Defaults to `Infinity`. */
   get maxDistance(): number {
     return this.zpp_inner.maxdist;
   }
 
+  /** Maximum travel distance for raycasting queries. Defaults to `Infinity`. */
   set maxDistance(value: number) {
     if (value !== value) {
       throw new Error("Error: maxDistance cannot be NaN");
@@ -190,6 +209,7 @@ export class Ray {
     this.zpp_inner.maxdist = value;
   }
 
+  /** Arbitrary user data attached to this Ray. */
   get userData(): Record<string, unknown> {
     if (this.zpp_inner.userData == null) {
       this.zpp_inner.userData = {};
@@ -201,10 +221,20 @@ export class Ray {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Compute the axis-aligned bounding box that encloses the ray from origin to `maxDistance`.
+   * @returns A new AABB wrapping the ray's extent.
+   */
   aabb(): AABB {
     return AABB._wrap(this.zpp_inner.rayAABB());
   }
 
+  /**
+   * Return the world-space point at `distance` along the ray.
+   * @param distance - Distance from the ray origin along the ray direction.
+   * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
+   * @returns The point `origin + distance * normalised_direction`.
+   */
   at(distance: number, weak: boolean = false): Vec2 {
     this.zpp_inner.validate_dir();
 
@@ -220,6 +250,10 @@ export class Ray {
     return Vec2.get(x, y, weak);
   }
 
+  /**
+   * Return a new Ray with the same origin, direction, and maxDistance.
+   * @returns A deep copy of this Ray.
+   */
   copy(): Ray {
     const ret = new Ray(this.zpp_inner.origin, this.zpp_inner.direction);
     const md = this.zpp_inner.maxdist;

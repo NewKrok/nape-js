@@ -33,6 +33,12 @@ export class Vec2 {
     return this;
   }
 
+  /**
+   * Creates a Vec2 with the given components. Defaults to (0, 0).
+   *
+   * @param x - The x component (default 0).
+   * @param y - The y component (default 0).
+   */
   constructor(x: number = 0, y: number = 0) {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
@@ -184,7 +190,19 @@ export class Vec2 {
     return null as unknown as Vec2;
   }
 
-  /** Obtain a Vec2 from the object pool (or create a new one). */
+  /**
+   * Allocate a Vec2 from the public object pool. If `weak` is true, the vector
+   * auto-disposes after a single API call.
+   *
+   * @param x - The x component (default 0).
+   * @param y - The y component (default 0).
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A pooled or newly created Vec2.
+   * @example
+   * const v = Vec2.get(3, 4);
+   * // use v ...
+   * v.dispose();
+   */
   static get(x: number = 0, y: number = 0, weak: boolean = false): Vec2 {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
@@ -192,7 +210,13 @@ export class Vec2 {
     return Vec2._poolGet(x, y, weak);
   }
 
-  /** Obtain a weak Vec2 that auto-disposes after a single use. */
+  /**
+   * Allocate a weak Vec2 (auto-disposes after a single use).
+   *
+   * @param x - The x component (default 0).
+   * @param y - The y component (default 0).
+   * @returns A weak, pooled Vec2 that is automatically disposed after one API call.
+   */
   static weak(x: number = 0, y: number = 0): Vec2 {
     if (x !== x || y !== y) {
       throw new Error("Error: Vec2 components cannot be NaN");
@@ -200,7 +224,16 @@ export class Vec2 {
     return Vec2._poolGet(x, y, true);
   }
 
-  /** Create a Vec2 from polar coordinates. */
+  /**
+   * Create a Vec2 from polar coordinates (length and angle in radians).
+   *
+   * @param length - The magnitude of the resulting vector.
+   * @param angle - The angle in radians, measured counter-clockwise from the +x axis.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 with components `(length * cos(angle), length * sin(angle))`.
+   * @example
+   * const v = Vec2.fromPolar(1, Math.PI / 4); // 45-degree unit vector
+   */
   static fromPolar(length: number, angle: number, weak: boolean = false): Vec2 {
     if (length !== length) {
       throw new Error("Error: Vec2::length cannot be NaN");
@@ -213,7 +246,14 @@ export class Vec2 {
     return Vec2._poolGet(x, y, weak);
   }
 
-  /** Squared distance between two Vec2s. */
+  /**
+   * Squared Euclidean distance between two Vec2s. Avoids a square root when
+   * only comparison is needed.
+   *
+   * @param a - The first Vec2.
+   * @param b - The second Vec2.
+   * @returns The squared distance `(a.x - b.x)² + (a.y - b.y)²`.
+   */
   static dsq(a: Vec2, b: Vec2): number {
     if (a != null && a.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -238,7 +278,13 @@ export class Vec2 {
     return ret;
   }
 
-  /** Euclidean distance between two Vec2s. */
+  /**
+   * Euclidean distance between two Vec2s.
+   *
+   * @param a - The first Vec2.
+   * @param b - The second Vec2.
+   * @returns The distance `sqrt((a.x - b.x)² + (a.y - b.y)²)`.
+   */
   static distance(a: Vec2, b: Vec2): number {
     if (a != null && a.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -267,12 +313,14 @@ export class Vec2 {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** The x component. */
   get x(): number {
     this._checkDisposed();
     this._validate();
     return this.zpp_inner.x;
   }
 
+  /** The x component. */
   set x(value: number) {
     this._checkDisposed();
     this._checkImmutable();
@@ -286,12 +334,14 @@ export class Vec2 {
     }
   }
 
+  /** The y component. */
   get y(): number {
     this._checkDisposed();
     this._validate();
     return this.zpp_inner.y;
   }
 
+  /** The y component. */
   set y(value: number) {
     this._checkDisposed();
     this._checkImmutable();
@@ -305,7 +355,7 @@ export class Vec2 {
     }
   }
 
-  /** Magnitude of the vector. */
+  /** Magnitude (Euclidean length) of the vector. */
   get length(): number {
     this._checkDisposed();
     this._validate();
@@ -314,7 +364,12 @@ export class Vec2 {
     return Math.sqrt(x * x + y * y);
   }
 
-  /** Setting length scales the vector to the given magnitude. */
+  /**
+   * Setting length scales the vector to the given magnitude. Throws if the
+   * vector is zero-length.
+   *
+   * @param value - The desired magnitude. Must not be NaN.
+   */
   set length(value: number) {
     this._checkDisposed();
     this._checkImmutable();
@@ -333,7 +388,10 @@ export class Vec2 {
     this._invalidate();
   }
 
-  /** Angle of the vector in radians (measured from the +x axis). */
+  /**
+   * Angle of the vector in radians, measured counter-clockwise from the +x
+   * axis. Returns 0 for the zero vector.
+   */
   get angle(): number {
     this._checkDisposed();
     this._validate();
@@ -345,7 +403,12 @@ export class Vec2 {
     return Math.atan2(y, x);
   }
 
-  /** Setting angle preserves magnitude but rotates to the given angle. */
+  /**
+   * Setting angle preserves the vector's magnitude and rotates it to the given
+   * angle.
+   *
+   * @param value - The desired angle in radians. Must not be NaN.
+   */
   set angle(value: number) {
     this._checkDisposed();
     this._checkImmutable();
@@ -365,7 +428,12 @@ export class Vec2 {
   // Instance methods
   // ---------------------------------------------------------------------------
 
-  /** Squared length — avoids a square root when only comparison is needed. */
+  /**
+   * Returns the squared magnitude. Faster than `length` as it avoids a square
+   * root.
+   *
+   * @returns `x² + y²`.
+   */
   lsq(): number {
     this._checkDisposed();
     this._validate();
@@ -374,7 +442,12 @@ export class Vec2 {
     return x * x + y * y;
   }
 
-  /** Copy values from another vector into this one (in-place). Returns this. */
+  /**
+   * Copy another Vec2's components into this vector in-place.
+   *
+   * @param vector - The source Vec2 to copy from.
+   * @returns `this` for chaining.
+   */
   set(vector: Vec2): this {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -392,7 +465,13 @@ export class Vec2 {
     return this;
   }
 
-  /** Set both components at once (in-place). Returns this. */
+  /**
+   * Set both components at once in-place.
+   *
+   * @param x - The new x component.
+   * @param y - The new y component.
+   * @returns `this` for chaining.
+   */
   setxy(x: number, y: number): this {
     this._checkDisposed();
     this._checkImmutable();
@@ -400,7 +479,12 @@ export class Vec2 {
     return this;
   }
 
-  /** Return a new copy of this vector. */
+  /**
+   * Return a new Vec2 with the same components.
+   *
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A copy of this vector.
+   */
   copy(weak: boolean = false): Vec2 {
     this._checkDisposed();
     this._validate();
@@ -409,7 +493,12 @@ export class Vec2 {
     return Vec2._poolGet(x, y, weak);
   }
 
-  /** Rotate this vector by the given angle in radians (in-place). Returns this. */
+  /**
+   * Rotate this vector by `angle` radians in-place.
+   *
+   * @param angle - The rotation angle in radians.
+   * @returns `this` for chaining.
+   */
   rotate(angle: number): this {
     this._checkDisposed();
     this._checkImmutable();
@@ -427,7 +516,13 @@ export class Vec2 {
     return this;
   }
 
-  /** Reflect this vector about the given axis vector (returns new Vec2). */
+  /**
+   * Reflect `vec` about this vector as a normal axis.
+   *
+   * @param vec - The Vec2 to reflect.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 that is the reflection of `vec` about this vector.
+   */
   reflect(vec: Vec2, weak: boolean = false): Vec2 {
     this._checkDisposed();
     if (vec != null && vec.zpp_disp) {
@@ -447,7 +542,12 @@ export class Vec2 {
     return ret;
   }
 
-  /** Normalize this vector to unit length (in-place). Returns this. */
+  /**
+   * Normalise this vector to unit length in-place. Throws for zero-length
+   * vectors.
+   *
+   * @returns `this` for chaining.
+   */
   normalise(): this {
     this._checkDisposed();
     this._checkImmutable();
@@ -464,7 +564,13 @@ export class Vec2 {
     return this;
   }
 
-  /** Return a new unit-length vector with the same direction. */
+  /**
+   * Return a new unit-length vector with the same direction. Throws for
+   * zero-length vectors.
+   *
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A normalised copy of this vector.
+   */
   unit(weak: boolean = false): Vec2 {
     this._checkDisposed();
     this._validate();
@@ -478,7 +584,13 @@ export class Vec2 {
     return Vec2._poolGet(x * scale, y * scale, weak);
   }
 
-  /** Return a new vector = this + other. */
+  /**
+   * Return a new Vec2 equal to `this + other`.
+   *
+   * @param vector - The Vec2 to add.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 with components `(this.x + other.x, this.y + other.y)`.
+   */
   add(vector: Vec2, weak: boolean = false): Vec2 {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -496,7 +608,14 @@ export class Vec2 {
     return ret;
   }
 
-  /** Return a new vector = this + other * scalar. */
+  /**
+   * Return a new Vec2 equal to `this + other × scalar`.
+   *
+   * @param vector - The Vec2 to scale and add.
+   * @param scalar - The multiplier applied to `vector` before addition.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 with components `(this.x + vector.x * scalar, this.y + vector.y * scalar)`.
+   */
   addMul(vector: Vec2, scalar: number, weak: boolean = false): Vec2 {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -514,7 +633,13 @@ export class Vec2 {
     return ret;
   }
 
-  /** Return a new vector = this - other. */
+  /**
+   * Return a new Vec2 equal to `this − other`.
+   *
+   * @param vector - The Vec2 to subtract.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 with components `(this.x - other.x, this.y - other.y)`.
+   */
   sub(vector: Vec2, weak: boolean = false): Vec2 {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -532,7 +657,13 @@ export class Vec2 {
     return ret;
   }
 
-  /** Return a new vector = this * scalar. */
+  /**
+   * Return a new Vec2 equal to `this × scalar`.
+   *
+   * @param scalar - The multiplier.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 with components `(this.x * scalar, this.y * scalar)`.
+   */
   mul(scalar: number, weak: boolean = false): Vec2 {
     this._checkDisposed();
     if (scalar !== scalar) {
@@ -544,7 +675,12 @@ export class Vec2 {
     return Vec2._poolGet(x, y, weak);
   }
 
-  /** this += other (in-place). Returns this. */
+  /**
+   * Add another Vec2 to this in-place (`this += other`).
+   *
+   * @param vector - The Vec2 to add.
+   * @returns `this` for chaining.
+   */
   addeq(vector: Vec2): this {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -563,7 +699,12 @@ export class Vec2 {
     return this;
   }
 
-  /** this -= other (in-place). Returns this. */
+  /**
+   * Subtract another Vec2 from this in-place (`this -= other`).
+   *
+   * @param vector - The Vec2 to subtract.
+   * @returns `this` for chaining.
+   */
   subeq(vector: Vec2): this {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -582,7 +723,12 @@ export class Vec2 {
     return this;
   }
 
-  /** this *= scalar (in-place). Returns this. */
+  /**
+   * Multiply this Vec2 by a scalar in-place (`this ×= scalar`).
+   *
+   * @param scalar - The multiplier.
+   * @returns `this` for chaining.
+   */
   muleq(scalar: number): this {
     this._checkDisposed();
     this._checkImmutable();
@@ -596,7 +742,12 @@ export class Vec2 {
     return this;
   }
 
-  /** Dot product of this and other. */
+  /**
+   * Dot product of this and another Vec2.
+   *
+   * @param vector - The other Vec2.
+   * @returns `this.x * other.x + this.y * other.y`.
+   */
   dot(vector: Vec2): number {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -612,7 +763,13 @@ export class Vec2 {
     return ret;
   }
 
-  /** 2D cross product (returns scalar: this.x*other.y - this.y*other.x). */
+  /**
+   * 2D cross product (`this.x × other.y − this.y × other.x`). Returns a
+   * scalar.
+   *
+   * @param vector - The other Vec2.
+   * @returns The scalar cross product.
+   */
   cross(vector: Vec2): number {
     this._checkDisposed();
     if (vector != null && vector.zpp_disp) {
@@ -628,7 +785,12 @@ export class Vec2 {
     return ret;
   }
 
-  /** Return the perpendicular vector (rotated 90deg counter-clockwise). */
+  /**
+   * Return the perpendicular vector, rotated 90° counter-clockwise.
+   *
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 with components `(-this.y, this.x)`.
+   */
   perp(weak: boolean = false): Vec2 {
     this._checkDisposed();
     this._validate();
@@ -637,7 +799,10 @@ export class Vec2 {
     return Vec2._poolGet(x, y, weak);
   }
 
-  /** Release this vector back to the object pool. */
+  /**
+   * Return this Vec2 to the object pool. Throws if already disposed or
+   * immutable.
+   */
   dispose(): void {
     if (this.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
@@ -668,6 +833,11 @@ export class Vec2 {
     ZPP_Vec2.zpp_pool = inner;
   }
 
+  /**
+   * String representation in the form `{ x: … y: … }`.
+   *
+   * @returns A human-readable string of this vector's components.
+   */
   toString(): string {
     this._checkDisposed();
     this._validate();

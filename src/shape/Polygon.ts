@@ -12,9 +12,6 @@ import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter"
 
 /**
  * A convex polygon physics shape.
- *
- * Fully modernized — uses ZPP_Polygon directly (extracted to TypeScript).
- * Use the static helper methods (`box`, `rect`, `regular`) for common shapes.
  */
 export class Polygon extends Shape {
   static __name__ = ["nape", "shape", "Polygon"];
@@ -23,6 +20,13 @@ export class Polygon extends Shape {
   /** Direct access to the extracted internal ZPP_Polygon. */
   zpp_inner_zn!: ZPP_Polygon;
 
+  /**
+   * Create a Polygon from a list of Vec2 vertices. Vertices must form a convex polygon
+   * in counter-clockwise order.
+   * @param localVerts - Vertices as `Array<Vec2>`, `Vec2List`, or `GeomPoly`.
+   * @param material - Material to assign (uses default if omitted).
+   * @param filter - InteractionFilter to assign (uses default if omitted).
+   */
   constructor(
     localVerts?: Vec2[] | any,
     material?: Material,
@@ -207,6 +211,15 @@ export class Polygon extends Shape {
   // Static factory methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Create an axis-aligned rectangle at the given position.
+   * @param x - Left edge x coordinate.
+   * @param y - Top edge y coordinate.
+   * @param width - Rectangle width.
+   * @param height - Rectangle height.
+   * @param weak - If true, returned Vec2s are marked weak and will be auto-disposed.
+   * @returns Array of four Vec2 corner vertices.
+   */
   static rect(
     x: number,
     y: number,
@@ -228,6 +241,13 @@ export class Polygon extends Shape {
     return [v1, v2, v3, v4];
   }
 
+  /**
+   * Create an axis-aligned rectangular polygon centred at the origin.
+   * @param width - Rectangle width.
+   * @param height - Rectangle height (defaults to `width` for a square).
+   * @param weak - If true, returned Vec2s are marked weak and will be auto-disposed.
+   * @returns Array of four Vec2 corner vertices.
+   */
   static box(
     width: number,
     height: number = width,
@@ -239,6 +259,15 @@ export class Polygon extends Shape {
     return Polygon.rect(-width / 2, -height / 2, width, height, weak);
   }
 
+  /**
+   * Create a regular polygon (or ellipse approximation) centred at the origin.
+   * @param xRadius - Horizontal radius of the circumscribed ellipse.
+   * @param yRadius - Vertical radius of the circumscribed ellipse.
+   * @param edgeCount - Number of sides (must be >= 3).
+   * @param angleOffset - Rotation offset in radians applied to all vertices (default 0).
+   * @param weak - If true, returned Vec2s are marked weak and will be auto-disposed.
+   * @returns Array of `edgeCount` Vec2 vertices.
+   */
   static regular(
     xRadius: number,
     yRadius: number,
@@ -270,7 +299,7 @@ export class Polygon extends Shape {
   // Properties — direct ZPP_Polygon access
   // ---------------------------------------------------------------------------
 
-  /** Read-only list of local-space vertices. */
+  /** The list of local-space vertices defining this polygon's shape. */
   get localVerts(): any {
     if (this.zpp_inner_zn.wrap_lverts == null) {
       this.zpp_inner_zn.getlverts();
@@ -278,7 +307,7 @@ export class Polygon extends Shape {
     return this.zpp_inner_zn.wrap_lverts;
   }
 
-  /** Read-only list of world-space vertices (computed after stepping). */
+  /** World-space vertices of this polygon, updated each simulation step. */
   get worldVerts(): any {
     if (this.zpp_inner_zn.wrap_gverts == null) {
       this.zpp_inner_zn.getgverts();
@@ -286,7 +315,7 @@ export class Polygon extends Shape {
     return this.zpp_inner_zn.wrap_gverts;
   }
 
-  /** Read-only edge list. */
+  /** The list of edges derived from this polygon's vertices. */
   get edges(): any {
     if (this.zpp_inner_zn.wrap_edges == null) {
       this.zpp_inner_zn.getedges();
@@ -294,7 +323,11 @@ export class Polygon extends Shape {
     return this.zpp_inner_zn.wrap_edges;
   }
 
-  /** Validate the polygon geometry. */
+  /**
+   * Validate the polygon geometry and return a string describing any issues, or
+   * `"valid"` if the polygon is well-formed.
+   * @returns A validation result string from the underlying ZPP_Polygon.
+   */
   validity(): any {
     return this.zpp_inner_zn.valid();
   }

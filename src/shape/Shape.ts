@@ -39,9 +39,8 @@ export function _bindPolygonWrap(fn: SubclassWrapFn): void {
 
 
 /**
- * Base class for physics shapes (Circle, Polygon).
- *
- * Fully modernized — all getters/setters access the ZPP_Shape inner directly.
+ * Base class for physics shapes (Circle, Polygon). Never instantiated directly — use
+ * `new Circle(...)` or `Polygon.box(...)` etc.
  */
 export class Shape extends Interactor {
   /** @internal – shapes are created via Circle or Polygon constructors. */
@@ -77,18 +76,24 @@ export class Shape extends Interactor {
   // Properties — direct ZPP access
   // ---------------------------------------------------------------------------
 
+  /** The shape type: CIRCLE or POLYGON. */
   get type(): ShapeType {
     return ZPP_Shape.types[(this as any).zpp_inner.type];
   }
 
+  /** Returns true if this is a Circle shape. */
   isCircle(): boolean {
     return (this as any).zpp_inner.type === 0;
   }
 
+  /** Returns true if this is a Polygon shape. */
   isPolygon(): boolean {
     return (this as any).zpp_inner.type === 1;
   }
 
+  /**
+   * The Body this shape belongs to. Setting moves the shape between bodies.
+   */
   get body(): Body {
     const zpp = (this as any).zpp_inner;
     if (zpp.body != null) {
@@ -116,6 +121,7 @@ export class Shape extends Interactor {
     }
   }
 
+  /** Cast to Circle, or null if this is not a circle. */
   get castCircle(): Shape | null {
     const zpp = (this as any).zpp_inner;
     if (zpp.type === 0) {
@@ -125,6 +131,7 @@ export class Shape extends Interactor {
     return null;
   }
 
+  /** Cast to Polygon, or null if this is not a polygon. */
   get castPolygon(): Shape | null {
     const zpp = (this as any).zpp_inner;
     if (zpp.type === 1) {
@@ -134,6 +141,7 @@ export class Shape extends Interactor {
     return null;
   }
 
+  /** World-space centre of mass of this shape (read-only, lazy-computed). */
   get worldCOM(): Vec2 {
     const zpp = (this as any).zpp_inner;
     if (zpp.wrap_worldCOM == null) {
@@ -142,6 +150,9 @@ export class Shape extends Interactor {
     return zpp.wrap_worldCOM;
   }
 
+  /**
+   * Local-space centre of mass. Can be set to override the default shape centroid.
+   */
   get localCOM(): Vec2 {
     const zpp = (this as any).zpp_inner;
     if (zpp.wrap_localCOM == null) {
@@ -183,24 +194,28 @@ export class Shape extends Interactor {
     }
   }
 
+  /** Cross-sectional area of this shape. */
   get area(): number {
     const zpp = (this as any).zpp_inner;
     zpp.validate_area_inertia();
     return zpp.area;
   }
 
+  /** Contribution to moment of inertia (about local centroid, unit density). */
   get inertia(): number {
     const zpp = (this as any).zpp_inner;
     zpp.validate_area_inertia();
     return zpp.inertia;
   }
 
+  /** Angular drag coefficient for this shape. */
   get angDrag(): number {
     const zpp = (this as any).zpp_inner;
     zpp.validate_angDrag();
     return zpp.angDrag;
   }
 
+  /** The Material assigned to this shape (controls friction, elasticity, density). */
   get material(): Material {
     return (this as any).zpp_inner.material.wrapper();
   }
@@ -214,6 +229,7 @@ export class Shape extends Interactor {
     zpp.setMaterial((value as any).zpp_inner);
   }
 
+  /** The InteractionFilter controlling which shapes interact with this one. */
   get filter(): InteractionFilter {
     return (this as any).zpp_inner.filter.wrapper();
   }
@@ -227,6 +243,7 @@ export class Shape extends Interactor {
     zpp.setFilter((value as any).zpp_inner);
   }
 
+  /** Fluid simulation properties for this shape. Auto-created on first access. */
   get fluidProperties(): FluidProperties {
     const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::fluidProperties");
@@ -250,7 +267,7 @@ export class Shape extends Interactor {
     }
   }
 
-  /** Callback types assigned to this shape. */
+  /** Set of callback types registered on this shape for event dispatch. */
   get cbTypes(): CbTypeSet {
     if (this.zpp_inner_i.wrap_cbTypes == null) {
       this.zpp_inner_i.setupcbTypes();
@@ -276,6 +293,7 @@ export class Shape extends Interactor {
     };
   }
 
+  /** If true, this shape participates in fluid interaction. */
   get fluidEnabled(): boolean {
     return (this as any).zpp_inner.fluidEnabled;
   }
@@ -296,6 +314,7 @@ export class Shape extends Interactor {
     zpp.wake();
   }
 
+  /** If true, this shape acts as a sensor (no physical response, only callbacks). */
   get sensorEnabled(): boolean {
     return (this as any).zpp_inner.sensorEnabled;
   }
@@ -307,6 +326,7 @@ export class Shape extends Interactor {
     zpp.wake();
   }
 
+  /** World-space AABB of this shape (updated each step). */
   get bounds(): AABB {
     return (this as any).zpp_inner.aabb.wrapper();
   }
@@ -315,6 +335,11 @@ export class Shape extends Interactor {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Translate the shape's local vertices by the given vector (in-place).
+   * @param translation - The displacement vector to apply.
+   * @returns `this` for chaining.
+   */
   translate(translation: Vec2): Shape {
     const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::translate()");
@@ -344,6 +369,12 @@ export class Shape extends Interactor {
     return this;
   }
 
+  /**
+   * Scale the shape's local geometry. Circles require uniform scaling.
+   * @param scaleX - Horizontal scale factor (must be non-zero).
+   * @param scaleY - Vertical scale factor (must be non-zero).
+   * @returns `this` for chaining.
+   */
   scale(scaleX: number, scaleY: number): Shape {
     const zpp = (this as any).zpp_inner;
     const nape = getNape();
@@ -374,6 +405,11 @@ export class Shape extends Interactor {
     return this;
   }
 
+  /**
+   * Rotate the shape's local vertices by `angle` radians.
+   * @param angle - Rotation in radians.
+   * @returns `this` for chaining.
+   */
   rotate(angle: number): Shape {
     const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::rotate()");
@@ -398,6 +434,11 @@ export class Shape extends Interactor {
     return this;
   }
 
+  /**
+   * Apply a Mat23 affine transform to the shape's local geometry.
+   * @param matrix - The transformation matrix (must be non-singular; Circles require equiorthogonal).
+   * @returns `this` for chaining.
+   */
   transform(matrix: { _inner: NapeInner }): Shape {
     const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::transform()");
@@ -429,6 +470,12 @@ export class Shape extends Interactor {
     return this;
   }
 
+  /**
+   * Return true if the given world-space point lies inside this shape.
+   * Requires the shape to be attached to a Body.
+   * @param point - The world-space point to test.
+   * @returns True if the point is inside this shape.
+   */
   contains(point: Vec2): boolean {
     const zpp = (this as any).zpp_inner;
     if ((point as any)?.zpp_disp) {
@@ -450,6 +497,10 @@ export class Shape extends Interactor {
     return ret;
   }
 
+  /**
+   * Create a deep copy of this shape with the same type, geometry, material, and filter.
+   * @returns A new Shape instance independent of this one.
+   */
   copy(): Shape {
     const result = (this as any).zpp_inner.copy();
     // ZPP_Shape.copy() returns the compiled wrapper — rewrap into TS class
