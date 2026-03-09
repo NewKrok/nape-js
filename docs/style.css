@@ -496,3 +496,83 @@ a:hover { text-decoration: underline; }
   color: var(--accent);
   text-decoration: none;
 }
+
+/* =========================================================================
+   Examples page — play overlay, card stats, view-code panel
+   ========================================================================= */
+
+/* Play overlay */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 20, 0.72);
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+  transition: background 0.15s;
+  z-index: 2;
+}
+.play-overlay:hover { background: rgba(10, 14, 20, 0.55); }
+.play-overlay[hidden] { display: none; }
+
+.play-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(88,166,255,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  /* ▶ triangle via clip-path */
+  clip-path: polygon(30% 20%, 30% 80%, 80% 50%);
+}
+.play-overlay:hover .play-btn {
+  transform: scale(1.12);
+  box-shadow: 0 0 30px rgba(88,166,255,0.6);
+}
+
+/* Per-card stats row */
+.card-stats {
+  display: flex;
+  gap: 12px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Card title row (title + code toggle button) */
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.card-title-row h3 { margin: 0; }
+
+.code-toggle-btn {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+}
+
+/* View-code panel */
+.card-code-panel {
+  margin: 0;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  max-height: 320px;
+  overflow-y: auto;
+  white-space: pre;
+}
+.card-code-panel[hidden] { display: none; }

@@ -1,29 +1,29 @@
 # Docs Demo Architecture Refactor Plan
 
-## Jelenlegi állapot (problémák)
+## Current state (problems)
 
-| Fájl | Méret | Probléma |
-|------|-------|----------|
-| `docs/app.js` | 2 670 sor | 9 demo inline, Three.js, render loop, pointer events, stats – mind itt |
-| `docs/examples.js` | 1 416 sor | 14 demo inline, duplikált helpers, nincs stats/code preview |
-| `docs/renderer.js` | 234 sor | ✅ megosztott, jó állapot |
+| File | Size | Problem |
+|------|------|---------|
+| `docs/app.js` | 2,670 lines | 9 demos inline, Three.js, render loop, pointer events, stats — all here |
+| `docs/examples.js` | 1,416 lines | 14 demos inline, duplicated helpers, no stats/code preview |
+| `docs/renderer.js` | 234 lines | ✅ shared, good shape |
 
-**Konkrét duplikációk:**
-- `addWalls()` — mindkét fájlban
-- `spawnRandomShape()` — mindkét fájlban
-- Three.js setup/teardown — mindkét fájlban
-- pointer event handling — mindkét fájlban (különböző hibákkal)
-- canvas scaling helper (`getCanvasScale` / `getCanvasPos`) — mindkét fájlban
-- rAF render loop — mindkét fájlban
-- `strandbeast` demo — kód duplikálva mindkét fájlban
+**Concrete duplications:**
+- `addWalls()` — in both files
+- `spawnRandomShape()` — in both files
+- Three.js setup/teardown — in both files
+- Pointer event handling — in both files (with different bugs)
+- Canvas scaling helper (`getCanvasScale` / `getCanvasPos`) — in both files
+- rAF render loop — in both files
+- `strandbeast` demo — code duplicated across both files
 
 ---
 
-## Célállapot
+## Target state
 
 ```
 docs/
-  demos/                        # ÚJ: egy fájl / demo
+  demos/                        # NEW: one file per demo
     falling.js
     pyramid.js
     chain.js
@@ -32,7 +32,7 @@ docs/
     gravity.js
     stacking.js
     ragdoll.js
-    strandbeast.js              # featured=true, egyszer szerepel
+    strandbeast.js              # featured=true, lives here once
     car-sideview.js
     car-topdown.js
     platformer.js
@@ -49,28 +49,28 @@ docs/
     soft-body.js
     one-way-platforms.js
     collision-filtering.js
-  demo-runner.js                # ÚJ: megosztott runtime osztály
-  renderer.js                   # változatlan
-  app.js                        # ~200 sorra csökken
-  examples.js                   # ~150 sorra csökken
-  style.css                     # play overlay + view-code stílusok
-  index.html                    # kisebb módosítás
-  examples.html                 # kisebb módosítás
+  demo-runner.js                # NEW: shared runtime class
+  renderer.js                   # unchanged
+  app.js                        # shrinks to ~200 lines
+  examples.js                   # shrinks to ~150 lines
+  style.css                     # additions: play overlay + view-code styles
+  index.html                    # minor changes
+  examples.html                 # minor changes
 ```
 
 ---
 
-## Demo definíció formátum
+## Demo definition format
 
-Minden `docs/demos/*.js` fájl egy default exportot ad:
+Each `docs/demos/*.js` file exports a single default object:
 
 ```javascript
 // docs/demos/falling.js
 export default {
   id: 'falling',
   label: 'Falling Shapes',
-  featured: true,          // megjelenik a homepage tabokban
-  featuredOrder: 0,        // 0–8, homepage tab sorrend
+  featured: true,          // appears in homepage tabs
+  featuredOrder: 0,        // 0–8, homepage tab order
   tags: ['basics', 'spawning'],
   desc: `<p>Click or drag to spawn shapes.</p>`,
 
@@ -79,76 +79,73 @@ export default {
     // ...
   },
 
-  // Opcionális interakció-callbackek:
+  // Optional interaction callbacks:
   click(x, y, space, W, H) { spawnRandomShape(space, x, y); },
   drag(x, y, space, W, H)  { spawnRandomShape(space, x, y); },
-  release(space)            { /* opcionális */ },
+  release(space)            { /* optional */ },
 
-  // Csak featured demoknál szükséges (homepage code preview):
+  // Only needed for featured demos (homepage code preview):
   code2d: `const space = new Space(...);\n// ...`,
-  code3d: `// Three.js verzió\n// ...`,
+  code3d: `// Three.js version\n// ...`,
 }
 ```
 
-**`featured: true`** → homepage tabban jelenik meg
-**`featured` nélkül / `false`** → csak az examples gridben
-**`featuredOrder`** → 0–8 közötti szám, homepage tab sorrend
+**`featured: true`** → shown in homepage tabs
+**`featured` absent / `false`** → examples grid only
+**`featuredOrder`** → 0–8, homepage tab order
 
 ---
 
-## DemoRunner osztály (`docs/demo-runner.js`)
+## DemoRunner class (`docs/demo-runner.js`)
 
 ```javascript
 export class DemoRunner {
-  // Konstruktor
+  // Constructor
   constructor(canvas, { W = 900, H = 500 } = {})
 
-  // Demo betöltés (teardown + setup)
+  // Load a demo (teardown old space + run demoDef.setup)
   load(demoDef)
 
-  // Loop vezérlés
+  // Loop control
   start()
   stop()
   get isRunning()
 
-  // Render mód
+  // Render mode
   setMode(mode)   // '2d' | '3d'
 
-  // DOM összekötések (opcionális, sorrendtől független)
-  wireStats({ fps, bodies, step })      // DOM elemek live frissítése
-  wireInteraction(element)              // pointer events az adott elemen
-  wireCodePanel(panelEl, getCode)       // syntax-highlighted kód megjelenítése
+  // DOM wiring (optional, order-independent)
+  wireStats({ fps, bodies, step })      // live-update DOM elements
+  wireInteraction(element)              // attach pointer events to element
+  wireCodePanel(panelEl, getCode)       // render syntax-highlighted code
 
-  // Aktuális állapot olvasása (app.js CodePen-hez használja)
+  // Read current state (used by app.js for CodePen)
   get currentDemo()
   get currentCode()
-
-  // Megosztott helperek (exportálva, hogy a demo fájlok importálhassák)
-  // Ezeket a demo-runner.js exportálja, nem a renderer.js
 }
 
-// Megosztott helperek export:
+// Shared helpers — exported so demo files can import them
 export function addWalls(space, W, H) { ... }
 export function spawnRandomShape(space, x, y) { ... }
 ```
 
-**DemoRunner belső felelőssége:**
-- Space létrehozás/teardown (`space.clear()`)
-- rAF loop (FPS számítás 60 frame rolling average, step ms mérés)
-- 2D canvas rajzolás (renderer.js `drawBody`, `drawConstraints`, `drawGrid` hívások)
-- Three.js 3D renderelés (app.js jelenlegi Three.js kódja ide kerül)
-- Pointer event kezelés (`pointerdown/move/up/cancel`, `setPointerCapture`)
-- Demo callback továbbítás (`click`, `drag`, `release`)
+**DemoRunner internal responsibilities:**
+- Space creation/destruction (`space.clear()`)
+- rAF loop (60-frame rolling-average FPS, step-ms timing)
+- 2D canvas drawing (via renderer.js `drawBody`, `drawConstraints`, `drawGrid`)
+- Three.js 3D rendering (current app.js Three.js code moves here)
+- Pointer event handling (`pointerdown/move/up/cancel`, `setPointerCapture`)
+- Forwarding `click`, `drag`, `release` to the loaded demo definition
 
 ---
 
-## `app.js` refaktorált struktúra (~200 sor)
+## `app.js` after refactor (~200 lines)
 
 ```javascript
 import { DemoRunner, addWalls, spawnRandomShape } from './demo-runner.js';
 import falling    from './demos/falling.js';
 import pyramid    from './demos/pyramid.js';
-// ... mind a 23 demo
+// ... all 23 demos
 
 const ALL_DEMOS = [falling, pyramid, chain, explosion, constraints,
                    gravity, stacking, ragdoll, strandbeast,
@@ -164,10 +161,10 @@ runner.wireStats({ fps: fpsEl, bodies: bodiesEl, step: stepEl });
 runner.wireInteraction(canvasWrap);
 runner.wireCodePanel(codePanel, () => runner.currentCode);
 
-// Tab-ok generálása FEATURED-ből
+// Build tabs from FEATURED
 buildTabs(FEATURED);
 
-// Tab kattintás
+// Tab click
 function startDemo(id) {
   const demo = FEATURED.find(d => d.id === id);
   runner.load(demo);
@@ -175,39 +172,39 @@ function startDemo(id) {
   updateCodePreview();
 }
 
-// Render mód toggle
+// Render mode toggle
 modeToggle.addEventListener('change', () => runner.setMode(...));
 
-// CodePen / Copy — runner.currentCode-ot olvassák
-// Benchmark suite — változatlan, inline marad
-// startDemo(FEATURED[0].id) — kezdő demo
+// CodePen / Copy — read runner.currentCode
+// Benchmark suite — unchanged, stays inline
+// startDemo(FEATURED[0].id) — initial demo
 ```
 
 ---
 
-## `examples.js` refaktorált struktúra (~150 sor)
+## `examples.js` after refactor (~150 lines)
 
 ```javascript
 import { DemoRunner, addWalls, spawnRandomShape } from './demo-runner.js';
 import falling from './demos/falling.js';
-// ... mind a 23 demo
+// ... all 23 demos
 
 const ALL_DEMOS = [...];
 
 function createCard(demo) {
-  // DOM építés
-  const card    = document.createElement('div');
-  const canvas  = document.createElement('canvas');
-  const overlay = createPlayOverlay();   // ▶ gomb
-  const stats   = createStatsBar();     // FPS / Bodies / Step
-  const codeBtn = createCodeToggle();   // { } Code gomb
-  const codePanel = createCodePanel();  // <pre> panel, hidden
+  // Build DOM
+  const card      = document.createElement('div');
+  const canvas    = document.createElement('canvas');
+  const overlay   = createPlayOverlay();   // ▶ button
+  const stats     = createStatsBar();      // FPS / Bodies / Step
+  const codeBtn   = createCodeToggle();    // { } Code button
+  const codePanel = createCodePanel();     // <pre> panel, hidden
 
   const runner = new DemoRunner(canvas, { W: CW, H: CH });
   runner.wireStats(stats);
   runner.wireInteraction(canvas);
 
-  // Play overlay kattintás
+  // Play overlay click
   overlay.addEventListener('click', () => {
     runner.load(demo);
     runner.start();
@@ -229,20 +226,21 @@ function createCard(demo) {
   return { card, runner };
 }
 
-// Grid feltöltés
+// Populate grid
 const grid = document.getElementById('examplesGrid');
-const cards = ALL_DEMOS.map(demo => {
+const cards = ALL_DEMOS.map((demo, idx) => {
   const { card, runner } = createCard(demo);
+  card.dataset.idx = idx;
   grid.append(card);
   return { runner };
 });
 
-// IntersectionObserver — csak futó demo-kat pause-ol/resume-ol
-// (auto-start NINCS — az overlay kezeli az indítást)
+// IntersectionObserver — only pause/resume already-started demos
+// (no auto-start — the overlay handles that)
 const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const { runner } = cards[entry.target.dataset.idx];
-    if (!runner.isRunning) continue;  // még nem indult el, skip
+    if (!runner.isRunning) continue;  // not started yet, skip
     entry.isIntersecting ? runner.start() : runner.stop();
   }
 }, { threshold: 0.1 });
@@ -256,43 +254,43 @@ const observer = new IntersectionObserver((entries) => {
 ┌─────────────────────────────────┐
 │                                 │
 │                                 │
-│           ▶  Play               │  ← félszellős overlay, kattintásra tűnik el
+│           ▶  Play               │  ← semi-transparent overlay, disappears on click
 │                                 │
 │                                 │
 └─────────────────────────────────┘
-  FPS: --  Bodies: --  Step: --ms    ← stats sor (rejtett indulásig)
-  { } Code                           ← toggle gomb
+  FPS: --  Bodies: --  Step: --ms    ← stats row (hidden until started)
+  { } Code                           ← toggle button
 ```
 
-- Overlay: `position: absolute`, teljes canvas területet fed, `backdrop-filter: blur(2px)`
-- ▶ gomb: nagy, centírozott, hover effekt
-- Kattintás után: `overlay.hidden = true`, stats megjelenik, demo fut
-- Reset gomb (kártyán): `runner.load(demo)` → újraindítás, overlay NEM jelenik vissza
+- Overlay: `position: absolute`, covers full canvas, `backdrop-filter: blur(2px)`
+- ▶ button: large, centered, hover effect
+- On click: `runner.load(demo)`, `runner.start()`, overlay disappears
+- Reset button (on card): `runner.load(demo)` → restarts, overlay stays hidden
 
 ---
 
-## View Code panel UX (examples oldal)
+## View Code panel UX (examples page)
 
-- `{ } Code` gomb a kártya alján
-- Toggle-öl egy `<pre class="code-panel">` elemet a canvas alatt
-- Ugyanaz a `highlightCode()` függvény mint a homepage-en (kerül a `demo-runner.js`-be vagy marad `app.js`-ben és újraexportálódik)
-- `demo.code2d`-t mutatja, ha nincs: `// Source not included for this demo.`
-- CodePen gomb **nincs** az examples oldalon
+- `{ } Code` button in card footer
+- Toggles a `<pre class="code-panel">` below the canvas
+- Same `highlightCode()` function as homepage (moved into `demo-runner.js` or kept in `app.js` and re-exported)
+- Shows `demo.code2d`; if absent: `// Source not included for this demo.`
+- No CodePen button on examples page
 
 ---
 
-## Stats megjelenítés (examples kártyákon)
+## Stats display (examples cards)
 
-Kompakt, a canvas alatt:
+Compact row below canvas:
 ```
 FPS: 60   Bodies: 12   Step: 1.2ms
 ```
-- Indulásig rejtett (`hidden`)
-- Ugyanaz a rolling-average FPS számítás mint a homepage-en (DemoRunner csinálja)
+- Hidden until demo starts
+- Same rolling-average FPS calculation as homepage (done inside DemoRunner)
 
 ---
 
-## CSS változások (`style.css`)
+## CSS additions (`style.css`)
 
 ```css
 /* Play overlay */
@@ -312,7 +310,7 @@ FPS: 60   Bodies: 12   Step: 1.2ms
   width: 64px; height: 64px;
   border-radius: 50%;
   background: var(--green);
-  /* ▶ ikon */
+  /* ▶ icon */
 }
 
 /* View Code panel */
@@ -326,7 +324,7 @@ FPS: 60   Bodies: 12   Step: 1.2ms
   overflow-y: auto;
 }
 
-/* Kártya stats sor */
+/* Card stats row */
 .card-stats {
   font-size: 0.8rem;
   color: var(--muted);
@@ -336,53 +334,53 @@ FPS: 60   Bodies: 12   Step: 1.2ms
 
 ---
 
-## Migráció lépései
+## Migration steps
 
-### 1. fázis — Infrastruktúra (blokkolás nélkül tesztelhető)
-1. Létrehozni `docs/demos/` könyvtárat
-2. Megírni `docs/demo-runner.js`-t (DemoRunner osztály + `addWalls` + `spawnRandomShape` export)
-3. Átmozgatni a Three.js logikát `app.js`-ből → `DemoRunner`-be
-4. Hozzáadni a play overlay + view-code CSS-t `style.css`-be
+### Phase 1 — Infrastructure (testable independently)
+1. Create `docs/demos/` directory
+2. Write `docs/demo-runner.js` (DemoRunner class + `addWalls` + `spawnRandomShape` exports)
+3. Move Three.js logic from `app.js` → `DemoRunner`
+4. Add play overlay + view-code CSS to `style.css`
 
-### 2. fázis — Demo fájlok kiszervezése
-5. Kiszervezni a 9 featured demót `app.js`-ből → `docs/demos/falling.js` stb. (egyenként, tesztelve)
-6. Kiszervezni a 14 examples demót `examples.js`-ből → `docs/demos/` (egyenként)
-7. `strandbeast.js` egységesítése: `featured: true`, törlés `examples.js`-ből
+### Phase 2 — Extract demo files
+5. Extract 9 featured demos from `app.js` → `docs/demos/falling.js` etc. (one at a time, verify each)
+6. Extract 14 examples from `examples.js` → `docs/demos/` (one at a time)
+7. Consolidate `strandbeast.js`: `featured: true`, remove from `examples.js`
 
-### 3. fázis — `app.js` refaktor
-8. `app.js` átírása: DemoRunner + demo importok, FEATURED szűrés, tab generálás
+### Phase 3 — Refactor `app.js`
+8. Rewrite `app.js`: DemoRunner + demo imports, FEATURED filter, tab generation
 
-### 4. fázis — `examples.js` refaktor
-9. `examples.js` átírása: DemoRunner + createCard() + play overlay + view-code + stats
+### Phase 4 — Refactor `examples.js`
+9. Rewrite `examples.js`: DemoRunner + createCard() + play overlay + view-code + stats
 
-### 5. fázis — Ellenőrzés
-10. `npm test` — minden 2269 teszt zöld
-11. `npm run build` — DTS generálás sikeres
-12. Manuális tesztelés: homepage, examples oldal, 2D/3D toggle, CodePen export, mobile
-
----
-
-## Mi marad változatlan
-
-- `renderer.js` — nem változik
-- Minden fizikai logika (a demo fájlokba kerül, de a kód maga változatlan)
-- Homepage UI struktúra (tab-ok, kód panel, benchmark, CodePen)
-- A 2269 unit teszt — ezek a `src/` könyvtárat tesztelik, a `docs/` módosítása nem érinti
+### Phase 5 — Verification
+10. `npm test` — all 2,269 tests green
+11. `npm run build` — DTS generation succeeds
+12. Manual smoke test: homepage, examples page, 2D/3D toggle, CodePen export, mobile
 
 ---
 
-## Várható eredmény
+## What stays unchanged
 
-| Metrika | Előtte | Utána |
-|---------|--------|-------|
-| `app.js` méret | 2 670 sor | ~200 sor |
-| `examples.js` méret | 1 416 sor | ~150 sor |
-| Duplikált `addWalls` | 2× | 0× |
-| Duplikált `spawnRandomShape` | 2× | 0× |
-| Duplikált pointer event kód | 2× | 0× |
-| Duplikált Three.js setup | 2× | 0× |
-| `strandbeast` kód | 2× | 1× |
-| Új demo hozzáadása | 2 fájl szerkesztése | 1 új fájl + 2 import sor |
+- `renderer.js` — no changes
+- All physics logic (moves into demo files, code itself unchanged)
+- Homepage UI structure (tabs, code panel, benchmark, CodePen)
+- All 2,269 unit tests — they test `src/`, `docs/` changes don't affect them
+
+---
+
+## Expected outcome
+
+| Metric | Before | After |
+|--------|--------|-------|
+| `app.js` size | 2,670 lines | ~200 lines |
+| `examples.js` size | 1,416 lines | ~150 lines |
+| Duplicate `addWalls` | 2× | 0× |
+| Duplicate `spawnRandomShape` | 2× | 0× |
+| Duplicate pointer event code | 2× | 0× |
+| Duplicate Three.js setup | 2× | 0× |
+| `strandbeast` code | 2× | 1× |
+| Adding a new demo | edit 2 files | 1 new file + 2 import lines |
 | Examples page: stats | ✗ | ✓ |
 | Examples page: code preview | ✗ | ✓ (View Code) |
-| Examples page: auto-start | mindenhol | sehol (play gomb) |
+| Examples page: auto-start | everywhere | nowhere (play button) |
