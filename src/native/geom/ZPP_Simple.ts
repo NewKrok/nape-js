@@ -40,25 +40,25 @@ export class ZPP_Simple {
     }
     if (ZPP_Simple.vertices == null) {
       if (ZPP_Set_ZPP_SimpleVert.zpp_pool == null) {
-        ZPP_Simple.vertices = new ZPP_Set_ZPP_SimpleVert();
+        ZPP_Simple.vertices = new ZPP_Set_ZPP_SimpleVert() as ZPP_Set<ZPP_SimpleVert>;
       } else {
-        ZPP_Simple.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool;
-        ZPP_Set_ZPP_SimpleVert.zpp_pool = ZPP_Simple.vertices.next;
-        ZPP_Simple.vertices.next = null;
+        ZPP_Simple.vertices = ZPP_Set_ZPP_SimpleVert.zpp_pool as ZPP_Set<ZPP_SimpleVert>;
+        ZPP_Set_ZPP_SimpleVert.zpp_pool = ZPP_Simple.vertices!.next as ZPP_Set<unknown> | null;
+        ZPP_Simple.vertices!.next = null;
       }
-      ZPP_Simple.vertices.lt = ZPP_SimpleVert.less_xy;
-      ZPP_Simple.vertices.swapped = ZPP_SimpleVert.swap_nodes;
+      ZPP_Simple.vertices!.lt = ZPP_SimpleVert.less_xy;
+      ZPP_Simple.vertices!.swapped = ZPP_SimpleVert.swap_nodes;
     }
     if (ZPP_Simple.queue == null) {
       if (ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
-        ZPP_Simple.queue = new ZPP_Set_ZPP_SimpleEvent();
+        ZPP_Simple.queue = new ZPP_Set_ZPP_SimpleEvent() as ZPP_Set<ZPP_SimpleEvent>;
       } else {
-        ZPP_Simple.queue = ZPP_Set_ZPP_SimpleEvent.zpp_pool;
-        ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.queue.next;
-        ZPP_Simple.queue.next = null;
+        ZPP_Simple.queue = ZPP_Set_ZPP_SimpleEvent.zpp_pool as ZPP_Set<ZPP_SimpleEvent>;
+        ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.queue!.next as ZPP_Set<unknown> | null;
+        ZPP_Simple.queue!.next = null;
       }
-      ZPP_Simple.queue.lt = ZPP_SimpleEvent.less_xy;
-      ZPP_Simple.queue.swapped = ZPP_SimpleEvent.swap_nodes;
+      ZPP_Simple.queue!.lt = ZPP_SimpleEvent.less_xy;
+      ZPP_Simple.queue!.swapped = ZPP_SimpleEvent.swap_nodes;
     }
     let fst: ZPP_SimpleVert | null = null;
     let pre: ZPP_SimpleVert | null = null;
@@ -81,11 +81,11 @@ export class ZPP_Simple {
         ret.x = x;
         ret.y = y;
         let vert: ZPP_SimpleVert = ret;
-        let cur = ZPP_Simple.vertices.parent;
+        let cur = ZPP_Simple.vertices!.parent;
         while (cur != null)
-          if (ZPP_Simple.vertices.lt(vert, cur.data)) {
+          if (ZPP_Simple.vertices!.lt!(vert, cur.data!)) {
             cur = cur.prev;
-          } else if (ZPP_Simple.vertices.lt(cur.data, vert)) {
+          } else if (ZPP_Simple.vertices!.lt!(cur.data!, vert)) {
             cur = cur.next;
           } else {
             break;
@@ -98,9 +98,9 @@ export class ZPP_Simple {
           o.forced = false;
           o.next = ZPP_SimpleVert.zpp_pool;
           ZPP_SimpleVert.zpp_pool = o;
-          vert = vx.data;
+          vert = vx.data!;
         } else {
-          vert.node = ZPP_Simple.vertices.insert(vert);
+          vert.node = ZPP_Simple.vertices!.insert(vert);
         }
         if (pre != null) {
           let ret1: ZPP_SimpleEvent;
@@ -134,8 +134,8 @@ export class ZPP_Simple {
             seg = ZPP_SimpleSeg.get(vert, pre);
           }
           e1.segment = e2.segment = seg;
-          ZPP_Simple.queue.insert(e1);
-          ZPP_Simple.queue.insert(e2);
+          ZPP_Simple.queue!.insert(e1);
+          ZPP_Simple.queue!.insert(e2);
           pre.links.insert(vert);
           vert.links.insert(pre);
         }
@@ -143,7 +143,7 @@ export class ZPP_Simple {
         if (fst == null) {
           fst = vert;
         }
-        nite = nite.next;
+        nite = nite.next!;
         if (!(nite != L)) {
           break;
         }
@@ -173,29 +173,29 @@ export class ZPP_Simple {
     if (ZPP_SimpleEvent.less_xy(e11, e21)) {
       e11.type = 1;
       e21.type = 2;
-      seg1 = ZPP_SimpleSeg.get(pre, fst);
+      seg1 = ZPP_SimpleSeg.get(pre!, fst!);
     } else {
       e11.type = 2;
       e21.type = 1;
-      seg1 = ZPP_SimpleSeg.get(fst, pre);
+      seg1 = ZPP_SimpleSeg.get(fst!, pre!);
     }
     e11.segment = e21.segment = seg1;
-    ZPP_Simple.queue.insert(e11);
-    ZPP_Simple.queue.insert(e21);
-    pre.links.insert(fst);
-    fst.links.insert(pre);
+    ZPP_Simple.queue!.insert(e11);
+    ZPP_Simple.queue!.insert(e21);
+    pre!.links.insert(fst!);
+    fst!.links.insert(pre!);
     if (ZPP_Simple.ints == null) {
       if (ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
-        ZPP_Simple.ints = new ZPP_Set_ZPP_SimpleEvent();
+        ZPP_Simple.ints = new ZPP_Set_ZPP_SimpleEvent() as ZPP_Set<ZPP_SimpleEvent>;
       } else {
-        ZPP_Simple.ints = ZPP_Set_ZPP_SimpleEvent.zpp_pool;
-        ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.ints.next;
-        ZPP_Simple.ints.next = null;
+        ZPP_Simple.ints = ZPP_Set_ZPP_SimpleEvent.zpp_pool as ZPP_Set<ZPP_SimpleEvent>;
+        ZPP_Set_ZPP_SimpleEvent.zpp_pool = ZPP_Simple.ints!.next as ZPP_Set<unknown> | null;
+        ZPP_Simple.ints!.next = null;
       }
-      ZPP_Simple.ints.lt = ZPP_SimpleEvent.less_xy;
+      ZPP_Simple.ints!.lt = ZPP_SimpleEvent.less_xy;
     }
-    while (!ZPP_Simple.queue.empty()) {
-      const e = ZPP_Simple.queue.pop_front();
+    while (!ZPP_Simple.queue!.empty()) {
+      const e = ZPP_Simple.queue!.pop_front();
       ZPP_Simple.sweep!.sweepx = e.vertex.x;
       if (e.type == 1) {
         const s = e.segment;
@@ -204,28 +204,28 @@ export class ZPP_Simple {
           s.next != null &&
           s != null &&
           !(s.next.id < s.id
-            ? ZPP_Simple.inthash.has(s.next.id, s.id)
-            : ZPP_Simple.inthash.has(s.id, s.next.id))
+            ? ZPP_Simple.inthash!.has(s.next.id, s.id)
+            : ZPP_Simple.inthash!.has(s.id, s.next.id))
         ) {
           const intx = ZPP_Simple.sweep!.intersection(s.next, s);
           if (intx != null) {
             if (intx.vertex.x >= ZPP_Simple.sweep!.sweepx) {
-              let cur1 = ZPP_Simple.queue.parent;
+              let cur1 = ZPP_Simple.queue!.parent;
               while (cur1 != null)
-                if (ZPP_Simple.queue.lt(intx, cur1.data)) {
+                if (ZPP_Simple.queue!.lt!(intx, cur1.data!)) {
                   cur1 = cur1.prev;
-                } else if (ZPP_Simple.queue.lt(cur1.data, intx)) {
+                } else if (ZPP_Simple.queue!.lt!(cur1.data!, intx)) {
                   cur1 = cur1.next;
                 } else {
                   break;
                 }
               const ex = cur1;
               if (ex == null) {
-                let cur2 = ZPP_Simple.ints.parent;
+                let cur2 = ZPP_Simple.ints!.parent;
                 while (cur2 != null)
-                  if (ZPP_Simple.ints.lt(intx, cur2.data)) {
+                  if (ZPP_Simple.ints!.lt!(intx, cur2.data!)) {
                     cur2 = cur2.prev;
-                  } else if (ZPP_Simple.ints.lt(cur2.data, intx)) {
+                  } else if (ZPP_Simple.ints!.lt!(cur2.data!, intx)) {
                     cur2 = cur2.next;
                   } else {
                     break;
@@ -238,12 +238,12 @@ export class ZPP_Simple {
                   o1.forced = false;
                   o1.next = ZPP_SimpleVert.zpp_pool;
                   ZPP_SimpleVert.zpp_pool = o1;
-                  intx.vertex = vx1.data.vertex;
+                  intx.vertex = vx1.data!.vertex;
                   vx1.data = intx;
-                  ZPP_Simple.queue.insert(intx);
+                  ZPP_Simple.queue!.insert(intx);
                 } else {
-                  ZPP_Simple.queue.insert(intx);
-                  ZPP_Simple.ints.insert(intx);
+                  ZPP_Simple.queue!.insert(intx);
+                  ZPP_Simple.ints!.insert(intx);
                 }
                 if (s.next.id < s.id) {
                   const tmp = ZPP_Simple.inthash;
@@ -261,7 +261,7 @@ export class ZPP_Simple {
                   ret5.di = di;
                   const ret6 = ret5;
                   ret6.value = true;
-                  tmp.add(ret6);
+                  tmp!.add(ret6);
                 } else {
                   const tmp1 = ZPP_Simple.inthash;
                   const id1 = s.id;
@@ -278,11 +278,11 @@ export class ZPP_Simple {
                   ret7.di = di1;
                   const ret8 = ret7;
                   ret8.value = true;
-                  tmp1.add(ret8);
+                  tmp1!.add(ret8);
                 }
               } else {
                 const x1 = ex.data;
-                if (x1.segment != intx.segment || intx.segment2 != x1.segment2) {
+                if (x1!.segment != intx.segment || intx.segment2 != x1!.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o2 = intx.vertex;
@@ -318,28 +318,28 @@ export class ZPP_Simple {
           s != null &&
           s.prev != null &&
           !(s.id < s.prev.id
-            ? ZPP_Simple.inthash.has(s.id, s.prev.id)
-            : ZPP_Simple.inthash.has(s.prev.id, s.id))
+            ? ZPP_Simple.inthash!.has(s.id, s.prev.id)
+            : ZPP_Simple.inthash!.has(s.prev.id, s.id))
         ) {
           const intx1 = ZPP_Simple.sweep!.intersection(s, s.prev);
           if (intx1 != null) {
             if (intx1.vertex.x >= ZPP_Simple.sweep!.sweepx) {
-              let cur3 = ZPP_Simple.queue.parent;
+              let cur3 = ZPP_Simple.queue!.parent;
               while (cur3 != null)
-                if (ZPP_Simple.queue.lt(intx1, cur3.data)) {
+                if (ZPP_Simple.queue!.lt!(intx1, cur3.data!)) {
                   cur3 = cur3.prev;
-                } else if (ZPP_Simple.queue.lt(cur3.data, intx1)) {
+                } else if (ZPP_Simple.queue!.lt!(cur3.data!, intx1)) {
                   cur3 = cur3.next;
                 } else {
                   break;
                 }
               const ex1 = cur3;
               if (ex1 == null) {
-                let cur4 = ZPP_Simple.ints.parent;
+                let cur4 = ZPP_Simple.ints!.parent;
                 while (cur4 != null)
-                  if (ZPP_Simple.ints.lt(intx1, cur4.data)) {
+                  if (ZPP_Simple.ints!.lt!(intx1, cur4.data!)) {
                     cur4 = cur4.prev;
-                  } else if (ZPP_Simple.ints.lt(cur4.data, intx1)) {
+                  } else if (ZPP_Simple.ints!.lt!(cur4.data!, intx1)) {
                     cur4 = cur4.next;
                   } else {
                     break;
@@ -352,12 +352,12 @@ export class ZPP_Simple {
                   o6.forced = false;
                   o6.next = ZPP_SimpleVert.zpp_pool;
                   ZPP_SimpleVert.zpp_pool = o6;
-                  intx1.vertex = vx2.data.vertex;
+                  intx1.vertex = vx2.data!.vertex;
                   vx2.data = intx1;
-                  ZPP_Simple.queue.insert(intx1);
+                  ZPP_Simple.queue!.insert(intx1);
                 } else {
-                  ZPP_Simple.queue.insert(intx1);
-                  ZPP_Simple.ints.insert(intx1);
+                  ZPP_Simple.queue!.insert(intx1);
+                  ZPP_Simple.ints!.insert(intx1);
                 }
                 if (s.id < s.prev.id) {
                   const tmp2 = ZPP_Simple.inthash;
@@ -375,7 +375,7 @@ export class ZPP_Simple {
                   ret9.di = di2;
                   const ret10 = ret9;
                   ret10.value = true;
-                  tmp2.add(ret10);
+                  tmp2!.add(ret10);
                 } else {
                   const tmp3 = ZPP_Simple.inthash;
                   const id3 = s.prev.id;
@@ -392,11 +392,11 @@ export class ZPP_Simple {
                   ret11.di = di3;
                   const ret12 = ret11;
                   ret12.value = true;
-                  tmp3.add(ret12);
+                  tmp3!.add(ret12);
                 }
               } else {
                 const x2 = ex1.data;
-                if (x2.segment != intx1.segment || intx1.segment2 != x2.segment2) {
+                if (x2!.segment != intx1.segment || intx1.segment2 != x2!.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o7 = intx1.vertex;
@@ -445,28 +445,28 @@ export class ZPP_Simple {
             nxt != null &&
             pre1 != null &&
             !(nxt.id < pre1.id
-              ? ZPP_Simple.inthash.has(nxt.id, pre1.id)
-              : ZPP_Simple.inthash.has(pre1.id, nxt.id))
+              ? ZPP_Simple.inthash!.has(nxt.id, pre1.id)
+              : ZPP_Simple.inthash!.has(pre1.id, nxt.id))
           ) {
             const intx2 = ZPP_Simple.sweep!.intersection(nxt, pre1);
             if (intx2 != null) {
               if (intx2.vertex.x >= ZPP_Simple.sweep!.sweepx) {
-                let cur5 = ZPP_Simple.queue.parent;
+                let cur5 = ZPP_Simple.queue!.parent;
                 while (cur5 != null)
-                  if (ZPP_Simple.queue.lt(intx2, cur5.data)) {
+                  if (ZPP_Simple.queue!.lt!(intx2, cur5.data!)) {
                     cur5 = cur5.prev;
-                  } else if (ZPP_Simple.queue.lt(cur5.data, intx2)) {
+                  } else if (ZPP_Simple.queue!.lt!(cur5.data!, intx2)) {
                     cur5 = cur5.next;
                   } else {
                     break;
                   }
                 const ex2 = cur5;
                 if (ex2 == null) {
-                  let cur6 = ZPP_Simple.ints.parent;
+                  let cur6 = ZPP_Simple.ints!.parent;
                   while (cur6 != null)
-                    if (ZPP_Simple.ints.lt(intx2, cur6.data)) {
+                    if (ZPP_Simple.ints!.lt!(intx2, cur6.data!)) {
                       cur6 = cur6.prev;
-                    } else if (ZPP_Simple.ints.lt(cur6.data, intx2)) {
+                    } else if (ZPP_Simple.ints!.lt!(cur6.data!, intx2)) {
                       cur6 = cur6.next;
                     } else {
                       break;
@@ -479,12 +479,12 @@ export class ZPP_Simple {
                     o12.forced = false;
                     o12.next = ZPP_SimpleVert.zpp_pool;
                     ZPP_SimpleVert.zpp_pool = o12;
-                    intx2.vertex = vx3.data.vertex;
+                    intx2.vertex = vx3.data!.vertex;
                     vx3.data = intx2;
-                    ZPP_Simple.queue.insert(intx2);
+                    ZPP_Simple.queue!.insert(intx2);
                   } else {
-                    ZPP_Simple.queue.insert(intx2);
-                    ZPP_Simple.ints.insert(intx2);
+                    ZPP_Simple.queue!.insert(intx2);
+                    ZPP_Simple.ints!.insert(intx2);
                   }
                   if (nxt.id < pre1.id) {
                     const tmp4 = ZPP_Simple.inthash;
@@ -502,7 +502,7 @@ export class ZPP_Simple {
                     ret13.di = di4;
                     const ret14 = ret13;
                     ret14.value = true;
-                    tmp4.add(ret14);
+                    tmp4!.add(ret14);
                   } else {
                     const tmp5 = ZPP_Simple.inthash;
                     const id5 = pre1.id;
@@ -519,11 +519,11 @@ export class ZPP_Simple {
                     ret15.di = di5;
                     const ret16 = ret15;
                     ret16.value = true;
-                    tmp5.add(ret16);
+                    tmp5!.add(ret16);
                   }
                 } else {
                   const x3 = ex2.data;
-                  if (x3.segment != intx2.segment || intx2.segment2 != x3.segment2) {
+                  if (x3!.segment != intx2.segment || intx2.segment2 != x3!.segment2) {
                     throw new Error("corner case 2, shiiiit.");
                   }
                   const o13 = intx2.vertex;
@@ -625,7 +625,7 @@ export class ZPP_Simple {
           }
         }
         if (pnull) {
-          intx3.node = ZPP_Simple.vertices.insert(intx3);
+          intx3.node = ZPP_Simple.vertices!.insert(intx3);
         }
         intx3.forced = true;
         if (pnull) {
@@ -650,28 +650,28 @@ export class ZPP_Simple {
           b.next != null &&
           b != null &&
           !(b.next.id < b.id
-            ? ZPP_Simple.inthash.has(b.next.id, b.id)
-            : ZPP_Simple.inthash.has(b.id, b.next.id))
+            ? ZPP_Simple.inthash!.has(b.next.id, b.id)
+            : ZPP_Simple.inthash!.has(b.id, b.next.id))
         ) {
           const intx4 = ZPP_Simple.sweep!.intersection(b.next, b);
           if (intx4 != null) {
             if (intx4.vertex.x >= ZPP_Simple.sweep!.sweepx) {
-              let cur9 = ZPP_Simple.queue.parent;
+              let cur9 = ZPP_Simple.queue!.parent;
               while (cur9 != null)
-                if (ZPP_Simple.queue.lt(intx4, cur9.data)) {
+                if (ZPP_Simple.queue!.lt!(intx4, cur9.data!)) {
                   cur9 = cur9.prev;
-                } else if (ZPP_Simple.queue.lt(cur9.data, intx4)) {
+                } else if (ZPP_Simple.queue!.lt!(cur9.data!, intx4)) {
                   cur9 = cur9.next;
                 } else {
                   break;
                 }
               const ex3 = cur9;
               if (ex3 == null) {
-                let cur10 = ZPP_Simple.ints.parent;
+                let cur10 = ZPP_Simple.ints!.parent;
                 while (cur10 != null)
-                  if (ZPP_Simple.ints.lt(intx4, cur10.data)) {
+                  if (ZPP_Simple.ints!.lt!(intx4, cur10.data!)) {
                     cur10 = cur10.prev;
-                  } else if (ZPP_Simple.ints.lt(cur10.data, intx4)) {
+                  } else if (ZPP_Simple.ints!.lt!(cur10.data!, intx4)) {
                     cur10 = cur10.next;
                   } else {
                     break;
@@ -684,12 +684,12 @@ export class ZPP_Simple {
                   o17.forced = false;
                   o17.next = ZPP_SimpleVert.zpp_pool;
                   ZPP_SimpleVert.zpp_pool = o17;
-                  intx4.vertex = vx4.data.vertex;
+                  intx4.vertex = vx4.data!.vertex;
                   vx4.data = intx4;
-                  ZPP_Simple.queue.insert(intx4);
+                  ZPP_Simple.queue!.insert(intx4);
                 } else {
-                  ZPP_Simple.queue.insert(intx4);
-                  ZPP_Simple.ints.insert(intx4);
+                  ZPP_Simple.queue!.insert(intx4);
+                  ZPP_Simple.ints!.insert(intx4);
                 }
                 if (b.next.id < b.id) {
                   const tmp6 = ZPP_Simple.inthash;
@@ -707,7 +707,7 @@ export class ZPP_Simple {
                   ret17.di = di6;
                   const ret18 = ret17;
                   ret18.value = true;
-                  tmp6.add(ret18);
+                  tmp6!.add(ret18);
                 } else {
                   const tmp7 = ZPP_Simple.inthash;
                   const id7 = b.id;
@@ -724,11 +724,11 @@ export class ZPP_Simple {
                   ret19.di = di7;
                   const ret20 = ret19;
                   ret20.value = true;
-                  tmp7.add(ret20);
+                  tmp7!.add(ret20);
                 }
               } else {
                 const x4 = ex3.data;
-                if (x4.segment != intx4.segment || intx4.segment2 != x4.segment2) {
+                if (x4!.segment != intx4.segment || intx4.segment2 != x4!.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o18 = intx4.vertex;
@@ -764,28 +764,28 @@ export class ZPP_Simple {
           a != null &&
           a.prev != null &&
           !(a.id < a.prev.id
-            ? ZPP_Simple.inthash.has(a.id, a.prev.id)
-            : ZPP_Simple.inthash.has(a.prev.id, a.id))
+            ? ZPP_Simple.inthash!.has(a.id, a.prev.id)
+            : ZPP_Simple.inthash!.has(a.prev.id, a.id))
         ) {
           const intx5 = ZPP_Simple.sweep!.intersection(a, a.prev);
           if (intx5 != null) {
             if (intx5.vertex.x >= ZPP_Simple.sweep!.sweepx) {
-              let cur11 = ZPP_Simple.queue.parent;
+              let cur11 = ZPP_Simple.queue!.parent;
               while (cur11 != null)
-                if (ZPP_Simple.queue.lt(intx5, cur11.data)) {
+                if (ZPP_Simple.queue!.lt!(intx5, cur11.data!)) {
                   cur11 = cur11.prev;
-                } else if (ZPP_Simple.queue.lt(cur11.data, intx5)) {
+                } else if (ZPP_Simple.queue!.lt!(cur11.data!, intx5)) {
                   cur11 = cur11.next;
                 } else {
                   break;
                 }
               const ex4 = cur11;
               if (ex4 == null) {
-                let cur12 = ZPP_Simple.ints.parent;
+                let cur12 = ZPP_Simple.ints!.parent;
                 while (cur12 != null)
-                  if (ZPP_Simple.ints.lt(intx5, cur12.data)) {
+                  if (ZPP_Simple.ints!.lt!(intx5, cur12.data!)) {
                     cur12 = cur12.prev;
-                  } else if (ZPP_Simple.ints.lt(cur12.data, intx5)) {
+                  } else if (ZPP_Simple.ints!.lt!(cur12.data!, intx5)) {
                     cur12 = cur12.next;
                   } else {
                     break;
@@ -798,12 +798,12 @@ export class ZPP_Simple {
                   o22.forced = false;
                   o22.next = ZPP_SimpleVert.zpp_pool;
                   ZPP_SimpleVert.zpp_pool = o22;
-                  intx5.vertex = vx5.data.vertex;
+                  intx5.vertex = vx5.data!.vertex;
                   vx5.data = intx5;
-                  ZPP_Simple.queue.insert(intx5);
+                  ZPP_Simple.queue!.insert(intx5);
                 } else {
-                  ZPP_Simple.queue.insert(intx5);
-                  ZPP_Simple.ints.insert(intx5);
+                  ZPP_Simple.queue!.insert(intx5);
+                  ZPP_Simple.ints!.insert(intx5);
                 }
                 if (a.id < a.prev.id) {
                   const tmp8 = ZPP_Simple.inthash;
@@ -821,7 +821,7 @@ export class ZPP_Simple {
                   ret21.di = di8;
                   const ret22 = ret21;
                   ret22.value = true;
-                  tmp8.add(ret22);
+                  tmp8!.add(ret22);
                 } else {
                   const tmp9 = ZPP_Simple.inthash;
                   const id9 = a.prev.id;
@@ -838,11 +838,11 @@ export class ZPP_Simple {
                   ret23.di = di9;
                   const ret24 = ret23;
                   ret24.value = true;
-                  tmp9.add(ret24);
+                  tmp9!.add(ret24);
                 }
               } else {
                 const x5 = ex4.data;
-                if (x5.segment != intx5.segment || intx5.segment2 != x5.segment2) {
+                if (x5!.segment != intx5.segment || intx5.segment2 != x5!.segment2) {
                   throw new Error("corner case 2, shiiiit.");
                 }
                 const o23 = intx5.vertex;
@@ -874,7 +874,7 @@ export class ZPP_Simple {
             }
           }
         }
-        ZPP_Simple.ints.remove(e);
+        ZPP_Simple.ints!.remove(e);
       }
       const o27 = e;
       o27.vertex = null;
@@ -884,27 +884,27 @@ export class ZPP_Simple {
       ZPP_SimpleEvent.zpp_pool = o27;
     }
     let _g = 0;
-    const _g1 = ZPP_Simple.inthash.table.length;
+    const _g1 = ZPP_Simple.inthash!.table.length;
     while (_g < _g1) {
       const i = _g++;
-      let n = ZPP_Simple.inthash.table[i];
+      let n = ZPP_Simple.inthash!.table[i];
       if (n == null) {
         continue;
       }
       while (n != null) {
-        const t1 = n.hnext;
+        const t1: Hashable2_Boolfalse | null = n.hnext;
         n.hnext = null;
         const o28 = n;
         o28.next = Hashable2_Boolfalse.zpp_pool;
         Hashable2_Boolfalse.zpp_pool = o28;
         n = t1;
       }
-      ZPP_Simple.inthash.table[i] = null;
+      ZPP_Simple.inthash!.table[i] = null;
     }
     if (rets == null) {
       rets = new ZNPList_ZPP_GeomVert();
     }
-    while (!ZPP_Simple.vertices.empty()) ZPP_Simple.clip_polygon(ZPP_Simple.vertices, rets);
+    while (!ZPP_Simple.vertices!.empty()) ZPP_Simple.clip_polygon(ZPP_Simple.vertices, rets);
     return rets;
   }
 
@@ -940,10 +940,12 @@ export class ZPP_Simple {
     if (ret == null) {
       obj.prev = obj.next = obj;
     } else {
-      obj.prev = ret;
-      obj.next = ret.next;
-      ret.next.prev = obj;
-      ret.next = obj;
+      const retRef = ret as ZPP_GeomVert;
+      const retNxt = retRef.next;
+      obj.prev = retRef;
+      obj.next = retNxt;
+      retNxt!.prev = obj;
+      retRef.next = obj;
     }
     ret = obj;
     ret.forced = cur.forced;
@@ -979,10 +981,12 @@ export class ZPP_Simple {
       if (ret == null) {
         obj1.prev = obj1.next = obj1;
       } else {
-        obj1.prev = ret;
-        obj1.next = ret.next;
-        ret.next.prev = obj1;
-        ret.next = obj1;
+        const retRef1 = ret as ZPP_GeomVert;
+        const retNxt1 = retRef1.next;
+        obj1.prev = retRef1;
+        obj1.next = retNxt1;
+        retNxt1!.prev = obj1;
+        retRef1.next = obj1;
       }
       ret = obj1;
       ret.forced = nxt.forced;
@@ -1095,7 +1099,7 @@ export class ZPP_Simple {
         ret.x = x;
         ret.y = y;
         vertices.add(ret);
-        nite = nite.next;
+        nite = nite.next!;
         if (!(nite != L)) {
           break;
         }
@@ -1106,8 +1110,8 @@ export class ZPP_Simple {
       queue = ZPP_Simple.list_queue = new ZNPList_ZPP_SimpleEvent();
     }
     let cx_ite = vertices.head;
-    let u = cx_ite.elt;
-    cx_ite = cx_ite.next;
+    let u = cx_ite!.elt;
+    cx_ite = cx_ite!.next;
     while (cx_ite != null) {
       const v1 = cx_ite.elt;
       let ret1: ZPP_SimpleEvent;
@@ -1134,17 +1138,17 @@ export class ZPP_Simple {
       if (ZPP_SimpleEvent.less_xy(e1, e2)) {
         e1.type = 1;
         e2.type = 2;
-        tmp = ZPP_SimpleSeg.get(u, v1);
+        tmp = ZPP_SimpleSeg.get(u!, v1!);
       } else {
         e1.type = 2;
         e2.type = 1;
-        tmp = ZPP_SimpleSeg.get(v1, u);
+        tmp = ZPP_SimpleSeg.get(v1!, u!);
       }
       e1.segment = e2.segment = tmp;
       u = v1;
       cx_ite = cx_ite.next;
     }
-    const v2 = vertices.head.elt;
+    const v2 = vertices.head!.elt;
     let ret3: ZPP_SimpleEvent;
     if (ZPP_SimpleEvent.zpp_pool == null) {
       ret3 = new ZPP_SimpleEvent();
@@ -1169,17 +1173,17 @@ export class ZPP_Simple {
     if (ZPP_SimpleEvent.less_xy(e11, e21)) {
       e11.type = 1;
       e21.type = 2;
-      tmp1 = ZPP_SimpleSeg.get(u, v2);
+      tmp1 = ZPP_SimpleSeg.get(u!, v2!);
     } else {
       e11.type = 2;
       e21.type = 1;
-      tmp1 = ZPP_SimpleSeg.get(v2, u);
+      tmp1 = ZPP_SimpleSeg.get(v2!, u!);
     }
     e11.segment = e21.segment = tmp1;
     // Merge sort the queue list
     const xxlist = queue;
     if (xxlist.head != null && xxlist.head.next != null) {
-      let head = xxlist.head;
+      let head: ZNPNode<ZPP_SimpleEvent> | null = xxlist.head;
       let tail: ZNPNode<ZPP_SimpleEvent> | null;
       let left: ZNPNode<ZPP_SimpleEvent> | null;
       let right: ZNPNode<ZPP_SimpleEvent> | null;
@@ -1192,7 +1196,7 @@ export class ZPP_Simple {
         numMerges = 0;
         left = head;
         head = null;
-        tail = head;
+        tail = null;
         while (left != null) {
           ++numMerges;
           right = left;
@@ -1204,16 +1208,16 @@ export class ZPP_Simple {
           }
           while (leftSize > 0 || (rightSize > 0 && right != null)) {
             if (leftSize == 0) {
-              nxt = right;
-              right = right.next;
+              nxt = right!;
+              right = right!.next;
               --rightSize;
             } else if (rightSize == 0 || right == null) {
-              nxt = left;
-              left = left.next;
+              nxt = left!;
+              left = left!.next;
               --leftSize;
-            } else if (ZPP_SimpleEvent.less_xy(left.elt, right.elt)) {
-              nxt = left;
-              left = left.next;
+            } else if (ZPP_SimpleEvent.less_xy(left!.elt!, right.elt!)) {
+              nxt = left!;
+              left = left!.next;
               --leftSize;
             } else {
               nxt = right;
@@ -1229,7 +1233,7 @@ export class ZPP_Simple {
           }
           left = right;
         }
-        tail.next = null;
+        tail!.next = null;
         listSize <<= 1;
         if (!(numMerges > 1)) {
           break;

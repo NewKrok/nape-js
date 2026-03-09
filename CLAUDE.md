@@ -503,12 +503,12 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
   - Tests and benchmarks updated to use native TS getters/setters
   - Bundle size: 991 KB → 979 KB
 
-- **28b** — Fix all `strictNullChecks` errors (already ON via `strict: true`) 🔶 In progress
+- **28b** ✅ — Fix all `strictNullChecks` errors (already ON via `strict: true`) — DONE
 
-  `strictNullChecks` was already enabled via `strict: true`. The task is fixing the ~2400 pre-existing
-  errors that were silently ignored by tsup (which skips type-checking).
+  `strictNullChecks` was already enabled via `strict: true`. Fixed ~2400 pre-existing
+  errors that were silently ignored by tsup (which skips type-checking). `npx tsc --noEmit` → 0 errors.
 
-  **Fixed (11 of 14 files):**
+  **All 14 files fixed:**
   - `ZPP_Set.ts` — `const ret: ZPP_Set<T> | null` explicit annotations (circular initializer)
   - `FastHash2_Hashable2_Boolfalse.ts` — `const t: Hashable2_Boolfalse | null`
   - `ZPP_ToiEvent.ts` — `s1/s2: ZPP_Shape | null`, `arbiter: ZPP_ColArbiter | null` (was `object`)
@@ -525,11 +525,10 @@ either dead code or already inlined. `tests/core/HaxeShims.test.ts` also deleted
   - `ZPP_MarchingSquares.ts` — `!` on map access; dynamic ZNP list methods cast to `any`
   - `ZPP_Monotone.ts` — nullable head var type; `!` on RB-tree traversal; `ZPP_Set<unknown>` cast
   - `ZPP_Cutter.ts` + `ZPP_CutInt.ts` — `!` throughout; fixed `ZPP_CutInt.end/start` types
-
-  **Remaining (3 files, ~2023 errors):**
-  - `ZPP_DynAABBPhase.ts` — 1588 errors (largest file, heavy `any` dispatch)
-  - `ZPP_SimpleSweep.ts` — 227 errors
-  - `ZPP_Simple.ts` — 208 errors
+  - `ZPP_SimpleSweep.ts` — extracted `pl/pr/ql/qr` locals with `!` in `edge_lt`; generic cast in constructor
+  - `ZPP_Simple.ts` — `!` on all static field accesses, `ZPP_Set<T>` casts, explicit nullable vars
+  - `ZPP_DynAABBPhase.ts` — `(this as any).updateAABBShape/updateCircShape/validateShape` for
+    prototype-copied methods; explicit `ZPP_AABBNode` annotations; `!` throughout (1563 occurrences)
 
 ### 🔶 Priority 29: Test coverage — target ≥80%
 
@@ -586,7 +585,7 @@ P21 → P22 → P23 → P24 → P25 → P26 → P27 (all done ✅)
 | P25 — `Any` → real types | XL | **largest** | medium | ✅ Done |
 | P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
-| P28 — API ergonomics (28a+28c done, 28b in progress) | M | DX | low | 🔶 Partial |
+| P28 — API ergonomics (28a+28b+28c all done) | M | DX | low | ✅ Done |
 | P29 — Test coverage (target ≥80%) | L | safety | none | 🔶 Steps 1–2 done |
 
 

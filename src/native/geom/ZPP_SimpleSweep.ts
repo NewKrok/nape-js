@@ -24,7 +24,7 @@ export class ZPP_SimpleSweep {
       this.tree = new ZPP_Set_ZPP_SimpleSeg() as ZPP_Set<ZPP_SimpleSeg>;
     } else {
       this.tree = ZPP_Set_ZPP_SimpleSeg.zpp_pool as ZPP_Set<ZPP_SimpleSeg>;
-      ZPP_Set_ZPP_SimpleSeg.zpp_pool = this.tree.next;
+      ZPP_Set_ZPP_SimpleSeg.zpp_pool = this.tree.next as ZPP_Set<unknown> | null;
       this.tree.next = null;
     }
     this.tree.lt = (p: ZPP_SimpleSeg, q: ZPP_SimpleSeg) => this.edge_lt(p, q);
@@ -38,6 +38,11 @@ export class ZPP_SimpleSweep {
   }
 
   edge_lt(p: ZPP_SimpleSeg, q: ZPP_SimpleSeg): boolean {
+    // Algorithm invariant: left/right are always non-null when edge_lt is called.
+    const pl = p.left!;
+    const pr = p.right!;
+    const ql = q.left!;
+    const qr = q.right!;
     let ux: number;
     let uy: number;
     let vx: number;
@@ -46,141 +51,141 @@ export class ZPP_SimpleSweep {
     if (p.left == q.left && p.right == q.right) {
       return false;
     } else if (p.left == q.right) {
-      if (p.left.x == p.right.x) {
-        if (p.left.y < p.right.y) {
-          return p.left.y > q.left.y;
+      if (pl.x == pr.x) {
+        if (pl.y < pr.y) {
+          return pl.y > ql.y;
         } else {
-          return p.right.y > q.left.y;
+          return pr.y > ql.y;
         }
       } else {
-        flip = p.right.x < p.left.x;
-        ux = p.right.x - p.left.x;
-        uy = p.right.y - p.left.y;
-        vx = q.left.x - p.left.x;
-        vy = q.left.y - p.left.y;
+        flip = pr.x < pl.x;
+        ux = pr.x - pl.x;
+        uy = pr.y - pl.y;
+        vx = ql.x - pl.x;
+        vy = ql.y - pl.y;
         return (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0;
       }
     } else if (p.right == q.left) {
       let tmp: boolean;
-      if (q.left.x == q.right.x) {
-        tmp = q.left.y < q.right.y ? q.left.y > p.left.y : q.right.y > p.left.y;
+      if (ql.x == qr.x) {
+        tmp = ql.y < qr.y ? ql.y > pl.y : qr.y > pl.y;
       } else {
-        flip = q.right.x < q.left.x;
-        ux = q.right.x - q.left.x;
-        uy = q.right.y - q.left.y;
-        vx = p.left.x - q.left.x;
-        vy = p.left.y - q.left.y;
+        flip = qr.x < ql.x;
+        ux = qr.x - ql.x;
+        uy = qr.y - ql.y;
+        vx = pl.x - ql.x;
+        vy = pl.y - ql.y;
         tmp = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0;
       }
       return !tmp;
     } else if (p.left == q.left) {
-      if (p.left.x == p.right.x) {
-        if (p.left.y < p.right.y) {
-          return p.left.y > q.right.y;
+      if (pl.x == pr.x) {
+        if (pl.y < pr.y) {
+          return pl.y > qr.y;
         } else {
-          return p.right.y > q.right.y;
+          return pr.y > qr.y;
         }
       } else {
-        flip = p.right.x < p.left.x;
-        ux = p.right.x - p.left.x;
-        uy = p.right.y - p.left.y;
-        vx = q.right.x - p.left.x;
-        vy = q.right.y - p.left.y;
+        flip = pr.x < pl.x;
+        ux = pr.x - pl.x;
+        uy = pr.y - pl.y;
+        vx = qr.x - pl.x;
+        vy = qr.y - pl.y;
         return (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0;
       }
     } else if (p.right == q.right) {
-      if (p.left.x == p.right.x) {
-        if (p.left.y < p.right.y) {
-          return p.left.y > q.left.y;
+      if (pl.x == pr.x) {
+        if (pl.y < pr.y) {
+          return pl.y > ql.y;
         } else {
-          return p.right.y > q.left.y;
+          return pr.y > ql.y;
         }
       } else {
-        flip = p.right.x < p.left.x;
-        ux = p.right.x - p.left.x;
-        uy = p.right.y - p.left.y;
-        vx = q.left.x - p.left.x;
-        vy = q.left.y - p.left.y;
+        flip = pr.x < pl.x;
+        ux = pr.x - pl.x;
+        uy = pr.y - pl.y;
+        vx = ql.x - pl.x;
+        vy = ql.y - pl.y;
         return (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0;
       }
     }
-    if (p.left.x == p.right.x) {
-      if (q.left.x == q.right.x) {
-        const pmax = p.left.y < p.right.y ? p.right : p.left;
-        const qmax = q.left.y < q.right.y ? q.right : q.left;
+    if (pl.x == pr.x) {
+      if (ql.x == qr.x) {
+        const pmax = pl.y < pr.y ? pr : pl;
+        const qmax = ql.y < qr.y ? qr : ql;
         return pmax.y > qmax.y;
       } else {
-        flip = q.right.x < q.left.x;
-        ux = q.right.x - q.left.x;
-        uy = q.right.y - q.left.y;
-        vx = p.left.x - q.left.x;
-        vy = p.left.y - q.left.y;
+        flip = qr.x < ql.x;
+        ux = qr.x - ql.x;
+        uy = qr.y - ql.y;
+        vx = pl.x - ql.x;
+        vy = pl.y - ql.y;
         const plrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
-        flip = q.right.x < q.left.x;
-        ux = q.right.x - q.left.x;
-        uy = q.right.y - q.left.y;
-        vx = p.right.x - q.left.x;
-        vy = p.right.y - q.left.y;
+        flip = qr.x < ql.x;
+        ux = qr.x - ql.x;
+        uy = qr.y - ql.y;
+        vx = pr.x - ql.x;
+        vy = pr.y - ql.y;
         const aplrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
         if (plrg * aplrg >= 0) {
           return plrg >= 0.0;
         } else {
-          return this.sweepx >= p.left.x;
+          return this.sweepx >= pl.x;
         }
       }
-    } else if (q.left.x == q.right.x) {
-      flip = p.right.x < p.left.x;
-      ux = p.right.x - p.left.x;
-      uy = p.right.y - p.left.y;
-      vx = q.left.x - p.left.x;
-      vy = q.left.y - p.left.y;
+    } else if (ql.x == qr.x) {
+      flip = pr.x < pl.x;
+      ux = pr.x - pl.x;
+      uy = pr.y - pl.y;
+      vx = ql.x - pl.x;
+      vy = ql.y - pl.y;
       const qlrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
-      flip = p.right.x < p.left.x;
-      ux = p.right.x - p.left.x;
-      uy = p.right.y - p.left.y;
-      vx = q.right.x - p.left.x;
-      vy = q.right.y - p.left.y;
+      flip = pr.x < pl.x;
+      ux = pr.x - pl.x;
+      uy = pr.y - pl.y;
+      vx = qr.x - pl.x;
+      vy = qr.y - pl.y;
       const aqlrg = flip ? uy * vx - ux * vy : vy * ux - vx * uy;
       if (qlrg * aqlrg >= 0) {
         return qlrg < 0.0;
       } else {
-        return this.sweepx < q.left.x;
+        return this.sweepx < ql.x;
       }
     } else {
-      flip = p.right.x < p.left.x;
-      ux = p.right.x - p.left.x;
-      uy = p.right.y - p.left.y;
-      vx = q.left.x - p.left.x;
-      vy = q.left.y - p.left.y;
+      flip = pr.x < pl.x;
+      ux = pr.x - pl.x;
+      uy = pr.y - pl.y;
+      vx = ql.x - pl.x;
+      vy = ql.y - pl.y;
       const qlrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0.0;
-      flip = p.right.x < p.left.x;
-      ux = p.right.x - p.left.x;
-      uy = p.right.y - p.left.y;
-      vx = q.right.x - p.left.x;
-      vy = q.right.y - p.left.y;
+      flip = pr.x < pl.x;
+      ux = pr.x - pl.x;
+      uy = pr.y - pl.y;
+      vx = qr.x - pl.x;
+      vy = qr.y - pl.y;
       const aqlrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) < 0.0;
       if (qlrg1 == aqlrg1) {
         return qlrg1;
       } else {
-        flip = q.right.x < q.left.x;
-        ux = q.right.x - q.left.x;
-        uy = q.right.y - q.left.y;
-        vx = p.left.x - q.left.x;
-        vy = p.left.y - q.left.y;
+        flip = qr.x < ql.x;
+        ux = qr.x - ql.x;
+        uy = qr.y - ql.y;
+        vx = pl.x - ql.x;
+        vy = pl.y - ql.y;
         const plrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
-        flip = q.right.x < q.left.x;
-        ux = q.right.x - q.left.x;
-        uy = q.right.y - q.left.y;
-        vx = p.right.x - q.left.x;
-        vy = p.right.y - q.left.y;
+        flip = qr.x < ql.x;
+        ux = qr.x - ql.x;
+        uy = qr.y - ql.y;
+        vx = pr.x - ql.x;
+        vy = pr.y - ql.y;
         const aplrg1 = (flip ? uy * vx - ux * vy : vy * ux - vx * uy) >= 0.0;
         if (plrg1 == aplrg1) {
           return plrg1;
         }
         const py =
-          ((this.sweepx - p.left.x) / (p.right.x - p.left.x)) * (p.right.y - p.left.y) + p.left.y;
+          ((this.sweepx - pl.x) / (pr.x - pl.x)) * (pr.y - pl.y) + pl.y;
         const qy =
-          ((this.sweepx - q.left.x) / (q.right.x - q.left.x)) * (q.right.y - q.left.y) + q.left.y;
+          ((this.sweepx - ql.x) / (qr.x - ql.x)) * (qr.y - ql.y) + ql.y;
         return py > qy;
       }
     }
@@ -224,21 +229,22 @@ export class ZPP_SimpleSweep {
     } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
       return false;
     } else {
+      const pl = p.left!; const pr = p.right!; const ql = q.left!; const qr = q.right!;
       const lsign =
-        (q.left.x - p.left.x) * (p.right.y - p.left.y) -
-        (p.right.x - p.left.x) * (q.left.y - p.left.y);
+        (ql.x - pl.x) * (pr.y - pl.y) -
+        (pr.x - pl.x) * (ql.y - pl.y);
       const rsign =
-        (q.right.x - p.left.x) * (p.right.y - p.left.y) -
-        (p.right.x - p.left.x) * (q.right.y - p.left.y);
+        (qr.x - pl.x) * (pr.y - pl.y) -
+        (pr.x - pl.x) * (qr.y - pl.y);
       if (lsign * rsign > 0) {
         return false;
       } else {
         const lsign2 =
-          (p.left.x - q.left.x) * (q.right.y - q.left.y) -
-          (q.right.x - q.left.x) * (p.left.y - q.left.y);
+          (pl.x - ql.x) * (qr.y - ql.y) -
+          (qr.x - ql.x) * (pl.y - ql.y);
         const rsign2 =
-          (p.right.x - q.left.x) * (q.right.y - q.left.y) -
-          (q.right.x - q.left.x) * (p.right.y - q.left.y);
+          (pr.x - ql.x) * (qr.y - ql.y) -
+          (qr.x - ql.x) * (pr.y - ql.y);
         if (lsign2 * rsign2 > 0) {
           return false;
         } else {
@@ -254,17 +260,18 @@ export class ZPP_SimpleSweep {
     } else if (p.left == q.left || p.left == q.right || p.right == q.left || p.right == q.right) {
       return null;
     } else {
-      const ux = p.right.x - p.left.x;
-      const uy = p.right.y - p.left.y;
-      const vx = q.right.x - q.left.x;
-      const vy = q.right.y - q.left.y;
+      const pl = p.left!; const pr = p.right!; const ql = q.left!; const qr = q.right!;
+      const ux = pr.x - pl.x;
+      const uy = pr.y - pl.y;
+      const vx = qr.x - ql.x;
+      const vy = qr.y - ql.y;
       let denom = vy * ux - vx * uy;
       if (denom == 0.0) {
         return null;
       }
       denom = 1 / denom;
-      const cx = q.left.x - p.left.x;
-      const cy = q.left.y - p.left.y;
+      const cx = ql.x - pl.x;
+      const cy = ql.y - pl.y;
       const t = (vy * cx - vx * cy) * denom;
       if (t < 0 || t > 1) {
         return null;
@@ -289,10 +296,10 @@ export class ZPP_SimpleSweep {
         if (t == 1 && cases) {
           throw new Error("corner case 1c");
         }
-        vet = (s == 0 ? q.left : s == 1 ? q.right : t == 0 ? p.left : p.right) as ZPP_SimpleVert;
+        vet = (s == 0 ? ql : s == 1 ? qr : t == 0 ? pl : pr) as ZPP_SimpleVert;
       } else {
-        const x = 0.5 * (p.left.x + ux * t + q.left.x + vx * s);
-        const y = 0.5 * (p.left.y + uy * t + q.left.y + vy * s);
+        const x = 0.5 * (pl.x + ux * t + ql.x + vx * s);
+        const y = 0.5 * (pl.y + uy * t + ql.y + vy * s);
         let ret: ZPP_SimpleVert;
         if (ZPP_SimpleVert.zpp_pool == null) {
           ret = new ZPP_SimpleVert();
