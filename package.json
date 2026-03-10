@@ -36,9 +36,13 @@
       }
     }
   },
+  "llms": "https://newkrok.github.io/nape-js/llms.txt",
+  "llmsFull": "https://newkrok.github.io/nape-js/llms-full.txt",
   "files": [
     "dist",
-    "!dist/**/*.map"
+    "!dist/**/*.map",
+    "llms.txt",
+    "llms-full.txt"
   ],
   "scripts": {
     "build": "tsup",

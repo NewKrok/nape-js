@@ -1,0 +1,103 @@
+# @newkrok/nape-js
+
+> Modern TypeScript 2D physics engine for the web. Fully typed, tree-shakeable, with object pooling and dual ESM/CJS exports. Originally ported from the Haxe Nape engine by Luca Deltodesco.
+
+Install: `npm install @newkrok/nape-js`
+
+- [GitHub Repository](https://github.com/NewKrok/nape-js): Source code, issues, contributing guide
+- [npm Package](https://www.npmjs.com/package/@newkrok/nape-js): Published package with TypeScript declarations
+- [API Reference](https://newkrok.github.io/nape-js/api/index.html): Full TypeDoc-generated API docs
+- [Interactive Demos](https://newkrok.github.io/nape-js/examples.html): Live physics demos with source code
+- [Full LLM Documentation](https://raw.githubusercontent.com/NewKrok/nape-js/master/llms-full.txt): Complete API reference in a single file
+
+## Quick Start
+
+```typescript
+import { Space, Body, BodyType, Vec2, Circle, Polygon } from "@newkrok/nape-js";
+
+const space = new Space(new Vec2(0, 600));
+
+const floor = new Body(BodyType.STATIC, new Vec2(400, 550));
+floor.shapes.add(new Polygon(Polygon.box(800, 20)));
+floor.space = space;
+
+const ball = new Body(BodyType.DYNAMIC, new Vec2(400, 100));
+ball.shapes.add(new Circle(20));
+ball.space = space;
+
+function update() {
+  space.step(1 / 60);
+}
+```
+
+## Core Classes
+
+- [Space](https://newkrok.github.io/nape-js/api/classes/Space.html): Physics world — create with gravity, add bodies, call `step(dt)` to simulate
+- [Body](https://newkrok.github.io/nape-js/api/classes/Body.html): Rigid body with position, velocity, rotation, mass, shapes list
+- [Vec2](https://newkrok.github.io/nape-js/api/classes/Vec2.html): 2D vector with pooling (`Vec2.get()`, `Vec2.weak()`) and arithmetic methods
+- [AABB](https://newkrok.github.io/nape-js/api/classes/AABB.html): Axis-aligned bounding box for spatial queries
+
+## Shapes
+
+- [Circle](https://newkrok.github.io/nape-js/api/classes/Circle.html): Circular collision shape with radius
+- [Polygon](https://newkrok.github.io/nape-js/api/classes/Polygon.html): Convex polygon with factories: `Polygon.box()`, `Polygon.rect()`, `Polygon.regular()`
+- [Shape](https://newkrok.github.io/nape-js/api/classes/Shape.html): Base class — material, filter, sensor support, cbTypes
+- [Edge](https://newkrok.github.io/nape-js/api/classes/Edge.html): Read-only polygon edge with normal and projection data
+
+## Physics Properties
+
+- [Material](https://newkrok.github.io/nape-js/api/classes/Material.html): Elasticity, friction, density — presets: `wood()`, `steel()`, `ice()`, `rubber()`, `glass()`, `sand()`
+- [FluidProperties](https://newkrok.github.io/nape-js/api/classes/FluidProperties.html): Density, viscosity for fluid interaction shapes
+- [InteractionFilter](https://newkrok.github.io/nape-js/api/classes/InteractionFilter.html): Bit-mask collision/sensor/fluid filtering
+- [InteractionGroup](https://newkrok.github.io/nape-js/api/classes/InteractionGroup.html): Group-based interaction management
+
+## Constraints (Joints)
+
+- [PivotJoint](https://newkrok.github.io/nape-js/api/classes/PivotJoint.html): Pin two bodies at a shared anchor point
+- [DistanceJoint](https://newkrok.github.io/nape-js/api/classes/DistanceJoint.html): Constrain distance between two anchors to [min, max]
+- [WeldJoint](https://newkrok.github.io/nape-js/api/classes/WeldJoint.html): Fix relative position and rotation angle
+- [AngleJoint](https://newkrok.github.io/nape-js/api/classes/AngleJoint.html): Constrain relative angle to [min, max] with optional ratio
+- [MotorJoint](https://newkrok.github.io/nape-js/api/classes/MotorJoint.html): Drive relative angular velocity to a target rate
+- [LineJoint](https://newkrok.github.io/nape-js/api/classes/LineJoint.html): Constrain anchor to slide along a line direction
+- [PulleyJoint](https://newkrok.github.io/nape-js/api/classes/PulleyJoint.html): Constrain weighted sum of two distances (pulley/rope)
+- [Constraint](https://newkrok.github.io/nape-js/api/classes/Constraint.html): Base class — stiff/soft, frequency, damping, breaking, maxForce
+
+## Callbacks & Events
+
+- [InteractionListener](https://newkrok.github.io/nape-js/api/classes/InteractionListener.html): Listen for BEGIN/ONGOING/END collision, sensor, or fluid events
+- [BodyListener](https://newkrok.github.io/nape-js/api/classes/BodyListener.html): Listen for WAKE/SLEEP body state changes
+- [ConstraintListener](https://newkrok.github.io/nape-js/api/classes/ConstraintListener.html): Listen for BREAK constraint events
+- [PreListener](https://newkrok.github.io/nape-js/api/classes/PreListener.html): Pre-collision handler — filter or modify collisions before solving
+- [CbType](https://newkrok.github.io/nape-js/api/classes/CbType.html): Tag bodies/shapes/constraints for selective callback filtering
+- [CbEvent](https://newkrok.github.io/nape-js/api/classes/CbEvent.html): Event types — BEGIN, ONGOING, END, WAKE, SLEEP, BREAK, PRE
+
+## Collision & Dynamics
+
+- [Arbiter](https://newkrok.github.io/nape-js/api/classes/Arbiter.html): Interaction data between two shapes (base class)
+- [CollisionArbiter](https://newkrok.github.io/nape-js/api/classes/CollisionArbiter.html): Collision contacts, normal, impulses, kinetic energy
+- [FluidArbiter](https://newkrok.github.io/nape-js/api/classes/FluidArbiter.html): Fluid overlap, buoyancy/drag impulses
+- [Contact](https://newkrok.github.io/nape-js/api/classes/Contact.html): Single contact point — position, penetration, friction
+
+## Geometry Utilities
+
+- [Ray](https://newkrok.github.io/nape-js/api/classes/Ray.html): Ray for raycasting queries with origin, direction, maxDistance
+- [Mat23](https://newkrok.github.io/nape-js/api/classes/Mat23.html): 2x3 affine transform matrix — rotation, translation, scale
+- [Geom](https://newkrok.github.io/nape-js/api/classes/Geom.html): Static utilities — distance queries, ray tests, polygon operations
+- [MarchingSquares](https://newkrok.github.io/nape-js/api/classes/MarchingSquares.html): Contour extraction from scalar fields
+
+## Enums
+
+- [BodyType](https://newkrok.github.io/nape-js/api/classes/BodyType.html): STATIC, DYNAMIC, KINEMATIC
+- [ShapeType](https://newkrok.github.io/nape-js/api/classes/ShapeType.html): CIRCLE, POLYGON
+- [Broadphase](https://newkrok.github.io/nape-js/api/classes/Broadphase.html): SWEEP_AND_PRUNE, DYNAMIC_AABB_TREE
+- [InteractionType](https://newkrok.github.io/nape-js/api/classes/InteractionType.html): COLLISION, SENSOR, FLUID, ANY
+- [ArbiterType](https://newkrok.github.io/nape-js/api/classes/ArbiterType.html): COLLISION, SENSOR, FLUID
+
+## Grouping & Hierarchy
+
+- [Compound](https://newkrok.github.io/nape-js/api/classes/Compound.html): Hierarchical grouping of bodies, constraints, and sub-compounds
+- [Interactor](https://newkrok.github.io/nape-js/api/classes/Interactor.html): Base class for Body, Shape, Compound — type casting, cbTypes
+
+## Collections
+
+- [NapeList](https://newkrok.github.io/nape-js/api/classes/NapeList.html): Generic iterable list with `for...of` support, add/remove/push/pop
