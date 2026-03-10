@@ -790,14 +790,7 @@ describe("Collision integration — island & sleep", () => {
     b2.space = space;
 
     // Connect them with a distance joint
-    const joint = new DistanceJoint(
-      b1,
-      b2,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      30,
-      50,
-    );
+    const joint = new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), 30, 50);
     joint.space = space;
 
     for (let i = 0; i < 600; i++) space.step(1 / 60);
@@ -827,7 +820,7 @@ describe("Collision integration — island & sleep", () => {
     for (let i = 0; i < 60; i++) space.step(1 / 60);
 
     // Target should have been displaced (or projectile has moved past)
-    const totalMoved = Math.abs(target.position.x) + Math.abs(projectile.position.x - (-200));
+    const totalMoved = Math.abs(target.position.x) + Math.abs(projectile.position.x - -200);
     expect(totalMoved).toBeGreaterThan(1);
   });
 });

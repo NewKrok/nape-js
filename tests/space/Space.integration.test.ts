@@ -183,11 +183,7 @@ describe("Space integration — collision & broadphase", () => {
     floor.space = space;
 
     // Stack of 3 boxes
-    const boxes = [
-      dynamicBox(0, -100),
-      dynamicBox(0, -50),
-      dynamicBox(0, 0),
-    ];
+    const boxes = [dynamicBox(0, -100), dynamicBox(0, -50), dynamicBox(0, 0)];
     boxes.forEach((b) => (b.space = space));
 
     for (let i = 0; i < 300; i++) space.step(1 / 60);
@@ -312,22 +308,13 @@ describe("Space integration — constraints", () => {
     const ball = dynamicCircle(0, 50);
     ball.space = space;
 
-    const joint = new DistanceJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      40,
-      60,
-    );
+    const joint = new DistanceJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0), 40, 60);
     joint.space = space;
 
     for (let i = 0; i < 120; i++) space.step(1 / 60);
 
     // Ball should stay within joint distance range
-    const dist = Math.sqrt(
-      ball.position.x ** 2 + ball.position.y ** 2,
-    );
+    const dist = Math.sqrt(ball.position.x ** 2 + ball.position.y ** 2);
     expect(dist).toBeLessThan(70); // some tolerance
     expect(dist).toBeGreaterThan(30);
   });
@@ -342,12 +329,7 @@ describe("Space integration — constraints", () => {
     const bob = dynamicCircle(50, 0);
     bob.space = space;
 
-    const joint = new PivotJoint(
-      anchor,
-      bob,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, bob, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 120; i++) space.step(1 / 60);
@@ -366,12 +348,7 @@ describe("Space integration — constraints", () => {
     b.space = space;
 
     // Weld at anchor1=(0,0), anchor2=(0,0) means both body origins are welded together
-    const weld = new WeldJoint(
-      a,
-      b,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const weld = new WeldJoint(a, b, new Vec2(0, 0), new Vec2(0, 0));
     weld.space = space;
 
     for (let i = 0; i < 60; i++) space.step(1 / 60);
@@ -392,12 +369,7 @@ describe("Space integration — constraints", () => {
     const bar = dynamicBox(50, 0, 60, 5);
     bar.space = space;
 
-    const pivot = new PivotJoint(
-      anchor,
-      bar,
-      new Vec2(0, 0),
-      new Vec2(-25, 0),
-    );
+    const pivot = new PivotJoint(anchor, bar, new Vec2(0, 0), new Vec2(-25, 0));
     pivot.space = space;
 
     const angle = new AngleJoint(anchor, bar, 0, 0);
@@ -418,12 +390,7 @@ describe("Space integration — constraints", () => {
     const ball = dynamicCircle(0, 50);
     ball.space = space;
 
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 30; i++) space.step(1 / 60);
@@ -448,12 +415,7 @@ describe("Space integration — constraints", () => {
     const ball = dynamicCircle(0, 50);
     ball.space = space;
 
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     space.step(1 / 60);

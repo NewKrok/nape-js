@@ -150,12 +150,7 @@ describe("AngleJoint — extended", () => {
   });
 
   it("should support userData", () => {
-    const joint = new AngleJoint(
-      new Body(),
-      new Body(),
-      -1,
-      1,
-    );
+    const joint = new AngleJoint(new Body(), new Body(), -1, 1);
     joint.userData.custom = "test";
     expect(joint.userData.custom).toBe("test");
   });
@@ -351,15 +346,7 @@ describe("LineJoint — extended", () => {
     b1.shapes.add(new Circle(5));
     const b2 = new Body();
     b2.shapes.add(new Circle(5));
-    const joint = new LineJoint(
-      b1,
-      b2,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      new Vec2(1, 0),
-      -10,
-      10,
-    );
+    const joint = new LineJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), new Vec2(1, 0), -10, 10);
 
     expect(joint.body1.id).toBe(b1.id);
     expect(joint.body2.id).toBe(b2.id);
@@ -452,14 +439,7 @@ describe("DistanceJoint — extended", () => {
   it("should return bodyImpulse", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new DistanceJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      40,
-      60,
-    );
+    const joint = new DistanceJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0), 40, 60);
     joint.space = space;
 
     for (let i = 0; i < 10; i++) space.step(1 / 60);
@@ -505,14 +485,7 @@ describe("DistanceJoint — extended", () => {
   it("should support soft constraint (frequency/damping)", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new DistanceJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      50,
-      50,
-    );
+    const joint = new DistanceJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0), 50, 50);
     joint.stiff = false;
     joint.frequency = 5;
     joint.damping = 0.5;
@@ -529,14 +502,7 @@ describe("DistanceJoint — extended", () => {
   it("should visitBodies", () => {
     const anchor = new Body();
     const ball = new Body();
-    const joint = new DistanceJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      10,
-      20,
-    );
+    const joint = new DistanceJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0), 10, 20);
 
     const visited: Body[] = [];
     joint.visitBodies((b: Body) => visited.push(b));
@@ -551,12 +517,7 @@ describe("PivotJoint — extended", () => {
   it("should return impulse as MatMN", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 10; i++) space.step(1 / 60);
@@ -568,12 +529,7 @@ describe("PivotJoint — extended", () => {
   it("should return bodyImpulse", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 10; i++) space.step(1 / 60);
@@ -585,12 +541,7 @@ describe("PivotJoint — extended", () => {
   it("should visitBodies", () => {
     const anchor = new Body();
     const ball = new Body();
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
 
     const visited: Body[] = [];
     joint.visitBodies((b: Body) => visited.push(b));
@@ -600,12 +551,7 @@ describe("PivotJoint — extended", () => {
   it("should support anchor update after construction", () => {
     const anchor = staticCircle(0, 0);
     const ball = dynamicCircle(50, 0);
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
 
     joint.anchor1 = new Vec2(10, 10);
     expect(joint.anchor1.x).toBeCloseTo(10);
@@ -620,12 +566,7 @@ describe("WeldJoint — extended", () => {
   it("should return impulse", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new WeldJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new WeldJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 10; i++) space.step(1 / 60);
@@ -637,12 +578,7 @@ describe("WeldJoint — extended", () => {
   it("should return bodyImpulse", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new WeldJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new WeldJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 10; i++) space.step(1 / 60);
@@ -654,12 +590,7 @@ describe("WeldJoint — extended", () => {
   it("should visitBodies", () => {
     const anchor = new Body();
     const ball = new Body();
-    const joint = new WeldJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new WeldJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
 
     const visited: Body[] = [];
     joint.visitBodies((b: Body) => visited.push(b));
@@ -669,13 +600,7 @@ describe("WeldJoint — extended", () => {
   it("should support phase property", () => {
     const anchor = new Body();
     const ball = new Body();
-    const joint = new WeldJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      Math.PI / 4,
-    );
+    const joint = new WeldJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0), Math.PI / 4);
     expect(joint.phase).toBeCloseTo(Math.PI / 4);
 
     joint.phase = Math.PI / 2;
@@ -690,12 +615,7 @@ describe("Constraint — shared properties", () => {
   it("should support active toggle on any joint", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
     joint.active = false;
 
@@ -715,12 +635,7 @@ describe("Constraint — shared properties", () => {
     b1.space = space;
     b2.space = space;
 
-    const joint = new PivotJoint(
-      b1,
-      b2,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0));
     joint.ignore = true; // ignore collision between these bodies
     joint.space = space;
 
@@ -730,14 +645,7 @@ describe("Constraint — shared properties", () => {
   it("should support removeOnBreak", () => {
     const space = new Space(new Vec2(0, 500));
     const { anchor, ball } = setupPair(space);
-    const joint = new DistanceJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      50,
-      50,
-    );
+    const joint = new DistanceJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0), 50, 50);
     joint.breakUnderForce = true;
     joint.maxForce = 0.001;
     joint.removeOnBreak = true;
@@ -759,12 +667,7 @@ describe("Constraint — shared properties", () => {
   it("should support isSleeping query", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
     space.step(1 / 60);
 
@@ -775,12 +678,7 @@ describe("Constraint — shared properties", () => {
   it("should throw for unlinked body in bodyImpulse", () => {
     const space = new Space(new Vec2(0, 100));
     const { anchor, ball } = setupPair(space);
-    const joint = new PivotJoint(
-      anchor,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(anchor, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
     space.step(1 / 60);
 
@@ -789,14 +687,7 @@ describe("Constraint — shared properties", () => {
   });
 
   it("should support stiff/frequency/damping on all soft joints", () => {
-    const joint = new DistanceJoint(
-      new Body(),
-      new Body(),
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-      10,
-      20,
-    );
+    const joint = new DistanceJoint(new Body(), new Body(), new Vec2(0, 0), new Vec2(0, 0), 10, 20);
 
     joint.stiff = false;
     expect(joint.stiff).toBe(false);
@@ -825,12 +716,7 @@ describe("Constraint — chain/multi-joint integration", () => {
       link.space = space;
       links.push(link);
 
-      const joint = new PivotJoint(
-        prev,
-        link,
-        new Vec2(i === 0 ? 0 : 0, 0),
-        new Vec2(-10, 0),
-      );
+      const joint = new PivotJoint(prev, link, new Vec2(i === 0 ? 0 : 0, 0), new Vec2(-10, 0));
       joint.space = space;
       prev = link;
     }
@@ -848,12 +734,7 @@ describe("Constraint — chain/multi-joint integration", () => {
     ball.space = space;
 
     // Use space.world as anchor
-    const joint = new PivotJoint(
-      space.world,
-      ball,
-      new Vec2(0, 0),
-      new Vec2(0, 0),
-    );
+    const joint = new PivotJoint(space.world, ball, new Vec2(0, 0), new Vec2(0, 0));
     joint.space = space;
 
     for (let i = 0; i < 60; i++) space.step(1 / 60);
