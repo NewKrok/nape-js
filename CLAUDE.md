@@ -26,12 +26,13 @@ npm run lint         # eslint + prettier
 
 ### Pre-push checklist
 
-**Before every `git push`, always run both:**
-1. `npm test` — all tests must pass
-2. `npm run build` — DTS generation must succeed
+**Before every `git push`, always run all three:**
+1. `npm run lint` — ESLint + Prettier must pass (catches unused vars, formatting issues)
+2. `npm test` — all tests must pass
+3. `npm run build` — DTS generation must succeed
 
 The build step catches TypeScript type errors that vitest does not (e.g., missing method
-declarations for runtime-copied prototype methods). Never push without a green build.
+declarations for runtime-copied prototype methods). Never push without a green lint + test + build.
 
 ---
 
