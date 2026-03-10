@@ -172,7 +172,7 @@ export class DemoRunner {
       this.#canvas = existingCanvas;
       // Upscale the existing canvas buffer for HiDPI displays.
       // W/H hold the logical size passed by the caller; set the physical buffer
-      // to dpr× while keeping the CSS size unchanged.
+      // to dpr× while letting CSS (width:100%; height:auto) handle layout.
       this.#canvas.width  = this.#W * dpr;
       this.#canvas.height = this.#H * dpr;
     } else {
@@ -468,6 +468,14 @@ export class DemoRunner {
       this.#container.removeChild(this.#threeRenderer.domElement);
       this.#threeRenderer.dispose();
     }
+
+    // Pin the container height before hiding the 2D canvas.
+    // The canvas provides the container's implicit height (height:auto CSS);
+    // hiding it without first pinning would collapse the container to ~0,
+    // making getBoundingClientRect return 0 and the 3D renderer invisible.
+    const cr = this.#container.getBoundingClientRect();
+    this.#container.style.height = `${cr.height}px`;
+
     this.#canvas.style.display = "none";
 
     const W = this.#W, H = this.#H;
@@ -481,8 +489,7 @@ export class DemoRunner {
     this.#threeCamera.position.set(W / 2, -H / 2, camZ);
     this.#threeCamera.lookAt(W / 2, -H / 2, 0);
 
-    // Initial size: use container's bounding rect (reliable after layout)
-    const cr = this.#container.getBoundingClientRect();
+    // Initial size from the rect measured above
     const displayW = Math.round(cr.width)  || W;
     const displayH = Math.round(cr.height) || Math.round(displayW * (H / W));
     this.#threeRenderer = new _THREE.WebGLRenderer({ antialias: true });
@@ -519,6 +526,7 @@ export class DemoRunner {
     this.#threeCamera = null;
     this.#threeMeshes = [];
     this.#canvas.style.display = "";
+    this.#container.style.height = "";
   }
 
   #buildMeshes() {
