@@ -309,19 +309,6 @@ export class Polygon extends Shape {
     return this.zpp_inner_zn.valid();
   }
 
-  // ---------------------------------------------------------------------------
-  // Backward-compat get_*/set_* methods
-  // ---------------------------------------------------------------------------
-
-  /** @internal */ get_localVerts(): any {
-    return this.localVerts;
-  }
-  /** @internal */ get_worldVerts(): any {
-    return this.worldVerts;
-  }
-  /** @internal */ get_edges(): any {
-    return this.edges;
-  }
 }
 
 // ---------------------------------------------------------------------------

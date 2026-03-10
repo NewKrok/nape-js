@@ -191,19 +191,17 @@ Missing convenience methods on geometry types:
 
 ---
 
-### Priority 32: Internal `get_X()`/`set_X()` cleanup in native files
+### Priority 32: Internal `get_X()`/`set_X()` cleanup in public API files ✅ Done
 
 **Effort: S | Impact: small | Risk: low**
 
-A small number of native-facing internal accessor methods survive in public API files
-for ZPP compatibility (marked `@internal`). These can be converted to direct field
-reads using the factory-callback pattern (same approach as P28c):
+Removed 22 unused `@internal` backward-compat `get_X()`/`set_X()` accessor methods
+from public API files. These were legacy bridges for the deleted `nape-compiled.js` and
+had zero callers in the current TypeScript codebase:
 
-- `Ray.ts` — 6 `@internal` accessor methods used by `ZPP_Ray`
-- `Shape.ts` — 13 `@internal` accessor methods used by `ZPP_Shape`
-- `Polygon.ts` — 3 `@internal` accessor methods used by `ZPP_Polygon`
-
-Each can be replaced by a static callback on the ZPP class, set at bootstrap time.
+- `Ray.ts` — 7 methods removed (get/set origin, direction, maxDistance, getUserData)
+- `Shape.ts` — 13 methods removed (type, body, castCircle/Polygon, worldCOM, localCOM, area, inertia, angDrag, material, filter, fluidProperties, fluidEnabled, sensorEnabled, bounds)
+- `Polygon.ts` — 3 methods removed (localVerts, worldVerts, edges)
 
 ---
 
@@ -249,6 +247,6 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–2 done |
 | P30 — TSDoc documentation | L | DX | none | 🔶 30a+30b+30c done |
 | P31 — API ergonomics additions | M | DX | low | ⬜ Not started |
-| P32 — Internal accessor cleanup | S | small | low | ⬜ Not started |
+| P32 — Internal accessor cleanup | S | small | low | ✅ Done |
 | P33 — Benchmark CI | M | medium | low | ⬜ Not started |
 | P34 — Granular tree shaking | XL | large | high | ⬜ Not started |
