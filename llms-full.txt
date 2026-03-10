@@ -1,0 +1,1620 @@
+# @newkrok/nape-js — Complete API Reference
+
+> Modern TypeScript 2D physics engine for the web. Fully typed, tree-shakeable, dual ESM/CJS exports. Originally ported from the Haxe Nape engine by Luca Deltodesco.
+
+- **npm**: `npm install @newkrok/nape-js`
+- **GitHub**: https://github.com/NewKrok/nape-js
+- **API docs**: https://newkrok.github.io/nape-js/api/index.html
+- **Demos**: https://newkrok.github.io/nape-js/examples.html
+- **License**: MIT
+- **Version**: 3.5.1
+
+---
+
+## Quick Start
+
+```typescript
+import { Space, Body, BodyType, Vec2, Circle, Polygon } from "@newkrok/nape-js";
+
+// Create a physics world with downward gravity
+const space = new Space(new Vec2(0, 600));
+
+// Static floor
+const floor = new Body(BodyType.STATIC, new Vec2(400, 550));
+floor.shapes.add(new Polygon(Polygon.box(800, 20)));
+floor.space = space;
+
+// Dynamic box
+const box = new Body(BodyType.DYNAMIC, new Vec2(400, 100));
+box.shapes.add(new Polygon(Polygon.box(40, 40)));
+box.space = space;
+
+// Dynamic circle
+const ball = new Body(BodyType.DYNAMIC, new Vec2(420, 50));
+ball.shapes.add(new Circle(20));
+ball.space = space;
+
+// Game loop — step 60 fps
+function update() {
+  space.step(1 / 60);
+  for (const body of space.bodies) {
+    console.log(`x=${body.position.x.toFixed(1)} y=${body.position.y.toFixed(1)}`);
+  }
+}
+```
+
+---
+
+## Key Concepts
+
+### Architecture
+
+All public classes are exported from the main entry point `@newkrok/nape-js`. The engine uses internal `ZPP_*` classes for computation, wrapped by typed public API classes. Users only interact with the public API.
+
+### Object Pooling
+
+`Vec2`, `Vec3`, `AABB`, and other frequently-allocated types use internal object pools. Use `Vec2.get()` and `dispose()` for explicit pool management. Weak Vec2s (`Vec2.weak()`) auto-dispose after a single API call.
+
+### Lists
+
+All collection properties (e.g., `body.shapes`, `space.bodies`) return `NapeList<T>` which supports ES6 iteration (`for...of`), indexed access (`.at(i)`), and standard mutation (`add()`, `remove()`, `push()`, `pop()`).
+
+### Simulation Loop
+
+Call `space.step(deltaTime)` once per frame. The engine handles broadphase collision detection, narrow-phase contact generation, constraint solving, and callback dispatch.
+
+### Callback System
+
+Attach listeners to `space.listeners` to receive events. Use `CbType` tags on bodies/shapes/constraints to filter which interactions trigger callbacks.
+
+```typescript
+import { InteractionListener, CbEvent, InteractionType, CbType } from "@newkrok/nape-js";
+
+const listener = new InteractionListener(
+  CbEvent.BEGIN,
+  InteractionType.COLLISION,
+  CbType.ANY_BODY,
+  CbType.ANY_BODY,
+  (cb) => {
+    console.log("Collision between", cb.int1, "and", cb.int2);
+  }
+);
+space.listeners.add(listener);
+```
+
+---
+
+## Geometry Types
+
+### Vec2
+
+2D vector used for positions, velocities, forces, and other 2D quantities. Supports object pooling via `Vec2.get()` / `dispose()`, weak references that auto-dispose after a single use, and immutability guards.
+
+#### Constructor
+
+```typescript
+new Vec2(x?: number, y?: number)
+```
+
+Creates a Vec2 with the given components. Defaults to (0, 0). Throws if components are NaN.
+
+#### Static Factories
+
+```typescript
+Vec2.get(x?: number, y?: number, weak?: boolean): Vec2
+```
+Allocate a Vec2 from the public object pool. If `weak` is true, the vector auto-disposes after a single API call.
+
+```typescript
+Vec2.weak(x?: number, y?: number): Vec2
+```
+Allocate a weak Vec2 (auto-disposes after a single use).
+
+```typescript
+Vec2.fromPolar(length: number, angle: number, weak?: boolean): Vec2
+```
+Create a Vec2 from polar coordinates (length and angle in radians). Returns `(length * cos(angle), length * sin(angle))`.
+
+#### Static Methods
+
+```typescript
+Vec2.distance(a: Vec2, b: Vec2): number
+```
+Euclidean distance between two Vec2s.
+
+```typescript
+Vec2.dsq(a: Vec2, b: Vec2): number
+```
+Squared Euclidean distance (avoids sqrt).
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `x` | `number` | The x component. Throws if NaN or immutable. |
+| `y` | `number` | The y component. Throws if NaN or immutable. |
+| `length` | `number` | Magnitude. Setting scales the vector to the given magnitude (throws for zero vectors). |
+| `angle` | `number` | Angle in radians from +x axis. Setting preserves magnitude. |
+
+#### Instance Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `set(vector: Vec2)` | `this` | Copy another Vec2's components into this vector in-place. |
+| `setxy(x: number, y: number)` | `this` | Set both components at once in-place. |
+| `copy(weak?: boolean)` | `Vec2` | Return a new Vec2 with the same components. |
+| `add(vector: Vec2, weak?: boolean)` | `Vec2` | Return `this + other`. |
+| `addMul(vector: Vec2, scalar: number, weak?: boolean)` | `Vec2` | Return `this + other * scalar`. |
+| `sub(vector: Vec2, weak?: boolean)` | `Vec2` | Return `this - other`. |
+| `mul(scalar: number, weak?: boolean)` | `Vec2` | Return `this * scalar`. |
+| `addeq(vector: Vec2)` | `this` | In-place `this += other`. |
+| `subeq(vector: Vec2)` | `this` | In-place `this -= other`. |
+| `muleq(scalar: number)` | `this` | In-place `this *= scalar`. |
+| `dot(vector: Vec2)` | `number` | Dot product. |
+| `cross(vector: Vec2)` | `number` | 2D cross product (scalar). |
+| `lsq()` | `number` | Squared magnitude (avoids sqrt). |
+| `perp(weak?: boolean)` | `Vec2` | Perpendicular vector rotated 90° CCW: `(-y, x)`. |
+| `rotate(angle: number)` | `this` | Rotate by angle (radians) in-place. |
+| `normalise()` | `this` | Normalise to unit length in-place. Throws for zero vectors. |
+| `unit(weak?: boolean)` | `Vec2` | Return a normalised copy. |
+| `reflect(vec: Vec2, weak?: boolean)` | `Vec2` | Reflect `vec` about this vector as a normal axis. |
+| `dispose()` | `void` | Return this Vec2 to the pool. Throws if immutable or in use. |
+| `toString()` | `string` | String in the form `{ x: ... y: ... }`. |
+
+---
+
+### Vec3
+
+3D vector used for constraint impulses.
+
+```typescript
+new Vec3(x?: number, y?: number, z?: number)
+```
+
+#### Static Factories
+
+```typescript
+Vec3.get(x?: number, y?: number, z?: number): Vec3
+```
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `x` | `number` | X component |
+| `y` | `number` | Y component |
+| `z` | `number` | Z component |
+| `length` | `number` | Magnitude |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `lsq()` | `number` | Squared magnitude |
+| `set(v: Vec3)` | `this` | Copy from another Vec3 |
+| `setxyz(x, y, z)` | `this` | Set all components |
+| `xy(weak?: boolean)` | `Vec2` | Extract x, y as a Vec2 |
+| `dispose()` | `void` | Return to pool |
+
+---
+
+### AABB
+
+Axis-aligned bounding box defined by min/max corners or x/y/width/height.
+
+```typescript
+new AABB(x?: number, y?: number, width?: number, height?: number)
+```
+
+All values default to 0. Width and height must be >= 0.
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `x` | `number` | Left edge (minx). Setting shifts box horizontally. |
+| `y` | `number` | Top edge (miny). Setting shifts box vertically. |
+| `width` | `number` | Width (maxx - minx). Must be >= 0. |
+| `height` | `number` | Height (maxy - miny). Must be >= 0. |
+| `min` | `Vec2` | Top-left corner as live Vec2 (mutating updates AABB). |
+| `max` | `Vec2` | Bottom-right corner as live Vec2 (mutating updates AABB). |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `copy()` | `AABB` | Return a new AABB with the same bounds. |
+
+---
+
+### Ray
+
+Ray for raycasting queries with origin, direction, and optional maximum distance.
+
+```typescript
+new Ray(origin: Vec2, direction: Vec2)
+```
+
+#### Static Factories
+
+```typescript
+Ray.fromSegment(start: Vec2, end: Vec2): Ray
+```
+Create a ray from a line segment.
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `origin` | `Vec2` | World-space start point |
+| `direction` | `Vec2` | Direction vector |
+| `maxDistance` | `number` | Maximum cast distance (default: infinity) |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `aabb()` | `AABB` | Bounding box of the ray |
+| `at(t: number, weak?: boolean)` | `Vec2` | Point along ray at parameter t |
+| `copy()` | `Ray` | Create a copy |
+
+---
+
+### Mat23
+
+2×3 affine transformation matrix for 2D transforms.
+
+```typescript
+new Mat23(a?: number, b?: number, c?: number, d?: number, tx?: number, ty?: number)
+```
+
+Represents: `| a  b  tx |`
+            `| c  d  ty |`
+
+#### Static Factories
+
+```typescript
+Mat23.rotation(angle: number): Mat23
+Mat23.translation(tx: number, ty: number): Mat23
+Mat23.scale(sx: number, sy: number): Mat23
+```
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `a`, `b`, `c`, `d` | `number` | Rotation/scale components |
+| `tx`, `ty` | `number` | Translation components |
+| `determinant` | `number` | Matrix determinant |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `copy()` | `Mat23` | Copy this matrix |
+| `set(m: Mat23)` | `this` | Copy from another matrix |
+| `setAs(a, b, c, d, tx, ty)` | `this` | Set all components |
+| `reset()` | `this` | Set to identity |
+| `singular()` | `boolean` | True if non-invertible |
+| `inverse()` | `Mat23` | Return inverse matrix |
+| `transpose()` | `Mat23` | Return transposed matrix |
+| `concat(m: Mat23)` | `Mat23` | Return this * m |
+| `transform(v: Vec2, weak?)` | `Vec2` | Transform a point |
+| `inverseTransform(v: Vec2, weak?)` | `Vec2` | Inverse-transform a point |
+| `orthogonal()` | `boolean` | Test orthogonality |
+| `equiorthogonal()` | `boolean` | Test equi-orthogonality |
+| `orthogonalise()` | `this` | Make orthogonal in-place |
+| `equiorthogonalise()` | `this` | Make equi-orthogonal in-place |
+
+---
+
+### MatMN
+
+Variable M×N matrix for constraint math.
+
+```typescript
+new MatMN(rows: number, cols: number)
+```
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `x(row, col)` | `number` | Get element |
+| `setx(row, col, value)` | `void` | Set element |
+| `transpose()` | `MatMN` | Return transposed matrix |
+| `mul(m: MatMN)` | `MatMN` | Return this * m |
+
+---
+
+### Geom
+
+Static geometry utility class.
+
+```typescript
+Geom.distanceBody(body1: Body, body2: Body, out1?: Vec2, out2?: Vec2): number
+Geom.distance(shape1: Shape, shape2: Shape, out1?: Vec2, out2?: Vec2): number
+Geom.intersectsBody(body1: Body, body2: Body): boolean
+Geom.intersects(shape1: Shape, shape2: Shape): boolean
+Geom.contains(shape1: Shape, shape2: Shape): boolean
+```
+
+---
+
+### GeomPoly
+
+Polygon data container for geometry operations (decomposition, winding, containment).
+
+```typescript
+new GeomPoly(vertices?: Array<Vec2> | Vec2List | GeomPoly)
+```
+
+#### Properties and Methods
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `empty()` | `boolean` | True if no vertices |
+| `size()` | `number` | Vertex count |
+| `area()` | `number` | Signed area |
+| `winding()` | `Winding` | CLOCKWISE or COUNTER_CLOCKWISE |
+| `contains(point: Vec2)` | `boolean` | Point-in-polygon test |
+| `isClockwise()` | `boolean` | Clockwise winding |
+| `isConvex()` | `boolean` | Convexity test |
+| `isSimple()` | `boolean` | Simple polygon test |
+| `simplify(tolerance)` | `GeomPoly` | Simplify polygon |
+| `convexDecomposition()` | `GeomPolyList` | Decompose into convex parts |
+| `triangularDecomposition()` | `GeomPolyList` | Triangulate |
+| `inflate(distance)` | `GeomPoly` | Offset polygon |
+| `transform(matrix: Mat23)` | `GeomPoly` | Apply transformation |
+
+---
+
+### MarchingSquares
+
+Isosurface extraction from scalar fields.
+
+```typescript
+MarchingSquares.run(
+  iso: (x: number, y: number) => number,
+  bounds: AABB,
+  cellsize: Vec2,
+  quality?: number,
+  subgrid?: Vec2,
+  combine?: boolean,
+  output?: GeomPolyList
+): GeomPolyList
+```
+
+---
+
+## Physics Types
+
+### Body
+
+Rigid body in the physics world. Can be DYNAMIC, STATIC, or KINEMATIC.
+
+```typescript
+new Body(type?: BodyType, position?: Vec2)
+```
+
+#### Properties
+
+| Property | Type | R/W | Description |
+|----------|------|-----|-------------|
+| `type` | `BodyType` | R/W | DYNAMIC, STATIC, or KINEMATIC |
+| `position` | `Vec2` | R/W | World-space position (live Vec2) |
+| `rotation` | `number` | R/W | Rotation in radians |
+| `velocity` | `Vec2` | R/W | Linear velocity (live Vec2) |
+| `angularVel` | `number` | R/W | Angular velocity (rad/s) |
+| `force` | `Vec2` | R/W | Accumulated force (live Vec2) |
+| `torque` | `number` | R/W | Accumulated torque |
+| `mass` | `number` | R/W | Total mass |
+| `inertia` | `number` | R/W | Rotational inertia |
+| `massMode` | `MassMode` | R/W | DEFAULT or FIXED |
+| `inertiaMode` | `InertiaMode` | R/W | DEFAULT or FIXED |
+| `gravMassMode` | `GravMassMode` | R/W | DEFAULT, FIXED, or SCALED |
+| `gravMass` | `number` | R/W | Gravity mass (when gravMassMode is FIXED) |
+| `gravMassScale` | `number` | R/W | Gravity mass scale (when gravMassMode is SCALED) |
+| `shapes` | `NapeList<Shape>` | R | Attached shapes |
+| `constraints` | `NapeList<Constraint>` | R | Connected constraints |
+| `arbiters` | `NapeList<Arbiter>` | R | Active interaction arbiters |
+| `compound` | `Compound \| null` | R/W | Parent compound |
+| `space` | `Space \| null` | R/W | Parent space (set to add body to world) |
+| `isSleeping` | `boolean` | R | True if body is asleep |
+| `isStatic` | `boolean` | R | True if type is STATIC |
+| `isDynamic` | `boolean` | R | True if type is DYNAMIC |
+| `isKinematic` | `boolean` | R | True if type is KINEMATIC |
+| `worldCOM` | `Vec2` | R | World-space center of mass (live Vec2) |
+| `localCOM` | `Vec2` | R/W | Local-space center of mass |
+| `kinematicVel` | `Vec2` | R/W | Kinematic velocity (live Vec2) |
+| `kinAngVel` | `number` | R/W | Kinematic angular velocity |
+| `surfaceVel` | `Vec2` | R/W | Surface velocity (for conveyor belt effects) |
+| `cbTypes` | `NapeList<CbType>` | R | Callback type tags |
+| `group` | `InteractionGroup \| null` | R/W | Interaction group |
+| `userData` | `Record<string, unknown>` | R | User data object |
+| `allowMovement` | `boolean` | R/W | If false, body cannot translate |
+| `allowRotation` | `boolean` | R/W | If false, body cannot rotate |
+| `bounds` | `AABB` | R | World-space axis-aligned bounding box |
+| `id` | `number` | R | Unique body identifier |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `applyImpulse(impulse: Vec2, pos?: Vec2)` | `void` | Apply a linear impulse at a world point |
+| `applyAngularImpulse(impulse: number)` | `void` | Apply an angular impulse |
+| `setVelocityFromTarget(target: Vec2, targetRotation: number, dt: number)` | `void` | Set velocity to reach target position/rotation in dt seconds |
+| `rotate(centre: Vec2, angle: number)` | `Body` | Rotate body around a world point |
+| `translate(displacement: Vec2)` | `Body` | Translate body by displacement |
+| `localPointToWorld(point: Vec2, weak?: boolean)` | `Vec2` | Convert local point to world coordinates |
+| `worldPointToLocal(point: Vec2, weak?: boolean)` | `Vec2` | Convert world point to local coordinates |
+| `localVectorToWorld(vector: Vec2, weak?: boolean)` | `Vec2` | Convert local vector to world coordinates |
+| `worldVectorToLocal(vector: Vec2, weak?: boolean)` | `Vec2` | Convert world vector to local coordinates |
+| `contains(point: Vec2)` | `boolean` | Test if any shape contains the point |
+| `copy()` | `Body` | Deep copy the body (shapes, constraints copied) |
+| `validateShapes()` | `void` | Validate all attached shapes |
+| `wake()` | `void` | Wake a sleeping body |
+
+---
+
+### BodyType (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `BodyType.STATIC` | Immovable body, infinite mass |
+| `BodyType.DYNAMIC` | Fully simulated body affected by forces and collisions |
+| `BodyType.KINEMATIC` | Moved by code only (not affected by forces), but interacts with dynamic bodies |
+
+---
+
+### Material
+
+Physical material properties applied to shapes.
+
+```typescript
+new Material(
+  elasticity?: number,      // Bounciness (0 = no bounce, 1 = perfect bounce). Default: 0.0
+  dynamicFriction?: number, // Kinetic friction coefficient. Default: 1.0
+  staticFriction?: number,  // Static friction coefficient. Default: 2.0
+  density?: number,         // Mass per unit area. Default: 1.0
+  rollingFriction?: number  // Rolling friction coefficient. Default: 0.001
+)
+```
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `elasticity` | `number` | Bounciness. Combined per-pair: `max(e1, e2)` if either > 0, else `e1 * e2`. |
+| `dynamicFriction` | `number` | Kinetic friction. Combined: `sqrt(f1 * f2)`. Must be >= 0. |
+| `staticFriction` | `number` | Static friction. Combined: `sqrt(f1 * f2)`. Must be >= 0. |
+| `density` | `number` | Mass per area. Must be > 0. Internally stored as `value / 1000`. |
+| `rollingFriction` | `number` | Rolling friction. Combined: `sqrt(f1 * f2)`. Must be >= 0. |
+| `userData` | `Record<string, unknown>` | User data. |
+
+#### Static Presets
+
+```typescript
+Material.wood()    // elasticity=0.4, dynamicFriction=0.2, staticFriction=0.4, density=0.5, rollingFriction=0.001
+Material.steel()   // elasticity=0.2, dynamicFriction=0.57, staticFriction=0.74, density=7.8, rollingFriction=0.001
+Material.ice()     // elasticity=0.3, dynamicFriction=0.03, staticFriction=0.1, density=0.9, rollingFriction=0.0001
+Material.rubber()  // elasticity=0.8, dynamicFriction=1.0, staticFriction=1.0, density=1.5, rollingFriction=0.01
+Material.glass()   // elasticity=0.4, dynamicFriction=0.94, staticFriction=0.94, density=2.6, rollingFriction=0.002
+Material.sand()    // elasticity=0.05, dynamicFriction=0.6, staticFriction=0.8, density=1.6, rollingFriction=0.5
+```
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `copy()` | `Material` | Deep copy |
+
+---
+
+### FluidProperties
+
+Fluid simulation parameters for sensor-enabled shapes.
+
+```typescript
+new FluidProperties(density?: number, viscosity?: number)
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `density` | `number` | Fluid density (buoyancy). Default: 2.0 |
+| `viscosity` | `number` | Fluid viscosity (drag). Default: 3.0 |
+| `gravity` | `Vec2` | Override gravity inside fluid (live Vec2) |
+| `shapes` | `NapeList<Shape>` | Shapes using these properties |
+| `userData` | `Record<string, unknown>` | User data |
+
+---
+
+### Compound
+
+Hierarchical grouping of bodies, constraints, and sub-compounds.
+
+```typescript
+new Compound()
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `bodies` | `NapeList<Body>` | Child bodies |
+| `constraints` | `NapeList<Constraint>` | Child constraints |
+| `compounds` | `NapeList<Compound>` | Child compounds |
+| `compound` | `Compound \| null` | Parent compound |
+| `space` | `Space \| null` | Parent space |
+| `cbTypes` | `NapeList<CbType>` | Callback type tags |
+| `userData` | `Record<string, unknown>` | User data |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `copy()` | `Compound` | Deep copy |
+| `breakApart()` | `void` | Flatten: move all children to parent space/compound |
+| `visitBodies(fn)` | `void` | Call fn for every body (recursive) |
+| `visitConstraints(fn)` | `void` | Call fn for every constraint (recursive) |
+| `visitCompounds(fn)` | `void` | Call fn for every sub-compound (recursive) |
+| `COM(weak?)` | `Vec2` | Center of mass of all bodies |
+| `translate(displacement: Vec2)` | `void` | Translate all bodies |
+| `rotate(centre: Vec2, angle: number)` | `void` | Rotate all bodies around point |
+
+---
+
+### Interactor (Base Class)
+
+Base class for Body, Shape, Compound. Provides interaction tagging.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `number` | Unique identifier |
+| `userData` | `Record<string, unknown>` | User data |
+| `group` | `InteractionGroup \| null` | Interaction group |
+| `cbTypes` | `NapeList<CbType>` | Callback type tags |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `isShape()` | `boolean` | Type check |
+| `isBody()` | `boolean` | Type check |
+| `isCompound()` | `boolean` | Type check |
+| `castBody` | `Body \| null` | Cast to Body |
+| `castShape` | `Shape \| null` | Cast to Shape |
+| `castCompound` | `Compound \| null` | Cast to Compound |
+
+---
+
+### MassMode / InertiaMode / GravMassMode (Enums)
+
+**MassMode**: `DEFAULT` (auto-calculated from shapes) | `FIXED` (user-set)
+
+**InertiaMode**: `DEFAULT` (auto-calculated) | `FIXED` (user-set)
+
+**GravMassMode**: `DEFAULT` (use mass) | `FIXED` (user-set gravMass) | `SCALED` (mass * gravMassScale)
+
+---
+
+## Shape Types
+
+### Shape (Base Class)
+
+Base class for Circle and Polygon. Cannot be instantiated directly.
+
+| Property | Type | R/W | Description |
+|----------|------|-----|-------------|
+| `type` | `ShapeType` | R | CIRCLE or POLYGON |
+| `body` | `Body \| null` | R/W | Parent body (set to attach) |
+| `worldCOM` | `Vec2` | R | World-space center of mass |
+| `localCOM` | `Vec2` | R/W | Local-space center of mass |
+| `area` | `number` | R | Shape area |
+| `inertia` | `number` | R | Rotational inertia |
+| `angDrag` | `number` | R | Angular drag coefficient |
+| `bounds` | `AABB` | R | World-space bounding box |
+| `material` | `Material` | R/W | Physical material |
+| `filter` | `InteractionFilter` | R/W | Collision/sensor/fluid filter |
+| `fluidProperties` | `FluidProperties` | R/W | Fluid properties |
+| `fluidEnabled` | `boolean` | R/W | Enable fluid interaction |
+| `sensorEnabled` | `boolean` | R/W | Enable sensor mode (detects overlap without physical response) |
+| `cbTypes` | `NapeList<CbType>` | R | Callback type tags |
+| `userData` | `Record<string, unknown>` | R | User data |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `isCircle()` | `boolean` | Type check |
+| `isPolygon()` | `boolean` | Type check |
+| `castCircle` | `Circle \| null` | Cast to Circle |
+| `castPolygon` | `Polygon \| null` | Cast to Polygon |
+| `contains(point: Vec2)` | `boolean` | Point containment test |
+| `translate(displacement: Vec2)` | `Shape` | Translate localCOM |
+| `scale(sx: number, sy: number)` | `Shape` | Scale shape |
+| `rotate(angle: number)` | `Shape` | Rotate shape |
+| `transform(matrix: Mat23)` | `Shape` | Apply matrix transform |
+| `copy()` | `Shape` | Deep copy |
+
+---
+
+### Circle
+
+Circular collision shape.
+
+```typescript
+new Circle(
+  radius?: number,              // Default: 50
+  localCOM?: Vec2,              // Local offset from body center
+  material?: Material,          // Physical material
+  filter?: InteractionFilter    // Interaction filter
+)
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `radius` | `number` | Circle radius. Must be > 0. |
+
+All Shape properties are inherited.
+
+---
+
+### Polygon
+
+Convex polygon collision shape.
+
+```typescript
+new Polygon(
+  localVerts?: Array<Vec2> | Vec2List | GeomPoly,
+  material?: Material,
+  filter?: InteractionFilter
+)
+```
+
+#### Static Factories
+
+```typescript
+Polygon.box(width: number, height: number, weak?: boolean): Array<Vec2>
+```
+Create vertices for an axis-aligned rectangle centered at origin.
+
+```typescript
+Polygon.rect(x: number, y: number, width: number, height: number, weak?: boolean): Array<Vec2>
+```
+Create vertices for a rectangle at (x, y).
+
+```typescript
+Polygon.regular(xRadius: number, yRadius: number, edgeCount: number, angleOffset?: number, weak?: boolean): Array<Vec2>
+```
+Create vertices for a regular polygon.
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `localVerts` | `Vec2List` | Vertices in local coordinates |
+| `worldVerts` | `Vec2List` | Vertices in world coordinates (read-only) |
+| `edges` | `EdgeList` | Polygon edges (read-only) |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `validity()` | `ValidationResult` | Check if polygon is valid (VALID, DEGENERATE, CONCAVE, SELF_INTERSECTING) |
+
+---
+
+### Edge (Read-Only)
+
+Polygon edge data. Obtained from `polygon.edges`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `polygon` | `Polygon` | Parent polygon |
+| `localNormal` | `Vec2` | Edge normal in local space |
+| `worldNormal` | `Vec2` | Edge normal in world space |
+| `length` | `number` | Edge length |
+| `localProjection` | `number` | Normal projection in local space |
+| `worldProjection` | `number` | Normal projection in world space |
+| `localVertex1`, `localVertex2` | `Vec2` | Endpoints in local space |
+| `worldVertex1`, `worldVertex2` | `Vec2` | Endpoints in world space |
+
+---
+
+### ShapeType (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `ShapeType.CIRCLE` | Circular shape |
+| `ShapeType.POLYGON` | Polygon shape |
+
+---
+
+### ValidationResult (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `ValidationResult.VALID` | Polygon is valid |
+| `ValidationResult.DEGENERATE` | Polygon has degenerate geometry (colinear points, zero area) |
+| `ValidationResult.CONCAVE` | Polygon is concave (must be convex) |
+| `ValidationResult.SELF_INTERSECTING` | Polygon edges cross |
+
+---
+
+## Constraint Types
+
+### Constraint (Base Class)
+
+Base class for all joints. Cannot be instantiated directly.
+
+#### Properties
+
+| Property | Type | R/W | Description |
+|----------|------|-----|-------------|
+| `active` | `boolean` | R/W | Enable/disable constraint |
+| `stiff` | `boolean` | R/W | If true, hard constraint. If false, spring-like. |
+| `frequency` | `number` | R/W | Spring frequency in Hz (when stiff=false). Must be > 0. |
+| `damping` | `number` | R/W | Damping ratio (when stiff=false). 0=no damping, 1=critical. Must be >= 0. |
+| `maxForce` | `number` | R/W | Maximum constraint force. Default: infinity. |
+| `maxError` | `number` | R/W | Maximum positional error before breaking. Default: infinity. |
+| `breakUnderForce` | `boolean` | R/W | Break constraint when maxForce exceeded. |
+| `breakUnderError` | `boolean` | R/W | Break constraint when maxError exceeded. |
+| `removeOnBreak` | `boolean` | R/W | Remove from space when broken. |
+| `isSleeping` | `boolean` | R | True if constraint is asleep |
+| `space` | `Space \| null` | R/W | Parent space (set to add to world) |
+| `compound` | `Compound \| null` | R/W | Parent compound |
+| `cbTypes` | `NapeList<CbType>` | R | Callback type tags |
+| `userData` | `Record<string, unknown>` | R | User data |
+| `debugDraw` | `boolean` | R/W | Enable debug drawing |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `impulse()` | `MatMN` | Current constraint impulse |
+| `bodyImpulse(body: Body)` | `Vec3` | Impulse on a specific body |
+| `visitBodies(fn: (body: Body) => void)` | `void` | Iterate connected bodies |
+| `copy()` | `Constraint` | Deep copy |
+
+---
+
+### PivotJoint
+
+Pin two bodies at a shared anchor point (hinge/pin joint).
+
+```typescript
+new PivotJoint(body1?: Body, body2?: Body, anchor1?: Vec2, anchor2?: Vec2)
+```
+
+Constrains two anchor points to remain coincident. 2 degrees of freedom.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` | `Body \| null` | First body (null = world) |
+| `body2` | `Body \| null` | Second body (null = world) |
+| `anchor1` | `Vec2` | Anchor point in body1 local coords |
+| `anchor2` | `Vec2` | Anchor point in body2 local coords |
+
+---
+
+### DistanceJoint
+
+Constrain distance between two anchor points.
+
+```typescript
+new DistanceJoint(
+  body1?: Body, body2?: Body,
+  anchor1?: Vec2, anchor2?: Vec2,
+  jointMin?: number, jointMax?: number
+)
+```
+
+Enforces: `jointMin <= distance(anchor1, anchor2) <= jointMax`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` | `Body \| null` | First body |
+| `body2` | `Body \| null` | Second body |
+| `anchor1` | `Vec2` | Anchor on body1 |
+| `anchor2` | `Vec2` | Anchor on body2 |
+| `jointMin` | `number` | Minimum allowed distance |
+| `jointMax` | `number` | Maximum allowed distance |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `isSlack()` | `boolean` | True if constraint is not active (distance within limits) |
+
+---
+
+### AngleJoint
+
+Constrain relative rotation angle between two bodies.
+
+```typescript
+new AngleJoint(
+  body1?: Body, body2?: Body,
+  jointMin?: number, jointMax?: number,
+  ratio?: number
+)
+```
+
+Enforces: `jointMin <= body2.rotation - ratio * body1.rotation <= jointMax`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` | `Body \| null` | First body |
+| `body2` | `Body \| null` | Second body |
+| `jointMin` | `number` | Minimum relative angle (radians) |
+| `jointMax` | `number` | Maximum relative angle (radians) |
+| `ratio` | `number` | Gear ratio (default 1.0) |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `isSlack()` | `boolean` | True if constraint is not active |
+
+---
+
+### WeldJoint
+
+Fix relative position and rotation (rigid weld).
+
+```typescript
+new WeldJoint(
+  body1?: Body, body2?: Body,
+  anchor1?: Vec2, anchor2?: Vec2,
+  phase?: number
+)
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` | `Body \| null` | First body |
+| `body2` | `Body \| null` | Second body |
+| `anchor1` | `Vec2` | Anchor on body1 |
+| `anchor2` | `Vec2` | Anchor on body2 |
+| `phase` | `number` | Target relative angle offset (radians, default 0) |
+
+---
+
+### MotorJoint
+
+Drive relative angular velocity to a target rate.
+
+```typescript
+new MotorJoint(body1?: Body, body2?: Body, rate?: number, ratio?: number)
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` | `Body \| null` | First body |
+| `body2` | `Body \| null` | Second body |
+| `rate` | `number` | Target angular velocity (rad/s, default 0) |
+| `ratio` | `number` | Gear ratio (default 1.0) |
+
+---
+
+### LineJoint
+
+Constrain body2's anchor to slide along a line through body1's anchor.
+
+```typescript
+new LineJoint(
+  body1?: Body, body2?: Body,
+  anchor1?: Vec2, anchor2?: Vec2,
+  direction?: Vec2,
+  jointMin?: number, jointMax?: number
+)
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` | `Body \| null` | Body defining the line |
+| `body2` | `Body \| null` | Body constrained to the line |
+| `anchor1` | `Vec2` | Line origin on body1 |
+| `anchor2` | `Vec2` | Anchor on body2 |
+| `direction` | `Vec2` | Line direction (local to body1) |
+| `jointMin` | `number` | Minimum displacement along line |
+| `jointMax` | `number` | Maximum displacement along line |
+
+---
+
+### PulleyJoint
+
+Constrain weighted sum of two distances (rope/pulley system).
+
+```typescript
+new PulleyJoint(
+  body1?: Body, body2?: Body, body3?: Body, body4?: Body,
+  anchor1?: Vec2, anchor2?: Vec2, anchor3?: Vec2, anchor4?: Vec2,
+  jointMin?: number, jointMax?: number,
+  ratio?: number
+)
+```
+
+Enforces: `jointMin <= dist(body1.anchor1, body2.anchor2) + ratio * dist(body3.anchor3, body4.anchor4) <= jointMax`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body1` - `body4` | `Body \| null` | Four bodies (null = world) |
+| `anchor1` - `anchor4` | `Vec2` | Four anchor points |
+| `jointMin` | `number` | Minimum combined distance |
+| `jointMax` | `number` | Maximum combined distance |
+| `ratio` | `number` | Weight ratio for second distance (default 1.0) |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `isSlack()` | `boolean` | True if constraint is not active |
+
+---
+
+## Callbacks & Events
+
+### CbType
+
+Callback type tag. Attach to bodies, shapes, or constraints to control which events trigger listeners.
+
+```typescript
+new CbType()
+```
+
+#### Static Singletons
+
+| Singleton | Description |
+|-----------|-------------|
+| `CbType.ANY_BODY` | Matches all bodies |
+| `CbType.ANY_SHAPE` | Matches all shapes |
+| `CbType.ANY_COMPOUND` | Matches all compounds |
+| `CbType.ANY_CONSTRAINT` | Matches all constraints (must be manually added to constraints) |
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `number` | Unique identifier |
+| `userData` | `Record<string, unknown>` | User data |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `including(types...)` | `OptionType` | Create filter matching this AND given types |
+| `excluding(types...)` | `OptionType` | Create filter matching this but NOT given types |
+
+---
+
+### CbEvent (Enum)
+
+| Value | Description | Used with |
+|-------|-------------|-----------|
+| `CbEvent.BEGIN` | Interaction just started | InteractionListener |
+| `CbEvent.ONGOING` | Interaction continues | InteractionListener |
+| `CbEvent.END` | Interaction ended | InteractionListener |
+| `CbEvent.WAKE` | Body woke up | BodyListener |
+| `CbEvent.SLEEP` | Body fell asleep | BodyListener |
+| `CbEvent.BREAK` | Constraint broke | ConstraintListener |
+| `CbEvent.PRE` | Pre-collision phase | PreListener (internal) |
+
+---
+
+### InteractionType (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `InteractionType.COLLISION` | Physical collision |
+| `InteractionType.SENSOR` | Overlap detection only (no physics response) |
+| `InteractionType.FLUID` | Fluid interaction (buoyancy, drag) |
+| `InteractionType.ANY` | Match any interaction type |
+
+---
+
+### InteractionListener
+
+Listen for collision, sensor, or fluid interaction events.
+
+```typescript
+new InteractionListener(
+  event: CbEvent,                    // BEGIN, ONGOING, or END
+  interactionType: InteractionType,  // COLLISION, SENSOR, FLUID, or ANY
+  options1: CbType | OptionType,     // Filter for first interactor
+  options2: CbType | OptionType,     // Filter for second interactor
+  handler: (cb: InteractionCallback) => void,
+  precedence?: number                // Lower runs first (default 0)
+)
+```
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `options1` | `OptionType` | Filter for first interactor |
+| `options2` | `OptionType` | Filter for second interactor |
+| `handler` | `Function` | Callback function |
+| `interactionType` | `InteractionType` | Event interaction type |
+| `allowSleepingCallbacks` | `boolean` | Fire callbacks even for sleeping interactions |
+
+#### Example
+
+```typescript
+const ct = new CbType();
+ball.cbTypes.add(ct);
+
+space.listeners.add(new InteractionListener(
+  CbEvent.BEGIN,
+  InteractionType.COLLISION,
+  ct,
+  CbType.ANY_BODY,
+  (cb) => {
+    console.log("Ball hit something!");
+    const arb = cb.arbiters.at(0).collisionArbiter;
+    console.log("Normal:", arb.normal.x, arb.normal.y);
+  }
+));
+```
+
+---
+
+### BodyListener
+
+Listen for body wake/sleep events.
+
+```typescript
+new BodyListener(
+  event: CbEvent,                    // WAKE or SLEEP
+  options: CbType | OptionType,      // Filter
+  handler: (cb: BodyCallback) => void,
+  precedence?: number
+)
+```
+
+---
+
+### ConstraintListener
+
+Listen for constraint events (BREAK, WAKE, SLEEP).
+
+```typescript
+new ConstraintListener(
+  event: CbEvent,                    // WAKE, SLEEP, or BREAK
+  options: CbType | OptionType,      // Filter
+  handler: (cb: ConstraintCallback) => void,
+  precedence?: number
+)
+```
+
+---
+
+### PreListener
+
+Pre-collision handler for filtering or modifying collisions before the solver runs.
+
+```typescript
+new PreListener(
+  interactionType: InteractionType,
+  options1: CbType | OptionType,
+  options2: CbType | OptionType,
+  handler: (cb: PreCallback) => PreFlag | null,
+  precedence?: number,
+  pure?: boolean   // If true, result is cached (default false)
+)
+```
+
+Return `PreFlag.ACCEPT`, `PreFlag.IGNORE`, `PreFlag.ACCEPT_ONCE`, or `PreFlag.IGNORE_ONCE` to control collision response.
+
+---
+
+### InteractionCallback
+
+Received by InteractionListener handlers.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `int1` | `Interactor` | First interactor (body, shape, or compound) |
+| `int2` | `Interactor` | Second interactor |
+| `arbiters` | `ArbiterList` | All arbiters for this interaction |
+
+---
+
+### BodyCallback
+
+Received by BodyListener handlers.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `body` | `Body` | The body that woke or slept |
+
+---
+
+### ConstraintCallback
+
+Received by ConstraintListener handlers.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `constraint` | `Constraint` | The constraint that broke |
+
+---
+
+### PreCallback
+
+Received by PreListener handlers.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `arbiter` | `Arbiter` | The arbiter (mutable — modify collision properties here) |
+| `int1` | `Interactor` | First interactor |
+| `int2` | `Interactor` | Second interactor |
+| `swapped` | `boolean` | True if int1/int2 are swapped relative to listener definition |
+
+---
+
+### PreFlag (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `PreFlag.ACCEPT` | Allow collision (permanent) |
+| `PreFlag.IGNORE` | Ignore collision (permanent) |
+| `PreFlag.ACCEPT_ONCE` | Allow collision (re-evaluate next step) |
+| `PreFlag.IGNORE_ONCE` | Ignore collision (re-evaluate next step) |
+
+---
+
+## Collision & Dynamics
+
+### Arbiter (Base Class)
+
+Interaction data between two shapes. Pooled — do not hold references after `space.step()`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `ArbiterType` | COLLISION, SENSOR, or FLUID |
+| `shape1` | `Shape` | First shape |
+| `shape2` | `Shape` | Second shape |
+| `body1` | `Body` | First body |
+| `body2` | `Body` | Second body |
+| `isSleeping` | `boolean` | True if interaction is sleeping |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `isCollisionArbiter()` | `boolean` | Type check |
+| `isFluidArbiter()` | `boolean` | Type check |
+| `isSensorArbiter()` | `boolean` | Type check |
+| `collisionArbiter` | `CollisionArbiter` | Cast (throws if wrong type) |
+| `fluidArbiter` | `FluidArbiter` | Cast (throws if wrong type) |
+| `totalImpulse(body?, freshOnly?)` | `Vec3` | Total impulse (x, y, angular) |
+
+---
+
+### CollisionArbiter
+
+Collision-specific arbiter with contact points and impulse data.
+
+| Property | Type | R/W | Description |
+|----------|------|-----|-------------|
+| `contacts` | `ContactList` | R | Active contact points |
+| `normal` | `Vec2` | R | Collision normal (shape1 → shape2) |
+| `radius` | `number` | R | Sum of shape radii |
+| `referenceEdge1` | `Edge \| null` | R | Reference edge on shape1 |
+| `referenceEdge2` | `Edge \| null` | R | Reference edge on shape2 |
+| `elasticity` | `number` | R/W* | Combined elasticity (* mutable in PreListener) |
+| `dynamicFriction` | `number` | R/W* | Combined dynamic friction |
+| `staticFriction` | `number` | R/W* | Combined static friction |
+| `rollingFriction` | `number` | R/W* | Combined rolling friction |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `normalImpulse(body?, freshOnly?)` | `Vec3` | Normal impulse |
+| `tangentImpulse(body?, freshOnly?)` | `Vec3` | Tangent (friction) impulse |
+| `rollingImpulse(body?, freshOnly?)` | `number` | Rolling friction impulse |
+| `totalImpulse(body?, freshOnly?)` | `Vec3` | Total impulse |
+| `firstVertex()` | `boolean` | True if contact is at first vertex |
+| `secondVertex()` | `boolean` | True if contact is at second vertex |
+
+---
+
+### FluidArbiter
+
+Fluid-specific arbiter with buoyancy and drag data.
+
+| Property | Type | R/W | Description |
+|----------|------|-----|-------------|
+| `position` | `Vec2` | R/W* | Center of overlap (* mutable in PreListener) |
+| `overlap` | `number` | R/W* | Overlap area in pixels² |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `buoyancyImpulse(body?)` | `Vec3` | Buoyancy impulse |
+| `dragImpulse(body?)` | `Vec3` | Drag impulse |
+| `totalImpulse(body?)` | `Vec3` | Total fluid impulse |
+
+---
+
+### Contact
+
+Single contact point between two colliding shapes.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `arbiter` | `CollisionArbiter` | Parent arbiter |
+| `position` | `Vec2` | World-space contact point |
+| `penetration` | `number` | Overlap depth (positive = overlapping) |
+| `fresh` | `boolean` | True if newly created this step |
+| `friction` | `number` | Friction at this contact |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `normalImpulse(body?)` | `Vec3` | Normal impulse at this contact |
+| `tangentImpulse(body?)` | `Vec3` | Tangent impulse at this contact |
+| `rollingImpulse(body?)` | `number` | Rolling impulse at this contact |
+| `totalImpulse(body?)` | `Vec3` | Total impulse at this contact |
+
+---
+
+### InteractionFilter
+
+Bitmask-based filtering for collision, sensor, and fluid interactions.
+
+```typescript
+new InteractionFilter(
+  collisionGroup?: number,  // Default: 1
+  collisionMask?: number,   // Default: -1 (all bits set)
+  sensorGroup?: number,     // Default: 1
+  sensorMask?: number,      // Default: -1
+  fluidGroup?: number,      // Default: 1
+  fluidMask?: number        // Default: -1
+)
+```
+
+Two shapes interact when: `(filter1.mask & filter2.group) != 0 && (filter2.mask & filter1.group) != 0`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `collisionGroup` | `number` | Collision group bits |
+| `collisionMask` | `number` | Collision mask bits |
+| `sensorGroup` | `number` | Sensor group bits |
+| `sensorMask` | `number` | Sensor mask bits |
+| `fluidGroup` | `number` | Fluid group bits |
+| `fluidMask` | `number` | Fluid mask bits |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `shouldCollide(other: InteractionFilter)` | `boolean` | Test collision interaction |
+| `shouldSense(other: InteractionFilter)` | `boolean` | Test sensor interaction |
+| `shouldFlow(other: InteractionFilter)` | `boolean` | Test fluid interaction |
+| `copy()` | `InteractionFilter` | Deep copy |
+
+---
+
+### InteractionGroup
+
+Hierarchical grouping for interaction control.
+
+```typescript
+new InteractionGroup(ignore?: boolean)
+```
+
+When two interactors share a common group ancestor with `ignore=true`, they don't interact.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `group` | `InteractionGroup \| null` | Parent group |
+| `ignore` | `boolean` | If true, members don't interact with each other |
+
+---
+
+### ArbiterType (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `ArbiterType.COLLISION` | Physical collision |
+| `ArbiterType.SENSOR` | Sensor overlap |
+| `ArbiterType.FLUID` | Fluid interaction |
+
+---
+
+## Space
+
+### Space
+
+Physics world. Create with gravity, add bodies/constraints, call `step(dt)` to simulate.
+
+```typescript
+new Space(gravity?: Vec2, broadphase?: Broadphase)
+```
+
+#### Properties
+
+| Property | Type | R/W | Description |
+|----------|------|-----|-------------|
+| `gravity` | `Vec2` | R/W | World gravity (live Vec2). Default: (0, 0). |
+| `broadphase` | `Broadphase` | R | SWEEP_AND_PRUNE or DYNAMIC_AABB_TREE |
+| `sortContacts` | `boolean` | R/W | Sort contacts for determinism. Default: true. |
+| `worldLinearDrag` | `number` | R/W | Global linear drag coefficient |
+| `worldAngularDrag` | `number` | R/W | Global angular drag coefficient |
+| `bodies` | `NapeList<Body>` | R | All bodies |
+| `liveBodies` | `NapeList<Body>` | R | Awake bodies |
+| `compounds` | `NapeList<Compound>` | R | All compounds |
+| `constraints` | `NapeList<Constraint>` | R | All constraints |
+| `liveConstraints` | `NapeList<Constraint>` | R | Awake constraints |
+| `world` | `Body` | R | Static world body (immovable anchor) |
+| `arbiters` | `ArbiterList` | R | Active arbiters |
+| `listeners` | `ListenerList` | R | Event listeners |
+| `timeStamp` | `number` | R | Number of step() calls |
+| `elapsedTime` | `number` | R | Cumulative simulated time |
+| `userData` | `Record<string, unknown>` | R | User data |
+
+#### Simulation
+
+```typescript
+step(deltaTime: number, velocityIterations?: number, positionIterations?: number): void
+```
+Advance simulation by `deltaTime` seconds. Iterations default to 10 each.
+
+```typescript
+clear(): void
+```
+Remove all bodies, constraints, compounds. Cannot be called during step().
+
+#### Visitors
+
+```typescript
+visitBodies(fn: (body: Body) => void): void      // All bodies including in compounds
+visitConstraints(fn: (c: Constraint) => void): void
+visitCompounds(fn: (c: Compound) => void): void
+```
+
+#### Spatial Queries
+
+```typescript
+// Point queries
+shapesUnderPoint(point: Vec2, filter?: InteractionFilter): ShapeList
+bodiesUnderPoint(point: Vec2, filter?: InteractionFilter): BodyList
+
+// AABB queries
+shapesInAABB(aabb: AABB, containment?: boolean, strict?: boolean, filter?: InteractionFilter): ShapeList
+bodiesInAABB(aabb: AABB, containment?: boolean, strict?: boolean, filter?: InteractionFilter): BodyList
+
+// Circle queries
+shapesInCircle(position: Vec2, radius: number, containment?: boolean, filter?: InteractionFilter): ShapeList
+bodiesInCircle(position: Vec2, radius: number, containment?: boolean, filter?: InteractionFilter): BodyList
+
+// Shape queries
+shapesInShape(shape: Shape, containment?: boolean, filter?: InteractionFilter): ShapeList
+bodiesInShape(shape: Shape, containment?: boolean, filter?: InteractionFilter): BodyList
+
+// Body queries (union of all shapes)
+shapesInBody(body: Body, filter?: InteractionFilter): ShapeList
+bodiesInBody(body: Body, filter?: InteractionFilter): BodyList
+```
+
+#### Raycasting
+
+```typescript
+rayCast(ray: Ray, inner?: boolean, filter?: InteractionFilter): RayResult | null
+rayMultiCast(ray: Ray, inner?: boolean, filter?: InteractionFilter): RayResultList
+```
+
+#### Convex Sweep
+
+```typescript
+convexCast(shape: Shape, deltaTime: number, liveSweep?: boolean, filter?: InteractionFilter): RayResult | null
+convexMultiCast(shape: Shape, deltaTime: number, liveSweep?: boolean, filter?: InteractionFilter): RayResultList
+```
+
+#### Interaction Type Query
+
+```typescript
+interactionType(shape1: Shape, shape2: Shape): InteractionType | null
+```
+
+---
+
+### Broadphase (Enum)
+
+| Value | Description |
+|-------|-------------|
+| `Broadphase.SWEEP_AND_PRUNE` | Good for many objects with little movement |
+| `Broadphase.DYNAMIC_AABB_TREE` | Good for dynamic scenes with varied object sizes |
+
+---
+
+## Collections
+
+### NapeList\<T\>
+
+Generic iterable list wrapping internal Haxe lists. Supports ES6 iteration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `length` | `number` | Number of elements |
+| `empty` | `boolean` | True if length is 0 |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `at(index: number)` | `T` | Get element by index |
+| `push(item: T)` | `boolean` | Add to end |
+| `pop()` | `T` | Remove from end |
+| `unshift(item: T)` | `boolean` | Add to beginning |
+| `shift()` | `T` | Remove from beginning |
+| `add(item: T)` | `boolean` | Add item |
+| `remove(item: T)` | `boolean` | Remove item |
+| `has(item: T)` | `boolean` | Check if contains item |
+| `clear()` | `void` | Remove all items |
+| `forEach(fn: (item: T) => void)` | `void` | Iterate all items |
+| `toArray()` | `T[]` | Convert to JavaScript array |
+| `[Symbol.iterator]()` | `Iterator<T>` | ES6 iteration support |
+
+#### Usage
+
+```typescript
+// Iterate with for...of
+for (const body of space.bodies) {
+  console.log(body.position.x, body.position.y);
+}
+
+// Indexed access
+const first = space.bodies.at(0);
+
+// Add/remove
+body.shapes.add(new Circle(20));
+body.shapes.remove(oldShape);
+
+// Convert to array
+const bodyArray = space.bodies.toArray();
+```
+
+---
+
+## Common Patterns
+
+### Adding Bodies to Space
+
+```typescript
+const body = new Body(BodyType.DYNAMIC, new Vec2(100, 100));
+body.shapes.add(new Circle(25));
+body.space = space;  // This adds the body to the space
+```
+
+### Removing Bodies
+
+```typescript
+body.space = null;  // Removes from space
+```
+
+### Applying Forces
+
+```typescript
+// Continuous force (applied per step)
+body.force.setxy(100, 0);
+
+// One-time impulse
+body.applyImpulse(new Vec2(500, 0));
+
+// Impulse at a point (creates torque)
+body.applyImpulse(new Vec2(0, -100), new Vec2(body.position.x + 10, body.position.y));
+```
+
+### Sensors
+
+```typescript
+const sensor = new Circle(50);
+sensor.sensorEnabled = true;
+body.shapes.add(sensor);
+
+space.listeners.add(new InteractionListener(
+  CbEvent.BEGIN, InteractionType.SENSOR,
+  CbType.ANY_BODY, CbType.ANY_BODY,
+  (cb) => console.log("Sensor triggered!")
+));
+```
+
+### Fluids
+
+```typescript
+const water = new Body(BodyType.STATIC, new Vec2(400, 400));
+const waterShape = new Polygon(Polygon.box(800, 200));
+waterShape.fluidEnabled = true;
+waterShape.fluidProperties = new FluidProperties(2.0, 3.0);
+waterShape.sensorEnabled = true;
+water.shapes.add(waterShape);
+water.space = space;
+```
+
+### Collision Layers
+
+```typescript
+const LAYER_PLAYER = 1;
+const LAYER_ENEMY = 2;
+const LAYER_BULLET = 4;
+
+// Player collides with enemy and bullet
+playerShape.filter = new InteractionFilter(LAYER_PLAYER, LAYER_ENEMY | LAYER_BULLET);
+
+// Enemy collides with player and bullet
+enemyShape.filter = new InteractionFilter(LAYER_ENEMY, LAYER_PLAYER | LAYER_BULLET);
+
+// Bullets collide with player and enemy (not each other)
+bulletShape.filter = new InteractionFilter(LAYER_BULLET, LAYER_PLAYER | LAYER_ENEMY);
+```
+
+### Spring Constraints
+
+```typescript
+const spring = new DistanceJoint(body1, body2,
+  new Vec2(0, 0), new Vec2(0, 0),
+  50, 100  // min/max distance
+);
+spring.stiff = false;      // Make it springy
+spring.frequency = 2.0;    // 2 Hz oscillation
+spring.damping = 0.5;      // Half critical damping
+spring.space = space;
+```
+
+### Raycasting
+
+```typescript
+const ray = new Ray(new Vec2(0, 300), new Vec2(1, 0));
+ray.maxDistance = 800;
+
+const result = space.rayCast(ray);
+if (result) {
+  console.log("Hit shape:", result.shape);
+  console.log("Hit point:", ray.at(result.distance));
+  console.log("Normal:", result.normal);
+}
+```
+
+### One-Way Platforms
+
+```typescript
+space.listeners.add(new PreListener(
+  InteractionType.COLLISION,
+  platformType, playerType,
+  (cb) => {
+    const arb = cb.arbiter.collisionArbiter;
+    // Only collide if player is above platform (normal points up)
+    if (arb.normal.y < 0) return PreFlag.ACCEPT;
+    return PreFlag.IGNORE;
+  }
+));
+```
+
+---
+
+## Exports
+
+All classes are available from the main entry point:
+
+```typescript
+import {
+  // Geometry
+  Vec2, Vec3, Mat23, MatMN, AABB, Ray,
+  ConvexResult, RayResult, Geom, GeomPoly,
+  Winding, MarchingSquares,
+
+  // Physics
+  Body, BodyType, Compound, Interactor,
+  Material, FluidProperties,
+  MassMode, InertiaMode, GravMassMode,
+
+  // Shapes
+  Shape, Circle, Polygon, Edge,
+  ShapeType, ValidationResult,
+
+  // Space
+  Space, Broadphase,
+
+  // Dynamics
+  Arbiter, CollisionArbiter, FluidArbiter,
+  Contact, ArbiterType,
+  InteractionFilter, InteractionGroup,
+
+  // Callbacks
+  CbEvent, CbType, Listener,
+  BodyListener, InteractionListener,
+  ConstraintListener, PreListener,
+  Callback, BodyCallback,
+  InteractionCallback, ConstraintCallback, PreCallback,
+  InteractionType, ListenerType, PreFlag, OptionType,
+
+  // Constraints
+  Constraint, PivotJoint, DistanceJoint,
+  AngleJoint, WeldJoint, MotorJoint,
+  LineJoint, PulleyJoint,
+
+  // Utilities
+  NapeList, VERSION
+} from "@newkrok/nape-js";
+```
