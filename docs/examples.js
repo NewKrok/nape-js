@@ -243,12 +243,15 @@ function createCard(demo) {
   // --- Render a static preview frame ---
   runner.renderPreview(demo);
 
-  // --- Play overlay click: start (demo is already loaded by renderPreview) ---
+  // --- Play overlay: start demo (already loaded by renderPreview) ---
   let started = false;
+
+  // Prevent wireInteraction's pointerdown from capturing the pointer,
+  // which would swallow the click event on desktop browsers.
+  overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
+
   overlay.addEventListener("click", () => {
-    if (!started) {
-      started = true;
-    }
+    started = true;
     runner.start();
     overlay.hidden = true;
     statsBar.hidden = false;
