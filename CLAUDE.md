@@ -110,13 +110,15 @@ the validated length from `ZPP_PublicList.user_length`.
 
 ### Priority 29: Test coverage — target ≥80% 🔶 In progress
 
-Steps 1–4 done (+813 tests, 2269 → 3082). All previously crashing APIs are now fixed and tested.
+Steps 1–5 done (+849 tests, 2269 → 3118). All previously crashing APIs are now fixed and tested.
 
-**Current coverage: ~54% statements** (was ~44.7% before Step 4 + bugfixes).
+**Current coverage: ~54.3% statements** (was ~44.7% before Step 4 + bugfixes).
 
-**Remaining gaps (Step 5):**
-- `ZPP_Cutter` ~1%, `ZPP_ColArbiter` ~18%, `ZPP_FluidArbiter` ~24%, `ZPP_Collide` ~21%
-- `ZPP_Space` deeper paths ~56%, `ZPP_Body` ~67%, `ZPP_Ray` ~44%
+**Step 5 (partial — 2026-03-11):** Added `ZPP_ColArbiter.test.ts` (+22 tests) and `ZPP_FluidArbiter.test.ts` (+14 tests), covering preStep/impulse/warm-start/pool/material paths.
+
+**Remaining gaps (Step 6):**
+- `ZPP_ColArbiter` ~18%→improving, `ZPP_FluidArbiter` ~24%→improving, `ZPP_Collide` ~21%
+- `ZPP_Space` deeper paths ~57%, `ZPP_Body` ~73%, `ZPP_Ray` ~44%, `ZPP_Broadphase` ~27%
 - Reaching ≥80% requires extensive ZPP native path tests
 
 ---
@@ -167,15 +169,15 @@ Scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`.
 
 ---
 
-### Priority 35: Type system improvements (Space.ts return types)
+### Priority 35: Type system improvements (Space.ts return types) ✅ Done
 
-**Effort: S | Impact: medium (DX) | Risk: low**
+Added `TypedListLike<T>` interface to `NapeListFactory.ts` and concrete type aliases
+(`BodyList`, `ShapeList`, `CompoundList`, `ConstraintList`, `ArbiterList`, `ListenerList`,
+`RayResultList`, `ConvexResultList`) in `src/util/listTypes.ts`.
 
-`Space.ts` returns `object` from 6 collection properties and ~18 query methods instead of
-concrete types (`BodyList`, `ShapeList`, `CompoundList`, `ConstraintList`, `ListenerList`,
-`RayResultList`, etc.). These should return properly typed values for better IDE support.
-
-**File:** `src/space/Space.ts`
+- `Space.ts`: 7 collection properties + 14 query methods → concrete list types
+- `Body.ts`: `connectedBodies()` / `interactingBodies()` → `BodyList`
+- All types exported from public API (`src/index.ts`)
 
 ---
 
@@ -217,12 +219,12 @@ State snapshot + restore: `space.toJSON()` / `Space.fromJSON(data)`:
 | P26 — Tree shaking                    | L      | large   | high   | ✅ Done           |
 | P27 — HaxeShims audit                 | S      | small   | low    | ✅ Done           |
 | P28 — API ergonomics (28a+28b+28c)    | M      | DX      | low    | ✅ Done           |
-| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 ~54% (Step 5 pending) |
+| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 ~54.3% (Step 6 pending, 3118 tests) |
 | P30 — TSDoc documentation             | L      | DX      | none   | ✅ Done           |
 | P31 — API ergonomics additions        | M      | DX      | low    | ✅ Done           |
 | P32 — Internal accessor cleanup       | S      | small   | low    | ✅ Done           |
 | P33 — Benchmark CI                    | M      | medium  | low    | ✅ Done           |
 | P34 — Granular tree shaking           | XL     | large   | high   | ❌ Cancelled      |
-| P35 — Type system improvements        | S      | DX      | low    | ⬜ Not started    |
+| P35 — Type system improvements        | S      | DX      | low    | ✅ Done           |
 | P36 — Server-side + demo examples     | M      | medium  | low    | ⬜ Not started    |
 | P37 — Serialization API               | L      | medium  | medium | ⬜ Not started    |
