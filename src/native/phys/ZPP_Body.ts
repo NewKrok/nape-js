@@ -360,8 +360,8 @@ export class ZPP_Body {
           const o = cur;
           o.data = null;
           o.lt = null;
-          o.next = ZPP_Body._zpp.util.ZPP_Set_ZPP_BodyNode.zpp_pool;
-          ZPP_Body._zpp.util.ZPP_Set_ZPP_BodyNode.zpp_pool = o;
+          o.next = ZPP_Body._zpp.util.ZPP_Set_ZPP_Body.zpp_pool;
+          ZPP_Body._zpp.util.ZPP_Set_ZPP_Body.zpp_pool = o;
           cur = ret1;
         }
       }
@@ -420,8 +420,8 @@ export class ZPP_Body {
           const o = cur;
           o.data = null;
           o.lt = null;
-          o.next = zpp.util.ZPP_Set_ZPP_BodyNode.zpp_pool;
-          zpp.util.ZPP_Set_ZPP_BodyNode.zpp_pool = o;
+          o.next = zpp.util.ZPP_Set_ZPP_Body.zpp_pool;
+          zpp.util.ZPP_Set_ZPP_Body.zpp_pool = o;
           cur = ret1;
         }
       }

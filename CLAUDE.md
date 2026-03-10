@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2913 tests across 142 files
+npm test             # vitest — 3082 tests across 145 files
 npm run lint         # eslint + prettier
 ```
 
@@ -45,7 +45,7 @@ tree-shakeable, and minified. Key facts:
 - **85 ZPP\_\* internal classes** in `src/native/`
 - **68 public API classes** in `src/` with direct `zpp_inner` access
 - **Bundle:** ~994 KB minified ESM + CJS, dual exports map, tree shaking via `bootstrap.ts`
-- **Tests:** 2913 passing across 142 files
+- **Tests:** 3082 passing across 145 files
 - **`strict: true`**, `tsc --noEmit` → 0 errors
 
 ### Key architectural patterns (reference)
@@ -81,115 +81,55 @@ by each of the 6 enum classes after self-registering; fires `_initEnums` once al
 - User-facing `userData` → `Record<string, unknown> | null`
 - Dynamic ZNPList/ZNPNode/ZPP_Set subclass fields → `any` (created at runtime)
 
+**Iterator loop pattern** (manual ZPP iterator — Body.ts style):
+
+```ts
+const iter = arbList.iterator();
+while (true) {
+  iter.zpp_inner.zpp_inner.valmod();
+  const length = iter.zpp_inner.zpp_gl();   // zpp_gl() is on TypedList (NapeListFactory)
+  iter.zpp_critical = true;
+  if (iter.zpp_i >= length) {
+    iter.zpp_next = getNape().dynamics.ArbiterIterator.zpp_pool;
+    getNape().dynamics.ArbiterIterator.zpp_pool = iter;
+    iter.zpp_inner = null;
+    break;
+  }
+  iter.zpp_critical = false;
+  const item = iter.zpp_inner.at(iter.zpp_i++);
+  // ... process item
+}
+```
+
+`zpp_gl()` is defined on `TypedList.prototype` in `src/util/NapeListFactory.ts` — it computes
+the validated length from `ZPP_PublicList.user_length`.
+
 ---
 
 ## Roadmap
 
-### 🔶 Priority 29: Test coverage — target ≥80% (Steps 1–2 done)
+### Priority 29: Test coverage — target ≥80% 🔶 In progress
 
-**Effort: L | Impact: safety | Risk: zero**
+Steps 1–4 done (+813 tests, 2269 → 3082). All previously crashing APIs are now fixed and tested.
 
-**Step 1 done** (+254 tests, 2269 → 2523): 13 missing public API test files created.
+**Current coverage: ~54% statements** (was ~44.7% before Step 4 + bugfixes).
 
-**Step 2 done** (+154 tests, 2523 → 2677; now 2736 with P31): `Body`, `AABB`,
-`FluidProperties`, `Material` test files expanded with deep property, validation, and
-round-trip coverage.
-
-**Key patterns discovered:**
-
-- Constraints do NOT auto-register `CbType.ANY_CONSTRAINT` — must use custom CbType + `(joint.cbTypes as any).add(ct)`
-- Fluid arbiters are transient — don't persist in `space.arbiters` after step; capture inside ONGOING callback
-- WAKE events require a sleep→wake transition, not just initial addition to space
-- `space.arbiters` returns a `ZPP_SpaceArbiterList` without a standard `.length` getter
-- Bodies inside compounds do NOT appear in `space.bodies` (top-level only); use `space.liveBodies` or `compound.bodies`
-- Joint body getters may return a different wrapper object — compare by `.id`, not reference equality
-- `interactionType()` returns the _potential_ type based on filters, not actual geometric overlap
-
-**Step 3 done** (+177 tests, 2736 → 2913): Space/broadphase integration tests + collision/arbiter + constraint coverage.
-
-Three new integration test files:
-
-- `tests/space/Space.integration.test.ts` (89 tests) — gravity, broadphase, spatial queries
-  (shapesUnderPoint, bodiesUnderPoint, shapesInAABB, bodiesInAABB, shapesInCircle, bodiesInCircle,
-  shapesInShape, bodiesInShape, shapesInBody, bodiesInBody), ray casting, convex casting,
-  compound management, sleep/wake, material properties, edge cases
-- `tests/dynamics/Collision.integration.test.ts` (38 tests) — contact behavior, interaction
-  filters (group/mask, InteractionGroup, sensor), callbacks (BEGIN/ONGOING/END, custom CbType,
-  pre-listeners with IGNORE/ACCEPT), fluid interaction (buoyancy, drag, overlap), island/sleep,
-  arbiter property access (normalImpulse, tangentImpulse, contacts, bodies, isSleeping)
-- `tests/constraint/Constraint.integration.test.ts` (50 tests) — AngleJoint, MotorJoint,
-  LineJoint, PulleyJoint, DistanceJoint, PivotJoint, WeldJoint extended coverage (impulse,
-  bodyImpulse, visitBodies, isSlack, breakUnderForce, soft constraints, chain integration)
-
-**Step 4 done** (+154 tests, 2913 → 3067): GeomPoly advanced, Island/Space integration, Body/Compound extended.
-
-Three new test files:
-
-- `tests/geom/GeomPoly.advanced.test.ts` (58 tests) — `simplify()` (drives ZPP_Simplify),
-  `isSimple()` deep coverage (drives ZPP_Simple), `simpleDecomposition()`, `cut()` (drives
-  ZPP_Cutter) with various geometries, bounded/unbounded cuts, edge cases
-- `tests/space/Island.integration.test.ts` (44 tests) — Space properties (worldLinearDrag,
-  worldAngularDrag, sortContacts, timeStamp, elapsedTime, world body), step edge cases,
-  liveBodies/liveConstraints, sleep/wake island transitions, joint-linked islands, compound
-  + island interaction, broadphase tree stress (ZPP_AABBTree, ZPP_SweepData, ZPP_Island)
-- `tests/phys/Body.extended.test.ts` (52 tests) — body type transitions in space, shape
-  manipulation in space, constraintVelocity, mass/inertia/gravMass mode interactions,
-  applyImpulse in simulation, Compound management (translate, rotate, copy, breakApart,
-  constraints), InteractionFilter, velocity tracking
-
-**Key patterns discovered in Step 4:**
-
-- `ZPP_Set_ZPP_BodyNode` is not registered in ZNPRegistry → `Body.connectedBodies()` and
-  `Body.interactingBodies()` crash when called; these need `ZPP_Set_ZPP_BodyNode` added
-- `ArbiterIterator` is not registered → `Body.normalImpulse()`, `tangentImpulse()`,
-  `rollingImpulse()` etc. crash; these require an `ArbiterIterator` pool in the nape namespace
-- `liveBodies` only includes DYNAMIC bodies (type 2); KINEMATIC bodies go to `staticsleep`
-- `MassMode.INFINITE` and `InertiaMode.INFINITE` do not exist (only DEFAULT and FIXED)
-- `constraintVelocity` returns `Vec2` (not Vec3)
-
-**Step 5 — Remaining coverage gaps (TODO):**
-
-- `ZPP_Cutter` still ~1% (cut tests exercise the run() entry, but its 1600-line body needs
-  many more polygon types to reach significant coverage)
-- `ZPP_ColArbiter` (~18%), `ZPP_FluidArbiter` (~24%), `ZPP_Collide` (~21%)
-- `ZPP_Space` deeper paths (~56%), `ZPP_Body` deeper paths (~67%), `ZPP_Ray` (~44%)
-- `Body.connectedBodies`, `Body.interactingBodies`, impulse query methods need
-  `ZPP_Set_ZPP_BodyNode` + `ArbiterIterator` registration to be testable
-- Overall coverage: ~44.7% → target ≥80% requires native ZNPRegistry additions
+**Remaining gaps (Step 5):**
+- `ZPP_Cutter` ~1%, `ZPP_ColArbiter` ~18%, `ZPP_FluidArbiter` ~24%, `ZPP_Collide` ~21%
+- `ZPP_Space` deeper paths ~56%, `ZPP_Body` ~67%, `ZPP_Ray` ~44%
+- Reaching ≥80% requires extensive ZPP native path tests
 
 ---
 
 ### Priority 30: TSDoc — public API documentation ✅ Done
 
-**Effort: L | Impact: large (DX) | Risk: none**
-
-30a–30c done: all geometry, physics, callback & constraint types documented.
-
-**30d — Tooling & cleanup:**
-
-- `typedoc` v0.28.17 added as dev dependency, configured via `typedoc.json`
-- Scripts: `build:typedoc`, `build:docs`, `serve:docs`
-- Fixed 5 typedoc warnings: `@param` name mismatches, unresolved `{@link}`, missing export
-- Exported `UserConstraint` and `CbTypeSet` from `index.ts` for docs coverage
-- Added TSDoc to `InteractionFilter` constructor + all properties/methods
-- Typedoc builds with 0 warnings, 0 errors → `docs/api/`
+All geometry, physics, callback & constraint types documented. Typedoc builds with 0 warnings → `docs/api/`.
 
 ---
 
 ### Priority 31: API ergonomics additions ✅ Done
 
-**Effort: M | Impact: medium (DX) | Risk: low**
-
-Convenience methods added to geometry types (+59 tests):
-
-**31a — `clone()` methods**: `Vec2`, `Vec3`, `AABB`, `Ray`, `Mat23`, `MatMN`
-(delegates to existing `copy()` where available; new impl for `Vec3`/`MatMN`)
-
-**31b — `equals()` methods**: `Vec2.equals(other, epsilon?)`, `Vec3.equals()`,
-`AABB.equals()`, `Mat23.equals()`, `MatMN.equals()` + static `Vec2.eq(a, b, epsilon?)`
-
-**31c — Utility statics**: `Vec2.fromAngle(radians)`, `Vec2.lerp(a, b, t)`,
-`AABB.fromPoints(points)`
+`clone()`, `equals()` on Vec2/Vec3/AABB/Ray/Mat23/MatMN; `Vec2.fromAngle`, `Vec2.lerp`, `AABB.fromPoints`.
 
 ---
 
@@ -201,31 +141,8 @@ Removed 22 unused legacy accessor methods from `Ray.ts`, `Shape.ts`, `Polygon.ts
 
 ### Priority 33: Performance profiling & benchmark CI ✅ Done
 
-**Effort: M | Impact: medium | Risk: low**
-
-CI-integrated benchmark suite with calibration-normalized regression detection:
-
-- `benchmarks/run.mjs` — `--json` output mode + calibration step (median of 7×1M
-  `Math.sqrt` ops) so timings are comparable across machines
-- `benchmarks/compare.mjs` — compares two JSON result files normalized by calibration
-  factor; exits 1 if any benchmark regresses beyond threshold (default 10%)
-- `benchmarks/baseline.json` — committed baseline from current master
-- `.github/workflows/benchmark.yml` — CI job: on PRs fails if >10% regression; on
-  master pushes uploads results as 90-day artifact
-- `package.json` scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`
-
-**Three scenarios measured:**
-
-- A) Falling boxes (200 / 500 / 1000) — broadphase + collision + solver
-- B) PivotJoint chains (50 / 100 / 200 links) — constraint stress
-- C) Position readout (200 / 500 boxes) — step + iterate body x/y/rotation (render loop cost)
-
-**To update baseline after intentional perf improvement:**
-
-```bash
-npm run benchmark:update-baseline   # rebuilds + runs --json + overwrites baseline.json
-git add benchmarks/baseline.json && git commit -m "chore: update benchmark baseline"
-```
+CI-integrated benchmark suite with calibration-normalized regression detection.
+Scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`.
 
 ---
 
@@ -243,6 +160,44 @@ per-class tree shaking. True granular shaking requires lazy registration:
 
 ---
 
+### Priority 35: Type system improvements (Space.ts return types)
+
+**Effort: S | Impact: medium (DX) | Risk: low**
+
+`Space.ts` returns `object` from 6 collection properties and ~18 query methods instead of
+concrete types (`BodyList`, `ShapeList`, `CompoundList`, `ConstraintList`, `ListenerList`,
+`RayResultList`, etc.). These should return properly typed values for better IDE support.
+
+**File:** `src/space/Space.ts`
+
+---
+
+### Priority 36: Server-side + demo examples
+
+**Effort: M | Impact: medium | Risk: low**
+
+The engine has no DOM dependencies and runs on Node.js already. Goals:
+
+- Verify bundle is DOM-free (no `window`/`document` references)
+- `/examples/server/` — Node.js script that runs a simulation and outputs positions
+- `/examples/browser/` — canvas renderer + physics loop for web use
+- CI job ensuring examples run on Node.js (regression protection)
+
+---
+
+### Priority 37: Serialization API
+
+**Effort: L | Impact: medium | Risk: medium**
+
+State snapshot + restore: `space.toJSON()` / `Space.fromJSON(data)`:
+
+- Body positions, angles, velocities, types
+- Shape types and offsets
+- Constraint definitions
+- Use cases: save/load, replay, server↔client sync
+
+---
+
 ## Priority table
 
 | Priority                              | Effort | Impact  | Risk   | Status            |
@@ -255,9 +210,12 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P26 — Tree shaking                    | L      | large   | high   | ✅ Done           |
 | P27 — HaxeShims audit                 | S      | small   | low    | ✅ Done           |
 | P28 — API ergonomics (28a+28b+28c)    | M      | DX      | low    | ✅ Done           |
-| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 Steps 1–4 done |
+| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 ~54% (Step 5 pending) |
 | P30 — TSDoc documentation             | L      | DX      | none   | ✅ Done           |
 | P31 — API ergonomics additions        | M      | DX      | low    | ✅ Done           |
 | P32 — Internal accessor cleanup       | S      | small   | low    | ✅ Done           |
 | P33 — Benchmark CI                    | M      | medium  | low    | ✅ Done           |
 | P34 — Granular tree shaking           | XL     | large   | high   | ⬜ Not started    |
+| P35 — Type system improvements        | S      | DX      | low    | ⬜ Not started    |
+| P36 — Server-side + demo examples     | M      | medium  | low    | ⬜ Not started    |
+| P37 — Serialization API               | L      | medium  | medium | ⬜ Not started    |

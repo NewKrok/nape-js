@@ -144,6 +144,17 @@ export function createListClasses(spec: ListSpec): {
 
   TypedList.prototype.zpp_inner = null;
 
+  // zpp_gl() — internal length accessor used by manual iterator loops in Body.ts
+  // Matches the compiled Haxe pattern: iter.zpp_inner.zpp_gl()
+  TypedList.prototype.zpp_gl = function (this: Any): number {
+    this.zpp_inner.valmod();
+    if (this.zpp_inner.zip_length) {
+      this.zpp_inner.zip_length = false;
+      this.zpp_inner.user_length = this.zpp_inner.inner.length;
+    }
+    return this.zpp_inner.user_length;
+  };
+
   // Internal length helper (not exposed on the prototype as get_length)
   function _getLength(list: Any): number {
     list.zpp_inner.valmod();
