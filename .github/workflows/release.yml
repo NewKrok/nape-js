@@ -86,7 +86,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          NEW_VERSION=$(npm version ${{ steps.bump.outputs.bump }} -m "release: v%s")
+          BUMP="${{ steps.bump.outputs.bump }}"
+
+          # Compute what the next version would be and check if its tag already exists.
+          # This prevents "fatal: tag already exists" when a previous run created the
+          # tag but the version-bump commit didn't land on master.
+          NEXT_VERSION=$(npm version "$BUMP" --no-git-tag-version)
+          git checkout -- package.json package-lock.json 2>/dev/null || true
+
+          while git rev-parse "refs/tags/$NEXT_VERSION" >/dev/null 2>&1; do
+            echo "Tag $NEXT_VERSION already exists — deleting stale remote tag"
+            git push origin ":refs/tags/$NEXT_VERSION" || true
+            git tag -d "$NEXT_VERSION" || true
+            break
+          done
+
+          NEW_VERSION=$(npm version "$BUMP" -m "release: v%s")
           echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "New version: $NEW_VERSION"
 
