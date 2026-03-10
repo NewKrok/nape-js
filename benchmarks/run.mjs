@@ -4,17 +4,16 @@
  * Measures physics simulation performance across three scenarios:
  *   A) Falling boxes — broadphase + collision + solving
  *   B) Constraint stress — chains of bodies linked by PivotJoints
- *   C) Wrapper overhead — same simulation via raw Haxe API vs. TS wrappers
+ *   C) Position readout — step + iterating body positions (render loop cost)
  *
  * Usage:
- *   npm run benchmark
+ *   npm run benchmark              # human-readable output
+ *   node benchmarks/run.mjs --json  # JSON output for CI comparison
  */
 
-// Import the TypeScript wrappers (from build output)
-import { getNape, Space, Body, BodyType, Vec2, Circle, Polygon, PivotJoint } from "../dist/index.js";
+import { Space, Body, BodyType, Vec2, Circle, Polygon, PivotJoint } from "../dist/index.js";
 
-// Raw nape namespace (for wrapper-overhead comparison in Scenario C)
-const napeRaw = getNape();
+const JSON_MODE = process.argv.includes("--json");
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -29,6 +28,8 @@ function median(arr) {
 function formatMs(ms) {
   return ms < 1 ? `${(ms * 1000).toFixed(0)}µs` : `${ms.toFixed(2)}ms`;
 }
+
+const allResults = [];
 
 function bench(name, setup, run, iterations = 100) {
   const ctx = setup();
@@ -47,10 +48,33 @@ function bench(name, setup, run, iterations = 100) {
   const min = Math.min(...times);
   const max = Math.max(...times);
 
-  console.log(
-    `  ${name.padEnd(45)} avg=${formatMs(avg).padStart(8)}  med=${formatMs(med).padStart(8)}  min=${formatMs(min).padStart(8)}  max=${formatMs(max).padStart(8)}`,
-  );
-  return { name, avg, med, min, max };
+  if (!JSON_MODE) {
+    console.log(
+      `  ${name.padEnd(45)} avg=${formatMs(avg).padStart(8)}  med=${formatMs(med).padStart(8)}  min=${formatMs(min).padStart(8)}  max=${formatMs(max).padStart(8)}`,
+    );
+  }
+
+  const result = { name, avg, med, min, max };
+  allResults.push(result);
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// Calibration — environment-independent normalization
+// Runs a fixed CPU workload so benchmark results can be compared across
+// machines (e.g., dev laptop vs. CI runner) by dividing by this factor.
+// ---------------------------------------------------------------------------
+
+function calibrate(iterations = 7) {
+  const times = [];
+  for (let i = 0; i < iterations; i++) {
+    let x = 0;
+    const start = performance.now();
+    for (let j = 0; j < 1_000_000; j++) x += Math.sqrt(j);
+    times.push(performance.now() - start);
+    void x; // prevent dead-code elimination
+  }
+  return median(times);
 }
 
 // ---------------------------------------------------------------------------
@@ -61,12 +85,10 @@ function setupFallingBoxes(count) {
   return () => {
     const space = new Space(new Vec2(0, 600));
 
-    // Floor
     const floor = new Body(BodyType.STATIC, new Vec2(0, 500));
     floor.shapes.add(new Polygon(Polygon.box(2000, 20)));
     floor.space = space;
 
-    // Walls
     const wallL = new Body(BodyType.STATIC, new Vec2(-500, 0));
     wallL.shapes.add(new Polygon(Polygon.box(20, 1200)));
     wallL.space = space;
@@ -75,7 +97,6 @@ function setupFallingBoxes(count) {
     wallR.shapes.add(new Polygon(Polygon.box(20, 1200)));
     wallR.space = space;
 
-    // Dynamic boxes
     for (let i = 0; i < count; i++) {
       const x = (Math.random() - 0.5) * 800;
       const y = -Math.random() * 2000;
@@ -106,12 +127,7 @@ function setupConstraintChain(chainLength) {
       link.shapes.add(new Circle(5));
       link.space = space;
 
-      const joint = new PivotJoint(
-        prev,
-        link,
-        new Vec2(7, 0),
-        new Vec2(-7, 0),
-      );
+      const joint = new PivotJoint(prev, link, new Vec2(7, 0), new Vec2(-7, 0));
       joint.space = space;
       prev = link;
     }
@@ -121,36 +137,12 @@ function setupConstraintChain(chainLength) {
 }
 
 // ---------------------------------------------------------------------------
-// Scenario C: Wrapper Overhead — Raw Haxe API vs. TS Wrappers
+// Scenario C: Position Readout (step + iterate body positions)
+// Simulates a render loop: step the simulation, then read x/y/rotation for
+// every dynamic body.  Measures combined step + wrapper iteration cost.
 // ---------------------------------------------------------------------------
 
-function setupRawSimulation(count) {
-  return () => {
-    const space = new napeRaw.space.Space(new napeRaw.geom.Vec2(0, 600));
-
-    const floor = new napeRaw.phys.Body(
-      napeRaw.phys.BodyType.STATIC,
-      new napeRaw.geom.Vec2(0, 500),
-    );
-    floor.shapes.add(new napeRaw.shape.Polygon(napeRaw.shape.Polygon.box(2000, 20)));
-    floor.space = space;
-
-    for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 800;
-      const y = -Math.random() * 500;
-      const body = new napeRaw.phys.Body(
-        napeRaw.phys.BodyType.DYNAMIC,
-        new napeRaw.geom.Vec2(x, y),
-      );
-      body.shapes.add(new napeRaw.shape.Polygon(napeRaw.shape.Polygon.box(15, 15)));
-      body.space = space;
-    }
-
-    return space;
-  };
-}
-
-function setupWrappedSimulation(count) {
+function setupPositionReadout(count) {
   return () => {
     const space = new Space(new Vec2(0, 600));
 
@@ -174,64 +166,77 @@ function setupWrappedSimulation(count) {
 // Run
 // ---------------------------------------------------------------------------
 
-console.log("=".repeat(90));
-console.log("  nape-js Benchmark Suite");
-console.log("=".repeat(90));
-console.log();
+if (!JSON_MODE) {
+  console.log("=".repeat(90));
+  console.log("  nape-js Benchmark Suite");
+  console.log("=".repeat(90));
+  console.log();
+  console.log("  Calibrating...");
+}
 
-console.log("--- A) Falling Boxes (space.step per iteration) ---");
+const calibration = calibrate();
+
+if (!JSON_MODE) {
+  console.log(`  Calibration factor: ${formatMs(calibration)} (1M Math.sqrt ops, median of 7 runs)`);
+  console.log();
+}
+
+if (!JSON_MODE) console.log("--- A) Falling Boxes (space.step per iteration) ---");
 bench("200 boxes – step(1/60)", setupFallingBoxes(200), (space) => space.step(1 / 60, 8, 3));
 bench("500 boxes – step(1/60)", setupFallingBoxes(500), (space) => space.step(1 / 60, 8, 3));
 bench("1000 boxes – step(1/60)", setupFallingBoxes(1000), (space) => space.step(1 / 60, 8, 3), 50);
 
-console.log();
-console.log("--- B) Constraint Stress (PivotJoint chains) ---");
+if (!JSON_MODE) {
+  console.log();
+  console.log("--- B) Constraint Stress (PivotJoint chains) ---");
+}
 bench("50-link chain – step(1/60)", setupConstraintChain(50), (space) => space.step(1 / 60, 8, 3));
 bench("100-link chain – step(1/60)", setupConstraintChain(100), (space) => space.step(1 / 60, 8, 3));
 bench("200-link chain – step(1/60)", setupConstraintChain(200), (space) => space.step(1 / 60, 8, 3), 50);
 
-console.log();
-console.log("--- C) Wrapper Overhead (raw Haxe vs. TS wrapper) ---");
-
-const OVERHEAD_COUNT = 200;
-const rawResult = bench(
-  `Raw Haxe API – ${OVERHEAD_COUNT} boxes – step(1/60)`,
-  setupRawSimulation(OVERHEAD_COUNT),
+if (!JSON_MODE) {
+  console.log();
+  console.log("--- C) Position Readout (step + iterate x/y/rotation for all bodies) ---");
+}
+bench(
+  "200 boxes – step + position readout",
+  setupPositionReadout(200),
   (space) => {
     space.step(1 / 60, 8, 3);
-    // Read positions (simulates rendering)
-    const bodies = space.bodies;
-    for (let i = 0; i < bodies.length; i++) {
-      const b = bodies.at(i);
-      b.position.x;
-      b.position.y;
-      b.rotation;
-    }
-  },
-);
-const wrapResult = bench(
-  `TS Wrapper – ${OVERHEAD_COUNT} boxes – step(1/60)`,
-  setupWrappedSimulation(OVERHEAD_COUNT),
-  (space) => {
-    space.step(1 / 60, 8, 3);
-    // Read positions (simulates rendering)
     for (const body of space.bodies) {
-      body.position.x;
-      body.position.y;
-      body.rotation;
+      void body.position.x;
+      void body.position.y;
+      void body.rotation;
+    }
+  },
+);
+bench(
+  "500 boxes – step + position readout",
+  setupPositionReadout(500),
+  (space) => {
+    space.step(1 / 60, 8, 3);
+    for (const body of space.bodies) {
+      void body.position.x;
+      void body.position.y;
+      void body.rotation;
     }
   },
 );
 
-const overhead = ((wrapResult.avg - rawResult.avg) / rawResult.avg * 100).toFixed(1);
-console.log();
-console.log(`  Wrapper overhead: ${overhead}% (avg step + position readout)`);
-console.log();
-console.log("=".repeat(90));
-
-// Memory
-const mem = process.memoryUsage();
-console.log(
-  `  Memory: RSS=${(mem.rss / 1024 / 1024).toFixed(1)}MB  Heap=${(mem.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(mem.heapTotal / 1024 / 1024).toFixed(1)}MB`,
-);
-console.log("=".repeat(90));
+if (!JSON_MODE) {
+  console.log();
+  console.log("=".repeat(90));
+  const mem = process.memoryUsage();
+  console.log(
+    `  Memory: RSS=${(mem.rss / 1024 / 1024).toFixed(1)}MB  Heap=${(mem.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(mem.heapTotal / 1024 / 1024).toFixed(1)}MB`,
+  );
+  console.log("=".repeat(90));
+} else {
+  const output = {
+    timestamp: new Date().toISOString(),
+    node: process.version,
+    calibration,
+    results: allResults,
+  };
+  process.stdout.write(JSON.stringify(output, null, 2) + "\n");
+}
