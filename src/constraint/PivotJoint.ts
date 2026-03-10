@@ -58,6 +58,7 @@ function _disposeWeakVec2(v: Vec2): void {
  * Fully modernized — uses ZPP_PivotJoint directly (extracted to TypeScript).
  */
 export class PivotJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_PivotJoint;
 
   /**
@@ -294,6 +295,7 @@ export class PivotJoint extends Constraint {
   get zpp_inner_zn(): ZPP_PivotJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_PivotJoint) {
     this.zpp_inner = v;
   }

@@ -12,8 +12,10 @@ import type { NapeInner } from "./Vec2";
 export class Mat23 {
   static __name__ = ["nape", "geom", "Mat23"];
 
+  /** @internal */
   zpp_inner: ZPP_Mat23;
 
+  /** @internal */
   get _inner(): NapeInner {
     return this;
   }

@@ -57,6 +57,7 @@ function _disposeWeakVec2(v: Vec2): void {
  * Fully modernized — uses ZPP_LineJoint directly (extracted to TypeScript).
  */
 export class LineJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_LineJoint;
 
   /**
@@ -391,6 +392,7 @@ export class LineJoint extends Constraint {
   get zpp_inner_zn(): ZPP_LineJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_LineJoint) {
     this.zpp_inner = v;
   }

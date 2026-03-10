@@ -110,7 +110,7 @@ export class Body extends Interactor {
   static __name__ = ["nape", "phys", "Body"];
   static __super__: typeof Interactor = Interactor;
 
-  /** Direct access to the extracted internal ZPP_Body. */
+  /** @internal */
   zpp_inner!: ZPP_Body;
   /** If true, this body is included in debug rendering. */
   debugDraw: boolean = true;

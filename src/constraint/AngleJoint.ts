@@ -29,6 +29,7 @@ import { ZPP_AngleJoint } from "../native/constraint/ZPP_AngleJoint";
  * Fully modernized — uses ZPP_AngleJoint directly (extracted to TypeScript).
  */
 export class AngleJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_AngleJoint;
 
   /**
@@ -301,6 +302,7 @@ export class AngleJoint extends Constraint {
   get zpp_inner_zn(): ZPP_AngleJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_AngleJoint) {
     this.zpp_inner = v;
   }

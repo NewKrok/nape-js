@@ -42,8 +42,10 @@ export function cbEventToNumber(event: CbEvent): number {
 export class Listener {
   static __name__ = ["nape", "callbacks", "Listener"];
 
+  /** @internal */
   zpp_inner: ZPP_Listener;
 
+  /** @internal */
   get _inner(): this {
     return this;
   }
@@ -55,6 +57,7 @@ export class Listener {
     this.zpp_inner = null as unknown as ZPP_Listener;
   }
 
+  /** @internal */
   static _wrap(inner: ZPP_Listener | Listener | null | undefined): Listener {
     if (inner instanceof Listener) return inner;
     if (!inner) return null as unknown as Listener;

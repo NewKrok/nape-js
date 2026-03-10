@@ -33,8 +33,10 @@ import type { OptionType } from "./OptionType";
 export class CbType {
   static __name__ = ["nape", "callbacks", "CbType"];
 
+  /** @internal */
   zpp_inner: ZPP_CbType;
 
+  /** @internal */
   get _inner(): NapeInner {
     return this;
   }
@@ -172,6 +174,7 @@ export class CbType {
   // Wrapping
   // ---------------------------------------------------------------------------
 
+  /** @internal */
   static _wrap(inner: any): CbType {
     if (inner instanceof CbType) return inner;
     if (!inner) return null as unknown as CbType;

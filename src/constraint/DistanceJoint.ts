@@ -59,6 +59,7 @@ function _disposeWeakVec2(v: Vec2): void {
  * Fully modernized — uses ZPP_DistanceJoint directly (extracted to TypeScript).
  */
 export class DistanceJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_DistanceJoint;
 
   /**
@@ -389,6 +390,7 @@ export class DistanceJoint extends Constraint {
   get zpp_inner_zn(): ZPP_DistanceJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_DistanceJoint) {
     this.zpp_inner = v;
   }

@@ -38,10 +38,10 @@ function _disposeWeakVec2(v: Vec2): void {
 export class Ray {
   static __name__ = ["nape", "geom", "Ray"];
 
-  /** Direct access to the extracted internal ZPP_Ray. */
+  /** @internal */
   zpp_inner: ZPP_Ray;
 
-  /** Backward-compat alias for compiled code. */
+  /** @internal */
   get _inner(): this {
     return this;
   }

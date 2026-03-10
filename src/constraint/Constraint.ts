@@ -26,9 +26,10 @@ import { ZPP_Constraint } from "../native/constraint/ZPP_Constraint";
  */
 export class Constraint {
   static __name__ = ["nape", "constraint", "Constraint"];
+  /** @internal */
   static zpp_internalAlloc = false;
 
-  /** Direct access to the extracted internal ZPP_Constraint. */
+  /** @internal */
   zpp_inner!: ZPP_Constraint;
 
   /**

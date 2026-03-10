@@ -17,7 +17,7 @@ export class Compound extends Interactor {
   static __name__ = ["nape", "phys", "Compound"];
   static __super__ = Interactor;
 
-  /** Direct access to the extracted internal ZPP_Compound. */
+  /** @internal */
   zpp_inner!: ZPP_Compound;
 
   constructor() {

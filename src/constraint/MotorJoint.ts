@@ -27,6 +27,7 @@ import { ZPP_MotorJoint } from "../native/constraint/ZPP_MotorJoint";
  * Fully modernized — uses ZPP_MotorJoint directly (extracted to TypeScript).
  */
 export class MotorJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_MotorJoint;
 
   /**
@@ -257,6 +258,7 @@ export class MotorJoint extends Constraint {
   get zpp_inner_zn(): ZPP_MotorJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_MotorJoint) {
     this.zpp_inner = v;
   }
