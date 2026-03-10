@@ -217,6 +217,18 @@ export class DemoRunner {
     }
   }
 
+  /**
+   * Async variant of load(). If the demo exports a `preload()` function it is
+   * awaited before setup() is called — useful for fetching images or other
+   * async resources. Falls back to synchronous load() when no preload exists.
+   *
+   * @returns {Promise<void>}
+   */
+  async loadAsync(demoDef) {
+    if (demoDef.preload) await demoDef.preload();
+    this.load(demoDef);
+  }
+
   /** Begin the rAF loop. */
   start() {
     if (this.#animId) return;
@@ -239,6 +251,19 @@ export class DemoRunner {
    * Used for generating static preview thumbnails on the examples grid.
    */
   renderPreview(demoDef) {
+    this.load(demoDef);
+    this.#space.step(1 / 60, demoDef.velocityIterations ?? 8, demoDef.positionIterations ?? 3);
+    this.#render2d();
+  }
+
+  /**
+   * Async variant of renderPreview(). Awaits preload() if present before
+   * loading and rendering the preview frame.
+   *
+   * @returns {Promise<void>}
+   */
+  async renderPreviewAsync(demoDef) {
+    if (demoDef.preload) await demoDef.preload();
     this.load(demoDef);
     this.#space.step(1 / 60, demoDef.velocityIterations ?? 8, demoDef.positionIterations ?? 3);
     this.#render2d();

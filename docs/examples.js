@@ -2,44 +2,45 @@
  * nape-js Examples Page — grid of interactive physics demos with play overlay,
  * per-card stats, and View Code toggle.
  */
-import { VERSION } from "./nape-js.esm.js?v=3.6.1";
-import { installErrorOverlay } from "./renderer.js?v=3.6.1";
-import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.6.1";
+import { VERSION } from "./nape-js.esm.js?v=3.6.2";
+import { installErrorOverlay } from "./renderer.js?v=3.6.2";
+import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.6.2";
 
 const NAPE_CDN = "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
 
 // All demos (featured + examples)
-import falling     from "./demos/falling.js?v=3.6.1";
-import pyramid     from "./demos/pyramid.js?v=3.6.1";
-import chain       from "./demos/chain.js?v=3.6.1";
-import explosion   from "./demos/explosion.js?v=3.6.1";
-import constraints from "./demos/constraints.js?v=3.6.1";
-import gravity     from "./demos/gravity.js?v=3.6.1";
-import stacking    from "./demos/stacking.js?v=3.6.1";
-import ragdoll     from "./demos/ragdoll.js?v=3.6.1";
-import strandbeast from "./demos/strandbeast.js?v=3.6.1";
-import carSideview    from "./demos/car-sideview.js?v=3.6.1";
-import carTopdown     from "./demos/car-topdown.js?v=3.6.1";
-import platformer     from "./demos/platformer.js?v=3.6.1";
-import ropeBridge     from "./demos/rope-bridge.js?v=3.6.1";
-import wreckingBall   from "./demos/wrecking-ball.js?v=3.6.1";
-import newtonsCradle  from "./demos/newtons-cradle.js?v=3.6.1";
-import dominos        from "./demos/dominos.js?v=3.6.1";
-import conveyorBelts  from "./demos/conveyor-belts.js?v=3.6.1";
-import trebuchet      from "./demos/trebuchet.js?v=3.6.1";
-import seesaw         from "./demos/seesaw.js?v=3.6.1";
-import pinball        from "./demos/pinball.js?v=3.6.1";
-import cloth          from "./demos/cloth.js?v=3.6.1";
-import funnel         from "./demos/funnel.js?v=3.6.1";
-import softBody       from "./demos/soft-body.js?v=3.6.1";
-import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.6.1";
-import collisionFiltering from "./demos/collision-filtering.js?v=3.6.1";
+import falling     from "./demos/falling.js?v=3.6.2";
+import pyramid     from "./demos/pyramid.js?v=3.6.2";
+import chain       from "./demos/chain.js?v=3.6.2";
+import explosion   from "./demos/explosion.js?v=3.6.2";
+import constraints from "./demos/constraints.js?v=3.6.2";
+import gravity     from "./demos/gravity.js?v=3.6.2";
+import stacking    from "./demos/stacking.js?v=3.6.2";
+import ragdoll     from "./demos/ragdoll.js?v=3.6.2";
+import strandbeast from "./demos/strandbeast.js?v=3.6.2";
+import carSideview    from "./demos/car-sideview.js?v=3.6.2";
+import carTopdown     from "./demos/car-topdown.js?v=3.6.2";
+import platformer     from "./demos/platformer.js?v=3.6.2";
+import ropeBridge     from "./demos/rope-bridge.js?v=3.6.2";
+import wreckingBall   from "./demos/wrecking-ball.js?v=3.6.2";
+import newtonsCradle  from "./demos/newtons-cradle.js?v=3.6.2";
+import dominos        from "./demos/dominos.js?v=3.6.2";
+import conveyorBelts  from "./demos/conveyor-belts.js?v=3.6.2";
+import trebuchet      from "./demos/trebuchet.js?v=3.6.2";
+import seesaw         from "./demos/seesaw.js?v=3.6.2";
+import pinball        from "./demos/pinball.js?v=3.6.2";
+import cloth          from "./demos/cloth.js?v=3.6.2";
+import funnel         from "./demos/funnel.js?v=3.6.2";
+import softBody       from "./demos/soft-body.js?v=3.6.2";
+import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.6.2";
+import collisionFiltering from "./demos/collision-filtering.js?v=3.6.2";
+import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.6.2";
 
 const ALL_DEMOS = [
   falling, pyramid, chain, explosion, constraints, gravity, stacking, ragdoll, strandbeast,
   carSideview, carTopdown, platformer, ropeBridge, wreckingBall, newtonsCradle,
   dominos, conveyorBelts, trebuchet, seesaw, pinball, cloth, funnel,
-  softBody, oneWayPlatforms, collisionFiltering,
+  softBody, oneWayPlatforms, collisionFiltering, bodyFromGraphic,
 ];
 
 const CW = 900;
@@ -240,18 +241,32 @@ function createCard(demo) {
   card.appendChild(info);
   card.appendChild(codePanel);
 
-  // --- Render a static preview frame ---
-  runner.renderPreview(demo);
+  // --- Render a static preview frame (async-safe: awaits preload if present) ---
+  // Keep track of whether preload+load has completed so the play button
+  // can decide whether to reload or just start the already-loaded space.
+  let previewReady = false;
+  runner.renderPreviewAsync(demo).then(() => { previewReady = true; });
 
-  // --- Play overlay: start demo (already loaded by renderPreview) ---
+  // --- Play overlay: start demo ---
   let started = false;
+  let loading = false;
 
   // Prevent wireInteraction's pointerdown from capturing the pointer,
   // which would swallow the click event on desktop browsers.
   overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
 
-  overlay.addEventListener("click", () => {
+  overlay.addEventListener("click", async () => {
+    if (loading) return;
+    loading = true;
+    // If the preview hasn't finished loading yet, wait for it; otherwise
+    // reload fresh so the demo starts from its initial state.
+    if (!previewReady) {
+      await runner.renderPreviewAsync(demo);
+    } else {
+      await runner.loadAsync(demo);
+    }
     started = true;
+    loading = false;
     runner.start();
     overlay.hidden = true;
     statsBar.hidden = false;

@@ -3,20 +3,20 @@
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon, VERSION,
-} from "./nape-js.esm.js?v=3.4.13";
-import { installErrorOverlay } from "./renderer.js?v=3.4.13";
-import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.4.13";
+} from "./nape-js.esm.js?v=3.6.2";
+import { installErrorOverlay } from "./renderer.js?v=3.6.2";
+import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.6.2";
 
 // Demo definitions — one file each
-import falling     from "./demos/falling.js?v=3.4.13";
-import pyramid     from "./demos/pyramid.js?v=3.4.13";
-import chain       from "./demos/chain.js?v=3.4.13";
-import explosion   from "./demos/explosion.js?v=3.4.13";
-import constraints from "./demos/constraints.js?v=3.4.13";
-import gravity     from "./demos/gravity.js?v=3.4.13";
-import stacking    from "./demos/stacking.js?v=3.4.13";
-import ragdoll     from "./demos/ragdoll.js?v=3.4.13";
-import strandbeast from "./demos/strandbeast.js?v=3.4.13";
+import falling     from "./demos/falling.js?v=3.6.2";
+import pyramid     from "./demos/pyramid.js?v=3.6.2";
+import chain       from "./demos/chain.js?v=3.6.2";
+import explosion   from "./demos/explosion.js?v=3.6.2";
+import constraints from "./demos/constraints.js?v=3.6.2";
+import gravity     from "./demos/gravity.js?v=3.6.2";
+import stacking    from "./demos/stacking.js?v=3.6.2";
+import ragdoll     from "./demos/ragdoll.js?v=3.6.2";
+import strandbeast from "./demos/strandbeast.js?v=3.6.2";
 
 // =========================================================================
 // Demo registry
@@ -78,7 +78,7 @@ function buildTabs() {
   }
 }
 
-function startDemo(id) {
+async function startDemo(id) {
   const demo = FEATURED.find(d => d.id === id) ?? FEATURED[0];
   currentDemoId = demo.id;
 
@@ -87,7 +87,7 @@ function startDemo(id) {
   });
 
   demoDescEl.innerHTML = demo.desc ?? "";
-  runner.load(demo);
+  await runner.loadAsync(demo);
   runner.start();
   updateCodePreview();
 }
