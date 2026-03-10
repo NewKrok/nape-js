@@ -204,7 +204,7 @@ export class DemoRunner {
   }
 
   /** Load a demo definition. Tears down the old space and runs setup(). */
-  load(demoDef) {
+  load(demoDef, { preview = false } = {}) {
     this.stop();
     this.#demo  = demoDef;
     this.#space = null;
@@ -219,6 +219,11 @@ export class DemoRunner {
     const space = new Space();
     this.#space = space;
     demoDef.setup(space, this.#W, this.#H);
+
+    // Optional init hook: passes the canvas container element so demos can
+    // attach DOM-level listeners (e.g. drag-and-drop file handlers).
+    // Skipped during preview-only renders to avoid DOM side-effects.
+    if (!preview) demoDef.init?.(this.#container, this.#W, this.#H);
 
     // Build 3D meshes if already in 3D mode
     if (this.#mode === "3d" && this.#threeScene) {
@@ -260,7 +265,7 @@ export class DemoRunner {
    * Used for generating static preview thumbnails on the examples grid.
    */
   renderPreview(demoDef) {
-    this.load(demoDef);
+    this.load(demoDef, { preview: true });
     this.#space.step(1 / 60, demoDef.velocityIterations ?? 8, demoDef.positionIterations ?? 3);
     this.#render2d();
   }
@@ -273,7 +278,7 @@ export class DemoRunner {
    */
   async renderPreviewAsync(demoDef) {
     if (demoDef.preload) await demoDef.preload();
-    this.load(demoDef);
+    this.load(demoDef, { preview: true });
     this.#space.step(1 / 60, demoDef.velocityIterations ?? 8, demoDef.positionIterations ?? 3);
     this.#render2d();
   }
@@ -415,9 +420,13 @@ export class DemoRunner {
     const ctx = this.#ctx;
     const W = this.#W, H = this.#H;
     ctx.clearRect(0, 0, W, H);
-    drawGrid(ctx, W, H);
-    drawConstraints(ctx, this.#space);
-    for (const body of this.#space.bodies) drawBody(ctx, body, this.#debugDraw);
+    if (this.#demo?.render) {
+      this.#demo.render(ctx, this.#space, W, H);
+    } else {
+      drawGrid(ctx, W, H);
+      drawConstraints(ctx, this.#space);
+      for (const body of this.#space.bodies) drawBody(ctx, body, this.#debugDraw);
+    }
   }
 
   // -----------------------------------------------------------------------

@@ -689,3 +689,62 @@ body.has-expanded-demo::before {
   white-space: pre;
 }
 .card-code-panel[hidden] { display: none; }
+
+/* =========================================================================
+   Drop Image → Body demo — file drag-over overlay
+   ========================================================================= */
+
+.drop-image-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 20, 0.0);
+  border: 2px dashed transparent;
+  border-radius: 6px;
+  pointer-events: none;
+  transition: background 0.15s, border-color 0.15s;
+  z-index: 10;
+}
+
+.drop-image-overlay.active {
+  background: rgba(88,166,255,0.12);
+  border-color: #58a6ff;
+}
+
+.drop-image-hint {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #58a6ff;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  text-shadow: 0 0 12px rgba(88,166,255,0.6);
+}
+
+.drop-image-overlay.active .drop-image-hint {
+  display: flex;
+}
+
+/* Statikus "húzd ide" hint a canvas sarkában (csak ha még nincs elem) */
+.drop-image-static-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(10,14,20,0.7);
+  border: 1px dashed rgba(88,166,255,0.4);
+  border-radius: 20px;
+  color: rgba(88,166,255,0.7);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.3s;
+}

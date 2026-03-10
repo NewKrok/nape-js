@@ -35,12 +35,13 @@ import softBody       from "./demos/soft-body.js?v=3.6.2";
 import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.6.2";
 import collisionFiltering from "./demos/collision-filtering.js?v=3.6.2";
 import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.6.2";
+import dropImageBody     from "./demos/drop-image-body.js?v=3.6.2";
 
 const ALL_DEMOS = [
   falling, pyramid, chain, explosion, constraints, gravity, stacking, ragdoll, strandbeast,
   carSideview, carTopdown, platformer, ropeBridge, wreckingBall, newtonsCradle,
   dominos, conveyorBelts, trebuchet, seesaw, pinball, cloth, funnel,
-  softBody, oneWayPlatforms, collisionFiltering, bodyFromGraphic,
+  softBody, oneWayPlatforms, collisionFiltering, bodyFromGraphic, dropImageBody,
 ];
 
 const CW = 900;
