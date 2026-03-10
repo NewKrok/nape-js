@@ -4,6 +4,7 @@ import { addWalls, spawnRandomShape } from "../demo-runner.js";
 export default {
   id: "constraints",
   label: "Constraints Showcase",
+  tags: ["PivotJoint", "DistanceJoint", "AngleJoint", "WeldJoint", "MotorJoint", "LineJoint"],
   featured: true,
   featuredOrder: 4,
   desc: 'All built-in constraint types in one scene: PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint. <b>Click</b> to apply impulse.',

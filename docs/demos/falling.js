@@ -4,6 +4,7 @@ import { addWalls, spawnRandomShape } from "../demo-runner.js";
 export default {
   id: "falling",
   label: "Falling Shapes",
+  tags: ["Circle", "Polygon", "Gravity", "Click"],
   featured: true,
   featuredOrder: 0,
   desc: 'Random boxes and circles fall into a container. <b>Click</b> to spawn more shapes at the cursor.',

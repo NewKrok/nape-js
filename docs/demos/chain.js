@@ -12,6 +12,7 @@ let _dragY = 0;
 export default {
   id: "chain",
   label: "Pendulum Chain",
+  tags: ["PivotJoint", "Chain", "Drag"],
   featured: true,
   featuredOrder: 2,
   desc: 'A pendulum chain with a heavy bob. <b>Drag</b> any link to grab and pull it.',

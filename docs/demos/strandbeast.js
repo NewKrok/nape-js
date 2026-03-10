@@ -4,6 +4,7 @@ import { addWalls } from "../demo-runner.js";
 export default {
   id: "strandbeast",
   label: "Strand Beast",
+  tags: ["PivotJoint", "MotorJoint", "DistanceJoint", "Mechanism"],
   featured: true,
   featuredOrder: 8,
   desc: 'A Theo Jansen-style walking mechanism with 6 legs (3 phase-offset pairs) driven by a <code>MotorJoint</code> crank. Reverses direction at the walls. <b>Click</b> to drop a ball.',

@@ -4,6 +4,7 @@ import { addWalls, spawnRandomShape } from "../demo-runner.js";
 export default {
   id: "explosion",
   label: "Impulse Blast",
+  tags: ["Impulse", "Radial Force", "Click"],
   featured: true,
   featuredOrder: 3,
   desc: '<b>Click</b> anywhere to create an impulse blast that pushes nearby bodies away.',

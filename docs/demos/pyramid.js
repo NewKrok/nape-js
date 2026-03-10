@@ -4,6 +4,7 @@ import { addWalls } from "../demo-runner.js";
 export default {
   id: "pyramid",
   label: "Pyramid Stress Test",
+  tags: ["Stacking", "Stress Test", "Click"],
   featured: true,
   featuredOrder: 1,
   desc: 'A classic box-stacking pyramid. <b>Click</b> to drop a heavy ball onto it.',

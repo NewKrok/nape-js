@@ -8,6 +8,7 @@ let _planetY = 0;
 export default {
   id: "gravity",
   label: "Orbital Gravity",
+  tags: ["Zero Gravity", "Custom Force", "Orbital", "Click"],
   featured: true,
   featuredOrder: 5,
   desc: 'Mario Galaxy-style gravity: bodies are pulled toward a central planet. <b>Click</b> to spawn orbiting bodies.',

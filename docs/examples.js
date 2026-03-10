@@ -1,6 +1,6 @@
 /**
  * nape-js Examples Page — grid of interactive physics demos with play overlay,
- * per-card stats, and View Code toggle.
+ * per-card stats, search/tag filtering, size toggle, outline toggle, and View Code.
  */
 import { VERSION } from "./nape-js.esm.js?v=3.6.2";
 import { installErrorOverlay } from "./renderer.js?v=3.6.2";
@@ -47,14 +47,10 @@ const CW = 900;
 const CH = 500;
 
 // =========================================================================
-// Card factory
+// CodePen helper
 // =========================================================================
 
-function openInCodePen(demo) {
-  const code = demo.code2d;
-  if (!code) return;
-
-  const RENDERER_2D = `// ── Renderer ────────────────────────────────────────────────────────────────
+const RENDERER_2D = `// ── Renderer ────────────────────────────────────────────────────────────────
 const COLORS = [
   { fill: "rgba(88,166,255,0.18)",  stroke: "#58a6ff" },
   { fill: "rgba(210,153,34,0.18)",  stroke: "#d29922" },
@@ -102,6 +98,10 @@ function addWalls() {
 
 `;
 
+function openInCodePen(demo) {
+  // Use code2d if available; otherwise fetch the raw module source
+  const code = demo.code2d ?? `// Source: ./demos/${demo.id}.js\n// (open the demo page to view full source)`;
+
   const html = `<canvas id="demoCanvas" width="900" height="500" style="background:#0a0e14;display:block;max-width:100%;border:1px solid #30363d;border-radius:8px"></canvas>`;
   const css  = `body { margin: 20px; background: #0d1117; font-family: sans-serif; color: #e6edf3; }`;
   const js   = `import {
@@ -136,7 +136,11 @@ ${RENDERER_2D}${code}`;
   document.body.removeChild(form);
 }
 
-function createCard(demo) {
+// =========================================================================
+// Card factory
+// =========================================================================
+
+function createCard(demo, { onTagClick } = {}) {
   // --- Card container ---
   const card = document.createElement("div");
   card.className = "example-card";
@@ -170,6 +174,72 @@ function createCard(demo) {
   statsBar.append(fpsEl, " · ", bodiesEl, " · ", stepEl);
   card.appendChild(statsBar);
 
+  // --- Canvas overlay controls (top-right corner, always visible) ---
+  const canvasControls = document.createElement("div");
+  canvasControls.className = "canvas-controls";
+
+  // 2D/3D render mode toggle
+  const renderToggle = document.createElement("div");
+  renderToggle.className = "card-render-toggle";
+  const btn2d = document.createElement("button");
+  btn2d.className = "card-render-btn active";
+  btn2d.dataset.mode = "2d";
+  btn2d.textContent = "2D";
+  const btn3d = document.createElement("button");
+  btn3d.className = "card-render-btn";
+  btn3d.dataset.mode = "3d";
+  btn3d.textContent = "3D";
+  renderToggle.append(btn2d, btn3d);
+
+  let cardMode = "2d";
+  renderToggle.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    const btn = e.target.closest(".card-render-btn");
+    if (!btn || btn.dataset.mode === cardMode) return;
+    const mode = btn.dataset.mode;
+    if (mode === "3d") await loadThree();
+    cardMode = mode;
+    btn2d.classList.toggle("active", mode === "2d");
+    btn3d.classList.toggle("active", mode === "3d");
+    runner.setMode(mode);
+  });
+
+  // Fullscreen button
+  const fsBtn = document.createElement("button");
+  fsBtn.className = "canvas-fs-btn";
+  fsBtn.title = "Fullscreen";
+  fsBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="1,5 1,1 5,1"/><polyline points="15,5 15,1 11,1"/>
+    <polyline points="1,11 1,15 5,15"/><polyline points="15,11 15,15 11,15"/>
+  </svg>`;
+  const ICON_EXPAND   = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,5 1,1 5,1"/><polyline points="15,5 15,1 11,1"/><polyline points="1,11 1,15 5,15"/><polyline points="15,11 15,15 11,15"/></svg>`;
+  const ICON_COLLAPSE = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="5,1 1,1 1,5"/><polyline points="11,1 15,1 15,5"/><polyline points="1,11 1,15 5,15"/><polyline points="15,11 15,15 11,15"/></svg>`;
+
+  let isExpanded = false;
+
+  function setExpanded(expand) {
+    isExpanded = expand;
+    card.classList.toggle("expanded", expand);
+    document.body.classList.toggle("has-expanded-demo", expand);
+    fsBtn.title = expand ? "Exit fullscreen" : "Fullscreen";
+    fsBtn.innerHTML = expand ? ICON_COLLAPSE : ICON_EXPAND;
+    // Scroll lock
+    document.body.style.overflow = expand ? "hidden" : "";
+  }
+
+  fsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setExpanded(!isExpanded);
+  });
+
+  // Escape key closes expanded mode
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isExpanded) setExpanded(false);
+  });
+
+  canvasControls.append(renderToggle, fsBtn);
+  renderWrap.appendChild(canvasControls);
+
   runner.wireStats({ fps: fpsEl, step: stepEl, bodies: bodiesEl });
   runner.wireInteraction(renderWrap);
 
@@ -186,7 +256,7 @@ function createCard(demo) {
   const btnGroup = document.createElement("div");
   btnGroup.className = "card-btn-group";
 
-  // View Code button — always shown; fetches source if no code2d
+  // View Code button — always shown
   const codeToggle = document.createElement("button");
   codeToggle.className = "btn btn-small code-toggle-btn";
   codeToggle.textContent = "{ } Code";
@@ -208,17 +278,15 @@ function createCard(demo) {
 
   btnGroup.appendChild(codeToggle);
 
-  // CodePen button — only for demos with code2d
-  if (demo.code2d) {
-    const codepenBtn = document.createElement("button");
-    codepenBtn.className = "btn btn-small btn-codepen";
-    codepenBtn.textContent = "CodePen";
-    codepenBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openInCodePen(demo);
-    });
-    btnGroup.appendChild(codepenBtn);
-  }
+  // CodePen button — shown for ALL demos
+  const codepenBtn = document.createElement("button");
+  codepenBtn.className = "btn btn-small btn-codepen";
+  codepenBtn.textContent = "CodePen";
+  codepenBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openInCodePen(demo);
+  });
+  btnGroup.appendChild(codepenBtn);
 
   titleRow.append(h3, btnGroup);
   info.appendChild(titleRow);
@@ -233,6 +301,10 @@ function createCard(demo) {
       const span = document.createElement("span");
       span.className = "example-tag";
       span.textContent = t;
+      span.addEventListener("click", (e) => {
+        e.stopPropagation();
+        onTagClick?.(t);
+      });
       tagWrap.appendChild(span);
     }
     info.appendChild(tagWrap);
@@ -242,8 +314,6 @@ function createCard(demo) {
   card.appendChild(codePanel);
 
   // --- Render a static preview frame (async-safe: awaits preload if present) ---
-  // Keep track of whether preload+load has completed so the play button
-  // can decide whether to reload or just start the already-loaded space.
   let previewReady = false;
   runner.renderPreviewAsync(demo).then(() => { previewReady = true; });
 
@@ -251,15 +321,11 @@ function createCard(demo) {
   let started = false;
   let loading = false;
 
-  // Prevent wireInteraction's pointerdown from capturing the pointer,
-  // which would swallow the click event on desktop browsers.
   overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
 
   overlay.addEventListener("click", async () => {
     if (loading) return;
     loading = true;
-    // If the preview hasn't finished loading yet, wait for it; otherwise
-    // reload fresh so the demo starts from its initial state.
     if (!previewReady) {
       await runner.renderPreviewAsync(demo);
     } else {
@@ -270,45 +336,119 @@ function createCard(demo) {
     runner.start();
     overlay.hidden = true;
     statsBar.hidden = false;
+    card.classList.add("running");
   });
 
   return { card, runner, overlay, statsBar, isStarted: () => started };
 }
 
 // =========================================================================
-// Build grid
+// Build grid + filtering
 // =========================================================================
 
 installErrorOverlay(VERSION);
 
-const grid  = document.getElementById("examplesGrid");
-const cards = ALL_DEMOS.map((demo) => {
-  const result = createCard(demo);
+const grid      = document.getElementById("examplesGrid");
+const searchEl  = document.getElementById("searchInput");
+const tagBar    = document.getElementById("tagFilterBar");
+
+// Collect all unique tags across demos (sorted)
+const allTags = [...new Set(ALL_DEMOS.flatMap(d => d.tags ?? []))].sort();
+
+let activeTag    = null;
+let searchQuery  = "";
+
+// Build tag filter buttons
+function buildTagBar() {
+  tagBar.innerHTML = "";
+  for (const tag of allTags) {
+    const btn = document.createElement("button");
+    btn.className = "filter-tag" + (activeTag === tag ? " active" : "");
+    btn.textContent = tag;
+    btn.addEventListener("click", () => setActiveTag(activeTag === tag ? null : tag));
+    tagBar.appendChild(btn);
+  }
+  if (activeTag) {
+    const clear = document.createElement("button");
+    clear.className = "filter-tag filter-tag-clear";
+    clear.textContent = "✕ Clear";
+    clear.addEventListener("click", () => setActiveTag(null));
+    tagBar.appendChild(clear);
+  }
+}
+
+function setActiveTag(tag) {
+  activeTag = tag;
+  buildTagBar();
+  applyFilter();
+}
+
+function applyFilter() {
+  const q = searchQuery.toLowerCase().trim();
+  let anyVisible = false;
+  for (const { card, demo } of cardEntries) {
+    const matchesSearch = !q
+      || demo.label?.toLowerCase().includes(q)
+      || demo.desc?.toLowerCase().includes(q)
+      || demo.tags?.some(t => t.toLowerCase().includes(q));
+    const matchesTag = !activeTag || demo.tags?.includes(activeTag);
+    const visible = matchesSearch && matchesTag;
+    card.style.display = visible ? "" : "none";
+    if (visible) anyVisible = true;
+  }
+
+  // Show/hide no-results placeholder
+  let noResults = grid.querySelector(".no-results");
+  if (!anyVisible) {
+    if (!noResults) {
+      noResults = document.createElement("div");
+      noResults.className = "no-results";
+      noResults.textContent = "No demos match your search.";
+      grid.appendChild(noResults);
+    }
+    noResults.style.display = "";
+  } else if (noResults) {
+    noResults.style.display = "none";
+  }
+}
+
+// Wire search
+searchEl.addEventListener("input", () => {
+  searchQuery = searchEl.value;
+  applyFilter();
+});
+
+// Build cards
+const cardEntries = ALL_DEMOS.map((demo) => {
+  const result = createCard(demo, {
+    onTagClick: (tag) => setActiveTag(activeTag === tag ? null : tag),
+  });
   grid.appendChild(result.card);
-  return result;
+  return { ...result, demo };
+});
+
+buildTagBar();
+
+// =========================================================================
+// Grid size toggle
+// =========================================================================
+
+document.getElementById("gridSizeToggle").addEventListener("click", (e) => {
+  const btn = e.target.closest(".grid-size-btn");
+  if (!btn) return;
+  const size = btn.dataset.size;
+  document.querySelectorAll(".grid-size-btn").forEach(b => b.classList.toggle("active", b.dataset.size === size));
+  grid.classList.toggle("size-small", size === "small");
+  grid.classList.toggle("size-full",  size === "full");
 });
 
 // =========================================================================
-// Render mode toggle
+// Outline toggle
 // =========================================================================
 
-let renderMode = "2d";
-
-document.getElementById("renderModeToggle").addEventListener("click", async (e) => {
-  const btn = e.target.closest(".render-mode-btn");
-  if (!btn) return;
-  const mode = btn.dataset.mode;
-  if (mode === renderMode) return;
-
-  if (mode === "3d") await loadThree();
-
-  renderMode = mode;
-  document.querySelectorAll(".render-mode-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.mode === mode);
-  });
-
-  for (const { runner } of cards) {
-    if (runner.isRunning) runner.setMode(mode);
+document.getElementById("outlineToggle").addEventListener("change", (e) => {
+  for (const { runner } of cardEntries) {
+    runner.debugDraw = e.target.checked;
   }
 });
 
@@ -318,20 +458,21 @@ document.getElementById("renderModeToggle").addEventListener("click", async (e) 
 
 const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
-    const match = cards.find(c => c.card === entry.target);
+    const match = cardEntries.find(c => c.card === entry.target);
     if (!match) continue;
-    if (!match.isStarted()) continue;   // not started yet — play button handles start
-    const { runner, overlay, statsBar } = match;
+    const { runner, overlay, statsBar, isStarted } = match;
+    if (!isStarted()) continue;   // not started yet — play button handles start
     if (entry.isIntersecting) {
       runner.start();
       overlay.hidden = true;
       statsBar.hidden = false;
     } else {
       runner.stop();
+      // Show play button again so user can see it's paused
       overlay.hidden = false;
       statsBar.hidden = true;
     }
   }
 }, { threshold: 0.1 });
 
-for (const { card } of cards) observer.observe(card);
+for (const { card } of cardEntries) observer.observe(card);

@@ -4,6 +4,7 @@ import { addWalls } from "../demo-runner.js";
 export default {
   id: "stacking",
   label: "Stacking",
+  tags: ["Stacking", "Stability", "Click"],
   featured: true,
   featuredOrder: 6,
   desc: 'Towers of various shapes testing stacking stability. <b>Click</b> to drop a heavy box.',

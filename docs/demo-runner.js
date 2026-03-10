@@ -143,6 +143,7 @@ export class DemoRunner {
   #demo    = null;
   #animId  = null;
   #debugDraw = true;  // true = show outlines (normal); false = dark silhouettes
+  #resizeObserver = null;
 
   // FPS tracking
   #lastTime   = 0;
@@ -171,10 +172,18 @@ export class DemoRunner {
       this.#canvas = document.createElement("canvas");
       this.#canvas.width  = this.#W;
       this.#canvas.height = this.#H;
-      this.#canvas.style.cssText = "display:block;width:100%;height:100%";
+      this.#canvas.style.cssText = "display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain";
       container.appendChild(this.#canvas);
     }
     this.#ctx = this.#canvas.getContext("2d");
+
+    // ResizeObserver — only needed for 3D renderer; 2D canvas keeps fixed resolution.
+    // We observe the canvas itself (not the container) because the container is sized
+    // by aspect-ratio CSS and has no intrinsic height when canvas is absolute-positioned.
+    this.#resizeObserver = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      this.#onResize(rect.width, rect.height);
+    });
   }
 
   // -----------------------------------------------------------------------
@@ -312,14 +321,23 @@ export class DemoRunner {
 
     const getPos = (e) => {
       const rect = el.getBoundingClientRect();
+      // Account for object-fit:contain letterboxing on the 2D canvas.
+      // The canvas preserves W:H aspect ratio inside the container rect.
+      const aspect  = this.#W / this.#H;
+      const fitW    = Math.min(rect.width, rect.height * aspect);
+      const fitH    = fitW / aspect;
+      const padX    = (rect.width  - fitW) / 2;
+      const padY    = (rect.height - fitH) / 2;
       return {
-        x: (e.clientX - rect.left) * (this.#W / rect.width),
-        y: (e.clientY - rect.top)  * (this.#H / rect.height),
+        x: ((e.clientX - rect.left) - padX) * (this.#W / fitW),
+        y: ((e.clientY - rect.top)  - padY) * (this.#H / fitH),
       };
     };
 
     el.addEventListener("pointerdown", (e) => {
       if (!this.#space || !this.#demo) return;
+      // Don't capture pointer when clicking overlay controls (2D/3D toggle, fullscreen, etc.)
+      if (e.target.closest(".canvas-controls")) return;
       e.preventDefault();
       el.setPointerCapture(e.pointerId);
       isDragging = true;
@@ -403,6 +421,23 @@ export class DemoRunner {
   }
 
   // -----------------------------------------------------------------------
+  // Resize handling
+  // -----------------------------------------------------------------------
+
+  #onResize(displayW, displayH) {
+    if (!displayW || !displayH) return;
+    // 3D renderer: update internal resolution and camera aspect.
+    // updateStyle=false keeps our CSS width/height:100% intact.
+    if (this.#threeRenderer) {
+      this.#threeRenderer.setSize(Math.round(displayW), Math.round(displayH), false);
+      if (this.#threeCamera) {
+        this.#threeCamera.aspect = displayW / displayH;
+        this.#threeCamera.updateProjectionMatrix();
+      }
+    }
+  }
+
+  // -----------------------------------------------------------------------
   // Three.js 3D rendering
   // -----------------------------------------------------------------------
 
@@ -427,12 +462,17 @@ export class DemoRunner {
     this.#threeCamera.position.set(W / 2, -H / 2, camZ);
     this.#threeCamera.lookAt(W / 2, -H / 2, 0);
 
-    const displayW = this.#container.clientWidth  || W;
-    const displayH = Math.round(displayW * (H / W));
+    // Initial size: use container's bounding rect (reliable after layout)
+    const cr = this.#container.getBoundingClientRect();
+    const displayW = Math.round(cr.width)  || W;
+    const displayH = Math.round(cr.height) || Math.round(displayW * (H / W));
     this.#threeRenderer = new _THREE.WebGLRenderer({ antialias: true });
-    this.#threeRenderer.setSize(displayW, displayH);
-    this.#threeRenderer.domElement.style.cssText = "display:block;width:100%;height:100%";
+    this.#threeRenderer.setSize(displayW, displayH, false);
+    this.#threeRenderer.domElement.style.cssText = "display:block;position:absolute;inset:0;width:100%;height:100%";
     this.#container.appendChild(this.#threeRenderer.domElement);
+
+    // Watch the Three.js canvas for resize (it has real CSS dimensions unlike the container)
+    this.#resizeObserver.observe(this.#threeRenderer.domElement);
 
     // 3-point lighting
     const keyLight = new _THREE.DirectionalLight(0xfff5e0, 2.0);
@@ -451,6 +491,7 @@ export class DemoRunner {
 
   #teardown3d() {
     if (this.#threeRenderer) {
+      this.#resizeObserver.unobserve(this.#threeRenderer.domElement);
       this.#container.removeChild(this.#threeRenderer.domElement);
       this.#threeRenderer.dispose();
       this.#threeRenderer = null;

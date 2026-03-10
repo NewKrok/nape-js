@@ -4,6 +4,7 @@ import { addWalls } from "../demo-runner.js";
 export default {
   id: "ragdoll",
   label: "Ragdoll",
+  tags: ["PivotJoint", "AngleJoint", "Character", "Click"],
   featured: true,
   featuredOrder: 7,
   desc: 'Ragdoll figures built from <code>PivotJoint</code> and <code>AngleJoint</code> constraints. <b>Click</b> to spawn a new ragdoll at the cursor.',

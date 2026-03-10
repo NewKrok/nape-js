@@ -544,6 +544,7 @@ a:hover { text-decoration: underline; }
 /* Per-card stats row */
 .card-stats {
   display: flex;
+  align-items: center;
   gap: 12px;
   padding: 4px 12px;
   font-size: 0.75rem;
@@ -554,6 +555,104 @@ a:hover { text-decoration: underline; }
 }
 /* Fixed width prevents layout shift from changing step values */
 .card-stats-step { min-width: 80px; }
+
+/* Canvas overlay controls — top-right corner of the render area */
+.canvas-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+/* Show on card hover OR when demo is running (card has .active) */
+.example-card:hover .canvas-controls,
+.example-card.running .canvas-controls {
+  opacity: 1;
+}
+
+/* 2D/3D toggle pill */
+.card-render-toggle {
+  display: inline-flex;
+  border: 1px solid rgba(48,54,61,0.8);
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(13,17,23,0.75);
+  backdrop-filter: blur(6px);
+}
+.card-render-btn {
+  padding: 3px 9px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  border: none;
+  background: transparent;
+  color: rgba(139,148,158,0.9);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+.card-render-btn:hover { color: #fff; }
+.card-render-btn.active {
+  background: var(--accent-dim);
+  color: #fff;
+}
+
+/* Fullscreen button */
+.canvas-fs-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(48,54,61,0.8);
+  border-radius: 5px;
+  background: rgba(13,17,23,0.75);
+  backdrop-filter: blur(6px);
+  color: rgba(139,148,158,0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s, background 0.12s;
+  padding: 0;
+}
+.canvas-fs-btn:hover {
+  color: #fff;
+  background: rgba(31,111,235,0.6);
+}
+
+/* In-page expanded mode — card fills the viewport like a lightbox */
+.example-card.expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  border-radius: 0;
+  border-color: var(--accent);
+  display: flex;
+  flex-direction: column;
+  /* override grid sizing */
+  width: 100% !important;
+  height: 100% !important;
+}
+.example-card.expanded .example-card-canvas {
+  flex: 1;
+  aspect-ratio: unset;
+  height: 0; /* flex takes over */
+}
+.example-card.expanded .canvas-controls {
+  opacity: 1;
+}
+/* Dim backdrop when a card is expanded */
+body.has-expanded-demo::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 199;
+  backdrop-filter: blur(4px);
+}
 
 /* Card title row (title + code toggle button) */
 .card-title-row {
