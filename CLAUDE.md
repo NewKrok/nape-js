@@ -121,11 +121,41 @@ Three new integration test files:
   LineJoint, PulleyJoint, DistanceJoint, PivotJoint, WeldJoint extended coverage (impulse,
   bodyImpulse, visitBodies, isSlack, breakUnderForce, soft constraints, chain integration)
 
-**Step 4 — Remaining coverage gaps (TODO):**
+**Step 4 done** (+154 tests, 2913 → 3067): GeomPoly advanced, Island/Space integration, Body/Compound extended.
 
-- `ZPP_Cutter` (~1%), `ZPP_Simplify` (~13%), `ZPP_Simple` (~16%), `ZPP_Island` (~16%)
+Three new test files:
+
+- `tests/geom/GeomPoly.advanced.test.ts` (58 tests) — `simplify()` (drives ZPP_Simplify),
+  `isSimple()` deep coverage (drives ZPP_Simple), `simpleDecomposition()`, `cut()` (drives
+  ZPP_Cutter) with various geometries, bounded/unbounded cuts, edge cases
+- `tests/space/Island.integration.test.ts` (44 tests) — Space properties (worldLinearDrag,
+  worldAngularDrag, sortContacts, timeStamp, elapsedTime, world body), step edge cases,
+  liveBodies/liveConstraints, sleep/wake island transitions, joint-linked islands, compound
+  + island interaction, broadphase tree stress (ZPP_AABBTree, ZPP_SweepData, ZPP_Island)
+- `tests/phys/Body.extended.test.ts` (52 tests) — body type transitions in space, shape
+  manipulation in space, constraintVelocity, mass/inertia/gravMass mode interactions,
+  applyImpulse in simulation, Compound management (translate, rotate, copy, breakApart,
+  constraints), InteractionFilter, velocity tracking
+
+**Key patterns discovered in Step 4:**
+
+- `ZPP_Set_ZPP_BodyNode` is not registered in ZNPRegistry → `Body.connectedBodies()` and
+  `Body.interactingBodies()` crash when called; these need `ZPP_Set_ZPP_BodyNode` added
+- `ArbiterIterator` is not registered → `Body.normalImpulse()`, `tangentImpulse()`,
+  `rollingImpulse()` etc. crash; these require an `ArbiterIterator` pool in the nape namespace
+- `liveBodies` only includes DYNAMIC bodies (type 2); KINEMATIC bodies go to `staticsleep`
+- `MassMode.INFINITE` and `InertiaMode.INFINITE` do not exist (only DEFAULT and FIXED)
+- `constraintVelocity` returns `Vec2` (not Vec3)
+
+**Step 5 — Remaining coverage gaps (TODO):**
+
+- `ZPP_Cutter` still ~1% (cut tests exercise the run() entry, but its 1600-line body needs
+  many more polygon types to reach significant coverage)
 - `ZPP_ColArbiter` (~18%), `ZPP_FluidArbiter` (~24%), `ZPP_Collide` (~21%)
-- Overall coverage: ~44.7% → target ≥80% requires significant native-level test additions
+- `ZPP_Space` deeper paths (~56%), `ZPP_Body` deeper paths (~67%), `ZPP_Ray` (~44%)
+- `Body.connectedBodies`, `Body.interactingBodies`, impulse query methods need
+  `ZPP_Set_ZPP_BodyNode` + `ArbiterIterator` registration to be testable
+- Overall coverage: ~44.7% → target ≥80% requires native ZNPRegistry additions
 
 ---
 
@@ -225,7 +255,7 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P26 — Tree shaking                    | L      | large   | high   | ✅ Done           |
 | P27 — HaxeShims audit                 | S      | small   | low    | ✅ Done           |
 | P28 — API ergonomics (28a+28b+28c)    | M      | DX      | low    | ✅ Done           |
-| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 Steps 1–3 done |
+| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 Steps 1–4 done |
 | P30 — TSDoc documentation             | L      | DX      | none   | ✅ Done           |
 | P31 — API ergonomics additions        | M      | DX      | low    | ✅ Done           |
 | P32 — Internal accessor cleanup       | S      | small   | low    | ✅ Done           |
