@@ -265,9 +265,9 @@ installErrorOverlay(VERSION);
 
 const grid  = document.getElementById("examplesGrid");
 const cards = ALL_DEMOS.map((demo) => {
-  const { card, runner } = createCard(demo);
-  grid.appendChild(card);
-  return { card, runner };
+  const result = createCard(demo);
+  grid.appendChild(result.card);
+  return result;
 });
 
 // =========================================================================
