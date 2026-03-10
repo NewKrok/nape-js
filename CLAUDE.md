@@ -146,17 +146,24 @@ Scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`.
 
 ---
 
-### Priority 34: Granular tree shaking (lazy ZPP registration)
+### Priority 34: Granular tree shaking (lazy ZPP registration) ❌ Cancelled
 
 **Effort: XL | Impact: large (bundle) | Risk: high**
 
-Currently `ZPPRegistry.ts` statically imports **all 85 ZPP classes**, preventing
-per-class tree shaking. True granular shaking requires lazy registration:
+**Decision (2026-03-10): Not worth pursuing.** Investigation revealed:
 
-- Each ZPP class self-registers when its public API counterpart is imported
-- `bootstrap.ts` would only import the ZPP classes needed for requested public classes
-- Estimated bundle reduction: ~30–40% for apps that don't use all features (e.g., no fluid)
-- High risk: registration order, `_initEnums`, `_initStatics` timing must be preserved
+- The current `sideEffects` config in `package.json` is **correct** — `dist/index.js` and
+  `dist/index.cjs` legitimately have side effects (bootstrap runs nape namespace assignments,
+  `_createFn` wiring, `_bindBodyWrapForInteractor`, etc.).
+- Tree shaking is **architecturally impossible** without the full P34 refactor because
+  `index.ts` always imports `bootstrap.ts`, which imports every class unconditionally.
+- Competing engines (Three.js, Planck.js, Matter.js) do not use lazy registration either —
+  they ship single concatenated ESM builds and rely on standard bundler tree shaking of
+  named exports, which only helps when the user avoids the entry point entirely.
+- The only engine with true per-class tree shaking is Rapier (non-compat), which requires
+  an async `init()` call — a DX tradeoff not worth making for nape-js.
+- The full lazy ZPP registration refactor remains theoretically possible but the complexity
+  and risk are disproportionate to the benefit.
 
 ---
 
@@ -215,7 +222,7 @@ State snapshot + restore: `space.toJSON()` / `Space.fromJSON(data)`:
 | P31 — API ergonomics additions        | M      | DX      | low    | ✅ Done           |
 | P32 — Internal accessor cleanup       | S      | small   | low    | ✅ Done           |
 | P33 — Benchmark CI                    | M      | medium  | low    | ✅ Done           |
-| P34 — Granular tree shaking           | XL     | large   | high   | ⬜ Not started    |
+| P34 — Granular tree shaking           | XL     | large   | high   | ❌ Cancelled      |
 | P35 — Type system improvements        | S      | DX      | low    | ⬜ Not started    |
 | P36 — Server-side + demo examples     | M      | medium  | low    | ⬜ Not started    |
 | P37 — Serialization API               | L      | medium  | medium | ⬜ Not started    |
