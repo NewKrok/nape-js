@@ -213,7 +213,7 @@ function wireDrop(wrapperEl, overlayEl) {
 // Egyéni rajzoló
 // ---------------------------------------------------------------------------
 
-function drawDropBody(ctx, body) {
+function drawDropBody(ctx, body, showOutlines = true) {
   const colorIdx = body.userData?._colorIdx ?? 0;
   const pal      = COLOR_PALETTE[colorIdx % COLOR_PALETTE.length];
 
@@ -230,11 +230,13 @@ function drawDropBody(ctx, body) {
       ctx.moveTo(verts.at(0).x, verts.at(0).y);
       for (let i = 1; i < len; i++) ctx.lineTo(verts.at(i).x, verts.at(i).y);
       ctx.closePath();
-      ctx.fillStyle = pal.fill;
+      ctx.fillStyle = showOutlines ? pal.fill : "#162540";
       ctx.fill();
-      ctx.strokeStyle = pal.stroke;
-      ctx.lineWidth   = 1.5;
-      ctx.stroke();
+      if (showOutlines) {
+        ctx.strokeStyle = pal.stroke;
+        ctx.lineWidth   = 1.5;
+        ctx.stroke();
+      }
     }
   }
 
@@ -337,7 +339,7 @@ export default {
     }
   },
 
-  render(ctx, space, W, H) {
+  render(ctx, space, W, H, showOutlines = true) {
     // Grid
     ctx.strokeStyle = "rgba(255,255,255,0.04)";
     ctx.lineWidth   = 1;
@@ -350,7 +352,7 @@ export default {
     }
 
     for (const body of space.bodies) {
-      drawDropBody(ctx, body);
+      drawDropBody(ctx, body, showOutlines);
     }
   },
 

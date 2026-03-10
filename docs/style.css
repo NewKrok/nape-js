@@ -137,10 +137,15 @@ a:hover { text-decoration: underline; }
 .btn-small {
   padding: 5px 14px;
   font-size: 0.82rem;
+  line-height: 1.4;
   border-radius: 6px;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
 }
 .btn-small:hover { background: var(--border); }
 
@@ -425,6 +430,26 @@ a:hover { text-decoration: underline; }
   background: var(--green) !important;
   color: var(--bg) !important;
 }
+.btn-share {
+  background: var(--surface) !important;
+  color: var(--text-dim) !important;
+  border-color: var(--border) !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+.btn-share:hover {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  background: var(--accent-dim) !important;
+}
+.btn-share-copied {
+  color: var(--green) !important;
+  border-color: var(--green) !important;
+  background: var(--surface) !important;
+  font-size: 0.75rem !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
 .code-panel-body {
   margin: 0;
   padding: 16px 18px;
@@ -600,6 +625,35 @@ a:hover { text-decoration: underline; }
 .card-render-btn.active {
   background: var(--accent-dim);
   color: #fff;
+}
+
+/* Outline toggle button (per-card) */
+.canvas-outline-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(48,54,61,0.8);
+  border-radius: 5px;
+  background: rgba(13,17,23,0.75);
+  backdrop-filter: blur(6px);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s, background 0.12s;
+  padding: 0;
+}
+.canvas-outline-btn:hover { color: #fff; background: rgba(31,111,235,0.6); }
+.canvas-outline-btn.active { color: var(--accent); }
+
+/* Reset button */
+.canvas-reset-btn {
+  color: var(--text-dim);
+}
+.canvas-reset-btn:hover {
+  color: #fff;
+  background: rgba(248,81,73,0.4) !important;
+  border-color: rgba(248,81,73,0.6) !important;
 }
 
 /* Fullscreen button */

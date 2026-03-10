@@ -421,7 +421,7 @@ export class DemoRunner {
     const W = this.#W, H = this.#H;
     ctx.clearRect(0, 0, W, H);
     if (this.#demo?.render) {
-      this.#demo.render(ctx, this.#space, W, H);
+      this.#demo.render(ctx, this.#space, W, H, this.#debugDraw);
     } else {
       drawGrid(ctx, W, H);
       drawConstraints(ctx, this.#space);
@@ -549,7 +549,7 @@ export class DemoRunner {
 
       const edges = new _THREE.LineSegments(
         new _THREE.EdgesGeometry(geom, 15),
-        new _THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }),
+        new _THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
       );
       edges.visible = this.#debugDraw;
       mesh.add(edges);

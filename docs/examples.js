@@ -203,6 +203,41 @@ function createCard(demo, { onTagClick } = {}) {
     btn2d.classList.toggle("active", mode === "2d");
     btn3d.classList.toggle("active", mode === "3d");
     runner.setMode(mode);
+    updateUrlForCard(demo.id, { mode: cardMode, outline: runner.debugDraw });
+  });
+
+  // Outline toggle (per-card)
+  const outlineToggleBtn = document.createElement("button");
+  outlineToggleBtn.className = "canvas-outline-btn active";
+  outlineToggleBtn.title = "Toggle outlines";
+  outlineToggleBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="2" width="12" height="12" rx="2"/>
+    <circle cx="8" cy="8" r="3"/>
+  </svg>`;
+  outlineToggleBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    runner.debugDraw = !runner.debugDraw;
+    outlineToggleBtn.classList.toggle("active", runner.debugDraw);
+    updateUrlForCard(demo.id, { mode: cardMode, outline: runner.debugDraw });
+  });
+
+  // Reset button
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "canvas-fs-btn canvas-reset-btn";
+  resetBtn.title = "Reset demo";
+  resetBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2.5 8a5.5 5.5 0 1 1 1.1 3.3"/>
+    <polyline points="2.5,3.5 2.5,8 7,8"/>
+  </svg>`;
+  resetBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    runner.stop();
+    overlay.hidden = false;
+    statsBar.hidden = true;
+    card.classList.remove("running");
+    started = false;
+    await runner.renderPreviewAsync(demo);
+    previewReady = true;
   });
 
   // Fullscreen button
@@ -238,7 +273,7 @@ function createCard(demo, { onTagClick } = {}) {
     if (e.key === "Escape" && isExpanded) setExpanded(false);
   });
 
-  canvasControls.append(renderToggle, fsBtn);
+  canvasControls.append(renderToggle, outlineToggleBtn, resetBtn, fsBtn);
   renderWrap.appendChild(canvasControls);
 
   runner.wireStats({ fps: fpsEl, step: stepEl, bodies: bodiesEl });
@@ -289,6 +324,33 @@ function createCard(demo, { onTagClick } = {}) {
   });
   btnGroup.appendChild(codepenBtn);
 
+  // Share / copy link button
+  const shareBtn = document.createElement("button");
+  shareBtn.className = "btn btn-small btn-share";
+  shareBtn.title = "Copy link to this demo";
+  shareBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="13" cy="2.5" r="1.5"/><circle cx="13" cy="13.5" r="1.5"/><circle cx="3" cy="8" r="1.5"/>
+    <line x1="11.5" y1="3.3" x2="4.4" y2="7.2"/><line x1="4.4" y1="8.8" x2="11.5" y2="12.7"/>
+  </svg>`;
+  shareBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const params = new URLSearchParams();
+    params.set("open", demo.id);
+    if (cardMode === "3d") params.set("mode", "3d");
+    if (!runner.debugDraw) params.set("outline", "0");
+    const url = window.location.origin + window.location.pathname + "?" + params.toString();
+    navigator.clipboard.writeText(url).then(() => {
+      const prev = shareBtn.innerHTML;
+      shareBtn.textContent = "Copied!";
+      shareBtn.classList.add("btn-share-copied");
+      setTimeout(() => {
+        shareBtn.innerHTML = prev;
+        shareBtn.classList.remove("btn-share-copied");
+      }, 1800);
+    });
+  });
+  btnGroup.appendChild(shareBtn);
+
   titleRow.append(h3, btnGroup);
   info.appendChild(titleRow);
 
@@ -322,9 +384,7 @@ function createCard(demo, { onTagClick } = {}) {
   let started = false;
   let loading = false;
 
-  overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
-
-  overlay.addEventListener("click", async () => {
+  async function startDemo() {
     if (loading) return;
     loading = true;
     if (!previewReady) {
@@ -338,9 +398,50 @@ function createCard(demo, { onTagClick } = {}) {
     overlay.hidden = true;
     statsBar.hidden = false;
     card.classList.add("running");
-  });
+  }
 
-  return { card, runner, overlay, statsBar, isStarted: () => started };
+  overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
+  overlay.addEventListener("click", startDemo);
+
+  return {
+    card, runner, overlay, statsBar,
+    isStarted: () => started,
+    startDemo,
+    setExpanded,
+    setMode: async (mode) => {
+      if (mode === "3d") await loadThree();
+      cardMode = mode;
+      btn2d.classList.toggle("active", mode === "2d");
+      btn3d.classList.toggle("active", mode === "3d");
+      runner.setMode(mode);
+      outlineToggleBtn.classList.toggle("active", runner.debugDraw);
+    },
+    setOutline: (val) => {
+      runner.debugDraw = val;
+      outlineToggleBtn.classList.toggle("active", val);
+    },
+  };
+}
+
+// =========================================================================
+// URL deep-link helpers
+// =========================================================================
+
+function updateUrlForCard(demoId, { mode, outline } = {}) {
+  const params = new URLSearchParams(window.location.search);
+  if (demoId) {
+    params.set("open", demoId);
+    if (mode && mode !== "2d") params.set("mode", mode);
+    else params.delete("mode");
+    if (outline === false) params.set("outline", "0");
+    else params.delete("outline");
+  } else {
+    params.delete("open");
+    params.delete("mode");
+    params.delete("outline");
+  }
+  const newUrl = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+  history.replaceState(null, "", newUrl);
 }
 
 // =========================================================================
@@ -431,6 +532,32 @@ const cardEntries = ALL_DEMOS.map((demo) => {
 buildTagBar();
 
 // =========================================================================
+// Deep-link auto-start
+// =========================================================================
+
+(async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const openId = urlParams.get("open");
+  if (!openId) return;
+
+  const entry = cardEntries.find(e => e.demo.id === openId);
+  if (!entry) return;
+
+  const urlMode    = urlParams.get("mode");
+  const urlOutline = urlParams.get("outline");
+
+  // Apply outline before start
+  if (urlOutline === "0") entry.setOutline(false);
+
+  // Apply mode (loads Three.js if needed), then start
+  if (urlMode === "3d") await entry.setMode("3d");
+
+  // Scroll into view and expand to fullscreen
+  entry.card.scrollIntoView({ behavior: "smooth", block: "center" });
+  entry.setExpanded(true);
+})();
+
+// =========================================================================
 // Grid size toggle
 // =========================================================================
 
@@ -441,16 +568,6 @@ document.getElementById("gridSizeToggle").addEventListener("click", (e) => {
   document.querySelectorAll(".grid-size-btn").forEach(b => b.classList.toggle("active", b.dataset.size === size));
   grid.classList.toggle("size-small", size === "small");
   grid.classList.toggle("size-full",  size === "full");
-});
-
-// =========================================================================
-// Outline toggle
-// =========================================================================
-
-document.getElementById("outlineToggle").addEventListener("change", (e) => {
-  for (const { runner } of cardEntries) {
-    runner.debugDraw = e.target.checked;
-  }
 });
 
 // =========================================================================
