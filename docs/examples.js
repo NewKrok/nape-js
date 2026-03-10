@@ -240,15 +240,21 @@ function createCard(demo) {
   card.appendChild(info);
   card.appendChild(codePanel);
 
-  // --- Play overlay click: load + start ---
+  // --- Render a static preview frame ---
+  runner.renderPreview(demo);
+
+  // --- Play overlay click: start (demo is already loaded by renderPreview) ---
+  let started = false;
   overlay.addEventListener("click", () => {
-    runner.load(demo);
+    if (!started) {
+      started = true;
+    }
     runner.start();
     overlay.hidden = true;
     statsBar.hidden = false;
   });
 
-  return { card, runner };
+  return { card, runner, overlay, statsBar, isStarted: () => started };
 }
 
 // =========================================================================
@@ -296,9 +302,17 @@ const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const match = cards.find(c => c.card === entry.target);
     if (!match) continue;
-    const { runner } = match;
-    if (!runner.isRunning) continue;   // not started yet — play button handles start
-    if (entry.isIntersecting) { runner.start(); } else { runner.stop(); }
+    if (!match.isStarted()) continue;   // not started yet — play button handles start
+    const { runner, overlay, statsBar } = match;
+    if (entry.isIntersecting) {
+      runner.start();
+      overlay.hidden = true;
+      statsBar.hidden = false;
+    } else {
+      runner.stop();
+      overlay.hidden = false;
+      statsBar.hidden = true;
+    }
   }
 }, { threshold: 0.1 });
 

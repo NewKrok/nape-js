@@ -235,6 +235,16 @@ export class DemoRunner {
   }
 
   /**
+   * Load a demo, run one physics step, render a single frame, then stop.
+   * Used for generating static preview thumbnails on the examples grid.
+   */
+  renderPreview(demoDef) {
+    this.load(demoDef);
+    this.#space.step(1 / 60, demoDef.velocityIterations ?? 8, demoDef.positionIterations ?? 3);
+    this.#render2d();
+  }
+
+  /**
    * Switch render mode. Call `await loadThree()` before setMode("3d").
    * Restarts the loop if it was running.
    */
