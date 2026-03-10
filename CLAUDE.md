@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2736 tests across 139 files
+npm test             # vitest — 2913 tests across 142 files
 npm run lint         # eslint + prettier
 ```
 
@@ -44,7 +44,7 @@ tree-shakeable, and minified. Key facts:
 - **85 ZPP_* internal classes** in `src/native/`
 - **68 public API classes** in `src/` with direct `zpp_inner` access
 - **Bundle:** ~994 KB minified ESM + CJS, dual exports map, tree shaking via `bootstrap.ts`
-- **Tests:** 2736 passing across 139 files
+- **Tests:** 2913 passing across 142 files
 - **`strict: true`**, `tsc --noEmit` → 0 errors
 
 ### Key architectural patterns (reference)
@@ -95,10 +95,30 @@ round-trip coverage.
 - Constraints do NOT auto-register `CbType.ANY_CONSTRAINT` — must use custom CbType + `(joint.cbTypes as any).add(ct)`
 - Fluid arbiters are transient — don't persist in `space.arbiters` after step; capture inside ONGOING callback
 - WAKE events require a sleep→wake transition, not just initial addition to space
+- `space.arbiters` returns a `ZPP_SpaceArbiterList` without a standard `.length` getter
+- Bodies inside compounds do NOT appear in `space.bodies` (top-level only); use `space.liveBodies` or `compound.bodies`
+- Joint body getters may return a different wrapper object — compare by `.id`, not reference equality
+- `interactionType()` returns the *potential* type based on filters, not actual geometric overlap
 
-**Step 3 — Space/broadphase integration tests (TODO):**
-- `ZPP_Space` (~30% coverage), `ZPP_DynAABBPhase` (~16%), `ZPP_AABBTree` (~4%)
-- Goal: add 40–60 integration tests covering `step()`, broadphase scenarios, constraint interactions
+**Step 3 done** (+177 tests, 2736 → 2913): Space/broadphase integration tests + collision/arbiter + constraint coverage.
+
+Three new integration test files:
+- `tests/space/Space.integration.test.ts` (89 tests) — gravity, broadphase, spatial queries
+  (shapesUnderPoint, bodiesUnderPoint, shapesInAABB, bodiesInAABB, shapesInCircle, bodiesInCircle,
+  shapesInShape, bodiesInShape, shapesInBody, bodiesInBody), ray casting, convex casting,
+  compound management, sleep/wake, material properties, edge cases
+- `tests/dynamics/Collision.integration.test.ts` (38 tests) — contact behavior, interaction
+  filters (group/mask, InteractionGroup, sensor), callbacks (BEGIN/ONGOING/END, custom CbType,
+  pre-listeners with IGNORE/ACCEPT), fluid interaction (buoyancy, drag, overlap), island/sleep,
+  arbiter property access (normalImpulse, tangentImpulse, contacts, bodies, isSleeping)
+- `tests/constraint/Constraint.integration.test.ts` (50 tests) — AngleJoint, MotorJoint,
+  LineJoint, PulleyJoint, DistanceJoint, PivotJoint, WeldJoint extended coverage (impulse,
+  bodyImpulse, visitBodies, isSlack, breakUnderForce, soft constraints, chain integration)
+
+**Step 4 — Remaining coverage gaps (TODO):**
+- `ZPP_Cutter` (~1%), `ZPP_Simplify` (~13%), `ZPP_Simple` (~16%), `ZPP_Island` (~16%)
+- `ZPP_ColArbiter` (~18%), `ZPP_FluidArbiter` (~24%), `ZPP_Collide` (~21%)
+- Overall coverage: ~44.7% → target ≥80% requires significant native-level test additions
 
 ---
 
@@ -195,7 +215,7 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P26 — Tree shaking | L | large | high | ✅ Done |
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
 | P28 — API ergonomics (28a+28b+28c) | M | DX | low | ✅ Done |
-| P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–2 done |
+| P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–3 done |
 | P30 — TSDoc documentation | L | DX | none | ✅ Done |
 | P31 — API ergonomics additions | M | DX | low | ✅ Done |
 | P32 — Internal accessor cleanup | S | small | low | ✅ Done |
