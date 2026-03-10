@@ -16,7 +16,6 @@ import { Compound } from "../../src/phys/Compound";
 import { InteractionType } from "../../src/callbacks/InteractionType";
 import { Broadphase } from "../../src/space/Broadphase";
 import { Material } from "../../src/phys/Material";
-import { FluidProperties } from "../../src/phys/FluidProperties";
 
 // ---------------------------------------------------------------------------
 // Helper: create a dynamic body with a circle shape at position
@@ -649,8 +648,7 @@ describe("Space integration — spatial queries", () => {
 
   // --- shapesInBody / bodiesInBody ---
   it("should find shapes overlapping a body", () => {
-    const { space, b1 } = setupQuerySpace();
-    // b1 is at (50,50), b3 is at (50,150) — only b1 area shapes should overlap with a query body at (50,50)
+    const { space } = setupQuerySpace();
     const queryBody = new Body(BodyType.DYNAMIC, new Vec2(50, 50));
     queryBody.shapes.add(new Circle(30));
     queryBody.space = space;

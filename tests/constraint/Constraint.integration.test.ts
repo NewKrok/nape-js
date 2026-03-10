@@ -4,7 +4,6 @@ import { Body } from "../../src/phys/Body";
 import { BodyType } from "../../src/phys/BodyType";
 import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
-import { Polygon } from "../../src/shape/Polygon";
 import { AngleJoint } from "../../src/constraint/AngleJoint";
 import { MotorJoint } from "../../src/constraint/MotorJoint";
 import { LineJoint } from "../../src/constraint/LineJoint";

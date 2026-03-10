@@ -232,7 +232,7 @@ describe("Collision integration — interaction filters", () => {
     (ball.shapes as any).at(0).sensorEnabled = true;
     ball.space = space;
 
-    let sensed = false;
+    let _sensed = false;
     const ct = new CbType();
     (ball.cbTypes as any).add(ct);
     const listener = new InteractionListener(
@@ -241,7 +241,7 @@ describe("Collision integration — interaction filters", () => {
       ct,
       CbType.ANY_BODY,
       () => {
-        sensed = true;
+        _sensed = true;
       },
     );
     listener.space = space;
@@ -414,7 +414,7 @@ describe("Collision integration — pre-listeners", () => {
       InteractionType.COLLISION,
       CbType.ANY_BODY,
       CbType.ANY_BODY,
-      (cb: any) => {
+      (_cb: any) => {
         return PreFlag.IGNORE;
       },
     );
@@ -438,7 +438,7 @@ describe("Collision integration — pre-listeners", () => {
       InteractionType.COLLISION,
       CbType.ANY_BODY,
       CbType.ANY_BODY,
-      (cb: any) => {
+      (_cb: any) => {
         return PreFlag.ACCEPT;
       },
     );
@@ -634,19 +634,12 @@ describe("Collision integration — material properties", () => {
     (ball.shapes as any).at(0).material = bouncyMat;
     ball.space = space;
 
-    let highestY = -Infinity;
     let contactMade = false;
-    let postBounceHighest = -Infinity;
 
     for (let i = 0; i < 300; i++) {
       space.step(1 / 60);
       if (!contactMade && ball.velocity.y < 0) {
         contactMade = true;
-      }
-      if (contactMade) {
-        if (ball.position.y < postBounceHighest) {
-          postBounceHighest = ball.position.y;
-        }
       }
     }
 
@@ -826,8 +819,6 @@ describe("Collision integration — island & sleep", () => {
     for (let i = 0; i < 600; i++) space.step(1 / 60);
 
     // Record position
-    const targetYBefore = target.position.y;
-
     // Launch a projectile at the resting box
     const projectile = dynamicCircle(-200, 170, 10);
     projectile.velocity = new Vec2(500, 0);
@@ -853,7 +844,6 @@ describe("Collision integration — arbiter property access", () => {
     ball.space = space;
 
     let hasCollisionArbiter = false;
-    let gotNormalImpulse = false;
     const listener = new InteractionListener(
       CbEvent.ONGOING,
       InteractionType.COLLISION,
@@ -863,10 +853,7 @@ describe("Collision integration — arbiter property access", () => {
         const arb = cb.arbiters.at(0);
         if (arb.collisionArbiter) {
           hasCollisionArbiter = true;
-          const ni = arb.collisionArbiter.normalImpulse();
-          if (typeof ni === "number" && !isNaN(ni)) {
-            gotNormalImpulse = true;
-          }
+          arb.collisionArbiter.normalImpulse();
         }
       },
     );
