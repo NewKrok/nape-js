@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 3082 tests across 145 files
+npm test             # vitest — 3118 tests across 147 files
 npm run lint         # eslint + prettier
 ```
 
@@ -45,7 +45,7 @@ tree-shakeable, and minified. Key facts:
 - **85 ZPP\_\* internal classes** in `src/native/`
 - **68 public API classes** in `src/` with direct `zpp_inner` access
 - **Bundle:** ~994 KB minified ESM + CJS, dual exports map, tree shaking via `bootstrap.ts`
-- **Tests:** 3082 passing across 145 files
+- **Tests:** 3118 passing across 147 files
 - **`strict: true`**, `tsc --noEmit` → 0 errors
 
 ### Key architectural patterns (reference)
@@ -123,31 +123,6 @@ Steps 1–5 done (+849 tests, 2269 → 3118). All previously crashing APIs are n
 
 ---
 
-### Priority 30: TSDoc — public API documentation ✅ Done
-
-All geometry, physics, callback & constraint types documented. Typedoc builds with 0 warnings → `docs/api/`.
-
----
-
-### Priority 31: API ergonomics additions ✅ Done
-
-`clone()`, `equals()` on Vec2/Vec3/AABB/Ray/Mat23/MatMN; `Vec2.fromAngle`, `Vec2.lerp`, `AABB.fromPoints`.
-
----
-
-### Priority 32: Internal `get_X()`/`set_X()` cleanup ✅ Done
-
-Removed 22 unused legacy accessor methods from `Ray.ts`, `Shape.ts`, `Polygon.ts`.
-
----
-
-### Priority 33: Performance profiling & benchmark CI ✅ Done
-
-CI-integrated benchmark suite with calibration-normalized regression detection.
-Scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`.
-
----
-
 ### Priority 34: Granular tree shaking (lazy ZPP registration) ❌ Cancelled
 
 **Effort: XL | Impact: large (bundle) | Risk: high**
@@ -166,18 +141,6 @@ Scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`.
   an async `init()` call — a DX tradeoff not worth making for nape-js.
 - The full lazy ZPP registration refactor remains theoretically possible but the complexity
   and risk are disproportionate to the benefit.
-
----
-
-### Priority 35: Type system improvements (Space.ts return types) ✅ Done
-
-Added `TypedListLike<T>` interface to `NapeListFactory.ts` and concrete type aliases
-(`BodyList`, `ShapeList`, `CompoundList`, `ConstraintList`, `ArbiterList`, `ListenerList`,
-`RayResultList`, `ConvexResultList`) in `src/util/listTypes.ts`.
-
-- `Space.ts`: 7 collection properties + 14 query methods → concrete list types
-- `Body.ts`: `connectedBodies()` / `interactingBodies()` → `BodyList`
-- All types exported from public API (`src/index.ts`)
 
 ---
 
