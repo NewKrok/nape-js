@@ -60,7 +60,9 @@ describe("Space properties", () => {
 
   it("should throw on NaN worldLinearDrag", () => {
     const space = new Space(Vec2.get(0, 100));
-    expect(() => { space.worldLinearDrag = NaN; }).toThrow(/NaN/);
+    expect(() => {
+      space.worldLinearDrag = NaN;
+    }).toThrow(/NaN/);
   });
 
   it("should get/set worldAngularDrag", () => {
@@ -71,7 +73,9 @@ describe("Space properties", () => {
 
   it("should throw on NaN worldAngularDrag", () => {
     const space = new Space(Vec2.get(0, 100));
-    expect(() => { space.worldAngularDrag = NaN; }).toThrow(/NaN/);
+    expect(() => {
+      space.worldAngularDrag = NaN;
+    }).toThrow(/NaN/);
   });
 
   it("should get/set sortContacts", () => {

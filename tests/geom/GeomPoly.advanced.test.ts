@@ -16,12 +16,7 @@ import { Vec2 } from "../../src/geom/Vec2";
 // ---------------------------------------------------------------------------
 
 function makeSquare(s = 10): GeomPoly {
-  return new GeomPoly([
-    Vec2.get(0, 0),
-    Vec2.get(s, 0),
-    Vec2.get(s, s),
-    Vec2.get(0, s),
-  ]);
+  return new GeomPoly([Vec2.get(0, 0), Vec2.get(s, 0), Vec2.get(s, s), Vec2.get(0, s)]);
 }
 
 function makePentagon(): GeomPoly {
@@ -227,11 +222,7 @@ describe("GeomPoly.isSimple (deep)", () => {
   });
 
   it("should return true for 3-vertex triangle with coords far from origin", () => {
-    const p = new GeomPoly([
-      Vec2.get(1000, 1000),
-      Vec2.get(1100, 1000),
-      Vec2.get(1050, 1100),
-    ]);
+    const p = new GeomPoly([Vec2.get(1000, 1000), Vec2.get(1100, 1000), Vec2.get(1050, 1100)]);
     expect(p.isSimple()).toBe(true);
   });
 
