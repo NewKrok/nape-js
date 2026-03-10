@@ -1,0 +1,45 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  benchmark:
+    name: Performance Budget
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run benchmarks (JSON)
+        run: node benchmarks/run.mjs --json > benchmarks/current.json
+
+      # On pull_request: compare against committed baseline
+      - name: Compare against baseline
+        if: github.event_name == 'pull_request'
+        run: node benchmarks/compare.mjs benchmarks/baseline.json benchmarks/current.json --threshold 10
+
+      # On push to master: show human-readable output and update cached baseline
+      - name: Show benchmark results (master)
+        if: github.event_name == 'push'
+        run: node benchmarks/compare.mjs benchmarks/baseline.json benchmarks/current.json --threshold 10 || true
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.sha }}
+          path: benchmarks/current.json
+          retention-days: 90

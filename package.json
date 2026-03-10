@@ -53,6 +53,9 @@
     "format:check": "prettier --check src/ tests/",
     "check:circular": "madge --circular --extensions ts src/ --json | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));if(d.length>24){console.error('New circular dependencies detected: '+d.length+' (max 24)');process.exit(1)}else{console.log('Circular dependencies: '+d.length+'/5 (OK)')}\"",
     "benchmark": "npm run build && node benchmarks/run.mjs",
+    "benchmark:json": "npm run build && node benchmarks/run.mjs --json",
+    "benchmark:compare": "node benchmarks/compare.mjs",
+    "benchmark:update-baseline": "npm run benchmark:json -- > benchmarks/baseline.json && echo 'baseline.json updated'",
     "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js && node scripts/stamp-docs.mjs && npm run build:typedoc",
     "build:typedoc": "typedoc",
     "serve:docs": "npx serve docs"
