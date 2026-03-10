@@ -271,5 +271,4 @@ export class Ray {
     ret.zpp_inner.maxdist = md;
     return ret;
   }
-
 }

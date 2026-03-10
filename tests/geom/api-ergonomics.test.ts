@@ -401,12 +401,7 @@ describe("AABB.fromPoints()", () => {
   });
 
   it("creates bounding box from multiple points", () => {
-    const a = AABB.fromPoints([
-      new Vec2(1, 2),
-      new Vec2(5, 8),
-      new Vec2(3, -1),
-      new Vec2(-2, 4),
-    ]);
+    const a = AABB.fromPoints([new Vec2(1, 2), new Vec2(5, 8), new Vec2(3, -1), new Vec2(-2, 4)]);
     expect(a.x).toBe(-2);
     expect(a.y).toBe(-1);
     expect(a.width).toBeCloseTo(7);

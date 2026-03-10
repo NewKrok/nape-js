@@ -308,7 +308,6 @@ export class Polygon extends Shape {
   validity(): any {
     return this.zpp_inner_zn.valid();
   }
-
 }
 
 // ---------------------------------------------------------------------------
