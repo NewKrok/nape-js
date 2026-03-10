@@ -251,6 +251,14 @@ export class Ray {
   }
 
   /**
+   * Return a new Ray with the same origin, direction, and maxDistance. Alias for `copy()`.
+   * @returns A new Ray with the same properties.
+   */
+  clone(): Ray {
+    return this.copy();
+  }
+
+  /**
    * Return a new Ray with the same origin, direction, and maxDistance.
    * @returns A deep copy of this Ray.
    */

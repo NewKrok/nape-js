@@ -1,6 +1,7 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_AABB } from "../native/geom/ZPP_AABB";
+import { Vec2 } from "./Vec2";
 import type { NapeInner } from "./Vec2";
 
 /**
@@ -61,6 +62,48 @@ export class AABB {
 
     this.zpp_inner = zpp;
     zpp.outer = this;
+  }
+
+  /**
+   * Create the smallest AABB that contains all the given points.
+   * Disposes weak Vec2 arguments after use.
+   *
+   * @param points - An array of Vec2 points to enclose. Must contain at least one point.
+   * @returns A new AABB enclosing all the points.
+   */
+  static fromPoints(points: Vec2[]): AABB {
+    if (points == null || points.length === 0) {
+      throw new Error("Error: AABB::fromPoints requires at least one point");
+    }
+    const first = points[0];
+    if (first != null && first.zpp_disp) {
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
+    }
+    if (first == null) {
+      throw new Error("Error: AABB::fromPoints cannot contain null Vec2");
+    }
+    first.zpp_inner.validate();
+    let minx = first.zpp_inner.x;
+    let miny = first.zpp_inner.y;
+    let maxx = minx;
+    let maxy = miny;
+    for (let i = 1; i < points.length; i++) {
+      const p = points[i];
+      if (p != null && p.zpp_disp) {
+        throw new Error("Error: Vec2 has been disposed and cannot be used!");
+      }
+      if (p == null) {
+        throw new Error("Error: AABB::fromPoints cannot contain null Vec2");
+      }
+      p.zpp_inner.validate();
+      const px = p.zpp_inner.x;
+      const py = p.zpp_inner.y;
+      if (px < minx) minx = px;
+      if (py < miny) miny = py;
+      if (px > maxx) maxx = px;
+      if (py > maxy) maxy = py;
+    }
+    return new AABB(minx, miny, maxx - minx, maxy - miny);
   }
 
   /** @internal Wrap a ZPP_AABB (or legacy compiled AABB) with caching. */
@@ -487,6 +530,40 @@ export class AABB {
   // ---------------------------------------------------------------------------
   // Methods
   // ---------------------------------------------------------------------------
+
+  /**
+   * Return a new AABB with the same bounds. Alias for `copy()`.
+   *
+   * @returns A new AABB with the same position and dimensions.
+   */
+  clone(): AABB {
+    return this.copy();
+  }
+
+  /**
+   * Check whether this AABB is equal to another, within an optional epsilon tolerance.
+   *
+   * @param other - The AABB to compare against.
+   * @param epsilon - Maximum allowed difference per component (default 0).
+   * @returns `true` if all four bounds (minx, miny, maxx, maxy) differ by at most `epsilon`.
+   */
+  equals(other: AABB, epsilon: number = 0): boolean {
+    if (other == null) {
+      return false;
+    }
+    this.zpp_inner.validate();
+    other.zpp_inner.validate();
+    const d1 = this.zpp_inner.minx - other.zpp_inner.minx;
+    const d2 = this.zpp_inner.miny - other.zpp_inner.miny;
+    const d3 = this.zpp_inner.maxx - other.zpp_inner.maxx;
+    const d4 = this.zpp_inner.maxy - other.zpp_inner.maxy;
+    return (
+      (d1 < 0 ? -d1 : d1) <= epsilon &&
+      (d2 < 0 ? -d2 : d2) <= epsilon &&
+      (d3 < 0 ? -d3 : d3) <= epsilon &&
+      (d4 < 0 ? -d4 : d4) <= epsilon
+    );
+  }
 
   /**
    * Return a new AABB with the same bounds.

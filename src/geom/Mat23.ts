@@ -180,6 +180,43 @@ export class Mat23 {
   // ---------------------------------------------------------------------------
 
   /**
+   * Return a new Mat23 with the same components. Alias for `copy()`.
+   * @returns A new Mat23 with the same components.
+   */
+  clone(): Mat23 {
+    return this.copy();
+  }
+
+  /**
+   * Check whether this Mat23 is component-wise equal to another, within an optional epsilon tolerance.
+   *
+   * @param other - The Mat23 to compare against.
+   * @param epsilon - Maximum allowed difference per component (default 0).
+   * @returns `true` if all six components differ by at most `epsilon`.
+   */
+  equals(other: Mat23, epsilon: number = 0): boolean {
+    if (other == null) {
+      return false;
+    }
+    const t = this.zpp_inner;
+    const o = other.zpp_inner;
+    const da = t.a - o.a;
+    const db = t.b - o.b;
+    const dc = t.c - o.c;
+    const dd = t.d - o.d;
+    const dtx = t.tx - o.tx;
+    const dty = t.ty - o.ty;
+    return (
+      (da < 0 ? -da : da) <= epsilon &&
+      (db < 0 ? -db : db) <= epsilon &&
+      (dc < 0 ? -dc : dc) <= epsilon &&
+      (dd < 0 ? -dd : dd) <= epsilon &&
+      (dtx < 0 ? -dtx : dtx) <= epsilon &&
+      (dty < 0 ? -dty : dty) <= epsilon
+    );
+  }
+
+  /**
    * Return a new Mat23 with the same components.
    * @returns A deep copy of this matrix.
    */

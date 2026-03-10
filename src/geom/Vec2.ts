@@ -247,6 +247,83 @@ export class Vec2 {
   }
 
   /**
+   * Create a unit Vec2 pointing in the given direction (angle in radians).
+   * Equivalent to `Vec2.fromPolar(1, radians)`.
+   *
+   * @param radians - The angle in radians, measured counter-clockwise from the +x axis.
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A unit Vec2 at the given angle.
+   */
+  static fromAngle(radians: number, weak: boolean = false): Vec2 {
+    return Vec2.fromPolar(1, radians, weak);
+  }
+
+  /**
+   * Linearly interpolate between two Vec2s. Returns `a + t * (b - a)`.
+   * Disposes weak arguments after use.
+   *
+   * @param a - The start Vec2 (t = 0).
+   * @param b - The end Vec2 (t = 1).
+   * @param t - The interpolation factor (typically 0–1, but not clamped).
+   * @param weak - If true, the returned Vec2 is auto-disposed after one use (default false).
+   * @returns A new Vec2 at the interpolated position.
+   */
+  static lerp(a: Vec2, b: Vec2, t: number, weak: boolean = false): Vec2 {
+    if (a != null && a.zpp_disp) {
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
+    }
+    if (b != null && b.zpp_disp) {
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
+    }
+    if (a == null || b == null) {
+      throw new Error("Error: Cannot lerp with null Vec2");
+    }
+    if (t !== t) {
+      throw new Error("Error: Cannot lerp with NaN t");
+    }
+    a.zpp_inner.validate();
+    b.zpp_inner.validate();
+    const x = a.zpp_inner.x + t * (b.zpp_inner.x - a.zpp_inner.x);
+    const y = a.zpp_inner.y + t * (b.zpp_inner.y - a.zpp_inner.y);
+    const ret = Vec2._poolGet(x, y, weak);
+    Vec2._disposeWeak(a);
+    Vec2._disposeWeak(b);
+    return ret;
+  }
+
+  /**
+   * Check whether two Vec2s are component-wise equal, within an optional epsilon tolerance.
+   * Disposes weak arguments after comparison.
+   *
+   * @param a - The first Vec2.
+   * @param b - The second Vec2.
+   * @param epsilon - Maximum allowed difference per component (default 0).
+   * @returns `true` if both components differ by at most `epsilon`.
+   */
+  static eq(a: Vec2, b: Vec2, epsilon: number = 0): boolean {
+    if (a != null && a.zpp_disp) {
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
+    }
+    if (b != null && b.zpp_disp) {
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
+    }
+    if (a == null || b == null) {
+      const ret = a == null && b == null;
+      if (a != null) Vec2._disposeWeak(a);
+      if (b != null) Vec2._disposeWeak(b);
+      return ret;
+    }
+    a.zpp_inner.validate();
+    b.zpp_inner.validate();
+    const dx = a.zpp_inner.x - b.zpp_inner.x;
+    const dy = a.zpp_inner.y - b.zpp_inner.y;
+    const ret = (dx < 0 ? -dx : dx) <= epsilon && (dy < 0 ? -dy : dy) <= epsilon;
+    Vec2._disposeWeak(a);
+    Vec2._disposeWeak(b);
+    return ret;
+  }
+
+  /**
    * Squared Euclidean distance between two Vec2s. Avoids a square root when
    * only comparison is needed.
    *
@@ -477,6 +554,37 @@ export class Vec2 {
     this._checkImmutable();
     this._setXY(x, y);
     return this;
+  }
+
+  /**
+   * Return a new Vec2 with the same components. Alias for `copy()`.
+   *
+   * @returns A new Vec2 with the same x and y values.
+   */
+  clone(): Vec2 {
+    return this.copy();
+  }
+
+  /**
+   * Check whether this Vec2 is component-wise equal to another, within an optional epsilon tolerance.
+   *
+   * @param other - The Vec2 to compare against.
+   * @param epsilon - Maximum allowed difference per component (default 0).
+   * @returns `true` if both components differ by at most `epsilon`.
+   */
+  equals(other: Vec2, epsilon: number = 0): boolean {
+    this._checkDisposed();
+    if (other != null && other.zpp_disp) {
+      throw new Error("Error: Vec2 has been disposed and cannot be used!");
+    }
+    if (other == null) {
+      return false;
+    }
+    this._validate();
+    other.zpp_inner.validate();
+    const dx = this.zpp_inner.x - other.zpp_inner.x;
+    const dy = this.zpp_inner.y - other.zpp_inner.y;
+    return (dx < 0 ? -dx : dx) <= epsilon && (dy < 0 ? -dy : dy) <= epsilon;
   }
 
   /**
