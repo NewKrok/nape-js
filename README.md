@@ -10,11 +10,11 @@
 [![bundle size](https://img.shields.io/badge/gzip-414%20KB-blue.svg)](https://github.com/NewKrok/nape-js)
 [![license](https://img.shields.io/npm/l/@newkrok/nape-js.svg)](https://github.com/NewKrok/nape-js/blob/master/LICENSE)
 
-Modern TypeScript wrapper for the [Nape](https://github.com/deltaluca/nape) 2D physics engine.
+Fully typed, tree-shakeable 2D physics engine — a complete TypeScript port of the
+[Nape](https://github.com/deltaluca/nape) Haxe physics engine.
 
-- Original Haxe engine by Luca Deltodesco
-- JS compiler by Andrew Bradley ([nape-to-js](https://github.com/cspotcode/nape-to-js))
-- TypeScript wrapper by Istvan Krisztian Somoracz
+- Originally created in Haxe by Luca Deltodesco
+- Ported to TypeScript by Istvan Krisztian Somoracz
 
 ## Installation
 
@@ -55,29 +55,6 @@ function update() {
 }
 ```
 
-### Before (v1) vs After (v2)
-
-```javascript
-// v1 — raw Haxe API
-import initNape from "./js/libs/nape-js.module.js";
-initNape();
-const body = new nape.phys.Body(nape.phys.BodyType.get_DYNAMIC());
-body.get_shapes().add(new nape.shape.Polygon(nape.shape.Polygon.box(100, 100)));
-body.get_position().set_x(200);
-body.set_rotation(Math.PI / 2);
-body.set_space(space);
-```
-
-```typescript
-// v2 — TypeScript wrapper
-import { Body, BodyType, Polygon } from "@newkrok/nape-js";
-const body = new Body(BodyType.DYNAMIC);
-body.shapes.add(new Polygon(Polygon.box(100, 100)));
-body.position.x = 200;
-body.rotation = Math.PI / 2;
-body.space = space;
-```
-
 ## API Reference
 
 ### Core Classes
@@ -86,8 +63,11 @@ body.space = space;
 |-------|-------------|
 | `Space` | Physics world — add bodies, step simulation |
 | `Body` | Rigid body with position, velocity, mass |
-| `Vec2` | 2D vector for positions, velocities, forces |
-| `AABB` | Axis-aligned bounding box |
+| `Vec2` | 2D vector — pooling, `clone()`, `equals()`, `lerp()`, `fromAngle()` |
+| `Vec3` | 3D vector for constraint impulses — `clone()`, `equals()` |
+| `AABB` | Axis-aligned bounding box — `clone()`, `equals()`, `fromPoints()` |
+| `Mat23` | 2×3 affine matrix — `clone()`, `equals()`, transform, inverse |
+| `Ray` | Raycasting — `clone()`, `fromSegment()`, spatial queries |
 
 ### Shapes
 
@@ -134,14 +114,15 @@ body.space = space;
 | Class | Description |
 |-------|-------------|
 | `NapeList<T>` | Iterable list with `for...of` support |
+| `MatMN` | Variable-sized M×N matrix — `clone()`, `equals()`, multiply, transpose |
 
 ## Development
 
 ```bash
 npm install
-npm run build    # Compile TypeScript + bundle
-npm test         # Run tests (779 tests)
-npm run benchmark # Performance benchmarks
+npm run build      # tsup → dist/ (ESM + CJS + DTS)
+npm test           # vitest — 2736 tests across 139 files
+npm run benchmark  # Performance benchmarks
 ```
 
 ## License

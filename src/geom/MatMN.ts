@@ -102,6 +102,42 @@ export class MatMN {
   // ---------------------------------------------------------------------------
 
   /**
+   * Check whether this MatMN is element-wise equal to another, within an optional epsilon tolerance.
+   * Matrices must have the same dimensions.
+   *
+   * @param other - The MatMN to compare against.
+   * @param epsilon - Maximum allowed difference per element (default 0).
+   * @returns `true` if dimensions match and all elements differ by at most `epsilon`.
+   */
+  equals(other: MatMN, epsilon: number = 0): boolean {
+    if (other == null) {
+      return false;
+    }
+    if (this.zpp_inner.m !== other.zpp_inner.m || this.zpp_inner.n !== other.zpp_inner.n) {
+      return false;
+    }
+    for (let i = 0; i < this.zpp_inner.x.length; i++) {
+      const d = this.zpp_inner.x[i] - other.zpp_inner.x[i];
+      if ((d < 0 ? -d : d) > epsilon) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Return a new MatMN with the same dimensions and element values.
+   * @returns A deep copy of this matrix.
+   */
+  clone(): MatMN {
+    const ret = new MatMN(this.zpp_inner.m, this.zpp_inner.n);
+    for (let i = 0; i < this.zpp_inner.x.length; i++) {
+      ret.zpp_inner.x[i] = this.zpp_inner.x[i];
+    }
+    return ret;
+  }
+
+  /**
    * String representation with rows separated by semicolons.
    * @returns A human-readable string of the matrix elements.
    */

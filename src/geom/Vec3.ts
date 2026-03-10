@@ -251,6 +251,43 @@ export class Vec3 {
   }
 
   /**
+   * Check whether this Vec3 is component-wise equal to another, within an optional epsilon tolerance.
+   *
+   * @param other - The Vec3 to compare against.
+   * @param epsilon - Maximum allowed difference per component (default 0).
+   * @returns `true` if all three components differ by at most `epsilon`.
+   */
+  equals(other: Vec3, epsilon: number = 0): boolean {
+    this._checkDisposed();
+    if (other != null && other.zpp_disp) {
+      throw new Error("Error: Vec3 has been disposed and cannot be used!");
+    }
+    if (other == null) {
+      return false;
+    }
+    this.zpp_inner.validate();
+    other.zpp_inner.validate();
+    const dx = this.zpp_inner.x - other.zpp_inner.x;
+    const dy = this.zpp_inner.y - other.zpp_inner.y;
+    const dz = this.zpp_inner.z - other.zpp_inner.z;
+    return (
+      (dx < 0 ? -dx : dx) <= epsilon &&
+      (dy < 0 ? -dy : dy) <= epsilon &&
+      (dz < 0 ? -dz : dz) <= epsilon
+    );
+  }
+
+  /**
+   * Return a new Vec3 with the same components.
+   * @returns A copy of this vector.
+   */
+  clone(): Vec3 {
+    this._checkDisposed();
+    this.zpp_inner.validate();
+    return Vec3.get(this.zpp_inner.x, this.zpp_inner.y, this.zpp_inner.z);
+  }
+
+  /**
    * Return the x and y components as a new Vec2.
    * @param weak - If true, the returned Vec2 is a weak (pooled) reference.
    * @returns A new Vec2 containing this vector's x and y components.
