@@ -400,7 +400,7 @@ export class Constraint {
    * The impulse applied to `body` by this constraint in the last simulation step,
    * expressed as a {@link Vec3} `(fx, fy, torque)`.
    *
-   * @param body - Must be one of the bodies linked to this constraint.
+   * @param _body - Must be one of the bodies linked to this constraint.
    */
   bodyImpulse(_body: Body): Vec3 | null {
     return null;
@@ -409,7 +409,7 @@ export class Constraint {
   /**
    * Invokes `fn` once for each distinct body linked to this constraint.
    *
-   * @param fn - Function to call for each body.
+   * @param _fn - Function to call for each body.
    */
   visitBodies(_fn: (body: Body) => void): void {}
 

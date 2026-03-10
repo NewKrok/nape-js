@@ -28,6 +28,14 @@ export class InteractionFilter {
     return this;
   }
 
+  /**
+   * @param collisionGroup - Collision group bits (default 1).
+   * @param collisionMask - Collision mask bits (default -1, all bits set).
+   * @param sensorGroup - Sensor group bits (default 1).
+   * @param sensorMask - Sensor mask bits (default -1, all bits set).
+   * @param fluidGroup - Fluid group bits (default 1).
+   * @param fluidMask - Fluid mask bits (default -1, all bits set).
+   */
   constructor(
     collisionGroup: number = 1,
     collisionMask: number = -1,
@@ -103,6 +111,7 @@ export class InteractionFilter {
   // Properties
   // ---------------------------------------------------------------------------
 
+  /** Bit-mask identifying which collision group(s) this shape belongs to. */
   get collisionGroup(): number {
     return this.zpp_inner.collisionGroup;
   }
@@ -113,6 +122,7 @@ export class InteractionFilter {
     }
   }
 
+  /** Bit-mask of collision groups this shape will collide with. */
   get collisionMask(): number {
     return this.zpp_inner.collisionMask;
   }
@@ -123,6 +133,7 @@ export class InteractionFilter {
     }
   }
 
+  /** Bit-mask identifying which sensor group(s) this shape belongs to. */
   get sensorGroup(): number {
     return this.zpp_inner.sensorGroup;
   }
@@ -133,6 +144,7 @@ export class InteractionFilter {
     }
   }
 
+  /** Bit-mask of sensor groups this shape will sense. */
   get sensorMask(): number {
     return this.zpp_inner.sensorMask;
   }
@@ -143,6 +155,7 @@ export class InteractionFilter {
     }
   }
 
+  /** Bit-mask identifying which fluid group(s) this shape belongs to. */
   get fluidGroup(): number {
     return this.zpp_inner.fluidGroup;
   }
@@ -153,6 +166,7 @@ export class InteractionFilter {
     }
   }
 
+  /** Bit-mask of fluid groups this shape will interact with as a fluid. */
   get fluidMask(): number {
     return this.zpp_inner.fluidMask;
   }
@@ -163,6 +177,7 @@ export class InteractionFilter {
     }
   }
 
+  /** Arbitrary user data attached to this filter. */
   get userData(): Record<string, unknown> {
     if (this.zpp_inner.userData == null) {
       this.zpp_inner.userData = {};
@@ -170,6 +185,7 @@ export class InteractionFilter {
     return this.zpp_inner.userData;
   }
 
+  /** Read-only list of shapes currently using this filter. */
   get shapes(): any {
     if (this.zpp_inner.wrap_shapes == null) {
       const nape = getNape();
@@ -185,6 +201,11 @@ export class InteractionFilter {
   // Methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Test whether two filters allow collision interaction.
+   * @param filter - The other filter to test against.
+   * @returns `true` if the two filters' group/mask bits permit collision.
+   */
   shouldCollide(filter: InteractionFilter): boolean {
     if (filter == null) {
       throw new Error("Error: filter argument cannot be null for shouldCollide");
@@ -192,6 +213,11 @@ export class InteractionFilter {
     return this.zpp_inner.shouldCollide(filter.zpp_inner);
   }
 
+  /**
+   * Test whether two filters allow sensor interaction.
+   * @param filter - The other filter to test against.
+   * @returns `true` if the two filters' group/mask bits permit sensing.
+   */
   shouldSense(filter: InteractionFilter): boolean {
     if (filter == null) {
       throw new Error("Error: filter argument cannot be null for shouldSense");
@@ -199,6 +225,11 @@ export class InteractionFilter {
     return this.zpp_inner.shouldSense(filter.zpp_inner);
   }
 
+  /**
+   * Test whether two filters allow fluid interaction.
+   * @param filter - The other filter to test against.
+   * @returns `true` if the two filters' group/mask bits permit fluid interaction.
+   */
   shouldFlow(filter: InteractionFilter): boolean {
     if (filter == null) {
       throw new Error("Error: filter argument cannot be null for shouldFlow");
@@ -206,6 +237,7 @@ export class InteractionFilter {
     return this.zpp_inner.shouldFlow(filter.zpp_inner);
   }
 
+  /** Create a copy of this filter with the same group/mask values. */
   copy(): InteractionFilter {
     return new InteractionFilter(
       this.zpp_inner.collisionGroup,
@@ -217,6 +249,7 @@ export class InteractionFilter {
     );
   }
 
+  /** Return a hex-formatted string representation of all group/mask pairs. */
   toString(): string {
     const hex = (n: number, digits: number): string => {
       let s = "";

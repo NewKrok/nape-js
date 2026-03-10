@@ -183,7 +183,7 @@ export class Arbiter {
    * Overridden by {@link CollisionArbiter} and {@link FluidArbiter}.
    *
    * @param body - One of the two interacting bodies, or `null` for the combined impulse.
-   * @param freshOnly - When `true`, only count fresh (new) contacts. Default `false`.
+   * @param _freshOnly - When `true`, only count fresh (new) contacts. Default `false`.
    */
   totalImpulse(body: Body | null = null, _freshOnly: boolean = false): Vec3 {
     this._activeCheck();
