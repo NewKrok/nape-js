@@ -20,7 +20,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 
 ```bash
 npm run build        # tsup → dist/
-npm test             # vitest — 2677 tests across 138 files
+npm test             # vitest — 2736 tests across 139 files
 npm run lint         # eslint + prettier
 ```
 
@@ -35,19 +35,16 @@ declarations for runtime-copied prototype methods). Never push without a green b
 
 ---
 
-## Codebase State (post-P28)
+## Codebase State
 
 All Haxe modernization is complete. The codebase is **pure TypeScript**, fully typed,
 tree-shakeable, and minified. Key facts:
 
-- **85 ZPP_* internal classes** extracted to `src/native/`
-- **68 public API classes** in `src/` with direct `zpp_inner` access (no compiled delegate)
-- **`nape-compiled.js` deleted** — zero compiled JS remains
-- **`type Any = any` eliminated** — `strict: true`, `tsc --noEmit` → 0 errors
-- **Bundle:** 979 KB minified ESM + CJS, dual exports map, tree shaking via `bootstrap.ts`
-- **Tests:** 2677 passing across 138 files
-- **No Haxe dead code** — `$hxClasses`, `__class__`, `$estr`, `$bind`, `HaxeShims.ts` all gone
-- **No `get_X()`/`set_X()` backward-compat methods** — all removed (P28c)
+- **85 ZPP_* internal classes** in `src/native/`
+- **68 public API classes** in `src/` with direct `zpp_inner` access
+- **Bundle:** ~994 KB minified ESM + CJS, dual exports map, tree shaking via `bootstrap.ts`
+- **Tests:** 2736 passing across 139 files
+- **`strict: true`**, `tsc --noEmit` → 0 errors
 
 ### Key architectural patterns (reference)
 
@@ -81,49 +78,6 @@ by each of the 6 enum classes after self-registering; fires `_initEnums` once al
 
 ---
 
-## Modernization Pattern (for future reference)
-
-### Steps to extract a class
-
-1. **Extract ZPP_Foo** to `src/native/.../ZPP_Foo.ts`
-   - Add `static _wrapFn` callback + `wrapper()` method with `_wrapFn` → legacy fallback
-   - Add `static zpp_pool`, `outer`, `next` fields
-   - Copy parent prototype methods in `_init()` if ZPP_Foo has a compiled base class
-
-2. **Rewrite public API class** in `src/.../Foo.ts`
-   - `zpp_inner: ZPP_Foo` — direct typed access (no `any`)
-   - `get _inner() { return this; }` — backward compat for compiled code
-   - Constructor: pool from `ZPP_Foo.zpp_pool`, set `zpp.outer = this`
-   - `static _wrap(inner)` — handle ZPP_Foo, legacy objects, null
-   - Getters/setters read/write `zpp_inner` directly with validation + invalidation
-
-3. **Wire up in `bootstrap.ts`** (not in the module itself — avoids circular imports):
-   ```typescript
-   ZPP_Foo._wrapFn = (zpp) => getOrCreate(zpp, (raw) => { /* create wrapper */ });
-   nape.xxx.Foo = Foo;
-   ```
-
-4. **Verify**: `npm test` passes, `npm run build` succeeds
-
-### Key gotchas
-
-- **Circular imports**: Foo.ts → engine.ts → ZPPRegistry.ts. Never import Foo.ts from ZPPRegistry.
-- **Test setup**: `tests/setup.ts` imports all subclass modules — factory callbacks available everywhere.
-- **Circular ESM dep with `extends`**: Subclasses register from `index.ts`, not `engine.ts`.
-- **NaN checks**: Use `value !== value` (Haxe NaN pattern).
-- **Invalidation flags**: Copy exact bitmasks from compiled setter code.
-- **Pool management**: Always check `ZPP_Foo.zpp_pool` before `new ZPP_Foo()`.
-- **List APIs**: Compiled lists use `get_length()` not `.length`, `Iterator.get(list)` for iteration.
-- **Density conversion**: Material stores density as `value / 1000`, public API shows `* 1000`.
-
-### Reference implementations
-
-- **ZPP class extraction**: `src/native/phys/ZPP_Body.ts` or `src/native/phys/ZPP_Compound.ts`
-- **Public API class**: `src/phys/Body.ts` or `src/phys/Compound.ts`
-- **Simpler example**: `src/geom/AABB.ts` + `src/native/geom/ZPP_AABB.ts`
-
----
-
 ## Roadmap
 
 ### 🔶 Priority 29: Test coverage — target ≥80% (Steps 1–2 done)
@@ -132,8 +86,9 @@ by each of the 6 enum classes after self-registering; fires `_initEnums` once al
 
 **Step 1 done** (+254 tests, 2269 → 2523): 13 missing public API test files created.
 
-**Step 2 done** (+154 tests, 2523 → 2677): `Body`, `AABB`, `FluidProperties`, `Material`
-test files expanded with deep property, validation, and round-trip coverage.
+**Step 2 done** (+154 tests, 2523 → 2677; now 2736 with P31): `Body`, `AABB`,
+`FluidProperties`, `Material` test files expanded with deep property, validation, and
+round-trip coverage.
 
 **Key patterns discovered:**
 - Constraints do NOT auto-register `CbType.ANY_CONSTRAINT` — must use custom CbType + `(joint.cbTypes as any).add(ct)`
@@ -146,62 +101,35 @@ test files expanded with deep property, validation, and round-trip coverage.
 
 ---
 
-### Priority 30: TSDoc — public API documentation
+### 🔶 Priority 30: TSDoc — public API documentation
 
 **Effort: L | Impact: large (DX) | Risk: none**
 
-Current state: class-level JSDoc exists on all 68 public classes, but **~95% of public
-methods/properties have no per-member documentation**. IDE autocomplete shows no hints.
-
-**30a — Core geometry types** (`Vec2`, `AABB`, `Ray`, `Mat23`, `MatMN`, `Vec3`): ✅ Done
-
-**30b — Physics types** (`Body`, `Space`, `Shape`, `Circle`, `Polygon`): ✅ Done
-
-**30c — Callbacks & constraints** (`Listener`, `CbType`, all joints, `Arbiter` subtypes): ✅ Done
-
-- Documented callback lifecycle (BEGIN/ONGOING/END semantics)
-- Documented constraint limits, motor, spring params
-- Documented Arbiter subtypes (CollisionArbiter, FluidArbiter)
-
+30a–30c done: all geometry, physics, callback & constraint types documented.
 **Tooling:** Consider adding `typedoc` as a dev dependency + `npm run docs` script.
 
 ---
 
-### Priority 31: API ergonomics additions
+### Priority 31: API ergonomics additions ✅ Done
 
 **Effort: M | Impact: medium (DX) | Risk: low**
 
-Missing convenience methods on geometry types:
+Convenience methods added to geometry types (+59 tests):
 
-**31a — `clone()` methods** (currently absent):
-- `Vec2.clone()` → `new Vec2(this.x, this.y)`
-- `AABB.clone()` → `new AABB(this.x, this.y, this.width, this.height)`
-- `Ray.clone()` → clone with same origin/direction/maxDistance
-- `Mat23.clone()`, `MatMN.clone()`
+**31a — `clone()` methods**: `Vec2`, `Vec3`, `AABB`, `Ray`, `Mat23`, `MatMN`
+(delegates to existing `copy()` where available; new impl for `Vec3`/`MatMN`)
 
-**31b — `equals()` methods** (currently absent):
-- `Vec2.equals(other: Vec2, epsilon?: number): boolean`
-- `AABB.equals(other: AABB, epsilon?: number): boolean`
-- Static variants: `Vec2.eq(a, b)` mirroring existing `Vec2.distance` style
+**31b — `equals()` methods**: `Vec2.equals(other, epsilon?)`, `Vec3.equals()`,
+`AABB.equals()`, `Mat23.equals()`, `MatMN.equals()` + static `Vec2.eq(a, b, epsilon?)`
 
-**31c — Utility statics** (quality of life):
-- `Vec2.fromAngle(radians: number): Vec2`
-- `Vec2.lerp(a: Vec2, b: Vec2, t: number): Vec2`
-- `AABB.fromPoints(points: Vec2[]): AABB`
+**31c — Utility statics**: `Vec2.fromAngle(radians)`, `Vec2.lerp(a, b, t)`,
+`AABB.fromPoints(points)`
 
 ---
 
-### Priority 32: Internal `get_X()`/`set_X()` cleanup in public API files ✅ Done
+### Priority 32: Internal `get_X()`/`set_X()` cleanup ✅ Done
 
-**Effort: S | Impact: small | Risk: low**
-
-Removed 22 unused `@internal` backward-compat `get_X()`/`set_X()` accessor methods
-from public API files. These were legacy bridges for the deleted `nape-compiled.js` and
-had zero callers in the current TypeScript codebase:
-
-- `Ray.ts` — 7 methods removed (get/set origin, direction, maxDistance, getUserData)
-- `Shape.ts` — 13 methods removed (type, body, castCircle/Polygon, worldCOM, localCOM, area, inertia, angDrag, material, filter, fluidProperties, fluidEnabled, sensorEnabled, bounds)
-- `Polygon.ts` — 3 methods removed (localVerts, worldVerts, edges)
+Removed 22 unused legacy accessor methods from `Ray.ts`, `Shape.ts`, `Polygon.ts`.
 
 ---
 
@@ -246,7 +174,7 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P28 — API ergonomics (28a+28b+28c) | M | DX | low | ✅ Done |
 | P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–2 done |
 | P30 — TSDoc documentation | L | DX | none | 🔶 30a+30b+30c done |
-| P31 — API ergonomics additions | M | DX | low | ⬜ Not started |
+| P31 — API ergonomics additions | M | DX | low | ✅ Done |
 | P32 — Internal accessor cleanup | S | small | low | ✅ Done |
 | P33 — Benchmark CI | M | medium | low | ⬜ Not started |
 | P34 — Granular tree shaking | XL | large | high | ⬜ Not started |
