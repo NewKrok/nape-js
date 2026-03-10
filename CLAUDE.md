@@ -27,6 +27,7 @@ npm run lint         # eslint + prettier
 ### Pre-push checklist
 
 **Before every `git push`, always run all three:**
+
 1. `npm run lint` — ESLint + Prettier must pass (catches unused vars, formatting issues)
 2. `npm test` — all tests must pass
 3. `npm run build` — DTS generation must succeed
@@ -41,7 +42,7 @@ declarations for runtime-copied prototype methods). Never push without a green l
 All Haxe modernization is complete. The codebase is **pure TypeScript**, fully typed,
 tree-shakeable, and minified. Key facts:
 
-- **85 ZPP_* internal classes** in `src/native/`
+- **85 ZPP\_\* internal classes** in `src/native/`
 - **68 public API classes** in `src/` with direct `zpp_inner` access
 - **Bundle:** ~994 KB minified ESM + CJS, dual exports map, tree shaking via `bootstrap.ts`
 - **Tests:** 2913 passing across 142 files
@@ -50,6 +51,7 @@ tree-shakeable, and minified. Key facts:
 ### Key architectural patterns (reference)
 
 **Registration flow:**
+
 - `src/core/bootstrap.ts` — single place for all `nape.xxx = Foo` assignments and
   `_createFn`/factory-callback wiring. Imported first from `index.ts` + `tests/setup.ts`.
 - `src/native/util/ZPPRegistry.ts` (`registerZPPClasses`) — registers all 85 ZPP classes,
@@ -59,6 +61,7 @@ tree-shakeable, and minified. Key facts:
 - `src/core/engine.ts` — lazy `getNape()` + `ensureEnumsReady()`.
 
 **Factory callback pattern** (ZPP → public API subclass instances):
+
 - `ZPP_Callback`: `_createBodyCb`, `_createConCb`, `_createIntCb`, `_createPreCb`
 - `ZPP_Arbiter`: `_createColArb`, `_createFluidArb`
 - `ZPP_*Joint`: `_createFn` on each joint class
@@ -71,6 +74,7 @@ to ESM circular dependency (`class extends undefined` at init time).
 by each of the 6 enum classes after self-registering; fires `_initEnums` once all 6 are ready.
 
 **`any` usage rules in native files:**
+
 - `outer`/`wrap`/`wrap_min`/`wrap_max` → always `any` (circular ESM prevention + Haxe pool disconnection)
 - `_nape`/`_zpp` static namespace refs → always `any` (dynamic dispatch)
 - `_wrapFn` callbacks → `((zpp: ZPP_Foo) => any) | null`
@@ -92,17 +96,19 @@ by each of the 6 enum classes after self-registering; fires `_initEnums` once al
 round-trip coverage.
 
 **Key patterns discovered:**
+
 - Constraints do NOT auto-register `CbType.ANY_CONSTRAINT` — must use custom CbType + `(joint.cbTypes as any).add(ct)`
 - Fluid arbiters are transient — don't persist in `space.arbiters` after step; capture inside ONGOING callback
 - WAKE events require a sleep→wake transition, not just initial addition to space
 - `space.arbiters` returns a `ZPP_SpaceArbiterList` without a standard `.length` getter
 - Bodies inside compounds do NOT appear in `space.bodies` (top-level only); use `space.liveBodies` or `compound.bodies`
 - Joint body getters may return a different wrapper object — compare by `.id`, not reference equality
-- `interactionType()` returns the *potential* type based on filters, not actual geometric overlap
+- `interactionType()` returns the _potential_ type based on filters, not actual geometric overlap
 
 **Step 3 done** (+177 tests, 2736 → 2913): Space/broadphase integration tests + collision/arbiter + constraint coverage.
 
 Three new integration test files:
+
 - `tests/space/Space.integration.test.ts` (89 tests) — gravity, broadphase, spatial queries
   (shapesUnderPoint, bodiesUnderPoint, shapesInAABB, bodiesInAABB, shapesInCircle, bodiesInCircle,
   shapesInShape, bodiesInShape, shapesInBody, bodiesInBody), ray casting, convex casting,
@@ -116,6 +122,7 @@ Three new integration test files:
   bodyImpulse, visitBodies, isSlack, breakUnderForce, soft constraints, chain integration)
 
 **Step 4 — Remaining coverage gaps (TODO):**
+
 - `ZPP_Cutter` (~1%), `ZPP_Simplify` (~13%), `ZPP_Simple` (~16%), `ZPP_Island` (~16%)
 - `ZPP_ColArbiter` (~18%), `ZPP_FluidArbiter` (~24%), `ZPP_Collide` (~21%)
 - Overall coverage: ~44.7% → target ≥80% requires significant native-level test additions
@@ -129,6 +136,7 @@ Three new integration test files:
 30a–30c done: all geometry, physics, callback & constraint types documented.
 
 **30d — Tooling & cleanup:**
+
 - `typedoc` v0.28.17 added as dev dependency, configured via `typedoc.json`
 - Scripts: `build:typedoc`, `build:docs`, `serve:docs`
 - Fixed 5 typedoc warnings: `@param` name mismatches, unresolved `{@link}`, missing export
@@ -177,11 +185,13 @@ CI-integrated benchmark suite with calibration-normalized regression detection:
 - `package.json` scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`
 
 **Three scenarios measured:**
+
 - A) Falling boxes (200 / 500 / 1000) — broadphase + collision + solver
 - B) PivotJoint chains (50 / 100 / 200 links) — constraint stress
 - C) Position readout (200 / 500 boxes) — step + iterate body x/y/rotation (render loop cost)
 
 **To update baseline after intentional perf improvement:**
+
 ```bash
 npm run benchmark:update-baseline   # rebuilds + runs --json + overwrites baseline.json
 git add benchmarks/baseline.json && git commit -m "chore: update benchmark baseline"
@@ -205,19 +215,19 @@ per-class tree shaking. True granular shaking requires lazy registration:
 
 ## Priority table
 
-| Priority | Effort | Impact | Risk | Status |
-|----------|--------|--------|------|--------|
-| P21 — Drop `__class__` / `$hxClasses` | S | medium | low | ✅ Done |
-| P22 — Minification | XS | large | none | ✅ Done |
-| P23 — `__zpp` → direct imports | M | large | medium | ✅ Done |
-| P24 — Namespace reduction | S | medium | low | ✅ Done |
-| P25 — `Any` → real types | XL | largest | medium | ✅ Done |
-| P26 — Tree shaking | L | large | high | ✅ Done |
-| P27 — HaxeShims audit | S | small | low | ✅ Done |
-| P28 — API ergonomics (28a+28b+28c) | M | DX | low | ✅ Done |
-| P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–3 done |
-| P30 — TSDoc documentation | L | DX | none | ✅ Done |
-| P31 — API ergonomics additions | M | DX | low | ✅ Done |
-| P32 — Internal accessor cleanup | S | small | low | ✅ Done |
-| P33 — Benchmark CI | M | medium | low | ✅ Done |
-| P34 — Granular tree shaking | XL | large | high | ⬜ Not started |
+| Priority                              | Effort | Impact  | Risk   | Status            |
+| ------------------------------------- | ------ | ------- | ------ | ----------------- |
+| P21 — Drop `__class__` / `$hxClasses` | S      | medium  | low    | ✅ Done           |
+| P22 — Minification                    | XS     | large   | none   | ✅ Done           |
+| P23 — `__zpp` → direct imports        | M      | large   | medium | ✅ Done           |
+| P24 — Namespace reduction             | S      | medium  | low    | ✅ Done           |
+| P25 — `Any` → real types              | XL     | largest | medium | ✅ Done           |
+| P26 — Tree shaking                    | L      | large   | high   | ✅ Done           |
+| P27 — HaxeShims audit                 | S      | small   | low    | ✅ Done           |
+| P28 — API ergonomics (28a+28b+28c)    | M      | DX      | low    | ✅ Done           |
+| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 Steps 1–3 done |
+| P30 — TSDoc documentation             | L      | DX      | none   | ✅ Done           |
+| P31 — API ergonomics additions        | M      | DX      | low    | ✅ Done           |
+| P32 — Internal accessor cleanup       | S      | small   | low    | ✅ Done           |
+| P33 — Benchmark CI                    | M      | medium  | low    | ✅ Done           |
+| P34 — Granular tree shaking           | XL     | large   | high   | ⬜ Not started    |
