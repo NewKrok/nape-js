@@ -28,10 +28,14 @@ import "./Winding"; // Side-effect: register Winding in namespace before GeomPol
 export class GeomPoly {
   static __name__ = ["nape", "geom", "GeomPoly"];
 
+  /** @internal */
   zpp_inner: ZPP_GeomPoly;
+  /** @internal */
   zpp_pool: GeomPoly | null = null;
+  /** @internal */
   zpp_disp: boolean = false;
 
+  /** @internal */
   get _inner(): any {
     return this;
   }

@@ -57,6 +57,7 @@ function _disposeWeakVec2(v: Vec2): void {
  * Fully modernized — uses ZPP_PulleyJoint directly (extracted to TypeScript).
  */
 export class PulleyJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_PulleyJoint;
 
   /**
@@ -578,6 +579,7 @@ export class PulleyJoint extends Constraint {
   get zpp_inner_zn(): ZPP_PulleyJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_PulleyJoint) {
     this.zpp_inner = v;
   }

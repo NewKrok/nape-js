@@ -35,6 +35,7 @@ import type { BodyCallback } from "./BodyCallback";
 export class BodyListener extends Listener {
   static __name__ = ["nape", "callbacks", "BodyListener"];
 
+  /** @internal */
   zpp_inner_zn: ZPP_BodyListener;
 
   /**

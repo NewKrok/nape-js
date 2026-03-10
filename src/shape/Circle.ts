@@ -17,7 +17,7 @@ export class Circle extends Shape {
   static __name__ = ["nape", "shape", "Circle"];
   static __super__: any = Shape;
 
-  /** Direct access to the extracted internal ZPP_Circle. */
+  /** @internal */
   zpp_inner_zn!: ZPP_Circle;
 
   /**

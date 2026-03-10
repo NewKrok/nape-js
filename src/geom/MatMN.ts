@@ -11,8 +11,10 @@ import type { NapeInner } from "./Vec2";
 export class MatMN {
   static __name__ = ["nape", "geom", "MatMN"];
 
+  /** @internal */
   zpp_inner: ZPP_MatMN;
 
+  /** @internal */
   get _inner(): NapeInner {
     return this;
   }
@@ -34,6 +36,7 @@ export class MatMN {
   // Static wrap helper
   // ---------------------------------------------------------------------------
 
+  /** @internal */
   static _wrap(inner: ZPP_MatMN | MatMN | null): MatMN {
     if (inner instanceof MatMN) return inner;
     if (!inner) return null as unknown as MatMN;

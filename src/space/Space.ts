@@ -19,6 +19,7 @@ import type { NapeInner as _NapeInner } from "../geom/Vec2";
  * The physics world. Add bodies, shapes, and constraints, then call `step()` each frame to advance the simulation.
  */
 export class Space {
+  /** @internal */
   zpp_inner!: ZPP_Space;
 
   /**

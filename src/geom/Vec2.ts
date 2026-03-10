@@ -849,7 +849,7 @@ export class Vec2 {
 // Internal type helpers (used across wrapper modules)
 // ---------------------------------------------------------------------------
 
-/** @internal Opaque handle for any Haxe-compiled nape object. */
+/** Opaque handle for any nape internal object. */
 export type NapeInner = any;
 
 /** @internal Helper to write to readonly properties during construction. */

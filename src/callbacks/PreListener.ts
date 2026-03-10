@@ -53,6 +53,7 @@ import type { PreFlag } from "./PreFlag";
 export class PreListener extends Listener {
   static __name__ = ["nape", "callbacks", "PreListener"];
 
+  /** @internal */
   zpp_inner_zn: ZPP_InteractionListener;
 
   /**

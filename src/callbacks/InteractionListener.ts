@@ -64,6 +64,7 @@ export function numberToInteractionType(itype: number): InteractionType | null {
 export class InteractionListener extends Listener {
   static __name__ = ["nape", "callbacks", "InteractionListener"];
 
+  /** @internal */
   zpp_inner_zn: ZPP_InteractionListener;
 
   /**

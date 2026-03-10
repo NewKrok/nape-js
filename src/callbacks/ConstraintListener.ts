@@ -38,6 +38,7 @@ import type { ConstraintCallback } from "./ConstraintCallback";
 export class ConstraintListener extends Listener {
   static __name__ = ["nape", "callbacks", "ConstraintListener"];
 
+  /** @internal */
   zpp_inner_zn: ZPP_ConstraintListener;
 
   /**

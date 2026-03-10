@@ -14,7 +14,8 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "lib": ["ES2020"],
-    "isolatedModules": true
+    "isolatedModules": true,
+    "stripInternal": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests", "benchmarks"]

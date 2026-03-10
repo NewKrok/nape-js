@@ -7,7 +7,7 @@
  * - Missing class registrations in the nape namespace
  */
 import { describe, it, expect } from "vitest";
-import { getNape } from "../../src/index";
+import { getNape } from "../../src/core/engine";
 import { PivotJoint } from "../../src/constraint/PivotJoint";
 
 describe("Engine integration — namespace registrations", () => {

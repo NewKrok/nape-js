@@ -56,6 +56,7 @@ function _disposeWeakVec2(v: Vec2): void {
  * Fully modernized — uses ZPP_WeldJoint directly (extracted to TypeScript).
  */
 export class WeldJoint extends Constraint {
+  /** @internal */
   declare zpp_inner: ZPP_WeldJoint;
 
   /**
@@ -333,6 +334,7 @@ export class WeldJoint extends Constraint {
   get zpp_inner_zn(): ZPP_WeldJoint {
     return this.zpp_inner;
   }
+  /** @internal */
   set zpp_inner_zn(v: ZPP_WeldJoint) {
     this.zpp_inner = v;
   }

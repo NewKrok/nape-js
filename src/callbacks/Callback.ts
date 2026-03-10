@@ -21,6 +21,7 @@ import type { Listener } from "./Listener";
 export class Callback {
   static __name__ = ["nape", "callbacks", "Callback"];
 
+  /** @internal */
   zpp_inner: ZPP_Callback | null = null;
 
   constructor() {

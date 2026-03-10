@@ -16,7 +16,7 @@ export class Polygon extends Shape {
   static __name__ = ["nape", "shape", "Polygon"];
   static __super__: any = Shape;
 
-  /** Direct access to the extracted internal ZPP_Polygon. */
+  /** @internal */
   zpp_inner_zn!: ZPP_Polygon;
 
   /**
