@@ -12,6 +12,51 @@ import { getNape } from "../core/engine";
 
 type Any = any;
 
+/**
+ * Structural interface for all dynamically-generated Nape list classes
+ * (BodyList, ShapeList, CompoundList, etc.).
+ *
+ * These classes are created at runtime by {@link createListClasses} and placed
+ * in the `nape` namespace, so they cannot be imported directly. Use this
+ * interface as the return type for Space / Body query methods.
+ */
+export interface TypedListLike<T> extends Iterable<T> {
+  /** Number of elements in the list. */
+  readonly length: number;
+  /** Returns element at the given index. */
+  at(index: number): T;
+  /** Returns true if the list contains `obj`. */
+  has(obj: T): boolean;
+  /** Adds `obj` to the end of the list. Returns true if successful. */
+  push(obj: T): boolean;
+  /** Adds `obj` to the front of the list. Returns true if successful. */
+  unshift(obj: T): boolean;
+  /** Removes and returns the last element. */
+  pop(): T;
+  /** Removes and returns the first element. */
+  shift(): T;
+  /** Adds `obj` (anywhere). Returns true if successful. */
+  add(obj: T): boolean;
+  /** Removes `obj`. Returns true if it was present. */
+  remove(obj: T): boolean;
+  /** Removes all elements. */
+  clear(): void;
+  /** Returns true if the list has no elements. */
+  empty(): boolean;
+  /** Returns an iterator over the elements. */
+  iterator(): Iterable<T>;
+  /** Returns a shallow or deep copy of the list. */
+  copy(deep?: boolean): TypedListLike<T>;
+  /** Merge elements of `xs` into this list. */
+  merge(xs: TypedListLike<T>): void;
+  /** Apply `lambda` to every element. */
+  foreach(lambda: (obj: T) => void): void;
+  /** Returns a filtered copy. */
+  filter(lambda: (obj: T) => boolean): TypedListLike<T>;
+  /** Converts to a plain array. */
+  toArray(): T[];
+}
+
 export interface ListSpec {
   /** Element type name for error messages, e.g. "CbType" */
   typeName: string;

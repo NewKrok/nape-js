@@ -7,6 +7,8 @@ import { Constraint } from "../constraint/Constraint";
 import { Shape } from "../shape/Shape";
 import { Ray } from "../geom/Ray";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
+import type { RayResult } from "../geom/RayResult";
+import type { ConvexResult } from "../geom/ConvexResult";
 import { ZPP_Space } from "../native/space/ZPP_Space";
 import { ZPP_SpaceArbiterList } from "../native/dynamics/ZPP_SpaceArbiterList";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
@@ -14,6 +16,16 @@ import type { Broadphase } from "./Broadphase";
 import type { Compound } from "../phys/Compound";
 import type { InteractionType } from "../callbacks/InteractionType";
 import type { NapeInner as _NapeInner } from "../geom/Vec2";
+import type {
+  BodyList,
+  CompoundList,
+  ShapeList,
+  ConstraintList,
+  ArbiterList,
+  ListenerList,
+  RayResultList,
+  ConvexResultList,
+} from "../util/listTypes";
 
 /**
  * The physics world. Add bodies, shapes, and constraints, then call `step()` each frame to advance the simulation.
@@ -163,27 +175,27 @@ export class Space {
   }
 
   /** Read-only list of all Compound objects in this space. */
-  get compounds(): object {
+  get compounds(): CompoundList {
     return this.zpp_inner.wrap_compounds;
   }
 
   /** Read-only list of all Body objects directly in this space. */
-  get bodies(): object {
+  get bodies(): BodyList {
     return this.zpp_inner.wrap_bodies;
   }
 
   /** Read-only list of bodies that are awake and actively simulated. */
-  get liveBodies(): object {
+  get liveBodies(): BodyList {
     return this.zpp_inner.wrap_live;
   }
 
   /** Read-only list of all Constraint objects in this space. */
-  get constraints(): object {
+  get constraints(): ConstraintList {
     return this.zpp_inner.wrap_constraints;
   }
 
   /** Read-only list of active (awake) constraints. */
-  get liveConstraints(): object {
+  get liveConstraints(): ConstraintList {
     return this.zpp_inner.wrap_livecon;
   }
 
@@ -193,7 +205,7 @@ export class Space {
   }
 
   /** Read-only list of all active collision/fluid arbiters. */
-  get arbiters(): object {
+  get arbiters(): ArbiterList {
     if (this.zpp_inner.wrap_arbiters == null) {
       const ret = new ZPP_SpaceArbiterList();
       ret.space = this.zpp_inner;
@@ -203,7 +215,7 @@ export class Space {
   }
 
   /** Read-only list of all event listeners registered to this space. */
-  get listeners(): object {
+  get listeners(): ListenerList {
     return this.zpp_inner.wrap_listeners;
   }
 
@@ -559,7 +571,7 @@ export class Space {
    * @returns A ShapeList of matching shapes.
    * @throws If `point` is null or disposed.
    */
-  shapesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: object | null): object {
+  shapesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: ShapeList | null): ShapeList {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -585,7 +597,7 @@ export class Space {
    * @returns A BodyList of matching bodies.
    * @throws If `point` is null or disposed.
    */
-  bodiesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: object | null): object {
+  bodiesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: BodyList | null): BodyList {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -618,8 +630,8 @@ export class Space {
     containment: boolean = false,
     strict: boolean = true,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: ShapeList | null,
+  ): ShapeList {
     if (aabb == null) {
       throw new Error("Error: Cannot evaluate shapes in a null AABB :)");
     }
@@ -647,8 +659,8 @@ export class Space {
     containment: boolean = false,
     strict: boolean = true,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: BodyList | null,
+  ): BodyList {
     if (aabb == null) {
       throw new Error("Error: Cannot evaluate objects in a null AABB :)");
     }
@@ -676,8 +688,8 @@ export class Space {
     radius: number,
     containment: boolean = false,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: ShapeList | null,
+  ): ShapeList {
     if (position?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -711,8 +723,8 @@ export class Space {
     radius: number,
     containment: boolean = false,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: BodyList | null,
+  ): BodyList {
     if (position?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -744,8 +756,8 @@ export class Space {
     shape: Shape,
     containment: boolean = false,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: ShapeList | null,
+  ): ShapeList {
     if (shape == null) {
       throw new Error("Error: Cannot evaluate shapes in a null shapes :)");
     }
@@ -781,8 +793,8 @@ export class Space {
     shape: Shape,
     containment: boolean = false,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: BodyList | null,
+  ): BodyList {
     if (shape == null) {
       throw new Error("Error: Cannot evaluate bodies in a null shapes :)");
     }
@@ -814,7 +826,7 @@ export class Space {
    * @returns A ShapeList of overlapping shapes.
    * @throws If `body` is null.
    */
-  shapesInBody(body: Body, filter?: InteractionFilter | null, output?: object | null): object {
+  shapesInBody(body: Body, filter?: InteractionFilter | null, output?: ShapeList | null): ShapeList {
     if (body == null) {
       throw new Error("Error: Cannot evaluate shapes in null body");
     }
@@ -855,7 +867,7 @@ export class Space {
    * @returns A BodyList of overlapping bodies.
    * @throws If `body` is null.
    */
-  bodiesInBody(body: Body, filter?: InteractionFilter | null, output?: object | null): object {
+  bodiesInBody(body: Body, filter?: InteractionFilter | null, output?: BodyList | null): BodyList {
     if (body == null) {
       throw new Error("Error: Cannot evaluate shapes in null body");
     }
@@ -901,7 +913,7 @@ export class Space {
     deltaTime: number,
     liveSweep: boolean = false,
     filter?: InteractionFilter | null,
-  ): object | null {
+  ): ConvexResult | null {
     if (shape == null) {
       throw new Error("Error: Cannot cast null shape :)");
     }
@@ -930,8 +942,8 @@ export class Space {
     deltaTime: number,
     liveSweep: boolean = false,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: ConvexResultList | null,
+  ): ConvexResultList {
     if (shape == null) {
       throw new Error("Error: Cannot cast null shape :)");
     }
@@ -953,7 +965,7 @@ export class Space {
    * @returns The closest RayResult, or null if nothing was hit.
    * @throws If `ray` is null.
    */
-  rayCast(ray: Ray, inner: boolean = false, filter?: InteractionFilter | null): object | null {
+  rayCast(ray: Ray, inner: boolean = false, filter?: InteractionFilter | null): RayResult | null {
     if (ray == null) {
       throw new Error("Error: Cannot cast null ray :)");
     }
@@ -973,8 +985,8 @@ export class Space {
     ray: Ray,
     inner: boolean = false,
     filter?: InteractionFilter | null,
-    output?: object | null,
-  ): object {
+    output?: RayResultList | null,
+  ): RayResultList {
     if (ray == null) {
       throw new Error("Error: Cannot cast null ray :)");
     }
@@ -986,6 +998,6 @@ export class Space {
    * @returns A string in the form `Space(bodies=N)`.
    */
   toString(): string {
-    return `Space(bodies=${(this.bodies as any).length})`;
+    return `Space(bodies=${this.bodies.length})`;
   }
 }

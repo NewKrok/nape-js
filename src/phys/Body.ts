@@ -15,6 +15,7 @@ import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { Compound } from "./Compound";
 import type { Arbiter } from "../dynamics/Arbiter";
+import type { BodyList } from "../util/listTypes";
 import type { Mat23 } from "../geom/Mat23";
 import type { Material } from "./Material";
 import type { FluidProperties } from "./FluidProperties";
@@ -1426,7 +1427,7 @@ export class Body extends Interactor {
    * @param output - Optional existing list to accumulate results into.
    * @returns A BodyList of connected bodies.
    */
-  connectedBodies(depth: number = -1, output: object | null = null): object {
+  connectedBodies(depth: number = -1, output: BodyList | null = null): BodyList {
     return this.zpp_inner.connectedBodies(depth, output);
   }
 
@@ -1440,8 +1441,8 @@ export class Body extends Interactor {
   interactingBodies(
     type: InteractionType | null = null,
     _depth: number = -1,
-    output: object | null = null,
-  ): object {
+    output: BodyList | null = null,
+  ): BodyList {
     let arbiter_type: number;
     if (type == null) {
       arbiter_type = ZPP_Arbiter.COL | ZPP_Arbiter.SENSOR | ZPP_Arbiter.FLUID;

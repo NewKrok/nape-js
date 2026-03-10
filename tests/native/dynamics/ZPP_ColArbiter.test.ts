@@ -396,7 +396,7 @@ describe("ZPP_ColArbiter — arbiter lifecycle", () => {
   it("BEGIN and END callbacks fire during lifecycle", () => {
     const space = makeSpace();
     let begins = 0;
-    let ends = 0;
+    let _ends = 0;
 
     const listener = new InteractionListener(
       CbEvent.BEGIN,
@@ -415,7 +415,7 @@ describe("ZPP_ColArbiter — arbiter lifecycle", () => {
       CbType.ANY_BODY,
       CbType.ANY_BODY,
       (_cb: any) => {
-        ends++;
+        _ends++;
       },
     );
     endListener.space = space;

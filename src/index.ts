@@ -82,6 +82,17 @@ export { UserConstraint } from "./constraint/UserConstraint";
 
 // Utilities
 export { NapeList } from "./util/NapeList";
+export type { TypedListLike } from "./util/NapeListFactory";
+export type {
+  BodyList,
+  CompoundList,
+  ShapeList,
+  ConstraintList,
+  ArbiterList,
+  ListenerList,
+  RayResultList,
+  ConvexResultList,
+} from "./util/listTypes";
 
 // List/Iterator registration (side-effect import — registers all typed list pairs)
 import "./util/registerLists";

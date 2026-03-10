@@ -50,7 +50,7 @@ function makeFluidBody(
 }
 
 /** Create a fluid body with a circle submerged shape */
-function makeFluidBodyCircle(
+function _makeFluidBodyCircle(
   x = 0,
   y = 0,
   r = 500,
