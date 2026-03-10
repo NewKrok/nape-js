@@ -782,7 +782,7 @@ body.has-expanded-demo::before {
   display: flex;
 }
 
-/* Statikus "húzd ide" hint a canvas sarkában (csak ha még nincs elem) */
+/* Statikus "húzd ide" hint a canvas sarkában — csak drag közben látható */
 .drop-image-static-hint {
   position: absolute;
   bottom: 16px;
@@ -800,5 +800,10 @@ body.has-expanded-demo::before {
   font-family: var(--font-mono);
   pointer-events: none;
   z-index: 5;
+  opacity: 0;
   transition: opacity 0.3s;
+}
+
+.drop-image-overlay.active ~ .drop-image-static-hint {
+  opacity: 1;
 }

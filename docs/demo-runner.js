@@ -166,16 +166,24 @@ export class DemoRunner {
     this.#W = W ?? 900;
     this.#H = H ?? 500;
 
+    const dpr = window.devicePixelRatio || 1;
+
     if (existingCanvas) {
       this.#canvas = existingCanvas;
+      // Upscale the existing canvas buffer for HiDPI displays.
+      // W/H hold the logical size passed by the caller; set the physical buffer
+      // to dpr× while keeping the CSS size unchanged.
+      this.#canvas.width  = this.#W * dpr;
+      this.#canvas.height = this.#H * dpr;
     } else {
       this.#canvas = document.createElement("canvas");
-      this.#canvas.width  = this.#W;
-      this.#canvas.height = this.#H;
+      this.#canvas.width  = this.#W * dpr;
+      this.#canvas.height = this.#H * dpr;
       this.#canvas.style.cssText = "display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain";
       container.appendChild(this.#canvas);
     }
     this.#ctx = this.#canvas.getContext("2d");
+    this.#ctx.scale(dpr, dpr);
 
     // ResizeObserver — only needed for 3D renderer; 2D canvas keeps fixed resolution.
     // We observe the canvas itself (not the container) because the container is sized
@@ -419,6 +427,8 @@ export class DemoRunner {
   #render2d() {
     const ctx = this.#ctx;
     const W = this.#W, H = this.#H;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     if (this.#demo?.render) {
       this.#demo.render(ctx, this.#space, W, H, this.#debugDraw);

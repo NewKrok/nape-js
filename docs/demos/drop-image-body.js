@@ -4,7 +4,7 @@ import {
 import { addWalls } from "../demo-runner.js";
 
 // ---------------------------------------------------------------------------
-// IsoBody — képből fizikai test generálás MarchingSquares-szel
+// IsoBody — generate a physics body from an image using MarchingSquares
 // ---------------------------------------------------------------------------
 
 function isoBodyRun(isoFn, bounds, granularity = null, quality = 2, simplification = 1.5) {
@@ -34,7 +34,7 @@ function isoBodyRun(isoFn, bounds, granularity = null, quality = 2, simplificati
 }
 
 // ---------------------------------------------------------------------------
-// Alpha-alapú iso: átlátszó = kívül, nem átlátszó = belül
+// Alpha-based iso: transparent = outside, opaque = inside
 // ---------------------------------------------------------------------------
 
 function createAlphaIso(canvas, threshold = 64) {
@@ -62,7 +62,7 @@ function createAlphaIso(canvas, threshold = 64) {
 }
 
 // ---------------------------------------------------------------------------
-// Luminance-alapú iso: sötét = belül (nem-átlátszó képekhez)
+// Luminance-based iso: dark = inside (for opaque images)
 // ---------------------------------------------------------------------------
 
 function createLuminanceIso(canvas, threshold = 128) {
@@ -91,7 +91,7 @@ function createLuminanceIso(canvas, threshold = 128) {
 }
 
 // ---------------------------------------------------------------------------
-// Kép feldolgozás fizikai testé — auto-detect alpha vs luminance
+// Image to physics body — auto-detect alpha vs luminance
 // ---------------------------------------------------------------------------
 
 const TARGET_SIZE = 120;
@@ -116,7 +116,7 @@ function imageToBody(imgCanvas) {
   scaled.height = th;
   scaled.getContext("2d").drawImage(imgCanvas, 0, 0, tw, th);
 
-  // Döntés: van-e érdemi alfa csatorna?
+  // Decide: does the image have a meaningful alpha channel?
   const pxData = scaled.getContext("2d").getImageData(0, 0, tw, th).data;
   let hasAlpha = false;
   for (let i = 3; i < pxData.length; i += 4) {
@@ -134,7 +134,7 @@ function imageToBody(imgCanvas) {
     Vec2.weak(cellSize, cellSize),
   );
 
-  // Ha üres test (pl. teljesen fehér kép), fallback négyzetre
+  // If body is empty (e.g. fully white image), fall back to a box
   if (body.shapes.length === 0) {
     body.shapes.add(new Polygon(Polygon.box(tw * 0.8, th * 0.8)));
     const com = body.localCOM;
@@ -150,7 +150,7 @@ function imageToBody(imgCanvas) {
 }
 
 // ---------------------------------------------------------------------------
-// Drag state (mouse drag a meglévő testek mozgatásához)
+// Drag state (mouse drag to move existing bodies)
 // ---------------------------------------------------------------------------
 
 let _mouseBody      = null;
@@ -160,9 +160,10 @@ let _pendingRelease = false;
 let _dragX = 0, _dragY = 0;
 let _space = null;
 let _W = 900, _H = 500;
+let _dropWired = false;
 
 // ---------------------------------------------------------------------------
-// Fájl-drop feldolgozás
+// File drop handler
 // ---------------------------------------------------------------------------
 
 function processDroppedFile(file) {
@@ -185,7 +186,7 @@ function processDroppedFile(file) {
 }
 
 // ---------------------------------------------------------------------------
-// Drop kezelők egy DOM elemen
+// Wire drop event listeners onto a DOM element
 // ---------------------------------------------------------------------------
 
 function wireDrop(wrapperEl, overlayEl) {
@@ -210,7 +211,7 @@ function wireDrop(wrapperEl, overlayEl) {
 }
 
 // ---------------------------------------------------------------------------
-// Egyéni rajzoló
+// Custom body renderer
 // ---------------------------------------------------------------------------
 
 function drawDropBody(ctx, body, showOutlines = true) {
@@ -290,7 +291,7 @@ export default {
       container.appendChild(overlay);
     }
 
-    // Statikus "drag image here" hint alul
+    // Static "drag image here" hint at the bottom
     let hint = container.querySelector(".drop-image-static-hint");
     if (!hint) {
       hint = document.createElement("div");
@@ -305,7 +306,10 @@ export default {
       container.appendChild(hint);
     }
 
-    wireDrop(container, overlay);
+    if (!_dropWired) {
+      _dropWired = true;
+      wireDrop(container, overlay);
+    }
   },
 
   step(space) {
