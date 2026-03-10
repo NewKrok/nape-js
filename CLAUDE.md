@@ -141,16 +141,31 @@ Removed 22 unused legacy accessor methods from `Ray.ts`, `Shape.ts`, `Polygon.ts
 
 ---
 
-### Priority 33: Performance profiling & benchmark CI
+### Priority 33: Performance profiling & benchmark CI ✅ Done
 
 **Effort: M | Impact: medium | Risk: low**
 
-`benchmarks/run.mjs` exists but is not part of CI. Potential improvements:
+CI-integrated benchmark suite with calibration-normalized regression detection:
 
-- Integrate benchmark into CI with a performance budget (fail if >10% regression)
-- Profile hot paths: `space.step()`, broadphase update, constraint solver
-- Evaluate whether ZPP pool allocation is effective (object churn measurement)
-- Consider typed arrays (`Float64Array`) for Vec2 coordinates in hot paths (ZPP_Vec2)
+- `benchmarks/run.mjs` — `--json` output mode + calibration step (median of 7×1M
+  `Math.sqrt` ops) so timings are comparable across machines
+- `benchmarks/compare.mjs` — compares two JSON result files normalized by calibration
+  factor; exits 1 if any benchmark regresses beyond threshold (default 10%)
+- `benchmarks/baseline.json` — committed baseline from current master
+- `.github/workflows/benchmark.yml` — CI job: on PRs fails if >10% regression; on
+  master pushes uploads results as 90-day artifact
+- `package.json` scripts: `benchmark:json`, `benchmark:compare`, `benchmark:update-baseline`
+
+**Three scenarios measured:**
+- A) Falling boxes (200 / 500 / 1000) — broadphase + collision + solver
+- B) PivotJoint chains (50 / 100 / 200 links) — constraint stress
+- C) Position readout (200 / 500 boxes) — step + iterate body x/y/rotation (render loop cost)
+
+**To update baseline after intentional perf improvement:**
+```bash
+npm run benchmark:update-baseline   # rebuilds + runs --json + overwrites baseline.json
+git add benchmarks/baseline.json && git commit -m "chore: update benchmark baseline"
+```
 
 ---
 
@@ -184,5 +199,5 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P30 — TSDoc documentation | L | DX | none | ✅ Done |
 | P31 — API ergonomics additions | M | DX | low | ✅ Done |
 | P32 — Internal accessor cleanup | S | small | low | ✅ Done |
-| P33 — Benchmark CI | M | medium | low | ⬜ Not started |
+| P33 — Benchmark CI | M | medium | low | ✅ Done |
 | P34 — Granular tree shaking | XL | large | high | ⬜ Not started |
