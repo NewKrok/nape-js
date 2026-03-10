@@ -33,14 +33,7 @@ import "../../../src/dynamics/Contact";
 // -------------------------------------------------------------------------
 
 /** Create a large static fluid body covering (x, y) with given size */
-function makeFluidBody(
-  x = 0,
-  y = 0,
-  w = 2000,
-  h = 2000,
-  density = 2.0,
-  viscosity = 3.0,
-): Body {
+function makeFluidBody(x = 0, y = 0, w = 2000, h = 2000, density = 2.0, viscosity = 3.0): Body {
   const b = new Body(BodyType.STATIC, new Vec2(x, y));
   const shape = new Polygon(Polygon.box(w, h));
   shape.fluidEnabled = true;
@@ -50,13 +43,7 @@ function makeFluidBody(
 }
 
 /** Create a fluid body with a circle submerged shape */
-function _makeFluidBodyCircle(
-  x = 0,
-  y = 0,
-  r = 500,
-  density = 2.0,
-  viscosity = 3.0,
-): Body {
+function _makeFluidBodyCircle(x = 0, y = 0, r = 500, density = 2.0, viscosity = 3.0): Body {
   const b = new Body(BodyType.STATIC, new Vec2(x, y));
   const shape = new Circle(r);
   shape.fluidEnabled = true;

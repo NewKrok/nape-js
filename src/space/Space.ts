@@ -571,7 +571,11 @@ export class Space {
    * @returns A ShapeList of matching shapes.
    * @throws If `point` is null or disposed.
    */
-  shapesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: ShapeList | null): ShapeList {
+  shapesUnderPoint(
+    point: Vec2,
+    filter?: InteractionFilter | null,
+    output?: ShapeList | null,
+  ): ShapeList {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -597,7 +601,11 @@ export class Space {
    * @returns A BodyList of matching bodies.
    * @throws If `point` is null or disposed.
    */
-  bodiesUnderPoint(point: Vec2, filter?: InteractionFilter | null, output?: BodyList | null): BodyList {
+  bodiesUnderPoint(
+    point: Vec2,
+    filter?: InteractionFilter | null,
+    output?: BodyList | null,
+  ): BodyList {
     if (point?.zpp_disp) {
       throw new Error("Error: Vec2 has been disposed and cannot be used!");
     }
@@ -826,7 +834,11 @@ export class Space {
    * @returns A ShapeList of overlapping shapes.
    * @throws If `body` is null.
    */
-  shapesInBody(body: Body, filter?: InteractionFilter | null, output?: ShapeList | null): ShapeList {
+  shapesInBody(
+    body: Body,
+    filter?: InteractionFilter | null,
+    output?: ShapeList | null,
+  ): ShapeList {
     if (body == null) {
       throw new Error("Error: Cannot evaluate shapes in null body");
     }

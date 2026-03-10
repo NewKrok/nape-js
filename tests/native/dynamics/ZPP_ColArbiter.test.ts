@@ -60,12 +60,7 @@ function arbiterCount(space: Space): number {
 }
 
 /** Run a scene until the first collision arbiter appears or maxSteps. */
-function runUntilCollision(
-  space: Space,
-  maxSteps = 120,
-  dt = 1 / 60,
-  iterations = 10,
-): boolean {
+function runUntilCollision(space: Space, maxSteps = 120, dt = 1 / 60, iterations = 10): boolean {
   for (let i = 0; i < maxSteps; i++) {
     space.step(dt, iterations, iterations);
     if (arbiterCount(space) > 0) return true;
