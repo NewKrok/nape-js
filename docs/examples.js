@@ -2,38 +2,38 @@
  * nape-js Examples Page — grid of interactive physics demos with play overlay,
  * per-card stats, and View Code toggle.
  */
-import { VERSION } from "./nape-js.esm.js?v=3.4.13";
-import { installErrorOverlay } from "./renderer.js?v=3.4.13";
-import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.4.13";
+import { VERSION } from "./nape-js.esm.js?v=3.6.1";
+import { installErrorOverlay } from "./renderer.js?v=3.6.1";
+import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.6.1";
 
 const NAPE_CDN = "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
 
 // All demos (featured + examples)
-import falling     from "./demos/falling.js?v=3.4.13";
-import pyramid     from "./demos/pyramid.js?v=3.4.13";
-import chain       from "./demos/chain.js?v=3.4.13";
-import explosion   from "./demos/explosion.js?v=3.4.13";
-import constraints from "./demos/constraints.js?v=3.4.13";
-import gravity     from "./demos/gravity.js?v=3.4.13";
-import stacking    from "./demos/stacking.js?v=3.4.13";
-import ragdoll     from "./demos/ragdoll.js?v=3.4.13";
-import strandbeast from "./demos/strandbeast.js?v=3.4.13";
-import carSideview    from "./demos/car-sideview.js?v=3.4.13";
-import carTopdown     from "./demos/car-topdown.js?v=3.4.13";
-import platformer     from "./demos/platformer.js?v=3.4.13";
-import ropeBridge     from "./demos/rope-bridge.js?v=3.4.13";
-import wreckingBall   from "./demos/wrecking-ball.js?v=3.4.13";
-import newtonsCradle  from "./demos/newtons-cradle.js?v=3.4.13";
-import dominos        from "./demos/dominos.js?v=3.4.13";
-import conveyorBelts  from "./demos/conveyor-belts.js?v=3.4.13";
-import trebuchet      from "./demos/trebuchet.js?v=3.4.13";
-import seesaw         from "./demos/seesaw.js?v=3.4.13";
-import pinball        from "./demos/pinball.js?v=3.4.13";
-import cloth          from "./demos/cloth.js?v=3.4.13";
-import funnel         from "./demos/funnel.js?v=3.4.13";
-import softBody       from "./demos/soft-body.js?v=3.4.13";
-import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.4.13";
-import collisionFiltering from "./demos/collision-filtering.js?v=3.4.13";
+import falling     from "./demos/falling.js?v=3.6.1";
+import pyramid     from "./demos/pyramid.js?v=3.6.1";
+import chain       from "./demos/chain.js?v=3.6.1";
+import explosion   from "./demos/explosion.js?v=3.6.1";
+import constraints from "./demos/constraints.js?v=3.6.1";
+import gravity     from "./demos/gravity.js?v=3.6.1";
+import stacking    from "./demos/stacking.js?v=3.6.1";
+import ragdoll     from "./demos/ragdoll.js?v=3.6.1";
+import strandbeast from "./demos/strandbeast.js?v=3.6.1";
+import carSideview    from "./demos/car-sideview.js?v=3.6.1";
+import carTopdown     from "./demos/car-topdown.js?v=3.6.1";
+import platformer     from "./demos/platformer.js?v=3.6.1";
+import ropeBridge     from "./demos/rope-bridge.js?v=3.6.1";
+import wreckingBall   from "./demos/wrecking-ball.js?v=3.6.1";
+import newtonsCradle  from "./demos/newtons-cradle.js?v=3.6.1";
+import dominos        from "./demos/dominos.js?v=3.6.1";
+import conveyorBelts  from "./demos/conveyor-belts.js?v=3.6.1";
+import trebuchet      from "./demos/trebuchet.js?v=3.6.1";
+import seesaw         from "./demos/seesaw.js?v=3.6.1";
+import pinball        from "./demos/pinball.js?v=3.6.1";
+import cloth          from "./demos/cloth.js?v=3.6.1";
+import funnel         from "./demos/funnel.js?v=3.6.1";
+import softBody       from "./demos/soft-body.js?v=3.6.1";
+import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.6.1";
+import collisionFiltering from "./demos/collision-filtering.js?v=3.6.1";
 
 const ALL_DEMOS = [
   falling, pyramid, chain, explosion, constraints, gravity, stacking, ragdoll, strandbeast,
@@ -243,12 +243,15 @@ function createCard(demo) {
   // --- Render a static preview frame ---
   runner.renderPreview(demo);
 
-  // --- Play overlay click: start (demo is already loaded by renderPreview) ---
+  // --- Play overlay: start demo (already loaded by renderPreview) ---
   let started = false;
+
+  // Prevent wireInteraction's pointerdown from capturing the pointer,
+  // which would swallow the click event on desktop browsers.
+  overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
+
   overlay.addEventListener("click", () => {
-    if (!started) {
-      started = true;
-    }
+    started = true;
     runner.start();
     overlay.hidden = true;
     statsBar.hidden = false;
