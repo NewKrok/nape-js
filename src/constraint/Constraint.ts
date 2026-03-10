@@ -402,7 +402,7 @@ export class Constraint {
    *
    * @param body - Must be one of the bodies linked to this constraint.
    */
-  bodyImpulse(_body: Body): Vec3 | null {
+  bodyImpulse(body: Body): Vec3 | null {
     return null;
   }
 
@@ -411,7 +411,7 @@ export class Constraint {
    *
    * @param fn - Function to call for each body.
    */
-  visitBodies(_fn: (body: Body) => void): void {}
+  visitBodies(fn: (body: Body) => void): void {}
 
   /**
    * Creates and returns a copy of this constraint with the same parameters.

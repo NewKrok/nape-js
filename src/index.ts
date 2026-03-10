@@ -31,7 +31,7 @@ export { InertiaMode } from "./phys/InertiaMode";
 export { MassMode } from "./phys/MassMode";
 
 // Shapes
-export { Shape } from "./shape/Shape";
+export { Shape, type CbTypeSet } from "./shape/Shape";
 export { Circle } from "./shape/Circle";
 export { Polygon } from "./shape/Polygon";
 export { Edge } from "./shape/Edge";
@@ -78,6 +78,7 @@ export { WeldJoint } from "./constraint/WeldJoint";
 export { MotorJoint } from "./constraint/MotorJoint";
 export { LineJoint } from "./constraint/LineJoint";
 export { PulleyJoint } from "./constraint/PulleyJoint";
+export { UserConstraint } from "./constraint/UserConstraint";
 
 // Utilities
 export { NapeList } from "./util/NapeList";

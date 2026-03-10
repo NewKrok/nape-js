@@ -185,7 +185,7 @@ export class Arbiter {
    * @param body - One of the two interacting bodies, or `null` for the combined impulse.
    * @param freshOnly - When `true`, only count fresh (new) contacts. Default `false`.
    */
-  totalImpulse(body: Body | null = null, _freshOnly: boolean = false): Vec3 {
+  totalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) {
       this._checkBody(body);

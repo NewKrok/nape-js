@@ -108,7 +108,7 @@ export class FluidArbiter extends Arbiter {
   }
 
   /** Total impulse (buoyancy + drag). */
-  override totalImpulse(body: Body | null = null, _freshOnly: boolean = false): Vec3 {
+  override totalImpulse(body: Body | null = null, freshOnly: boolean = false): Vec3 {
     this._activeCheck();
     if (body != null) this._checkBody(body);
     const buoy = this.buoyancyImpulse(body);

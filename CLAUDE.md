@@ -101,12 +101,19 @@ round-trip coverage.
 
 ---
 
-### 🔶 Priority 30: TSDoc — public API documentation
+### Priority 30: TSDoc — public API documentation ✅ Done
 
 **Effort: L | Impact: large (DX) | Risk: none**
 
 30a–30c done: all geometry, physics, callback & constraint types documented.
-**Tooling:** Consider adding `typedoc` as a dev dependency + `npm run docs` script.
+
+**30d — Tooling & cleanup:**
+- `typedoc` v0.28.17 added as dev dependency, configured via `typedoc.json`
+- Scripts: `build:typedoc`, `build:docs`, `serve:docs`
+- Fixed 5 typedoc warnings: `@param` name mismatches, unresolved `{@link}`, missing export
+- Exported `UserConstraint` and `CbTypeSet` from `index.ts` for docs coverage
+- Added TSDoc to `InteractionFilter` constructor + all properties/methods
+- Typedoc builds with 0 warnings, 0 errors → `docs/api/`
 
 ---
 
@@ -173,7 +180,7 @@ per-class tree shaking. True granular shaking requires lazy registration:
 | P27 — HaxeShims audit | S | small | low | ✅ Done |
 | P28 — API ergonomics (28a+28b+28c) | M | DX | low | ✅ Done |
 | P29 — Test coverage ≥80% | L | safety | none | 🔶 Steps 1–2 done |
-| P30 — TSDoc documentation | L | DX | none | 🔶 30a+30b+30c done |
+| P30 — TSDoc documentation | L | DX | none | ✅ Done |
 | P31 — API ergonomics additions | M | DX | low | ✅ Done |
 | P32 — Internal accessor cleanup | S | small | low | ✅ Done |
 | P33 — Benchmark CI | M | medium | low | ⬜ Not started |
