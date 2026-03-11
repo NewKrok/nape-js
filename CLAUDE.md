@@ -110,16 +110,29 @@ the validated length from `ZPP_PublicList.user_length`.
 
 ### Priority 29: Test coverage — target ≥80% 🔶 In progress
 
-Steps 1–5 done (+849 tests, 2269 → 3118). All previously crashing APIs are now fixed and tested.
+Steps 1–6 done (+959 tests, 2269 → 3228). All previously crashing APIs are now fixed and tested.
 
-**Current coverage: ~54.3% statements** (was ~44.7% before Step 4 + bugfixes).
+**Current coverage: ~54.3% statements** (was ~44.7% before Step 4 + bugfixes; Step 6 expected to push this higher).
 
 **Step 5 (partial — 2026-03-11):** Added `ZPP_ColArbiter.test.ts` (+22 tests) and `ZPP_FluidArbiter.test.ts` (+14 tests), covering preStep/impulse/warm-start/pool/material paths.
 
-**Remaining gaps (Step 6):**
-- `ZPP_ColArbiter` ~18%→improving, `ZPP_FluidArbiter` ~24%→improving, `ZPP_Collide` ~21%
-- `ZPP_Space` deeper paths ~57%, `ZPP_Body` ~73%, `ZPP_Ray` ~44%, `ZPP_Broadphase` ~27%
-- Reaching ≥80% requires extensive ZPP native path tests
+**Step 6 (2026-03-11):** +110 tests across three files:
+- `ZPP_Ray.test.ts` — full rewrite (~45 tests): constructor fields, invalidation callbacks,
+  `validate_dir` normalisation, `rayAABB` all quadrants, `aabbtest`/`aabbsect`,
+  `circlesect`/`polysect` via ZPP shapes, full `Space.rayCast`/`rayMultiCast` integration
+  (both broadphase algorithms, `maxDistance`, inner mode, multi-hit ordering).
+- `ZPP_Collide.test.ts` — +33 tests: `polyContains`, `shapeContains` polygon routing,
+  `bodyContains` multi-shape/polygon, `containTest` mixed shape types, `testCollide_safe`
+  reversed args, `flowCollide` via fluid simulation, `contactCollide` via simulation
+  (circle-circle, circle-polygon, polygon-polygon).
+- `ZPP_Broadphase.integration.test.ts` — new file, 35 tests: body insert/remove for both
+  algorithms, AABB sync for dynamic shapes, collision consistency, 10-body scenes,
+  raycast hit/miss/multicast for both algorithms, extreme positions.
+
+**Remaining gaps (Step 7):**
+- `ZPP_Collide` ~21%→improving, `ZPP_Broadphase` ~27%→improving, `ZPP_Ray` ~44%→improving
+- `ZPP_Space` deeper paths ~57%, `ZPP_Body` ~73%
+- Reaching ≥80% requires further ZPP native path tests (ZPP_Space, ZPP_Body deeper paths)
 
 ---
 
@@ -238,7 +251,7 @@ Not targeted (built-in physics or non-physics use case):
 | P26 — Tree shaking                    | L      | large   | high   | ✅ Done           |
 | P27 — HaxeShims audit                 | S      | small   | low    | ✅ Done           |
 | P28 — API ergonomics (28a+28b+28c)    | M      | DX      | low    | ✅ Done           |
-| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 ~54.3% (Step 6 pending, 3118 tests) |
+| P29 — Test coverage ≥80%              | L      | safety  | none   | 🔶 ~54.3%+ (Step 6 done, 3228 tests, Step 7 pending) |
 | P30 — TSDoc documentation             | L      | DX      | none   | ✅ Done           |
 | P31 — API ergonomics additions        | M      | DX      | low    | ✅ Done           |
 | P32 — Internal accessor cleanup       | S      | small   | low    | ✅ Done           |
