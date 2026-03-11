@@ -116,12 +116,35 @@ function update() {
 | `NapeList<T>` | Iterable list with `for...of` support |
 | `MatMN` | Variable-sized M×N matrix — `clone()`, `equals()`, multiply, transpose |
 
+### Serialization
+
+Full physics state snapshot/restore — suitable for save/load, replay, and multiplayer
+server↔client synchronization.
+
+```typescript
+import "@newkrok/nape-js";
+import { spaceToJSON, spaceFromJSON } from "@newkrok/nape-js/serialization";
+
+// Serialize
+const snapshot = spaceToJSON(space);
+const json = JSON.stringify(snapshot);
+
+// Restore (e.g. on another machine / after network transfer)
+const restored = spaceFromJSON(JSON.parse(json));
+restored.step(1 / 60);
+```
+
+The `/serialization` entry point is tree-shakeable — it does not pull in the engine
+bootstrap when unused. The snapshot captures bodies, shapes, materials, interaction
+filters, fluid properties, all constraint types (except `UserConstraint`), and compounds.
+Arbiters and broadphase tree state are reconstructed automatically on the first step.
+
 ## Development
 
 ```bash
 npm install
 npm run build      # tsup → dist/ (ESM + CJS + DTS)
-npm test           # vitest — 2736 tests across 139 files
+npm test           # vitest — 3276 tests across 149 files
 npm run benchmark  # Performance benchmarks
 ```
 
