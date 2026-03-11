@@ -194,12 +194,30 @@ renderer ships in the core bundle.
 
 - `CanvasDebugDraw` — HTML5 Canvas 2D context (~200 lines, in `docs/`)
 - `ThreeDebugDraw` — Three.js `LineSegments` overlay (~200 lines, in `docs/`)
-- Both integrate with the existing `DemoRunner` 2D/3D toggle
+- `PixiDebugDraw` — PixiJS `Graphics` API (~200 lines, in `docs/`) — **highest priority**
+  reference impl; PixiJS is the #1 pure 2D renderer (~46.6k stars, ~403k npm/week) and
+  the most natural pairing for external physics engines
+- `P5DebugDraw` — p5.js immediate-mode drawing (~150 lines, in `docs/`) — optional,
+  targets the educational/creative-coding community (~23.5k stars)
+- All integrate with the existing `DemoRunner` 2D/3D toggle where applicable
+
+**Renderer ecosystem research (2026-03):**
+
+Best pairing targets (pure renderers, no built-in physics):
+- **PixiJS** — 46.6k stars, ~403k npm/week, WebGL/WebGPU. #1 target.
+- **p5.js** — 23.5k stars, ~40-66k npm/week, Canvas+WebGL. Educational reach.
+- **Two.js** — 8.5k stars, ~3k npm/week, SVG/Canvas/WebGL. Small community.
+
+Not targeted (built-in physics or non-physics use case):
+- Phaser (38k stars) — bundles Arcade Physics + Matter.js
+- Konva (14.2k stars) — UI/editor focus, not physics
+- Fabric.js (31k stars) — design tool/whiteboard focus
+- Excalibur / KAPLAY — self-contained with own physics
 
 **Why Box2D pattern over Rapier-style buffers:**
 
 - Semantic primitives (circle vs polygon vs point) give renderers more information
-- Fits naturally into both Canvas 2D and Three.js pipelines
+- Fits naturally into Canvas 2D, Three.js, PixiJS, and p5.js pipelines
 - Matches the existing `DemoRunner` architecture (2D canvas + 3D WebGL)
 - Users can implement for any target (PixiJS, SVG, raw WebGL, etc.)
 
