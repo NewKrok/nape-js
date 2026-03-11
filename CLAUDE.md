@@ -170,6 +170,44 @@ State snapshot + restore: `space.toJSON()` / `Space.fromJSON(data)`:
 
 ---
 
+### Priority 38: Debug draw API
+
+**Effort: M | Impact: medium (DX) | Risk: low**
+
+Abstract debug-rendering interface following the Box2D `b2Draw` pattern. The engine
+traverses its internal state and calls user-provided draw callbacks — no concrete
+renderer ships in the core bundle.
+
+**Design:**
+
+- `DebugDraw` — abstract class with primitive draw methods:
+  `drawSegment`, `drawCircle`, `drawSolidCircle`, `drawPolygon`, `drawSolidPolygon`,
+  `drawPoint`, `drawTransform`
+- `Space.debugDraw(drawer, flags)` — walks bodies, shapes, constraints, contacts,
+  broadphase AABBs, and velocity vectors; calls the appropriate `drawer` methods
+- `DebugDrawFlags` bitmask — `SHAPES`, `JOINTS`, `CONTACTS`, `AABB`, `CENTER_OF_MASS`,
+  `VELOCITIES` (user picks which layers to render)
+- **No concrete renderer in the library** — keeps the bundle at 0 KB extra for users
+  who don't use debug draw
+
+**Reference implementations (docs/examples, not in core bundle):**
+
+- `CanvasDebugDraw` — HTML5 Canvas 2D context (~200 lines, in `docs/`)
+- `ThreeDebugDraw` — Three.js `LineSegments` overlay (~200 lines, in `docs/`)
+- Both integrate with the existing `DemoRunner` 2D/3D toggle
+
+**Why Box2D pattern over Rapier-style buffers:**
+
+- Semantic primitives (circle vs polygon vs point) give renderers more information
+- Fits naturally into both Canvas 2D and Three.js pipelines
+- Matches the existing `DemoRunner` architecture (2D canvas + 3D WebGL)
+- Users can implement for any target (PixiJS, SVG, raw WebGL, etc.)
+
+**Bundle impact:** The abstract `DebugDraw` class + `Space.debugDraw()` traversal adds
+~5–8 KB minified to core (<1% of ~994 KB). Tree-shakeable if not imported.
+
+---
+
 ## Priority table
 
 | Priority                              | Effort | Impact  | Risk   | Status            |
@@ -191,3 +229,4 @@ State snapshot + restore: `space.toJSON()` / `Space.fromJSON(data)`:
 | P35 — Type system improvements        | S      | DX      | low    | ✅ Done           |
 | P36 — Server-side + demo examples     | M      | medium  | low    | ⬜ Not started    |
 | P37 — Serialization API               | L      | medium  | medium | ⬜ Not started    |
+| P38 — Debug draw API                  | M      | DX      | low    | ⬜ Not started    |
