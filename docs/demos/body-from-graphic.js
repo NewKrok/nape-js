@@ -107,7 +107,7 @@ export default {
 
   async preload() {
     // Load at the largest required size; smaller ones will be downscaled from this
-    _cogCanvas = await loadImageToCanvas("../assets/cog.webp", COG_SIZES[COG_SIZES.length - 1], COG_SIZES[COG_SIZES.length - 1]);
+    _cogCanvas = await loadImageToCanvas("./assets/cog.webp", COG_SIZES[COG_SIZES.length - 1], COG_SIZES[COG_SIZES.length - 1]);
   },
 
   setup(space, W, H) {
