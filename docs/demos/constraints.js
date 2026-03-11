@@ -228,11 +228,11 @@ export default {
     }
   },
 
-  // Update the invisible "cursor body" position so the mouse joint pulls toward it
+  // Drive the kinematic cursor body toward the drag target each step
   step(_space) {
     if (this._mouseBody && this._dragTarget) {
-      this._mouseBody.position.x = this._dragTarget.x;
-      this._mouseBody.position.y = this._dragTarget.y;
+      this._mouseBody.kinematicVel.x = (this._dragTarget.x - this._mouseBody.position.x) * 60;
+      this._mouseBody.kinematicVel.y = (this._dragTarget.y - this._mouseBody.position.y) * 60;
     }
   },
 
@@ -247,7 +247,7 @@ export default {
     }
     if (!closest) return;
 
-    this._mouseBody = new Body(BodyType.STATIC, new Vec2(x, y));
+    this._mouseBody = new Body(BodyType.KINEMATIC, new Vec2(x, y));
     this._mouseBody.space = space;
     this._dragTarget = { x, y };
 
