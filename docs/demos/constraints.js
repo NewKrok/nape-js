@@ -228,11 +228,11 @@ export default {
     }
   },
 
-  // Update the invisible "cursor body" position so the mouse joint pulls toward it
+  // Drive the kinematic cursor body toward the drag target each step
   step(_space) {
     if (this._mouseBody && this._dragTarget) {
-      this._mouseBody.position.x = this._dragTarget.x;
-      this._mouseBody.position.y = this._dragTarget.y;
+      this._mouseBody.kinematicVel.x = (this._dragTarget.x - this._mouseBody.position.x) * 60;
+      this._mouseBody.kinematicVel.y = (this._dragTarget.y - this._mouseBody.position.y) * 60;
     }
   },
 
@@ -247,7 +247,7 @@ export default {
     }
     if (!closest) return;
 
-    this._mouseBody = new Body(BodyType.STATIC, new Vec2(x, y));
+    this._mouseBody = new Body(BodyType.KINEMATIC, new Vec2(x, y));
     this._mouseBody.space = space;
     this._dragTarget = { x, y };
 
@@ -441,12 +441,12 @@ export default {
 
     // ── Cell labels ───────────────────────────────────────────────────────────
     const LABELS = [
-      { col: 0, row: 0, name: 'PivotJoint',    desc: 'csuklós forgáspont' },
-      { col: 1, row: 0, name: 'DistanceJoint', desc: 'rugós távolság-korlát' },
-      { col: 2, row: 0, name: 'AngleJoint',    desc: 'szög-tartomány korlát' },
-      { col: 0, row: 1, name: 'WeldJoint',     desc: 'merev kötés (ragasztás)' },
-      { col: 1, row: 1, name: 'MotorJoint',    desc: 'szögsebesség motor' },
-      { col: 2, row: 1, name: 'LineJoint',     desc: 'lineáris sín (slider)' },
+      { col: 0, row: 0, name: 'PivotJoint',    desc: 'pin / hinge pivot point' },
+      { col: 1, row: 0, name: 'DistanceJoint', desc: 'spring distance constraint' },
+      { col: 2, row: 0, name: 'AngleJoint',    desc: 'rotation range limit' },
+      { col: 0, row: 1, name: 'WeldJoint',     desc: 'rigid weld (glue)' },
+      { col: 1, row: 1, name: 'MotorJoint',    desc: 'angular velocity motor' },
+      { col: 2, row: 1, name: 'LineJoint',     desc: 'linear rail / slider' },
     ];
     for (const { col, row, name, desc } of LABELS) {
       const c = cellCenter(col, row, W, H);
