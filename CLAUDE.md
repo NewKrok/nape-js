@@ -31,6 +31,18 @@ npm run lint         # eslint + prettier
 2. `npm test` — all tests must pass
 3. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
 
+**Documentation to review** — when the PR changes features, APIs, priorities, or versions:
+
+| File | What to update | When |
+| ---- | -------------- | ---- |
+| `CLAUDE.md` | Status table, test count, key features list | Priority status changes, new features |
+| `.claude/docs/roadmap.md` | Priority table, detailed descriptions, competitive analysis | New/changed/completed priorities |
+| `.claude/docs/architecture.md` | Internal patterns, registration flow, `any` rules | Architecture or bootstrap changes |
+| `README.md` | Quick start, API tables, test count, badge versions | Public API changes, releases |
+| `llms.txt` | Class list, links, quick start example | Public API additions/removals |
+| `llms-full.txt` | Complete API reference, version number (line 1) | Any public API change, releases |
+| `package.json` | `version` field | Releases |
+
 ## Architecture
 
 ```
@@ -67,17 +79,3 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | Sub-stepping solver      | ⬜ Planned — P51 (long-term) |
 
 Full roadmap with details, competitor analysis, and history: `.claude/docs/roadmap.md`
-
-## Documentation Files — Update Before PR
-
-When a PR changes features, APIs, priorities, or version numbers, review these files:
-
-| File | What to update | When |
-| ---- | -------------- | ---- |
-| `CLAUDE.md` | Status table, test count, key features list | Priority status changes, new features |
-| `.claude/docs/roadmap.md` | Priority table, detailed descriptions, competitive analysis | New/changed/completed priorities |
-| `.claude/docs/architecture.md` | Internal patterns, registration flow, `any` rules | Architecture or bootstrap changes |
-| `README.md` | Quick start, API tables, test count, badge versions | Public API changes, releases |
-| `llms.txt` | Class list, links, quick start example | Public API additions/removals |
-| `llms-full.txt` | Complete API reference, version number (line 1) | Any public API change, releases |
-| `package.json` | `version` field | Releases |
