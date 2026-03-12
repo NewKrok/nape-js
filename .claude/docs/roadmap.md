@@ -43,6 +43,7 @@ Key competitors to watch:
 | P38 — Debug draw API                  | M      | DX       | ✅ Done      |
 | P39 — Binary serialization            | M      | critical | ✅ Done      |
 | P40 — Haxe remnant cleanup             | M      | medium   | ✅ Done      |
+| P41 — Capsule shape                    | S      | medium   | ✅ Done      |
 
 ### Active & Planned
 
@@ -50,7 +51,6 @@ Key competitors to watch:
 | ----------------------------------------- | ------ | -------- | ------ | -------------- |
 | P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3251 tests) |
 | P36 — Server-side + demo examples         | M      | medium   | low    | ⬜ Not started |
-| P41 — Capsule shape                       | S      | medium   | low    | ⬜ Not started |
 | P42 — Web Worker helper                   | M      | perf/DX  | medium | ⬜ Not started |
 | P43 — Concave polygon helper              | M      | high     | low    | ⬜ Not started |
 | P44 — PixiJS integration package          | M      | adoption | low    | ⬜ Not started |
@@ -131,13 +131,18 @@ Removed all remaining Haxe compilation artifacts from the codebase:
 
 ---
 
-## Planned: P41 — Capsule Shape
+## Done: P41 — Capsule Shape
 
 **Effort: S | Impact: medium | Risk: low**
 
-Native capsule shape primitive (two semicircles + rectangle), commonly needed for character
-controllers and rounded obstacles. Box2D v3 added this as a first-class shape. Currently
-achievable only via Polygon approximation or compound Circle+Polygon bodies.
+Convenience `Capsule` class that builds a Body from two Circle end-caps + a rectangular
+Polygon middle section. Commonly needed for character controllers and rounded obstacles.
+
+- `Capsule.create(width, height, material?, filter?)` — horizontal capsule
+- `Capsule.createVertical(width, height, material?, filter?)` — vertical capsule
+- Exported from `@newkrok/nape-js` main entry point
+- Interactive demo: `examples/capsule-demo.html`
+- 26 tests covering creation, validation, material/filter propagation, physics integration
 
 ---
 

@@ -14,6 +14,17 @@ import { ZPP_Body } from "../phys/ZPP_Body";
 import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { getNape } from "../../core/engine";
 
+/** Check if shape is circle-like for CCD (circle or capsule). */
+function _isCircleLike(s: any): boolean {
+  return s.type === 0 || s.type === 2;
+}
+
+/** Get effective CCD bounding radius from worldCOM for circle or capsule. */
+function _ccdRadius(s: any): number {
+  if (s.type === 0) return s.circle.radius;
+  return s.capsule.halfLength + s.capsule.radius;
+}
+
 export class ZPP_SweepDistance {
   static dynamicSweep(
     toi: ZPP_ToiEvent,
@@ -83,7 +94,7 @@ export class ZPP_SweepDistance {
           }
         }
       }
-      if (s1.type == 0) {
+      if (s1.type == 0 || s1.type === 2) {
         s1.worldCOMx = b1.posx + (b1.axisy * s1.localCOMx - b1.axisx * s1.localCOMy);
         s1.worldCOMy = b1.posy + (s1.localCOMx * b1.axisx + s1.localCOMy * b1.axisy);
       } else {
@@ -146,7 +157,7 @@ export class ZPP_SweepDistance {
           }
         }
       }
-      if (s2.type == 0) {
+      if (s2.type == 0 || s2.type === 2) {
         s2.worldCOMx = b2.posx + (b2.axisy * s2.localCOMx - b2.axisx * s2.localCOMy);
         s2.worldCOMy = b2.posy + (s2.localCOMx * b2.axisx + s2.localCOMy * b2.axisy);
       } else {
@@ -191,16 +202,18 @@ export class ZPP_SweepDistance {
       let w1 = c1;
       let w2 = c2;
       var sep;
-      if (s11.type == 0 && s21.type == 0) {
-        const c11 = s11.circle;
-        const c21 = s21.circle;
+      if (_isCircleLike(s11) && _isCircleLike(s21)) {
+        const c11 = s11.circle || s11.capsule;
+        const c21 = s21.circle || s21.capsule;
+        const _r11 = _ccdRadius(s11);
+        const _r21 = _ccdRadius(s21);
         var dist;
         let nx2 = 0.0;
         let ny = 0.0;
         nx2 = c21.worldCOMx - c11.worldCOMx;
         ny = c21.worldCOMy - c11.worldCOMy;
         const len = Math.sqrt(nx2 * nx2 + ny * ny);
-        dist = len - (c11.radius + c21.radius);
+        dist = len - (_r11 + _r21);
         if (dist < 1e100) {
           if (len == 0) {
             nx2 = 1;
@@ -210,10 +223,10 @@ export class ZPP_SweepDistance {
             nx2 *= t2;
             ny *= t2;
           }
-          const t3 = c11.radius;
+          const t3 = _r11;
           w1.x = c11.worldCOMx + nx2 * t3;
           w1.y = c11.worldCOMy + ny * t3;
-          const t4 = -c21.radius;
+          const t4 = -_r21;
           w2.x = c21.worldCOMx + nx2 * t4;
           w2.y = c21.worldCOMy + ny * t4;
           axis.x = nx2;
@@ -222,7 +235,7 @@ export class ZPP_SweepDistance {
         sep = dist;
       } else {
         let swapped = false;
-        if (s11.type == 0 && s21.type == 1) {
+        if (_isCircleLike(s11) && s21.type == 1) {
           const tmp = s11;
           s11 = s21;
           s21 = tmp;
@@ -231,19 +244,17 @@ export class ZPP_SweepDistance {
           w2 = tmp2;
           swapped = true;
         }
-        if (s11.type == 1 && s21.type == 0) {
+        if (s11.type == 1 && _isCircleLike(s21)) {
           const poly = s11.polygon;
-          const circle = s21.circle;
+          const circle = s21.circle || s21.capsule;
+          const _circR = _ccdRadius(s21);
           let best = -1e100;
           let a0 = null;
           let cx_ite4 = poly.edges.head;
           while (cx_ite4 != null) {
             const a = cx_ite4.elt;
             const dist1 =
-              a.gnormx * circle.worldCOMx +
-              a.gnormy * circle.worldCOMy -
-              a.gprojection -
-              circle.radius;
+              a.gnormx * circle.worldCOMx + a.gnormy * circle.worldCOMy - a.gprojection - _circR;
             if (dist1 > 1e100) {
               best = dist1;
               break;
@@ -269,7 +280,7 @@ export class ZPP_SweepDistance {
               nx3 = circle.worldCOMx - v0.x;
               ny1 = circle.worldCOMy - v0.y;
               const len1 = Math.sqrt(nx3 * nx3 + ny1 * ny1);
-              best = len1 - circle.radius;
+              best = len1 - _circR;
               if (best < 1e100) {
                 if (len1 == 0) {
                   nx3 = 1;
@@ -282,7 +293,7 @@ export class ZPP_SweepDistance {
                 const t6 = 0;
                 w1.x = v0.x + nx3 * t6;
                 w1.y = v0.y + ny1 * t6;
-                const t7 = -circle.radius;
+                const t7 = -_circR;
                 w2.x = circle.worldCOMx + nx3 * t7;
                 w2.y = circle.worldCOMy + ny1 * t7;
                 axis.x = nx3;
@@ -294,7 +305,7 @@ export class ZPP_SweepDistance {
               nx4 = circle.worldCOMx - v11.x;
               ny2 = circle.worldCOMy - v11.y;
               const len2 = Math.sqrt(nx4 * nx4 + ny2 * ny2);
-              best = len2 - circle.radius;
+              best = len2 - _circR;
               if (best < 1e100) {
                 if (len2 == 0) {
                   nx4 = 1;
@@ -307,14 +318,14 @@ export class ZPP_SweepDistance {
                 const t9 = 0;
                 w1.x = v11.x + nx4 * t9;
                 w1.y = v11.y + ny2 * t9;
-                const t10 = -circle.radius;
+                const t10 = -_circR;
                 w2.x = circle.worldCOMx + nx4 * t10;
                 w2.y = circle.worldCOMy + ny2 * t10;
                 axis.x = nx4;
                 axis.y = ny2;
               }
             } else {
-              const t11 = -circle.radius;
+              const t11 = -_circR;
               w2.x = circle.worldCOMx + a0.gnormx * t11;
               w2.y = circle.worldCOMy + a0.gnormy * t11;
               const t12 = -best;
@@ -679,7 +690,7 @@ export class ZPP_SweepDistance {
             }
           }
         }
-        if (s1.type == 0) {
+        if (s1.type == 0 || s1.type === 2) {
           s1.worldCOMx = b1.posx + (b1.axisy * s1.localCOMx - b1.axisx * s1.localCOMy);
           s1.worldCOMy = b1.posy + (s1.localCOMx * b1.axisx + s1.localCOMy * b1.axisy);
         } else {
@@ -742,7 +753,7 @@ export class ZPP_SweepDistance {
             }
           }
         }
-        if (s2.type == 0) {
+        if (s2.type == 0 || s2.type === 2) {
           s2.worldCOMx = b2.posx + (b2.axisy * s2.localCOMx - b2.axisx * s2.localCOMy);
           s2.worldCOMy = b2.posy + (s2.localCOMx * b2.axisx + s2.localCOMy * b2.axisy);
         } else {
@@ -787,16 +798,18 @@ export class ZPP_SweepDistance {
         let w11 = c1;
         let w21 = c2;
         var sep2;
-        if (s13.type == 0 && s23.type == 0) {
-          const c12 = s13.circle;
-          const c22 = s23.circle;
+        if (_isCircleLike(s13) && _isCircleLike(s23)) {
+          const c12 = s13.circle || s13.capsule;
+          const c22 = s23.circle || s23.capsule;
+          const _r12 = _ccdRadius(s13);
+          const _r22 = _ccdRadius(s23);
           var dist2;
           let nx7 = 0.0;
           let ny3 = 0.0;
           nx7 = c22.worldCOMx - c12.worldCOMx;
           ny3 = c22.worldCOMy - c12.worldCOMy;
           const len3 = Math.sqrt(nx7 * nx7 + ny3 * ny3);
-          dist2 = len3 - (c12.radius + c22.radius);
+          dist2 = len3 - (_r12 + _r22);
           if (dist2 < 1e100) {
             if (len3 == 0) {
               nx7 = 1;
@@ -806,10 +819,10 @@ export class ZPP_SweepDistance {
               nx7 *= t28;
               ny3 *= t28;
             }
-            const t29 = c12.radius;
+            const t29 = _r12;
             w11.x = c12.worldCOMx + nx7 * t29;
             w11.y = c12.worldCOMy + ny3 * t29;
-            const t30 = -c22.radius;
+            const t30 = -_r22;
             w21.x = c22.worldCOMx + nx7 * t30;
             w21.y = c22.worldCOMy + ny3 * t30;
             axis.x = nx7;
@@ -818,7 +831,7 @@ export class ZPP_SweepDistance {
           sep2 = dist2;
         } else {
           let swapped1 = false;
-          if (s13.type == 0 && s23.type == 1) {
+          if (_isCircleLike(s13) && s23.type == 1) {
             const tmp3 = s13;
             s13 = s23;
             s23 = tmp3;
@@ -827,9 +840,10 @@ export class ZPP_SweepDistance {
             w21 = tmp21;
             swapped1 = true;
           }
-          if (s13.type == 1 && s23.type == 0) {
+          if (s13.type == 1 && _isCircleLike(s23)) {
             const poly1 = s13.polygon;
-            const circle1 = s23.circle;
+            const circle1 = s23.circle || s23.capsule;
+            const _circR1 = _ccdRadius(s23);
             let best2 = -1e100;
             let a01 = null;
             let cx_ite14 = poly1.edges.head;
@@ -839,7 +853,7 @@ export class ZPP_SweepDistance {
                 a6.gnormx * circle1.worldCOMx +
                 a6.gnormy * circle1.worldCOMy -
                 a6.gprojection -
-                circle1.radius;
+                _circR1;
               if (dist3 > 1e100) {
                 best2 = dist3;
                 break;
@@ -865,7 +879,7 @@ export class ZPP_SweepDistance {
                 nx8 = circle1.worldCOMx - v02.x;
                 ny4 = circle1.worldCOMy - v02.y;
                 const len4 = Math.sqrt(nx8 * nx8 + ny4 * ny4);
-                best2 = len4 - circle1.radius;
+                best2 = len4 - _circR1;
                 if (best2 < 1e100) {
                   if (len4 == 0) {
                     nx8 = 1;
@@ -878,7 +892,7 @@ export class ZPP_SweepDistance {
                   const t32 = 0;
                   w11.x = v02.x + nx8 * t32;
                   w11.y = v02.y + ny4 * t32;
-                  const t33 = -circle1.radius;
+                  const t33 = -_circR1;
                   w21.x = circle1.worldCOMx + nx8 * t33;
                   w21.y = circle1.worldCOMy + ny4 * t33;
                   axis.x = nx8;
@@ -890,7 +904,7 @@ export class ZPP_SweepDistance {
                 nx9 = circle1.worldCOMx - v13.x;
                 ny5 = circle1.worldCOMy - v13.y;
                 const len5 = Math.sqrt(nx9 * nx9 + ny5 * ny5);
-                best2 = len5 - circle1.radius;
+                best2 = len5 - _circR1;
                 if (best2 < 1e100) {
                   if (len5 == 0) {
                     nx9 = 1;
@@ -903,14 +917,14 @@ export class ZPP_SweepDistance {
                   const t35 = 0;
                   w11.x = v13.x + nx9 * t35;
                   w11.y = v13.y + ny5 * t35;
-                  const t36 = -circle1.radius;
+                  const t36 = -_circR1;
                   w21.x = circle1.worldCOMx + nx9 * t36;
                   w21.y = circle1.worldCOMy + ny5 * t36;
                   axis.x = nx9;
                   axis.y = ny5;
                 }
               } else {
-                const t37 = -circle1.radius;
+                const t37 = -_circR1;
                 w21.x = circle1.worldCOMx + a01.gnormx * t37;
                 w21.y = circle1.worldCOMy + a01.gnormy * t37;
                 const t38 = -best2;
@@ -1296,7 +1310,7 @@ export class ZPP_SweepDistance {
           }
         }
       }
-      if (s1.type == 0) {
+      if (s1.type == 0 || s1.type === 2) {
         s1.worldCOMx = b1.posx + (b1.axisy * s1.localCOMx - b1.axisx * s1.localCOMy);
         s1.worldCOMy = b1.posy + (s1.localCOMx * b1.axisx + s1.localCOMy * b1.axisy);
       } else {
@@ -1341,9 +1355,11 @@ export class ZPP_SweepDistance {
       let w1 = c1;
       let w2 = c2;
       var sep;
-      if (s11.type == 0 && s21.type == 0) {
-        const c11 = s11.circle;
-        const c21 = s21.circle;
+      if (_isCircleLike(s11) && _isCircleLike(s21)) {
+        const c11 = s11.circle || s11.capsule;
+        const c21 = s21.circle || s21.capsule;
+        const _r11 = _ccdRadius(s11);
+        const _r21 = _ccdRadius(s21);
         var dist;
         let nx1 = 0.0;
         let ny = 0.0;
@@ -1372,7 +1388,7 @@ export class ZPP_SweepDistance {
         sep = dist;
       } else {
         let swapped = false;
-        if (s11.type == 0 && s21.type == 1) {
+        if (_isCircleLike(s11) && s21.type == 1) {
           const tmp = s11;
           s11 = s21;
           s21 = tmp;
@@ -1381,19 +1397,17 @@ export class ZPP_SweepDistance {
           w2 = tmp2;
           swapped = true;
         }
-        if (s11.type == 1 && s21.type == 0) {
+        if (s11.type == 1 && _isCircleLike(s21)) {
           const poly = s11.polygon;
-          const circle = s21.circle;
+          const circle = s21.circle || s21.capsule;
+          const _circR = _ccdRadius(s21);
           let best = -1e100;
           let a0 = null;
           let cx_ite2 = poly.edges.head;
           while (cx_ite2 != null) {
             const a = cx_ite2.elt;
             const dist1 =
-              a.gnormx * circle.worldCOMx +
-              a.gnormy * circle.worldCOMy -
-              a.gprojection -
-              circle.radius;
+              a.gnormx * circle.worldCOMx + a.gnormy * circle.worldCOMy - a.gprojection - _circR;
             if (dist1 > 1e100) {
               best = dist1;
               break;
@@ -1419,7 +1433,7 @@ export class ZPP_SweepDistance {
               nx2 = circle.worldCOMx - v0.x;
               ny1 = circle.worldCOMy - v0.y;
               const len1 = Math.sqrt(nx2 * nx2 + ny1 * ny1);
-              best = len1 - circle.radius;
+              best = len1 - _circR;
               if (best < 1e100) {
                 if (len1 == 0) {
                   nx2 = 1;
@@ -1432,7 +1446,7 @@ export class ZPP_SweepDistance {
                 const t5 = 0;
                 w1.x = v0.x + nx2 * t5;
                 w1.y = v0.y + ny1 * t5;
-                const t6 = -circle.radius;
+                const t6 = -_circR;
                 w2.x = circle.worldCOMx + nx2 * t6;
                 w2.y = circle.worldCOMy + ny1 * t6;
                 axis.x = nx2;
@@ -1444,7 +1458,7 @@ export class ZPP_SweepDistance {
               nx3 = circle.worldCOMx - v11.x;
               ny2 = circle.worldCOMy - v11.y;
               const len2 = Math.sqrt(nx3 * nx3 + ny2 * ny2);
-              best = len2 - circle.radius;
+              best = len2 - _circR;
               if (best < 1e100) {
                 if (len2 == 0) {
                   nx3 = 1;
@@ -1457,14 +1471,14 @@ export class ZPP_SweepDistance {
                 const t8 = 0;
                 w1.x = v11.x + nx3 * t8;
                 w1.y = v11.y + ny2 * t8;
-                const t9 = -circle.radius;
+                const t9 = -_circR;
                 w2.x = circle.worldCOMx + nx3 * t9;
                 w2.y = circle.worldCOMy + ny2 * t9;
                 axis.x = nx3;
                 axis.y = ny2;
               }
             } else {
-              const t10 = -circle.radius;
+              const t10 = -_circR;
               w2.x = circle.worldCOMx + a0.gnormx * t10;
               w2.y = circle.worldCOMy + a0.gnormy * t10;
               const t11 = -best;
@@ -1819,7 +1833,7 @@ export class ZPP_SweepDistance {
             }
           }
         }
-        if (s1.type == 0) {
+        if (s1.type == 0 || s1.type === 2) {
           s1.worldCOMx = b1.posx + (b1.axisy * s1.localCOMx - b1.axisx * s1.localCOMy);
           s1.worldCOMy = b1.posy + (s1.localCOMx * b1.axisx + s1.localCOMy * b1.axisy);
         } else {
@@ -1864,16 +1878,18 @@ export class ZPP_SweepDistance {
         let w11 = c1;
         let w21 = c2;
         var sep2;
-        if (s13.type == 0 && s23.type == 0) {
-          const c12 = s13.circle;
-          const c22 = s23.circle;
+        if (_isCircleLike(s13) && _isCircleLike(s23)) {
+          const c12 = s13.circle || s13.capsule;
+          const c22 = s23.circle || s23.capsule;
+          const _r12 = _ccdRadius(s13);
+          const _r22 = _ccdRadius(s23);
           var dist2;
           let nx5 = 0.0;
           let ny3 = 0.0;
           nx5 = c22.worldCOMx - c12.worldCOMx;
           ny3 = c22.worldCOMy - c12.worldCOMy;
           const len3 = Math.sqrt(nx5 * nx5 + ny3 * ny3);
-          dist2 = len3 - (c12.radius + c22.radius);
+          dist2 = len3 - (_r12 + _r22);
           if (dist2 < 1e100) {
             if (len3 == 0) {
               nx5 = 1;
@@ -1883,10 +1899,10 @@ export class ZPP_SweepDistance {
               nx5 *= t26;
               ny3 *= t26;
             }
-            const t27 = c12.radius;
+            const t27 = _r12;
             w11.x = c12.worldCOMx + nx5 * t27;
             w11.y = c12.worldCOMy + ny3 * t27;
-            const t28 = -c22.radius;
+            const t28 = -_r22;
             w21.x = c22.worldCOMx + nx5 * t28;
             w21.y = c22.worldCOMy + ny3 * t28;
             axis.x = nx5;
@@ -1895,7 +1911,7 @@ export class ZPP_SweepDistance {
           sep2 = dist2;
         } else {
           let swapped1 = false;
-          if (s13.type == 0 && s23.type == 1) {
+          if (_isCircleLike(s13) && s23.type == 1) {
             const tmp3 = s13;
             s13 = s23;
             s23 = tmp3;
@@ -1904,9 +1920,10 @@ export class ZPP_SweepDistance {
             w21 = tmp21;
             swapped1 = true;
           }
-          if (s13.type == 1 && s23.type == 0) {
+          if (s13.type == 1 && _isCircleLike(s23)) {
             const poly1 = s13.polygon;
-            const circle1 = s23.circle;
+            const circle1 = s23.circle || s23.capsule;
+            const _circR1 = _ccdRadius(s23);
             let best2 = -1e100;
             let a01 = null;
             let cx_ite10 = poly1.edges.head;
@@ -1916,7 +1933,7 @@ export class ZPP_SweepDistance {
                 a6.gnormx * circle1.worldCOMx +
                 a6.gnormy * circle1.worldCOMy -
                 a6.gprojection -
-                circle1.radius;
+                _circR1;
               if (dist3 > 1e100) {
                 best2 = dist3;
                 break;
@@ -1942,7 +1959,7 @@ export class ZPP_SweepDistance {
                 nx6 = circle1.worldCOMx - v02.x;
                 ny4 = circle1.worldCOMy - v02.y;
                 const len4 = Math.sqrt(nx6 * nx6 + ny4 * ny4);
-                best2 = len4 - circle1.radius;
+                best2 = len4 - _circR1;
                 if (best2 < 1e100) {
                   if (len4 == 0) {
                     nx6 = 1;
@@ -1955,7 +1972,7 @@ export class ZPP_SweepDistance {
                   const t30 = 0;
                   w11.x = v02.x + nx6 * t30;
                   w11.y = v02.y + ny4 * t30;
-                  const t31 = -circle1.radius;
+                  const t31 = -_circR1;
                   w21.x = circle1.worldCOMx + nx6 * t31;
                   w21.y = circle1.worldCOMy + ny4 * t31;
                   axis.x = nx6;
@@ -1967,7 +1984,7 @@ export class ZPP_SweepDistance {
                 nx7 = circle1.worldCOMx - v13.x;
                 ny5 = circle1.worldCOMy - v13.y;
                 const len5 = Math.sqrt(nx7 * nx7 + ny5 * ny5);
-                best2 = len5 - circle1.radius;
+                best2 = len5 - _circR1;
                 if (best2 < 1e100) {
                   if (len5 == 0) {
                     nx7 = 1;
@@ -1980,14 +1997,14 @@ export class ZPP_SweepDistance {
                   const t33 = 0;
                   w11.x = v13.x + nx7 * t33;
                   w11.y = v13.y + ny5 * t33;
-                  const t34 = -circle1.radius;
+                  const t34 = -_circR1;
                   w21.x = circle1.worldCOMx + nx7 * t34;
                   w21.y = circle1.worldCOMy + ny5 * t34;
                   axis.x = nx7;
                   axis.y = ny5;
                 }
               } else {
-                const t35 = -circle1.radius;
+                const t35 = -_circR1;
                 w21.x = circle1.worldCOMx + a01.gnormx * t35;
                 w21.y = circle1.worldCOMy + a01.gnormy * t35;
                 const t36 = -best2;
@@ -2364,16 +2381,18 @@ export class ZPP_SweepDistance {
           upperBound = 1e100;
         }
         var dist;
-        if (s11.type == 0 && s21.type == 0) {
-          const c1 = s11.circle;
-          const c2 = s21.circle;
+        if (_isCircleLike(s11) && _isCircleLike(s21)) {
+          const c1 = s11.circle || s11.capsule;
+          const c2 = s21.circle || s21.capsule;
+          const _rc1 = _ccdRadius(s11);
+          const _rc2 = _ccdRadius(s21);
           var dist1;
           let nx = 0.0;
           let ny = 0.0;
           nx = c2.worldCOMx - c1.worldCOMx;
           ny = c2.worldCOMy - c1.worldCOMy;
           const len = Math.sqrt(nx * nx + ny * ny);
-          dist1 = len - (c1.radius + c2.radius);
+          dist1 = len - (_rc1 + _rc2);
           if (dist1 < upperBound) {
             if (len == 0) {
               nx = 1;
@@ -2383,10 +2402,10 @@ export class ZPP_SweepDistance {
               nx *= t;
               ny *= t;
             }
-            const t3 = c1.radius;
+            const t3 = _rc1;
             w11.x = c1.worldCOMx + nx * t3;
             w11.y = c1.worldCOMy + ny * t3;
-            const t4 = -c2.radius;
+            const t4 = -_rc2;
             w21.x = c2.worldCOMx + nx * t4;
             w21.y = c2.worldCOMy + ny * t4;
             ax.x = nx;
@@ -2395,7 +2414,7 @@ export class ZPP_SweepDistance {
           dist = dist1;
         } else {
           let swapped = false;
-          if (s11.type == 0 && s21.type == 1) {
+          if (_isCircleLike(s11) && s21.type == 1) {
             const tmp = s11;
             s11 = s21;
             s21 = tmp;
@@ -2404,19 +2423,17 @@ export class ZPP_SweepDistance {
             w21 = tmp2;
             swapped = true;
           }
-          if (s11.type == 1 && s21.type == 0) {
+          if (s11.type == 1 && _isCircleLike(s21)) {
             const poly = s11.polygon;
-            const circle = s21.circle;
+            const circle = s21.circle || s21.capsule;
+            const _circR = _ccdRadius(s21);
             let best = -1e100;
             let a0 = null;
             let cx_ite2 = poly.edges.head;
             while (cx_ite2 != null) {
               const a = cx_ite2.elt;
               const dist2 =
-                a.gnormx * circle.worldCOMx +
-                a.gnormy * circle.worldCOMy -
-                a.gprojection -
-                circle.radius;
+                a.gnormx * circle.worldCOMx + a.gnormy * circle.worldCOMy - a.gprojection - _circR;
               if (dist2 > upperBound) {
                 best = dist2;
                 break;
@@ -2442,7 +2459,7 @@ export class ZPP_SweepDistance {
                 nx1 = circle.worldCOMx - v0.x;
                 ny1 = circle.worldCOMy - v0.y;
                 const len1 = Math.sqrt(nx1 * nx1 + ny1 * ny1);
-                best = len1 - circle.radius;
+                best = len1 - _circR;
                 if (best < upperBound) {
                   if (len1 == 0) {
                     nx1 = 1;
@@ -2455,7 +2472,7 @@ export class ZPP_SweepDistance {
                   const t6 = 0;
                   w11.x = v0.x + nx1 * t6;
                   w11.y = v0.y + ny1 * t6;
-                  const t7 = -circle.radius;
+                  const t7 = -_circR;
                   w21.x = circle.worldCOMx + nx1 * t7;
                   w21.y = circle.worldCOMy + ny1 * t7;
                   ax.x = nx1;
@@ -2467,7 +2484,7 @@ export class ZPP_SweepDistance {
                 nx2 = circle.worldCOMx - v1.x;
                 ny2 = circle.worldCOMy - v1.y;
                 const len2 = Math.sqrt(nx2 * nx2 + ny2 * ny2);
-                best = len2 - circle.radius;
+                best = len2 - _circR;
                 if (best < upperBound) {
                   if (len2 == 0) {
                     nx2 = 1;
@@ -2480,14 +2497,14 @@ export class ZPP_SweepDistance {
                   const t9 = 0;
                   w11.x = v1.x + nx2 * t9;
                   w11.y = v1.y + ny2 * t9;
-                  const t10 = -circle.radius;
+                  const t10 = -_circR;
                   w21.x = circle.worldCOMx + nx2 * t10;
                   w21.y = circle.worldCOMy + ny2 * t10;
                   ax.x = nx2;
                   ax.y = ny2;
                 }
               } else {
-                const t11 = -circle.radius;
+                const t11 = -_circR;
                 w21.x = circle.worldCOMx + a0.gnormx * t11;
                 w21.y = circle.worldCOMy + a0.gnormy * t11;
                 const t12 = -best;
@@ -2847,16 +2864,18 @@ export class ZPP_SweepDistance {
     if (upperBound == null) {
       upperBound = 1e100;
     }
-    if (s1.type == 0 && s2.type == 0) {
-      const c1 = s1.circle;
-      const c2 = s2.circle;
+    if (_isCircleLike(s1) && _isCircleLike(s2)) {
+      const c1 = s1.circle || s1.capsule;
+      const c2 = s2.circle || s2.capsule;
+      const _rd1 = _ccdRadius(s1);
+      const _rd2 = _ccdRadius(s2);
       let dist;
       let nx = 0.0;
       let ny = 0.0;
       nx = c2.worldCOMx - c1.worldCOMx;
       ny = c2.worldCOMy - c1.worldCOMy;
       const len = Math.sqrt(nx * nx + ny * ny);
-      dist = len - (c1.radius + c2.radius);
+      dist = len - (_rd1 + _rd2);
       if (dist < upperBound) {
         if (len == 0) {
           nx = 1;
@@ -2866,10 +2885,10 @@ export class ZPP_SweepDistance {
           nx *= t;
           ny *= t;
         }
-        const t1 = c1.radius;
+        const t1 = _rd1;
         w1.x = c1.worldCOMx + nx * t1;
         w1.y = c1.worldCOMy + ny * t1;
-        const t2 = -c2.radius;
+        const t2 = -_rd2;
         w2.x = c2.worldCOMx + nx * t2;
         w2.y = c2.worldCOMy + ny * t2;
         axis.x = nx;
@@ -2878,7 +2897,7 @@ export class ZPP_SweepDistance {
       return dist;
     } else {
       let swapped = false;
-      if (s1.type == 0 && s2.type == 1) {
+      if (_isCircleLike(s1) && s2.type == 1) {
         const tmp = s1;
         s1 = s2;
         s2 = tmp;
@@ -2887,19 +2906,17 @@ export class ZPP_SweepDistance {
         w2 = tmp2;
         swapped = true;
       }
-      if (s1.type == 1 && s2.type == 0) {
+      if (s1.type == 1 && _isCircleLike(s2)) {
         const poly = s1.polygon;
-        const circle = s2.circle;
+        const circle = s2.circle || s2.capsule;
+        const _circR = _ccdRadius(s2);
         let best = -1e100;
         let a0 = null;
         let cx_ite = poly.edges.head;
         while (cx_ite != null) {
           const a = cx_ite.elt;
           const dist1 =
-            a.gnormx * circle.worldCOMx +
-            a.gnormy * circle.worldCOMy -
-            a.gprojection -
-            circle.radius;
+            a.gnormx * circle.worldCOMx + a.gnormy * circle.worldCOMy - a.gprojection - _circR;
           if (dist1 > upperBound) {
             best = dist1;
             break;
@@ -2925,7 +2942,7 @@ export class ZPP_SweepDistance {
             nx1 = circle.worldCOMx - v0.x;
             ny1 = circle.worldCOMy - v0.y;
             const len1 = Math.sqrt(nx1 * nx1 + ny1 * ny1);
-            best = len1 - circle.radius;
+            best = len1 - _circR;
             if (best < upperBound) {
               if (len1 == 0) {
                 nx1 = 1;
@@ -2938,7 +2955,7 @@ export class ZPP_SweepDistance {
               const t4 = 0;
               w1.x = v0.x + nx1 * t4;
               w1.y = v0.y + ny1 * t4;
-              const t5 = -circle.radius;
+              const t5 = -_circR;
               w2.x = circle.worldCOMx + nx1 * t5;
               w2.y = circle.worldCOMy + ny1 * t5;
               axis.x = nx1;
@@ -2950,7 +2967,7 @@ export class ZPP_SweepDistance {
             nx2 = circle.worldCOMx - v1.x;
             ny2 = circle.worldCOMy - v1.y;
             const len2 = Math.sqrt(nx2 * nx2 + ny2 * ny2);
-            best = len2 - circle.radius;
+            best = len2 - _circR;
             if (best < upperBound) {
               if (len2 == 0) {
                 nx2 = 1;
@@ -2963,14 +2980,14 @@ export class ZPP_SweepDistance {
               const t7 = 0;
               w1.x = v1.x + nx2 * t7;
               w1.y = v1.y + ny2 * t7;
-              const t8 = -circle.radius;
+              const t8 = -_circR;
               w2.x = circle.worldCOMx + nx2 * t8;
               w2.y = circle.worldCOMy + ny2 * t8;
               axis.x = nx2;
               axis.y = ny2;
             }
           } else {
-            const t9 = -circle.radius;
+            const t9 = -_circR;
             w2.x = circle.worldCOMx + a0.gnormx * t9;
             w2.y = circle.worldCOMy + a0.gnormy * t9;
             const t10 = -best;

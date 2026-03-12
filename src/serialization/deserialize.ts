@@ -13,6 +13,7 @@ import { InertiaMode } from "../phys/InertiaMode";
 import { GravMassMode } from "../phys/GravMassMode";
 import { Circle } from "../shape/Circle";
 import { Polygon } from "../shape/Polygon";
+import { Capsule } from "../shape/Capsule";
 import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
@@ -80,14 +81,17 @@ function buildFluidProps(d: FluidPropertiesData): FluidProperties {
   return fp;
 }
 
-function buildShape(d: ShapeData): Circle | Polygon {
+function buildShape(d: ShapeData): Circle | Polygon | Capsule {
   const material = buildMaterial(d.material);
   const filter = buildFilter(d.filter);
 
-  let shape: Circle | Polygon;
+  let shape: Circle | Polygon | Capsule;
   if (d.type === "circle") {
     const lcom = toVec2(d.localCOM);
     shape = new Circle(d.radius, lcom, material, filter);
+  } else if (d.type === "capsule") {
+    const lcom = toVec2(d.localCOM);
+    shape = new Capsule(d.width, d.height, lcom, material, filter);
   } else {
     const verts = d.localVerts.map((v) => toVec2(v));
     shape = new Polygon(verts, material, filter);

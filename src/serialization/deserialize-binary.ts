@@ -15,6 +15,7 @@ import { InertiaMode } from "../phys/InertiaMode";
 import { GravMassMode } from "../phys/GravMassMode";
 import { Circle } from "../shape/Circle";
 import { Polygon } from "../shape/Polygon";
+import { Capsule } from "../shape/Capsule";
 import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
@@ -84,19 +85,27 @@ function readFluidProps(r: BinaryReader): FluidProperties {
   return fp;
 }
 
-function readShape(r: BinaryReader): Circle | Polygon {
+function readShape(r: BinaryReader): Circle | Polygon | Capsule {
   const shapeType = r.readUint8();
 
-  let shape: Circle | Polygon;
+  let shape: Circle | Polygon | Capsule;
   if (shapeType === 0) {
     // Circle
     const radius = r.readFloat64();
     const lcomX = r.readFloat64();
     const lcomY = r.readFloat64();
-    // Material & filter read below, but Circle constructor needs them
     const material = readMaterial(r);
     const filter = readFilter(r);
     shape = new Circle(radius, Vec2.weak(lcomX, lcomY), material, filter);
+  } else if (shapeType === 2) {
+    // Capsule
+    const width = r.readFloat64();
+    const height = r.readFloat64();
+    const lcomX = r.readFloat64();
+    const lcomY = r.readFloat64();
+    const material = readMaterial(r);
+    const filter = readFilter(r);
+    shape = new Capsule(width, height, Vec2.weak(lcomX, lcomY), material, filter);
   } else {
     // Polygon
     const vertCount = r.readUint16();

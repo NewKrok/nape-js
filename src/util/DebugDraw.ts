@@ -87,6 +87,28 @@ export abstract class DebugDraw {
   drawSolidPolygon(vertices: DebugVec2[], colour?: number): void {}
 
   /**
+   * Draw a capsule outline (two semicircles connected by straight segments).
+   * Used for: static/kinematic capsule shapes.
+   * @param spine1 - World-space first spine endpoint.
+   * @param spine2 - World-space second spine endpoint.
+   * @param radius - End-cap radius.
+   * @param colour - Optional ARGB colour hint.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  drawCapsule(spine1: DebugVec2, spine2: DebugVec2, radius: number, colour?: number): void {}
+
+  /**
+   * Draw a filled capsule.
+   * Used for: dynamic capsule shapes.
+   * @param spine1 - World-space first spine endpoint.
+   * @param spine2 - World-space second spine endpoint.
+   * @param radius - End-cap radius.
+   * @param colour - Optional ARGB colour hint.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  drawSolidCapsule(spine1: DebugVec2, spine2: DebugVec2, radius: number, colour?: number): void {}
+
+  /**
    * Draw a point marker.
    * Used for: contact points, centre-of-mass markers.
    * @param position - World-space position.

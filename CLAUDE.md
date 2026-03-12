@@ -68,7 +68,7 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | Debug draw API           | ✅ Done — abstract `DebugDraw` + `Space.debugDraw()` |
 | Server/demo examples     | ⬜ Planned — P36 |
 | Haxe remnant cleanup     | ✅ Done — P40 (`__name__`/`__class__`/`__super__`/`_gthis`/`_init()`) |
-| Capsule shape            | ⬜ Planned — P41 |
+| Capsule shape            | ✅ Done — P41 (`Capsule.create` / `Capsule.createVertical`) |
 | Web Worker helper        | ⬜ Planned — P42 |
 | Concave polygon helper   | ⬜ Planned — P43 |
 | PixiJS integration       | ⬜ Planned — P44 |

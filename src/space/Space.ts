@@ -1097,6 +1097,17 @@ export class Space {
                 drawer.drawPolygon(verts, bodyColour);
               }
             }
+          } else if (zppShape.type === 2) {
+            // Capsule
+            const zppCap = zppShape.capsule;
+            if (zppShape.zip_aabb) zppShape.validate_aabb();
+            const sp1 = { x: zppCap.spine1x, y: zppCap.spine1y };
+            const sp2 = { x: zppCap.spine2x, y: zppCap.spine2y };
+            if (isDynamic) {
+              drawer.drawSolidCapsule(sp1, sp2, zppCap.radius, bodyColour);
+            } else {
+              drawer.drawCapsule(sp1, sp2, zppCap.radius, bodyColour);
+            }
           }
           shapeNode = shapeNode.next;
         }

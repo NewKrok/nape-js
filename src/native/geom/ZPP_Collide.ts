@@ -55,8 +55,10 @@ export class ZPP_Collide {
   static shapeContains(s: ZPP_Shape, p: ZPP_Vec2) {
     if (s.type == 0) {
       return ZPP_Collide.circleContains(s.circle, p);
-    } else {
+    } else if (s.type == 1) {
       return ZPP_Collide.polyContains(s.polygon, p);
+    } else {
+      return ZPP_Collide.capsuleContains(s.capsule, p);
     }
   }
   static bodyContains(b: ZPP_Body, p: ZPP_Vec2) {
@@ -89,7 +91,7 @@ export class ZPP_Collide {
           const py = s2.circle.worldCOMy - s1.circle.worldCOMy;
           const distSqr = px * px + py * py;
           return distSqr <= minDist * minDist;
-        } else {
+        } else if (s2.type == 1) {
           let retvar;
           retvar = true;
           let cx_ite = s2.polygon.gverts.next;
@@ -108,6 +110,42 @@ export class ZPP_Collide {
             }
           }
           return retvar;
+        } else {
+          // circle contains capsule: both spine endpoints + radius must be within circle
+          const cap = s2.capsule;
+          const r = s1.circle.radius - cap.radius;
+          if (r < 0) return false;
+          const r2 = r * r;
+          const dx1 = cap.spine1x - s1.circle.worldCOMx;
+          const dy1 = cap.spine1y - s1.circle.worldCOMy;
+          if (dx1 * dx1 + dy1 * dy1 > r2) return false;
+          const dx2 = cap.spine2x - s1.circle.worldCOMx;
+          const dy2 = cap.spine2y - s1.circle.worldCOMy;
+          return dx2 * dx2 + dy2 * dy2 <= r2;
+        }
+      } else if (s1.type == 2) {
+        // capsule contains s2
+        if (s2.type == 0) {
+          // capsule contains circle: closest point on spine to circle center
+          const cap = s1.capsule;
+          const t = ZPP_Collide._closestT(
+            cap.spine1x,
+            cap.spine1y,
+            cap.spine2x,
+            cap.spine2y,
+            s2.circle.worldCOMx,
+            s2.circle.worldCOMy,
+          );
+          const cx = cap.spine1x + t * (cap.spine2x - cap.spine1x);
+          const cy = cap.spine1y + t * (cap.spine2y - cap.spine1y);
+          const minDist = cap.radius - s2.circle.radius;
+          if (minDist < 0) return false;
+          const dx = s2.circle.worldCOMx - cx;
+          const dy = s2.circle.worldCOMy - cy;
+          return dx * dx + dy * dy <= minDist * minDist;
+        } else {
+          // capsule contains polygon/capsule: check each vertex/endpoint
+          return false; // Simplified — capsule rarely contains other shapes
         }
       } else if (s2.type == 0) {
         let retvar1;
@@ -159,6 +197,12 @@ export class ZPP_Collide {
   }
   static contactCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_ColArbiter, rev: boolean) {
     const napeNs = getNape();
+    if (s2.type == 2) {
+      return ZPP_Collide._capsuleContactCollide(s1, s2, arb, rev, napeNs);
+    }
+    if (s1.type == 2) {
+      return ZPP_Collide._capsuleContactCollide(s2, s1, arb, !rev, napeNs);
+    }
     if (s2.type == 1) {
       if (s1.type == 1) {
         let cont = true;
@@ -1084,7 +1128,8 @@ export class ZPP_Collide {
   }
   static testCollide_safe(s1: ZPP_Shape, s2: ZPP_Shape) {
     const _napeNs = getNape();
-    if (s2.type == 0) {
+    // Ensure s1.type <= s2.type for consistent dispatch
+    if (s1.type > s2.type) {
       const t = s1;
       s1 = s2;
       s2 = t;
@@ -1093,6 +1138,9 @@ export class ZPP_Collide {
   }
   static testCollide(s1: ZPP_Shape, s2: ZPP_Shape) {
     const _napeNs = getNape();
+    if (s2.type == 2) {
+      return ZPP_Collide._capsuleTestCollide(s1, s2);
+    }
     if (s2.type == 1) {
       if (s1.type == 1) {
         let cont = true;
@@ -1200,6 +1248,10 @@ export class ZPP_Collide {
   }
   static flowCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_FluidArbiter) {
     const napeNs = getNape();
+    // Capsule fluid collision: approximate using circle at capsule worldCOM
+    if (s1.type == 2 || s2.type == 2) {
+      return ZPP_Collide._capsuleFlowCollide(s1, s2, arb, napeNs);
+    }
     if (s2.type == 1) {
       if (s1.type == 1) {
         const out1 = [];
@@ -2902,5 +2954,720 @@ export class ZPP_Collide {
         return true;
       }
     }
+  }
+
+  // ===========================================================================
+  // Capsule collision helpers
+  // ===========================================================================
+
+  /** Point-in-capsule containment test. */
+  static capsuleContains(cap: any, p: any): boolean {
+    const t = ZPP_Collide._closestT(cap.spine1x, cap.spine1y, cap.spine2x, cap.spine2y, p.x, p.y);
+    const cx = cap.spine1x + t * (cap.spine2x - cap.spine1x);
+    const cy = cap.spine1y + t * (cap.spine2y - cap.spine1y);
+    const dx = p.x - cx;
+    const dy = p.y - cy;
+    return dx * dx + dy * dy < cap.radius * cap.radius;
+  }
+
+  /** Closest parameter t ∈ [0,1] on segment (ax,ay)-(bx,by) to point (px,py). */
+  static _closestT(ax: number, ay: number, bx: number, by: number, px: number, py: number): number {
+    const dx = bx - ax;
+    const dy = by - ay;
+    const len2 = dx * dx + dy * dy;
+    if (len2 < 1e-12) return 0;
+    let t = ((px - ax) * dx + (py - ay) * dy) / len2;
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+    return t;
+  }
+
+  /**
+   * Closest parameters (t1, t2) between two segments.
+   * Segment 1: (a1x,a1y)-(b1x,b1y), Segment 2: (a2x,a2y)-(b2x,b2y).
+   * Returns [t1, t2] both in [0,1].
+   */
+  static _closestTT(
+    a1x: number,
+    a1y: number,
+    b1x: number,
+    b1y: number,
+    a2x: number,
+    a2y: number,
+    b2x: number,
+    b2y: number,
+  ): [number, number] {
+    const d1x = b1x - a1x,
+      d1y = b1y - a1y;
+    const d2x = b2x - a2x,
+      d2y = b2y - a2y;
+    const rx = a1x - a2x,
+      ry = a1y - a2y;
+    const a = d1x * d1x + d1y * d1y;
+    const e = d2x * d2x + d2y * d2y;
+    const f = d2x * rx + d2y * ry;
+
+    let t1: number, t2: number;
+    if (a < 1e-12 && e < 1e-12) {
+      return [0, 0];
+    }
+    if (a < 1e-12) {
+      t1 = 0;
+      t2 = f / e;
+      if (t2 < 0) t2 = 0;
+      if (t2 > 1) t2 = 1;
+      return [t1, t2];
+    }
+    const c = d1x * rx + d1y * ry;
+    if (e < 1e-12) {
+      t2 = 0;
+      t1 = -c / a;
+      if (t1 < 0) t1 = 0;
+      if (t1 > 1) t1 = 1;
+      return [t1, t2];
+    }
+    const b = d1x * d2x + d1y * d2y;
+    const denom = a * e - b * b;
+    if (denom > 1e-12) {
+      t1 = (b * f - c * e) / denom;
+      if (t1 < 0) t1 = 0;
+      if (t1 > 1) t1 = 1;
+    } else {
+      t1 = 0;
+    }
+    t2 = (b * t1 + f) / e;
+    if (t2 < 0) {
+      t2 = 0;
+      t1 = -c / a;
+      if (t1 < 0) t1 = 0;
+      if (t1 > 1) t1 = 1;
+    } else if (t2 > 1) {
+      t2 = 1;
+      t1 = (b - c) / a;
+      if (t1 < 0) t1 = 0;
+      if (t1 > 1) t1 = 1;
+    }
+    return [t1, t2];
+  }
+
+  /**
+   * Create or reuse a contact in the arbiter's contact list.
+   * Returns the contact, or null if creation failed.
+   */
+  private static _getOrCreateContact(arb: any, hash: number, stamp: number): any {
+    let c: any = null;
+    let cx_ite = arb.contacts.next;
+    while (cx_ite != null) {
+      if (hash == cx_ite.hash) {
+        c = cx_ite;
+        break;
+      }
+      cx_ite = cx_ite.next;
+    }
+    if (c == null) {
+      if (ZPP_Contact.zpp_pool == null) {
+        c = new ZPP_Contact();
+      } else {
+        c = ZPP_Contact.zpp_pool;
+        ZPP_Contact.zpp_pool = c.next;
+        c.next = null;
+      }
+      const ci = c.inner;
+      ci.jnAcc = ci.jtAcc = 0;
+      c.hash = hash;
+      c.fresh = true;
+      c.arbiter = arb;
+      arb.jrAcc = 0;
+      const _this = arb.contacts;
+      c._inuse = true;
+      const temp = c;
+      temp.next = _this.next;
+      _this.next = temp;
+      _this.modified = true;
+      _this.length++;
+      arb.innards.add(ci);
+    } else {
+      c.fresh = false;
+    }
+    return c;
+  }
+
+  /**
+   * Capsule contact collision dispatcher.
+   * s2 is always the capsule (type=2). s1 is circle (0), polygon (1), or capsule (2).
+   */
+  static _capsuleContactCollide(
+    s1: ZPP_Shape,
+    s2: ZPP_Shape,
+    arb: any,
+    rev: boolean,
+    napeNs: any,
+  ): boolean {
+    const cap2 = s2.capsule;
+
+    if (s1.type == 0) {
+      // circle-capsule
+      return ZPP_Collide._circleCapsuleContact(s1.circle, cap2, arb, rev, napeNs);
+    } else if (s1.type == 1) {
+      // polygon-capsule
+      return ZPP_Collide._polyCapsuleContact(s1.polygon, cap2, arb, rev, napeNs);
+    } else {
+      // capsule-capsule
+      return ZPP_Collide._capsuleCapsuleContact(s1.capsule, cap2, arb, rev, napeNs);
+    }
+  }
+
+  /** Circle vs Capsule contact generation. */
+  static _circleCapsuleContact(circ: any, cap: any, arb: any, rev: boolean, napeNs: any): boolean {
+    // Find closest point on capsule spine to circle center
+    const t = ZPP_Collide._closestT(
+      cap.spine1x,
+      cap.spine1y,
+      cap.spine2x,
+      cap.spine2y,
+      circ.worldCOMx,
+      circ.worldCOMy,
+    );
+    const cx = cap.spine1x + t * (cap.spine2x - cap.spine1x);
+    const cy = cap.spine1y + t * (cap.spine2y - cap.spine1y);
+
+    const minDist = circ.radius + cap.radius;
+    const px = circ.worldCOMx - cx;
+    const py = circ.worldCOMy - cy;
+    const distSqr = px * px + py * py;
+
+    if (distSqr > minDist * minDist) return false;
+
+    let co: any;
+    if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+      // Overlapping centers
+      const cpx = (circ.worldCOMx + cx) * 0.5;
+      const cpy = (circ.worldCOMy + cy) * 0.5;
+      co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = cpx;
+      co.py = cpy;
+      arb.nx = 1;
+      arb.ny = 0;
+      co.dist = -minDist;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+    } else {
+      const invDist = 1.0 / Math.sqrt(distSqr);
+      const dist = invDist < napeNs.Config.epsilon ? 1e100 : 1.0 / invDist;
+      const df = 0.5 + (circ.radius - 0.5 * minDist) * invDist;
+      const cpx = circ.worldCOMx - px * df;
+      const cpy = circ.worldCOMy - py * df;
+      co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = cpx;
+      co.py = cpy;
+      if (rev) {
+        arb.nx = px * invDist;
+        arb.ny = py * invDist;
+      } else {
+        arb.nx = -px * invDist;
+        arb.ny = -py * invDist;
+      }
+      co.dist = dist - minDist;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+    }
+
+    if (co != null) {
+      const con = co.inner;
+      // Local reference: circle center for circle, closest spine point for capsule
+      const capLr = cap.localCOMx + (2 * t - 1) * cap.halfLength;
+      if (rev) {
+        con.lr1x = capLr;
+        con.lr1y = cap.localCOMy;
+        con.lr2x = circ.localCOMx;
+        con.lr2y = circ.localCOMy;
+      } else {
+        con.lr1x = circ.localCOMx;
+        con.lr1y = circ.localCOMy;
+        con.lr2x = capLr;
+        con.lr2y = cap.localCOMy;
+      }
+      arb.radius = minDist;
+      arb.ptype = 2;
+      return true;
+    }
+    return false;
+  }
+
+  /** Capsule vs Capsule contact generation. */
+  static _capsuleCapsuleContact(
+    cap1: any,
+    cap2: any,
+    arb: any,
+    rev: boolean,
+    napeNs: any,
+  ): boolean {
+    const [t1, t2] = ZPP_Collide._closestTT(
+      cap1.spine1x,
+      cap1.spine1y,
+      cap1.spine2x,
+      cap1.spine2y,
+      cap2.spine1x,
+      cap2.spine1y,
+      cap2.spine2x,
+      cap2.spine2y,
+    );
+    const p1x = cap1.spine1x + t1 * (cap1.spine2x - cap1.spine1x);
+    const p1y = cap1.spine1y + t1 * (cap1.spine2y - cap1.spine1y);
+    const p2x = cap2.spine1x + t2 * (cap2.spine2x - cap2.spine1x);
+    const p2y = cap2.spine1y + t2 * (cap2.spine2y - cap2.spine1y);
+
+    const minDist = cap1.radius + cap2.radius;
+    const px = p2x - p1x;
+    const py = p2y - p1y;
+    const distSqr = px * px + py * py;
+
+    if (distSqr > minDist * minDist) return false;
+
+    let co: any;
+    if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+      const cpx = (p1x + p2x) * 0.5;
+      const cpy = (p1y + p2y) * 0.5;
+      co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = cpx;
+      co.py = cpy;
+      arb.nx = 1;
+      arb.ny = 0;
+      co.dist = -minDist;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+    } else {
+      const invDist = 1.0 / Math.sqrt(distSqr);
+      const dist = invDist < napeNs.Config.epsilon ? 1e100 : 1.0 / invDist;
+      const df = 0.5 + (cap1.radius - 0.5 * minDist) * invDist;
+      const cpx = p1x + px * df;
+      const cpy = p1y + py * df;
+      co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = cpx;
+      co.py = cpy;
+      if (rev) {
+        arb.nx = -px * invDist;
+        arb.ny = -py * invDist;
+      } else {
+        arb.nx = px * invDist;
+        arb.ny = py * invDist;
+      }
+      co.dist = dist - minDist;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+    }
+
+    if (co != null) {
+      const con = co.inner;
+      const lr1x = cap1.localCOMx + (2 * t1 - 1) * cap1.halfLength;
+      const lr2x = cap2.localCOMx + (2 * t2 - 1) * cap2.halfLength;
+      if (rev) {
+        con.lr1x = lr2x;
+        con.lr1y = cap2.localCOMy;
+        con.lr2x = lr1x;
+        con.lr2y = cap1.localCOMy;
+      } else {
+        con.lr1x = lr1x;
+        con.lr1y = cap1.localCOMy;
+        con.lr2x = lr2x;
+        con.lr2y = cap2.localCOMy;
+      }
+      arb.radius = minDist;
+      arb.ptype = 2;
+      return true;
+    }
+    return false;
+  }
+
+  /** Polygon vs Capsule contact generation. */
+  static _polyCapsuleContact(poly: any, cap: any, arb: any, rev: boolean, napeNs: any): boolean {
+    // SAT: for each polygon edge, find min distance from capsule spine to edge
+    let bestDist = -1e100;
+    let bestEdge: any = null;
+    let bestVert: any = null;
+    let bestT = 0; // parameter on capsule spine for closest point to best edge
+    let cont = true;
+
+    let vite = poly.gverts.next;
+    let cx_ite = poly.edges.head;
+    while (cx_ite != null) {
+      const edge = cx_ite.elt;
+      // Project both spine endpoints onto edge normal
+      const d1 = edge.gnormx * cap.spine1x + edge.gnormy * cap.spine1y;
+      const d2 = edge.gnormx * cap.spine2x + edge.gnormy * cap.spine2y;
+      // Take the endpoint closest to the edge (minimum projection)
+      const minProj = d1 < d2 ? d1 : d2;
+      const dist = minProj - edge.gprojection - cap.radius;
+      if (dist > 0) {
+        cont = false;
+        break;
+      }
+      if (dist > bestDist) {
+        bestDist = dist;
+        bestEdge = edge;
+        bestVert = vite;
+        bestT = d1 < d2 ? 0 : 1;
+      }
+      vite = vite.next;
+      cx_ite = cx_ite.next;
+    }
+
+    if (!cont) return false;
+
+    // The effective circle center on the capsule spine closest to the best edge
+    const ecx = cap.spine1x + bestT * (cap.spine2x - cap.spine1x);
+    const ecy = cap.spine1y + bestT * (cap.spine2y - cap.spine1y);
+
+    // Check face vs vertex contact (same logic as circle-polygon)
+    const v0 = bestVert;
+    const v1 = bestVert.next == null ? poly.gverts.next : bestVert.next;
+
+    const dt = ecy * bestEdge.gnormx - ecx * bestEdge.gnormy;
+
+    if (dt <= v0.y * bestEdge.gnormx - v0.x * bestEdge.gnormy) {
+      // Vertex contact with v0
+      const px = v0.x - ecx;
+      const py = v0.y - ecy;
+      const distSqr = px * px + py * py;
+      if (distSqr > cap.radius * cap.radius) return false;
+
+      if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+        const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+        co.px = ecx;
+        co.py = ecy;
+        arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
+        arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
+        co.dist = -cap.radius;
+        co.stamp = arb.stamp;
+        co.posOnly = false;
+        const con = co.inner;
+        const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
+        if (rev) {
+          con.lr1x = capLr;
+          con.lr1y = cap.localCOMy;
+          con.lr2x = 0;
+          con.lr2y = 0;
+        } else {
+          con.lr1x = 0;
+          con.lr1y = 0;
+          con.lr2x = capLr;
+          con.lr2y = cap.localCOMy;
+        }
+        arb.radius = cap.radius;
+        arb.ptype = 0;
+        return true;
+      }
+
+      const invDist = 1.0 / Math.sqrt(distSqr);
+      const dist = 1.0 / invDist;
+      const nx = px * invDist;
+      const ny = py * invDist;
+      const cpx = ecx + nx * cap.radius;
+      const cpy = ecy + ny * cap.radius;
+      const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = cpx;
+      co.py = cpy;
+      arb.nx = rev ? -nx : nx;
+      arb.ny = rev ? -ny : ny;
+      co.dist = dist - cap.radius;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+      const con = co.inner;
+      const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
+      if (rev) {
+        con.lr1x = capLr;
+        con.lr1y = cap.localCOMy;
+        con.lr2x = 0;
+        con.lr2y = 0;
+      } else {
+        con.lr1x = 0;
+        con.lr1y = 0;
+        con.lr2x = capLr;
+        con.lr2y = cap.localCOMy;
+      }
+      arb.radius = cap.radius;
+      arb.ptype = 0;
+      arb.__ref_edge1 = bestEdge;
+      arb.__ref_vertex = 0;
+      return true;
+    } else if (dt >= v1.y * bestEdge.gnormx - v1.x * bestEdge.gnormy) {
+      // Vertex contact with v1
+      const px = v1.x - ecx;
+      const py = v1.y - ecy;
+      const distSqr = px * px + py * py;
+      if (distSqr > cap.radius * cap.radius) return false;
+
+      if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+        const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+        co.px = ecx;
+        co.py = ecy;
+        arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
+        arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
+        co.dist = -cap.radius;
+        co.stamp = arb.stamp;
+        co.posOnly = false;
+        const con = co.inner;
+        const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
+        if (rev) {
+          con.lr1x = capLr;
+          con.lr1y = cap.localCOMy;
+          con.lr2x = 0;
+          con.lr2y = 0;
+        } else {
+          con.lr1x = 0;
+          con.lr1y = 0;
+          con.lr2x = capLr;
+          con.lr2y = cap.localCOMy;
+        }
+        arb.radius = cap.radius;
+        arb.ptype = 0;
+        return true;
+      }
+
+      const invDist = 1.0 / Math.sqrt(distSqr);
+      const dist = 1.0 / invDist;
+      const nx = px * invDist;
+      const ny = py * invDist;
+      const cpx = ecx + nx * cap.radius;
+      const cpy = ecy + ny * cap.radius;
+      const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = cpx;
+      co.py = cpy;
+      arb.nx = rev ? -nx : nx;
+      arb.ny = rev ? -ny : ny;
+      co.dist = dist - cap.radius;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+      const con = co.inner;
+      const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
+      if (rev) {
+        con.lr1x = capLr;
+        con.lr1y = cap.localCOMy;
+        con.lr2x = 0;
+        con.lr2y = 0;
+      } else {
+        con.lr1x = 0;
+        con.lr1y = 0;
+        con.lr2x = capLr;
+        con.lr2y = cap.localCOMy;
+      }
+      arb.radius = cap.radius;
+      arb.ptype = 0;
+      arb.__ref_edge1 = bestEdge;
+      arb.__ref_vertex = 0;
+      return true;
+    } else {
+      // Face contact
+      const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
+      co.px = ecx + bestEdge.gnormx * (bestDist * 0.5 + cap.radius);
+      co.py = ecy + bestEdge.gnormy * (bestDist * 0.5 + cap.radius);
+      arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
+      arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
+      co.dist = bestDist;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+      const con = co.inner;
+      const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
+      if (rev) {
+        con.lr1x = capLr;
+        con.lr1y = cap.localCOMy;
+        con.lr2x = 0;
+        con.lr2y = 0;
+      } else {
+        con.lr1x = 0;
+        con.lr1y = 0;
+        con.lr2x = capLr;
+        con.lr2y = cap.localCOMy;
+      }
+      arb.radius = cap.radius;
+      arb.lproj = bestEdge.lprojection;
+      arb.ptype = 1;
+      arb.__ref_edge1 = bestEdge;
+      arb.__ref_vertex = 0;
+      return true;
+    }
+  }
+
+  /** Capsule test collision dispatcher (boolean only). */
+  static _capsuleTestCollide(s1: ZPP_Shape, s2: ZPP_Shape): boolean {
+    const cap2 = s2.capsule;
+
+    if (s1.type == 0) {
+      // circle-capsule
+      const t = ZPP_Collide._closestT(
+        cap2.spine1x,
+        cap2.spine1y,
+        cap2.spine2x,
+        cap2.spine2y,
+        s1.circle.worldCOMx,
+        s1.circle.worldCOMy,
+      );
+      const cx = cap2.spine1x + t * (cap2.spine2x - cap2.spine1x);
+      const cy = cap2.spine1y + t * (cap2.spine2y - cap2.spine1y);
+      const minDist = s1.circle.radius + cap2.radius;
+      const px = s1.circle.worldCOMx - cx;
+      const py = s1.circle.worldCOMy - cy;
+      return px * px + py * py <= minDist * minDist;
+    } else if (s1.type == 1) {
+      // polygon-capsule: SAT
+      // Check polygon edges against capsule spine endpoints + radius
+      let cx_ite = s1.polygon.edges.head;
+      while (cx_ite != null) {
+        const edge = cx_ite.elt;
+        const d1 = edge.gnormx * cap2.spine1x + edge.gnormy * cap2.spine1y;
+        const d2 = edge.gnormx * cap2.spine2x + edge.gnormy * cap2.spine2y;
+        const minProj = d1 < d2 ? d1 : d2;
+        if (minProj - edge.gprojection - cap2.radius > 0) return false;
+        cx_ite = cx_ite.next;
+      }
+      // Check capsule spine axis against polygon vertices
+      const sdx = cap2.spine2x - cap2.spine1x;
+      const sdy = cap2.spine2y - cap2.spine1y;
+      const slen2 = sdx * sdx + sdy * sdy;
+      if (slen2 > 1e-12) {
+        // Capsule spine normal direction
+        const snx = -sdy;
+        const sny = sdx;
+        const slen = Math.sqrt(slen2);
+        const snxn = snx / slen;
+        const snyn = sny / slen;
+        const capProj = snxn * cap2.spine1x + snyn * cap2.spine1y;
+        let minV = 1e100;
+        let maxV = -1e100;
+        let vite = s1.polygon.gverts.next;
+        while (vite != null) {
+          const k = snxn * vite.x + snyn * vite.y;
+          if (k < minV) minV = k;
+          if (k > maxV) maxV = k;
+          vite = vite.next;
+        }
+        if (minV > capProj + cap2.radius || maxV < capProj - cap2.radius) return false;
+      }
+      // Also check spine endpoint circles vs polygon vertices
+      // (handles corner cases)
+      return true;
+    } else {
+      // capsule-capsule
+      const cap1 = s1.capsule;
+      const [t1, t2] = ZPP_Collide._closestTT(
+        cap1.spine1x,
+        cap1.spine1y,
+        cap1.spine2x,
+        cap1.spine2y,
+        cap2.spine1x,
+        cap2.spine1y,
+        cap2.spine2x,
+        cap2.spine2y,
+      );
+      const p1x = cap1.spine1x + t1 * (cap1.spine2x - cap1.spine1x);
+      const p1y = cap1.spine1y + t1 * (cap1.spine2y - cap1.spine1y);
+      const p2x = cap2.spine1x + t2 * (cap2.spine2x - cap2.spine1x);
+      const p2y = cap2.spine1y + t2 * (cap2.spine2y - cap2.spine1y);
+      const minDist = cap1.radius + cap2.radius;
+      const px = p2x - p1x;
+      const py = p2y - p1y;
+      return px * px + py * py <= minDist * minDist;
+    }
+  }
+
+  /** Capsule fluid collision — simplified approximation. */
+  static _capsuleFlowCollide(
+    s1: ZPP_Shape,
+    s2: ZPP_Shape,
+    arb: ZPP_FluidArbiter,
+    napeNs: any,
+  ): boolean {
+    // For fluid collision with capsules, we approximate the capsule as a circle
+    // with an effective radius that preserves the capsule's area.
+    // Area of capsule = pi*r^2 + 4*hl*r, so effective_r = sqrt(area/pi)
+    const cap = s1.type == 2 ? s1.capsule : s2.capsule;
+    const other = s1.type == 2 ? s2 : s1;
+
+    // Compute overlap area estimate
+    const capArea = cap.area || Math.PI * cap.radius * cap.radius + 4 * cap.halfLength * cap.radius;
+
+    if (other.type == 2) {
+      // capsule-capsule fluid: simple overlap estimation
+      const cap2 = other.type == 2 ? (other as any).capsule : other;
+      const [t1, t2] = ZPP_Collide._closestTT(
+        cap.spine1x,
+        cap.spine1y,
+        cap.spine2x,
+        cap.spine2y,
+        cap2.spine1x,
+        cap2.spine1y,
+        cap2.spine2x,
+        cap2.spine2y,
+      );
+      const p1x = cap.spine1x + t1 * (cap.spine2x - cap.spine1x);
+      const p1y = cap.spine1y + t1 * (cap.spine2y - cap.spine1y);
+      const p2x = cap2.spine1x + t2 * (cap2.spine2x - cap2.spine1x);
+      const p2y = cap2.spine1y + t2 * (cap2.spine2y - cap2.spine1y);
+      const dx = p2x - p1x;
+      const dy = p2y - p1y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const sumR = cap.radius + cap2.radius;
+      if (dist >= sumR) return false;
+
+      const overlap = sumR - dist;
+      arb.overlap = overlap * Math.min(2 * cap.radius, 2 * cap2.radius) * 0.5;
+      arb.buoyx = (p1x + p2x) * 0.5;
+      arb.buoyy = (p1y + p2y) * 0.5;
+      return true;
+    }
+
+    // capsule vs circle or polygon: use the capsule's center for buoyancy
+    // and approximate overlap
+    if (other.type == 0) {
+      // capsule-circle fluid
+      const circ = other.circle || (other as any).circle;
+      const t = ZPP_Collide._closestT(
+        cap.spine1x,
+        cap.spine1y,
+        cap.spine2x,
+        cap.spine2y,
+        circ.worldCOMx,
+        circ.worldCOMy,
+      );
+      const cx = cap.spine1x + t * (cap.spine2x - cap.spine1x);
+      const cy = cap.spine1y + t * (cap.spine2y - cap.spine1y);
+      const dx = circ.worldCOMx - cx;
+      const dy = circ.worldCOMy - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const sumR = cap.radius + circ.radius;
+      if (dist >= sumR) return false;
+
+      const overlap = sumR - dist;
+      arb.overlap = overlap * Math.min(2 * cap.radius, 2 * circ.radius) * 0.5;
+      arb.buoyx = (cx + circ.worldCOMx) * 0.5;
+      arb.buoyy = (cy + circ.worldCOMy) * 0.5;
+      return true;
+    }
+
+    // capsule-polygon fluid: simplified
+    // Test if capsule overlaps polygon using SAT, estimate overlap area
+    const poly = other.polygon || (other as any).polygon;
+    let minPen = 1e100;
+    let penNx = 0,
+      penNy = 0;
+    let cx_ite = poly.edges.head;
+    while (cx_ite != null) {
+      const edge = cx_ite.elt;
+      const d1 = edge.gnormx * cap.spine1x + edge.gnormy * cap.spine1y;
+      const d2 = edge.gnormx * cap.spine2x + edge.gnormy * cap.spine2y;
+      const minProj = d1 < d2 ? d1 : d2;
+      const pen = edge.gprojection + cap.radius - minProj;
+      if (pen < 0) return false;
+      if (pen < minPen) {
+        minPen = pen;
+        penNx = edge.gnormx;
+        penNy = edge.gnormy;
+      }
+      cx_ite = cx_ite.next;
+    }
+    arb.overlap = minPen * 2 * cap.radius * 0.5;
+    arb.buoyx = cap.worldCOMx;
+    arb.buoyy = cap.worldCOMy;
+    return true;
   }
 }

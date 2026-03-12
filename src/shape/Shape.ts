@@ -27,6 +27,7 @@ import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 type SubclassWrapFn = (inner: NapeInner) => Shape;
 let _circleWrap: SubclassWrapFn | undefined;
 let _polygonWrap: SubclassWrapFn | undefined;
+let _capsuleWrap: SubclassWrapFn | undefined;
 
 /** @internal Called by Circle at module init. */
 export function _bindCircleWrap(fn: SubclassWrapFn): void {
@@ -35,6 +36,10 @@ export function _bindCircleWrap(fn: SubclassWrapFn): void {
 /** @internal Called by Polygon at module init. */
 export function _bindPolygonWrap(fn: SubclassWrapFn): void {
   _polygonWrap = fn;
+}
+/** @internal Called by Capsule at module init. */
+export function _bindCapsuleWrap(fn: SubclassWrapFn): void {
+  _capsuleWrap = fn;
 }
 
 /**
@@ -63,6 +68,7 @@ export class Shape extends Interactor {
       : (inner.zpp_inner?.type ?? -1);
     if (type === 0 && _circleWrap) return _circleWrap(inner);
     if (type === 1 && _polygonWrap) return _polygonWrap(inner);
+    if (type === 2 && _capsuleWrap) return _capsuleWrap(inner);
 
     // Handle ZPP inner objects that have an outer
     if (inner.outer) return inner.outer;
@@ -94,6 +100,11 @@ export class Shape extends Interactor {
   /** Returns true if this is a Polygon shape. */
   isPolygon(): boolean {
     return (this as any).zpp_inner.type === 1;
+  }
+
+  /** Returns true if this is a Capsule shape. */
+  isCapsule(): boolean {
+    return (this as any).zpp_inner.type === 2;
   }
 
   /**
@@ -146,6 +157,16 @@ export class Shape extends Interactor {
     return null;
   }
 
+  /** Cast to Capsule, or null if this is not a capsule. */
+  get castCapsule(): Shape | null {
+    const zpp = (this as any).zpp_inner;
+    if (zpp.type === 2) {
+      const outer = zpp.capsule.outer_zn;
+      return _capsuleWrap ? _capsuleWrap(outer) : outer;
+    }
+    return null;
+  }
+
   /** World-space centre of mass of this shape (read-only, lazy-computed). */
   get worldCOM(): Vec2 {
     const zpp = (this as any).zpp_inner;
@@ -163,8 +184,10 @@ export class Shape extends Interactor {
     if (zpp.wrap_localCOM == null) {
       if (zpp.type === 0) {
         zpp.circle.setupLocalCOM();
-      } else {
+      } else if (zpp.type === 1) {
         zpp.polygon.setupLocalCOM();
+      } else {
+        zpp.capsule.setupLocalCOM();
       }
     }
     return zpp.wrap_localCOM;
@@ -188,8 +211,10 @@ export class Shape extends Interactor {
     if (zpp.wrap_localCOM == null) {
       if (zpp.type === 0) {
         zpp.circle.setupLocalCOM();
-      } else {
+      } else if (zpp.type === 1) {
         zpp.polygon.setupLocalCOM();
+      } else {
+        zpp.capsule.setupLocalCOM();
       }
     }
     // Set via the wrapper (triggers _invalidate callback)
@@ -365,7 +390,7 @@ export class Shape extends Interactor {
       const x = inner.x;
       if (inner._validate != null) inner._validate();
       const y = inner.y;
-      const target = zpp.type === 0 ? zpp.circle : zpp.polygon;
+      const target = zpp.type === 0 ? zpp.circle : zpp.type === 1 ? zpp.polygon : zpp.capsule;
       target.__translate(x, y);
     }
     if ((translation as any).zpp_inner.weak) {
@@ -402,8 +427,10 @@ export class Shape extends Interactor {
       } else {
         throw new Error("Error: Cannot perform a non equal scaling on a Circle");
       }
-    } else {
+    } else if (zpp.type === 1) {
       zpp.polygon.__scale(scaleX, scaleY);
+    } else {
+      zpp.capsule.__scale(scaleX, scaleY);
     }
     return this;
   }
@@ -430,8 +457,10 @@ export class Shape extends Interactor {
       const sin = Math.sin(angle);
       if (zpp.type === 0) {
         zpp.circle.__rotate(sin, cos);
-      } else {
+      } else if (zpp.type === 1) {
         zpp.polygon.__rotate(sin, cos);
+      } else {
+        zpp.capsule.__rotate(sin, cos);
       }
     }
     return this;
@@ -463,8 +492,10 @@ export class Shape extends Interactor {
       } else {
         throw new Error("Error: Cannot transform Circle by a non equiorthogonal matrix");
       }
-    } else {
+    } else if (zpp.type === 1) {
       zpp.polygon.__transform(mat);
+    } else {
+      zpp.capsule.__transform(mat);
     }
     return this;
   }
@@ -508,7 +539,7 @@ export class Shape extends Interactor {
 
   override toString(): string {
     const zpp = (this as any).zpp_inner;
-    const ret = zpp.type === 0 ? "Circle" : "Polygon";
+    const ret = zpp.type === 0 ? "Circle" : zpp.type === 1 ? "Polygon" : "Capsule";
     return ret + "#" + this.zpp_inner_i.id;
   }
 
