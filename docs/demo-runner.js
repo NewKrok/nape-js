@@ -541,6 +541,30 @@ export class DemoRunner {
       let geom;
       if (shape.isCircle()) {
         geom = new _THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
+      } else if (shape.isCapsule()) {
+        const cap = shape.castCapsule;
+        const hl = cap.halfLength;
+        const r = cap.radius;
+        // Build capsule cross-section as a 2D shape (stadium)
+        const pts = [];
+        const segs = 12;
+        // Right semicircle
+        for (let i = -segs; i <= segs; i++) {
+          const a = (i / segs) * Math.PI / 2;
+          pts.push(new _THREE.Vector2(hl + Math.cos(a) * r, Math.sin(a) * r));
+        }
+        // Left semicircle
+        for (let i = segs; i >= -segs; i--) {
+          const a = Math.PI + (i / segs) * Math.PI / 2;
+          pts.push(new _THREE.Vector2(-hl + Math.cos(a) * r, Math.sin(a) * r));
+        }
+        geom = new _THREE.ExtrudeGeometry(
+          new _THREE.Shape(pts),
+          { depth: 30, bevelEnabled: true, bevelSize: 2, bevelThickness: 2, bevelSegments: 2 },
+        );
+        geom.applyMatrix4(new _THREE.Matrix4().makeScale(1, -1, 1));
+        geom.computeVertexNormals();
+        geom.translate(0, 0, -15);
       } else if (shape.isPolygon()) {
         const verts = shape.castPolygon.localVerts;
         const len   = verts.length;
