@@ -66,7 +66,7 @@
     "benchmark:json": "npm run build && node benchmarks/run.mjs --json",
     "benchmark:compare": "node benchmarks/compare.mjs",
     "benchmark:update-baseline": "npm run benchmark:json -- > benchmarks/baseline.json && echo 'baseline.json updated'",
-    "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js && node scripts/stamp-docs.mjs && npm run build:typedoc",
+    "build:docs": "npm run build && cp dist/index.js docs/nape-js.esm.js && cp dist/chunk-*.js docs/ && node scripts/stamp-docs.mjs && npm run build:typedoc",
     "build:typedoc": "typedoc",
     "serve:docs": "npx serve docs"
   },
