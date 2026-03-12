@@ -23,8 +23,17 @@ export default {
   setup(space, W, H) {
     space.gravity = new Vec2(0, 600);
     addWalls(space, W, H);
-    for (let i = 0; i < 40; i++) {
-      spawnCapsule(space, 100 + Math.random() * 700, 50 + Math.random() * 250, i);
+    const cols = 4;
+    const rows = 4;
+    const xStep = (W - 200) / cols;
+    const yStep = 60;
+    let idx = 0;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const x = 120 + col * xStep + (Math.random() - 0.5) * 20;
+        const y = 80 + row * yStep;
+        spawnCapsule(space, x, y, idx++);
+      }
     }
   },
 

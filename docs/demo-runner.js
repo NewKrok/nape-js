@@ -379,8 +379,6 @@ export class DemoRunner {
   // -----------------------------------------------------------------------
 
   #tick() {
-    this.#animId = requestAnimationFrame(() => this.#tick());
-
     const now = performance.now();
     const dt  = now - this.#lastTime;
     this.#lastTime = now;
@@ -395,29 +393,31 @@ export class DemoRunner {
       this.#fpsAccum   = 0;
     }
 
-    if (!this.#space) return;
+    if (this.#space) {
+      // Per-frame demo hook (e.g. custom gravity application)
+      this.#demo?.step?.(this.#space, this.#W, this.#H);
 
-    // Per-frame demo hook (e.g. custom gravity application)
-    this.#demo?.step?.(this.#space, this.#W, this.#H);
+      // Physics step
+      const stepStart = performance.now();
+      this.#space.step(
+        1 / 60,
+        this.#demo?.velocityIterations ?? 8,
+        this.#demo?.positionIterations ?? 3,
+      );
+      const stepMs = performance.now() - stepStart;
 
-    // Physics step
-    const stepStart = performance.now();
-    this.#space.step(
-      1 / 60,
-      this.#demo?.velocityIterations ?? 8,
-      this.#demo?.positionIterations ?? 3,
-    );
-    const stepMs = performance.now() - stepStart;
+      if (this.#statsStep)   this.#statsStep.textContent   = `Step: ${stepMs.toFixed(2)}ms`;
+      if (this.#statsBodies) this.#statsBodies.textContent = `Bodies: ${this.#space.bodies.length}`;
 
-    if (this.#statsStep)   this.#statsStep.textContent   = `Step: ${stepMs.toFixed(2)}ms`;
-    if (this.#statsBodies) this.#statsBodies.textContent = `Bodies: ${this.#space.bodies.length}`;
-
-    // Render
-    if (this.#mode === "3d" && this.#threeRenderer) {
-      this.#render3d();
-    } else {
-      this.#render2d();
+      // Render
+      if (this.#mode === "3d" && this.#threeRenderer) {
+        this.#render3d();
+      } else {
+        this.#render2d();
+      }
     }
+
+    this.#animId = requestAnimationFrame(() => this.#tick());
   }
 
   // -----------------------------------------------------------------------

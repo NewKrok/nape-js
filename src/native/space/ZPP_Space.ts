@@ -3183,6 +3183,7 @@ export class ZPP_Space {
     this.pre_dt = deltaTime;
     this.midstep = true;
     this.stamp++;
+    try {
     this.validation();
     this.bphase.broadphase(this, true);
     this.prestep(deltaTime);
@@ -3388,7 +3389,9 @@ export class ZPP_Space {
     }
     this.doForests(deltaTime);
     this.sleepArbiters();
-    this.midstep = false;
+    } finally {
+      this.midstep = false;
+    }
     let pre1 = null;
     let cx_ite9 = this.callbackset_list.next;
     while (cx_ite9 != null) {

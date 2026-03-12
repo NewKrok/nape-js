@@ -3340,21 +3340,19 @@ export class ZPP_Collide {
 
   /** Polygon vs Capsule contact generation. */
   static _polyCapsuleContact(poly: any, cap: any, arb: any, rev: boolean, napeNs: any): boolean {
-    // SAT: for each polygon edge, find min distance from capsule spine to edge
+    // SAT: for each polygon edge, find the minimum separation from capsule spine to edge
     let bestDist = -1e100;
     let bestEdge: any = null;
     let bestVert: any = null;
-    let bestT = 0; // parameter on capsule spine for closest point to best edge
     let cont = true;
 
     let vite = poly.gverts.next;
     let cx_ite = poly.edges.head;
     while (cx_ite != null) {
       const edge = cx_ite.elt;
-      // Project both spine endpoints onto edge normal
+      // Project both spine endpoints onto edge normal; take minimum (worst case)
       const d1 = edge.gnormx * cap.spine1x + edge.gnormy * cap.spine1y;
       const d2 = edge.gnormx * cap.spine2x + edge.gnormy * cap.spine2y;
-      // Take the endpoint closest to the edge (minimum projection)
       const minProj = d1 < d2 ? d1 : d2;
       const dist = minProj - edge.gprojection - cap.radius;
       if (dist > 0) {
@@ -3365,7 +3363,6 @@ export class ZPP_Collide {
         bestDist = dist;
         bestEdge = edge;
         bestVert = vite;
-        bestT = d1 < d2 ? 0 : 1;
       }
       vite = vite.next;
       cx_ite = cx_ite.next;
@@ -3373,215 +3370,107 @@ export class ZPP_Collide {
 
     if (!cont) return false;
 
-    // The effective circle center on the capsule spine closest to the best edge
-    const ecx = cap.spine1x + bestT * (cap.spine2x - cap.spine1x);
-    const ecy = cap.spine1y + bestT * (cap.spine2y - cap.spine1y);
-
-    // Check face vs vertex contact (same logic as circle-polygon)
+    // Contact phase: test both spine endpoints against the best edge's Voronoi regions.
+    // Each endpoint is treated as a circle centre; we check face vs vertex contact for each.
     const v0 = bestVert;
     const v1 = bestVert.next == null ? poly.gverts.next : bestVert.next;
+    const v0Cross = v0.y * bestEdge.gnormx - v0.x * bestEdge.gnormy;
+    const v1Cross = v1.y * bestEdge.gnormx - v1.x * bestEdge.gnormy;
 
-    const dt = ecy * bestEdge.gnormx - ecx * bestEdge.gnormy;
+    // Helper: add a face contact for spine endpoint at parameter t
+    const addFaceContact = (idx: number, t: number, sx: number, sy: number): void => {
+      const proj = bestEdge.gnormx * sx + bestEdge.gnormy * sy;
+      const d = proj - bestEdge.gprojection - cap.radius;
+      if (d > 0) return; // not penetrating
+      const co = ZPP_Collide._getOrCreateContact(arb, idx, arb.stamp);
+      co.px = sx + bestEdge.gnormx * (d * 0.5 + cap.radius);
+      co.py = sy + bestEdge.gnormy * (d * 0.5 + cap.radius);
+      co.dist = d;
+      co.stamp = arb.stamp;
+      co.posOnly = false;
+      const con = co.inner;
+      const capLr = cap.localCOMx + (2 * t - 1) * cap.halfLength;
+      if (rev) { con.lr1x = capLr; con.lr1y = cap.localCOMy; con.lr2x = 0; con.lr2y = 0; }
+      else      { con.lr1x = 0; con.lr1y = 0; con.lr2x = capLr; con.lr2y = cap.localCOMy; }
+    };
 
-    if (dt <= v0.y * bestEdge.gnormx - v0.x * bestEdge.gnormy) {
-      // Vertex contact with v0
-      const px = v0.x - ecx;
-      const py = v0.y - ecy;
+    // Helper: add a vertex contact for spine endpoint at parameter t vs a polygon vertex
+    const addVertexContact = (t: number, sx: number, sy: number, vx: number, vy: number): boolean => {
+      const px = vx - sx;
+      const py = vy - sy;
       const distSqr = px * px + py * py;
       if (distSqr > cap.radius * cap.radius) return false;
-
       if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
         const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
-        co.px = ecx;
-        co.py = ecy;
+        co.px = sx; co.py = sy;
         arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
         arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
         co.dist = -cap.radius;
         co.stamp = arb.stamp;
         co.posOnly = false;
         const con = co.inner;
-        const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
-        if (rev) {
-          con.lr1x = capLr;
-          con.lr1y = cap.localCOMy;
-          con.lr2x = 0;
-          con.lr2y = 0;
-        } else {
-          con.lr1x = 0;
-          con.lr1y = 0;
-          con.lr2x = capLr;
-          con.lr2y = cap.localCOMy;
-        }
-        arb.radius = cap.radius;
-        arb.ptype = 0;
-        return true;
-      }
-
-      const invDist = 1.0 / Math.sqrt(distSqr);
-      const dist = 1.0 / invDist;
-      const nx = px * invDist;
-      const ny = py * invDist;
-      const cpx = ecx + nx * cap.radius;
-      const cpy = ecy + ny * cap.radius;
-      const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
-      co.px = cpx;
-      co.py = cpy;
-      arb.nx = rev ? -nx : nx;
-      arb.ny = rev ? -ny : ny;
-      co.dist = dist - cap.radius;
-      co.stamp = arb.stamp;
-      co.posOnly = false;
-      const con = co.inner;
-      const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
-      if (rev) {
-        con.lr1x = capLr;
-        con.lr1y = cap.localCOMy;
-        con.lr2x = 0;
-        con.lr2y = 0;
+        const capLr = cap.localCOMx + (2 * t - 1) * cap.halfLength;
+        if (rev) { con.lr1x = capLr; con.lr1y = cap.localCOMy; con.lr2x = 0; con.lr2y = 0; }
+        else      { con.lr1x = 0; con.lr1y = 0; con.lr2x = capLr; con.lr2y = cap.localCOMy; }
       } else {
-        con.lr1x = 0;
-        con.lr1y = 0;
-        con.lr2x = capLr;
-        con.lr2y = cap.localCOMy;
-      }
-      arb.radius = cap.radius;
-      arb.ptype = 0;
-      arb.__ref_edge1 = bestEdge;
-      arb.__ref_vertex = 0;
-      return true;
-    } else if (dt >= v1.y * bestEdge.gnormx - v1.x * bestEdge.gnormy) {
-      // Vertex contact with v1
-      const px = v1.x - ecx;
-      const py = v1.y - ecy;
-      const distSqr = px * px + py * py;
-      if (distSqr > cap.radius * cap.radius) return false;
-
-      if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+        const invDist = 1.0 / Math.sqrt(distSqr);
+        const dist = 1.0 / invDist;
+        const nx = px * invDist;
+        const ny = py * invDist;
         const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
-        co.px = ecx;
-        co.py = ecy;
-        arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
-        arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
-        co.dist = -cap.radius;
+        co.px = sx + nx * cap.radius;
+        co.py = sy + ny * cap.radius;
+        arb.nx = rev ? -nx : nx;
+        arb.ny = rev ? -ny : ny;
+        co.dist = dist - cap.radius;
         co.stamp = arb.stamp;
         co.posOnly = false;
         const con = co.inner;
-        const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
-        if (rev) {
-          con.lr1x = capLr;
-          con.lr1y = cap.localCOMy;
-          con.lr2x = 0;
-          con.lr2y = 0;
-        } else {
-          con.lr1x = 0;
-          con.lr1y = 0;
-          con.lr2x = capLr;
-          con.lr2y = cap.localCOMy;
-        }
-        arb.radius = cap.radius;
-        arb.ptype = 0;
-        return true;
-      }
-
-      const invDist = 1.0 / Math.sqrt(distSqr);
-      const dist = 1.0 / invDist;
-      const nx = px * invDist;
-      const ny = py * invDist;
-      const cpx = ecx + nx * cap.radius;
-      const cpy = ecy + ny * cap.radius;
-      const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
-      co.px = cpx;
-      co.py = cpy;
-      arb.nx = rev ? -nx : nx;
-      arb.ny = rev ? -ny : ny;
-      co.dist = dist - cap.radius;
-      co.stamp = arb.stamp;
-      co.posOnly = false;
-      const con = co.inner;
-      const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
-      if (rev) {
-        con.lr1x = capLr;
-        con.lr1y = cap.localCOMy;
-        con.lr2x = 0;
-        con.lr2y = 0;
-      } else {
-        con.lr1x = 0;
-        con.lr1y = 0;
-        con.lr2x = capLr;
-        con.lr2y = cap.localCOMy;
+        const capLr = cap.localCOMx + (2 * t - 1) * cap.halfLength;
+        if (rev) { con.lr1x = capLr; con.lr1y = cap.localCOMy; con.lr2x = 0; con.lr2y = 0; }
+        else      { con.lr1x = 0; con.lr1y = 0; con.lr2x = capLr; con.lr2y = cap.localCOMy; }
+        arb.__ref_edge1 = bestEdge;
+        arb.__ref_vertex = 0;
       }
       arb.radius = cap.radius;
       arb.ptype = 0;
-      arb.__ref_edge1 = bestEdge;
-      arb.__ref_vertex = 0;
       return true;
-    } else {
-      // Face contact — generate contacts for both spine endpoints in the Voronoi region
-      arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
-      arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
+    };
 
-      // Contact 1: at bestT endpoint (already known to be in face region)
-      const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
-      co.px = ecx + bestEdge.gnormx * (bestDist * 0.5 + cap.radius);
-      co.py = ecy + bestEdge.gnormy * (bestDist * 0.5 + cap.radius);
-      co.dist = bestDist;
-      co.stamp = arb.stamp;
-      co.posOnly = false;
-      const con = co.inner;
-      const capLr = cap.localCOMx + (2 * bestT - 1) * cap.halfLength;
-      if (rev) {
-        con.lr1x = capLr;
-        con.lr1y = cap.localCOMy;
-        con.lr2x = 0;
-        con.lr2y = 0;
+    // Classify spine1 (t=0) and spine2 (t=1)
+    const dt1 = cap.spine1y * bestEdge.gnormx - cap.spine1x * bestEdge.gnormy;
+    const dt2 = cap.spine2y * bestEdge.gnormx - cap.spine2x * bestEdge.gnormy;
+    const s1face = dt1 > v0Cross && dt1 < v1Cross;
+    const s2face = dt2 > v0Cross && dt2 < v1Cross;
+
+    if (!s1face && !s2face) {
+      // Both endpoints outside face region — vertex contact with closest polygon vertex
+      // Use the spine endpoint that produced the smallest separation (bestT ≈ 0 or 1)
+      const d1 = bestEdge.gnormx * cap.spine1x + bestEdge.gnormy * cap.spine1y;
+      const d2 = bestEdge.gnormx * cap.spine2x + bestEdge.gnormy * cap.spine2y;
+      if (d1 < d2) {
+        if (dt1 <= v0Cross) return addVertexContact(0, cap.spine1x, cap.spine1y, v0.x, v0.y);
+        else                return addVertexContact(0, cap.spine1x, cap.spine1y, v1.x, v1.y);
       } else {
-        con.lr1x = 0;
-        con.lr1y = 0;
-        con.lr2x = capLr;
-        con.lr2y = cap.localCOMy;
+        if (dt2 <= v0Cross) return addVertexContact(1, cap.spine2x, cap.spine2y, v0.x, v0.y);
+        else                return addVertexContact(1, cap.spine2x, cap.spine2y, v1.x, v1.y);
       }
-
-      // Contact 2: check if the other spine endpoint is also in the face region
-      const otherT = 1 - bestT;
-      const otherEcx = cap.spine1x + otherT * (cap.spine2x - cap.spine1x);
-      const otherEcy = cap.spine1y + otherT * (cap.spine2y - cap.spine1y);
-      const otherDt = otherEcy * bestEdge.gnormx - otherEcx * bestEdge.gnormy;
-      const v0Cross = v0.y * bestEdge.gnormx - v0.x * bestEdge.gnormy;
-      const v1Cross = v1.y * bestEdge.gnormx - v1.x * bestEdge.gnormy;
-
-      if (otherDt > v0Cross && otherDt < v1Cross) {
-        const otherProj = bestEdge.gnormx * otherEcx + bestEdge.gnormy * otherEcy;
-        const otherDist = otherProj - bestEdge.gprojection - cap.radius;
-        if (otherDist <= 0) {
-          const co2 = ZPP_Collide._getOrCreateContact(arb, 1, arb.stamp);
-          co2.px = otherEcx + bestEdge.gnormx * (otherDist * 0.5 + cap.radius);
-          co2.py = otherEcy + bestEdge.gnormy * (otherDist * 0.5 + cap.radius);
-          co2.dist = otherDist;
-          co2.stamp = arb.stamp;
-          co2.posOnly = false;
-          const con2 = co2.inner;
-          const capLr2 = cap.localCOMx + (2 * otherT - 1) * cap.halfLength;
-          if (rev) {
-            con2.lr1x = capLr2;
-            con2.lr1y = cap.localCOMy;
-            con2.lr2x = 0;
-            con2.lr2y = 0;
-          } else {
-            con2.lr1x = 0;
-            con2.lr1y = 0;
-            con2.lr2x = capLr2;
-            con2.lr2y = cap.localCOMy;
-          }
-        }
-      }
-
-      arb.radius = cap.radius;
-      arb.lproj = bestEdge.lprojection;
-      arb.ptype = 1;
-      arb.__ref_edge1 = bestEdge;
-      arb.__ref_vertex = 0;
-      return true;
     }
+
+    // At least one endpoint is in the face region — face contact
+    arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
+    arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
+    arb.radius = cap.radius;
+    arb.lproj = bestEdge.lprojection;
+    arb.ptype = 1;
+    arb.__ref_edge1 = bestEdge;
+    arb.__ref_vertex = 0;
+
+    let contactIdx = 0;
+    if (s1face) addFaceContact(contactIdx++, 0, cap.spine1x, cap.spine1y);
+    if (s2face) addFaceContact(contactIdx,   1, cap.spine2x, cap.spine2y);
+
+    return contactIdx > 0 || (arb.oc1 != null && arb.oc1.stamp == arb.stamp);
   }
 
   /** Capsule test collision dispatcher (boolean only). */

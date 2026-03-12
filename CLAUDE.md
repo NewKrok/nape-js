@@ -66,7 +66,7 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | Serialization API        | ✅ Done — `@newkrok/nape-js/serialization` |
 | Binary snapshots         | ✅ Done — `spaceToBinary` / `spaceFromBinary` (P39) |
 | Debug draw API           | ✅ Done — abstract `DebugDraw` + `Space.debugDraw()` |
-| Server/demo examples     | ⬜ Planned — P36 |
+| Server/demo examples     | ❌ Cancelled — P36 (no standalone value without hosting) |
 | Haxe remnant cleanup     | ✅ Done — P40 (`__name__`/`__class__`/`__super__`/`_gthis`/`_init()`) |
 | Capsule shape            | ✅ Done — P41 (`Capsule.create` / `Capsule.createVertical`) |
 | Web Worker helper        | ⬜ Planned — P42 |
@@ -78,5 +78,6 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | ECS adapter              | ⬜ Planned — P49 |
 | Spatial hash grid        | ⬜ Planned — P50 |
 | Sub-stepping solver      | ⬜ Planned — P51 (long-term) |
+| Multiplayer demo         | ⬜ Planned — P52 (hosztolt, WebSocket, Railway) |
 
 Full roadmap with details, competitor analysis, and history: `.claude/docs/roadmap.md`

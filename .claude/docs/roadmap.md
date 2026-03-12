@@ -50,7 +50,8 @@ Key competitors to watch:
 | Priority                                  | Effort | Impact   | Risk   | Status         |
 | ----------------------------------------- | ------ | -------- | ------ | -------------- |
 | P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3251 tests) |
-| P36 — Server-side + demo examples         | M      | medium   | low    | ⬜ Not started |
+| P36 — Server-side + demo examples         | M      | medium   | low    | ❌ Cancelled   |
+| P52 — Multiplayer demo                    | M      | adoption | low    | ⬜ Not started |
 | P42 — Web Worker helper                   | M      | perf/DX  | medium | ⬜ Not started |
 | P43 — Concave polygon helper              | M      | high     | low    | ⬜ Not started |
 | P44 — PixiJS integration package          | M      | adoption | low    | ⬜ Not started |
@@ -77,16 +78,28 @@ Steps 1–6 done (+959 tests, 2269 → 3228). All previously crashing APIs are n
 
 ---
 
-## Planned: P36 — Server-side + Demo Examples
+## Cancelled: P36 — Server-side + Demo Examples
 
-**Effort: M | Impact: medium | Risk: low**
+**Decision: Cancelled.** A standalone Node.js script with CI has no demonstrable value
+without hosting. Superseded by P52 which delivers a real hosted multiplayer demo.
 
-The engine has no DOM dependencies and runs on Node.js already. Goals:
+---
 
-- Verify bundle is DOM-free (no `window`/`document` references)
-- `/examples/server/` — Node.js script that runs a simulation and outputs positions
-- `/examples/browser/` — canvas renderer + physics loop for web use
-- CI job ensuring examples run on Node.js (regression protection)
+## Planned: P52 — Multiplayer Demo
+
+**Effort: M | Impact: adoption | Risk: low**
+
+A hosted, real-time multiplayer physics demo — the most effective way to showcase
+the engine to new users. Goals:
+
+- `docs/multiplayer.html` — dedicated page, linked from examples grid
+- Railway-hosted Node.js WebSocket server running nape-js physics at 60 Hz
+- Server-authoritative simulation: all physics runs server-side
+- Binary state broadcast each frame via P39 (`spaceToBinary`)
+- Small platformer scene: static walls/floor, one-way floating platform, scattered balls and boxes
+- Each connected player controls one character (circle), WASD/arrow keys
+- All players visible to each other in real-time
+- Player count indicator, ping display
 
 ---
 
