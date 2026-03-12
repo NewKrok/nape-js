@@ -290,7 +290,22 @@ const httpServer = createServer((req, res) => {
   res.end(`nape-js multiplayer server — ${players.size}/${MAX_PLAYERS} players\n`);
 });
 
-const wss = new WebSocketServer({ server: httpServer });
+const ALLOWED_ORIGINS = [
+  "https://newkrok.github.io",
+  "http://localhost:5500",   // Live Server (VS Code)
+  "http://localhost:3000",
+  "http://127.0.0.1:5500",
+];
+
+const wss = new WebSocketServer({
+  server: httpServer,
+  verifyClient: ({ origin }) => {
+    if (!origin) return false; // parancssorból jövő raw WS kapcsolat elutasítva
+    const allowed = ALLOWED_ORIGINS.some(o => origin === o || origin.startsWith("http://localhost"));
+    if (!allowed) console.warn(`Rejected connection from origin: ${origin}`);
+    return allowed;
+  },
+});
 
 wss.on("connection", (ws) => {
   const result = spawnPlayer(ws);
