@@ -36,12 +36,13 @@ import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.7.5";
 import collisionFiltering from "./demos/collision-filtering.js?v=3.7.5";
 import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.7.5";
 import dropImageBody     from "./demos/drop-image-body.js?v=3.7.5";
+import capsule           from "./demos/capsule.js?v=3.7.5";
 
 const ALL_DEMOS = [
   falling, pyramid, chain, explosion, constraints, gravity, stacking, ragdoll, strandbeast,
   carSideview, carTopdown, platformer, ropeBridge, wreckingBall, newtonsCradle,
   dominos, conveyorBelts, trebuchet, seesaw, pinball, cloth, funnel,
-  softBody, oneWayPlatforms, collisionFiltering, bodyFromGraphic, dropImageBody,
+  softBody, oneWayPlatforms, collisionFiltering, bodyFromGraphic, dropImageBody, capsule,
 ];
 
 const CW = 900;
@@ -106,7 +107,7 @@ function openInCodePen(demo) {
   const html = `<canvas id="demoCanvas" width="900" height="500" style="background:#0a0e14;display:block;max-width:100%;border:1px solid #30363d;border-radius:8px"></canvas>`;
   const css  = `body { margin: 20px; background: #0d1117; font-family: sans-serif; color: #e6edf3; }`;
   const js   = `import {
-  Space, Body, BodyType, Vec2, Circle, Polygon,
+  Space, Body, BodyType, Vec2, Circle, Polygon, Capsule,
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint,
   Material, InteractionFilter, InteractionGroup,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
