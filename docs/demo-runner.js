@@ -553,8 +553,8 @@ export class DemoRunner {
           const a = (i / segs) * Math.PI / 2;
           pts.push(new _THREE.Vector2(hl + Math.cos(a) * r, Math.sin(a) * r));
         }
-        // Left semicircle
-        for (let i = segs; i >= -segs; i--) {
+        // Left semicircle (top-to-bottom to continue from right semicircle end)
+        for (let i = -segs; i <= segs; i++) {
           const a = Math.PI + (i / segs) * Math.PI / 2;
           pts.push(new _THREE.Vector2(-hl + Math.cos(a) * r, Math.sin(a) * r));
         }
