@@ -3272,6 +3272,65 @@ export class ZPP_Collide {
         con.lr2x = lr2x;
         con.lr2y = cap2.localCOMy;
       }
+
+      // For parallel spines, generate a second contact at the other overlap endpoint
+      const d1x = cap1.spine2x - cap1.spine1x;
+      const d1y = cap1.spine2y - cap1.spine1y;
+      const d2x = cap2.spine2x - cap2.spine1x;
+      const d2y = cap2.spine2y - cap2.spine1y;
+      const cross = d1x * d2y - d1y * d2x;
+      const len1sq = d1x * d1x + d1y * d1y;
+      const len2sq = d2x * d2x + d2y * d2y;
+
+      if (cross * cross < 0.01 * len1sq * len2sq && len1sq > 1e-12 && len2sq > 1e-12) {
+        // Nearly parallel — try a second contact at the opposite endpoint of cap1
+        const otherT1 = t1 < 0.5 ? 1 : 0;
+        const op1x = cap1.spine1x + otherT1 * (cap1.spine2x - cap1.spine1x);
+        const op1y = cap1.spine1y + otherT1 * (cap1.spine2y - cap1.spine1y);
+        const otherT2 = ZPP_Collide._closestT(
+          cap2.spine1x,
+          cap2.spine1y,
+          cap2.spine2x,
+          cap2.spine2y,
+          op1x,
+          op1y,
+        );
+        const op2x = cap2.spine1x + otherT2 * (cap2.spine2x - cap2.spine1x);
+        const op2y = cap2.spine1y + otherT2 * (cap2.spine2y - cap2.spine1y);
+        const opx = op2x - op1x;
+        const opy = op2y - op1y;
+        const odistSqr = opx * opx + opy * opy;
+
+        if (
+          odistSqr <= minDist * minDist &&
+          odistSqr > napeNs.Config.epsilon * napeNs.Config.epsilon
+        ) {
+          const oInvDist = 1.0 / Math.sqrt(odistSqr);
+          const oDist = 1.0 / oInvDist;
+          const odf = 0.5 + (cap1.radius - 0.5 * minDist) * oInvDist;
+          const co2 = ZPP_Collide._getOrCreateContact(arb, 1, arb.stamp);
+          co2.px = op1x + opx * odf;
+          co2.py = op1y + opy * odf;
+          co2.dist = oDist - minDist;
+          co2.stamp = arb.stamp;
+          co2.posOnly = false;
+          const con2 = co2.inner;
+          const olr1x = cap1.localCOMx + (2 * otherT1 - 1) * cap1.halfLength;
+          const olr2x = cap2.localCOMx + (2 * otherT2 - 1) * cap2.halfLength;
+          if (rev) {
+            con2.lr1x = olr2x;
+            con2.lr1y = cap2.localCOMy;
+            con2.lr2x = olr1x;
+            con2.lr2y = cap1.localCOMy;
+          } else {
+            con2.lr1x = olr1x;
+            con2.lr1y = cap1.localCOMy;
+            con2.lr2x = olr2x;
+            con2.lr2y = cap2.localCOMy;
+          }
+        }
+      }
+
       arb.radius = minDist;
       arb.ptype = 2;
       return true;
@@ -3457,12 +3516,14 @@ export class ZPP_Collide {
       arb.__ref_vertex = 0;
       return true;
     } else {
-      // Face contact
+      // Face contact — generate contacts for both spine endpoints in the Voronoi region
+      arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
+      arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
+
+      // Contact 1: at bestT endpoint (already known to be in face region)
       const co = ZPP_Collide._getOrCreateContact(arb, 0, arb.stamp);
       co.px = ecx + bestEdge.gnormx * (bestDist * 0.5 + cap.radius);
       co.py = ecy + bestEdge.gnormy * (bestDist * 0.5 + cap.radius);
-      arb.nx = rev ? -bestEdge.gnormx : bestEdge.gnormx;
-      arb.ny = rev ? -bestEdge.gnormy : bestEdge.gnormy;
       co.dist = bestDist;
       co.stamp = arb.stamp;
       co.posOnly = false;
@@ -3479,6 +3540,41 @@ export class ZPP_Collide {
         con.lr2x = capLr;
         con.lr2y = cap.localCOMy;
       }
+
+      // Contact 2: check if the other spine endpoint is also in the face region
+      const otherT = 1 - bestT;
+      const otherEcx = cap.spine1x + otherT * (cap.spine2x - cap.spine1x);
+      const otherEcy = cap.spine1y + otherT * (cap.spine2y - cap.spine1y);
+      const otherDt = otherEcy * bestEdge.gnormx - otherEcx * bestEdge.gnormy;
+      const v0Cross = v0.y * bestEdge.gnormx - v0.x * bestEdge.gnormy;
+      const v1Cross = v1.y * bestEdge.gnormx - v1.x * bestEdge.gnormy;
+
+      if (otherDt > v0Cross && otherDt < v1Cross) {
+        const otherProj = bestEdge.gnormx * otherEcx + bestEdge.gnormy * otherEcy;
+        const otherDist = otherProj - bestEdge.gprojection - cap.radius;
+        if (otherDist <= 0) {
+          const co2 = ZPP_Collide._getOrCreateContact(arb, 1, arb.stamp);
+          co2.px = otherEcx + bestEdge.gnormx * (otherDist * 0.5 + cap.radius);
+          co2.py = otherEcy + bestEdge.gnormy * (otherDist * 0.5 + cap.radius);
+          co2.dist = otherDist;
+          co2.stamp = arb.stamp;
+          co2.posOnly = false;
+          const con2 = co2.inner;
+          const capLr2 = cap.localCOMx + (2 * otherT - 1) * cap.halfLength;
+          if (rev) {
+            con2.lr1x = capLr2;
+            con2.lr1y = cap.localCOMy;
+            con2.lr2x = 0;
+            con2.lr2y = 0;
+          } else {
+            con2.lr1x = 0;
+            con2.lr1y = 0;
+            con2.lr2x = capLr2;
+            con2.lr2y = cap.localCOMy;
+          }
+        }
+      }
+
       arb.radius = cap.radius;
       arb.lproj = bestEdge.lprojection;
       arb.ptype = 1;
