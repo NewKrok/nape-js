@@ -28,7 +28,7 @@ const H = 500;
 const TICK_MS = 1000 / 60;
 const PLAYER_RADIUS = 14;
 const PLAYER_MASS_MATERIAL = new Material(0.1, 0.5, 0.4, 2);
-const JUMP_FORCE = -380;
+const JUMP_FORCE = -480;
 const MOVE_FORCE = 220;
 const MAX_PLAYERS = 8;
 
@@ -90,17 +90,19 @@ addStatic(W - WALL/2, H / 2,        WALL,   H);          // right wall
 addStatic(W / 2,      WALL / 2,     W,      WALL);       // ceiling
 
 // One-way floating platform (centre)
-const platBody = new Body(BodyType.STATIC, new Vec2(W / 2, H * 0.55));
+const platBody = new Body(BodyType.STATIC, new Vec2(W / 2, H * 0.65));
 platBody.shapes.add(new Polygon(Polygon.box(180, 14)));
 platBody.shapes.at(0).cbTypes.add(platformType);
 platBody.space = space;
-staticBodies.push({ x: W / 2, y: H * 0.55, w: 180, h: 14, oneWay: true });
+staticBodies.push({ x: W / 2, y: H * 0.65, w: 180, h: 14, oneWay: true });
 
 // Smaller side platforms
 const sidePlats = [
-  { x: 190, y: H * 0.38, w: 110, h: 12 },
-  { x: 710, y: H * 0.38, w: 110, h: 12 },
-  { x: 450, y: H * 0.22, w: 130, h: 12 },
+  { x: 190, y: H * 0.50, w: 110, h: 12 },
+  { x: 710, y: H * 0.50, w: 110, h: 12 },
+  { x: 330, y: H * 0.35, w: 100, h: 12 },
+  { x: 580, y: H * 0.35, w: 100, h: 12 },
+  { x: 450, y: H * 0.20, w: 130, h: 12 },
 ];
 for (const p of sidePlats) {
   const pb = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
@@ -126,14 +128,24 @@ function spawnObject(x, y, shape /* "circle"|"box" */, size) {
 }
 
 const sceneObjects = [
-  spawnObject(200, 100, "circle", 14),
-  spawnObject(400, 80,  "circle", 10),
-  spawnObject(650, 120, "circle", 16),
-  spawnObject(300, 60,  "circle", 12),
-  spawnObject(580, 90,  "circle", 11),
-  spawnObject(260, 150, "box",    20),
-  spawnObject(500, 70,  "box",    18),
-  spawnObject(730, 100, "box",    22),
+  // Labdák
+  spawnObject(200, 350, "circle", 14),
+  spawnObject(400, 380, "circle", 10),
+  spawnObject(650, 350, "circle", 16),
+  spawnObject(300, 400, "circle", 12),
+  spawnObject(580, 370, "circle", 11),
+  spawnObject(750, 400, "circle", 13),
+  spawnObject(120, 380, "circle",  9),
+  // Dobozok — padlón
+  spawnObject(260, 360, "box", 22),
+  spawnObject(500, 380, "box", 18),
+  spawnObject(730, 360, "box", 24),
+  spawnObject(450, 400, "box", 16),
+  // Dobozok — platformokon
+  spawnObject(W / 2 - 30, H * 0.65 - 30, "box",    18),
+  spawnObject(W / 2 + 30, H * 0.65 - 30, "circle", 10),
+  spawnObject(190,         H * 0.50 - 25, "box",    16),
+  spawnObject(710,         H * 0.50 - 25, "circle", 11),
 ];
 
 // ─── Player management ────────────────────────────────────────────────────────
@@ -172,18 +184,25 @@ function removePlayer(playerId) {
   players.delete(playerId);
 }
 
-// ─── Ground detection via arbiter check ──────────────────────────────────────
+// ─── Ground detection via space arbiters ─────────────────────────────────────
+// Check space.arbiters for any arbiter involving this body with upward normal
 
 function isOnGround(body) {
   try {
-    const arbs = body.arbiters;
+    const arbs = space.arbiters;
     for (let i = 0; i < arbs.length; i++) {
       const arb = arbs.at(i);
       try {
+        // Only care about arbiters involving this body
+        if (arb.body1 !== body && arb.body2 !== body) continue;
         const col = arb.collisionArbiter;
         if (!col) continue;
         const ny = col.normal.y;
-        if (Math.abs(ny) > 0.5) return true;
+        // normal points from body1 to body2
+        // if our body is body2 and normal.y < 0 → floor is below us
+        // if our body is body1 and normal.y > 0 → floor is below us
+        const sign = arb.body2 === body ? -1 : 1;
+        if (ny * sign < -0.5) return true;
       } catch (_) {}
     }
   } catch (_) {}
