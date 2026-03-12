@@ -1,0 +1,9 @@
+[build]
+buildCommand = "cd server && npm install"
+
+[deploy]
+startCommand = "cd server && node index.js"
+healthcheckPath = "/"
+healthcheckTimeout = 10
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

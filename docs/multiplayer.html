@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js — Multiplayer Demo</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="stylesheet" href="style.css?v=3.10.3" />
+  <style>
+    .mp-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    .mp-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-alt);
+    }
+
+    .mp-header a {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    .mp-header a:hover { color: var(--text); }
+
+    .mp-header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .mp-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      gap: 16px;
+    }
+
+    .mp-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 16px;
+      width: 900px;
+      max-width: 100%;
+    }
+
+    .mp-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+
+    .mp-status-dot.connected { background: var(--green); }
+
+    #statusText { color: var(--text); }
+
+    .mp-status-bar .sep {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+    }
+
+    .mp-canvas-wrap {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #0a0f15;
+    }
+
+    #gameCanvas {
+      display: block;
+    }
+
+    .mp-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13,17,23,0.85);
+      gap: 12px;
+    }
+
+    .mp-overlay.hidden { display: none; }
+
+    .mp-overlay p {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    .mp-overlay .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .mp-controls {
+      font-size: 13px;
+      color: var(--text-dim);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mp-controls span { display: flex; align-items: center; gap: 6px; }
+
+    .key {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .player-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .player-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .player-badge .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+    }
+
+    .player-badge.me { color: var(--text); border-color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="mp-page">
+
+  <header class="mp-header">
+    <a href="examples.html">&larr; Examples</a>
+    <h1>Multiplayer Demo</h1>
+  </header>
+
+  <main class="mp-main">
+
+    <div class="mp-status-bar">
+      <div class="mp-status-dot" id="statusDot"></div>
+      <span id="statusText">Connecting…</span>
+      <div class="sep"></div>
+      <span id="playerCountText">0 / 8 players</span>
+      <div class="sep"></div>
+      <span id="pingText">ping: —</span>
+      <div class="sep" style="margin-left:auto; display:none"></div>
+      <div class="player-list" id="playerList"></div>
+    </div>
+
+    <div class="mp-canvas-wrap">
+      <canvas id="gameCanvas" width="900" height="500"></canvas>
+      <div class="mp-overlay" id="overlay">
+        <div class="spinner"></div>
+        <p id="overlayText">Connecting to server…</p>
+      </div>
+    </div>
+
+    <div class="mp-controls">
+      <span><span class="key">←</span><span class="key">→</span> or <span class="key">A</span><span class="key">D</span> Move</span>
+      <span><span class="key">↑</span> or <span class="key">W</span> or <span class="key">Space</span> Jump</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────────
+// SERVER_URL is replaced at build/deploy time, or falls back to localhost for dev.
+const SERVER_URL = window.NAPE_MP_SERVER_URL || "ws://localhost:3000";
+
+// ─── Canvas setup ─────────────────────────────────────────────────────────────
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width;
+const H = canvas.height;
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let myPlayerId = null;
+let myBodyId = null;
+let myColorIdx = 0;
+let playerColors = [];
+let playerMeta = []; // [{id, colorIdx, bodyId}]
+
+// Scene descriptors (received once on init)
+let staticBodies = [];
+let sceneObjects = [];
+
+// Interpolated positions: bodyId → {x, y, rot, px, py, prot}
+const bodyState = new Map();
+
+let lastFrameTime = 0;
+let frameCount = 0;
+let lastPingTime = 0;
+let ping = 0;
+
+// ─── Input ────────────────────────────────────────────────────────────────────
+const keys = { left: false, right: false, jump: false };
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft"  || e.key === "a" || e.key === "A") keys.left  = true;
+  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = true;
+  if (e.key === "ArrowUp"    || e.key === "w" || e.key === "W" || e.key === " ") keys.jump = true;
+  if (["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," "].includes(e.key)) e.preventDefault();
+});
+
+window.addEventListener("keyup", (e) => {
+  if (e.key === "ArrowLeft"  || e.key === "a" || e.key === "A") keys.left  = false;
+  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
+  if (e.key === "ArrowUp"    || e.key === "w" || e.key === "W" || e.key === " ") keys.jump = false;
+});
+
+// Mobile touch controls
+let touchLeft = false, touchRight = false, touchJump = false;
+
+// ─── WebSocket ────────────────────────────────────────────────────────────────
+let ws = null;
+let inputInterval = null;
+let reconnectTimeout = null;
+
+function connect() {
+  setOverlay(true, "Connecting to server…");
+  setStatus(false, "Connecting…");
+
+  ws = new WebSocket(SERVER_URL);
+  ws.binaryType = "arraybuffer";
+
+  ws.onopen = () => {
+    setStatus(true, "Connected");
+    setOverlay(false);
+    // Send input at 20 Hz
+    inputInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "input", keys }));
+      }
+    }, 50);
+    // Ping every 2s
+    setInterval(() => {
+      lastPingTime = performance.now();
+      if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "ping" }));
+    }, 2000);
+  };
+
+  ws.onmessage = (e) => {
+    if (e.data instanceof ArrayBuffer) {
+      handleBinaryFrame(e.data);
+    } else {
+      handleJsonMessage(JSON.parse(e.data));
+    }
+  };
+
+  ws.onclose = () => {
+    clearInterval(inputInterval);
+    setStatus(false, "Disconnected");
+    setOverlay(true, "Connection lost. Reconnecting…");
+    reconnectTimeout = setTimeout(connect, 3000);
+  };
+
+  ws.onerror = () => {
+    ws.close();
+  };
+}
+
+// ─── Message handlers ─────────────────────────────────────────────────────────
+
+function handleJsonMessage(msg) {
+  if (msg.type === "init") {
+    myPlayerId = msg.playerId;
+    myBodyId = msg.bodyId;
+    myColorIdx = msg.colorIdx;
+    playerColors = msg.playerColors;
+    staticBodies = msg.staticBodies;
+    sceneObjects = msg.sceneObjects;
+    playerMeta = msg.players;
+
+    // Pre-populate body state for scene objects
+    for (const obj of sceneObjects) {
+      bodyState.set(obj.id, { x: obj.x, y: obj.y, rot: 0, px: obj.x, py: obj.y, prot: 0 });
+    }
+    updatePlayerListUI();
+  }
+
+  if (msg.type === "players") {
+    playerMeta = msg.players;
+    document.getElementById("playerCountText").textContent = `${msg.count} / 8 players`;
+    updatePlayerListUI();
+  }
+
+  if (msg.type === "pong") {
+    ping = Math.round(performance.now() - lastPingTime);
+    document.getElementById("pingText").textContent = `ping: ${ping}ms`;
+  }
+
+  if (msg.type === "error") {
+    setOverlay(true, msg.message);
+  }
+}
+
+function handleBinaryFrame(buf) {
+  const view = new DataView(buf);
+  const count = view.getUint16(0, true);
+  let offset = 2;
+  for (let i = 0; i < count; i++) {
+    const id  = view.getUint16(offset, true);     offset += 2;
+    const x   = view.getFloat32(offset, true);    offset += 4;
+    const y   = view.getFloat32(offset, true);    offset += 4;
+    const rot = view.getFloat32(offset, true);    offset += 4;
+
+    const prev = bodyState.get(id);
+    bodyState.set(id, {
+      x, y, rot,
+      px: prev ? prev.x : x,
+      py: prev ? prev.y : y,
+      prot: prev ? prev.rot : rot,
+    });
+  }
+}
+
+// ─── Rendering ────────────────────────────────────────────────────────────────
+
+const OBJECT_COLORS = [
+  { fill: "rgba(88,166,255,0.18)",  stroke: "#58a6ff" },
+  { fill: "rgba(210,153,34,0.18)",  stroke: "#d29922" },
+  { fill: "rgba(63,185,80,0.18)",   stroke: "#3fb950" },
+];
+const STATIC_COLOR = { fill: "rgba(120,160,200,0.12)", stroke: "#4a6070" };
+const PLATFORM_COLOR = { fill: "rgba(88,166,255,0.10)", stroke: "#58a6ff" };
+
+function getBodyColor(id) {
+  // Is it a player body?
+  const pm = playerMeta.find(p => p.bodyId === id);
+  if (pm && playerColors.length) {
+    const c = playerColors[pm.colorIdx % playerColors.length];
+    return { fill: c.fill, stroke: c.stroke };
+  }
+  // Scene object — stable color by id
+  return OBJECT_COLORS[id % OBJECT_COLORS.length];
+}
+
+function drawRoundRect(x, y, w, h, r = 4) {
+  ctx.beginPath();
+  ctx.roundRect(x - w/2, y - h/2, w, h, r);
+}
+
+function render(alpha) {
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = "rgba(255,255,255,0.03)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Static bodies
+  for (const s of staticBodies) {
+    const c = s.oneWay ? PLATFORM_COLOR : STATIC_COLOR;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    drawRoundRect(0, 0, s.w, s.h, 3);
+    ctx.fillStyle = c.fill; ctx.fill();
+    ctx.strokeStyle = c.stroke; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+  }
+
+  // Dynamic bodies (interpolated)
+  for (const [id, state] of bodyState) {
+    const ix = state.px + (state.x - state.px) * alpha;
+    const iy = state.py + (state.y - state.py) * alpha;
+    const irot = state.prot + (state.rot - state.prot) * alpha;
+
+    const c = getBodyColor(id);
+    const isMe = id === myBodyId;
+
+    ctx.save();
+    ctx.translate(ix, iy);
+    ctx.rotate(irot);
+
+    // Find shape info
+    const obj = sceneObjects.find(o => o.id === id);
+    const pm = playerMeta.find(p => p.bodyId === id);
+
+    if (pm) {
+      // Player: circle
+      const r = 14;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fillStyle = c.fill; ctx.fill();
+      ctx.strokeStyle = c.stroke; ctx.lineWidth = isMe ? 2.5 : 1.5; ctx.stroke();
+      // "Me" indicator
+      if (isMe) {
+        ctx.beginPath();
+        ctx.arc(0, -r - 6, 4, 0, Math.PI * 2);
+        ctx.fillStyle = c.stroke; ctx.fill();
+      }
+    } else if (obj) {
+      if (obj.shape === "circle") {
+        ctx.beginPath();
+        ctx.arc(0, 0, obj.size, 0, Math.PI * 2);
+        ctx.fillStyle = c.fill; ctx.fill();
+        ctx.strokeStyle = c.stroke; ctx.lineWidth = 1.2; ctx.stroke();
+      } else {
+        drawRoundRect(0, 0, obj.size, obj.size, 3);
+        ctx.fillStyle = c.fill; ctx.fill();
+        ctx.strokeStyle = c.stroke; ctx.lineWidth = 1.2; ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
+}
+
+// ─── Game loop ────────────────────────────────────────────────────────────────
+const TICK_MS = 1000 / 60;
+let lastTick = performance.now();
+
+function loop(now) {
+  requestAnimationFrame(loop);
+  const alpha = Math.min((now - lastTick) / TICK_MS, 1);
+  render(alpha);
+  if (now - lastTick >= TICK_MS) lastTick = now;
+}
+
+requestAnimationFrame(loop);
+
+// ─── UI helpers ───────────────────────────────────────────────────────────────
+
+function setStatus(connected, text) {
+  document.getElementById("statusDot").className = "mp-status-dot" + (connected ? " connected" : "");
+  document.getElementById("statusText").textContent = text;
+}
+
+function setOverlay(visible, text = "") {
+  const el = document.getElementById("overlay");
+  el.className = "mp-overlay" + (visible ? "" : " hidden");
+  if (text) document.getElementById("overlayText").textContent = text;
+}
+
+function updatePlayerListUI() {
+  const list = document.getElementById("playerList");
+  list.innerHTML = "";
+  for (const p of playerMeta) {
+    const c = playerColors[p.colorIdx % playerColors.length] || { stroke: "#888" };
+    const badge = document.createElement("div");
+    badge.className = "player-badge" + (p.id === myPlayerId ? " me" : "");
+    badge.innerHTML = `<span class="dot" style="color:${c.stroke}"></span>P${p.id}${p.id === myPlayerId ? " (you)" : ""}`;
+    list.appendChild(badge);
+  }
+}
+
+// ─── Start ────────────────────────────────────────────────────────────────────
+connect();
+</script>
+</body>
+</html>
