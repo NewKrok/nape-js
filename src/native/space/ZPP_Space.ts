@@ -3184,211 +3184,213 @@ export class ZPP_Space {
     this.midstep = true;
     this.stamp++;
     try {
-    this.validation();
-    this.bphase.broadphase(this, true);
-    this.prestep(deltaTime);
-    if (this.sortcontacts) {
-      const xxlist = this.c_arbiters_false;
-      if (xxlist.head != null && xxlist.head.next != null) {
-        let head = xxlist.head;
-        let tail = null;
-        let left = null;
-        let right = null;
-        let nxt = null;
-        let listSize = 1;
-        let numMerges;
-        let leftSize;
-        let rightSize;
-        while (true) {
-          numMerges = 0;
-          left = head;
-          head = null;
-          tail = head;
-          while (left != null) {
-            ++numMerges;
-            right = left;
-            leftSize = 0;
-            rightSize = listSize;
-            while (right != null && leftSize < listSize) {
-              ++leftSize;
-              right = right.next;
-            }
-            while (leftSize > 0 || (rightSize > 0 && right != null)) {
-              if (leftSize == 0) {
-                nxt = right;
+      this.validation();
+      this.bphase.broadphase(this, true);
+      this.prestep(deltaTime);
+      if (this.sortcontacts) {
+        const xxlist = this.c_arbiters_false;
+        if (xxlist.head != null && xxlist.head.next != null) {
+          let head = xxlist.head;
+          let tail = null;
+          let left = null;
+          let right = null;
+          let nxt = null;
+          let listSize = 1;
+          let numMerges;
+          let leftSize;
+          let rightSize;
+          while (true) {
+            numMerges = 0;
+            left = head;
+            head = null;
+            tail = head;
+            while (left != null) {
+              ++numMerges;
+              right = left;
+              leftSize = 0;
+              rightSize = listSize;
+              while (right != null && leftSize < listSize) {
+                ++leftSize;
                 right = right.next;
-                --rightSize;
-              } else if (rightSize == 0 || right == null) {
-                nxt = left;
-                left = left.next;
-                --leftSize;
-              } else if (
-                left.elt.active && right.elt.active ? left.elt.oc1.dist < right.elt.oc1.dist : true
-              ) {
-                nxt = left;
-                left = left.next;
-                --leftSize;
-              } else {
-                nxt = right;
-                right = right.next;
-                --rightSize;
               }
-              if (tail != null) {
-                tail.next = nxt;
-              } else {
-                head = nxt;
+              while (leftSize > 0 || (rightSize > 0 && right != null)) {
+                if (leftSize == 0) {
+                  nxt = right;
+                  right = right.next;
+                  --rightSize;
+                } else if (rightSize == 0 || right == null) {
+                  nxt = left;
+                  left = left.next;
+                  --leftSize;
+                } else if (
+                  left.elt.active && right.elt.active
+                    ? left.elt.oc1.dist < right.elt.oc1.dist
+                    : true
+                ) {
+                  nxt = left;
+                  left = left.next;
+                  --leftSize;
+                } else {
+                  nxt = right;
+                  right = right.next;
+                  --rightSize;
+                }
+                if (tail != null) {
+                  tail.next = nxt;
+                } else {
+                  head = nxt;
+                }
+                tail = nxt;
               }
-              tail = nxt;
+              left = right;
             }
-            left = right;
+            tail.next = null;
+            listSize <<= 1;
+            if (!(numMerges > 1)) {
+              break;
+            }
           }
-          tail.next = null;
-          listSize <<= 1;
-          if (!(numMerges > 1)) {
-            break;
-          }
+          xxlist.head = head;
+          xxlist.modified = true;
+          xxlist.pushmod = true;
         }
-        xxlist.head = head;
-        xxlist.modified = true;
-        xxlist.pushmod = true;
       }
-    }
-    this.updateVel(deltaTime);
-    this.warmStart();
-    this.iterateVel(velocityIterations);
-    let cx_ite = this.kinematics.head;
-    while (cx_ite != null) {
-      const cur = cx_ite.elt;
-      cur.pre_posx = cur.posx;
-      cur.pre_posy = cur.posy;
-      cur.pre_rot = cur.rot;
-      cx_ite = cx_ite.next;
-    }
-    let cx_ite1 = this.live.head;
-    while (cx_ite1 != null) {
-      const cur1 = cx_ite1.elt;
-      cur1.pre_posx = cur1.posx;
-      cur1.pre_posy = cur1.posy;
-      cur1.pre_rot = cur1.rot;
-      cx_ite1 = cx_ite1.next;
-    }
-    this.updatePos(deltaTime);
-    this.continuous = true;
-    this.continuousCollisions(deltaTime);
-    this.continuous = false;
-    this.iteratePos(positionIterations);
-    let cx_ite2 = this.kinematics.head;
-    while (cx_ite2 != null) {
-      const cur2 = cx_ite2.elt;
-      const upos = !(cur2.posx == cur2.pre_posx && cur2.posy == cur2.pre_posy);
-      const urot = cur2.pre_rot != cur2.rot;
-      if (upos) {
-        let cx_ite3 = cur2.shapes.head;
-        while (cx_ite3 != null) {
-          const s = cx_ite3.elt;
-          if (s.type == 1) {
-            s.polygon.invalidate_gverts();
-            s.polygon.invalidate_gaxi();
+      this.updateVel(deltaTime);
+      this.warmStart();
+      this.iterateVel(velocityIterations);
+      let cx_ite = this.kinematics.head;
+      while (cx_ite != null) {
+        const cur = cx_ite.elt;
+        cur.pre_posx = cur.posx;
+        cur.pre_posy = cur.posy;
+        cur.pre_rot = cur.rot;
+        cx_ite = cx_ite.next;
+      }
+      let cx_ite1 = this.live.head;
+      while (cx_ite1 != null) {
+        const cur1 = cx_ite1.elt;
+        cur1.pre_posx = cur1.posx;
+        cur1.pre_posy = cur1.posy;
+        cur1.pre_rot = cur1.rot;
+        cx_ite1 = cx_ite1.next;
+      }
+      this.updatePos(deltaTime);
+      this.continuous = true;
+      this.continuousCollisions(deltaTime);
+      this.continuous = false;
+      this.iteratePos(positionIterations);
+      let cx_ite2 = this.kinematics.head;
+      while (cx_ite2 != null) {
+        const cur2 = cx_ite2.elt;
+        const upos = !(cur2.posx == cur2.pre_posx && cur2.posy == cur2.pre_posy);
+        const urot = cur2.pre_rot != cur2.rot;
+        if (upos) {
+          let cx_ite3 = cur2.shapes.head;
+          while (cx_ite3 != null) {
+            const s = cx_ite3.elt;
+            if (s.type == 1) {
+              s.polygon.invalidate_gverts();
+              s.polygon.invalidate_gaxi();
+            }
+            s.invalidate_worldCOM();
+            cx_ite3 = cx_ite3.next;
           }
-          s.invalidate_worldCOM();
-          cx_ite3 = cx_ite3.next;
+          cur2.zip_worldCOM = true;
         }
-        cur2.zip_worldCOM = true;
-      }
-      if (urot) {
-        cur2.zip_axis = true;
-        let cx_ite4 = cur2.shapes.head;
-        while (cx_ite4 != null) {
-          const s1 = cx_ite4.elt;
-          if (s1.type == 1) {
-            s1.polygon.invalidate_gverts();
-            s1.polygon.invalidate_gaxi();
+        if (urot) {
+          cur2.zip_axis = true;
+          let cx_ite4 = cur2.shapes.head;
+          while (cx_ite4 != null) {
+            const s1 = cx_ite4.elt;
+            if (s1.type == 1) {
+              s1.polygon.invalidate_gverts();
+              s1.polygon.invalidate_gaxi();
+            }
+            s1.invalidate_worldCOM();
+            cx_ite4 = cx_ite4.next;
           }
-          s1.invalidate_worldCOM();
-          cx_ite4 = cx_ite4.next;
+          cur2.zip_worldCOM = true;
         }
-        cur2.zip_worldCOM = true;
+        cx_ite2 = cx_ite2.next;
       }
-      cx_ite2 = cx_ite2.next;
-    }
-    let cx_ite5 = this.live.head;
-    while (cx_ite5 != null) {
-      const cur3 = cx_ite5.elt;
-      const upos1 = !(cur3.posx == cur3.pre_posx && cur3.posy == cur3.pre_posy);
-      const urot1 = cur3.pre_rot != cur3.rot;
-      if (upos1) {
-        let cx_ite6 = cur3.shapes.head;
-        while (cx_ite6 != null) {
-          const s2 = cx_ite6.elt;
-          if (s2.type == 1) {
-            s2.polygon.invalidate_gverts();
-            s2.polygon.invalidate_gaxi();
+      let cx_ite5 = this.live.head;
+      while (cx_ite5 != null) {
+        const cur3 = cx_ite5.elt;
+        const upos1 = !(cur3.posx == cur3.pre_posx && cur3.posy == cur3.pre_posy);
+        const urot1 = cur3.pre_rot != cur3.rot;
+        if (upos1) {
+          let cx_ite6 = cur3.shapes.head;
+          while (cx_ite6 != null) {
+            const s2 = cx_ite6.elt;
+            if (s2.type == 1) {
+              s2.polygon.invalidate_gverts();
+              s2.polygon.invalidate_gaxi();
+            }
+            s2.invalidate_worldCOM();
+            cx_ite6 = cx_ite6.next;
           }
-          s2.invalidate_worldCOM();
-          cx_ite6 = cx_ite6.next;
+          cur3.zip_worldCOM = true;
         }
-        cur3.zip_worldCOM = true;
-      }
-      if (urot1) {
-        cur3.zip_axis = true;
-        let cx_ite7 = cur3.shapes.head;
-        while (cx_ite7 != null) {
-          const s3 = cx_ite7.elt;
-          if (s3.type == 1) {
-            s3.polygon.invalidate_gverts();
-            s3.polygon.invalidate_gaxi();
+        if (urot1) {
+          cur3.zip_axis = true;
+          let cx_ite7 = cur3.shapes.head;
+          while (cx_ite7 != null) {
+            const s3 = cx_ite7.elt;
+            if (s3.type == 1) {
+              s3.polygon.invalidate_gverts();
+              s3.polygon.invalidate_gaxi();
+            }
+            s3.invalidate_worldCOM();
+            cx_ite7 = cx_ite7.next;
           }
-          s3.invalidate_worldCOM();
-          cx_ite7 = cx_ite7.next;
+          cur3.zip_worldCOM = true;
         }
-        cur3.zip_worldCOM = true;
+        cx_ite5 = cx_ite5.next;
       }
-      cx_ite5 = cx_ite5.next;
-    }
-    let pre = null;
-    let cx_ite8 = this.staticsleep.head;
-    while (cx_ite8 != null) {
-      const b = cx_ite8.elt;
-      if (b.type != 3 || (b.velx == 0 && b.vely == 0 && b.angvel == 0)) {
-        if (b.kinematicDelaySleep) {
-          b.kinematicDelaySleep = false;
-          cx_ite8 = cx_ite8.next;
+      let pre = null;
+      let cx_ite8 = this.staticsleep.head;
+      while (cx_ite8 != null) {
+        const b = cx_ite8.elt;
+        if (b.type != 3 || (b.velx == 0 && b.vely == 0 && b.angvel == 0)) {
+          if (b.kinematicDelaySleep) {
+            b.kinematicDelaySleep = false;
+            cx_ite8 = cx_ite8.next;
+            continue;
+          }
+          b.component.sleeping = true;
+          const _this = this.staticsleep;
+          let old;
+          let ret;
+          if (pre == null) {
+            old = _this.head;
+            ret = old.next;
+            _this.head = ret;
+            if (_this.head == null) {
+              _this.pushmod = true;
+            }
+          } else {
+            old = pre.next;
+            ret = old.next;
+            pre.next = ret;
+            if (ret == null) {
+              _this.pushmod = true;
+            }
+          }
+          const o = old;
+          o.elt = null;
+          o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
+          ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = o;
+          _this.modified = true;
+          _this.length--;
+          _this.pushmod = true;
+          cx_ite8 = ret;
           continue;
         }
-        b.component.sleeping = true;
-        const _this = this.staticsleep;
-        let old;
-        let ret;
-        if (pre == null) {
-          old = _this.head;
-          ret = old.next;
-          _this.head = ret;
-          if (_this.head == null) {
-            _this.pushmod = true;
-          }
-        } else {
-          old = pre.next;
-          ret = old.next;
-          pre.next = ret;
-          if (ret == null) {
-            _this.pushmod = true;
-          }
-        }
-        const o = old;
-        o.elt = null;
-        o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = o;
-        _this.modified = true;
-        _this.length--;
-        _this.pushmod = true;
-        cx_ite8 = ret;
-        continue;
+        pre = cx_ite8;
+        cx_ite8 = cx_ite8.next;
       }
-      pre = cx_ite8;
-      cx_ite8 = cx_ite8.next;
-    }
-    this.doForests(deltaTime);
-    this.sleepArbiters();
+      this.doForests(deltaTime);
+      this.sleepArbiters();
     } finally {
       this.midstep = false;
     }
