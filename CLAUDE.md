@@ -274,4 +274,4 @@ Not targeted (built-in physics or non-physics use case):
 | P35 — Type system improvements        | S      | DX      | low    | ✅ Done           |
 | P36 — Server-side + demo examples     | M      | medium  | low    | ⬜ Not started    |
 | P37 — Serialization API               | L      | medium  | medium | ✅ Done           |
-| P38 — Debug draw API                  | M      | DX      | low    | ⬜ Not started    |
+| P38 — Debug draw API                  | M      | DX      | low    | ✅ Done           |
