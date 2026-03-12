@@ -51,7 +51,7 @@ Key competitors to watch:
 | ----------------------------------------- | ------ | -------- | ------ | -------------- |
 | P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3251 tests) |
 | P36 — Server-side + demo examples         | M      | medium   | low    | ❌ Cancelled   |
-| P52 — Multiplayer demo                    | M      | adoption | low    | ⬜ Not started |
+| P52 — Multiplayer demo                    | M      | adoption | low    | ✅ Done        |
 | P42 — Web Worker helper                   | M      | perf/DX  | medium | ⬜ Not started |
 | P43 — Concave polygon helper              | M      | high     | low    | ⬜ Not started |
 | P44 — PixiJS integration package          | M      | adoption | low    | ⬜ Not started |
@@ -85,21 +85,26 @@ without hosting. Superseded by P52 which delivers a real hosted multiplayer demo
 
 ---
 
-## Planned: P52 — Multiplayer Demo
+## Done: P52 — Multiplayer Demo
 
 **Effort: M | Impact: adoption | Risk: low**
 
-A hosted, real-time multiplayer physics demo — the most effective way to showcase
-the engine to new users. Goals:
+A hosted, real-time multiplayer physics demo showcasing the engine to new users.
 
-- `docs/multiplayer.html` — dedicated page, linked from examples grid
-- Railway-hosted Node.js WebSocket server running nape-js physics at 60 Hz
-- Server-authoritative simulation: all physics runs server-side
-- Binary state broadcast each frame via P39 (`spaceToBinary`)
-- Small platformer scene: static walls/floor, one-way floating platform, scattered balls and boxes
-- Each connected player controls one character (circle), WASD/arrow keys
-- All players visible to each other in real-time
-- Player count indicator, ping display
+**Delivered:**
+- `docs/multiplayer.html` — client page, linked from examples grid, GitHub "View source" link
+- `server/index.js` — Railway-hosted Node.js WebSocket server, 60 Hz physics loop
+- `railway.toml` — Railway deploy config
+- Server-authoritative simulation (all physics server-side)
+- Custom binary delta frame protocol — only changed bodies sent each tick (vs full state)
+- Platformer scene: static walls/floor/ceiling, one-way platforms, scattered balls & boxes
+- 5 hanging pendulums via `DistanceJoint` (soft spring, pushable)
+- Player character: vertical `Capsule` shape (28×46px), WASD/arrow keys
+- Ground detection via `space.arbiters` + `isSleeping` fallback
+- Up to 8 players — 9th+ connection enters **spectator mode** (watches, no body)
+- Player count indicator, ping display (server-side pong response)
+- Player color badges, "you" indicator dot above own character
+- Reconnect on disconnect (players only)
 
 ---
 
