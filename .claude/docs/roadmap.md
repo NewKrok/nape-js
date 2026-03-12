@@ -58,6 +58,9 @@ Key competitors to watch:
 | P46 — Hot-path optimization               | M      | perf     | low    | ⬜ Not started |
 | P47 — CJS bundle dedup (serialization)    | S      | bundle   | low    | ⬜ Not started |
 | P48 — Deterministic mode (soft)           | L      | critical | high   | ⬜ Not started |
+| P49 — ECS adapter layer                   | M      | DX       | medium | ⬜ Not started |
+| P50 — Spatial hash grid broadphase        | S-M    | perf     | low    | ⬜ Not started |
+| P51 — Sub-stepping solver                 | XL     | stability| high   | ⬜ Not started |
 
 ---
 
@@ -217,6 +220,46 @@ Same-platform deterministic simulation (identical results on same browser/OS):
 Note: True cross-platform bit-level determinism (like Rapier) is impractical in pure JS
 due to IEEE 754 implementation differences. "Soft determinism" (same platform = same results)
 is the achievable goal and sufficient for most multiplayer patterns.
+
+---
+
+## Planned: P49 — ECS Adapter Layer
+
+**Effort: M | Impact: DX | Risk: medium**
+
+Optional adapter for Entity Component System frameworks (bitECS, miniplex, Becsy):
+
+- Physics components (position, velocity, mass) as flat typed arrays
+- System that syncs ECS components ↔ nape-js Body objects each frame
+- Enables better cache locality and easier serialization
+- Growing trend in JS game development — no physics engine currently offers this
+
+---
+
+## Planned: P50 — Spatial Hash Grid Broadphase
+
+**Effort: S-M | Impact: perf (niche) | Risk: low**
+
+Third broadphase algorithm option for dense, uniform-object scenes:
+
+- O(1) expected lookup for nearby objects
+- Best for: particle simulations, many same-sized objects, bounded worlds
+- Complements existing SAP (good for few moving objects) and AABB tree (general purpose)
+- Not useful for variable-size objects or sparse worlds
+
+---
+
+## Planned: P51 — Sub-stepping Solver
+
+**Effort: XL | Impact: stability | Risk: high**
+
+Box2D v3's "Soft Step" solver approach: soft constraints + sub-stepping for better stability:
+
+- Handles higher mass ratios without jitter
+- More stable long body chains and stacks
+- Better convergence for complex constraint networks
+- Major architectural change — requires careful testing and benchmarking
+- Long-term goal, depends on P46 (hot-path optimization) as prerequisite
 
 ---
 

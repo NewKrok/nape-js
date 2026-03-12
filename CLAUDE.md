@@ -62,5 +62,8 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | Character controller     | ⬜ Planned — P45 |
 | Hot-path optimization    | ⬜ Planned — P46 |
 | Deterministic mode       | ⬜ Planned — P48 (multiplayer) |
+| ECS adapter              | ⬜ Planned — P49 |
+| Spatial hash grid        | ⬜ Planned — P50 |
+| Sub-stepping solver      | ⬜ Planned — P51 (long-term) |
 
 Full roadmap with details, competitor analysis, and history: `.claude/docs/roadmap.md`
