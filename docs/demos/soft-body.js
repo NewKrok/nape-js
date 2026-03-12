@@ -297,7 +297,8 @@ function regularVerts(rx, ry, sides) {
 export default {
   id: "soft-body",
   label: "Soft Body",
-  featured: false,
+  featured: true,
+  featuredOrder: 2,
   tags: ["PivotJoint", "Pressure", "Soft Body"],
   desc: "Pneumatic soft bodies: a trapezoidal shell with stiff outer skin, elastic inner skin, and gas-pressure volume conservation.",
 

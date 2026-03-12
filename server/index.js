@@ -193,16 +193,18 @@ function isOnGround(body) {
     for (let i = 0; i < arbs.length; i++) {
       const arb = arbs.at(i);
       try {
-        // Only care about arbiters involving this body
         if (arb.body1 !== body && arb.body2 !== body) continue;
         const col = arb.collisionArbiter;
         if (!col) continue;
         const ny = col.normal.y;
-        // normal points from body1 to body2
-        // if our body is body2 and normal.y < 0 → floor is below us
-        // if our body is body1 and normal.y > 0 → floor is below us
-        const sign = arb.body2 === body ? -1 : 1;
-        if (ny * sign < -0.5) return true;
+        // In canvas coords +y is down. The collision normal points from body1 → body2.
+        // We want a contact where the floor is below the player.
+        // The effective normal relative to the player is:
+        //   player = body2 → normal pushes player upward → ny < 0
+        //   player = body1 → normal pushes player downward, floor below → ny > 0
+        // Accept both orderings; only vertically-dominant contacts count.
+        const effNy = arb.body2 === body ? ny : -ny;
+        if (effNy < -0.5) return true;
       } catch (_) {}
     }
   } catch (_) {}
@@ -226,7 +228,7 @@ function applyPlayerInputs() {
     player.onGround = isOnGround(body);
     if (player.jumpCooldown > 0) player.jumpCooldown--;
     if (keys.jump && player.onGround && player.jumpCooldown === 0) {
-      body.velocity = new Vec2(vel.x, JUMP_FORCE);
+      body.velocity = new Vec2(targetVx, JUMP_FORCE);
       player.jumpCooldown = 10; // ~167ms at 60Hz
     }
   }

@@ -17,6 +17,7 @@ import gravity     from "./demos/gravity.js?v=3.10.3";
 import stacking    from "./demos/stacking.js?v=3.10.3";
 import ragdoll     from "./demos/ragdoll.js?v=3.10.3";
 import strandbeast from "./demos/strandbeast.js?v=3.10.3";
+import softBody    from "./demos/soft-body.js?v=3.10.3";
 
 // =========================================================================
 // Demo registry
@@ -24,7 +25,7 @@ import strandbeast from "./demos/strandbeast.js?v=3.10.3";
 
 const ALL_DEMOS = [
   falling, pyramid, chain, explosion, constraints,
-  gravity, stacking, ragdoll, strandbeast,
+  gravity, stacking, ragdoll, strandbeast, softBody,
 ];
 
 const FEATURED = ALL_DEMOS

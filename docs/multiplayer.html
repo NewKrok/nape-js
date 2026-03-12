@@ -243,6 +243,7 @@ let lastFrameTime = 0;
 let frameCount = 0;
 let lastPingTime = 0;
 let ping = 0;
+let lastServerFrame = 0;
 
 // ─── Input ────────────────────────────────────────────────────────────────────
 const keys = { left: false, right: false, jump: false };
@@ -347,6 +348,7 @@ function handleJsonMessage(msg) {
 }
 
 function handleBinaryFrame(buf) {
+  const now = performance.now();
   const view = new DataView(buf);
   const count = view.getUint16(0, true);
   let offset = 2;
@@ -362,8 +364,11 @@ function handleBinaryFrame(buf) {
       px: prev ? prev.x : x,
       py: prev ? prev.y : y,
       prot: prev ? prev.rot : rot,
+      ts: now,          // when this snapshot arrived
+      pts: prev ? prev.ts : now - TICK_MS,
     });
   }
+  lastServerFrame = now;
 }
 
 // ─── Rendering ────────────────────────────────────────────────────────────────
@@ -413,10 +418,18 @@ function render(alpha) {
   }
 
   // Dynamic bodies (interpolated)
+  const now = performance.now();
   for (const [id, state] of bodyState) {
-    const ix = state.px + (state.x - state.px) * alpha;
-    const iy = state.py + (state.y - state.py) * alpha;
-    const irot = state.prot + (state.rot - state.prot) * alpha;
+    // Per-body alpha based on actual snapshot timestamps for smoother interpolation
+    let a = alpha;
+    if (state.ts && state.pts && state.ts > state.pts) {
+      const INTERP_DELAY = TICK_MS * 1.5;
+      const renderTime = now - INTERP_DELAY;
+      a = Math.max(0, Math.min(1, (renderTime - state.pts) / (state.ts - state.pts)));
+    }
+    const ix = state.px + (state.x - state.px) * a;
+    const iy = state.py + (state.y - state.py) * a;
+    const irot = state.prot + (state.rot - state.prot) * a;
 
     const c = getBodyColor(id);
     const isMe = id === myBodyId;
@@ -461,13 +474,26 @@ function render(alpha) {
 
 // ─── Game loop ────────────────────────────────────────────────────────────────
 const TICK_MS = 1000 / 60;
-let lastTick = performance.now();
 
 function loop(now) {
   requestAnimationFrame(loop);
-  const alpha = Math.min((now - lastTick) / TICK_MS, 1);
+
+  // Interpolation alpha: how far we are between the last two server snapshots.
+  // We add a small buffer (half a tick) so we always have two frames to interpolate between.
+  const INTERP_DELAY = TICK_MS * 1.5;
+  const renderTime = now - INTERP_DELAY;
+
+  let alpha = 1;
+  if (lastServerFrame > 0) {
+    // Oldest snapshot arrival time across all bodies (approximate as lastServerFrame - TICK_MS)
+    const frameStart = lastServerFrame - TICK_MS;
+    const frameEnd   = lastServerFrame;
+    if (frameEnd > frameStart) {
+      alpha = Math.max(0, Math.min(1, (renderTime - frameStart) / (frameEnd - frameStart)));
+    }
+  }
+
   render(alpha);
-  if (now - lastTick >= TICK_MS) lastTick = now;
 }
 
 requestAnimationFrame(loop);

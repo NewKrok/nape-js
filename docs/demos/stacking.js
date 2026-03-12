@@ -5,8 +5,7 @@ export default {
   id: "stacking",
   label: "Stacking",
   tags: ["Stacking", "Stability", "Click"],
-  featured: true,
-  featuredOrder: 6,
+  featured: false,
   desc: 'Towers of various shapes testing stacking stability. <b>Click</b> to drop a heavy box.',
 
   setup(space, W, H) {

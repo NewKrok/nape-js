@@ -203,6 +203,19 @@ a:hover { text-decoration: underline; }
   color: var(--bg);
   text-decoration: none;
 }
+.tab-mp {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.tab-mp:hover {
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+}
 
 /* ---------- Canvas ---------- */
 .canvas-wrap {
