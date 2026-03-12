@@ -448,15 +448,7 @@ describe("binary round-trip", () => {
     const b2 = new Body(BodyType.DYNAMIC, Vec2.weak(50, 0));
     b2.shapes.add(new Circle(10));
     b2.space = space;
-    const joint = new LineJoint(
-      b1,
-      b2,
-      Vec2.weak(0, 0),
-      Vec2.weak(0, 0),
-      Vec2.weak(1, 0),
-      -10,
-      10,
-    );
+    const joint = new LineJoint(b1, b2, Vec2.weak(0, 0), Vec2.weak(0, 0), Vec2.weak(1, 0), -10, 10);
     joint.space = space;
 
     const restored = roundTrip(space);

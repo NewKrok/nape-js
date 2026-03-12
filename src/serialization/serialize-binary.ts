@@ -112,8 +112,7 @@ function writeShape(w: BinaryWriter, shape: Shape): void {
   // Flags: bit 0 = sensorEnabled, bit 1 = fluidEnabled, bit 2 = hasFluidProps
   const fluidEnabled = shape.fluidEnabled;
   const hasFluidProps = fluidEnabled && shape.fluidProperties != null;
-  const flags =
-    (shape.sensorEnabled ? 1 : 0) | (fluidEnabled ? 2 : 0) | (hasFluidProps ? 4 : 0);
+  const flags = (shape.sensorEnabled ? 1 : 0) | (fluidEnabled ? 2 : 0) | (hasFluidProps ? 4 : 0);
   w.writeUint8(flags);
 
   if (hasFluidProps) {

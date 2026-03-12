@@ -276,14 +276,7 @@ function applyBase(
 function readConstraint(
   r: BinaryReader,
   bodies: Body[],
-):
-  | PivotJoint
-  | DistanceJoint
-  | AngleJoint
-  | MotorJoint
-  | LineJoint
-  | PulleyJoint
-  | WeldJoint {
+): PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint {
   const typeTag = r.readUint8();
   const base = readConstraintBase(r);
   const b1 = base.body1Id >= 0 ? (bodies[base.body1Id] ?? null) : null;
