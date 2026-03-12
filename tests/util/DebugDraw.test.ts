@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { DebugDraw, type DebugVec2 } from "../../src/util/DebugDraw";
 import { DebugDrawFlags } from "../../src/util/DebugDrawFlags";
 import { Space } from "../../src/space/Space";
