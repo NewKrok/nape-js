@@ -10,6 +10,7 @@ import type { Body } from "../phys/Body";
 import type { Shape } from "../shape/Shape";
 import type { Circle } from "../shape/Circle";
 import type { Polygon } from "../shape/Polygon";
+import type { Capsule } from "../shape/Capsule";
 import type { Constraint } from "../constraint/Constraint";
 import type { PivotJoint } from "../constraint/PivotJoint";
 import type { DistanceJoint } from "../constraint/DistanceJoint";
@@ -29,6 +30,7 @@ import {
   type ShapeData,
   type CircleShapeData,
   type PolygonShapeData,
+  type CapsuleShapeData,
   type ConstraintData,
   type ConstraintBaseData,
   type CompoundData,
@@ -112,6 +114,20 @@ function serializeShape(shape: Shape): ShapeData {
       fluidEnabled,
       fluidProperties,
     } satisfies CircleShapeData;
+  } else if (shape.isCapsule()) {
+    const cap = shape as unknown as Capsule;
+    const lcom = shape.localCOM;
+    return {
+      type: "capsule",
+      width: cap.width,
+      height: cap.height,
+      localCOM: vec2(lcom),
+      material: mat,
+      filter,
+      sensorEnabled,
+      fluidEnabled,
+      fluidProperties,
+    } satisfies CapsuleShapeData;
   } else {
     const p = shape as Polygon;
     const verts = p.localVerts;

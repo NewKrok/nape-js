@@ -69,7 +69,19 @@ export interface PolygonShapeData {
   fluidProperties: FluidPropertiesData | null;
 }
 
-export type ShapeData = CircleShapeData | PolygonShapeData;
+export interface CapsuleShapeData {
+  type: "capsule";
+  width: number;
+  height: number;
+  localCOM: Vec2Data;
+  material: MaterialData;
+  filter: InteractionFilterData;
+  sensorEnabled: boolean;
+  fluidEnabled: boolean;
+  fluidProperties: FluidPropertiesData | null;
+}
+
+export type ShapeData = CircleShapeData | PolygonShapeData | CapsuleShapeData;
 
 // ---------------------------------------------------------------------------
 // Body

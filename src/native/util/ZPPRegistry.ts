@@ -94,6 +94,7 @@ import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { ZPP_Circle } from "../shape/ZPP_Circle";
 import { ZPP_Edge } from "../shape/ZPP_Edge";
 import { ZPP_Polygon } from "../shape/ZPP_Polygon";
+import { ZPP_Capsule } from "../shape/ZPP_Capsule";
 
 import { ZPP_Broadphase } from "../space/ZPP_Broadphase";
 import { ZPP_AABBNode } from "../space/ZPP_AABBNode";
@@ -343,6 +344,11 @@ export function registerZPPClasses(): any {
   (ZPP_Polygon as any)._zpp = zpp;
   (ZPP_Polygon as any)._init();
   zpp.shape.ZPP_Polygon = ZPP_Polygon;
+
+  (ZPP_Capsule as any)._nape = nape;
+  (ZPP_Capsule as any)._zpp = zpp;
+  (ZPP_Capsule as any)._init();
+  zpp.shape.ZPP_Capsule = ZPP_Capsule;
 
   // --- space ---
   if (!zpp.space) zpp.space = {};

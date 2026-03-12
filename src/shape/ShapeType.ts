@@ -34,10 +34,19 @@ export class ShapeType {
     }
     return ZPP_Flags.ShapeType_POLYGON;
   }
+  static get CAPSULE(): ShapeType {
+    if (ZPP_Flags.ShapeType_CAPSULE == null) {
+      ZPP_Flags.internal = true;
+      ZPP_Flags.ShapeType_CAPSULE = new ShapeType();
+      ZPP_Flags.internal = false;
+    }
+    return ZPP_Flags.ShapeType_CAPSULE;
+  }
 
   toString(): string {
     if (this === ZPP_Flags.ShapeType_CIRCLE) return "CIRCLE";
     if (this === ZPP_Flags.ShapeType_POLYGON) return "POLYGON";
+    if (this === ZPP_Flags.ShapeType_CAPSULE) return "CAPSULE";
     return "";
   }
 }

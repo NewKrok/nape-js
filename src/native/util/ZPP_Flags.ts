@@ -69,6 +69,7 @@ export class ZPP_Flags {
   // --- Shape type ---
   static ShapeType_CIRCLE: any = null;
   static ShapeType_POLYGON: any = null;
+  static ShapeType_CAPSULE: any = null;
 
   // --- Broadphase ---
   static Broadphase_DYNAMIC_AABB_TREE: any = null;
@@ -124,6 +125,7 @@ export class ZPP_Flags {
   static id_ValidationResult_SELF_INTERSECTING = 3;
   static id_ShapeType_CIRCLE = 0;
   static id_ShapeType_POLYGON = 1;
+  static id_ShapeType_CAPSULE = 2;
   static id_Broadphase_DYNAMIC_AABB_TREE = 0;
   static id_Broadphase_SWEEP_AND_PRUNE = 1;
   static id_ArbiterType_COLLISION = 1;

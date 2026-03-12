@@ -94,6 +94,9 @@ export class ZPP_Geom {
           _this3.aabb.miny = _this3.worldCOMy - ry;
           _this3.aabb.maxx = _this3.worldCOMx + rx;
           _this3.aabb.maxy = _this3.worldCOMy + ry;
+        } else if (s.type == 2) {
+          // Capsule: delegate to ZPP_Capsule.__validate_aabb()
+          s.capsule.__validate_aabb();
         } else {
           const _this6 = s.polygon;
           if (_this6.zip_gverts) {

@@ -20,6 +20,7 @@ import type { Body } from "../phys/Body";
 import type { Shape } from "../shape/Shape";
 import type { Circle } from "../shape/Circle";
 import type { Polygon } from "../shape/Polygon";
+import type { Capsule } from "../shape/Capsule";
 import type { Constraint } from "../constraint/Constraint";
 import type { PivotJoint } from "../constraint/PivotJoint";
 import type { DistanceJoint } from "../constraint/DistanceJoint";
@@ -87,6 +88,14 @@ function writeShape(w: BinaryWriter, shape: Shape): void {
     w.writeUint8(0); // circle
     const c = shape as Circle;
     w.writeFloat64(c.radius);
+    const lcom = shape.localCOM;
+    w.writeFloat64(lcom.x);
+    w.writeFloat64(lcom.y);
+  } else if (shape.isCapsule()) {
+    w.writeUint8(2); // capsule
+    const cap = shape as unknown as Capsule;
+    w.writeFloat64(cap.width);
+    w.writeFloat64(cap.height);
     const lcom = shape.localCOM;
     w.writeFloat64(lcom.x);
     w.writeFloat64(lcom.y);
