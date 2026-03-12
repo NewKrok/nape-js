@@ -170,16 +170,30 @@ The engine has no DOM dependencies and runs on Node.js already. Goals:
 
 ---
 
-### Priority 37: Serialization API
+### Priority 37: Serialization API ✅ Done
 
-**Effort: L | Impact: medium | Risk: medium**
+**Entry point:** `import { spaceToJSON, spaceFromJSON } from '@newkrok/nape-js/serialization'`
 
-State snapshot + restore: `space.toJSON()` / `Space.fromJSON(data)`:
+**Files:**
+- `src/serialization/types.ts` — `SpaceSnapshot` + all snapshot interfaces
+- `src/serialization/serialize.ts` — `spaceToJSON(space): SpaceSnapshot`
+- `src/serialization/deserialize.ts` — `spaceFromJSON(snapshot): Space`
+- `src/serialization/index.ts` — public re-export + type exports
+- `tests/serialization/serialization.test.ts` — 48 tests
 
-- Body positions, angles, velocities, types
-- Shape types and offsets
-- Constraint definitions
-- Use cases: save/load, replay, server↔client sync
+**What is serialized:** Space config (gravity, drags, broadphase, sortContacts), all bodies
+(position, rotation, velocity, angularVel, kinematicVel, surfaceVel, force, torque, mass,
+inertia, gravMass, allowMovement, allowRotation, isBullet, shapes, userData), all shapes
+(circle radius / polygon vertices, material, interactionFilter, sensorEnabled,
+fluidEnabled, fluidProperties), all constraints except UserConstraint (PivotJoint,
+DistanceJoint, AngleJoint, MotorJoint, LineJoint, PulleyJoint, WeldJoint — full base
+props: active, stiff, frequency, damping, maxForce, maxError, break flags, userData),
+compounds (as body-ID + constraint-index groupings).
+
+**What is NOT serialized:** Arbiters (rebuilt each step), UserConstraint (not
+serializable), broadphase tree internal state (rebuilt), isSleeping (inferred).
+
+**Use cases:** save/load, replay, multiplayer server↔client sync.
 
 ---
 
@@ -259,5 +273,5 @@ Not targeted (built-in physics or non-physics use case):
 | P34 — Granular tree shaking           | XL     | large   | high   | ❌ Cancelled      |
 | P35 — Type system improvements        | S      | DX      | low    | ✅ Done           |
 | P36 — Server-side + demo examples     | M      | medium  | low    | ⬜ Not started    |
-| P37 — Serialization API               | L      | medium  | medium | ⬜ Not started    |
-| P38 — Debug draw API                  | M      | DX      | low    | ⬜ Not started    |
+| P37 — Serialization API               | L      | medium  | medium | ✅ Done           |
+| P38 — Debug draw API                  | M      | DX      | low    | ✅ Done           |

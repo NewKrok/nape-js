@@ -82,6 +82,8 @@ export { UserConstraint } from "./constraint/UserConstraint";
 
 // Utilities
 export { NapeList } from "./util/NapeList";
+export { DebugDraw, type DebugVec2 } from "./util/DebugDraw";
+export { DebugDrawFlags } from "./util/DebugDrawFlags";
 export type { TypedListLike } from "./util/NapeListFactory";
 export type {
   BodyList,

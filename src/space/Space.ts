@@ -26,6 +26,8 @@ import type {
   RayResultList,
   ConvexResultList,
 } from "../util/listTypes";
+import type { DebugDraw } from "../util/DebugDraw";
+import { DebugDrawFlags } from "../util/DebugDrawFlags";
 
 /**
  * The physics world. Add bodies, shapes, and constraints, then call `step()` each frame to advance the simulation.
@@ -1003,6 +1005,181 @@ export class Space {
       throw new Error("Error: Cannot cast null ray :)");
     }
     return this.zpp_inner.rayMultiCast(ray, inner, filter, output);
+  }
+
+  /**
+   * Draw the current state of the physics world using a user-supplied renderer.
+   *
+   * Walks all bodies, shapes, constraints, contacts, AABBs, and velocity
+   * vectors and calls the appropriate draw primitives on `drawer`. Only the
+   * layers selected by `flags` are rendered.
+   *
+   * **Performance note:** this method allocates temporary vertex arrays for
+   * polygon shapes on every call. It is intended for development/debug use
+   * only — do not call it in a performance-critical production loop.
+   *
+   * @param drawer - The renderer to use. Must not be null.
+   * @param flags  - Bitmask of {@link DebugDrawFlags} layers to render.
+   *                 Defaults to `DebugDrawFlags.ALL`.
+   *
+   * @example
+   * ```ts
+   * space.debugDraw(myDrawer, DebugDrawFlags.SHAPES | DebugDrawFlags.JOINTS);
+   * ```
+   */
+  debugDraw(drawer: DebugDraw, flags: number = DebugDrawFlags.ALL): void {
+    if (drawer == null) {
+      throw new Error("Error: drawer cannot be null for Space::debugDraw");
+    }
+
+    const drawShapes = (flags & DebugDrawFlags.SHAPES) !== 0;
+    const drawJoints = (flags & DebugDrawFlags.JOINTS) !== 0;
+    const drawContacts = (flags & DebugDrawFlags.CONTACTS) !== 0;
+    const drawAABB = (flags & DebugDrawFlags.AABB) !== 0;
+    const drawCOM = (flags & DebugDrawFlags.CENTER_OF_MASS) !== 0;
+    const drawVelocities = (flags & DebugDrawFlags.VELOCITIES) !== 0;
+
+    // Colours (ARGB)
+    const COL_DYNAMIC = 0xff4fc3f7; // light blue — dynamic bodies
+    const COL_STATIC = 0xff90a4ae; // grey — static bodies
+    const COL_KINEMATIC = 0xffffb74d; // orange — kinematic bodies
+    const COL_JOINT = 0xffa5d6a7; // green — joints
+    const COL_CONTACT = 0xffef5350; // red — contacts
+    const COL_AABB = 0x44ffffff; // translucent white — AABBs
+    const COL_COM = 0xffffeb3b; // yellow — centre of mass
+    const COL_VEL = 0xffce93d8; // purple — velocity
+
+    this.visitBodies((body) => {
+      const zppBody = (body as any).zpp_inner;
+      const isDynamic = zppBody.type === 2;
+      const isStatic = zppBody.type === 1;
+      const bodyColour = isStatic ? COL_STATIC : isDynamic ? COL_DYNAMIC : COL_KINEMATIC;
+
+      // --- SHAPES ---
+      if (drawShapes) {
+        let shapeNode = zppBody.shapes.head;
+        while (shapeNode != null) {
+          const zppShape = shapeNode.elt;
+          if (zppShape.type === 0) {
+            // Circle
+            const zppCircle = zppShape.circle;
+            if (zppShape.zip_worldCOM) zppShape.validate_worldCOM();
+            const cx = zppShape.worldCOMx;
+            const cy = zppShape.worldCOMy;
+            const r = zppCircle.radius;
+            const rot = zppBody.rot;
+            const axisX = cx + Math.cos(rot) * r;
+            const axisY = cy + Math.sin(rot) * r;
+            const centre = { x: cx, y: cy };
+            const axis = { x: axisX, y: axisY };
+            if (isDynamic) {
+              drawer.drawSolidCircle(centre, r, axis, bodyColour);
+            } else {
+              drawer.drawCircle(centre, r, bodyColour);
+            }
+          } else if (zppShape.type === 1) {
+            // Polygon — collect world vertices from gverts linked list
+            const zppPoly = zppShape.polygon;
+            // Ensure gverts are up-to-date
+            if (zppPoly.zip_gverts) {
+              zppPoly.validate_gverts();
+            }
+            const verts: { x: number; y: number }[] = [];
+            let v = zppPoly.gverts.next;
+            while (v != null) {
+              verts.push({ x: v.x, y: v.y });
+              v = v.next;
+            }
+            if (verts.length >= 3) {
+              if (isDynamic) {
+                drawer.drawSolidPolygon(verts, bodyColour);
+              } else {
+                drawer.drawPolygon(verts, bodyColour);
+              }
+            }
+          }
+          shapeNode = shapeNode.next;
+        }
+      }
+
+      // --- AABB ---
+      if (drawAABB && !zppBody.world) {
+        const aabb = zppBody.aabb;
+        const minX = aabb.minx;
+        const minY = aabb.miny;
+        const maxX = aabb.maxx;
+        const maxY = aabb.maxy;
+        drawer.drawSegment({ x: minX, y: minY }, { x: maxX, y: minY }, COL_AABB);
+        drawer.drawSegment({ x: maxX, y: minY }, { x: maxX, y: maxY }, COL_AABB);
+        drawer.drawSegment({ x: maxX, y: maxY }, { x: minX, y: maxY }, COL_AABB);
+        drawer.drawSegment({ x: minX, y: maxY }, { x: minX, y: minY }, COL_AABB);
+      }
+
+      // --- CENTRE OF MASS ---
+      if (drawCOM && !zppBody.world) {
+        zppBody.validate_worldCOM();
+        drawer.drawPoint({ x: zppBody.worldCOMx, y: zppBody.worldCOMy }, COL_COM);
+      }
+
+      // --- VELOCITIES ---
+      if (drawVelocities && !zppBody.world && isDynamic) {
+        const px = zppBody.posx;
+        const py = zppBody.posy;
+        // Scale velocity for visibility (1 unit = 1 physics unit/s)
+        drawer.drawSegment(
+          { x: px, y: py },
+          { x: px + zppBody.velx, y: py + zppBody.vely },
+          COL_VEL,
+        );
+      }
+    });
+
+    // --- JOINTS ---
+    if (drawJoints) {
+      this.visitConstraints((constraint) => {
+        if (!constraint.debugDraw) return;
+        const inner = (constraint as any).zpp_inner;
+        // Access b1/b2 via the ZPP joint — fields are on the concrete subclass
+        const b1 = inner.b1;
+        const b2 = inner.b2;
+        const a1x = inner.a1worldx ?? (b1 != null ? b1.posx : 0);
+        const a1y = inner.a1worldy ?? (b1 != null ? b1.posy : 0);
+        const a2x = inner.a2worldx ?? (b2 != null ? b2.posx : 0);
+        const a2y = inner.a2worldy ?? (b2 != null ? b2.posy : 0);
+        drawer.drawSegment({ x: a1x, y: a1y }, { x: a2x, y: a2y }, COL_JOINT);
+        drawer.drawPoint({ x: a1x, y: a1y }, COL_JOINT);
+        drawer.drawPoint({ x: a2x, y: a2y }, COL_JOINT);
+      });
+    }
+
+    // --- CONTACTS ---
+    if (drawContacts) {
+      // Iterate c_arbiters_true and c_arbiters_false directly on the ZPP_Space.
+      // ZPP_ColArbiter uses a sentinel-head linked list: contacts.next is the first contact.
+      const drawColArbList = (list: any): void => {
+        if (list == null) return;
+        let node = list.head;
+        while (node != null) {
+          const colarb = node.elt;
+          if (colarb != null) {
+            const nx = colarb.nx;
+            const ny = colarb.ny;
+            let contact = colarb.contacts?.next; // sentinel: first real contact is .next
+            while (contact != null) {
+              const cx = contact.px;
+              const cy = contact.py;
+              drawer.drawPoint({ x: cx, y: cy }, COL_CONTACT);
+              // Draw normal indicator
+              drawer.drawSegment({ x: cx, y: cy }, { x: cx + nx * 8, y: cy + ny * 8 }, COL_CONTACT);
+              contact = contact.next;
+            }
+          }
+          node = node.next;
+        }
+      };
+      drawColArbList(this.zpp_inner.c_arbiters_true);
+      drawColArbList(this.zpp_inner.c_arbiters_false);
+    }
   }
 
   /**
