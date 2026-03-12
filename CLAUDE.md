@@ -11,9 +11,9 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
 - **Collision detection** — broadphase (sweep-and-prune / dynamic AABB tree), narrowphase, CCD, raycasting, convex sweep
 - **Callback system** — body/interaction/constraint listeners, pre-collision callbacks
 - **Fluid simulation** — buoyancy and drag via fluid-enabled shapes (unique among JS engines)
-- **Serialization** — `spaceToJSON` / `spaceFromJSON` for save/load/multiplayer sync
+- **Serialization** — JSON (`spaceToJSON` / `spaceFromJSON`) + binary (`spaceToBinary` / `spaceFromBinary`) for save/load/multiplayer rollback
 - **Debug draw** — abstract `DebugDraw` interface (Box2D pattern), reference impls for Canvas/Three.js/PixiJS/p5.js
-- **~994 KB** minified ESM + CJS dual bundle, TSDoc documented, 3200+ tests
+- **~994 KB** minified ESM + CJS dual bundle, TSDoc documented, 3300+ tests
 
 ## Build & Test
 
@@ -61,11 +61,11 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | What                     | Status |
 | ------------------------ | ------ |
 | Haxe modernization       | ✅ Complete — pure TypeScript, fully typed |
-| Test coverage            | 🔶 ~54% statements (3228 tests), target ≥80% |
+| Test coverage            | 🔶 ~54% statements (3354 tests), target ≥80% |
 | Serialization API        | ✅ Done — `@newkrok/nape-js/serialization` |
+| Binary snapshots         | ✅ Done — `spaceToBinary` / `spaceFromBinary` (P39) |
 | Debug draw API           | ✅ Done — abstract `DebugDraw` + `Space.debugDraw()` |
 | Server/demo examples     | ⬜ Planned — P36 |
-| Binary snapshots         | ⬜ Planned — P39 (multiplayer rollback) |
 | Haxe remnant cleanup     | ⬜ Planned — P40 (128 files with `__name__`/`__class__`/`__super__`) |
 | Capsule shape            | ⬜ Planned — P41 |
 | Web Worker helper        | ⬜ Planned — P42 |
