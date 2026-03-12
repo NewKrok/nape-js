@@ -65,6 +65,34 @@ export function drawBody(ctx, body, showOutlines = true) {
         ctx.strokeStyle = stroke + "55";
         ctx.stroke();
       }
+    } else if (shape.isCapsule()) {
+      const cap = shape.castCapsule;
+      const hl = cap.halfLength;
+      const r = cap.radius;
+      ctx.beginPath();
+      // Top edge
+      ctx.moveTo(-hl, -r);
+      ctx.lineTo(hl, -r);
+      // Right semicircle
+      ctx.arc(hl, 0, r, -Math.PI / 2, Math.PI / 2);
+      // Bottom edge
+      ctx.lineTo(-hl, r);
+      // Left semicircle
+      ctx.arc(-hl, 0, r, Math.PI / 2, -Math.PI / 2);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        // Spine indicator
+        ctx.beginPath();
+        ctx.moveTo(-hl, 0);
+        ctx.lineTo(hl, 0);
+        ctx.strokeStyle = stroke + "55";
+        ctx.stroke();
+      }
     } else if (shape.isPolygon()) {
       const verts = shape.castPolygon.localVerts;
       const len = verts.length;
