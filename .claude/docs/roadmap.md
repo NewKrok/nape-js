@@ -21,34 +21,34 @@ Key competitors to watch:
 
 ## Priority Table
 
-### Completed (P21–P38)
+### Completed (P21–P39)
 
-| Priority                              | Effort | Impact  | Status       |
-| ------------------------------------- | ------ | ------- | ------------ |
-| P21 — Drop `__class__` / `$hxClasses` | S      | medium  | ✅ Done      |
-| P22 — Minification                    | XS     | large   | ✅ Done      |
-| P23 — `__zpp` → direct imports        | M      | large   | ✅ Done      |
-| P24 — Namespace reduction             | S      | medium  | ✅ Done      |
-| P25 — `Any` → real types              | XL     | largest | ✅ Done      |
-| P26 — Tree shaking                    | L      | large   | ✅ Done      |
-| P27 — HaxeShims audit                 | S      | small   | ✅ Done      |
-| P28 — API ergonomics (28a+28b+28c)    | M      | DX      | ✅ Done      |
-| P30 — TSDoc documentation             | L      | DX      | ✅ Done      |
-| P31 — API ergonomics additions        | M      | DX      | ✅ Done      |
-| P32 — Internal accessor cleanup       | S      | small   | ✅ Done      |
-| P33 — Benchmark CI                    | M      | medium  | ✅ Done      |
-| P34 — Granular tree shaking           | XL     | large   | ❌ Cancelled |
-| P35 — Type system improvements        | S      | DX      | ✅ Done      |
-| P37 — Serialization API               | L      | medium  | ✅ Done      |
-| P38 — Debug draw API                  | M      | DX      | ✅ Done      |
+| Priority                              | Effort | Impact   | Status       |
+| ------------------------------------- | ------ | -------- | ------------ |
+| P21 — Drop `__class__` / `$hxClasses` | S      | medium   | ✅ Done      |
+| P22 — Minification                    | XS     | large    | ✅ Done      |
+| P23 — `__zpp` → direct imports        | M      | large    | ✅ Done      |
+| P24 — Namespace reduction             | S      | medium   | ✅ Done      |
+| P25 — `Any` → real types              | XL     | largest  | ✅ Done      |
+| P26 — Tree shaking                    | L      | large    | ✅ Done      |
+| P27 — HaxeShims audit                 | S      | small    | ✅ Done      |
+| P28 — API ergonomics (28a+28b+28c)    | M      | DX       | ✅ Done      |
+| P30 — TSDoc documentation             | L      | DX       | ✅ Done      |
+| P31 — API ergonomics additions        | M      | DX       | ✅ Done      |
+| P32 — Internal accessor cleanup       | S      | small    | ✅ Done      |
+| P33 — Benchmark CI                    | M      | medium   | ✅ Done      |
+| P34 — Granular tree shaking           | XL     | large    | ❌ Cancelled |
+| P35 — Type system improvements        | S      | DX       | ✅ Done      |
+| P37 — Serialization API               | L      | medium   | ✅ Done      |
+| P38 — Debug draw API                  | M      | DX       | ✅ Done      |
+| P39 — Binary serialization            | M      | critical | ✅ Done      |
 
 ### Active & Planned
 
 | Priority                                  | Effort | Impact   | Risk   | Status         |
 | ----------------------------------------- | ------ | -------- | ------ | -------------- |
-| P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3228 tests) |
+| P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3354 tests) |
 | P36 — Server-side + demo examples         | M      | medium   | low    | ⬜ Not started |
-| P39 — Binary serialization (Uint8Array)   | M      | critical | medium | ⬜ Not started |
 | P40 — Haxe remnant cleanup                | M      | medium   | low    | ⬜ Not started |
 | P41 — Capsule shape                       | S      | medium   | low    | ⬜ Not started |
 | P42 — Web Worker helper                   | M      | perf/DX  | medium | ⬜ Not started |
@@ -90,17 +90,26 @@ The engine has no DOM dependencies and runs on Node.js already. Goals:
 
 ---
 
-## Planned: P39 — Binary Serialization (Uint8Array Snapshots)
+## Done: P39 — Binary Serialization (Uint8Array Snapshots)
 
 **Effort: M | Impact: critical (multiplayer) | Risk: medium**
 
-The existing JSON serialization (P37) is suitable for save/load but too slow for per-frame
-rollback netcode (needs sub-millisecond). Binary snapshots following Rapier's pattern:
+Compact binary snapshot format for sub-millisecond rollback netcode:
 
-- `spaceToBinary(space): Uint8Array` — compact binary state snapshot
-- `spaceFromBinary(data): Space` — fast restore
-- Delta encoding option for network sync (only send changed bodies)
-- Target: <1ms for 100-body scene snapshot + restore
+- `spaceToBinary(space): Uint8Array` — compact binary state snapshot (little-endian)
+- `spaceFromBinary(data): Uint8Array` — fast restore
+- `BINARY_SNAPSHOT_VERSION` — format version constant
+- All exported from `@newkrok/nape-js/serialization` (same entry point as JSON API)
+
+**Key differences from JSON serialization:**
+- ~40–60% smaller payload than equivalent JSON
+- No `userData` (arbitrary JSON cannot be efficiently binary-encoded)
+- Same constraint/body coverage (UserConstraint skipped)
+- Magic header `"NAPE"` + version guard for data integrity
+
+**Remaining future work (separate priorities):**
+- Delta encoding for network sync (only send changed bodies) — future priority
+- P48 — Deterministic mode for cross-platform multiplayer
 
 **Use cases:** rollback netcode, client-side prediction, fast save/load, replay recording.
 

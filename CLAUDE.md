@@ -11,9 +11,9 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
 - **Collision detection** — broadphase (sweep-and-prune / dynamic AABB tree), narrowphase, CCD, raycasting, convex sweep
 - **Callback system** — body/interaction/constraint listeners, pre-collision callbacks
 - **Fluid simulation** — buoyancy and drag via fluid-enabled shapes (unique among JS engines)
-- **Serialization** — `spaceToJSON` / `spaceFromJSON` for save/load/multiplayer sync
+- **Serialization** — JSON (`spaceToJSON` / `spaceFromJSON`) + binary (`spaceToBinary` / `spaceFromBinary`) for save/load/multiplayer rollback
 - **Debug draw** — abstract `DebugDraw` interface (Box2D pattern), reference impls for Canvas/Three.js/PixiJS/p5.js
-- **~994 KB** minified ESM + CJS dual bundle, TSDoc documented, 3200+ tests
+- **~994 KB** minified ESM + CJS dual bundle, TSDoc documented, 3300+ tests
 
 ## Build & Test
 
@@ -25,11 +25,12 @@ npm run lint         # eslint + prettier
 
 ## Pre-push Checklist
 
-**Before every `git push`, always run all three:**
+**Before every `git push`, always run all four:**
 
-1. `npm run lint` — must pass (catches unused vars, formatting)
-2. `npm test` — all tests must pass
-3. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
+1. `npm run format:check` — must pass (Prettier code style)
+2. `npm run lint` — must pass (catches unused vars, ESLint rules)
+3. `npm test` — all tests must pass
+4. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
 
 **Documentation to review** — when the PR changes features, APIs, priorities, or versions:
 
@@ -61,11 +62,11 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | What                     | Status |
 | ------------------------ | ------ |
 | Haxe modernization       | ✅ Complete — pure TypeScript, fully typed |
-| Test coverage            | 🔶 ~54% statements (3228 tests), target ≥80% |
+| Test coverage            | 🔶 ~54% statements (3354 tests), target ≥80% |
 | Serialization API        | ✅ Done — `@newkrok/nape-js/serialization` |
+| Binary snapshots         | ✅ Done — `spaceToBinary` / `spaceFromBinary` (P39) |
 | Debug draw API           | ✅ Done — abstract `DebugDraw` + `Space.debugDraw()` |
 | Server/demo examples     | ⬜ Planned — P36 |
-| Binary snapshots         | ⬜ Planned — P39 (multiplayer rollback) |
 | Haxe remnant cleanup     | ⬜ Planned — P40 (128 files with `__name__`/`__class__`/`__super__`) |
 | Capsule shape            | ⬜ Planned — P41 |
 | Web Worker helper        | ⬜ Planned — P42 |
