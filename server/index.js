@@ -16,8 +16,8 @@
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import {
-  Space, Body, BodyType, Vec2, Circle, Polygon, Material,
-  CbType, InteractionType, PreListener, PreFlag,
+  Space, Body, BodyType, Vec2, Circle, Polygon, Capsule, Material,
+  CbType, InteractionType, PreListener, PreFlag, DistanceJoint,
 } from "@newkrok/nape-js";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -26,7 +26,8 @@ const PORT = process.env.PORT || 3000;
 const W = 900;
 const H = 500;
 const TICK_MS = 1000 / 60;
-const PLAYER_RADIUS = 14;
+const PLAYER_W = 28;   // capsule width (narrow side)
+const PLAYER_H = 46;   // capsule height (tall side, after PI/2 rotation)
 const PLAYER_MASS_MATERIAL = new Material(0.1, 0.5, 0.4, 2);
 const JUMP_FORCE = -480;
 const MOVE_FORCE = 220;
@@ -127,8 +128,34 @@ function spawnObject(x, y, shape /* "circle"|"box" */, size) {
   return { id, shape, size, x, y };
 }
 
+// ─── Spawn hanging objects (DistanceJoint pendulums) ─────────────────────────
+
+function spawnHanging(anchorX, anchorY, ropeLen, shape, size) {
+  const id = nextBodyId++;
+  const body = new Body(BodyType.DYNAMIC, new Vec2(anchorX, anchorY + ropeLen));
+  if (shape === "circle") {
+    body.shapes.add(new Circle(size, undefined, new Material(0.2, 0.4, 0.3, 1.5)));
+  } else {
+    body.shapes.add(new Polygon(Polygon.box(size, size), undefined, new Material(0.2, 0.4, 0.3, 1.5)));
+  }
+  body.space = space;
+  dynamicBodies.set(id, body);
+
+  // Static anchor body (invisible, just for the joint)
+  const anchor = new Body(BodyType.STATIC, new Vec2(anchorX, anchorY));
+  anchor.space = space;
+
+  const joint = new DistanceJoint(anchor, body, new Vec2(0, 0), new Vec2(0, 0), ropeLen, ropeLen);
+  joint.stiff = false;
+  joint.damping = 2;
+  joint.frequency = 4;
+  joint.space = space;
+
+  return { id, shape, size, x: anchorX, y: anchorY + ropeLen, anchorX, anchorY, ropeLen };
+}
+
 const sceneObjects = [
-  // Labdák
+  // Labdák — padlón
   spawnObject(200, 350, "circle", 14),
   spawnObject(400, 380, "circle", 10),
   spawnObject(650, 350, "circle", 16),
@@ -146,12 +173,19 @@ const sceneObjects = [
   spawnObject(W / 2 + 30, H * 0.65 - 30, "circle", 10),
   spawnObject(190,         H * 0.50 - 25, "box",    16),
   spawnObject(710,         H * 0.50 - 25, "circle", 11),
+  // Lelógó elemek — mennyezetről
+  spawnHanging(160,  WALL, 110, "circle", 16),
+  spawnHanging(450,  WALL,  90, "box",    20),
+  spawnHanging(740,  WALL, 120, "circle", 13),
+  spawnHanging(310,  WALL,  70, "box",    16),
+  spawnHanging(610,  WALL,  80, "circle", 11),
 ];
 
 // ─── Player management ────────────────────────────────────────────────────────
 
 let nextPlayerId = 1;
-const players = new Map(); // playerId → { ws, body, bodyId, colorIdx, keys, onGround }
+const players = new Map();    // playerId → { ws, body, bodyId, colorIdx, keys, onGround }
+const spectators = new Set(); // ws handles of spectator connections
 
 function spawnPlayer(ws) {
   if (players.size >= MAX_PLAYERS) return null;
@@ -160,9 +194,11 @@ function spawnPlayer(ws) {
   const colorIdx = (playerId - 1) % PLAYER_COLORS.length;
   const bodyId = nextBodyId++;
 
-  const spawnX = WALL + PLAYER_RADIUS + Math.random() * (W - WALL * 2 - PLAYER_RADIUS * 2);
+  const spawnX = WALL + PLAYER_W + Math.random() * (W - WALL * 2 - PLAYER_W * 2);
   const body = new Body(BodyType.DYNAMIC, new Vec2(spawnX, 60));
-  body.shapes.add(new Circle(PLAYER_RADIUS, undefined, PLAYER_MASS_MATERIAL));
+  const cap = new Capsule(PLAYER_H, PLAYER_W, undefined, PLAYER_MASS_MATERIAL);
+  cap.rotation = Math.PI / 2;
+  body.shapes.add(cap);
   body.shapes.at(0).cbTypes.add(playerType);
   // Prevent rotation so character stays upright
   body.allowRotation = false;
@@ -181,30 +217,33 @@ function removePlayer(playerId) {
   if (!player) return;
   player.body.space = null;
   dynamicBodies.delete(player.bodyId);
+  lastState.delete(player.bodyId);
   players.delete(playerId);
 }
 
 // ─── Ground detection via space arbiters ─────────────────────────────────────
-// Check space.arbiters for any arbiter involving this body with upward normal
+// A body is on the ground if it has a collision contact where the normal's Y
+// component (pointing away from the other body toward the player) is upward,
+// i.e. the floor pushes the player up (effNy < 0 in canvas coords where +y=down).
 
 function isOnGround(body) {
+  // Sleeping bodies have no active arbiters — treat as grounded if nearly stationary.
+  if (body.isSleeping) return true;
   try {
     const arbs = space.arbiters;
-    for (let i = 0; i < arbs.length; i++) {
+    const count = arbs.zpp_gl();
+    for (let i = 0; i < count; i++) {
       const arb = arbs.at(i);
       try {
         if (arb.body1 !== body && arb.body2 !== body) continue;
         const col = arb.collisionArbiter;
         if (!col) continue;
         const ny = col.normal.y;
-        // In canvas coords +y is down. The collision normal points from body1 → body2.
-        // We want a contact where the floor is below the player.
-        // The effective normal relative to the player is:
-        //   player = body2 → normal pushes player upward → ny < 0
-        //   player = body1 → normal pushes player downward, floor below → ny > 0
-        // Accept both orderings; only vertically-dominant contacts count.
-        const effNy = arb.body2 === body ? ny : -ny;
-        if (effNy < -0.5) return true;
+        // normal points from body1 → body2.
+        // If player is body1: effNy = -ny (floor pushes up → effNy < 0)
+        // If player is body2: effNy = ny  (normal already points into player upward)
+        const effNy = arb.body1 === body ? -ny : ny;
+        if (effNy < -0.3) return true;
       } catch (_) {}
     }
   } catch (_) {}
@@ -234,20 +273,40 @@ function applyPlayerInputs() {
   }
 }
 
-// ─── Build binary state frame ─────────────────────────────────────────────────
+// ─── Build binary state frame (delta — only changed bodies) ───────────────────
 // Format: [bodyCount: Uint16] + N × [id: Uint16, x: Float32, y: Float32, rot: Float32]
 // Total: 2 + N×14 bytes
 
+const POS_THRESHOLD = 0.1;   // px
+const ROT_THRESHOLD = 0.001; // rad
+const lastState = new Map(); // id → { x, y, rot }
+
 function buildStateFrame() {
-  const count = dynamicBodies.size;
-  const buf = Buffer.allocUnsafe(2 + count * 14);
-  buf.writeUInt16LE(count, 0);
-  let offset = 2;
+  const changed = [];
   for (const [id, body] of dynamicBodies) {
-    buf.writeUInt16LE(id, offset);       offset += 2;
-    buf.writeFloatLE(body.position.x, offset); offset += 4;
-    buf.writeFloatLE(body.position.y, offset); offset += 4;
-    buf.writeFloatLE(body.rotation,   offset); offset += 4;
+    const x   = body.position.x;
+    const y   = body.position.y;
+    const rot = body.rotation;
+    const prev = lastState.get(id);
+    if (
+      !prev ||
+      Math.abs(x - prev.x)     > POS_THRESHOLD ||
+      Math.abs(y - prev.y)     > POS_THRESHOLD ||
+      Math.abs(rot - prev.rot) > ROT_THRESHOLD
+    ) {
+      changed.push({ id, x, y, rot });
+      lastState.set(id, { x, y, rot });
+    }
+  }
+  if (changed.length === 0) return null;
+  const buf = Buffer.allocUnsafe(2 + changed.length * 14);
+  buf.writeUInt16LE(changed.length, 0);
+  let offset = 2;
+  for (const { id, x, y, rot } of changed) {
+    buf.writeUInt16LE(id, offset);     offset += 2;
+    buf.writeFloatLE(x,   offset);     offset += 4;
+    buf.writeFloatLE(y,   offset);     offset += 4;
+    buf.writeFloatLE(rot, offset);     offset += 4;
   }
   return buf;
 }
@@ -256,9 +315,10 @@ function buildStateFrame() {
 
 function broadcastBinary(buf) {
   for (const [, player] of players) {
-    if (player.ws.readyState === 1 /* OPEN */) {
-      player.ws.send(buf);
-    }
+    if (player.ws.readyState === 1 /* OPEN */) player.ws.send(buf);
+  }
+  for (const ws of spectators) {
+    if (ws.readyState === 1 /* OPEN */) ws.send(buf);
   }
 }
 
@@ -302,7 +362,7 @@ setInterval(() => {
   applyPlayerInputs();
   space.step(TICK_MS / 1000);
   const frame = buildStateFrame();
-  broadcastBinary(frame);
+  if (frame) broadcastBinary(frame);
 }, TICK_MS);
 
 // ─── HTTP + WebSocket server ──────────────────────────────────────────────────
@@ -331,12 +391,38 @@ const wss = new WebSocketServer({
 
 wss.on("connection", (ws) => {
   const result = spawnPlayer(ws);
+
+  // ── Spectator mode ────────────────────────────────────────────────────────
   if (!result) {
-    ws.send(JSON.stringify({ type: "error", message: "Server full" }));
-    ws.close();
+    spectators.add(ws);
+    console.log(`Spectator connected, total spectators: ${spectators.size}`);
+    ws.send(JSON.stringify({
+      type: "init",
+      spectator: true,
+      staticBodies,
+      sceneObjects,
+      playerColors: PLAYER_COLORS,
+      players: [...players.entries()].map(([id, p]) => ({ id, colorIdx: p.colorIdx, bodyId: p.bodyId })),
+    }));
+    broadcastPlayerList();
+
+    ws.on("message", (data) => {
+      try {
+        const msg = JSON.parse(data.toString());
+        if (msg.type === "ping") ws.send(JSON.stringify({ type: "pong" }));
+      } catch (_) {}
+    });
+
+    ws.on("close", () => {
+      spectators.delete(ws);
+      console.log(`Spectator disconnected, total spectators: ${spectators.size}`);
+    });
+
+    ws.on("error", () => { spectators.delete(ws); });
     return;
   }
 
+  // ── Player mode ───────────────────────────────────────────────────────────
   const { playerId, bodyId, colorIdx } = result;
   console.log(`Player ${playerId} connected (body ${bodyId}), total: ${players.size}`);
 
@@ -349,6 +435,9 @@ wss.on("connection", (ws) => {
       if (msg.type === "input") {
         const player = players.get(playerId);
         if (player) player.keys = msg.keys;
+      }
+      if (msg.type === "ping") {
+        ws.send(JSON.stringify({ type: "pong" }));
       }
     } catch (_) {}
   });

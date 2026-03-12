@@ -78,6 +78,6 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | ECS adapter              | ⬜ Planned — P49 |
 | Spatial hash grid        | ⬜ Planned — P50 |
 | Sub-stepping solver      | ⬜ Planned — P51 (long-term) |
-| Multiplayer demo         | ⬜ Planned — P52 (hosztolt, WebSocket, Railway) |
+| Multiplayer demo         | ✅ Done — P52 (Railway WebSocket, `docs/multiplayer.html` + `server/`) |
 
 Full roadmap with details, competitor analysis, and history: `.claude/docs/roadmap.md`
