@@ -25,11 +25,12 @@ npm run lint         # eslint + prettier
 
 ## Pre-push Checklist
 
-**Before every `git push`, always run all three:**
+**Before every `git push`, always run all four:**
 
-1. `npm run lint` — must pass (catches unused vars, formatting)
-2. `npm test` — all tests must pass
-3. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
+1. `npm run format:check` — must pass (Prettier code style)
+2. `npm run lint` — must pass (catches unused vars, ESLint rules)
+3. `npm test` — all tests must pass
+4. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
 
 **Documentation to review** — when the PR changes features, APIs, priorities, or versions:
 
