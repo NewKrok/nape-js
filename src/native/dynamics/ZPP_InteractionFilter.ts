@@ -12,7 +12,6 @@ export class ZPP_InteractionFilter {
   static zpp_pool: ZPP_InteractionFilter | null = null;
 
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "dynamics", "ZPP_InteractionFilter"];
 
   // --- Static: namespace references (set by compiled module) ---
   static _nape: any = null;

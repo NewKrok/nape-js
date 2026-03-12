@@ -12,8 +12,6 @@ import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 
 export class ZPP_WeldJoint extends ZPP_Constraint {
-  static override __name__ = ["zpp_nape", "constraint", "ZPP_WeldJoint"];
-  static __super__ = ZPP_Constraint;
   static _wrapFn: ((zpp: ZPP_WeldJoint) => any) | null = null;
   static _createFn: ((...args: any[]) => any) | null = null;
 

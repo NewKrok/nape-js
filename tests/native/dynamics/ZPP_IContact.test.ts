@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_IContact } from "../../../src/native/dynamics/ZPP_IContact";
 
 describe("ZPP_IContact", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_IContact.__name__).toEqual(["zpp_nape", "dynamics", "ZPP_IContact"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const c = new ZPP_IContact();

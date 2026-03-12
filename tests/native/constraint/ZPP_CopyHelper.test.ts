@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_CopyHelper } from "../../../src/native/constraint/ZPP_CopyHelper";
 
 describe("ZPP_CopyHelper", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_CopyHelper.__name__).toEqual(["zpp_nape", "constraint", "ZPP_CopyHelper"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize fields to defaults", () => {
       const h = new ZPP_CopyHelper();

@@ -10,7 +10,6 @@
 
 export class ZPP_CallbackSet {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_CallbackSet"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_CallbackSet | null = null;

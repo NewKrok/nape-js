@@ -3,10 +3,6 @@ import { BodyType } from "../../src/phys/BodyType";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("BodyType", () => {
-  it("should have correct __name__", () => {
-    expect(BodyType.__name__).toEqual(["nape", "phys", "BodyType"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new BodyType()).toThrow("Cannot instantiate");
   });

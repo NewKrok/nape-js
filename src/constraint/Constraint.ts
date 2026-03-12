@@ -25,7 +25,6 @@ import { ZPP_Constraint } from "../native/constraint/ZPP_Constraint";
  * Fully modernized — uses ZPP_Constraint directly (extracted to TypeScript).
  */
 export class Constraint {
-  static __name__ = ["nape", "constraint", "Constraint"];
   /** @internal */
   static zpp_internalAlloc = false;
 

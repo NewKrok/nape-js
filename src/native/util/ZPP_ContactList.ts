@@ -12,7 +12,6 @@ import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 
 export class ZPP_ContactList {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "util", "ZPP_ContactList"];
 
   // --- Static: internal flag for iterator instantiation guard ---
   static internal = false;

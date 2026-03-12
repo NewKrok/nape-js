@@ -12,8 +12,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 30760–30856.
  */
 export class ValidationResult {
-  static __name__ = ["nape", "shape", "ValidationResult"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ValidationResult derp!");

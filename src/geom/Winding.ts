@@ -11,8 +11,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 19050–19116.
  */
 export class Winding {
-  static __name__ = ["nape", "geom", "Winding"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate Winding derp!");

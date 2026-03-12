@@ -12,7 +12,6 @@ export class ZPP_AABB {
   static zpp_pool: ZPP_AABB | null = null;
 
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_AABB"];
 
   // --- Static: namespace references ---
   static _nape: any = null;

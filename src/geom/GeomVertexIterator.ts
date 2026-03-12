@@ -18,8 +18,6 @@ function GeomVertexIteratorCtor(this: any) {
   }
 }
 
-GeomVertexIteratorCtor.__name__ = ["nape", "geom", "GeomVertexIterator"];
-
 GeomVertexIteratorCtor.prototype.zpp_inner = null;
 
 GeomVertexIteratorCtor.prototype.hasNext = function (this: any): boolean {

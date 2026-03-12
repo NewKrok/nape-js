@@ -16,8 +16,6 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { getNape } from "../../core/engine";
 
 export class ZPP_Cutter {
-  static __name__ = ["zpp_nape", "geom", "ZPP_Cutter"];
-
   /** Internal list of intersections (ZNPList_ZPP_CutInt), lazily created. */
   static ints: any = null;
 

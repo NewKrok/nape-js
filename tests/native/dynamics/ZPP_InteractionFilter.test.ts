@@ -9,16 +9,6 @@ describe("ZPP_InteractionFilter", () => {
     ZPP_InteractionFilter._nape = createMockNape();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_InteractionFilter.__name__).toEqual([
-        "zpp_nape",
-        "dynamics",
-        "ZPP_InteractionFilter",
-      ]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize with default bitmask values", () => {
       const f = new ZPP_InteractionFilter();

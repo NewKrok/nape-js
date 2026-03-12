@@ -11,12 +11,6 @@ describe("ZPP_PubPool", () => {
     ZPP_PubPool.nextVec3 = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_PubPool.__name__).toEqual(["zpp_nape", "util", "ZPP_PubPool"]);
-    });
-  });
-
   describe("static pool references", () => {
     it("should initialize all pools to null", () => {
       expect(ZPP_PubPool.poolGeomPoly).toBeNull();

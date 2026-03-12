@@ -17,7 +17,6 @@ import { ZPP_Set } from "../util/ZPP_Set";
 
 export class ZPP_Monotone {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_Monotone"];
 
   // --- Static fields ---
   static queue: ZNPList<ZPP_PartitionVertex> | null = null;

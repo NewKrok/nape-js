@@ -3,10 +3,6 @@ import { Broadphase } from "../../src/space/Broadphase";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("Broadphase", () => {
-  it("should have correct __name__", () => {
-    expect(Broadphase.__name__).toEqual(["nape", "space", "Broadphase"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new Broadphase()).toThrow("Cannot instantiate");
   });

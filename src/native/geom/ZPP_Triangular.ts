@@ -14,7 +14,6 @@ import { ZNPList_ZPP_PartitionVertex, ZPP_Set_ZPP_PartitionPair } from "../util/
 
 export class ZPP_Triangular {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_Triangular"];
 
   // --- Static fields ---
   static queue: any = null;

@@ -3,10 +3,6 @@ import { PreFlag } from "../../src/callbacks/PreFlag";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("PreFlag", () => {
-  it("should have correct __name__", () => {
-    expect(PreFlag.__name__).toEqual(["nape", "callbacks", "PreFlag"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new PreFlag()).toThrow("Cannot instantiate");
   });

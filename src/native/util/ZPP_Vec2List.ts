@@ -13,7 +13,6 @@ import { ZNPList_ZPP_Vec2 } from "./ZNPRegistry";
 
 export class ZPP_Vec2List {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "util", "ZPP_Vec2List"];
 
   // --- Static: internal flag for iterator instantiation guard ---
   static internal = false;

@@ -4,12 +4,6 @@ import "../../../src/core/engine";
 import { ZPP_Simplify } from "../../../src/native/geom/ZPP_Simplify";
 
 describe("ZPP_Simplify", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Simplify.__name__).toEqual(["zpp_nape", "geom", "ZPP_Simplify"]);
-    });
-  });
-
   describe("lessval", () => {
     it("should return negative when a is less", () => {
       expect(ZPP_Simplify.lessval({ x: 0, y: 0 }, { x: 1, y: 1 })).toBeLessThan(0);

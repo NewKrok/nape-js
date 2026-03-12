@@ -10,8 +10,6 @@ import type { Shape } from "../shape/Shape";
  * Instances are pooled — call `dispose()` when done to return to pool.
  */
 export class ConvexResult {
-  static __name__ = ["nape", "geom", "ConvexResult"];
-
   /** @internal */
   zpp_inner: ZPP_ConvexRayResult;
 

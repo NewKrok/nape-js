@@ -17,11 +17,7 @@ import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
 
-export class ZPP_DynAABBPhase {
-  // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_DynAABBPhase"];
-  static __super__: any = null;
-
+export class ZPP_DynAABBPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
   static _zpp: any = null;
   static _nape: any = null;
@@ -40,36 +36,14 @@ export class ZPP_DynAABBPhase {
   treeStack2: any = null;
   failed: any = null;
   openlist: any = null;
-  space: any = null;
-  is_sweep = false;
-  sweep: any = null;
-  dynab: any = null;
-  aabbShape: any = null;
-  matrix: any = null;
-  circShape: any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: any = ZPP_DynAABBPhase;
 
   constructor(space: any) {
-    ZPP_Broadphase._initFields(this);
+    super();
     this.space = space;
     this.is_sweep = false;
     this.dynab = this;
     this.stree = new ZPP_AABBTree();
     this.dtree = new ZPP_AABBTree();
-  }
-
-  // ========== Inheritance init ==========
-
-  static _init(): void {
-    ZPP_DynAABBPhase.__super__ = ZPP_DynAABBPhase._zpp.space.ZPP_Broadphase;
-    const parentProto = ZPP_DynAABBPhase._zpp.space.ZPP_Broadphase.prototype;
-    Object.getOwnPropertyNames(parentProto).forEach((k) => {
-      if (k !== "constructor" && !(k in ZPP_DynAABBPhase.prototype)) {
-        (ZPP_DynAABBPhase.prototype as any)[k] = parentProto[k];
-      }
-    });
   }
 
   // ========== dyn ==========

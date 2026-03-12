@@ -12,7 +12,6 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_ConvexRayResult {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_ConvexRayResult"];
 
   // --- Static: object pools ---
   static rayPool: ZPP_ConvexRayResult | null = null;

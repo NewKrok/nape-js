@@ -11,8 +11,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 11653–11725.
  */
 export class ArbiterType {
-  static __name__ = ["nape", "dynamics", "ArbiterType"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ArbiterType derp!");

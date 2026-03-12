@@ -36,8 +36,6 @@ function _disposeWeakVec2(v: Vec2): void {
  * Fully modernized — uses ZPP_Ray directly (extracted to TypeScript).
  */
 export class Ray {
-  static __name__ = ["nape", "geom", "Ray"];
-
   /** @internal */
   zpp_inner: ZPP_Ray;
 

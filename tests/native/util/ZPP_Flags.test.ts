@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_Flags } from "../../../src/native/util/ZPP_Flags";
 
 describe("ZPP_Flags", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Flags.__name__).toEqual(["zpp_nape", "util", "ZPP_Flags"]);
-    });
-  });
-
   describe("static flag fields", () => {
     it("should initialize gravity mass mode flags to null", () => {
       expect(ZPP_Flags.GravMassMode_DEFAULT).toBeNull();

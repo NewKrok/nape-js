@@ -15,9 +15,6 @@ import type { Body } from "../phys/Body";
  * Fully modernized — uses extracted ZPP_FluidArbiter directly.
  */
 export class FluidArbiter extends Arbiter {
-  static override __name__ = ["nape", "dynamics", "FluidArbiter"];
-  static __super__ = Arbiter;
-
   constructor() {
     super();
   }

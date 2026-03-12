@@ -14,7 +14,6 @@ import { ZPP_InteractionListener } from "./ZPP_InteractionListener";
 
 export class ZPP_CbType {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_CbType"];
 
   // --- Static: namespace references ---
   static _zpp: any = null;

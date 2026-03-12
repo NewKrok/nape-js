@@ -14,8 +14,6 @@ import { ZPP_Set_ZPP_SimpleSeg } from "../util/ZNPRegistry";
 import { ZPP_Set } from "../util/ZPP_Set";
 
 export class ZPP_SimpleSweep {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SimpleSweep"];
-
   sweepx = 0.0;
   tree: ZPP_Set<ZPP_SimpleSeg> | null = null;
 

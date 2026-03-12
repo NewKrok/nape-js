@@ -5,12 +5,8 @@ const TABLE_MASK = 1048575; // TABLE_SIZE - 1
 const HASH_MULT = 106039;
 
 export class FastHash2_Hashable2_Boolfalse {
-  static __name__ = ["zpp_nape", "util", "FastHash2_Hashable2_Boolfalse"];
-
   table: (Hashable2_Boolfalse | null)[];
   cnt: number = 0;
-
-  __class__: any = FastHash2_Hashable2_Boolfalse;
 
   constructor() {
     this.cnt = 0;

@@ -17,12 +17,6 @@ describe("ZPP_CbSet", () => {
     };
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_CbSet.__name__).toEqual(["zpp_nape", "callbacks", "ZPP_CbSet"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize all lists", () => {
       const s = new ZPP_CbSet();

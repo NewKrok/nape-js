@@ -6,12 +6,6 @@ describe("ZPP_SimpleEvent", () => {
     ZPP_SimpleEvent.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_SimpleEvent.__name__).toEqual(["zpp_nape", "geom", "ZPP_SimpleEvent"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const e = new ZPP_SimpleEvent();

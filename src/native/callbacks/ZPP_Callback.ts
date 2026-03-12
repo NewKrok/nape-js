@@ -9,7 +9,6 @@
 
 export class ZPP_Callback {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_Callback"];
 
   // --- Static: namespace references ---
   static _nape: any = null;

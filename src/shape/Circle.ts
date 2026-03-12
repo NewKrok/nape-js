@@ -14,9 +14,6 @@ import { ZPP_Const } from "../native/util/ZPP_Const";
  * A circular physics shape. The simplest and most performant collision shape.
  */
 export class Circle extends Shape {
-  static __name__ = ["nape", "shape", "Circle"];
-  static __super__: any = Shape;
-
   /** @internal */
   zpp_inner_zn!: ZPP_Circle;
 

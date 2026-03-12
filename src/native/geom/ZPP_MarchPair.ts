@@ -8,7 +8,6 @@
 
 export class ZPP_MarchPair {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_MarchPair"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_MarchPair | null = null;

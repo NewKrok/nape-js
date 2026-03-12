@@ -12,7 +12,6 @@ import { ZPP_AABB } from "../geom/ZPP_AABB";
 
 export class ZPP_AABBNode {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_AABBNode"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_AABBNode | null = null;

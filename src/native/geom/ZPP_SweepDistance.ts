@@ -15,8 +15,6 @@ import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { getNape } from "../../core/engine";
 
 export class ZPP_SweepDistance {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SweepDistance"];
-
   static dynamicSweep(
     toi: ZPP_ToiEvent,
     timeStep: number,

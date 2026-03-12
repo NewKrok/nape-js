@@ -170,35 +170,26 @@ export function registerZPPClasses(): any {
   (ZPP_Constraint as any)._nape = nape;
   (ZPP_Constraint as any)._zpp = zpp;
   zpp.constraint.ZPP_Constraint = ZPP_Constraint;
-  zpp.constraint.ZPP_Constraint.__name__ = (ZPP_Constraint as any).__name__;
 
   zpp.constraint.ZPP_AngleJoint = ZPP_AngleJoint;
-  zpp.constraint.ZPP_AngleJoint.__name__ = (ZPP_AngleJoint as any).__name__;
 
   zpp.constraint.ZPP_CopyHelper = ZPP_CopyHelper;
 
   zpp.constraint.ZPP_DistanceJoint = ZPP_DistanceJoint;
-  zpp.constraint.ZPP_DistanceJoint.__name__ = (ZPP_DistanceJoint as any).__name__;
 
   zpp.constraint.ZPP_LineJoint = ZPP_LineJoint;
-  zpp.constraint.ZPP_LineJoint.__name__ = (ZPP_LineJoint as any).__name__;
 
   zpp.constraint.ZPP_MotorJoint = ZPP_MotorJoint;
-  zpp.constraint.ZPP_MotorJoint.__name__ = (ZPP_MotorJoint as any).__name__;
 
   zpp.constraint.ZPP_PivotJoint = ZPP_PivotJoint;
-  zpp.constraint.ZPP_PivotJoint.__name__ = (ZPP_PivotJoint as any).__name__;
 
   zpp.constraint.ZPP_PulleyJoint = ZPP_PulleyJoint;
-  zpp.constraint.ZPP_PulleyJoint.__name__ = (ZPP_PulleyJoint as any).__name__;
 
   zpp.constraint.ZPP_UserConstraint = ZPP_UserConstraint;
-  zpp.constraint.ZPP_UserConstraint.__name__ = (ZPP_UserConstraint as any).__name__;
 
   zpp.constraint.ZPP_UserBody = ZPP_UserBody;
 
   zpp.constraint.ZPP_WeldJoint = ZPP_WeldJoint;
-  zpp.constraint.ZPP_WeldJoint.__name__ = (ZPP_WeldJoint as any).__name__;
 
   // --- dynamics ---
   if (!zpp.dynamics) zpp.dynamics = {};
@@ -367,7 +358,6 @@ export function registerZPPClasses(): any {
 
   (ZPP_DynAABBPhase as any)._zpp = zpp;
   (ZPP_DynAABBPhase as any)._nape = nape;
-  (ZPP_DynAABBPhase as any)._init();
   zpp.space.ZPP_DynAABBPhase = ZPP_DynAABBPhase;
 
   (ZPP_Island as any)._zpp = zpp;
@@ -389,7 +379,6 @@ export function registerZPPClasses(): any {
 
   (ZPP_SweepPhase as any)._zpp = zpp;
   (ZPP_SweepPhase as any)._nape = nape;
-  (ZPP_SweepPhase as any)._init();
   zpp.space.ZPP_SweepPhase = ZPP_SweepPhase;
 
   // --- util (remaining) ---

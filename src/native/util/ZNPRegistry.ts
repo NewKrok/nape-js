@@ -43,23 +43,20 @@ export let ZNPList_ZPP_CbSetPair: typeof ZNPList = null as any;
 // Factory helpers
 // ---------------------------------------------------------------------------
 
-function createZNPNode(typeName: string): any {
+function createZNPNode(_typeName: string): any {
   const cls = class extends ZNPNode<any> {};
-  (cls as any).__name__ = ["zpp_nape", "util", "ZNPNode_" + typeName];
   (cls as any).zpp_pool = null;
   return cls;
 }
 
 function createZNPList(typeName: string, N: any): any {
   const cls = class extends ZNPList<any> {};
-  (cls as any).__name__ = ["zpp_nape", "util", "ZNPList_" + typeName];
   (cls as any)._NodeClass = N;
   return cls;
 }
 
-function createZPPSet(typeName: string): any {
+function createZPPSet(_typeName: string): any {
   const cls = class extends ZPP_Set<any> {};
-  (cls as any).__name__ = ["zpp_nape", "util", "ZPP_Set_" + typeName];
   (cls as any).zpp_pool = null;
   return cls;
 }

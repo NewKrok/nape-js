@@ -13,7 +13,6 @@ import { ZPP_ID } from "../util/ZPP_ID";
 import type { ZPP_SimpleVert } from "./ZPP_SimpleVert";
 
 export class ZPP_SimpleSeg {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SimpleSeg"];
   static zpp_pool: ZPP_SimpleSeg | null = null;
 
   left: ZPP_SimpleVert | null = null;

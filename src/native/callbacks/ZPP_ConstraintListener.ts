@@ -10,8 +10,6 @@
 import { ZPP_Listener } from "./ZPP_Listener";
 
 export class ZPP_ConstraintListener extends ZPP_Listener {
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_ConstraintListener"];
-
   handler: any = null;
   options: any = null;
   outer_zn: any = null;

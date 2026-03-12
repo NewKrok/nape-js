@@ -12,7 +12,6 @@ import { ZPP_Component } from "./ZPP_Component";
 
 export class ZPP_Island {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_Island"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_Island | null = null;

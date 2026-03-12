@@ -8,7 +8,6 @@
 
 export class ZPP_GeomPoly {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_GeomPoly"];
 
   // --- Instance ---
   outer: object | null = null;

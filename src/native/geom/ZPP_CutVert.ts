@@ -9,7 +9,6 @@
 
 export class ZPP_CutVert {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_CutVert"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_CutVert | null = null;

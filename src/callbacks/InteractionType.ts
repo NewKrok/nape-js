@@ -13,8 +13,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 1785–1883.
  */
 export class InteractionType {
-  static __name__ = ["nape", "callbacks", "InteractionType"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate InteractionType derp!");

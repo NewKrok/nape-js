@@ -8,10 +8,6 @@ import { Circle } from "../../src/shape/Circle";
 import { Polygon } from "../../src/shape/Polygon";
 
 describe("Geom", () => {
-  it("should have correct __name__", () => {
-    expect(Geom.__name__).toEqual(["nape", "geom", "Geom"]);
-  });
-
   describe("distance", () => {
     it("should calculate distance between two circle shapes", () => {
       const space = new Space(new Vec2(0, 0));

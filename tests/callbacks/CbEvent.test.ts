@@ -3,10 +3,6 @@ import { CbEvent } from "../../src/callbacks/CbEvent";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("CbEvent", () => {
-  it("should have correct __name__", () => {
-    expect(CbEvent.__name__).toEqual(["nape", "callbacks", "CbEvent"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new CbEvent()).toThrow("Cannot instantiate");
   });

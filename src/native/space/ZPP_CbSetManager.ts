@@ -9,7 +9,6 @@
 
 export class ZPP_CbSetManager {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_CbSetManager"];
 
   // --- Static: namespace references ---
   static _zpp: any = null;

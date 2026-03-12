@@ -14,9 +14,6 @@ import type { Constraint } from "../constraint/Constraint";
  * Fully modernized — uses ZPP_Compound directly (extracted to TypeScript).
  */
 export class Compound extends Interactor {
-  static __name__ = ["nape", "phys", "Compound"];
-  static __super__ = Interactor;
-
   /** @internal */
   zpp_inner!: ZPP_Compound;
 

@@ -14,8 +14,6 @@ import { ZPP_IContact } from "./ZPP_IContact";
 
 export class ZPP_ColArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
-  static override __name__ = ["zpp_nape", "dynamics", "ZPP_ColArbiter"];
-  static __super__ = ZPP_Arbiter;
 
   // --- Static: face type constants ---
   static FACE1 = 0;

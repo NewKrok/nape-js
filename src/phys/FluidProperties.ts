@@ -14,7 +14,6 @@ import type { NapeInner } from "../geom/Vec2";
  */
 export class FluidProperties {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "phys", "FluidProperties"];
 
   /** @internal The internal ZPP_FluidProperties this wrapper owns. */
   zpp_inner: ZPP_FluidProperties;

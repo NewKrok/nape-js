@@ -18,7 +18,6 @@ export class ZPP_Material {
   static ARBITERS = 8;
 
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "phys", "ZPP_Material"];
 
   /**
    * Namespace references, set by the compiled module after import.

@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_VecMath } from "../../../src/native/geom/ZPP_VecMath";
 
 describe("ZPP_VecMath", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_VecMath.__name__).toEqual(["zpp_nape", "geom", "ZPP_VecMath"]);
-    });
-  });
-
   describe("vec_dsq", () => {
     it("should return 0 for identical points", () => {
       expect(ZPP_VecMath.vec_dsq(3, 4, 3, 4)).toBe(0);

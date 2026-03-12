@@ -51,8 +51,6 @@ import type { PreFlag } from "./PreFlag";
  * Fully modernized from nape-compiled.js lines 1142–1338.
  */
 export class PreListener extends Listener {
-  static __name__ = ["nape", "callbacks", "PreListener"];
-
   /** @internal */
   zpp_inner_zn: ZPP_InteractionListener;
 

@@ -9,7 +9,6 @@
 
 export class ZPP_PubPool {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "util", "ZPP_PubPool"];
 
   // --- Static: pool heads and lookaheads ---
   // Typed as `any` to avoid circular imports; concrete type is always a public API class.

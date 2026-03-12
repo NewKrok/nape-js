@@ -3,10 +3,6 @@ import { getNape } from "../../src/core/engine";
 import { ConvexResult } from "../../src/geom/ConvexResult";
 
 describe("ConvexResult", () => {
-  it("should have correct __name__", () => {
-    expect(ConvexResult.__name__).toEqual(["nape", "geom", "ConvexResult"]);
-  });
-
   it("should be registered in nape namespace", () => {
     const nape = getNape();
     expect(nape.geom.ConvexResult).toBe(ConvexResult);

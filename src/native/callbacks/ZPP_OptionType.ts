@@ -11,7 +11,6 @@ import { ZPP_CbType } from "./ZPP_CbType";
 
 export class ZPP_OptionType {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_OptionType"];
 
   // --- Static: namespace references ---
   static _nape: any = null;

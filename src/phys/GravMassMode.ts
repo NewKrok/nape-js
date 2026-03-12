@@ -11,8 +11,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 26272–26342.
  */
 export class GravMassMode {
-  static __name__ = ["nape", "phys", "GravMassMode"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate GravMassMode derp!");

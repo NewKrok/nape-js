@@ -122,14 +122,6 @@ describe("FluidArbiter", () => {
     expect(() => new FluidArbiter()).toThrow("Cannot instantiate");
   });
 
-  it("extends Arbiter", () => {
-    expect(FluidArbiter.__super__).toBe(Arbiter);
-  });
-
-  it("has correct __name__", () => {
-    expect(FluidArbiter.__name__).toEqual(["nape", "dynamics", "FluidArbiter"]);
-  });
-
   // -------------------------------------------------------------------------
   // Callback-captured FluidArbiter (BEGIN)
   // -------------------------------------------------------------------------

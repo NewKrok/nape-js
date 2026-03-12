@@ -15,8 +15,6 @@ import { ZPP_Interactor } from "./ZPP_Interactor";
 
 export class ZPP_Body {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "phys", "ZPP_Body"];
-  static __super__: any = null; // Set at _init time to ZPP_Interactor
 
   /**
    * Namespace references, set by the compiled module after import.
@@ -1562,11 +1560,10 @@ export class ZPP_Body {
     ZPP_Body._initialized = true;
     ZPP_Body._zpp = zpp;
     ZPP_Body._nape = nape;
-    ZPP_Body.__super__ = ZPP_Interactor;
 
     // Copy ZPP_Interactor prototype methods onto ZPP_Body
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
-      if (k !== "constructor" && k !== "__class__" && !(k in ZPP_Body.prototype)) {
+      if (k !== "constructor" && !(k in ZPP_Body.prototype)) {
         (ZPP_Body.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }

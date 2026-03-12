@@ -6,12 +6,6 @@ describe("ZPP_MarchSpan", () => {
     ZPP_MarchSpan.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_MarchSpan.__name__).toEqual(["zpp_nape", "geom", "ZPP_MarchSpan"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should set parent to self", () => {
       const span = new ZPP_MarchSpan();

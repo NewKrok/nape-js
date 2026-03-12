@@ -16,7 +16,6 @@ export class ZPP_Vec2 {
   static zpp_pool: ZPP_Vec2 | null = null;
 
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_Vec2"];
 
   // --- Static: namespace references ---
   static _nape: any = null;

@@ -20,8 +20,6 @@ import {
 import { ZNPList } from "../util/ZNPList";
 
 export class ZPP_MarchingSquares {
-  static __name__ = ["zpp_nape", "geom", "ZPP_MarchingSquares"];
-
   // --- Static fields ---
   static isos: ZNPArray2_Float | null = null;
   static ints: ZNPArray2_ZPP_GeomVert | null = null;

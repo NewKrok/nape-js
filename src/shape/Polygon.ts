@@ -13,9 +13,6 @@ import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter"
  * A convex polygon physics shape.
  */
 export class Polygon extends Shape {
-  static __name__ = ["nape", "shape", "Polygon"];
-  static __super__: any = Shape;
-
   /** @internal */
   zpp_inner_zn!: ZPP_Polygon;
 

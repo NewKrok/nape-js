@@ -3,10 +3,6 @@ import { InertiaMode } from "../../src/phys/InertiaMode";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("InertiaMode", () => {
-  it("should have correct __name__", () => {
-    expect(InertiaMode.__name__).toEqual(["nape", "phys", "InertiaMode"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new InertiaMode()).toThrow("Cannot instantiate");
   });

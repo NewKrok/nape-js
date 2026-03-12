@@ -86,14 +86,6 @@ describe("CollisionArbiter", () => {
     expect(() => new CollisionArbiter()).toThrow("Cannot instantiate");
   });
 
-  it("extends Arbiter", () => {
-    expect(CollisionArbiter.__super__).toBe(Arbiter);
-  });
-
-  it("has correct __name__", () => {
-    expect(CollisionArbiter.__name__).toEqual(["nape", "dynamics", "CollisionArbiter"]);
-  });
-
   // -------------------------------------------------------------------------
   // Callback-captured CollisionArbiter (circle-circle)
   // -------------------------------------------------------------------------

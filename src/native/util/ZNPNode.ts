@@ -10,8 +10,6 @@ export class ZNPNode<T> {
   elt: T | null = null;
   next: ZNPNode<T> | null = null;
 
-  __class__: any;
-
   alloc(): void {}
 
   free(): void {

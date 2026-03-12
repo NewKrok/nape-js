@@ -10,7 +10,6 @@
 
 export class ZPP_Component {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_Component"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_Component | null = null;

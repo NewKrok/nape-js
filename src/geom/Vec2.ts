@@ -13,7 +13,6 @@ import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
  */
 export class Vec2 {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "geom", "Vec2"];
 
   /** @internal The internal ZPP_Vec2 this wrapper owns. */
   zpp_inner: ZPP_Vec2;

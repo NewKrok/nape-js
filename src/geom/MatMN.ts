@@ -9,8 +9,6 @@ import type { NapeInner } from "./Vec2";
  * Converted from nape-compiled.js lines 17261–17395.
  */
 export class MatMN {
-  static __name__ = ["nape", "geom", "MatMN"];
-
   /** @internal */
   zpp_inner: ZPP_MatMN;
 

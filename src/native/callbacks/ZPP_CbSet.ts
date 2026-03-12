@@ -16,7 +16,6 @@ import { ZPP_ConstraintListener } from "./ZPP_ConstraintListener";
 
 export class ZPP_CbSet {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_CbSet"];
 
   // --- Static: namespace references ---
   static _zpp: any = null;

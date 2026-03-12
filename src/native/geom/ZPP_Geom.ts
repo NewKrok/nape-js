@@ -7,8 +7,6 @@
  */
 
 export class ZPP_Geom {
-  static __name__ = ["zpp_nape", "geom", "ZPP_Geom"];
-
   /** Validate and update all derived geometry for a shape. */
   static validateShape(s: any): void {
     if (s.type == 1) {

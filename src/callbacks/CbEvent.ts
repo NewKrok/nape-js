@@ -24,8 +24,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 516–657.
  */
 export class CbEvent {
-  static __name__ = ["nape", "callbacks", "CbEvent"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate CbEvent derp!");

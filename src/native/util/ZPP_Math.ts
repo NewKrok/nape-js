@@ -8,7 +8,6 @@
 
 export class ZPP_Math {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "util", "ZPP_Math"];
 
   static sqrt(x: number): number {
     return Math.sqrt(x);

@@ -15,8 +15,6 @@ import type { Polygon } from "./Polygon";
  * Fully modernized — all getters access ZPP_Edge directly.
  */
 export class Edge {
-  static __name__ = ["nape", "shape", "Edge"];
-
   /** @internal */
   zpp_inner!: ZPP_Edge;
 

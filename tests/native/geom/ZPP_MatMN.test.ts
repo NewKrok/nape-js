@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_MatMN } from "../../../src/native/geom/ZPP_MatMN";
 
 describe("ZPP_MatMN", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_MatMN.__name__).toEqual(["zpp_nape", "geom", "ZPP_MatMN"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should create a matrix with correct dimensions", () => {
       const mat = new ZPP_MatMN(3, 4);

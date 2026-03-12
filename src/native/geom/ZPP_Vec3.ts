@@ -9,7 +9,6 @@
 
 export class ZPP_Vec3 {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_Vec3"];
 
   // --- Static: namespace references ---
   static _zpp: object | null = null;

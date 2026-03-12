@@ -14,9 +14,6 @@ import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_UserBody } from "./ZPP_UserBody";
 
 export class ZPP_UserConstraint extends ZPP_Constraint {
-  static override __name__ = ["zpp_nape", "constraint", "ZPP_UserConstraint"];
-  static __super__ = ZPP_Constraint;
-
   // Outer public-API wrapper (UserConstraint)
   outer_zn: any = null;
 
@@ -64,8 +61,6 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
 
   // Previous accumulated impulse (for delta impulse calculation) [dim]
   jOld: number[] = null!;
-
-  override __class__: any = ZPP_UserConstraint;
 
   constructor(dim: number, velonly: boolean) {
     super();

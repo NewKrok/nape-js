@@ -108,9 +108,6 @@ function _ensureFlag<T>(flagName: keyof typeof ZPP_Flags, ctor: () => T): T {
  * A rigid body in the physics simulation. Add shapes to give it geometry, then add it to a `Space` to participate in simulation.
  */
 export class Body extends Interactor {
-  static __name__ = ["nape", "phys", "Body"];
-  static __super__: typeof Interactor = Interactor;
-
   /** @internal */
   zpp_inner!: ZPP_Body;
   /** If true, this body is included in debug rendering. */

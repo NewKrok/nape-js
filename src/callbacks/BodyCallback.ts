@@ -10,8 +10,6 @@ import type { Body } from "../phys/Body";
  * Converted from nape-compiled.js lines 239–261.
  */
 export class BodyCallback extends Callback {
-  static override __name__ = ["nape", "callbacks", "BodyCallback"];
-
   /** The body that woke or fell asleep. */
   get body(): Body {
     return this.zpp_inner!.body.outer;

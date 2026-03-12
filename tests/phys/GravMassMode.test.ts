@@ -3,10 +3,6 @@ import { GravMassMode } from "../../src/phys/GravMassMode";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("GravMassMode", () => {
-  it("should have correct __name__", () => {
-    expect(GravMassMode.__name__).toEqual(["nape", "phys", "GravMassMode"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new GravMassMode()).toThrow("Cannot instantiate");
   });

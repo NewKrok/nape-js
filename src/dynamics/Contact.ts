@@ -16,8 +16,6 @@ import type { CollisionArbiter } from "./CollisionArbiter";
  * Fully modernized — wraps extracted ZPP_Contact directly.
  */
 export class Contact {
-  static __name__ = ["nape", "dynamics", "Contact"];
-
   /** @internal Direct typed access to the extracted ZPP_Contact. */
   zpp_inner: ZPP_Contact;
 

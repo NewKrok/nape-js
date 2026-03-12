@@ -110,8 +110,6 @@ function makeZPP_List(
     }
   }
 
-  (Cls as any).__name__ = ["zpp_nape", "util", zppName];
-  (Cls.prototype as any).__class__ = Cls;
   zpp.util[zppName] = Cls;
   return Cls;
 }

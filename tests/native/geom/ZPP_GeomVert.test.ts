@@ -6,12 +6,6 @@ describe("ZPP_GeomVert", () => {
     ZPP_GeomVert.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_GeomVert.__name__).toEqual(["zpp_nape", "geom", "ZPP_GeomVert"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const v = new ZPP_GeomVert();

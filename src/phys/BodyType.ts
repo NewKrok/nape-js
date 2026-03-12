@@ -11,8 +11,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 24640–24705.
  */
 export class BodyType {
-  static __name__ = ["nape", "phys", "BodyType"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate BodyType derp!");

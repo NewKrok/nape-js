@@ -12,7 +12,6 @@
 
 export class ZPP_Broadphase {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_Broadphase"];
 
   // --- Static: lazy namespace references ---
   static _zpp: any = null;

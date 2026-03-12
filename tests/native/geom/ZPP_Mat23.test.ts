@@ -7,12 +7,6 @@ describe("ZPP_Mat23", () => {
     ZPP_Mat23._nape = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Mat23.__name__).toEqual(["zpp_nape", "geom", "ZPP_Mat23"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const m = new ZPP_Mat23();
