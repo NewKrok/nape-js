@@ -175,17 +175,18 @@ function removePlayer(playerId) {
 // ─── Ground detection via arbiter check ──────────────────────────────────────
 
 function isOnGround(body) {
-  for (const shape of body.shapes) {
-    for (const arb of shape.arbiters) {
+  try {
+    const arbs = body.arbiters;
+    for (let i = 0; i < arbs.length; i++) {
+      const arb = arbs.at(i);
       try {
-        const col = arb.get_collisionArbiter();
+        const col = arb.collisionArbiter;
         if (!col) continue;
-        const ny = col.get_normal().get_y();
-        // normal points from body1 to body2; if our body is body2 normal points up = negative y
+        const ny = col.normal.y;
         if (Math.abs(ny) > 0.5) return true;
       } catch (_) {}
     }
-  }
+  } catch (_) {}
   return false;
 }
 
