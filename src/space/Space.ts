@@ -1170,11 +1170,7 @@ export class Space {
               const cy = contact.py;
               drawer.drawPoint({ x: cx, y: cy }, COL_CONTACT);
               // Draw normal indicator
-              drawer.drawSegment(
-                { x: cx, y: cy },
-                { x: cx + nx * 8, y: cy + ny * 8 },
-                COL_CONTACT,
-              );
+              drawer.drawSegment({ x: cx, y: cy }, { x: cx + nx * 8, y: cy + ny * 8 }, COL_CONTACT);
               contact = contact.next;
             }
           }

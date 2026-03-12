@@ -50,9 +50,7 @@ function vec2(v: { x: number; y: number }): Vec2Data {
   return { x: v.x, y: v.y };
 }
 
-function safeUserData(
-  ud: Record<string, unknown> | null,
-): Record<string, unknown> | null {
+function safeUserData(ud: Record<string, unknown> | null): Record<string, unknown> | null {
   if (ud == null) return null;
   try {
     const json = JSON.stringify(ud);
@@ -136,7 +134,11 @@ function serializeShape(shape: Shape): ShapeData {
 
 const BODY_TYPES: Record<number, BodyTypeData> = { 1: "STATIC", 2: "DYNAMIC", 3: "KINEMATIC" };
 const MASS_MODES: Record<number, MassModeData> = { 0: "DEFAULT", 1: "FIXED", 2: "FIXED_GROUP" };
-const INERTIA_MODES: Record<number, InertiaModeData> = { 0: "DEFAULT", 1: "FIXED", 2: "FIXED_GROUP" };
+const INERTIA_MODES: Record<number, InertiaModeData> = {
+  0: "DEFAULT",
+  1: "FIXED",
+  2: "FIXED_GROUP",
+};
 const GRAV_MASS_MODES: Record<number, GravMassModeData> = { 0: "DEFAULT", 1: "FIXED", 2: "SCALED" };
 
 function serializeBody(body: Body, id: number): BodyData {

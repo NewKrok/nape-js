@@ -52,7 +52,13 @@ function toVec2Weak(d: Vec2Data): Vec2 {
 }
 
 function buildMaterial(d: MaterialData): Material {
-  return new Material(d.elasticity, d.dynamicFriction, d.staticFriction, d.density, d.rollingFriction);
+  return new Material(
+    d.elasticity,
+    d.dynamicFriction,
+    d.staticFriction,
+    d.density,
+    d.rollingFriction,
+  );
 }
 
 function buildFilter(d: InteractionFilterData): InteractionFilter {
@@ -192,9 +198,12 @@ function applyConstraintBase(
   }
 }
 
-function buildConstraint(d: ConstraintData, bodies: Body[]): PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint {
-  const b1 = d.body1Id != null ? bodies[d.body1Id] ?? null : null;
-  const b2 = d.body2Id != null ? bodies[d.body2Id] ?? null : null;
+function buildConstraint(
+  d: ConstraintData,
+  bodies: Body[],
+): PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint {
+  const b1 = d.body1Id != null ? (bodies[d.body1Id] ?? null) : null;
+  const b2 = d.body2Id != null ? (bodies[d.body2Id] ?? null) : null;
 
   switch (d.type) {
     case "PivotJoint": {
@@ -203,7 +212,14 @@ function buildConstraint(d: ConstraintData, bodies: Body[]): PivotJoint | Distan
       return c;
     }
     case "DistanceJoint": {
-      const c = new DistanceJoint(b1, b2, toVec2Weak(d.anchor1), toVec2Weak(d.anchor2), d.jointMin, d.jointMax);
+      const c = new DistanceJoint(
+        b1,
+        b2,
+        toVec2Weak(d.anchor1),
+        toVec2Weak(d.anchor2),
+        d.jointMin,
+        d.jointMax,
+      );
       applyConstraintBase(c, d);
       return c;
     }
@@ -218,12 +234,32 @@ function buildConstraint(d: ConstraintData, bodies: Body[]): PivotJoint | Distan
       return c;
     }
     case "LineJoint": {
-      const c = new LineJoint(b1, b2, toVec2Weak(d.anchor1), toVec2Weak(d.anchor2), toVec2Weak(d.direction), d.jointMin, d.jointMax);
+      const c = new LineJoint(
+        b1,
+        b2,
+        toVec2Weak(d.anchor1),
+        toVec2Weak(d.anchor2),
+        toVec2Weak(d.direction),
+        d.jointMin,
+        d.jointMax,
+      );
       applyConstraintBase(c, d);
       return c;
     }
     case "PulleyJoint": {
-      const c = new PulleyJoint(b1, b2, null, null, toVec2Weak(d.anchor1), toVec2Weak(d.anchor2), toVec2Weak(d.anchor3), toVec2Weak(d.anchor4), d.jointMin, d.jointMax, d.ratio);
+      const c = new PulleyJoint(
+        b1,
+        b2,
+        null,
+        null,
+        toVec2Weak(d.anchor1),
+        toVec2Weak(d.anchor2),
+        toVec2Weak(d.anchor3),
+        toVec2Weak(d.anchor4),
+        d.jointMin,
+        d.jointMax,
+        d.ratio,
+      );
       applyConstraintBase(c, d);
       return c;
     }
