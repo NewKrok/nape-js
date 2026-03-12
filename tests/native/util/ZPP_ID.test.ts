@@ -15,12 +15,6 @@ describe("ZPP_ID", () => {
     ZPP_ID._InteractionGroup = 0;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_ID.__name__).toEqual(["zpp_nape", "ZPP_ID"]);
-    });
-  });
-
   describe("Constraint", () => {
     it("should return monotonically increasing IDs", () => {
       expect(ZPP_ID.Constraint()).toBe(0);

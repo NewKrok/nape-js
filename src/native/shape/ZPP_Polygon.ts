@@ -11,8 +11,6 @@ import { ZPP_Edge } from "./ZPP_Edge";
 
 export class ZPP_Polygon {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "shape", "ZPP_Polygon"];
-  static __super__: any = null;
 
   // --- Static: namespace references ---
   static _nape: any = null;
@@ -111,24 +109,19 @@ export class ZPP_Polygon {
     ZPP_Polygon._initialized = true;
 
     const zpp = ZPP_Polygon._zpp;
-    ZPP_Polygon.__super__ = zpp.shape.ZPP_Shape;
 
     const srcProto = zpp.shape.ZPP_Shape.prototype;
     const dstProto = ZPP_Polygon.prototype as any;
 
     // Copy enumerable inherited properties (e.g., ZPP_Interactor methods)
     for (const k in srcProto) {
-      if (k !== "__class__" && !Object.prototype.hasOwnProperty.call(dstProto, k)) {
+      if (!Object.prototype.hasOwnProperty.call(dstProto, k)) {
         dstProto[k] = srcProto[k];
       }
     }
     // Copy non-enumerable own properties (TS class methods like _initShape)
     for (const k of Object.getOwnPropertyNames(srcProto)) {
-      if (
-        k !== "constructor" &&
-        k !== "__class__" &&
-        !Object.prototype.hasOwnProperty.call(dstProto, k)
-      ) {
+      if (k !== "constructor" && !Object.prototype.hasOwnProperty.call(dstProto, k)) {
         dstProto[k] = srcProto[k];
       }
     }

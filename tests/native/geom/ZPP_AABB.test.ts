@@ -8,12 +8,6 @@ describe("ZPP_AABB", () => {
     ZPP_AABB._zpp = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_AABB.__name__).toEqual(["zpp_nape", "geom", "ZPP_AABB"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields", () => {
       const a = new ZPP_AABB();

@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_Geom } from "../../../src/native/geom/ZPP_Geom";
 
 describe("ZPP_Geom", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Geom.__name__).toEqual(["zpp_nape", "geom", "ZPP_Geom"]);
-    });
-  });
-
   describe("validateShape", () => {
     it("should be a static method", () => {
       expect(typeof ZPP_Geom.validateShape).toBe("function");

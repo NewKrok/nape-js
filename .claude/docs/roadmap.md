@@ -42,14 +42,14 @@ Key competitors to watch:
 | P37 — Serialization API               | L      | medium   | ✅ Done      |
 | P38 — Debug draw API                  | M      | DX       | ✅ Done      |
 | P39 — Binary serialization            | M      | critical | ✅ Done      |
+| P40 — Haxe remnant cleanup             | M      | medium   | ✅ Done      |
 
 ### Active & Planned
 
 | Priority                                  | Effort | Impact   | Risk   | Status         |
 | ----------------------------------------- | ------ | -------- | ------ | -------------- |
-| P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3354 tests) |
+| P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3251 tests) |
 | P36 — Server-side + demo examples         | M      | medium   | low    | ⬜ Not started |
-| P40 — Haxe remnant cleanup                | M      | medium   | low    | ⬜ Not started |
 | P41 — Capsule shape                       | S      | medium   | low    | ⬜ Not started |
 | P42 — Web Worker helper                   | M      | perf/DX  | medium | ⬜ Not started |
 | P43 — Concave polygon helper              | M      | high     | low    | ⬜ Not started |
@@ -115,17 +115,19 @@ Compact binary snapshot format for sub-millisecond rollback netcode:
 
 ---
 
-## Planned: P40 — Haxe Remnant Cleanup
+## Done: P40 — Haxe Remnant Cleanup
 
 **Effort: M | Impact: medium (bundle, perf, code quality) | Risk: low**
 
-Remaining Haxe compilation artifacts found in the codebase:
+Removed all remaining Haxe compilation artifacts from the codebase:
 
-- `__name__` static arrays — 128 files, ~3-5 KB dead weight in bundle
-- `__class__` instance fields — 15 files, unnecessary runtime overhead
-- `__super__` static fields — 24 files, Haxe-style manual inheritance
-- Prototype-copy `_init()` — 2 files (DynAABBPhase, SweepPhase) should use proper `extends`
-- `const _gthis = this` — 4 occurrences in ZPP_Space.ts, replace with arrow functions
+- `__name__` static arrays — removed from 151 files (166 occurrences)
+- `__class__` instance fields — removed from 15 files, plus filter conditions in prototype-copy code
+- `__super__` static fields — removed from 24+ files (30 occurrences), including bootstrap.ts assignments
+- Prototype-copy `_init()` — DynAABBPhase & SweepPhase now use proper `extends ZPP_Broadphase`
+- `const _gthis = this` — replaced with direct `this` in 4 ZPP_Space.ts methods
+- `__name__` copies in ZPPRegistry.ts — removed 9 registry propagation lines
+- Test cleanup — removed 103 Haxe metadata tests (3354 → 3251 tests)
 
 ---
 

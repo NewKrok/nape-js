@@ -6,12 +6,6 @@ describe("ZPP_PartitionPair", () => {
     ZPP_PartitionPair.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_PartitionPair.__name__).toEqual(["zpp_nape", "geom", "ZPP_PartitionPair"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize key fields to defaults", () => {
       const p = new ZPP_PartitionPair();

@@ -10,8 +10,6 @@
  */
 
 export class ZPP_CopyHelper {
-  static __name__ = ["zpp_nape", "constraint", "ZPP_CopyHelper"];
-
   id: number = 0;
   bc: any = null;
   cb: any = null;

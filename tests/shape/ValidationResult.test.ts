@@ -3,10 +3,6 @@ import { ValidationResult } from "../../src/shape/ValidationResult";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("ValidationResult", () => {
-  it("should have correct __name__", () => {
-    expect(ValidationResult.__name__).toEqual(["nape", "shape", "ValidationResult"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new ValidationResult()).toThrow("Cannot instantiate");
   });

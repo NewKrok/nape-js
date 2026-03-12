@@ -9,7 +9,6 @@
 
 export class ZPP_PartitionPair {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_PartitionPair"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_PartitionPair | null = null;

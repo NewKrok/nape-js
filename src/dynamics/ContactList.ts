@@ -52,7 +52,6 @@ function ContactIterator(this: any) {
   }
 }
 
-ContactIterator.__name__ = ["nape", "dynamics", "ContactIterator"];
 ContactIterator.zpp_pool = null as any;
 
 ContactIterator.get = function (list: any): any {
@@ -104,8 +103,6 @@ function ContactListCtor(this: any) {
   this.zpp_inner = new ZPP_ContactList();
   this.zpp_inner.outer = this;
 }
-
-ContactListCtor.__name__ = ["nape", "dynamics", "ContactList"];
 
 ContactListCtor.fromArray = function (array: any[]): any {
   if (array == null) {

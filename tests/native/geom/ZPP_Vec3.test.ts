@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_Vec3 } from "../../../src/native/geom/ZPP_Vec3";
 
 describe("ZPP_Vec3", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Vec3.__name__).toEqual(["zpp_nape", "geom", "ZPP_Vec3"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const v = new ZPP_Vec3();

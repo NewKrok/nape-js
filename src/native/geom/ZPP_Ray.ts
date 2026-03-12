@@ -16,7 +16,6 @@ import { ZNPNode_RayResult } from "../util/ZNPRegistry";
 
 export class ZPP_Ray {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_Ray"];
 
   // --- Static: internal flag ---
   static internal = false;

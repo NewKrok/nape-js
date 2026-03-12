@@ -10,8 +10,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 26966–27013.
  */
 export class MassMode {
-  static __name__ = ["nape", "phys", "MassMode"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate MassMode derp!");

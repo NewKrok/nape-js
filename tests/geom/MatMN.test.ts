@@ -280,9 +280,5 @@ describe("MatMN", () => {
 
   // --- __name__ ---
 
-  it("should have correct __name__", () => {
-    expect(MatMN.__name__).toEqual(["nape", "geom", "MatMN"]);
-  });
-
   // --- __class__ ---
 });

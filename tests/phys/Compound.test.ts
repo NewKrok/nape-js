@@ -5,19 +5,9 @@ import { BodyType } from "../../src/phys/BodyType";
 import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
 import { Space } from "../../src/space/Space";
-import { Interactor } from "../../src/phys/Interactor";
 import { ZPP_Compound } from "../../src/native/phys/ZPP_Compound";
 
 describe("Compound", () => {
-  it("should have correct __name__", () => {
-    expect(Compound.__name__).toEqual(["nape", "phys", "Compound"]);
-  });
-
-  it("should extend Interactor", () => {
-    const c = new Compound();
-    expect(c).toBeInstanceOf(Interactor);
-  });
-
   it("should have zpp_inner as ZPP_Compound", () => {
     const c = new Compound();
     expect(c.zpp_inner).toBeInstanceOf(ZPP_Compound);
@@ -260,14 +250,6 @@ describe("Compound", () => {
 });
 
 describe("ZPP_Compound", () => {
-  it("should have correct __name__", () => {
-    expect(ZPP_Compound.__name__).toEqual(["zpp_nape", "phys", "ZPP_Compound"]);
-  });
-
-  it("should have __super__ set to ZPP_Interactor", () => {
-    expect(ZPP_Compound.__super__).not.toBeNull();
-  });
-
   it("should have _nape and _zpp set", () => {
     expect(ZPP_Compound._nape).not.toBeNull();
     expect(ZPP_Compound._zpp).not.toBeNull();

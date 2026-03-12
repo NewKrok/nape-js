@@ -10,7 +10,6 @@
 
 export class ZPP_IContact {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "dynamics", "ZPP_IContact"];
 
   // --- Instance: linked list (ZNPList pattern) ---
   length = 0;

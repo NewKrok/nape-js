@@ -8,7 +8,6 @@
  */
 
 export class ZPP_SimpleEvent {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SimpleEvent"];
   static zpp_pool: ZPP_SimpleEvent | null = null;
 
   type = 0;

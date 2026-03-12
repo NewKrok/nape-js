@@ -9,8 +9,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 30858–30909.
  */
 export class Broadphase {
-  static __name__ = ["nape", "space", "Broadphase"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate Broadphase derp!");

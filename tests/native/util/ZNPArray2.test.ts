@@ -64,10 +64,6 @@ describe("ZNPArray2", () => {
 });
 
 describe("ZNPArray2_Float", () => {
-  it("should have correct __name__", () => {
-    expect(ZNPArray2_Float.__name__).toEqual(["zpp_nape", "util", "ZNPArray2_Float"]);
-  });
-
   it("should work with numeric values", () => {
     const arr = new ZNPArray2_Float(3, 3);
     arr.resize(3, 3, 0.0);
@@ -77,10 +73,6 @@ describe("ZNPArray2_Float", () => {
 });
 
 describe("ZNPArray2_ZPP_GeomVert", () => {
-  it("should have correct __name__", () => {
-    expect(ZNPArray2_ZPP_GeomVert.__name__).toEqual(["zpp_nape", "util", "ZNPArray2_ZPP_GeomVert"]);
-  });
-
   it("should work with object values", () => {
     const arr = new ZNPArray2_ZPP_GeomVert(2, 2);
     arr.resize(2, 2, null);
@@ -88,16 +80,6 @@ describe("ZNPArray2_ZPP_GeomVert", () => {
     arr.set(0, 1, obj);
     expect(arr.get(0, 1)).toBe(obj);
     expect(arr.get(1, 0)).toBeNull();
-  });
-});
-
-describe("ZNPArray2_ZPP_MarchPair", () => {
-  it("should have correct __name__", () => {
-    expect(ZNPArray2_ZPP_MarchPair.__name__).toEqual([
-      "zpp_nape",
-      "util",
-      "ZNPArray2_ZPP_MarchPair",
-    ]);
   });
 });
 

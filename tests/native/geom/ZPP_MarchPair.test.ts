@@ -6,12 +6,6 @@ describe("ZPP_MarchPair", () => {
     ZPP_MarchPair.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_MarchPair.__name__).toEqual(["zpp_nape", "geom", "ZPP_MarchPair"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const pair = new ZPP_MarchPair();

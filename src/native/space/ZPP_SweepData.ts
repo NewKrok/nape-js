@@ -9,7 +9,6 @@
 
 export class ZPP_SweepData {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_SweepData"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_SweepData | null = null;

@@ -12,8 +12,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 2554–2646.
  */
 export class ListenerType {
-  static __name__ = ["nape", "callbacks", "ListenerType"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ListenerType derp!");

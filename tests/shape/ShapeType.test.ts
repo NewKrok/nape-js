@@ -3,10 +3,6 @@ import { ShapeType } from "../../src/shape/ShapeType";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("ShapeType", () => {
-  it("should have correct __name__", () => {
-    expect(ShapeType.__name__).toEqual(["nape", "shape", "ShapeType"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new ShapeType()).toThrow("Cannot instantiate");
   });

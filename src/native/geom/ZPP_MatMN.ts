@@ -8,7 +8,6 @@
 
 export class ZPP_MatMN {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_MatMN"];
 
   // --- Instance ---
   outer: object | null = null;

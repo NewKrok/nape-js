@@ -12,7 +12,6 @@ export class ZPP_FluidProperties {
   static zpp_pool: ZPP_FluidProperties | null = null;
 
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "phys", "ZPP_FluidProperties"];
 
   // --- Static: namespace references (set by compiled module) ---
   static _nape: any = null;

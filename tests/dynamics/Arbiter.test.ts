@@ -36,10 +36,6 @@ function createCollisionScene() {
 }
 
 describe("Arbiter", () => {
-  it("should have correct __name__", () => {
-    expect(Arbiter.__name__).toEqual(["nape", "dynamics", "Arbiter"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new Arbiter()).toThrow("Cannot instantiate");
   });
@@ -105,16 +101,8 @@ describe("Arbiter", () => {
 });
 
 describe("CollisionArbiter", () => {
-  it("should have correct __name__", () => {
-    expect(CollisionArbiter.__name__).toEqual(["nape", "dynamics", "CollisionArbiter"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new CollisionArbiter()).toThrow("Cannot instantiate");
-  });
-
-  it("should extend Arbiter", () => {
-    expect(CollisionArbiter.__super__).toBe(Arbiter);
   });
 
   it("should expose contacts list", () => {
@@ -185,15 +173,7 @@ describe("CollisionArbiter", () => {
 });
 
 describe("FluidArbiter", () => {
-  it("should have correct __name__", () => {
-    expect(FluidArbiter.__name__).toEqual(["nape", "dynamics", "FluidArbiter"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new FluidArbiter()).toThrow("Cannot instantiate");
-  });
-
-  it("should extend Arbiter", () => {
-    expect(FluidArbiter.__super__).toBe(Arbiter);
   });
 });

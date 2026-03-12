@@ -10,8 +10,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 26343–26390.
  */
 export class InertiaMode {
-  static __name__ = ["nape", "phys", "InertiaMode"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate InertiaMode derp!");

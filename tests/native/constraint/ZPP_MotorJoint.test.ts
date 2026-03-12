@@ -43,18 +43,7 @@ describe("ZPP_MotorJoint", () => {
     ZPP_Constraint._nape = createMockNape();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_MotorJoint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_MotorJoint"]);
-    });
-  });
-
   describe("constructor / defaults", () => {
-    it("should extend ZPP_Constraint", () => {
-      const mj = new ZPP_MotorJoint();
-      expect(mj).toBeInstanceOf(ZPP_Constraint);
-    });
-
     it("should initialize joint-specific fields to defaults", () => {
       const mj = new ZPP_MotorJoint();
       expect(mj.ratio).toBe(0.0);

@@ -17,8 +17,6 @@ import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 import { getNape } from "../../core/engine";
 
 export class ZPP_Collide {
-  static __name__ = ["zpp_nape", "geom", "ZPP_Collide"];
-
   /** Internal list for flow collision polygon vertices (ZNPList_ZPP_Vec2). */
   static flowpoly: any = null;
 

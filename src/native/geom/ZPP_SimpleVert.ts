@@ -11,7 +11,6 @@ import { ZPP_Set_ZPP_SimpleVert } from "../util/ZNPRegistry";
 import { ZPP_ID } from "../util/ZPP_ID";
 
 export class ZPP_SimpleVert {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SimpleVert"];
   static zpp_pool: ZPP_SimpleVert | null = null;
 
   forced = false;

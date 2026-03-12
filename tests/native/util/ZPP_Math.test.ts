@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_Math } from "../../../src/native/util/ZPP_Math";
 
 describe("ZPP_Math", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Math.__name__).toEqual(["zpp_nape", "util", "ZPP_Math"]);
-    });
-  });
-
   describe("sqrt", () => {
     it("should return square root of positive numbers", () => {
       expect(ZPP_Math.sqrt(4)).toBe(2);

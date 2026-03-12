@@ -29,8 +29,6 @@ import type { PreFlag } from "../callbacks/PreFlag";
  * Fully modernized — uses extracted ZPP_Arbiter directly.
  */
 export class Arbiter {
-  static __name__ = ["nape", "dynamics", "Arbiter"];
-
   /** @internal */
   zpp_inner: ZPP_Arbiter;
 

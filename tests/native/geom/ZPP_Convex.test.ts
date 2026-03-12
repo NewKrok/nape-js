@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 import { ZPP_Convex } from "../../../src/native/geom/ZPP_Convex";
 
 describe("ZPP_Convex", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Convex.__name__).toEqual(["zpp_nape", "geom", "ZPP_Convex"]);
-    });
-  });
-
   describe("isinner", () => {
     it("should return false for a left turn (counter-clockwise)", () => {
       const a = { x: 0, y: 0 };

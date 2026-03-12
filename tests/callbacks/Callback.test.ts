@@ -8,10 +8,6 @@ import { ZPP_Callback } from "../../src/native/callbacks/ZPP_Callback";
 import { getNape } from "../../src/core/engine";
 
 describe("Callback", () => {
-  it("should have correct __name__", () => {
-    expect(Callback.__name__).toEqual(["nape", "callbacks", "Callback"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new Callback()).toThrow("Callback cannot be instantiated");
   });
@@ -31,77 +27,25 @@ describe("Callback", () => {
 });
 
 describe("BodyCallback", () => {
-  it("should have correct __name__", () => {
-    expect(BodyCallback.__name__).toEqual(["nape", "callbacks", "BodyCallback"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new BodyCallback()).toThrow("Callback cannot be instantiated");
-  });
-
-  it("should extend Callback", () => {
-    ZPP_Callback.internal = true;
-    const cb = new BodyCallback();
-    ZPP_Callback.internal = false;
-    expect(cb).toBeInstanceOf(Callback);
-    expect(cb).toBeInstanceOf(BodyCallback);
-  });
-
-  it("should have __super__ set", () => {
-    expect((BodyCallback as any).__super__).toBe(Callback);
   });
 });
 
 describe("ConstraintCallback", () => {
-  it("should have correct __name__", () => {
-    expect(ConstraintCallback.__name__).toEqual(["nape", "callbacks", "ConstraintCallback"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new ConstraintCallback()).toThrow("Callback cannot be instantiated");
-  });
-
-  it("should extend Callback", () => {
-    ZPP_Callback.internal = true;
-    const cb = new ConstraintCallback();
-    ZPP_Callback.internal = false;
-    expect(cb).toBeInstanceOf(Callback);
-    expect(cb).toBeInstanceOf(ConstraintCallback);
   });
 });
 
 describe("InteractionCallback", () => {
-  it("should have correct __name__", () => {
-    expect(InteractionCallback.__name__).toEqual(["nape", "callbacks", "InteractionCallback"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new InteractionCallback()).toThrow("Callback cannot be instantiated");
-  });
-
-  it("should extend Callback", () => {
-    ZPP_Callback.internal = true;
-    const cb = new InteractionCallback();
-    ZPP_Callback.internal = false;
-    expect(cb).toBeInstanceOf(Callback);
-    expect(cb).toBeInstanceOf(InteractionCallback);
   });
 });
 
 describe("PreCallback", () => {
-  it("should have correct __name__", () => {
-    expect(PreCallback.__name__).toEqual(["nape", "callbacks", "PreCallback"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new PreCallback()).toThrow("Callback cannot be instantiated");
-  });
-
-  it("should extend Callback", () => {
-    ZPP_Callback.internal = true;
-    const cb = new PreCallback();
-    ZPP_Callback.internal = false;
-    expect(cb).toBeInstanceOf(Callback);
-    expect(cb).toBeInstanceOf(PreCallback);
   });
 });

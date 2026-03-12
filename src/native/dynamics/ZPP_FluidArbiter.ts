@@ -11,8 +11,6 @@ import { ZPP_Arbiter } from "./ZPP_Arbiter";
 
 export class ZPP_FluidArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
-  static override __name__ = ["zpp_nape", "dynamics", "ZPP_FluidArbiter"];
-  static __super__ = ZPP_Arbiter;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_FluidArbiter | null = null;

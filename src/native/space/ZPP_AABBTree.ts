@@ -12,7 +12,6 @@ import { ZPP_AABBNode } from "./ZPP_AABBNode";
 
 export class ZPP_AABBTree {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_AABBTree"];
 
   // --- Static: temporary AABB used during insert cost calculations ---
   static tmpaabb: ZPP_AABB | null = null;

@@ -3,10 +3,6 @@ import { ListenerType } from "../../src/callbacks/ListenerType";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("ListenerType", () => {
-  it("should have correct __name__", () => {
-    expect(ListenerType.__name__).toEqual(["nape", "callbacks", "ListenerType"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new ListenerType()).toThrow("Cannot instantiate");
   });

@@ -12,7 +12,6 @@ import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_CopyHelper } from "./ZPP_CopyHelper";
 
 export class ZPP_AngleJoint extends ZPP_Constraint {
-  static override __name__ = ["zpp_nape", "constraint", "ZPP_AngleJoint"];
   static _wrapFn: ((zpp: ZPP_AngleJoint) => any) | null = null;
   static _createFn: ((...args: any[]) => any) | null = null;
 

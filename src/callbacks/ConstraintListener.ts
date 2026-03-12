@@ -36,8 +36,6 @@ import type { ConstraintCallback } from "./ConstraintCallback";
  * Fully modernized from nape-compiled.js lines 546–649.
  */
 export class ConstraintListener extends Listener {
-  static __name__ = ["nape", "callbacks", "ConstraintListener"];
-
   /** @internal */
   zpp_inner_zn: ZPP_ConstraintListener;
 

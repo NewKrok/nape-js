@@ -31,8 +31,6 @@ import type { OptionType } from "./OptionType";
  * Converted from nape-compiled.js lines 689–770.
  */
 export class CbType {
-  static __name__ = ["nape", "callbacks", "CbType"];
-
   /** @internal */
   zpp_inner: ZPP_CbType;
 

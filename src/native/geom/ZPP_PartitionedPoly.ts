@@ -17,7 +17,6 @@ import { ZNPNode } from "../util/ZNPNode";
 
 export class ZPP_PartitionedPoly {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_PartitionedPoly"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_PartitionedPoly | null = null;

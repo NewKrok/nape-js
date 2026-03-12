@@ -22,12 +22,6 @@ function setupAndValidate(space: Space, bodies: Body[]): any[] {
 }
 
 describe("ZPP_SweepDistance", () => {
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_SweepDistance.__name__).toEqual(["zpp_nape", "geom", "ZPP_SweepDistance"]);
-    });
-  });
-
   describe("static methods exist", () => {
     it("should have dynamicSweep method", () => {
       expect(typeof ZPP_SweepDistance.dynamicSweep).toBe("function");

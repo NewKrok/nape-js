@@ -16,8 +16,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 2504–2591.
  */
 export class PreFlag {
-  static __name__ = ["nape", "callbacks", "PreFlag"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate PreFlag derp!");

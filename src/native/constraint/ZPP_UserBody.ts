@@ -5,8 +5,6 @@
  */
 
 export class ZPP_UserBody {
-  static __name__ = ["zpp_nape", "constraint", "ZPP_UserBody"];
-
   cnt = 0;
   body: any = null;
 

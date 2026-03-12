@@ -193,10 +193,6 @@ describe("CbType", () => {
 
   // --- __name__ ---
 
-  it("should have correct __name__ metadata", () => {
-    expect(CbType.__name__).toEqual(["nape", "callbacks", "CbType"]);
-  });
-
   // --- Namespace registration ---
 
   it("should be registered in the nape namespace", () => {

@@ -11,7 +11,6 @@ import { ZNPList_ZPP_PartitionVertex } from "../util/ZNPRegistry";
 
 export class ZPP_PartitionVertex {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_PartitionVertex"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_PartitionVertex | null = null;

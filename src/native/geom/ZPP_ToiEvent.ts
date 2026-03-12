@@ -13,7 +13,6 @@ import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
 
 export class ZPP_ToiEvent {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_ToiEvent"];
 
   // --- Static: pool ---
   static zpp_pool: ZPP_ToiEvent | null = null;

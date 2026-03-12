@@ -3,10 +3,6 @@ import { Winding } from "../../src/geom/Winding";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("Winding", () => {
-  it("should have correct __name__", () => {
-    expect(Winding.__name__).toEqual(["nape", "geom", "Winding"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new Winding()).toThrow("Cannot instantiate");
   });

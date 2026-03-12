@@ -8,12 +8,6 @@ describe("ZPP_OptionType", () => {
     ZPP_OptionType._nape = createMockNape();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_OptionType.__name__).toEqual(["zpp_nape", "callbacks", "ZPP_OptionType"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize includes and excludes as empty lists", () => {
       const ot = new ZPP_OptionType();

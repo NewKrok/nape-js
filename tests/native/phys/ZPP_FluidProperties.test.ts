@@ -9,12 +9,6 @@ describe("ZPP_FluidProperties", () => {
     ZPP_FluidProperties._nape = createMockNape();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_FluidProperties.__name__).toEqual(["zpp_nape", "phys", "ZPP_FluidProperties"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize with default values", () => {
       const fp = new ZPP_FluidProperties();

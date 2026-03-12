@@ -9,7 +9,6 @@
 
 export class ZPP_Flags {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "util", "ZPP_Flags"];
 
   // --- Gravity mass mode ---
   static GravMassMode_DEFAULT: any = null;

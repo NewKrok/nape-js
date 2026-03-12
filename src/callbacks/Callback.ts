@@ -19,8 +19,6 @@ import type { Listener } from "./Listener";
  * Converted from nape-compiled.js lines 212–238.
  */
 export class Callback {
-  static __name__ = ["nape", "callbacks", "Callback"];
-
   /** @internal */
   zpp_inner: ZPP_Callback | null = null;
 

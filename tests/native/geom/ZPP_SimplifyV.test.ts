@@ -6,12 +6,6 @@ describe("ZPP_SimplifyV", () => {
     ZPP_SimplifyV.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_SimplifyV.__name__).toEqual(["zpp_nape", "geom", "ZPP_SimplifyV"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const v = new ZPP_SimplifyV();

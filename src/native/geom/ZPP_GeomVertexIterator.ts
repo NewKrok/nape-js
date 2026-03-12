@@ -11,7 +11,6 @@ import { getNape } from "../../core/engine";
 
 export class ZPP_GeomVertexIterator {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_GeomVertexIterator"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_GeomVertexIterator | null = null;

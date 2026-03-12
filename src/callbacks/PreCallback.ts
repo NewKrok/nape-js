@@ -14,8 +14,6 @@ import type { Interactor } from "../phys/Interactor";
  * Converted from nape-compiled.js lines 2590–2634.
  */
 export class PreCallback extends Callback {
-  static override __name__ = ["nape", "callbacks", "PreCallback"];
-
   /** The arbiter representing the potential interaction. Use to inspect collision normal, etc. */
   get arbiter(): Arbiter {
     return this.zpp_inner!.pre_arbiter.wrapper();

@@ -9,7 +9,6 @@
 
 export class ZPP_AABBPair {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_AABBPair"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_AABBPair | null = null;

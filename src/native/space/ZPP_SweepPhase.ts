@@ -13,12 +13,9 @@ import { ZPP_SweepData } from "./ZPP_SweepData";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Collide } from "../geom/ZPP_Collide";
+import { ZPP_Broadphase } from "./ZPP_Broadphase";
 
-export class ZPP_SweepPhase {
-  // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_SweepPhase"];
-  static __super__: any = null;
-
+export class ZPP_SweepPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
   static _zpp: any = null;
   static _nape: any = null;
@@ -26,33 +23,12 @@ export class ZPP_SweepPhase {
   // --- Instance fields ---
   failed: any = null;
   list: ZPP_SweepData | null = null;
-  space: any = null;
-  is_sweep = false;
-  sweep: any = null;
-
-  // --- Instance: Haxe class reference ---
-  __class__: any = ZPP_SweepPhase;
 
   constructor(space: any) {
-    // Initialize parent fields (ZPP_Broadphase is an ES6 class, can't use .call())
-    const ZPP_Broadphase = ZPP_SweepPhase._zpp.space.ZPP_Broadphase;
-    ZPP_Broadphase._initFields(this);
+    super();
     this.space = space;
     this.is_sweep = true;
     this.sweep = this;
-  }
-
-  // ========== Inheritance init ==========
-
-  static _init(): void {
-    ZPP_SweepPhase.__super__ = ZPP_SweepPhase._zpp.space.ZPP_Broadphase;
-    const parentProto = ZPP_SweepPhase._zpp.space.ZPP_Broadphase.prototype;
-    // Use Object.getOwnPropertyNames since ES6 class methods are non-enumerable
-    Object.getOwnPropertyNames(parentProto).forEach((k) => {
-      if (k !== "constructor" && !(k in ZPP_SweepPhase.prototype)) {
-        (ZPP_SweepPhase.prototype as any)[k] = parentProto[k];
-      }
-    });
   }
 
   // ========== Insert / Remove ==========

@@ -10,8 +10,6 @@ import type { NapeInner } from "./Vec2";
  * Converted from nape-compiled.js lines 20507–21760.
  */
 export class Mat23 {
-  static __name__ = ["nape", "geom", "Mat23"];
-
   /** @internal */
   zpp_inner: ZPP_Mat23;
 

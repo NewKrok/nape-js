@@ -2,8 +2,6 @@ export class ZNPArray2<T> {
   list: T[] = [];
   width: number = 0;
 
-  __class__: any;
-
   constructor(width: number, _height: number) {
     this.width = width;
     this.list = [];
@@ -26,14 +24,8 @@ export class ZNPArray2<T> {
   }
 }
 
-export class ZNPArray2_Float extends ZNPArray2<number> {
-  static __name__ = ["zpp_nape", "util", "ZNPArray2_Float"];
-}
+export class ZNPArray2_Float extends ZNPArray2<number> {}
 
-export class ZNPArray2_ZPP_GeomVert extends ZNPArray2<any> {
-  static __name__ = ["zpp_nape", "util", "ZNPArray2_ZPP_GeomVert"];
-}
+export class ZNPArray2_ZPP_GeomVert extends ZNPArray2<any> {}
 
-export class ZNPArray2_ZPP_MarchPair extends ZNPArray2<any> {
-  static __name__ = ["zpp_nape", "util", "ZNPArray2_ZPP_MarchPair"];
-}
+export class ZNPArray2_ZPP_MarchPair extends ZNPArray2<any> {}

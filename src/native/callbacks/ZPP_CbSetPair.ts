@@ -9,7 +9,6 @@
 
 export class ZPP_CbSetPair {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_CbSetPair"];
 
   // --- Static: namespace references ---
   static _zpp: any = null;

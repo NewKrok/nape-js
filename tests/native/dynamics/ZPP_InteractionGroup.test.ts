@@ -7,16 +7,6 @@ describe("ZPP_InteractionGroup", () => {
     ZPP_InteractionGroup._zpp = createMockZpp();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_InteractionGroup.__name__).toEqual([
-        "zpp_nape",
-        "dynamics",
-        "ZPP_InteractionGroup",
-      ]);
-    });
-  });
-
   describe("static type flags", () => {
     it("should define SHAPE and BODY", () => {
       expect(ZPP_InteractionGroup.SHAPE).toBe(1);

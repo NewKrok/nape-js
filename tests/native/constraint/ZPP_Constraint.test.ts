@@ -54,12 +54,6 @@ describe("ZPP_Constraint", () => {
     ZPP_Constraint._nape = savedNape;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Constraint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_Constraint"]);
-    });
-  });
-
   describe("constructor / _initBase", () => {
     it("should set default field values", () => {
       const c = new ZPP_Constraint();
@@ -95,11 +89,6 @@ describe("ZPP_Constraint", () => {
       expect(c.compound).toBeNull();
       expect(c.space).toBeNull();
       expect(c.component).toBeNull();
-    });
-
-    it("should set __class__ to ZPP_Constraint", () => {
-      const c = new ZPP_Constraint();
-      expect(c.__class__).toBe(ZPP_Constraint);
     });
 
     it("_initBase can be called on a plain object (simulates compiled .call(this))", () => {

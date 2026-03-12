@@ -34,12 +34,6 @@ function createCollisionScene() {
 }
 
 describe("Contact", () => {
-  describe("class metadata", () => {
-    it("should have correct __name__", () => {
-      expect(Contact.__name__).toEqual(["nape", "dynamics", "Contact"]);
-    });
-  });
-
   describe("instantiation", () => {
     it("should throw on direct instantiation", () => {
       expect(() => new Contact()).toThrow("Cannot instantiate Contact");

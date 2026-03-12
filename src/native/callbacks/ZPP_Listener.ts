@@ -12,7 +12,6 @@ import { ZPP_ID } from "../util/ZPP_ID";
 
 export class ZPP_Listener {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_Listener"];
 
   // --- Static: namespace references ---
   static _nape: any = null;

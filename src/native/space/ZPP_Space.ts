@@ -32,7 +32,6 @@ import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 
 export class ZPP_Space {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "space", "ZPP_Space"];
 
   // --- Static: namespace references ---
   static _zpp: any = null;
@@ -83,8 +82,6 @@ export class ZPP_Space {
   prelisteners: any = null;
   mrca1: any = null;
   mrca2: any = null;
-
-  __class__: any = ZPP_Space;
 
   constructor(gravity?: any, broadphase?: any) {
     this.prelisteners = null;
@@ -1183,7 +1180,6 @@ export class ZPP_Space {
     if (deleting == null) {
       deleting = false;
     }
-    const _gthis = this;
     const body = s.body;
     if (!deleting) {
       body.wake();
@@ -1296,7 +1292,7 @@ export class ZPP_Space {
                 const x = cx_ite5.elt;
                 if (x.event == 1) {
                   if ((x.itype & xarb.type) != 0 && callbackset.empty_arb(x.itype)) {
-                    const cb = _gthis.push_callback(x);
+                    const cb = this.push_callback(x);
                     cb.event = 1;
                     const o1 = callbackset.int1;
                     const o2 = callbackset.int2;
@@ -3097,7 +3093,6 @@ export class ZPP_Space {
   }
 
   step(deltaTime: any, velocityIterations: any, positionIterations: any) {
-    const _gthis = this;
     if (this.midstep) {
       throw new Error(
         "Error: ... REALLY?? you're going to call space.step() inside of space.step()? COME ON!!",
@@ -3409,7 +3404,7 @@ export class ZPP_Space {
         const x1 = cx_ite12.elt;
         if (x1.event == 6) {
           if ((!sleeping || x1.allowSleepingCallbacks) && !set.empty_arb(x1.itype)) {
-            const cb = _gthis.push_callback(x1);
+            const cb = this.push_callback(x1);
             cb.event = 6;
             const o11 = set.int1;
             const o2 = set.int2;
@@ -7597,7 +7592,6 @@ export class ZPP_Space {
     if (cont == null) {
       cont = false;
     }
-    const _gthis = this;
     if (!arb.cleared && arb.b1.component.sleeping && arb.b2.component.sleeping) {
       arb.sleep_stamp = this.stamp;
       arb.sleeping = true;
@@ -7858,7 +7852,7 @@ export class ZPP_Space {
                 const x = cx_ite4.elt;
                 if (x.event == 0) {
                   if ((x.itype & arb.type) != 0 && callbackset.empty_arb(x.itype)) {
-                    const cb = _gthis.push_callback(x);
+                    const cb = this.push_callback(x);
                     cb.event = 0;
                     const o11 = callbackset.int1;
                     const o21 = callbackset.int2;
@@ -7971,7 +7965,7 @@ export class ZPP_Space {
                 const x1 = cx_ite7.elt;
                 if (x1.event == 1) {
                   if ((x1.itype & arb.type) != 0 && callbackset.empty_arb(x1.itype)) {
-                    const cb3 = _gthis.push_callback(x1);
+                    const cb3 = this.push_callback(x1);
                     cb3.event = 1;
                     const o12 = callbackset.int1;
                     const o22 = callbackset.int2;
@@ -10124,7 +10118,6 @@ export class ZPP_Space {
   }
 
   narrowPhase(s1: any, s2: any, stat: any, in_arb: any, continuous: any) {
-    const _gthis = this;
     let ret = null;
     const b1 = s1.body;
     const b2 = s2.body;
@@ -10709,7 +10702,7 @@ export class ZPP_Space {
                     const x3 = cx_ite6.elt;
                     if (x3.event == 5) {
                       if ((x3.itype & inttype) != 0) {
-                        const _this19 = _gthis.prelisteners;
+                        const _this19 = this.prelisteners;
                         let ret23;
                         if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
                           ret23 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
@@ -11459,7 +11452,7 @@ export class ZPP_Space {
                     const x4 = cx_ite15.elt;
                     if (x4.event == 5) {
                       if ((x4.itype & inttype1) != 0) {
-                        const _this38 = _gthis.prelisteners;
+                        const _this38 = this.prelisteners;
                         let ret49;
                         if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
                           ret49 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
@@ -12272,7 +12265,7 @@ export class ZPP_Space {
                     const x5 = cx_ite25.elt;
                     if (x5.event == 5) {
                       if ((x5.itype & inttype2) != 0) {
-                        const _this59 = _gthis.prelisteners;
+                        const _this59 = this.prelisteners;
                         let ret77;
                         if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
                           ret77 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();

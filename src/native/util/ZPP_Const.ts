@@ -8,7 +8,6 @@
 
 export class ZPP_Const {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "ZPP_Const"];
 
   // --- Static: constants ---
   static FMAX = 1e100;

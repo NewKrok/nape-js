@@ -12,7 +12,6 @@ import type { ZPP_GeomVert } from "./ZPP_GeomVert";
 
 export class ZPP_CutInt {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_CutInt"];
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_CutInt | null = null;

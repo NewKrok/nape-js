@@ -13,7 +13,6 @@ import type { NapeInner } from "../geom/Vec2";
  */
 export class Material {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "phys", "Material"];
 
   /** @internal The internal ZPP_Material this wrapper owns. */
   zpp_inner: ZPP_Material;

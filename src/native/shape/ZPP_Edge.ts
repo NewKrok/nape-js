@@ -9,7 +9,6 @@
 
 export class ZPP_Edge {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "shape", "ZPP_Edge"];
 
   // --- Static: object pool (linked list via `next`) ---
   static zpp_pool: ZPP_Edge | null = null;

@@ -14,7 +14,6 @@ import type { NapeInner } from "../geom/Vec2";
  */
 export class InteractionFilter {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "dynamics", "InteractionFilter"];
 
   /** @internal The internal ZPP_InteractionFilter this wrapper owns. */
   zpp_inner: ZPP_InteractionFilter;

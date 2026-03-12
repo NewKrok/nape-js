@@ -40,8 +40,6 @@ export function cbEventToNumber(event: CbEvent): number {
  * Fully modernized from nape-compiled.js lines 231–433.
  */
 export class Listener {
-  static __name__ = ["nape", "callbacks", "Listener"];
-
   /** @internal */
   zpp_inner: ZPP_Listener;
 

@@ -7,12 +7,6 @@ describe("ZPP_CbType", () => {
     ZPP_CbType._zpp = createMockZpp();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_CbType.__name__).toEqual(["zpp_nape", "callbacks", "ZPP_CbType"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize with auto-incrementing id", () => {
       const a = new ZPP_CbType();

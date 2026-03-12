@@ -6,12 +6,6 @@ describe("ZPP_CutVert", () => {
     ZPP_CutVert.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_CutVert.__name__).toEqual(["zpp_nape", "geom", "ZPP_CutVert"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const v = new ZPP_CutVert();

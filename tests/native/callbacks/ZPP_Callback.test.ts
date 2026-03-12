@@ -10,12 +10,6 @@ describe("ZPP_Callback", () => {
     ZPP_Callback._zpp = createMockZpp();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Callback.__name__).toEqual(["zpp_nape", "callbacks", "ZPP_Callback"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields", () => {
       const cb = new ZPP_Callback();

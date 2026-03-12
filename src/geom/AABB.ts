@@ -14,7 +14,6 @@ import type { NapeInner } from "./Vec2";
  */
 export class AABB {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "geom", "AABB"];
 
   /** @internal The internal ZPP_AABB this wrapper owns. */
   zpp_inner: ZPP_AABB;

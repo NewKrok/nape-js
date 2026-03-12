@@ -49,18 +49,7 @@ describe("ZPP_AngleJoint", () => {
     ZPP_Constraint._nape = createMockNape();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_AngleJoint.__name__).toEqual(["zpp_nape", "constraint", "ZPP_AngleJoint"]);
-    });
-  });
-
   describe("constructor / defaults", () => {
-    it("should extend ZPP_Constraint", () => {
-      const aj = new ZPP_AngleJoint();
-      expect(aj).toBeInstanceOf(ZPP_Constraint);
-    });
-
     it("should initialize joint-specific fields to defaults", () => {
       const aj = new ZPP_AngleJoint();
       expect(aj.ratio).toBe(1);

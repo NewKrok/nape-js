@@ -13,7 +13,6 @@ export class ZPP_InteractionGroup {
   static BODY = 2;
 
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "dynamics", "ZPP_InteractionGroup"];
 
   // --- Static: namespace references (set by compiled module) ---
   static _zpp: any = null;

@@ -15,8 +15,6 @@ import "./GeomPoly";
  * Converted from nape-compiled.js lines 16879–17258.
  */
 export class MarchingSquares {
-  static __name__ = ["nape", "geom", "MarchingSquares"];
-
   /**
    * Run the marching squares algorithm to extract polygons from an iso function.
    *

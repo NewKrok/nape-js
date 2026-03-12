@@ -10,7 +10,6 @@
 
 export class ZPP_Arbiter {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "dynamics", "ZPP_Arbiter"];
 
   // --- Static: namespace references (set during registration) ---
   static _nape: any = null;

@@ -8,8 +8,6 @@
  */
 
 export class ZPP_Convex {
-  static __name__ = ["zpp_nape", "geom", "ZPP_Convex"];
-
   /**
    * Test if the angle at vertex b (from a→b→c) is an inner angle.
    * Returns true if the cross product (a-b) × (c-b) >= 0.

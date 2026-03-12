@@ -9,7 +9,6 @@
 
 export class ZPP_Mat23 {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "geom", "ZPP_Mat23"];
 
   // --- Static: namespace references ---
   static _nape: any = null;

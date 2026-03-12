@@ -14,8 +14,6 @@ import { ZPP_Interactor } from "../phys/ZPP_Interactor";
 
 export class ZPP_Shape {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "shape", "ZPP_Shape"];
-  static __super__: any = null;
 
   // --- Static: namespace references ---
   static _nape: any = null;
@@ -163,15 +161,9 @@ export class ZPP_Shape {
     if (ZPP_Shape._initialized) return;
     ZPP_Shape._initialized = true;
 
-    ZPP_Shape.__super__ = ZPP_Interactor;
-
     // Copy ZPP_Interactor prototype methods onto ZPP_Shape prototype
     for (const k of Object.getOwnPropertyNames(ZPP_Interactor.prototype)) {
-      if (
-        k !== "constructor" &&
-        k !== "__class__" &&
-        !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)
-      ) {
+      if (k !== "constructor" && !Object.prototype.hasOwnProperty.call(ZPP_Shape.prototype, k)) {
         (ZPP_Shape.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }

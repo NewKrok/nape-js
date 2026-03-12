@@ -9,7 +9,6 @@
 
 export class ZPP_ID {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "ZPP_ID"];
 
   // --- Static: counters ---
   static _Constraint = 0;

@@ -44,8 +44,6 @@ function validateShapeHasBody(s: any, method: string): void {
  * Fully modernized — calls ZPP_Geom, ZPP_SweepDistance, and ZPP_Collide directly.
  */
 export class Geom {
-  static __name__ = ["nape", "geom", "Geom"];
-
   /**
    * Calculate minimum distance between two bodies and return closest points.
    */

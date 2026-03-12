@@ -113,8 +113,6 @@ export function createListClasses(spec: ListSpec): {
     }
   }
 
-  TypedIterator.__name__ = [...namespaceParts, typeName + "Iterator"];
-
   TypedIterator.zpp_pool = null as Any;
 
   TypedIterator.get = function (list: Any): Any {
@@ -173,8 +171,6 @@ export function createListClasses(spec: ListSpec): {
     this.zpp_inner = new (getZPPListClass())();
     this.zpp_inner.outer = this;
   }
-
-  TypedList.__name__ = [...namespaceParts, typeName + "List"];
 
   TypedList.fromArray = function (array: Any[]): Any {
     if (array == null) {

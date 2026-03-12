@@ -21,12 +21,6 @@ describe("ZPP_CbSetPair", () => {
     };
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_CbSetPair.__name__).toEqual(["zpp_nape", "callbacks", "ZPP_CbSetPair"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize with defaults", () => {
       const p = new ZPP_CbSetPair();

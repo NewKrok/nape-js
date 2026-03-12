@@ -17,9 +17,6 @@ import type { Body } from "../phys/Body";
  * Fully modernized — uses extracted ZPP_ColArbiter directly.
  */
 export class CollisionArbiter extends Arbiter {
-  static override __name__ = ["nape", "dynamics", "CollisionArbiter"];
-  static __super__ = Arbiter;
-
   constructor() {
     super();
   }

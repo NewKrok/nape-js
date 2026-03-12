@@ -9,12 +9,6 @@ describe("ZPP_Material", () => {
     ZPP_Material._nape = createMockNape();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Material.__name__).toEqual(["zpp_nape", "phys", "ZPP_Material"]);
-    });
-  });
-
   describe("static constants", () => {
     it("should define invalidation bitmask flags", () => {
       expect(ZPP_Material.WAKE).toBe(1);

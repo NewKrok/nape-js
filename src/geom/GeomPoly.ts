@@ -26,8 +26,6 @@ import "./Winding"; // Side-effect: register Winding in namespace before GeomPol
  * Converted from nape-compiled.js lines 16271–19420.
  */
 export class GeomPoly {
-  static __name__ = ["nape", "geom", "GeomPoly"];
-
   /** @internal */
   zpp_inner: ZPP_GeomPoly;
   /** @internal */

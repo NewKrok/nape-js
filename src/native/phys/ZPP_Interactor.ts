@@ -13,7 +13,6 @@ import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
 
 export class ZPP_Interactor {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "phys", "ZPP_Interactor"];
 
   /**
    * Namespace references, set by the compiled module after import.

@@ -6,12 +6,6 @@ describe("ZPP_CutInt", () => {
     ZPP_CutInt.zpp_pool = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_CutInt.__name__).toEqual(["zpp_nape", "geom", "ZPP_CutInt"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const ci = new ZPP_CutInt();

@@ -10,7 +10,6 @@
 import { ZPP_SimplifyV } from "./ZPP_SimplifyV";
 
 export class ZPP_SimplifyP {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SimplifyP"];
   static zpp_pool: ZPP_SimplifyP | null = null;
 
   next: ZPP_SimplifyP | null = null;

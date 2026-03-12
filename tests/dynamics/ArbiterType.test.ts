@@ -3,10 +3,6 @@ import { ArbiterType } from "../../src/dynamics/ArbiterType";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("ArbiterType", () => {
-  it("should have correct __name__", () => {
-    expect(ArbiterType.__name__).toEqual(["nape", "dynamics", "ArbiterType"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new ArbiterType()).toThrow("Cannot instantiate");
   });

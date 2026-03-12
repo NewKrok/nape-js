@@ -13,7 +13,6 @@ import type { NapeInner } from "./Vec2";
  */
 export class Vec3 {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "geom", "Vec3"];
 
   /** @internal The internal ZPP_Vec3 this wrapper owns. */
   zpp_inner: ZPP_Vec3;

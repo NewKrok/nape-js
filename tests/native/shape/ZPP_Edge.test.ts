@@ -11,12 +11,6 @@ describe("ZPP_Edge", () => {
     ZPP_Edge._zpp = createMockZpp();
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Edge.__name__).toEqual(["zpp_nape", "shape", "ZPP_Edge"]);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize numeric fields to zero", () => {
       const e = new ZPP_Edge();

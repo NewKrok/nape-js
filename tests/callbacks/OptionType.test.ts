@@ -162,10 +162,6 @@ describe("OptionType", () => {
 
   // --- __name__ ---
 
-  it("should have correct __name__ metadata", () => {
-    expect(OptionType.__name__).toEqual(["nape", "callbacks", "OptionType"]);
-  });
-
   // --- Namespace registration ---
 
   it("should be registered in the nape namespace", () => {

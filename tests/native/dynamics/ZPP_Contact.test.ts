@@ -12,12 +12,6 @@ describe("ZPP_Contact", () => {
     ZPP_Contact._zpp = null;
   });
 
-  describe("__name__", () => {
-    it("should have correct Haxe metadata", () => {
-      expect(ZPP_Contact.__name__).toEqual(["zpp_nape", "dynamics", "ZPP_Contact"]);
-    });
-  });
-
   describe("instance defaults", () => {
     it("should initialize all fields to defaults", () => {
       const c = new ZPP_Contact();

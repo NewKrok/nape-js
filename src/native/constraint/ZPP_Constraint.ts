@@ -11,7 +11,6 @@ import { ZPP_ID } from "../util/ZPP_ID";
 
 export class ZPP_Constraint {
   // --- Static: Haxe metadata ---
-  static __name__ = ["zpp_nape", "constraint", "ZPP_Constraint"];
 
   /**
    * Namespace references, set by the compiled module after import.
@@ -43,8 +42,6 @@ export class ZPP_Constraint {
   cbSet: any = null;
   wrap_cbTypes: any = null;
   pre_dt: number = -1.0;
-
-  __class__: any = ZPP_Constraint;
 
   constructor() {
     this._initBase();

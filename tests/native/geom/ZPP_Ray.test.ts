@@ -66,10 +66,6 @@ function getZppShape(body: Body, space: Space): any {
 // ---------------------------------------------------------------------------
 
 describe("ZPP_Ray — metadata", () => {
-  it("should have correct __name__", () => {
-    expect(ZPP_Ray.__name__).toEqual(["zpp_nape", "geom", "ZPP_Ray"]);
-  });
-
   it("should be constructable", () => {
     const r = new ZPP_Ray();
     expect(r).toBeInstanceOf(ZPP_Ray);

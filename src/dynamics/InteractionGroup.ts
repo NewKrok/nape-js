@@ -14,7 +14,6 @@ import type { NapeInner } from "../geom/Vec2";
  */
 export class InteractionGroup {
   // --- Haxe metadata (required by compiled engine) ---
-  static __name__ = ["nape", "dynamics", "InteractionGroup"];
 
   /** @internal The internal ZPP_InteractionGroup this wrapper owns. */
   zpp_inner: ZPP_InteractionGroup;

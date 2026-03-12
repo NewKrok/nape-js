@@ -189,8 +189,4 @@ describe("MarchingSquares", () => {
   });
 
   // --- __name__ and __class__ ---
-
-  it("should have correct __name__", () => {
-    expect(MarchingSquares.__name__).toEqual(["nape", "geom", "MarchingSquares"]);
-  });
 });

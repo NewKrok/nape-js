@@ -10,8 +10,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * Converted from nape-compiled.js lines 30435–30482.
  */
 export class ShapeType {
-  static __name__ = ["nape", "shape", "ShapeType"];
-
   constructor() {
     if (!ZPP_Flags.internal) {
       throw new Error("Error: Cannot instantiate ShapeType derp!");

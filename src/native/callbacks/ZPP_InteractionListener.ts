@@ -15,8 +15,6 @@ import { ZPP_CbType } from "./ZPP_CbType";
 import { ZPP_OptionType } from "./ZPP_OptionType";
 
 export class ZPP_InteractionListener extends ZPP_Listener {
-  static __name__ = ["zpp_nape", "callbacks", "ZPP_InteractionListener"];
-
   // --- Static: working lists for set operations (initialized at engine init time) ---
   static UCbSet: ZNPList<ZPP_CbSet> | null = null;
   static VCbSet: ZNPList<ZPP_CbSet> | null = null;

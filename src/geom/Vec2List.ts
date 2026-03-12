@@ -57,7 +57,6 @@ function Vec2Iterator(this: any) {
   }
 }
 
-Vec2Iterator.__name__ = ["nape", "geom", "Vec2Iterator"];
 Vec2Iterator.zpp_pool = null as any;
 
 Vec2Iterator.get = function (list: any): any {
@@ -109,8 +108,6 @@ function Vec2ListCtor(this: any) {
   this.zpp_inner = new ZPP_Vec2List();
   this.zpp_inner.outer = this;
 }
-
-Vec2ListCtor.__name__ = ["nape", "geom", "Vec2List"];
 
 Vec2ListCtor.fromArray = function (array: any[]): any {
   if (array == null) {

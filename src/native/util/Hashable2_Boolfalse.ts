@@ -1,5 +1,4 @@
 export class Hashable2_Boolfalse {
-  static __name__ = ["zpp_nape", "util", "Hashable2_Boolfalse"];
   static zpp_pool: Hashable2_Boolfalse | null = null;
 
   value: boolean = false;
@@ -7,8 +6,6 @@ export class Hashable2_Boolfalse {
   hnext: Hashable2_Boolfalse | null = null;
   id: number = 0;
   di: number = 0;
-
-  __class__: any = Hashable2_Boolfalse;
 
   private static _alloc(): Hashable2_Boolfalse {
     if (Hashable2_Boolfalse.zpp_pool == null) {

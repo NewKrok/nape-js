@@ -8,10 +8,6 @@ import { Circle } from "../../src/shape/Circle";
 import { Space } from "../../src/space/Space";
 
 describe("RayResult", () => {
-  it("should have correct __name__", () => {
-    expect(RayResult.__name__).toEqual(["nape", "geom", "RayResult"]);
-  });
-
   it("should be registered in nape namespace", () => {
     const nape = getNape();
     expect(nape.geom.RayResult).toBe(RayResult);

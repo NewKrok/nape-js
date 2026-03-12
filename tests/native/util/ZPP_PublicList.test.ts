@@ -131,12 +131,6 @@ describe("ZPP_PublicList (P15 modernized)", () => {
     expect(inst.push_ite).toBeNull();
   });
 
-  it("each class has correct __name__", () => {
-    const zpp = getNape().__zpp;
-    expect(zpp.util.ZPP_BodyList.__name__).toEqual(["zpp_nape", "util", "ZPP_BodyList"]);
-    expect(zpp.util.ZPP_ArbiterList.__name__).toEqual(["zpp_nape", "util", "ZPP_ArbiterList"]);
-  });
-
   it("public lists work end-to-end after P15 migration", () => {
     // Verify that body list from Space works (uses ZPP_BodyList internally)
     const space = new Space();

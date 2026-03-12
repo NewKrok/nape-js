@@ -10,8 +10,6 @@ import type { Constraint } from "../constraint/Constraint";
  * Converted from nape-compiled.js lines 1262–1292.
  */
 export class ConstraintCallback extends Callback {
-  static override __name__ = ["nape", "callbacks", "ConstraintCallback"];
-
   /** The constraint that woke, fell asleep, or broke. */
   get constraint(): Constraint {
     return this.zpp_inner!.constraint.outer;

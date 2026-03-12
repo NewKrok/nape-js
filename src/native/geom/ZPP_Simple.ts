@@ -27,8 +27,6 @@ import {
 } from "../util/ZNPRegistry";
 
 export class ZPP_Simple {
-  static __name__ = ["zpp_nape", "geom", "ZPP_Simple"];
-
   static sweep: ZPP_SimpleSweep | null = null;
   static inthash: FastHash2_Hashable2_Boolfalse | null = null;
   static vertices: ZPP_Set<ZPP_SimpleVert> | null = null;

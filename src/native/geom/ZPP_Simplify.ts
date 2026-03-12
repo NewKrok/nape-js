@@ -19,8 +19,6 @@ interface XYPoint {
 }
 
 export class ZPP_Simplify {
-  static __name__ = ["zpp_nape", "geom", "ZPP_Simplify"];
-
   static stack: ZNPList<ZPP_SimplifyP> | null = null;
 
   static lessval(a: XYPoint, b: XYPoint): number {

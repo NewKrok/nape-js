@@ -10,8 +10,6 @@ import type { Interactor } from "../phys/Interactor";
  * Converted from nape-compiled.js lines 1398–1445.
  */
 export class InteractionCallback extends Callback {
-  static override __name__ = ["nape", "callbacks", "InteractionCallback"];
-
   /** The first interactor involved in the interaction. */
   get int1(): Interactor {
     return this.zpp_inner!.int1.outer_i;

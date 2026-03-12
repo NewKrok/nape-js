@@ -3,10 +3,6 @@ import { InteractionType } from "../../src/callbacks/InteractionType";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("InteractionType", () => {
-  it("should have correct __name__", () => {
-    expect(InteractionType.__name__).toEqual(["nape", "callbacks", "InteractionType"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new InteractionType()).toThrow("Cannot instantiate");
   });

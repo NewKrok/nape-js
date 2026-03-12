@@ -3,10 +3,6 @@ import { MassMode } from "../../src/phys/MassMode";
 import { ZPP_Flags } from "../../src/native/util/ZPP_Flags";
 
 describe("MassMode", () => {
-  it("should have correct __name__", () => {
-    expect(MassMode.__name__).toEqual(["nape", "phys", "MassMode"]);
-  });
-
   it("should throw on direct instantiation", () => {
     expect(() => new MassMode()).toThrow("Cannot instantiate");
   });

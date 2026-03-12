@@ -8,7 +8,6 @@
  */
 
 export class ZPP_SimplifyV {
-  static __name__ = ["zpp_nape", "geom", "ZPP_SimplifyV"];
   static zpp_pool: ZPP_SimplifyV | null = null;
 
   x = 0.0;
