@@ -62,6 +62,7 @@ Key competitors to watch:
 | P49 — ECS adapter layer                   | M      | DX       | medium | ⬜ Not started |
 | P50 — Spatial hash grid broadphase        | S-M    | perf     | low    | ⬜ Not started |
 | P51 — Sub-stepping solver                 | XL     | stability| high   | ⬜ Not started |
+| P53 — Polygon-Polygon narrowphase bug fix | M      | critical | high   | ⬜ Not started |
 
 ---
 
@@ -324,3 +325,24 @@ PixiDebugDraw (highest priority — PixiJS is #1 2D renderer), P5DebugDraw.
 **Decision (2026-03-10): Not worth pursuing.** Tree shaking is architecturally limited
 because `bootstrap.ts` imports every class unconditionally. Competing engines behave the
 same way. See `.claude/docs/architecture.md` for details.
+
+---
+
+## Known Bug: P53 — Polygon-Polygon Narrowphase Collision Failure
+
+**Discovered (2026-03-13):** When multiple `Polygon` dynamic bodies coexist in the same space
+(even without touching), their floor collision detection fails — bodies tunnel through static
+`Polygon` floors. Circle-Polygon collisions work correctly; only Polygon-Polygon is affected.
+
+**Reproduction:**
+- Create a space with 4 static walls + at least 2 dynamic `Polygon.box(...)` bodies
+- The Polygon bodies fall through the static Polygon floor despite `isBullet = true`
+- Single Polygon in isolation works fine; second Polygon body triggers the bug
+
+**Root cause:** Likely a narrowphase SAT solver issue when multiple Polygon-Polygon pairs are
+registered simultaneously in the broadphase/narrowphase pipeline.
+
+**Workaround (demos):** Use `Circle` physics shapes for objects that need to settle on floors,
+or use `Polygon` bodies only in joint-constrained (non-free-falling) scenarios.
+
+**Scope:** Does NOT affect Circle-Polygon, Circle-Circle, or Capsule-Polygon collisions.

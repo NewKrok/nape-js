@@ -79,5 +79,6 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | Spatial hash grid        | ⬜ Planned — P50 |
 | Sub-stepping solver      | ⬜ Planned — P51 (long-term) |
 | Multiplayer demo         | ✅ Done — P52 (Railway WebSocket, `docs/multiplayer.html` + `server/`) |
+| Polygon-Polygon bug      | 🐛 P53 — dynamic Polygon bodies tunnel through static Polygon floors when ≥2 present |
 
 Full roadmap with details, competitor analysis, and history: `.claude/docs/roadmap.md`

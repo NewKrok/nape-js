@@ -123,6 +123,7 @@ function spawnObject(x, y, shape /* "circle"|"box" */, size) {
   } else {
     body.shapes.add(new Polygon(Polygon.box(size, size), undefined, new Material(0.2, 0.5, 0.4, 1)));
   }
+  body.isBullet = true;
   body.space = space;
   dynamicBodies.set(id, body);
   return { id, shape, size, x, y };
@@ -138,6 +139,7 @@ function spawnHanging(anchorX, anchorY, ropeLen, shape, size) {
   } else {
     body.shapes.add(new Polygon(Polygon.box(size, size), undefined, new Material(0.2, 0.4, 0.3, 1.5)));
   }
+  body.isBullet = true;
   body.space = space;
   dynamicBodies.set(id, body);
 
@@ -174,11 +176,11 @@ const sceneObjects = [
   spawnObject(190,         H * 0.50 - 25, "box",    16),
   spawnObject(710,         H * 0.50 - 25, "circle", 11),
   // Lelógó elemek — mennyezetről
-  spawnHanging(160,  WALL, 110, "circle", 16),
-  spawnHanging(450,  WALL,  90, "box",    20),
-  spawnHanging(740,  WALL, 120, "circle", 13),
-  spawnHanging(310,  WALL,  70, "box",    16),
-  spawnHanging(610,  WALL,  80, "circle", 11),
+  spawnHanging(160,  WALL,       110, "circle", 16),
+  spawnHanging(W/2,  H * 0.65,   60, "box",    20),
+  spawnHanging(740,  WALL,       120, "circle", 13),
+  spawnHanging(310,  WALL,        70, "box",    16),
+  spawnHanging(610,  WALL,        80, "circle", 11),
 ];
 
 // ─── Player management ────────────────────────────────────────────────────────
@@ -197,11 +199,13 @@ function spawnPlayer(ws) {
   const spawnX = WALL + PLAYER_W + Math.random() * (W - WALL * 2 - PLAYER_W * 2);
   const body = new Body(BodyType.DYNAMIC, new Vec2(spawnX, 60));
   const cap = new Capsule(PLAYER_H, PLAYER_W, undefined, PLAYER_MASS_MATERIAL);
-  cap.rotation = Math.PI / 2;
   body.shapes.add(cap);
   body.shapes.at(0).cbTypes.add(playerType);
-  // Prevent rotation so character stays upright
+  // Rotate body (not shape) so capsule stands upright — shape rotation doesn't affect physics
+  body.rotation = Math.PI / 2;
+  // Prevent further rotation so character stays upright
   body.allowRotation = false;
+  body.isBullet = true;
   body.space = space;
 
   dynamicBodies.set(bodyId, body);
