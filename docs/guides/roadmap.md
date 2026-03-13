@@ -107,7 +107,7 @@ A hosted, real-time multiplayer physics demo showcasing the engine to new users.
 - Player color badges, "you" indicator dot above own character
 - Reconnect on disconnect (players only)
 
-**Implementation guide:** See [`.claude/docs/multiplayer-guide.md`](./multiplayer-guide.md) for
+**Implementation guide:** See [`docs/guides/multiplayer-guide.md`](./multiplayer-guide.md) for
 server architecture recommendations, protocol design, interpolation, prediction,
 determinism considerations, and scaling advice.
 
@@ -328,7 +328,7 @@ PixiDebugDraw (highest priority — PixiJS is #1 2D renderer), P5DebugDraw.
 
 **Decision (2026-03-10): Not worth pursuing.** Tree shaking is architecturally limited
 because `bootstrap.ts` imports every class unconditionally. Competing engines behave the
-same way. See `.claude/docs/architecture.md` for details.
+same way. See `docs/guides/architecture.md` for details.
 
 ---
 
