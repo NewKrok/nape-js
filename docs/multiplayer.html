@@ -465,21 +465,16 @@ function render(alpha) {
     const pm = playerMeta.find(p => p.bodyId === id);
 
     if (pm) {
-      // Player: vertical capsule
-      const pw = 14, ph = 23, pr = pw; // half-width, half-height, endcap radius
+      // Player: circle
+      const pr = 16;
       ctx.beginPath();
-      ctx.moveTo(-pw, -ph + pr);
-      ctx.lineTo(-pw,  ph - pr);
-      ctx.arc(0, ph - pr, pw, Math.PI, 0, true);
-      ctx.lineTo(pw, -ph + pr);
-      ctx.arc(0, -ph + pr, pw, 0, Math.PI, true);
-      ctx.closePath();
+      ctx.arc(0, 0, pr, 0, Math.PI * 2);
       ctx.fillStyle = c.fill; ctx.fill();
       ctx.strokeStyle = c.stroke; ctx.lineWidth = isMe ? 2.5 : 1.5; ctx.stroke();
       // "Me" indicator
       if (isMe) {
         ctx.beginPath();
-        ctx.arc(0, -ph - 6, 4, 0, Math.PI * 2);
+        ctx.arc(0, -pr - 6, 4, 0, Math.PI * 2);
         ctx.fillStyle = c.stroke; ctx.fill();
       }
     } else if (obj) {

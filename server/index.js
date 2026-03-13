@@ -16,7 +16,7 @@
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import {
-  Space, Body, BodyType, Vec2, Circle, Polygon, Capsule, Material,
+  Space, Body, BodyType, Vec2, Circle, Polygon, Material,
   CbType, InteractionType, PreListener, PreFlag, DistanceJoint,
 } from "@newkrok/nape-js";
 
@@ -26,8 +26,7 @@ const PORT = process.env.PORT || 3000;
 const W = 900;
 const H = 500;
 const TICK_MS = 1000 / 60;
-const PLAYER_W = 28;   // capsule width (narrow side)
-const PLAYER_H = 46;   // capsule height (tall side, after PI/2 rotation)
+const PLAYER_R = 16;   // player circle radius
 const PLAYER_MASS_MATERIAL = new Material(0.1, 0.5, 0.4, 2);
 const JUMP_FORCE = -480;
 const MOVE_FORCE = 220;
@@ -196,14 +195,10 @@ function spawnPlayer(ws) {
   const colorIdx = (playerId - 1) % PLAYER_COLORS.length;
   const bodyId = nextBodyId++;
 
-  const spawnX = WALL + PLAYER_W + Math.random() * (W - WALL * 2 - PLAYER_W * 2);
+  const spawnX = WALL + PLAYER_R + Math.random() * (W - WALL * 2 - PLAYER_R * 2);
   const body = new Body(BodyType.DYNAMIC, new Vec2(spawnX, 60));
-  const cap = new Capsule(PLAYER_H, PLAYER_W, undefined, PLAYER_MASS_MATERIAL);
-  body.shapes.add(cap);
+  body.shapes.add(new Circle(PLAYER_R, undefined, PLAYER_MASS_MATERIAL));
   body.shapes.at(0).cbTypes.add(playerType);
-  // Rotate body (not shape) so capsule stands upright — shape rotation doesn't affect physics
-  body.rotation = Math.PI / 2;
-  // Prevent further rotation so character stays upright
   body.allowRotation = false;
   body.isBullet = true;
   body.space = space;
