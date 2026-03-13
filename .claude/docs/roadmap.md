@@ -107,6 +107,10 @@ A hosted, real-time multiplayer physics demo showcasing the engine to new users.
 - Player color badges, "you" indicator dot above own character
 - Reconnect on disconnect (players only)
 
+**Implementation guide:** See [`.claude/docs/multiplayer-guide.md`](./multiplayer-guide.md) for
+server architecture recommendations, protocol design, interpolation, prediction,
+determinism considerations, and scaling advice.
+
 ---
 
 ## Done: P39 — Binary Serialization (Uint8Array Snapshots)
