@@ -144,7 +144,7 @@ Arbiters and broadphase tree state are reconstructed automatically on the first 
 ```bash
 npm install
 npm run build      # tsup → dist/ (ESM + CJS + DTS)
-npm test           # vitest — 3276 tests across 149 files
+npm test           # vitest — 3784 tests across 176 files
 npm run benchmark  # Performance benchmarks
 ```
 
