@@ -37,8 +37,9 @@ npm run lint         # eslint + prettier
 | File | What to update | When |
 | ---- | -------------- | ---- |
 | `CLAUDE.md` | Status table, test count, key features list | Priority status changes, new features |
-| `.claude/docs/roadmap.md` | Priority table, detailed descriptions, competitive analysis | New/changed/completed priorities |
-| `.claude/docs/architecture.md` | Internal patterns, registration flow, `any` rules | Architecture or bootstrap changes |
+| `docs/guides/roadmap.md` | Priority table, detailed descriptions, competitive analysis | New/changed/completed priorities |
+| `docs/guides/architecture.md` | Internal patterns, registration flow, `any` rules | Architecture or bootstrap changes |
+| `docs/guides/multiplayer-guide.md` | Multiplayer patterns, server setup, protocol, prediction | Multiplayer architecture changes |
 | `README.md` | Quick start, API tables, test count, badge versions | Public API changes, releases |
 | `llms.txt` | Class list, links, quick start example | Public API additions/removals |
 | `llms-full.txt` | Complete API reference, version number (line 1) | Any public API change, releases |
@@ -55,7 +56,7 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 ```
 
 For detailed internal patterns (registration flow, factory callbacks, `any` rules,
-iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
+iterator patterns, ESM constraints) see `docs/guides/architecture.md`.
 
 ## Current Status
 
@@ -81,4 +82,4 @@ iterator patterns, ESM constraints) see `.claude/docs/architecture.md`.
 | Multiplayer demo         | ✅ Done — P52 (Railway WebSocket, `docs/multiplayer.html` + `server/`) |
 | Polygon-Polygon bug      | 🐛 P53 — dynamic Polygon bodies tunnel through static Polygon floors when ≥2 present |
 
-Full roadmap with details, competitor analysis, and history: `.claude/docs/roadmap.md`
+Full roadmap with details, competitor analysis, and history: `docs/guides/roadmap.md`
