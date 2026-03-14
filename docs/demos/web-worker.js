@@ -271,17 +271,19 @@ function createMesh3D(sd, idx) {
 }
 
 function ensureThreeScene(renderer, scene) {
-  if (threeInited) return;
-  threeInited = true;
+  // If the scene changed (e.g. 2D→3D→2D→3D toggle), old meshes are gone — rebuild
+  if (threeScene !== scene) {
+    threeMeshes = [];
+  }
   threeScene = scene;
   _THREE = _THREE || window.THREE;
   // Try to resolve THREE from an already-loaded module
   if (!_THREE) {
     try { _THREE = loadThree(); } catch (_) { /* will be set when 3D mode activates */ }
   }
-  // Build meshes for all existing shapes
+  // Build meshes for shapes that don't have a mesh yet
   if (_THREE && shapeData) {
-    for (let i = 0; i < shapeData.length; i++) {
+    for (let i = threeMeshes.length; i < shapeData.length; i++) {
       const mesh = createMesh3D(shapeData[i], i);
       if (mesh) {
         scene.add(mesh);
