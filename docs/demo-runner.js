@@ -422,7 +422,11 @@ export class DemoRunner {
 
       // Render
       if (this.#mode === "3d" && this.#threeRenderer) {
-        this.#render3d();
+        if (this.#demo?.render3d) {
+          this.#demo.render3d(this.#threeRenderer, this.#threeScene, this.#threeCamera, this.#space, this.#W, this.#H);
+        } else {
+          this.#render3d();
+        }
       } else {
         this.#render2d();
       }

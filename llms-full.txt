@@ -1618,3 +1618,129 @@ import {
   NapeList, VERSION
 } from "@newkrok/nape-js";
 ```
+
+---
+
+## Web Worker Sub-Package (`@newkrok/nape-js/worker`)
+
+Run physics off the main thread using Web Workers + SharedArrayBuffer.
+
+```typescript
+import { PhysicsWorkerManager } from "@newkrok/nape-js/worker";
+```
+
+### PhysicsWorkerManager
+
+Main-thread controller for off-thread physics simulation.
+
+**Constructor:**
+```typescript
+new PhysicsWorkerManager(options?: PhysicsWorkerOptions)
+```
+
+**PhysicsWorkerOptions:**
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxBodies` | `number` | `512` | Maximum bodies the transform buffer holds |
+| `timestep` | `number` | `1/60` | Physics timestep in seconds |
+| `velocityIterations` | `number` | `10` | Velocity solver iterations |
+| `positionIterations` | `number` | `10` | Position solver iterations |
+| `gravityX` | `number` | `0` | Gravity X component |
+| `gravityY` | `number` | `600` | Gravity Y component |
+| `workerUrl` | `string?` | — | URL to pre-built worker script (omit for inline Blob) |
+| `autoStep` | `boolean` | `true` | Run fixed-interval loop in worker |
+
+**Lifecycle:**
+- `init(): Promise<void>` — Create worker and physics space
+- `start(): void` — Start physics loop (auto-step mode)
+- `stop(): void` — Pause physics loop
+- `step(): void` — Trigger single step (manual mode)
+- `destroy(): void` — Terminate worker, release resources
+
+**Body Management:**
+- `addBody(type, x, y, shapes, options?): number` — Returns unique body ID
+- `removeBody(id): void` — Remove body
+- `applyForce(id, fx, fy): void` — Set force for current step
+- `applyImpulse(id, ix, iy): void` — Instantaneous impulse
+- `setVelocity(id, vx, vy): void` — Override velocity
+- `setPosition(id, x, y): void` — Teleport body
+- `setGravity(gx, gy): void` — Change world gravity
+
+**Transform Reading:**
+- `getTransform(id): BodyTransform | null` — Read single body `{ x, y, rotation }`
+- `readAllTransforms(out: Map): void` — Read all (allocation-free)
+- `rawTransforms: Float32Array | null` — Raw buffer view
+- `bodyCount: number` — Bodies from last frame
+- `timestamp: number` — Physics step count
+- `stepTimeMs: number` — Last step duration (ms)
+- `isSharedBuffer: boolean` — True if SharedArrayBuffer in use
+
+**ShapeDesc types:**
+```typescript
+type ShapeDesc = CircleDesc | BoxDesc | PolygonDesc;
+{ type: "circle", radius: number, offsetX?: number, offsetY?: number }
+{ type: "box", width: number, height: number }
+{ type: "polygon", vertices: { x: number, y: number }[] }
+```
+
+**BodyOptions:**
+```typescript
+{
+  rotation?: number;
+  velocityX?: number; velocityY?: number;
+  angularVel?: number;
+  isBullet?: boolean;
+  allowRotation?: boolean;
+  allowMovement?: boolean;
+  elasticity?: number;
+  dynamicFriction?: number;
+  staticFriction?: number;
+  density?: number;
+}
+```
+
+### buildWorkerScript
+
+```typescript
+function buildWorkerScript(napeUrl: string): string
+```
+
+Generates self-contained worker JavaScript. Use for custom worker hosting.
+
+### Buffer Layout Constants
+
+- `HEADER_FLOATS = 3` — Header: `[bodyCount, timestamp, stepTimeMs]`
+- `FLOATS_PER_BODY = 3` — Per body: `[x, y, rotation]`
+- Full layout: `[header..., body0_x, body0_y, body0_rot, body1_x, ...]`
+
+### Usage Example
+
+```typescript
+import { PhysicsWorkerManager } from "@newkrok/nape-js/worker";
+
+const mgr = new PhysicsWorkerManager({ gravityY: 600, maxBodies: 200 });
+mgr.napeUrl = "/nape-js.esm.js"; // self-hosted bundle
+await mgr.init();
+
+// Add walls
+mgr.addBody("static", 400, 590, [{ type: "box", width: 800, height: 20 }]);
+
+// Add dynamic bodies
+const ids = [];
+for (let i = 0; i < 100; i++) {
+  ids.push(mgr.addBody("dynamic", Math.random() * 800, Math.random() * 300,
+    [{ type: "circle", radius: 10 }]));
+}
+
+mgr.start(); // 60 Hz physics loop in worker
+
+// Render loop on main thread
+function render() {
+  for (const id of ids) {
+    const t = mgr.getTransform(id);
+    if (t) drawCircle(t.x, t.y, 10);
+  }
+  requestAnimationFrame(render);
+}
+render();
+```

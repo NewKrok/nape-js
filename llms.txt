@@ -101,3 +101,10 @@ function update() {
 ## Collections
 
 - [NapeList](https://newkrok.github.io/nape-js/api/classes/NapeList.html): Generic iterable list with `for...of` support, add/remove/push/pop
+
+## Web Worker (`@newkrok/nape-js/worker`)
+
+- `PhysicsWorkerManager`: Run physics off the main thread — SharedArrayBuffer zero-copy or postMessage fallback
+- `buildWorkerScript(napeUrl)`: Generate self-contained worker script for inline Blob or hosted file
+- `BodyTransform`: `{ x, y, rotation }` per-body transform read from shared buffer
+- `FLOATS_PER_BODY`, `HEADER_FLOATS`: Buffer layout constants

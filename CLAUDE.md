@@ -70,7 +70,7 @@ iterator patterns, ESM constraints) see `docs/guides/architecture.md`.
 | Server/demo examples     | ❌ Cancelled — P36 (no standalone value without hosting) |
 | Haxe remnant cleanup     | ✅ Done — P40 (`__name__`/`__class__`/`__super__`/`_gthis`/`_init()`) |
 | Capsule shape            | ✅ Done — P41 (`Capsule.create` / `Capsule.createVertical`) |
-| Web Worker helper        | ⬜ Planned — P42 |
+| Web Worker helper        | ✅ Done — P42 (`@newkrok/nape-js/worker`, `PhysicsWorkerManager`) |
 | Concave polygon helper   | ⬜ Planned — P43 |
 | PixiJS integration       | ⬜ Planned — P44 |
 | Character controller     | ⬜ Planned — P45 |

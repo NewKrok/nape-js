@@ -37,12 +37,16 @@ import collisionFiltering from "./demos/collision-filtering.js?v=3.10.3";
 import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.10.3";
 import dropImageBody     from "./demos/drop-image-body.js?v=3.10.3";
 import capsule           from "./demos/capsule.js?v=3.10.3";
+import destructibleTerrain from "./demos/destructible-terrain.js?v=3.10.3";
+import webWorker           from "./demos/web-worker.js?v=3.10.3";
 
 const ALL_DEMOS = [
   falling, pyramid, chain, explosion, constraints, gravity, stacking, ragdoll, strandbeast,
   carSideview, carTopdown, platformer, ropeBridge, wreckingBall, newtonsCradle,
   dominos, conveyorBelts, trebuchet, seesaw, pinball, cloth, funnel,
   softBody, oneWayPlatforms, collisionFiltering, bodyFromGraphic, dropImageBody, capsule,
+  destructibleTerrain,
+  webWorker,
 ];
 
 const CW = 900;

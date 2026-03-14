@@ -44,6 +44,16 @@
         "types": "./dist/serialization/index.d.cts",
         "default": "./dist/serialization/index.cjs"
       }
+    },
+    "./worker": {
+      "import": {
+        "types": "./dist/worker/index.d.ts",
+        "default": "./dist/worker/index.js"
+      },
+      "require": {
+        "types": "./dist/worker/index.d.cts",
+        "default": "./dist/worker/index.cjs"
+      }
     }
   },
   "llms": "https://newkrok.github.io/nape-js/llms.txt",

@@ -139,6 +139,32 @@ bootstrap when unused. The snapshot captures bodies, shapes, materials, interact
 filters, fluid properties, all constraint types (except `UserConstraint`), and compounds.
 Arbiters and broadphase tree state are reconstructed automatically on the first step.
 
+### Web Worker
+
+Run physics off the main thread for smooth rendering even with hundreds of bodies.
+
+```typescript
+import "@newkrok/nape-js";
+import { PhysicsWorkerManager } from "@newkrok/nape-js/worker";
+
+const mgr = new PhysicsWorkerManager({ gravityY: 600, maxBodies: 256 });
+await mgr.init();
+
+const id = mgr.addBody("dynamic", 100, 50, [{ type: "circle", radius: 20 }]);
+mgr.start();
+
+// Read transforms on the main thread (zero-copy with SharedArrayBuffer)
+function render() {
+  const t = mgr.getTransform(id);
+  if (t) drawCircle(t.x, t.y, t.rotation);
+  requestAnimationFrame(render);
+}
+render();
+```
+
+Uses SharedArrayBuffer for zero-copy transform sharing when COOP/COEP headers are
+present, with automatic `postMessage` fallback otherwise.
+
 ## Development
 
 ```bash

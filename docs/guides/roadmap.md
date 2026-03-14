@@ -52,7 +52,7 @@ Key competitors to watch:
 | P29 — Test coverage ≥80%                  | L      | safety   | none   | 🔶 ~54% (3251 tests) |
 | P36 — Server-side + demo examples         | M      | medium   | low    | ❌ Cancelled   |
 | P52 — Multiplayer demo                    | M      | adoption | low    | ✅ Done        |
-| P42 — Web Worker helper                   | M      | perf/DX  | medium | ⬜ Not started |
+| P42 — Web Worker helper                   | M      | perf/DX  | medium | ✅ Done        |
 | P43 — Concave polygon helper              | M      | high     | low    | ⬜ Not started |
 | P44 — PixiJS integration package          | M      | adoption | low    | ⬜ Not started |
 | P45 — Character controller                | M      | DX       | medium | ⬜ Not started |
@@ -169,17 +169,40 @@ Polygon middle section. Commonly needed for character controllers and rounded ob
 
 ---
 
-## Planned: P42 — Web Worker Helper
+## Done: P42 — Web Worker Helper
 
 **Effort: M | Impact: perf/DX | Risk: medium**
 
-Run physics simulation off the main thread using Web Workers + SharedArrayBuffer:
+Run physics simulation off the main thread using Web Workers + SharedArrayBuffer.
 
-- Flat transform buffer layout: `[x0, y0, rot0, x1, y1, rot1, ...]`
-- Main thread reads transforms for rendering at any framerate
-- Physics runs at fixed timestep in worker (e.g., 60 Hz)
-- Reference: p2-es/use-p2 pattern, SharedArrayBuffer + Atomics
-- Requires COOP/COEP headers (Spectre mitigation)
+**Delivered:**
+- `@newkrok/nape-js/worker` sub-export — tree-shakeable, no core engine dependency
+- `PhysicsWorkerManager` class — main-thread controller for the worker lifecycle
+- `buildWorkerScript(napeUrl)` — generates self-contained worker code (inline Blob or hosted file)
+- Flat transform buffer layout: `[bodyCount, timestamp, stepMs, x0, y0, rot0, x1, y1, rot1, ...]`
+- SharedArrayBuffer zero-copy reads when COOP/COEP headers present
+- Automatic `postMessage` fallback when SharedArrayBuffer unavailable
+- Typed message protocol for body management (add/remove/force/impulse/velocity/position)
+- Auto-step mode (fixed 60 Hz loop in worker) or manual stepping
+- `docs/demos/web-worker.js` stress test demo — 300 bodies off-thread, smooth main-thread rendering
+- ~9.5 KB ESM bundle (separate from core engine)
+
+**API:**
+```ts
+import { PhysicsWorkerManager } from "@newkrok/nape-js/worker";
+
+const mgr = new PhysicsWorkerManager({ gravityY: 600, maxBodies: 256 });
+await mgr.init();
+const id = mgr.addBody("dynamic", 100, 50, [{ type: "circle", radius: 20 }]);
+mgr.start();
+
+// Read transforms (zero-copy with SharedArrayBuffer)
+const t = mgr.getTransform(id); // { x, y, rotation }
+```
+
+**Requirements:**
+- COOP/COEP headers for SharedArrayBuffer (falls back to postMessage without them)
+- Worker imports nape-js ESM bundle at runtime (CDN default, overridable via `napeUrl`)
 
 ---
 
