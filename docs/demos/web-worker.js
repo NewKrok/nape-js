@@ -383,7 +383,7 @@ export default {
   init(container) {
     overlayEl = document.createElement("div");
     overlayEl.style.cssText =
-      "position:absolute;top:8px;left:8px;z-index:10;" +
+      "position:absolute;bottom:8px;left:8px;z-index:10;" +
       "display:flex;gap:8px;align-items:center;pointer-events:none;" +
       "background:rgba(0,0,0,0.55);padding:6px 10px;border-radius:6px;" +
       "backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);";
