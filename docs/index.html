@@ -4,6 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>nape-js — 2D Physics Engine for TypeScript</title>
+  <meta name="description" content="nape-js — high-performance TypeScript 2D physics engine with rigid body dynamics, constraints, fluid simulation, and debug draw. Zero dependencies." />
+  <meta name="keywords" content="physics engine, TypeScript, 2D physics, rigid body, collision detection, constraints, nape, JavaScript" />
+  <link rel="canonical" href="https://newkrok.github.io/nape-js/" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="nape-js — 2D Physics Engine for TypeScript" />
+  <meta property="og:description" content="Fully typed, tree-shakeable 2D physics engine — rigid bodies, constraints, fluid simulation, and debug draw." />
+  <meta property="og:url" content="https://newkrok.github.io/nape-js/" />
+  <meta property="og:image" content="https://newkrok.github.io/nape-js/logo.svg" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="nape-js — 2D Physics Engine for TypeScript" />
+  <meta name="twitter:description" content="Fully typed, tree-shakeable 2D physics engine — rigid bodies, constraints, fluid simulation, and debug draw." />
+  <meta name="twitter:image" content="https://newkrok.github.io/nape-js/logo.svg" />
   <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -54,22 +68,30 @@
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
         <div class="canvas-overlay" id="canvasOverlay">Loading engine&hellip;</div>
+        <!-- Canvas overlay controls (top-right, matching examples page) -->
+        <div class="canvas-controls" id="canvasControls" style="opacity:1">
+          <div class="card-render-toggle" id="renderModeToggle">
+            <button class="card-render-btn active" data-mode="2d">2D</button>
+            <button class="card-render-btn" data-mode="3d">3D</button>
+          </div>
+          <button class="canvas-outline-btn active" id="outlineBtn" title="Toggle outlines">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="12" height="12" rx="2"/><circle cx="8" cy="8" r="3"/>
+            </svg>
+          </button>
+          <button class="canvas-fs-btn canvas-reset-btn" id="resetBtn" title="Reset demo">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.5 8a5.5 5.5 0 1 1 1.1 3.3"/><polyline points="2.5,3.5 2.5,8 7,8"/>
+            </svg>
+          </button>
+
+        </div>
       </div>
 
       <div class="demo-bar">
         <span id="fpsLabel">FPS: —</span>
         <span id="bodyCount">Bodies: —</span>
         <span id="stepTime">Step: —</span>
-        <button class="btn btn-small" id="resetBtn">Reset</button>
-        <div class="demo-bar-right">
-          <div class="render-mode-toggle" id="renderModeToggle">
-            <button class="render-mode-btn active" data-mode="2d">2D</button>
-            <button class="render-mode-btn" data-mode="3d">3D</button>
-          </div>
-          <label class="toggle-label">
-            <input type="checkbox" id="debugDraw" checked /> Show outlines
-          </label>
-        </div>
       </div>
 
       <div class="demo-description" id="demoDescription"></div>
@@ -122,8 +144,8 @@
           <ul>
             <li><a href="api/classes/Circle.html" target="_blank" rel="noopener"><b>Circle</b></a> — radius-based</li>
             <li><a href="api/classes/Polygon.html" target="_blank" rel="noopener"><b>Polygon</b></a> — convex hull</li>
+            <li><a href="api/classes/Capsule.html" target="_blank" rel="noopener"><b>Capsule</b></a> — rounded ends</li>
             <li><code>Polygon.box(w, h)</code></li>
-            <li><code>Polygon.regular(r, r, n)</code></li>
           </ul>
         </div>
         <div class="api-card">

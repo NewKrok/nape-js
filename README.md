@@ -7,10 +7,10 @@
 [![npm version](https://img.shields.io/npm/v/@newkrok/nape-js.svg)](https://www.npmjs.com/package/@newkrok/nape-js)
 [![npm downloads](https://img.shields.io/npm/dm/@newkrok/nape-js.svg)](https://www.npmjs.com/package/@newkrok/nape-js)
 [![CI](https://github.com/NewKrok/nape-js/actions/workflows/ci.yml/badge.svg)](https://github.com/NewKrok/nape-js/actions/workflows/ci.yml)
-[![bundle size](https://img.shields.io/badge/gzip-414%20KB-blue.svg)](https://github.com/NewKrok/nape-js)
+[![bundle size](https://img.shields.io/badge/gzip-16%20KB-blue.svg)](https://github.com/NewKrok/nape-js)
 [![license](https://img.shields.io/npm/l/@newkrok/nape-js.svg)](https://github.com/NewKrok/nape-js/blob/master/LICENSE)
 
-Fully typed, tree-shakeable 2D physics engine — a complete TypeScript port of the
+Fully typed, tree-shakeable 2D physics engine — a modern TypeScript rewrite of the
 [Nape](https://github.com/deltaluca/nape) Haxe physics engine.
 
 - Originally created in Haxe by Luca Deltodesco
@@ -57,6 +57,8 @@ function update() {
 
 ## API Reference
 
+> Full API documentation: [TypeDoc Reference](https://newkrok.github.io/nape-js/api/)
+
 ### Core Classes
 
 | Class | Description |
@@ -75,6 +77,7 @@ function update() {
 |-------|-------------|
 | `Circle` | Circular shape |
 | `Polygon` | Convex polygon (with `Polygon.box()`, `Polygon.rect()`, `Polygon.regular()`) |
+| `Capsule` | Capsule shape (`Capsule.create()`, `Capsule.createVertical()`) |
 | `Shape` | Base class with material, filter, sensor support |
 
 ### Physics Properties
@@ -164,6 +167,13 @@ render();
 
 Uses SharedArrayBuffer for zero-copy transform sharing when COOP/COEP headers are
 present, with automatic `postMessage` fallback otherwise.
+
+## Known Issues
+
+- **Polygon-Polygon tunneling** — When two or more dynamic `Polygon` bodies are
+  present in the same space, they may tunnel through static `Polygon` floors.
+  Single polygon works fine; circles and capsules are unaffected.
+  **Workaround:** use `Circle` shapes for free-falling objects.
 
 ## Development
 

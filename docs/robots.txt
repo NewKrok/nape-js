@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://newkrok.github.io/nape-js/sitemap.xml

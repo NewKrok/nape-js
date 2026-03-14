@@ -43,7 +43,6 @@ const fpsLabel      = document.getElementById("fpsLabel");
 const bodyCountLabel = document.getElementById("bodyCount");
 const stepTimeLabel = document.getElementById("stepTime");
 const demoDescEl    = document.getElementById("demoDescription");
-const debugDrawCb   = /** @type {HTMLInputElement} */ (document.getElementById("debugDraw"));
 const codePreviewEl = document.getElementById("codePreview");
 const copyCodeBtn   = document.getElementById("copyCodeBtn");
 const codepenBtn    = document.getElementById("codepenBtn");
@@ -58,9 +57,15 @@ const H = canvas.height;
 const runner = new DemoRunner(canvasWrap, { W, H, canvas });
 runner.wireStats({ fps: fpsLabel, bodies: bodyCountLabel, step: stepTimeLabel });
 runner.wireInteraction(canvasWrap);
-runner.debugDraw = debugDrawCb.checked;
+runner.debugDraw = true;
 
-debugDrawCb.addEventListener("change", () => { runner.debugDraw = debugDrawCb.checked; });
+// --- Outline toggle ---
+const outlineBtn = document.getElementById("outlineBtn");
+outlineBtn.addEventListener("click", () => {
+  runner.debugDraw = !runner.debugDraw;
+  outlineBtn.classList.toggle("active", runner.debugDraw);
+});
+
 
 // =========================================================================
 // Tabs
@@ -110,7 +115,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
 // =========================================================================
 
 document.getElementById("renderModeToggle").addEventListener("click", async (e) => {
-  const btn = e.target.closest(".render-mode-btn");
+  const btn = e.target.closest(".card-render-btn");
   if (!btn) return;
   const mode = btn.dataset.mode;
   if (mode === runner.mode) return;
@@ -118,7 +123,7 @@ document.getElementById("renderModeToggle").addEventListener("click", async (e) 
 
   if (mode === "3d") await loadThree();
 
-  document.querySelectorAll(".render-mode-btn").forEach(b => {
+  document.querySelectorAll(".card-render-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.mode === mode);
   });
   runner.setMode(mode);

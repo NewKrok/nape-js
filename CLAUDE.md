@@ -13,7 +13,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
 - **Fluid simulation** — buoyancy and drag via fluid-enabled shapes (unique among JS engines)
 - **Serialization** — JSON (`spaceToJSON` / `spaceFromJSON`) + binary (`spaceToBinary` / `spaceFromBinary`) for save/load/multiplayer rollback
 - **Debug draw** — abstract `DebugDraw` interface (Box2D pattern), reference impls for Canvas/Three.js/PixiJS/p5.js
-- **~994 KB** minified ESM + CJS dual bundle, TSDoc documented, 3200+ tests
+- **~87 KB** minified ESM bundle (~16 KB gzip), TSDoc documented, 3784 tests
 
 ## Build & Test
 
