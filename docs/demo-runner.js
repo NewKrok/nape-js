@@ -103,7 +103,7 @@ export function highlightCode(code) {
     "(`(?:[^`\\\\]|\\\\.)*`)",
     "\\b(import|from|export|const|let|var|new|for|if|else|return|function|class|extends|of|in|true|false|null|undefined|typeof|this|continue|break)\\b",
     "\\b(\\d+\\.?\\d*)\\b",
-    "\\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|Math|THREE|Map)\\b",
+    "\\b(Space|Body|BodyType|Vec2|Circle|Polygon|PivotJoint|DistanceJoint|AngleJoint|WeldJoint|MotorJoint|LineJoint|PulleyJoint|Material|InteractionFilter|InteractionGroup|CbType|CbEvent|InteractionType|InteractionListener|PreListener|PreFlag|MarchingSquares|AABB|GeomPoly|Math|THREE|Map)\\b",
   ].join("|"), "g");
 
   return code.replace(re, (match, comment, dStr, sStr, tStr, kw, num, type) => {
@@ -136,6 +136,8 @@ export class DemoRunner {
   #threeScene    = null;
   #threeCamera   = null;
   #threeMeshes   = [];
+  #threeOverlay  = null;  // 2D canvas overlay for 3D mode (cursor hints etc.)
+  #threeOverlayCtx = null;
 
   // Runtime state
   #mode    = "2d";
@@ -359,9 +361,12 @@ export class DemoRunner {
     });
 
     el.addEventListener("pointermove", (e) => {
-      if (!isDragging || !this.#space || !this.#demo) return;
-      e.preventDefault();
+      if (!this.#space || !this.#demo) return;
       const { x, y } = getPos(e);
+      // Always forward hover position (e.g. for cursor indicators)
+      this.#demo.hover?.(x, y, this.#space, this.#W, this.#H);
+      if (!isDragging) return;
+      e.preventDefault();
       this.#demo.drag?.(x, y, this.#space, this.#W, this.#H);
     });
 
@@ -372,6 +377,12 @@ export class DemoRunner {
     };
     el.addEventListener("pointerup",     endDrag);
     el.addEventListener("pointercancel", endDrag);
+
+    el.addEventListener("wheel", (e) => {
+      if (!this.#space || !this.#demo?.wheel) return;
+      e.preventDefault();
+      this.#demo.wheel(e.deltaY, this.#space, this.#W, this.#H);
+    }, { passive: false });
   }
 
   // -----------------------------------------------------------------------
@@ -450,7 +461,23 @@ export class DemoRunner {
     if (this.#threeRenderer) {
       this.#threeRenderer.setSize(Math.round(displayW), Math.round(displayH), false);
       if (this.#threeCamera) {
-        this.#threeCamera.aspect = displayW / displayH;
+        const displayAspect = displayW / displayH;
+        const sceneAspect   = this.#W / this.#H;
+        this.#threeCamera.aspect = displayAspect;
+
+        // Adjust FOV so the full W×H scene is always visible ("contain" fit).
+        // Base FOV (45°) was computed for sceneAspect; when the display is
+        // wider we keep the vertical FOV, when it's taller we widen it so
+        // the full width still fits.
+        const baseFov = 45;
+        if (displayAspect < sceneAspect) {
+          // Display is taller/narrower — need wider vertical FOV
+          const hFov = 2 * Math.atan(Math.tan((baseFov / 2) * Math.PI / 180) * sceneAspect);
+          const vFov = 2 * Math.atan(Math.tan(hFov / 2) / displayAspect);
+          this.#threeCamera.fov = vFov * 180 / Math.PI;
+        } else {
+          this.#threeCamera.fov = baseFov;
+        }
         this.#threeCamera.updateProjectionMatrix();
       }
     }
@@ -497,6 +524,14 @@ export class DemoRunner {
     this.#threeRenderer.domElement.style.cssText = "display:block;position:absolute;inset:0;width:100%;height:100%";
     this.#container.appendChild(this.#threeRenderer.domElement);
 
+    // 2D overlay canvas for demos that need cursor hints etc. in 3D mode
+    this.#threeOverlay = document.createElement("canvas");
+    this.#threeOverlay.width = W;
+    this.#threeOverlay.height = H;
+    this.#threeOverlay.style.cssText = "display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1";
+    this.#threeOverlayCtx = this.#threeOverlay.getContext("2d");
+    this.#container.appendChild(this.#threeOverlay);
+
     // Watch the Three.js canvas for resize (it has real CSS dimensions unlike the container)
     this.#resizeObserver.observe(this.#threeRenderer.domElement);
 
@@ -525,6 +560,11 @@ export class DemoRunner {
     this.#threeScene  = null;
     this.#threeCamera = null;
     this.#threeMeshes = [];
+    if (this.#threeOverlay) {
+      this.#container.removeChild(this.#threeOverlay);
+      this.#threeOverlay = null;
+      this.#threeOverlayCtx = null;
+    }
     this.#canvas.style.display = "";
     this.#container.style.height = "";
   }
@@ -537,6 +577,7 @@ export class DemoRunner {
   }
 
   #addBodyMesh(body) {
+    if (body.userData?._hidden3d) return;
     for (const shape of body.shapes) {
       let geom;
       if (shape.isCircle()) {
@@ -600,7 +641,26 @@ export class DemoRunner {
   }
 
   #render3d() {
-    // Sync bodies that appeared after setup (e.g. click-spawned)
+    // Remove meshes for bodies no longer in the space (e.g. destroyed terrain cells)
+    const spaceBodies = new Set();
+    for (const body of this.#space.bodies) spaceBodies.add(body);
+
+    for (let i = this.#threeMeshes.length - 1; i >= 0; i--) {
+      const entry = this.#threeMeshes[i];
+      if (!spaceBodies.has(entry.body)) {
+        this.#threeScene.remove(entry.mesh);
+        entry.mesh.traverse(child => {
+          if (child.geometry) child.geometry.dispose();
+          if (child.material) {
+            if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+            else child.material.dispose();
+          }
+        });
+        this.#threeMeshes.splice(i, 1);
+      }
+    }
+
+    // Sync bodies that appeared after setup (e.g. click-spawned, rebuilt terrain)
     const tracked = new Set(this.#threeMeshes.map(m => m.body));
     for (const body of this.#space.bodies) {
       if (!tracked.has(body)) this.#addBodyMesh(body);
@@ -612,5 +672,12 @@ export class DemoRunner {
     }
 
     this.#threeRenderer.render(this.#threeScene, this.#threeCamera);
+
+    // 2D overlay for demos that need it (e.g. cursor indicators)
+    if (this.#threeOverlayCtx && this.#demo?.render3dOverlay) {
+      const oc = this.#threeOverlayCtx;
+      oc.clearRect(0, 0, this.#W, this.#H);
+      this.#demo.render3dOverlay(oc, this.#space, this.#W, this.#H);
+    }
   }
 }
