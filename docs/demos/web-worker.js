@@ -384,10 +384,13 @@ export default {
     overlayEl = document.createElement("div");
     overlayEl.style.cssText =
       "position:absolute;top:8px;left:8px;z-index:10;" +
-      "display:flex;gap:8px;align-items:center;pointer-events:none;";
+      "display:flex;gap:8px;align-items:center;pointer-events:none;" +
+      "background:rgba(0,0,0,0.55);padding:6px 10px;border-radius:6px;" +
+      "backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);";
     overlayEl.innerHTML =
       '<span style="background:rgba(63,185,80,0.85);color:#fff;font:bold 11px/1 system-ui;' +
       'padding:3px 8px;border-radius:4px;letter-spacing:0.5px">WORKER</span>' +
+      '<span id="__worker_bodies" style="color:#c9d1d9;font:bold 11px/1 monospace"></span>' +
       '<span id="__worker_step" style="color:#8b949e;font:11px/1 monospace"></span>' +
       '<span style="color:#8b949e;font:11px/1 monospace">' +
       (useShared ? "SharedArrayBuffer" : "postMessage fallback") + '</span>';
@@ -470,7 +473,9 @@ export default {
       ctx.restore();
     }
 
-    // Update worker step time badge
+    // Update worker info badges
+    const bodiesEl = document.getElementById("__worker_bodies");
+    if (bodiesEl) bodiesEl.textContent = `Bodies: ${count}`;
     const stepEl = document.getElementById("__worker_step");
     if (stepEl) stepEl.textContent = `Step: ${workerStepMs.toFixed(2)}ms`;
   },
