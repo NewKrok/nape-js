@@ -3,21 +3,21 @@
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon, VERSION,
-} from "./nape-js.esm.js?v=3.10.3";
-import { installErrorOverlay } from "./renderer.js?v=3.10.3";
-import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.10.3";
+} from "./nape-js.esm.js?v=3.13.5";
+import { installErrorOverlay } from "./renderer.js?v=3.13.5";
+import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.13.5";
 
 // Demo definitions — one file each
-import falling     from "./demos/falling.js?v=3.10.3";
-import pyramid     from "./demos/pyramid.js?v=3.10.3";
-import chain       from "./demos/chain.js?v=3.10.3";
-import explosion   from "./demos/explosion.js?v=3.10.3";
-import constraints from "./demos/constraints.js?v=3.10.3";
-import gravity     from "./demos/gravity.js?v=3.10.3";
-import stacking    from "./demos/stacking.js?v=3.10.3";
-import ragdoll     from "./demos/ragdoll.js?v=3.10.3";
-import strandbeast from "./demos/strandbeast.js?v=3.10.3";
-import softBody    from "./demos/soft-body.js?v=3.10.3";
+import falling     from "./demos/falling.js?v=3.13.5";
+import pyramid     from "./demos/pyramid.js?v=3.13.5";
+import chain       from "./demos/chain.js?v=3.13.5";
+import explosion   from "./demos/explosion.js?v=3.13.5";
+import constraints from "./demos/constraints.js?v=3.13.5";
+import gravity     from "./demos/gravity.js?v=3.13.5";
+import stacking    from "./demos/stacking.js?v=3.13.5";
+import ragdoll     from "./demos/ragdoll.js?v=3.13.5";
+import strandbeast from "./demos/strandbeast.js?v=3.13.5";
+import softBody    from "./demos/soft-body.js?v=3.13.5";
 
 // =========================================================================
 // Demo registry
