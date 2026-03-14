@@ -95,16 +95,49 @@
     .grid-size-btn.active { background: var(--accent-dim); color: #fff; }
     .grid-size-btn svg { display: block; }
 
-    /* ── Tag filter bar ───────────────────────────────────────────────── */
+    /* ── Tag filter bar (collapsible) ────────────────────────────────── */
+    .examples-tags-wrapper {
+      margin-top: 14px;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .examples-tags-toggle {
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
     .examples-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       justify-content: center;
-      margin-top: 14px;
-      max-width: 860px;
-      margin-left: auto;
-      margin-right: auto;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+    .examples-tags.collapsed {
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .examples-tags.expanded {
+      max-height: 400px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── Multiplayer banner ───────────────────────────────────────────── */
+    .multiplayer-banner {
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      background: rgba(88,166,255,0.06);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
     }
     .filter-tag {
       display: inline-block;
@@ -265,11 +298,18 @@
         </div>
       </div>
 
-      <!-- Tag filter bar (populated by JS) -->
-      <div class="examples-tags" id="tagFilterBar"></div>
+      <!-- Tag filter bar (collapsible, populated by JS) -->
+      <div class="examples-tags-wrapper" id="tagFilterWrapper">
+        <button class="btn btn-small examples-tags-toggle" id="tagToggleBtn">Tags ▾</button>
+        <div class="examples-tags collapsed" id="tagFilterBar"></div>
+      </div>
+    </div>
+  </header>
 
-      <!-- Multiplayer banner -->
-      <div style="margin-top:24px;border:1px solid var(--accent);border-radius:var(--radius);background:rgba(88,166,255,0.06);padding:16px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;max-width:860px;margin-left:auto;margin-right:auto;">
+  <section class="section">
+    <div class="container">
+      <!-- Multiplayer banner (top of list) -->
+      <div class="multiplayer-banner">
         <div style="flex:1;min-width:180px;text-align:left">
           <div style="font-size:11px;color:var(--accent);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700">Live Demo</div>
           <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Multiplayer Physics</div>
@@ -277,11 +317,6 @@
         </div>
         <a href="multiplayer.html" class="btn btn-primary" style="white-space:nowrap" onclick="gtag('event','navigation',{event_category:'examples',event_label:'multiplayer'})">Play &rarr;</a>
       </div>
-    </div>
-  </header>
-
-  <section class="section">
-    <div class="container">
       <div class="examples-grid" id="examplesGrid"></div>
     </div>
   </section>

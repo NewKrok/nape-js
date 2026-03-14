@@ -8,7 +8,7 @@ import { DemoRunner, loadThree, highlightCode } from "./demo-runner.js?v=3.10.3"
 
 const NAPE_CDN = "https://cdn.jsdelivr.net/npm/@newkrok/nape-js/dist/index.js";
 
-// All demos (featured + examples)
+// All demos
 import falling     from "./demos/falling.js?v=3.10.3";
 import pyramid     from "./demos/pyramid.js?v=3.10.3";
 import chain       from "./demos/chain.js?v=3.10.3";
@@ -146,6 +146,19 @@ ${RENDERER_2D}${code}`;
 // Card factory
 // =========================================================================
 
+let activeCardEntry = null; // Track the single running demo
+
+function stopActiveDemo() {
+  if (!activeCardEntry) return;
+  const { runner, overlay, statsBar, card } = activeCardEntry;
+  runner.stop();
+  overlay.hidden = false;
+  statsBar.hidden = true;
+  card.classList.remove("running");
+  activeCardEntry._started = false;
+  activeCardEntry = null;
+}
+
 function createCard(demo, { onTagClick } = {}) {
   // --- Card container ---
   const card = document.createElement("div");
@@ -237,12 +250,12 @@ function createCard(demo, { onTagClick } = {}) {
   resetBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
     runner.stop();
-    overlay.hidden = false;
-    statsBar.hidden = true;
-    card.classList.remove("running");
     started = false;
+    cardRef._started = false;
     await runner.renderPreviewAsync(demo);
     previewReady = true;
+    // Auto-start after reset
+    await startDemo();
   });
 
   // Fullscreen button
@@ -389,8 +402,12 @@ function createCard(demo, { onTagClick } = {}) {
   let started = false;
   let loading = false;
 
+  const cardRef = { runner, overlay, statsBar, card, _started: false };
+
   async function startDemo() {
     if (loading) return;
+    // Stop any other running demo first
+    if (activeCardEntry && activeCardEntry !== cardRef) stopActiveDemo();
     loading = true;
     if (!previewReady) {
       await runner.renderPreviewAsync(demo);
@@ -398,18 +415,20 @@ function createCard(demo, { onTagClick } = {}) {
       await runner.loadAsync(demo);
     }
     started = true;
+    cardRef._started = true;
     loading = false;
     runner.start();
     overlay.hidden = true;
     statsBar.hidden = false;
     card.classList.add("running");
+    activeCardEntry = cardRef;
   }
 
   overlay.addEventListener("pointerdown", (e) => e.stopPropagation());
   overlay.addEventListener("click", startDemo);
 
   return {
-    card, runner, overlay, statsBar,
+    card, runner, overlay, statsBar, cardRef,
     isStarted: () => started,
     startDemo,
     setExpanded,
@@ -458,6 +477,15 @@ installErrorOverlay(VERSION);
 const grid      = document.getElementById("examplesGrid");
 const searchEl  = document.getElementById("searchInput");
 const tagBar    = document.getElementById("tagFilterBar");
+const tagToggle = document.getElementById("tagToggleBtn");
+let tagsExpanded = false;
+
+tagToggle.addEventListener("click", () => {
+  tagsExpanded = !tagsExpanded;
+  tagBar.classList.toggle("collapsed", !tagsExpanded);
+  tagBar.classList.toggle("expanded", tagsExpanded);
+  tagToggle.textContent = tagsExpanded ? "Tags ▴" : "Tags ▾";
+});
 
 // Collect all unique tags across demos (sorted)
 const allTags = [...new Set(ALL_DEMOS.flatMap(d => d.tags ?? []))].sort();
@@ -486,6 +514,13 @@ function buildTagBar() {
 
 function setActiveTag(tag) {
   activeTag = tag;
+  // Auto-expand tags when a filter is active
+  if (tag && !tagsExpanded) {
+    tagsExpanded = true;
+    tagBar.classList.remove("collapsed");
+    tagBar.classList.add("expanded");
+    tagToggle.textContent = "Tags ▴";
+  }
   buildTagBar();
   applyFilter();
 }
@@ -525,8 +560,8 @@ searchEl.addEventListener("input", () => {
   applyFilter();
 });
 
-// Build cards
-const cardEntries = ALL_DEMOS.map((demo) => {
+// Build cards (newest demos first — reverse order)
+const cardEntries = [...ALL_DEMOS].reverse().map((demo) => {
   const result = createCard(demo, {
     onTagClick: (tag) => setActiveTag(activeTag === tag ? null : tag),
   });
@@ -582,18 +617,18 @@ document.getElementById("gridSizeToggle").addEventListener("click", (e) => {
 const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const match = cardEntries.find(c => c.card === entry.target);
-    if (!match) continue;
-    const { runner, overlay, statsBar, isStarted } = match;
-    if (!isStarted()) continue;   // not started yet — play button handles start
-    if (entry.isIntersecting) {
-      runner.start();
-      overlay.hidden = true;
-      statsBar.hidden = false;
-    } else {
-      runner.stop();
-      // Show play button again so user can see it's paused
-      overlay.hidden = false;
-      statsBar.hidden = true;
+    if (!match || !match.isStarted()) continue;
+    // Only pause/resume the active demo
+    if (activeCardEntry && activeCardEntry === match.cardRef) {
+      if (entry.isIntersecting) {
+        match.runner.start();
+        match.overlay.hidden = true;
+        match.statsBar.hidden = false;
+      } else {
+        match.runner.stop();
+        match.overlay.hidden = false;
+        match.statsBar.hidden = true;
+      }
     }
   }
 }, { threshold: 0.1 });
