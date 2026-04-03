@@ -3371,7 +3371,7 @@ export class ZPP_Space {
     if (profiling) this._metrics.ccdTime += performance.now() - t1;
     this.continuous = false;
     if (profiling) t1 = performance.now();
-    this.iteratePos(positionIterations);
+    this._solvePositionSoA(positionIterations);
     if (profiling) this._metrics.positionSolverTime += performance.now() - t1;
   }
 
@@ -9884,6 +9884,74 @@ export class ZPP_Space {
     buf.unpackBodies();
     buf.unpackCollisionArbiters();
     buf.unpackFluidArbiters();
+  }
+
+  /**
+   * Position solver using SoA buffers for contacts, with OOP fallback for constraints.
+   * Mirrors the hybrid approach used by _solveVelocitySoA.
+   */
+  private _solvePositionSoA(positionIterations: number): void {
+    const buf = this._solverBuffers;
+
+    // Set config values needed by position solver
+    buf.setConfig(ZPP_Space._nape.Config.collisionSlop, ZPP_Space._nape.Config.epsilon);
+
+    // Re-pack body positions (they've changed since velocity phase due to updatePos)
+    buf.packBodies(this.live.head, this.kinematics.head, this.staticsleep.head);
+    // Collision arbiters were already packed during velocity phase with position fields;
+    // however, body positions have changed, so re-pack arbiters too (body indices may differ
+    // if bodies were added/removed, and we need fresh arbiter data for active state).
+    buf.packCollisionArbiters(this.c_arbiters_false.head, this.c_arbiters_true.head);
+    buf.colorCollisionArbiters();
+
+    const hasConstraints = this.live_constraints.head != null;
+
+    if (!hasConstraints) {
+      // Fast path: no constraints — pure SoA position solve
+      buf.iteratePosColoredSoA(positionIterations);
+    } else {
+      // Hybrid: SoA contacts + OOP constraint position solve per iteration
+      for (let iter = 0; iter < positionIterations; iter++) {
+        // OOP constraint position iteration (must run on body objects)
+        buf.unpackBodies();
+        let pre: any = null;
+        let cx_ite = this.live_constraints.head;
+        while (cx_ite != null) {
+          const con = cx_ite.elt;
+          if (!con.__velocity && con.stiff) {
+            if (con.applyImpulsePos()) {
+              cx_ite = this.live_constraints.erase(pre);
+              con.broken();
+              this.constraintCbBreak(con);
+              if (con.removeOnBreak) {
+                con.component.sleeping = true;
+                this.midstep = false;
+                if (con.compound != null) {
+                  con.compound.wrap_constraints.remove(con.outer);
+                } else {
+                  this.wrap_constraints.remove(con.outer);
+                }
+                this.midstep = true;
+              } else {
+                con.active = false;
+              }
+              con.clearcache();
+              continue;
+            }
+          }
+          pre = cx_ite;
+          cx_ite = cx_ite.next;
+        }
+        // Re-pack body positions after constraint changes
+        buf.packBodies(this.live.head, this.kinematics.head, this.staticsleep.head);
+
+        // One iteration of SoA contact position solve
+        buf.iteratePosColoredSoA(1);
+      }
+    }
+
+    // Unpack final body positions
+    buf.unpackBodies();
   }
 
   iteratePos(times: number) {

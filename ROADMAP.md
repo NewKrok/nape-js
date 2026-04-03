@@ -50,6 +50,23 @@ Cancelled: P34 (tree shaking — architectural limit), P36 (server demos — sup
 | P69 | **Deterministic replay system**          | M      | features        | Input recording + playback on top of existing serialization + deterministic mode. Debug bug reproduction, multiplayer rollback foundation, shareable replays, deterministic regression tests — one feature that connects many others |
 | P70 | ~~**GPU Physics (WebGPU)**~~             | L      | performance     | :white_check_mark: **Done.** SoA typed-array solver buffers, graph coloring for parallel contacts, 3 WGSL compute shaders (contact, fluid, warm start), `GPUComputeSolver` class. Public API: `space.initGPU()` + `space.stepGPU(dt, velIter?, posIter?)`. Additive — no breaking changes |
 
+#### P70 — GPU Physics Sub-tasks
+
+| Sub-task | Status | Description |
+| --- | --- | --- |
+| P70.1 SoA typed-array buffers | :white_check_mark: Done | `SolverBuffers` — body/arbiter data in contiguous `Float64Array`/`Float32Array`, pack/unpack, cache-friendly access |
+| P70.2 Graph coloring | :white_check_mark: Done | Greedy bitmask coloring (4-8 colors), contacts grouped into independent parallel sets |
+| P70.3 WGSL compute shaders | :white_check_mark: Done | Contact solver, fluid solver, warm start — all 3 shaders match SoA layout |
+| P70.4 GPUComputeSolver | :white_check_mark: Done | WebGPU pipeline management, buffer lifecycle, Float64→Float32 conversion, async staging readback |
+| P70.5 Public API + fallback | :white_check_mark: Done | `initGPU()`, `stepGPU()`, graceful CPU SoA fallback, no breaking changes |
+| P70.6 step() decomposition | :white_check_mark: Done | `_subStepPre`, `_subStepVelocity`, `_subStepPosition`, `_subStepSleep`, `_postStep` — enables async GPU integration |
+| P70.7 Float32 precision mode | :white_check_mark: Done | `SolverBuffers({ precision: 'f32' })` — halves memory, eliminates GPU conversion overhead |
+| P70.8 Benchmark CPU vs GPU | :white_check_mark: Done | Main page + benchmark.html both show CPU/GPU side-by-side, `NapeGPUAdapter` in engine comparison |
+| P70.9 Position solver GPU | :hourglass: Next | Port `iteratePos` to SoA + WGSL — same graph coloring, ~15-20% additional solver time on GPU |
+| P70.10 Body integration GPU | :white_square_button: Planned | `updateVel`/`updatePos` on GPU — trivially parallel, eliminates one CPU↔GPU roundtrip |
+| P70.11 Spatial hash broadphase GPU | :white_square_button: Planned | GPU hash bucket fill + pair generation via prefix scan — only worthwhile at 2000+ bodies |
+| P70.12 Zero-roundtrip GPU pipeline | :white_square_button: Planned | All phases on GPU in single command buffer — one upload, N dispatches, one readback per frame |
+
 ---
 
 ## Recommended Execution Order

@@ -29,7 +29,14 @@ const B_IINERTIA = 4;
 const B_KINVELX = 5;
 const B_KINVELY = 6;
 const B_KINANGVEL = 7;
-const BODY_STRIDE = 8;
+const B_POSX = 8;
+const B_POSY = 9;
+const B_ROT = 10;
+const B_AXISX = 11;
+const B_AXISY = 12;
+const B_SMASS = 13;
+const B_SINERTIA = 14;
+const BODY_STRIDE = 15;
 
 // ── Collision arbiter SoA field offsets (per arbiter, stride = COL_STRIDE) ──
 const A_B1 = 0; // body index * BODY_STRIDE
@@ -88,7 +95,23 @@ const A_RMASS = 45;
 const A_JRACC = 46;
 const A_RFRIC = 47;
 const A_RADIUS = 48;
-const COL_STRIDE = 49;
+// Position solver fields
+const A_PTYPE = 49;
+const A_LNORMX = 50;
+const A_LNORMY = 51;
+const A_LPROJ = 52;
+const A_BIASCOEF = 53;
+const A_REV = 54; // 1.0 or 0.0
+const A_HPC2 = 55; // 1.0 or 0.0 (has position contact 2)
+const A_C1_LR1X = 56;
+const A_C1_LR1Y = 57;
+const A_C1_LR2X = 58;
+const A_C1_LR2Y = 59;
+const A_C2_LR1X = 60;
+const A_C2_LR1Y = 61;
+const A_C2_LR2X = 62;
+const A_C2_LR2Y = 63;
+const COL_STRIDE = 64;
 
 // ── Fluid arbiter SoA field offsets (per arbiter, stride = FLUID_STRIDE) ──
 const F_B1 = 0;
@@ -132,6 +155,10 @@ export class SolverBuffers {
 
   /** Whether this instance uses Float32Array buffers. */
   private readonly _f32: boolean;
+
+  // ── Position solver config (set before each solve via setConfig) ──
+  collisionSlop = 0.2;
+  epsilon = 1e-8;
 
   // ── Body arrays ──
   bodyData: SolverArray;
@@ -243,6 +270,13 @@ export class SolverBuffers {
           d[off + B_KINVELX] = b.kinvelx;
           d[off + B_KINVELY] = b.kinvely;
           d[off + B_KINANGVEL] = b.kinangvel;
+          d[off + B_POSX] = b.posx;
+          d[off + B_POSY] = b.posy;
+          d[off + B_ROT] = b.rot;
+          d[off + B_AXISX] = b.axisx;
+          d[off + B_AXISY] = b.axisy;
+          d[off + B_SMASS] = b.smass;
+          d[off + B_SINERTIA] = b.sinertia;
           idx++;
         }
         node = node.next;
@@ -276,6 +310,13 @@ export class SolverBuffers {
     d[off + B_KINVELX] = b.kinvelx;
     d[off + B_KINVELY] = b.kinvely;
     d[off + B_KINANGVEL] = b.kinangvel;
+    d[off + B_POSX] = b.posx;
+    d[off + B_POSY] = b.posy;
+    d[off + B_ROT] = b.rot;
+    d[off + B_AXISX] = b.axisx;
+    d[off + B_AXISY] = b.axisy;
+    d[off + B_SMASS] = b.smass;
+    d[off + B_SINERTIA] = b.sinertia;
     this.bodyCount++;
     return idx;
   }
@@ -357,6 +398,25 @@ export class SolverBuffers {
             d[off + A_JRACC] = arb.jrAcc;
             d[off + A_RFRIC] = arb.rfric;
             d[off + A_RADIUS] = arb.radius;
+
+            // Position solver fields
+            d[off + A_PTYPE] = arb.ptype;
+            d[off + A_LNORMX] = arb.lnormx;
+            d[off + A_LNORMY] = arb.lnormy;
+            d[off + A_LPROJ] = arb.lproj;
+            d[off + A_BIASCOEF] = arb.biasCoef;
+            d[off + A_REV] = arb.rev ? 1.0 : 0.0;
+            d[off + A_HPC2] = arb.hpc2 ? 1.0 : 0.0;
+            d[off + A_C1_LR1X] = arb.c1.lr1x;
+            d[off + A_C1_LR1Y] = arb.c1.lr1y;
+            d[off + A_C1_LR2X] = arb.c1.lr2x;
+            d[off + A_C1_LR2Y] = arb.c1.lr2y;
+            if (arb.hpc2) {
+              d[off + A_C2_LR1X] = arb.c2.lr1x;
+              d[off + A_C2_LR1Y] = arb.c2.lr1y;
+              d[off + A_C2_LR2X] = arb.c2.lr2x;
+              d[off + A_C2_LR2Y] = arb.c2.lr2y;
+            }
 
             this.colList[idx] = arb;
             idx++;
@@ -661,6 +721,11 @@ export class SolverBuffers {
       b.velx = d[off + B_VELX];
       b.vely = d[off + B_VELY];
       b.angvel = d[off + B_ANGVEL];
+      b.posx = d[off + B_POSX];
+      b.posy = d[off + B_POSY];
+      b.rot = d[off + B_ROT];
+      b.axisx = d[off + B_AXISX];
+      b.axisy = d[off + B_AXISY];
     }
   }
 
@@ -1107,6 +1172,352 @@ export class SolverBuffers {
         const end = cg[c + 1];
         for (let k = start; k < end; k++) {
           this._solveOneContact(co[k]);
+        }
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  POSITION SOLVER CONFIG
+  // ═══════════════════════════════════════════════════════════════════════
+
+  /** Set physics config values needed by the position solver. */
+  setConfig(slop: number, eps: number): void {
+    this.collisionSlop = slop;
+    this.epsilon = eps;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  SoA POSITION ITERATIONS
+  // ═══════════════════════════════════════════════════════════════════════
+
+  /**
+   * Helper: apply a rotation delta `dr` to a body at offset `boff` in bodyData.
+   * Uses Math.sin/cos for large rotations, Padé approximation for small ones.
+   */
+  private _applyRotation(boff: number, dr: number): void {
+    const bd = this.bodyData;
+    bd[boff + B_ROT] += dr;
+    if (dr * dr > 0.0001) {
+      bd[boff + B_AXISX] = Math.sin(bd[boff + B_ROT]);
+      bd[boff + B_AXISY] = Math.cos(bd[boff + B_ROT]);
+    } else {
+      const d2 = dr * dr;
+      const p = 1 - 0.5 * d2;
+      const m = 1 - (d2 * d2) / 8;
+      const oldAx = bd[boff + B_AXISX];
+      const oldAy = bd[boff + B_AXISY];
+      bd[boff + B_AXISX] = (p * oldAx + dr * oldAy) * m;
+      bd[boff + B_AXISY] = (p * oldAy - dr * oldAx) * m;
+    }
+  }
+
+  /**
+   * Solve one position contact at index `i` in the collision SoA buffer.
+   * Mirrors the logic of iteratePos() in ZPP_Space for a single arbiter.
+   */
+  private _solveOnePosContact(i: number): void {
+    const cd = this.colData;
+    const bd = this.bodyData;
+    const off = i * COL_STRIDE;
+    const b1 = cd[off + A_B1] | 0;
+    const b2 = cd[off + A_B2] | 0;
+    const ptype = cd[off + A_PTYPE] | 0;
+
+    if (ptype === 2) {
+      // ── Circle contact ──
+      const lr2x = cd[off + A_C1_LR2X];
+      const lr2y = cd[off + A_C1_LR2Y];
+      let r2x = bd[b2 + B_AXISY] * lr2x - bd[b2 + B_AXISX] * lr2y;
+      let r2y = lr2x * bd[b2 + B_AXISX] + lr2y * bd[b2 + B_AXISY];
+      r2x += bd[b2 + B_POSX];
+      r2y += bd[b2 + B_POSY];
+
+      const lr1x = cd[off + A_C1_LR1X];
+      const lr1y = cd[off + A_C1_LR1Y];
+      let r1x = bd[b1 + B_AXISY] * lr1x - bd[b1 + B_AXISX] * lr1y;
+      let r1y = lr1x * bd[b1 + B_AXISX] + lr1y * bd[b1 + B_AXISY];
+      r1x += bd[b1 + B_POSX];
+      r1y += bd[b1 + B_POSY];
+
+      let dx = r2x - r1x;
+      let dy = r2y - r1y;
+      const dl = Math.sqrt(dx * dx + dy * dy);
+      const radius = cd[off + A_RADIUS];
+      const r = radius - this.collisionSlop;
+      let err = dl - r;
+
+      // Check if contact normal is flipped
+      const arbNx = cd[off + A_NX];
+      const arbNy = cd[off + A_NY];
+      if (dx * arbNx + dy * arbNy < 0) {
+        dx = -dx;
+        dy = -dy;
+        err -= radius;
+      }
+
+      if (err < 0) {
+        if (dl < this.epsilon) {
+          // Degenerate: bodies are at same position
+          if (bd[b1 + B_SMASS] !== 0.0) {
+            bd[b1 + B_POSX] += this.epsilon * 10;
+          } else {
+            bd[b2 + B_POSX] += this.epsilon * 10;
+          }
+        } else {
+          const invDl = 1.0 / dl;
+          dx *= invDl;
+          dy *= invDl;
+          const px = 0.5 * (r1x + r2x);
+          const py = 0.5 * (r1y + r2y);
+          const pen = dl - r;
+
+          r1x = px - bd[b1 + B_POSX];
+          r1y = py - bd[b1 + B_POSY];
+          r2x = px - bd[b2 + B_POSX];
+          r2y = py - bd[b2 + B_POSY];
+
+          const rn1 = dy * r1x - dx * r1y;
+          const rn2 = dy * r2x - dx * r2y;
+          const K =
+            bd[b2 + B_SMASS] +
+            rn2 * rn2 * bd[b2 + B_SINERTIA] +
+            bd[b1 + B_SMASS] +
+            rn1 * rn1 * bd[b1 + B_SINERTIA];
+          if (K !== 0) {
+            const biasCoef = cd[off + A_BIASCOEF];
+            const jn = (-biasCoef * pen) / K;
+            const Jx = dx * jn;
+            const Jy = dy * jn;
+
+            bd[b1 + B_POSX] -= Jx * bd[b1 + B_IMASS];
+            bd[b1 + B_POSY] -= Jy * bd[b1 + B_IMASS];
+            this._applyRotation(b1, -rn1 * bd[b1 + B_IINERTIA] * jn);
+
+            bd[b2 + B_POSX] += Jx * bd[b2 + B_IMASS];
+            bd[b2 + B_POSY] += Jy * bd[b2 + B_IMASS];
+            this._applyRotation(b2, rn2 * bd[b2 + B_IINERTIA] * jn);
+          }
+        }
+      }
+    } else {
+      // ── Polygon face contact (ptype == 0 or ptype == 1) ──
+      const lnormx = cd[off + A_LNORMX];
+      const lnormy = cd[off + A_LNORMY];
+      const lproj = cd[off + A_LPROJ];
+      const radius = cd[off + A_RADIUS];
+
+      let gnormx: number;
+      let gnormy: number;
+      let gproj: number;
+      let clip1x: number;
+      let clip1y: number;
+      let clip2x = 0;
+      let clip2y = 0;
+
+      // For ptype==0, reference body is b1; for ptype==1, reference body is b2
+      // Clip points come from the OTHER body
+      if (ptype === 0) {
+        gnormx = bd[b1 + B_AXISY] * lnormx - bd[b1 + B_AXISX] * lnormy;
+        gnormy = lnormx * bd[b1 + B_AXISX] + lnormy * bd[b1 + B_AXISY];
+        gproj = lproj + (gnormx * bd[b1 + B_POSX] + gnormy * bd[b1 + B_POSY]);
+        // Clip point from b2 using c1.lr1x/y (contact local ref on OTHER body)
+        const c1lr1x = cd[off + A_C1_LR1X];
+        const c1lr1y = cd[off + A_C1_LR1Y];
+        clip1x = bd[b2 + B_AXISY] * c1lr1x - bd[b2 + B_AXISX] * c1lr1y;
+        clip1y = c1lr1x * bd[b2 + B_AXISX] + c1lr1y * bd[b2 + B_AXISY];
+        clip1x += bd[b2 + B_POSX];
+        clip1y += bd[b2 + B_POSY];
+        if (cd[off + A_HPC2] === 1.0) {
+          const c2lr1x = cd[off + A_C2_LR1X];
+          const c2lr1y = cd[off + A_C2_LR1Y];
+          clip2x = bd[b2 + B_AXISY] * c2lr1x - bd[b2 + B_AXISX] * c2lr1y;
+          clip2y = c2lr1x * bd[b2 + B_AXISX] + c2lr1y * bd[b2 + B_AXISY];
+          clip2x += bd[b2 + B_POSX];
+          clip2y += bd[b2 + B_POSY];
+        }
+      } else {
+        gnormx = bd[b2 + B_AXISY] * lnormx - bd[b2 + B_AXISX] * lnormy;
+        gnormy = lnormx * bd[b2 + B_AXISX] + lnormy * bd[b2 + B_AXISY];
+        gproj = lproj + (gnormx * bd[b2 + B_POSX] + gnormy * bd[b2 + B_POSY]);
+        // Clip point from b1
+        const c1lr1x = cd[off + A_C1_LR1X];
+        const c1lr1y = cd[off + A_C1_LR1Y];
+        clip1x = bd[b1 + B_AXISY] * c1lr1x - bd[b1 + B_AXISX] * c1lr1y;
+        clip1y = c1lr1x * bd[b1 + B_AXISX] + c1lr1y * bd[b1 + B_AXISY];
+        clip1x += bd[b1 + B_POSX];
+        clip1y += bd[b1 + B_POSY];
+        if (cd[off + A_HPC2] === 1.0) {
+          const c2lr1x = cd[off + A_C2_LR1X];
+          const c2lr1y = cd[off + A_C2_LR1Y];
+          clip2x = bd[b1 + B_AXISY] * c2lr1x - bd[b1 + B_AXISX] * c2lr1y;
+          clip2y = c2lr1x * bd[b1 + B_AXISX] + c2lr1y * bd[b1 + B_AXISY];
+          clip2x += bd[b1 + B_POSX];
+          clip2y += bd[b1 + B_POSY];
+        }
+      }
+
+      let err1 = clip1x * gnormx + clip1y * gnormy - gproj - radius;
+      err1 += this.collisionSlop;
+      let err2 = 0.0;
+      const hasC2 = cd[off + A_HPC2] === 1.0;
+      if (hasC2) {
+        err2 = clip2x * gnormx + clip2y * gnormy - gproj - radius;
+        err2 += this.collisionSlop;
+      }
+
+      if (err1 < 0 || err2 < 0) {
+        // Flip normal if reversed
+        if (cd[off + A_REV] === 1.0) {
+          gnormx = -gnormx;
+          gnormy = -gnormy;
+        }
+
+        const c1r1x = clip1x - bd[b1 + B_POSX];
+        const c1r1y = clip1y - bd[b1 + B_POSY];
+        const c1r2x = clip1x - bd[b2 + B_POSX];
+        const c1r2y = clip1y - bd[b2 + B_POSY];
+
+        if (hasC2) {
+          // ── 2-contact block solver ──
+          const c2r1x = clip2x - bd[b1 + B_POSX];
+          const c2r1y = clip2y - bd[b1 + B_POSY];
+          const c2r2x = clip2x - bd[b2 + B_POSX];
+          const c2r2y = clip2y - bd[b2 + B_POSY];
+
+          const rn1a = gnormy * c1r1x - gnormx * c1r1y;
+          const rn1b = gnormy * c1r2x - gnormx * c1r2y;
+          const rn2a = gnormy * c2r1x - gnormx * c2r1y;
+          const rn2b = gnormy * c2r2x - gnormx * c2r2y;
+
+          const mass_sum = bd[b1 + B_SMASS] + bd[b2 + B_SMASS];
+          const si1 = bd[b1 + B_SINERTIA];
+          const si2 = bd[b2 + B_SINERTIA];
+          const kMassa = mass_sum + si1 * rn1a * rn1a + si2 * rn1b * rn1b;
+          const kMassb = mass_sum + si1 * rn1a * rn2a + si2 * rn1b * rn2b;
+          const kMassc = mass_sum + si1 * rn2a * rn2a + si2 * rn2b * rn2b;
+
+          const Ka = kMassa;
+          const Kb = kMassb;
+          const Kc = kMassc;
+          const biasCoef = cd[off + A_BIASCOEF];
+          const bx = err1 * biasCoef;
+          const by = err2 * biasCoef;
+
+          const im1 = bd[b1 + B_IMASS];
+          const im2 = bd[b2 + B_IMASS];
+          const ii1 = bd[b1 + B_IINERTIA];
+          const ii2 = bd[b2 + B_IINERTIA];
+
+          // Try full 2x2 solve
+          while (true) {
+            let xx = -bx;
+            let xy = -by;
+            let det = kMassa * kMassc - kMassb * kMassb;
+            if (det !== det) {
+              xy = 0;
+              xx = xy;
+            } else if (det === 0) {
+              if (kMassa !== 0) xx /= kMassa;
+              else xx = 0;
+              if (kMassc !== 0) xy /= kMassc;
+              else xy = 0;
+            } else {
+              det = 1 / det;
+              const t = det * (kMassc * xx - kMassb * xy);
+              xy = det * (kMassa * xy - kMassb * xx);
+              xx = t;
+            }
+
+            if (xx >= 0 && xy >= 0) {
+              const t1 = (xx + xy) * im1;
+              bd[b1 + B_POSX] -= gnormx * t1;
+              bd[b1 + B_POSY] -= gnormy * t1;
+              this._applyRotation(b1, -ii1 * (rn1a * xx + rn2a * xy));
+              const t2 = (xx + xy) * im2;
+              bd[b2 + B_POSX] += gnormx * t2;
+              bd[b2 + B_POSY] += gnormy * t2;
+              this._applyRotation(b2, ii2 * (rn1b * xx + rn2b * xy));
+              break;
+            }
+
+            // Fallback: contact 1 only
+            xx = -bx / Ka;
+            xy = 0;
+            const vn2 = Kb * xx + by;
+            if (xx >= 0 && vn2 >= 0) {
+              const t1 = (xx + xy) * im1;
+              bd[b1 + B_POSX] -= gnormx * t1;
+              bd[b1 + B_POSY] -= gnormy * t1;
+              this._applyRotation(b1, -ii1 * (rn1a * xx + rn2a * xy));
+              const t2 = (xx + xy) * im2;
+              bd[b2 + B_POSX] += gnormx * t2;
+              bd[b2 + B_POSY] += gnormy * t2;
+              this._applyRotation(b2, ii2 * (rn1b * xx + rn2b * xy));
+              break;
+            }
+
+            // Fallback: contact 2 only
+            xx = 0;
+            xy = -by / Kc;
+            const vn1 = Kb * xy + bx;
+            if (xy >= 0 && vn1 >= 0) {
+              const t1 = (xx + xy) * im1;
+              bd[b1 + B_POSX] -= gnormx * t1;
+              bd[b1 + B_POSY] -= gnormy * t1;
+              this._applyRotation(b1, -ii1 * (rn1a * xx + rn2a * xy));
+              const t2 = (xx + xy) * im2;
+              bd[b2 + B_POSX] += gnormx * t2;
+              bd[b2 + B_POSY] += gnormy * t2;
+              this._applyRotation(b2, ii2 * (rn1b * xx + rn2b * xy));
+              break;
+            }
+
+            // No valid solution
+            break;
+          }
+        } else {
+          // ── Single contact ──
+          const rn1 = gnormy * c1r1x - gnormx * c1r1y;
+          const rn2 = gnormy * c1r2x - gnormx * c1r2y;
+          const K =
+            bd[b2 + B_SMASS] +
+            rn2 * rn2 * bd[b2 + B_SINERTIA] +
+            bd[b1 + B_SMASS] +
+            rn1 * rn1 * bd[b1 + B_SINERTIA];
+          if (K !== 0) {
+            const biasCoef = cd[off + A_BIASCOEF];
+            const jn = (-biasCoef * err1) / K;
+            const Jx = gnormx * jn;
+            const Jy = gnormy * jn;
+
+            bd[b1 + B_POSX] -= Jx * bd[b1 + B_IMASS];
+            bd[b1 + B_POSY] -= Jy * bd[b1 + B_IMASS];
+            this._applyRotation(b1, -rn1 * bd[b1 + B_IINERTIA] * jn);
+
+            bd[b2 + B_POSX] += Jx * bd[b2 + B_IMASS];
+            bd[b2 + B_POSY] += Jy * bd[b2 + B_IMASS];
+            this._applyRotation(b2, rn2 * bd[b2 + B_IINERTIA] * jn);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Color-grouped position solver — processes contacts grouped by graph color.
+   * Must be called AFTER colorCollisionArbiters() and setConfig().
+   */
+  iteratePosColoredSoA(times: number): void {
+    const co = this.colorOrder;
+    const cg = this.colorGroups;
+    const nc = this.numColors;
+    for (let iter = 0; iter < times; iter++) {
+      for (let c = 0; c < nc; c++) {
+        const start = cg[c];
+        const end = cg[c + 1];
+        for (let k = start; k < end; k++) {
+          this._solveOnePosContact(co[k]);
         }
       }
     }
