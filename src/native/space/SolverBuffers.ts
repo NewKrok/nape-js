@@ -109,33 +109,43 @@ const F_AGAMMA = 14;
 const F_NODRAG = 15; // 1.0 = nodrag
 const FLUID_STRIDE = 16;
 
+/** Union type for solver buffer arrays (f64 or f32 precision). */
+type SolverArray = Float64Array | Float32Array;
+
 /**
- * Ensures `buf` has at least `needed` elements, growing by 2× if necessary.
+ * Ensures `buf` has at least `needed` elements, growing by 2x if necessary.
  * Returns `buf` or a new larger array with old data copied.
+ * Works with both Float64Array and Float32Array.
  */
-function ensureCapacity(buf: Float64Array, needed: number): Float64Array {
+function ensureCapacity<T extends SolverArray>(buf: T, needed: number): T {
   if (buf.length >= needed) return buf;
   let cap = buf.length || 64;
   while (cap < needed) cap *= 2;
-  const next = new Float64Array(cap);
+  const next = (buf instanceof Float32Array ? new Float32Array(cap) : new Float64Array(cap)) as T;
   next.set(buf);
   return next;
 }
 
 export class SolverBuffers {
+  /** Precision mode: 'f64' (default) or 'f32' for halved memory / GPU upload. */
+  readonly precision: "f64" | "f32";
+
+  /** Whether this instance uses Float32Array buffers. */
+  private readonly _f32: boolean;
+
   // ── Body arrays ──
-  bodyData: Float64Array = new Float64Array(256 * BODY_STRIDE);
+  bodyData: SolverArray;
   bodyCount = 0;
 
-  /** Map body → index into bodyData (bodyIndex * BODY_STRIDE = offset). */
+  /** Map body -> index into bodyData (bodyIndex * BODY_STRIDE = offset). */
   private bodyIndexMap: Map<ZPP_Body, number> = new Map();
-  /** Reverse: index → body object (for unpack). */
+  /** Reverse: index -> body object (for unpack). */
   private bodyList: ZPP_Body[] = [];
 
   // ── Collision arbiter arrays ──
-  colData: Float64Array = new Float64Array(512 * COL_STRIDE);
+  colData: SolverArray;
   colCount = 0;
-  /** Reverse: index → arbiter object (for unpack). */
+  /** Reverse: index -> arbiter object (for unpack). */
   private colList: ZPP_ColArbiter[] = [];
 
   // ── Graph coloring for collision arbiters ──
@@ -154,13 +164,26 @@ export class SolverBuffers {
   numColors = 0;
 
   // ── Fluid arbiter arrays ──
-  fluidData: Float64Array = new Float64Array(64 * FLUID_STRIDE);
+  fluidData: SolverArray;
   fluidCount = 0;
   private fluidList: ZPP_FluidArbiter[] = [];
   // Fluid color groups (same structure as collision)
   private fluidColorOrder: Uint32Array = new Uint32Array(64);
   private fluidColorGroups: Uint32Array = new Uint32Array(16);
   numFluidColors = 0;
+
+  constructor(options?: { precision?: "f64" | "f32" }) {
+    this.precision = options?.precision ?? "f64";
+    this._f32 = this.precision === "f32";
+    this.bodyData = this._createArray(256 * BODY_STRIDE);
+    this.colData = this._createArray(512 * COL_STRIDE);
+    this.fluidData = this._createArray(64 * FLUID_STRIDE);
+  }
+
+  /** Create a typed array of the configured precision. */
+  private _createArray(size: number): SolverArray {
+    return this._f32 ? new Float32Array(size) : new Float64Array(size);
+  }
 
   // ── Public accessors for GPU solver ──
 

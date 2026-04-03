@@ -96,6 +96,9 @@ export class ZPP_Space {
   /** WebGPU compute solver (lazy-initialized via initGPU()). */
   _gpuSolver: GPUComputeSolver | null = null;
 
+  /** Profiling timestamp for step start (used by sub-step methods). */
+  _profT0: number = 0;
+
   constructor(gravity?: any, broadphase?: any) {
     this.prelisteners = null;
     this.precb = null;
@@ -3243,183 +3246,200 @@ export class ZPP_Space {
     }
   }
 
-  step(deltaTime: number, velocityIterations: number, positionIterations: number) {
-    if (this.midstep) {
-      throw new Error(
-        "Error: ... REALLY?? you're going to call space.step() inside of space.step()? COME ON!!",
-      );
-    }
-    this.time += deltaTime;
-    this.midstep = true;
-    this.stamp++;
-    const n = this.subSteps;
-    const subDt = deltaTime / n;
+  /**
+   * Sub-step phase: validation, broadphase, deterministic ordering, prestep,
+   * and contact sorting.
+   */
+  _subStepPre(subDt: number): void {
     const profiling = this.profilerEnabled;
-    let t0 = 0;
     let t1 = 0;
-    if (profiling) {
-      this._metrics.reset();
-      t0 = performance.now();
+    this.pre_dt = subDt;
+    this.validation();
+    if (profiling) t1 = performance.now();
+    this.bphase.broadphase(this, true);
+    if (profiling) this._metrics.broadphaseTime += performance.now() - t1;
+    this._ensureDeterministicOrder();
+    if (profiling) t1 = performance.now();
+    this.prestep(subDt);
+    if (profiling) this._metrics.narrowphaseTime += performance.now() - t1;
+    if (this.sortcontacts) {
+      const xxlist = this.c_arbiters_false;
+      if (xxlist.head != null && xxlist.head.next != null) {
+        let head = xxlist.head;
+        let tail = null;
+        let left = null;
+        let right = null;
+        let nxt = null;
+        let listSize = 1;
+        let numMerges;
+        let leftSize;
+        let rightSize;
+        while (true) {
+          numMerges = 0;
+          left = head;
+          head = null;
+          tail = head;
+          while (left != null) {
+            ++numMerges;
+            right = left;
+            leftSize = 0;
+            rightSize = listSize;
+            while (right != null && leftSize < listSize) {
+              ++leftSize;
+              right = right.next;
+            }
+            while (leftSize > 0 || (rightSize > 0 && right != null)) {
+              if (leftSize == 0) {
+                nxt = right;
+                right = right.next;
+                --rightSize;
+              } else if (rightSize == 0 || right == null) {
+                nxt = left;
+                left = left.next;
+                --leftSize;
+              } else if (
+                left.elt.active && right.elt.active
+                  ? left.elt.oc1.dist < right.elt.oc1.dist
+                  : this.deterministic
+                    ? this._arbiterSortKey(left.elt) <= this._arbiterSortKey(right.elt)
+                    : true
+              ) {
+                nxt = left;
+                left = left.next;
+                --leftSize;
+              } else {
+                nxt = right;
+                right = right.next;
+                --rightSize;
+              }
+              if (tail != null) {
+                tail.next = nxt;
+              } else {
+                head = nxt;
+              }
+              tail = nxt;
+            }
+            left = right;
+          }
+          tail.next = null;
+          listSize <<= 1;
+          if (!(numMerges > 1)) {
+            break;
+          }
+        }
+        xxlist.head = head;
+        xxlist.modified = true;
+        xxlist.pushmod = true;
+      }
     }
-    try {
-      for (let _sub = 0; _sub < n; _sub++) {
-        this.pre_dt = subDt;
-        this.validation();
-        if (profiling) t1 = performance.now();
-        this.bphase.broadphase(this, true);
-        if (profiling) this._metrics.broadphaseTime += performance.now() - t1;
-        this._ensureDeterministicOrder();
-        if (profiling) t1 = performance.now();
-        this.prestep(subDt);
-        if (profiling) this._metrics.narrowphaseTime += performance.now() - t1;
-        if (this.sortcontacts) {
-          const xxlist = this.c_arbiters_false;
-          if (xxlist.head != null && xxlist.head.next != null) {
-            let head = xxlist.head;
-            let tail = null;
-            let left = null;
-            let right = null;
-            let nxt = null;
-            let listSize = 1;
-            let numMerges;
-            let leftSize;
-            let rightSize;
-            while (true) {
-              numMerges = 0;
-              left = head;
-              head = null;
-              tail = head;
-              while (left != null) {
-                ++numMerges;
-                right = left;
-                leftSize = 0;
-                rightSize = listSize;
-                while (right != null && leftSize < listSize) {
-                  ++leftSize;
-                  right = right.next;
-                }
-                while (leftSize > 0 || (rightSize > 0 && right != null)) {
-                  if (leftSize == 0) {
-                    nxt = right;
-                    right = right.next;
-                    --rightSize;
-                  } else if (rightSize == 0 || right == null) {
-                    nxt = left;
-                    left = left.next;
-                    --leftSize;
-                  } else if (
-                    left.elt.active && right.elt.active
-                      ? left.elt.oc1.dist < right.elt.oc1.dist
-                      : this.deterministic
-                        ? this._arbiterSortKey(left.elt) <= this._arbiterSortKey(right.elt)
-                        : true
-                  ) {
-                    nxt = left;
-                    left = left.next;
-                    --leftSize;
-                  } else {
-                    nxt = right;
-                    right = right.next;
-                    --rightSize;
-                  }
-                  if (tail != null) {
-                    tail.next = nxt;
-                  } else {
-                    head = nxt;
-                  }
-                  tail = nxt;
-                }
-                left = right;
-              }
-              tail.next = null;
-              listSize <<= 1;
-              if (!(numMerges > 1)) {
-                break;
-              }
-            }
-            xxlist.head = head;
-            xxlist.modified = true;
-            xxlist.pushmod = true;
-          }
-        }
-        if (profiling) t1 = performance.now();
-        this.updateVel(subDt);
-        this._solveVelocitySoA(velocityIterations);
-        if (profiling) this._metrics.velocitySolverTime += performance.now() - t1;
-        let cx_ite = this.kinematics.head;
-        while (cx_ite != null) {
-          const cur = cx_ite.elt;
-          cur.pre_posx = cur.posx;
-          cur.pre_posy = cur.posy;
-          cur.pre_rot = cur.rot;
-          cx_ite = cx_ite.next;
-        }
-        // Note: pre_pos backup for live bodies is done inside updatePos() already.
-        if (profiling) t1 = performance.now();
-        this.updatePos(subDt);
-        if (profiling) this._metrics.positionSolverTime += performance.now() - t1;
-        this.continuous = true;
-        if (profiling) t1 = performance.now();
-        this.continuousCollisions(subDt);
-        if (profiling) this._metrics.ccdTime += performance.now() - t1;
-        this.continuous = false;
-        if (profiling) t1 = performance.now();
-        this.iteratePos(positionIterations);
-        if (profiling) this._metrics.positionSolverTime += performance.now() - t1;
-        this._invalidateBodyList(this.kinematics);
-        this._invalidateBodyList(this.live);
-        let pre = null;
-        let cx_ite8 = this.staticsleep.head;
-        while (cx_ite8 != null) {
-          const b = cx_ite8.elt;
-          if (b.type != 3 || (b.velx == 0 && b.vely == 0 && b.angvel == 0)) {
-            if (b.kinematicDelaySleep) {
-              b.kinematicDelaySleep = false;
-              cx_ite8 = cx_ite8.next;
-              continue;
-            }
-            b.component.sleeping = true;
-            const _this = this.staticsleep;
-            let old;
-            let ret;
-            if (pre == null) {
-              old = _this.head;
-              ret = old.next;
-              _this.head = ret;
-              if (_this.head == null) {
-                _this.pushmod = true;
-              }
-            } else {
-              old = pre.next;
-              ret = old.next;
-              pre.next = ret;
-              if (ret == null) {
-                _this.pushmod = true;
-              }
-            }
-            const o = old;
-            o.elt = null;
-            o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = o;
-            _this.modified = true;
-            _this.length--;
-            _this.pushmod = true;
-            cx_ite8 = ret;
-            continue;
-          }
-          pre = cx_ite8;
+  }
+
+  /**
+   * Sub-step phase: velocity update and velocity constraint solving.
+   */
+  _subStepVelocity(subDt: number, velocityIterations: number): void {
+    const profiling = this.profilerEnabled;
+    let t1 = 0;
+    if (profiling) t1 = performance.now();
+    this.updateVel(subDt);
+    this._solveVelocitySoA(velocityIterations);
+    if (profiling) this._metrics.velocitySolverTime += performance.now() - t1;
+  }
+
+  /**
+   * Sub-step phase: kinematic pre-position backup, position update, CCD,
+   * and position iterations.
+   */
+  _subStepPosition(subDt: number, positionIterations: number): void {
+    const profiling = this.profilerEnabled;
+    let t1 = 0;
+    let cx_ite = this.kinematics.head;
+    while (cx_ite != null) {
+      const cur = cx_ite.elt;
+      cur.pre_posx = cur.posx;
+      cur.pre_posy = cur.posy;
+      cur.pre_rot = cur.rot;
+      cx_ite = cx_ite.next;
+    }
+    // Note: pre_pos backup for live bodies is done inside updatePos() already.
+    if (profiling) t1 = performance.now();
+    this.updatePos(subDt);
+    if (profiling) this._metrics.positionSolverTime += performance.now() - t1;
+    this.continuous = true;
+    if (profiling) t1 = performance.now();
+    this.continuousCollisions(subDt);
+    if (profiling) this._metrics.ccdTime += performance.now() - t1;
+    this.continuous = false;
+    if (profiling) t1 = performance.now();
+    this.iteratePos(positionIterations);
+    if (profiling) this._metrics.positionSolverTime += performance.now() - t1;
+  }
+
+  /**
+   * Sub-step phase: body list invalidation, static-sleep processing,
+   * island detection, and arbiter sleep.
+   */
+  _subStepSleep(subDt: number): void {
+    const profiling = this.profilerEnabled;
+    let t1 = 0;
+    this._invalidateBodyList(this.kinematics);
+    this._invalidateBodyList(this.live);
+    let pre = null;
+    let cx_ite8 = this.staticsleep.head;
+    while (cx_ite8 != null) {
+      const b = cx_ite8.elt;
+      if (b.type != 3 || (b.velx == 0 && b.vely == 0 && b.angvel == 0)) {
+        if (b.kinematicDelaySleep) {
+          b.kinematicDelaySleep = false;
           cx_ite8 = cx_ite8.next;
+          continue;
         }
-        if (profiling) t1 = performance.now();
-        this.doForests(subDt);
-        this.sleepArbiters();
-        if (profiling) this._metrics.sleepTime += performance.now() - t1;
-      } // end sub-step loop
-    } finally {
-      this.midstep = false;
+        b.component.sleeping = true;
+        const _this = this.staticsleep;
+        let old;
+        let ret;
+        if (pre == null) {
+          old = _this.head;
+          ret = old.next;
+          _this.head = ret;
+          if (_this.head == null) {
+            _this.pushmod = true;
+          }
+        } else {
+          old = pre.next;
+          ret = old.next;
+          pre.next = ret;
+          if (ret == null) {
+            _this.pushmod = true;
+          }
+        }
+        const o = old;
+        o.elt = null;
+        o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
+        ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = o;
+        _this.modified = true;
+        _this.length--;
+        _this.pushmod = true;
+        cx_ite8 = ret;
+        continue;
+      }
+      pre = cx_ite8;
+      cx_ite8 = cx_ite8.next;
     }
+    if (profiling) t1 = performance.now();
+    this.doForests(subDt);
+    this.sleepArbiters();
+    if (profiling) this._metrics.sleepTime += performance.now() - t1;
+  }
+
+  /**
+   * Post-step phase: metrics finalization, callback set cleanup,
+   * and callback dispatch.
+   */
+  _postStep(): void {
+    const profiling = this.profilerEnabled;
     if (profiling) {
-      this._metrics.totalStepTime = performance.now() - t0;
+      this._metrics.totalStepTime = performance.now() - this._profT0;
       this._collectCounters();
     }
     let pre1 = null;
@@ -3578,6 +3598,34 @@ export class ZPP_Space {
     }
   }
 
+  step(deltaTime: number, velocityIterations: number, positionIterations: number) {
+    if (this.midstep) {
+      throw new Error(
+        "Error: ... REALLY?? you're going to call space.step() inside of space.step()? COME ON!!",
+      );
+    }
+    this.time += deltaTime;
+    this.midstep = true;
+    this.stamp++;
+    const n = this.subSteps;
+    const subDt = deltaTime / n;
+    if (this.profilerEnabled) {
+      this._metrics.reset();
+      this._profT0 = performance.now();
+    }
+    try {
+      for (let _sub = 0; _sub < n; _sub++) {
+        this._subStepPre(subDt);
+        this._subStepVelocity(subDt, velocityIterations);
+        this._subStepPosition(subDt, positionIterations);
+        this._subStepSleep(subDt);
+      }
+    } finally {
+      this.midstep = false;
+    }
+    this._postStep();
+  }
+
   /**
    * GPU-accelerated step. Uses WebGPU compute shaders for the velocity
    * solver when available, falling back to CPU SoA otherwise.
@@ -3595,41 +3643,32 @@ export class ZPP_Space {
       return;
     }
 
-    // Use the CPU SoA path (which is already GPU-ready via color groups).
-    // When the GPU path is available, we solve contacts+fluids on GPU
-    // then fall back to CPU for the rest of step().
-    //
-    // Architecture: the velocity solve dispatches GPU compute, awaits
-    // readback, then step() continues synchronously for position solve,
-    // CCD, and sleep management.
-    //
-    // We achieve this by running the GPU velocity solve BEFORE calling
-    // step(), caching the results, then having step() skip the velocity
-    // solve and use the cached results instead.
-
     if (this.midstep) {
       throw new Error("Error: cannot call stepGPU() during step()");
     }
 
-    // Pre-step: run broadphase + narrowphase + velocity update manually
-    // Then do async GPU velocity solve
-    // Then run the rest of step() with the solved velocities
-    //
-    // For now, use the CPU SoA path which already benefits from
-    // graph coloring. The GPU shaders (GPUComputeSolver + WGSL) are
-    // ready and can be wired in by calling gpu.solveVelocity() directly
-    // from a custom game loop:
-    //
-    //   const gpu = new GPUComputeSolver();
-    //   await gpu.init();
-    //   // In game loop:
-    //   buf.packBodies(...); buf.packCollisionArbiters(...);
-    //   buf.colorCollisionArbiters();
-    //   buf.warmStartSoA();
-    //   await gpu.solveVelocity(buf, iterations);
-    //   buf.unpackBodies(); buf.unpackCollisionArbiters();
-    //
-    this.step(deltaTime, velocityIterations, positionIterations);
+    this.time += deltaTime;
+    this.midstep = true;
+    this.stamp++;
+    const n = this.subSteps;
+    const subDt = deltaTime / n;
+    if (this.profilerEnabled) {
+      this._metrics.reset();
+      this._profT0 = performance.now();
+    }
+    try {
+      for (let _sub = 0; _sub < n; _sub++) {
+        this._subStepPre(subDt);
+        // GPU velocity solve (async)
+        this.updateVel(subDt);
+        await this._solveVelocityGPU(velocityIterations);
+        this._subStepPosition(subDt, positionIterations);
+        this._subStepSleep(subDt);
+      }
+    } finally {
+      this.midstep = false;
+    }
+    this._postStep();
   }
 
   /** Collect entity counters into _metrics. O(N) body scan for type breakdown. */
