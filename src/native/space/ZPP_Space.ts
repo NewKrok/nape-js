@@ -9809,7 +9809,13 @@ export class ZPP_Space {
   async initGPU(): Promise<boolean> {
     if (this._gpuSolver?.available) return true;
     this._gpuSolver = new GPUComputeSolver();
-    return await this._gpuSolver.init();
+    const ok = await this._gpuSolver.init();
+    if (ok) {
+      // Switch to Float32 SoA buffers — eliminates F64↔F32 conversion overhead
+      // on GPU upload/readback (data can be sent directly to WebGPU).
+      this._solverBuffers = new SolverBuffers({ precision: "f32" });
+    }
+    return ok;
   }
 
   /**

@@ -158,6 +158,7 @@ export class GPUComputeSolver {
     for (let i = 0; i < bodyCount; i++) {
       const src = i * CPU_BODY_STRIDE;
       const dst = i * GPU_BODY_STRIDE;
+      // Works for both Float64Array and Float32Array source — no branch needed
       bodyF32[dst] = bd[src];
       bodyF32[dst + 1] = bd[src + 1];
       bodyF32[dst + 2] = bd[src + 2];
@@ -168,9 +169,18 @@ export class GPUComputeSolver {
       bodyF32[dst + 7] = bd[src + 7];
     }
 
-    // Convert col/fluid F64 → F32 (only velocity solver fields: first 49 of 64)
-    const colF32 = this._toF32(buf.colData, colCount * GPU_COL_STRIDE);
-    const fluidF32 = this._toF32(buf.fluidData, fluidCount * GPU_FLUID_STRIDE);
+    // Convert col/fluid to F32. If SolverBuffers uses f32, skip element-wise
+    // conversion but still need a copy (body index remap modifies A_B1/A_B2).
+    const colLen = colCount * GPU_COL_STRIDE;
+    const colF32 =
+      buf.colData instanceof Float32Array
+        ? (buf.colData.slice(0, colLen) as Float32Array)
+        : this._toF32(buf.colData, colLen);
+    const fluidLen = fluidCount * GPU_FLUID_STRIDE;
+    const fluidF32 =
+      buf.fluidData instanceof Float32Array
+        ? (buf.fluidData.slice(0, fluidLen) as Float32Array)
+        : this._toF32(buf.fluidData, fluidLen);
 
     // Remap body indices: bodyIdx*15 → bodyIdx*8
     for (let i = 0; i < colCount; i++) {
