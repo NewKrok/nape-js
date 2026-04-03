@@ -2,7 +2,7 @@
  * nape-js Demo Page — interactive demos + live benchmarks + code preview + CodePen export
  */
 import {
-  Space, Body, BodyType, Vec2, Circle, Polygon, VERSION,
+  Space, Body, BodyType, Vec2, Circle, Polygon, Broadphase, VERSION,
 } from "./nape-js.esm.js?v=3.23.0";
 import { installErrorOverlay } from "./renderer.js?v=3.23.0";
 import { DemoRunner } from "./demo-runner.js?v=3.23.0";
@@ -265,7 +265,7 @@ function runBenchmarkSuite() {
     }
 
     async function benchStepGPU(label, bodyCount, iterations) {
-      const sp = new Space(new Vec2(0, 600));
+      const sp = new Space(new Vec2(0, 600), Broadphase.SPATIAL_HASH);
       const hasGPU = await sp.initGPU();
       const fl = new Body(BodyType.STATIC, new Vec2(450, 550));
       fl.shapes.add(new Polygon(Polygon.box(900, 20)));
