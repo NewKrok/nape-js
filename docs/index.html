@@ -155,9 +155,10 @@
       <h2>Benchmarks</h2>
       <p class="section-desc">
         Measured in your browser right now. Each test runs the physics <code>step()</code>
-        in a tight loop and reports the median time per step.
+        and <code>stepGPU()</code> in a tight loop and reports the median time per step.
       </p>
       <button class="btn btn-primary" id="runBenchmark">Run Benchmarks</button>
+      <a href="benchmark.html" class="btn btn-secondary" style="margin-left:8px" onclick="gtag('event','navigation',{event_category:'benchmarks',event_label:'full_comparison'})">Full Engine Comparison &rarr;</a>
       <div class="bench-results" id="benchResults">
         <p class="bench-hint">Press the button to start.</p>
       </div>

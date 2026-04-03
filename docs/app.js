@@ -235,10 +235,11 @@ function runBenchmarkSuite() {
   const resultsEl = document.getElementById("benchResults");
   resultsEl.innerHTML = '<p class="bench-running">Running benchmarks&hellip;</p>';
 
-  setTimeout(() => {
-    const results = [];
+  setTimeout(async () => {
+    const cpuResults = [];
+    const gpuResults = [];
 
-    function benchStep(label, bodyCount, iterations) {
+    function benchStepCPU(label, bodyCount, iterations) {
       const sp = new Space(new Vec2(0, 600));
       const fl = new Body(BodyType.STATIC, new Vec2(450, 550));
       fl.shapes.add(new Polygon(Polygon.box(900, 20)));
@@ -260,28 +261,72 @@ function runBenchmarkSuite() {
       const sorted = [...times].sort((a, b) => a - b);
       const med = sorted[Math.floor(sorted.length / 2)];
       const avg = times.reduce((a, b) => a + b, 0) / times.length;
-      results.push({ label, bodyCount, med, avg, min: sorted[0], max: sorted[sorted.length - 1] });
+      cpuResults.push({ label, bodyCount, med, avg, min: sorted[0], max: sorted[sorted.length - 1] });
     }
 
-    benchStep("100 bodies",   100, 200);
-    benchStep("200 bodies",   200, 150);
-    benchStep("500 bodies",   500, 100);
-    benchStep("1 000 bodies", 1000, 50);
-    benchStep("2 000 bodies", 2000, 30);
+    async function benchStepGPU(label, bodyCount, iterations) {
+      const sp = new Space(new Vec2(0, 600));
+      const hasGPU = await sp.initGPU();
+      const fl = new Body(BodyType.STATIC, new Vec2(450, 550));
+      fl.shapes.add(new Polygon(Polygon.box(900, 20)));
+      fl.space = sp;
+      for (let i = 0; i < bodyCount; i++) {
+        const b = new Body(BodyType.DYNAMIC, new Vec2(50 + Math.random() * 800, -Math.random() * 1500));
+        const size = 8 + Math.random() * 16;
+        if (Math.random() < 0.5) { b.shapes.add(new Circle(size / 2)); }
+        else { b.shapes.add(new Polygon(Polygon.box(size, size))); }
+        b.space = sp;
+      }
+      for (let i = 0; i < 5; i++) await sp.stepGPU(1/60, 8, 3);
+      const times = [];
+      for (let i = 0; i < iterations; i++) {
+        const t0 = performance.now();
+        await sp.stepGPU(1/60, 8, 3);
+        times.push(performance.now() - t0);
+      }
+      const sorted = [...times].sort((a, b) => a - b);
+      const med = sorted[Math.floor(sorted.length / 2)];
+      const avg = times.reduce((a, b) => a + b, 0) / times.length;
+      gpuResults.push({ label, bodyCount, med, avg, min: sorted[0], max: sorted[sorted.length - 1], hasGPU });
+    }
 
-    const maxAvg = Math.max(...results.map(r => r.avg));
+    // Run CPU benchmarks
+    benchStepCPU("100 bodies",   100, 200);
+    benchStepCPU("200 bodies",   200, 150);
+    benchStepCPU("500 bodies",   500, 100);
+    benchStepCPU("1 000 bodies", 1000, 50);
+    benchStepCPU("2 000 bodies", 2000, 30);
+
+    // Run GPU benchmarks
+    await benchStepGPU("100 bodies",   100, 200);
+    await benchStepGPU("200 bodies",   200, 150);
+    await benchStepGPU("500 bodies",   500, 100);
+    await benchStepGPU("1 000 bodies", 1000, 50);
+    await benchStepGPU("2 000 bodies", 2000, 30);
+
+    const allResults = [...cpuResults, ...gpuResults];
+    const maxAvg = Math.max(...allResults.map(r => r.avg));
     let html = `<div class="bench-table-wrap"><table class="bench-table">
-      <thead><tr><th>Scenario</th><th>Median</th><th>Average</th><th>Min</th><th>Max</th><th class="bench-bar-col"></th></tr></thead>
+      <thead><tr><th>Scenario</th><th>Solver</th><th>Median</th><th>Average</th><th>Min</th><th>Max</th><th class="bench-bar-col"></th></tr></thead>
       <tbody>`;
-    for (const r of results) {
-      const barWidth = Math.max(4, (r.avg / maxAvg) * 100);
-      html += `<tr><td>${r.label}</td><td>${formatMs(r.med)}</td><td>${formatMs(r.avg)}</td><td>${formatMs(r.min)}</td><td>${formatMs(r.max)}</td>
-        <td class="bench-bar-col"><div class="bench-bar" style="width:${barWidth}px"></div></td></tr>`;
+    for (let i = 0; i < cpuResults.length; i++) {
+      const c = cpuResults[i];
+      const g = gpuResults[i];
+      const cBarWidth = Math.max(4, (c.avg / maxAvg) * 100);
+      const gBarWidth = Math.max(4, (g.avg / maxAvg) * 100);
+      html += `<tr><td rowspan="2">${c.label}</td><td style="color:#58a6ff">CPU</td><td>${formatMs(c.med)}</td><td>${formatMs(c.avg)}</td><td>${formatMs(c.min)}</td><td>${formatMs(c.max)}</td>
+        <td class="bench-bar-col"><div class="bench-bar" style="width:${cBarWidth}px;background:#58a6ff"></div></td></tr>`;
+      html += `<tr><td style="color:#a371f7">GPU</td><td>${formatMs(g.med)}</td><td>${formatMs(g.avg)}</td><td>${formatMs(g.min)}</td><td>${formatMs(g.max)}</td>
+        <td class="bench-bar-col"><div class="bench-bar" style="width:${gBarWidth}px;background:#a371f7"></div></td></tr>`;
     }
+    const gpuNote = gpuResults[0]?.hasGPU
+      ? "WebGPU active — GPU compute shaders enabled."
+      : "WebGPU not available — GPU path uses CPU SoA fallback.";
     html += `</tbody></table></div>
       <p style="margin-top:12px;color:var(--text-dim);font-size:0.82rem">
-        Measured with <code>space.step(1/60, 8, 3)</code> per iteration.
-        Mixed circle/box shapes. Your results may vary by browser and hardware.
+        Measured with <code>step()</code> / <code>stepGPU()</code> at 1/60s, 8 vel, 3 pos iterations.
+        Mixed circle/box shapes. ${gpuNote}
+        <br><a href="benchmark.html" style="color:var(--accent)">Full engine comparison benchmarks &rarr;</a>
       </p>`;
     resultsEl.innerHTML = html;
   }, 50);
