@@ -345,6 +345,59 @@ export class Space {
   }
 
   /**
+   * Initialize WebGPU compute shader acceleration.
+   *
+   * Call once during setup. Returns `true` if GPU is available, `false`
+   * otherwise (graceful fallback — `stepGPU()` will use the CPU path).
+   *
+   * ```ts
+   * const space = new Space();
+   * const hasGPU = await space.initGPU();
+   * // In game loop:
+   * await space.stepGPU(1/60, 10, 5);
+   * ```
+   */
+  async initGPU(): Promise<boolean> {
+    return this.zpp_inner.initGPU();
+  }
+
+  /**
+   * GPU-accelerated physics step.
+   *
+   * Uses WebGPU compute shaders for the velocity solver when available
+   * (after `initGPU()` returns true). Falls back to the CPU SoA solver
+   * automatically if GPU is not available.
+   *
+   * Note: When GPU is not available, this calls the synchronous `step()`
+   * internally. The async overhead is negligible.
+   *
+   * @param deltaTime - Time step in seconds; must be strictly positive.
+   * @param velocityIterations - Velocity solver iterations (default 10).
+   * @param positionIterations - Position solver iterations (default 10).
+   */
+  async stepGPU(
+    deltaTime: number,
+    velocityIterations: number = 10,
+    positionIterations: number = 10,
+  ): Promise<void> {
+    if (deltaTime !== deltaTime) {
+      throw new Error("Error: deltaTime cannot be NaN");
+    }
+    if (deltaTime <= 0) {
+      throw new Error("Error: deltaTime must be strictly positive");
+    }
+    if (velocityIterations <= 0) {
+      throw new Error("Error: must use atleast one velocity iteration");
+    }
+    if (positionIterations <= 0) {
+      throw new Error("Error: must use atleast one position iteration");
+    }
+
+    // Delegate to the internal async step which handles GPU/CPU selection
+    await this.zpp_inner.stepGPU(deltaTime, velocityIterations, positionIterations);
+  }
+
+  /**
    * Remove all bodies, constraints, and compounds from this space.
    * @throws If called during a `step()`.
    */

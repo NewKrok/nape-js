@@ -162,6 +162,28 @@ export class SolverBuffers {
   private fluidColorGroups: Uint32Array = new Uint32Array(16);
   numFluidColors = 0;
 
+  // ── Public accessors for GPU solver ──
+
+  /** Returns the collision color order array (contact indices by color group). */
+  getColorOrder(): Uint32Array {
+    return this.colorOrder;
+  }
+
+  /** Returns the collision color group boundaries array. */
+  getColorGroups(): Uint32Array {
+    return this.colorGroups;
+  }
+
+  /** Returns the fluid color order array. */
+  getFluidColorOrder(): Uint32Array {
+    return this.fluidColorOrder;
+  }
+
+  /** Returns the fluid color group boundaries array. */
+  getFluidColorGroups(): Uint32Array {
+    return this.fluidColorGroups;
+  }
+
   // ═══════════════════════════════════════════════════════════════════════
   //  PACK — object graph → flat arrays
   // ═══════════════════════════════════════════════════════════════════════
