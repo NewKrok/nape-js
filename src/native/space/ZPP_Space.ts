@@ -28,6 +28,7 @@ import { ZPP_Flags } from "../util/ZPP_Flags";
 import { ZPP_Island } from "./ZPP_Island";
 import { ZPP_Component } from "./ZPP_Component";
 import { ZPP_CallbackSet } from "./ZPP_CallbackSet";
+import { SolverBuffers } from "./SolverBuffers";
 import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 import { PhysicsMetrics } from "../../profiler/PhysicsMetrics";
 
@@ -87,6 +88,9 @@ export class ZPP_Space {
   prelisteners: any = null;
   mrca1: any = null;
   mrca2: any = null;
+
+  /** SoA typed-array buffers for cache-friendly / GPU-ready solver. */
+  private _solverBuffers: SolverBuffers = new SolverBuffers();
 
   constructor(gravity?: any, broadphase?: any) {
     this.prelisteners = null;
@@ -3336,8 +3340,7 @@ export class ZPP_Space {
         }
         if (profiling) t1 = performance.now();
         this.updateVel(subDt);
-        this.warmStart();
-        this.iterateVel(velocityIterations);
+        this._solveVelocitySoA(velocityIterations);
         if (profiling) this._metrics.velocitySolverTime += performance.now() - t1;
         let cx_ite = this.kinematics.head;
         while (cx_ite != null) {
@@ -9610,6 +9613,92 @@ export class ZPP_Space {
         }
       }
     }
+  }
+
+  /**
+   * SoA-accelerated velocity solve: packs body + arbiter data into flat
+   * typed arrays, runs warm-start and velocity iterations with sequential
+   * cache-friendly access, then writes results back.
+   *
+   * Constraints still go through the OOP path (each type has its own
+   * virtual applyImpulseVel). If there are live constraints, body
+   * velocities are synced between the SoA buffers and body objects
+   * once per iteration so constraints see updated values.
+   */
+  private _solveVelocitySoA(velocityIterations: number): void {
+    const buf = this._solverBuffers;
+
+    // ── Pack phase ──
+    buf.packBodies(this.live.head, this.kinematics.head, this.staticsleep.head);
+    buf.packCollisionArbiters(this.c_arbiters_false.head, this.c_arbiters_true.head);
+    buf.packFluidArbiters(this.f_arbiters.head);
+
+    // ── Warm start ──
+    buf.warmStartSoA();
+
+    // Constraint warm start (OOP — needs body object velocities synced)
+    const hasConstraints = this.live_constraints.head != null;
+    if (hasConstraints) {
+      buf.unpackBodies();
+      let cx_ite = this.live_constraints.head;
+      while (cx_ite != null) {
+        cx_ite.elt.warmStart();
+        cx_ite = cx_ite.next;
+      }
+      // Re-pack velocities after constraint warm start
+      buf.packBodies(this.live.head, this.kinematics.head, this.staticsleep.head);
+    }
+
+    // ── Velocity iterations ──
+    if (!hasConstraints) {
+      // Fast path: no constraints — run all iterations on SoA buffers
+      buf.iterateVelSoA(velocityIterations);
+    } else {
+      // Hybrid path: SoA fluid+collision per iteration, then OOP constraints
+      for (let iter = 0; iter < velocityIterations; iter++) {
+        // One iteration of fluid + collision on SoA
+        buf.iterateVelSoA(1);
+
+        // Sync body velocities back for constraint access
+        buf.unpackBodies();
+
+        // OOP constraint iteration (may break/remove constraints)
+        let pre: any = null;
+        let cx_ite = this.live_constraints.head;
+        while (cx_ite != null) {
+          const con = cx_ite.elt;
+          if (con.applyImpulseVel()) {
+            cx_ite = this.live_constraints.erase(pre);
+            con.broken();
+            this.constraintCbBreak(con);
+            if (con.removeOnBreak) {
+              con.component.sleeping = true;
+              this.midstep = false;
+              if (con.compound != null) {
+                con.compound.wrap_constraints.remove(con.outer);
+              } else {
+                this.wrap_constraints.remove(con.outer);
+              }
+              this.midstep = true;
+            } else {
+              con.active = false;
+            }
+            con.clearcache();
+            continue;
+          }
+          pre = cx_ite;
+          cx_ite = cx_ite.next;
+        }
+
+        // Re-pack body velocities (constraints may have changed them)
+        buf.packBodies(this.live.head, this.kinematics.head, this.staticsleep.head);
+      }
+    }
+
+    // ── Unpack phase ──
+    buf.unpackBodies();
+    buf.unpackCollisionArbiters();
+    buf.unpackFluidArbiters();
   }
 
   iteratePos(times: number) {
