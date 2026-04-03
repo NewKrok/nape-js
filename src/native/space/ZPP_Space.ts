@@ -9633,6 +9633,10 @@ export class ZPP_Space {
     buf.packCollisionArbiters(this.c_arbiters_false.head, this.c_arbiters_true.head);
     buf.packFluidArbiters(this.f_arbiters.head);
 
+    // ── Graph coloring (GPU dispatch groups) ──
+    buf.colorCollisionArbiters();
+    buf.colorFluidArbiters();
+
     // ── Warm start ──
     buf.warmStartSoA();
 
@@ -9651,13 +9655,13 @@ export class ZPP_Space {
 
     // ── Velocity iterations ──
     if (!hasConstraints) {
-      // Fast path: no constraints — run all iterations on SoA buffers
-      buf.iterateVelSoA(velocityIterations);
+      // Fast path: no constraints — use color-grouped solver
+      buf.iterateVelColoredSoA(velocityIterations);
     } else {
       // Hybrid path: SoA fluid+collision per iteration, then OOP constraints
       for (let iter = 0; iter < velocityIterations; iter++) {
-        // One iteration of fluid + collision on SoA
-        buf.iterateVelSoA(1);
+        // One iteration of fluid + collision on SoA (color-grouped)
+        buf.iterateVelColoredSoA(1);
 
         // Sync body velocities back for constraint access
         buf.unpackBodies();
