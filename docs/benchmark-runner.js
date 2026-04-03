@@ -96,6 +96,72 @@ export const SCENARIOS = [
       return world;
     },
   },
+  {
+    id: "falling-2000",
+    name: "Falling Bodies",
+    desc: "2000 dynamic boxes — heavy broadphase and solver load.",
+    count: 2000,
+    category: "collision",
+    warmup: 15,
+    iterations: 40,
+    setup(adapter, W, H) {
+      const world = adapter.createWorld();
+      adapter.addStaticBox(world, W / 2, H - 10, W, 20);
+      adapter.addStaticBox(world, -10, H / 2, 20, H);
+      adapter.addStaticBox(world, W + 10, H / 2, 20, H);
+      for (let i = 0; i < this.count; i++) {
+        const x = 40 + Math.random() * (W - 80);
+        const y = -Math.random() * 6000;
+        const size = 8 + Math.random() * 12;
+        adapter.addDynamicBox(world, x, y, size, size);
+      }
+      return world;
+    },
+  },
+  {
+    id: "falling-5000",
+    name: "Falling Bodies",
+    desc: "5000 dynamic boxes — extreme broadphase stress test.",
+    count: 5000,
+    category: "collision",
+    warmup: 10,
+    iterations: 30,
+    setup(adapter, W, H) {
+      const world = adapter.createWorld();
+      adapter.addStaticBox(world, W / 2, H - 10, W, 20);
+      adapter.addStaticBox(world, -10, H / 2, 20, H);
+      adapter.addStaticBox(world, W + 10, H / 2, 20, H);
+      for (let i = 0; i < this.count; i++) {
+        const x = 40 + Math.random() * (W - 80);
+        const y = -Math.random() * 12000;
+        const size = 6 + Math.random() * 10;
+        adapter.addDynamicBox(world, x, y, size, size);
+      }
+      return world;
+    },
+  },
+  {
+    id: "falling-10000",
+    name: "Falling Bodies",
+    desc: "10 000 dynamic boxes — extreme stress test for GPU vs CPU solver scaling.",
+    count: 10000,
+    category: "collision",
+    warmup: 5,
+    iterations: 20,
+    setup(adapter, W, H) {
+      const world = adapter.createWorld();
+      adapter.addStaticBox(world, W / 2, H - 10, W, 20);
+      adapter.addStaticBox(world, -10, H / 2, 20, H);
+      adapter.addStaticBox(world, W + 10, H / 2, 20, H);
+      for (let i = 0; i < this.count; i++) {
+        const x = 40 + Math.random() * (W - 80);
+        const y = -Math.random() * 20000;
+        const size = 5 + Math.random() * 8;
+        adapter.addDynamicBox(world, x, y, size, size);
+      }
+      return world;
+    },
+  },
 
   // ---- 2. Pyramid Stacking ----
   {

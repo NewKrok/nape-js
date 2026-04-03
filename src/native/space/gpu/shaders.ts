@@ -7,10 +7,14 @@
  */
 
 // ── Body SoA field offsets (must match SolverBuffers BODY_STRIDE) ──
+/** GPU body stride — velocity solver uses compact 8-field layout. */
 export const GPU_BODY_STRIDE = 8;
 
-// ── Collision arbiter offsets (must match SolverBuffers COL_STRIDE) ──
-export const GPU_COL_STRIDE = 49;
+/** CPU SoA body stride — full 15-field layout. */
+export const CPU_BODY_STRIDE = 15;
+
+// ── Collision arbiter offsets (must match SolverBuffers COL_STRIDE = 64) ──
+export const GPU_COL_STRIDE = 64;
 
 // ── Fluid arbiter offsets (must match SolverBuffers FLUID_STRIDE) ──
 export const GPU_FLUID_STRIDE = 16;
@@ -20,17 +24,25 @@ export const GPU_FLUID_STRIDE = 16;
  * Injected at the top of each shader module.
  */
 const SHARED_CONSTANTS = /* wgsl */ `
-// Body field offsets (stride = 8)
-const B_VELX: u32    = 0u;
-const B_VELY: u32    = 1u;
-const B_ANGVEL: u32  = 2u;
-const B_IMASS: u32   = 3u;
-const B_IINERTIA: u32 = 4u;
-const B_KINVELX: u32  = 5u;
-const B_KINVELY: u32  = 6u;
+// Body field offsets (stride = 15, full SoA layout)
+const B_VELX: u32      = 0u;
+const B_VELY: u32      = 1u;
+const B_ANGVEL: u32    = 2u;
+const B_IMASS: u32     = 3u;
+const B_IINERTIA: u32  = 4u;
+const B_KINVELX: u32   = 5u;
+const B_KINVELY: u32   = 6u;
 const B_KINANGVEL: u32 = 7u;
+const B_POSX: u32      = 8u;
+const B_POSY: u32      = 9u;
+const B_ROT: u32       = 10u;
+const B_AXISX: u32     = 11u;
+const B_AXISY: u32     = 12u;
+const B_SMASS: u32     = 13u;
+const B_SINERTIA: u32  = 14u;
+const BODY_STRIDE: u32 = 15u;
 
-// Collision arbiter field offsets (stride = 49)
+// Collision arbiter field offsets (stride = 64)
 const A_B1: u32       = 0u;
 const A_B2: u32       = 1u;
 const A_C1_R1X: u32   = 2u;
@@ -80,7 +92,23 @@ const A_RMASS: u32    = 45u;
 const A_JRACC: u32    = 46u;
 const A_RFRIC: u32    = 47u;
 const A_RADIUS: u32   = 48u;
-const COL_STRIDE: u32 = 49u;
+// Position solver fields (49-63)
+const A_PTYPE: u32     = 49u;
+const A_LNORMX: u32   = 50u;
+const A_LNORMY: u32   = 51u;
+const A_LPROJ: u32    = 52u;
+const A_BIASCOEF: u32 = 53u;
+const A_REV: u32      = 54u;
+const A_HPC2: u32     = 55u;
+const A_C1_LR1X: u32  = 56u;
+const A_C1_LR1Y: u32  = 57u;
+const A_C1_LR2X: u32  = 58u;
+const A_C1_LR2Y: u32  = 59u;
+const A_C2_LR1X: u32  = 60u;
+const A_C2_LR1Y: u32  = 61u;
+const A_C2_LR2X: u32  = 62u;
+const A_C2_LR2Y: u32  = 63u;
+const COL_STRIDE: u32 = 64u;  // matches SolverBuffers
 
 // Fluid arbiter field offsets (stride = 16)
 const F_B1: u32      = 0u;
@@ -112,28 +140,32 @@ const FLUID_STRIDE: u32 = 16u;
  *   @group(0) @binding(0) bodies:     read_write storage (f32 array)
  *   @group(0) @binding(1) contacts:   read_write storage (f32 array)
  *   @group(0) @binding(2) colorOrder: read storage (u32 array)
- *   @group(0) @binding(3) params:     uniform { colorStart, colorCount }
+ *   @group(0) @binding(3) allParams:  read storage (u32 array, pairs of [start, count])
+ *   @group(0) @binding(4) groupIdx:   uniform { idx }
  */
 export const CONTACT_SOLVER_WGSL =
   SHARED_CONSTANTS +
   /* wgsl */ `
 
-struct Params {
-  colorStart: u32,
-  colorCount: u32,
+struct GroupIdx {
+  idx: u32,
 }
 
 @group(0) @binding(0) var<storage, read_write> bd: array<f32>;
 @group(0) @binding(1) var<storage, read_write> cd: array<f32>;
 @group(0) @binding(2) var<storage, read> colorOrder: array<u32>;
-@group(0) @binding(3) var<uniform> params: Params;
+@group(0) @binding(3) var<storage, read> allParams: array<u32>;
+@group(0) @binding(4) var<uniform> groupIdx: GroupIdx;
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid: vec3u) {
+  let pOff = groupIdx.idx * 2u;
+  let colorStart = allParams[pOff];
+  let colorCount = allParams[pOff + 1u];
   let idx = gid.x;
-  if (idx >= params.colorCount) { return; }
+  if (idx >= colorCount) { return; }
 
-  let i = colorOrder[params.colorStart + idx];
+  let i = colorOrder[colorStart + idx];
   let off = i * COL_STRIDE;
 
   let b1 = u32(cd[off + A_B1]);
@@ -308,22 +340,25 @@ export const FLUID_SOLVER_WGSL =
   SHARED_CONSTANTS +
   /* wgsl */ `
 
-struct Params {
-  colorStart: u32,
-  colorCount: u32,
+struct GroupIdx {
+  idx: u32,
 }
 
 @group(0) @binding(0) var<storage, read_write> bd: array<f32>;
 @group(0) @binding(1) var<storage, read_write> fd: array<f32>;
 @group(0) @binding(2) var<storage, read> colorOrder: array<u32>;
-@group(0) @binding(3) var<uniform> params: Params;
+@group(0) @binding(3) var<storage, read> allParams: array<u32>;
+@group(0) @binding(4) var<uniform> groupIdx: GroupIdx;
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid: vec3u) {
+  let pOff = groupIdx.idx * 2u;
+  let colorStart = allParams[pOff];
+  let colorCount = allParams[pOff + 1u];
   let idx = gid.x;
-  if (idx >= params.colorCount) { return; }
+  if (idx >= colorCount) { return; }
 
-  let i = colorOrder[params.colorStart + idx];
+  let i = colorOrder[colorStart + idx];
   let off = i * FLUID_STRIDE;
 
   if (fd[off + F_NODRAG] == 1.0) { return; }
@@ -432,5 +467,279 @@ fn main(@builtin(global_invocation_id) gid: vec3u) {
   let jrAcc = cd[off + A_JRACC];
   bd[b2 + B_ANGVEL] += jrAcc * bd[b2 + B_IINERTIA];
   bd[b1 + B_ANGVEL] -= jrAcc * bd[b1 + B_IINERTIA];
+}
+`;
+
+/**
+ * Position solver compute shader.
+ *
+ * Each invocation solves one position contact. Dispatched per color group.
+ * Modifies body positions (POSX, POSY) and rotation (ROT, AXISX, AXISY).
+ *
+ * Bindings: same as contact solver + posParams uniform with
+ * { collisionSlop, epsilon } config values.
+ */
+export const POSITION_SOLVER_WGSL =
+  SHARED_CONSTANTS +
+  /* wgsl */ `
+
+struct GroupIdx {
+  idx: u32,
+}
+
+struct PosConfig {
+  collisionSlop: f32,
+  epsilon: f32,
+}
+
+@group(0) @binding(0) var<storage, read_write> bd: array<f32>;
+@group(0) @binding(1) var<storage, read> cd: array<f32>;
+@group(0) @binding(2) var<storage, read> colorOrder: array<u32>;
+@group(0) @binding(3) var<storage, read> allParams: array<u32>;
+@group(0) @binding(4) var<uniform> groupIdx: GroupIdx;
+@group(0) @binding(5) var<uniform> posConfig: PosConfig;
+
+fn applyRotation(boff: u32, dr: f32) {
+  bd[boff + B_ROT] += dr;
+  if (dr * dr > 0.0001) {
+    bd[boff + B_AXISX] = sin(bd[boff + B_ROT]);
+    bd[boff + B_AXISY] = cos(bd[boff + B_ROT]);
+  } else {
+    let d2 = dr * dr;
+    let p = 1.0 - 0.5 * d2;
+    let m = 1.0 - (d2 * d2) / 8.0;
+    let oldAx = bd[boff + B_AXISX];
+    let oldAy = bd[boff + B_AXISY];
+    bd[boff + B_AXISX] = (p * oldAx + dr * oldAy) * m;
+    bd[boff + B_AXISY] = (p * oldAy - dr * oldAx) * m;
+  }
+}
+
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3u) {
+  let pOff = groupIdx.idx * 2u;
+  let colorStart = allParams[pOff];
+  let colorCount = allParams[pOff + 1u];
+  let idx = gid.x;
+  if (idx >= colorCount) { return; }
+
+  let i = colorOrder[colorStart + idx];
+  let off = i * COL_STRIDE;
+
+  let b1 = u32(cd[off + A_B1]);
+  let b2 = u32(cd[off + A_B2]);
+  let ptype = u32(cd[off + A_PTYPE]);
+  let radius = cd[off + A_RADIUS];
+  let slop = posConfig.collisionSlop;
+  let eps = posConfig.epsilon;
+
+  if (ptype == 2u) {
+    // ── Circle contact ──
+    let lr2x = cd[off + A_C1_LR2X];
+    let lr2y = cd[off + A_C1_LR2Y];
+    var r2x = bd[b2 + B_AXISY] * lr2x - bd[b2 + B_AXISX] * lr2y + bd[b2 + B_POSX];
+    var r2y = lr2x * bd[b2 + B_AXISX] + lr2y * bd[b2 + B_AXISY] + bd[b2 + B_POSY];
+    let lr1x = cd[off + A_C1_LR1X];
+    let lr1y = cd[off + A_C1_LR1Y];
+    var r1x = bd[b1 + B_AXISY] * lr1x - bd[b1 + B_AXISX] * lr1y + bd[b1 + B_POSX];
+    var r1y = lr1x * bd[b1 + B_AXISX] + lr1y * bd[b1 + B_AXISY] + bd[b1 + B_POSY];
+
+    var dx = r2x - r1x;
+    var dy = r2y - r1y;
+    let dl = sqrt(dx * dx + dy * dy);
+    let r = radius - slop;
+    var err = dl - r;
+
+    let arbNx = cd[off + A_NX];
+    let arbNy = cd[off + A_NY];
+    if (dx * arbNx + dy * arbNy < 0.0) {
+      dx = -dx;
+      dy = -dy;
+      err -= radius;
+    }
+
+    if (err < 0.0) {
+      if (dl < eps) {
+        if (bd[b1 + B_SMASS] != 0.0) {
+          bd[b1 + B_POSX] += eps * 10.0;
+        } else {
+          bd[b2 + B_POSX] += eps * 10.0;
+        }
+      } else {
+        let invDl = 1.0 / dl;
+        dx *= invDl;
+        dy *= invDl;
+        let px = 0.5 * (r1x + r2x);
+        let py = 0.5 * (r1y + r2y);
+        let pen = dl - r;
+        r1x = px - bd[b1 + B_POSX];
+        r1y = py - bd[b1 + B_POSY];
+        r2x = px - bd[b2 + B_POSX];
+        r2y = py - bd[b2 + B_POSY];
+        let rn1 = dy * r1x - dx * r1y;
+        let rn2 = dy * r2x - dx * r2y;
+        let K = bd[b2 + B_SMASS] + rn2 * rn2 * bd[b2 + B_SINERTIA]
+              + bd[b1 + B_SMASS] + rn1 * rn1 * bd[b1 + B_SINERTIA];
+        if (K != 0.0) {
+          let biasCoef = cd[off + A_BIASCOEF];
+          let jn = (-biasCoef * pen) / K;
+          let Jx = dx * jn;
+          let Jy = dy * jn;
+          bd[b1 + B_POSX] -= Jx * bd[b1 + B_IMASS];
+          bd[b1 + B_POSY] -= Jy * bd[b1 + B_IMASS];
+          applyRotation(b1, -rn1 * bd[b1 + B_IINERTIA] * jn);
+          bd[b2 + B_POSX] += Jx * bd[b2 + B_IMASS];
+          bd[b2 + B_POSY] += Jy * bd[b2 + B_IMASS];
+          applyRotation(b2, rn2 * bd[b2 + B_IINERTIA] * jn);
+        }
+      }
+    }
+  } else {
+    // ── Polygon face contact ──
+    let lnormx = cd[off + A_LNORMX];
+    let lnormy = cd[off + A_LNORMY];
+    let lproj = cd[off + A_LPROJ];
+
+    var gnormx: f32; var gnormy: f32; var gproj: f32;
+    var clip1x: f32; var clip1y: f32;
+    var clip2x: f32 = 0.0; var clip2y: f32 = 0.0;
+
+    if (ptype == 0u) {
+      gnormx = bd[b1 + B_AXISY] * lnormx - bd[b1 + B_AXISX] * lnormy;
+      gnormy = lnormx * bd[b1 + B_AXISX] + lnormy * bd[b1 + B_AXISY];
+      gproj = lproj + (gnormx * bd[b1 + B_POSX] + gnormy * bd[b1 + B_POSY]);
+      let c1lr1x = cd[off + A_C1_LR1X]; let c1lr1y = cd[off + A_C1_LR1Y];
+      clip1x = bd[b2 + B_AXISY] * c1lr1x - bd[b2 + B_AXISX] * c1lr1y + bd[b2 + B_POSX];
+      clip1y = c1lr1x * bd[b2 + B_AXISX] + c1lr1y * bd[b2 + B_AXISY] + bd[b2 + B_POSY];
+      if (cd[off + A_HPC2] == 1.0) {
+        let c2lr1x = cd[off + A_C2_LR1X]; let c2lr1y = cd[off + A_C2_LR1Y];
+        clip2x = bd[b2 + B_AXISY] * c2lr1x - bd[b2 + B_AXISX] * c2lr1y + bd[b2 + B_POSX];
+        clip2y = c2lr1x * bd[b2 + B_AXISX] + c2lr1y * bd[b2 + B_AXISY] + bd[b2 + B_POSY];
+      }
+    } else {
+      gnormx = bd[b2 + B_AXISY] * lnormx - bd[b2 + B_AXISX] * lnormy;
+      gnormy = lnormx * bd[b2 + B_AXISX] + lnormy * bd[b2 + B_AXISY];
+      gproj = lproj + (gnormx * bd[b2 + B_POSX] + gnormy * bd[b2 + B_POSY]);
+      let c1lr1x = cd[off + A_C1_LR1X]; let c1lr1y = cd[off + A_C1_LR1Y];
+      clip1x = bd[b1 + B_AXISY] * c1lr1x - bd[b1 + B_AXISX] * c1lr1y + bd[b1 + B_POSX];
+      clip1y = c1lr1x * bd[b1 + B_AXISX] + c1lr1y * bd[b1 + B_AXISY] + bd[b1 + B_POSY];
+      if (cd[off + A_HPC2] == 1.0) {
+        let c2lr1x = cd[off + A_C2_LR1X]; let c2lr1y = cd[off + A_C2_LR1Y];
+        clip2x = bd[b1 + B_AXISY] * c2lr1x - bd[b1 + B_AXISX] * c2lr1y + bd[b1 + B_POSX];
+        clip2y = c2lr1x * bd[b1 + B_AXISX] + c2lr1y * bd[b1 + B_AXISY] + bd[b1 + B_POSY];
+      }
+    }
+
+    var err1 = clip1x * gnormx + clip1y * gnormy - gproj - radius + slop;
+    var err2: f32 = 0.0;
+    let hasC2 = cd[off + A_HPC2] == 1.0;
+    if (hasC2) {
+      err2 = clip2x * gnormx + clip2y * gnormy - gproj - radius + slop;
+    }
+
+    if (err1 < 0.0 || err2 < 0.0) {
+      if (cd[off + A_REV] == 1.0) {
+        gnormx = -gnormx;
+        gnormy = -gnormy;
+      }
+
+      let c1r1x = clip1x - bd[b1 + B_POSX];
+      let c1r1y = clip1y - bd[b1 + B_POSY];
+      let c1r2x = clip1x - bd[b2 + B_POSX];
+      let c1r2y = clip1y - bd[b2 + B_POSY];
+      let im1 = bd[b1 + B_IMASS];
+      let im2 = bd[b2 + B_IMASS];
+      let ii1 = bd[b1 + B_IINERTIA];
+      let ii2 = bd[b2 + B_IINERTIA];
+      let biasCoef = cd[off + A_BIASCOEF];
+
+      if (hasC2) {
+        let c2r1x = clip2x - bd[b1 + B_POSX];
+        let c2r1y = clip2y - bd[b1 + B_POSY];
+        let c2r2x = clip2x - bd[b2 + B_POSX];
+        let c2r2y = clip2y - bd[b2 + B_POSY];
+        let rn1a = gnormy * c1r1x - gnormx * c1r1y;
+        let rn1b = gnormy * c1r2x - gnormx * c1r2y;
+        let rn2a = gnormy * c2r1x - gnormx * c2r1y;
+        let rn2b = gnormy * c2r2x - gnormx * c2r2y;
+        let mass_sum = bd[b1 + B_SMASS] + bd[b2 + B_SMASS];
+        let si1 = bd[b1 + B_SINERTIA]; let si2 = bd[b2 + B_SINERTIA];
+        let kMassa = mass_sum + si1 * rn1a * rn1a + si2 * rn1b * rn1b;
+        let kMassb = mass_sum + si1 * rn1a * rn2a + si2 * rn1b * rn2b;
+        let kMassc = mass_sum + si1 * rn2a * rn2a + si2 * rn2b * rn2b;
+        let bx = err1 * biasCoef;
+        let by = err2 * biasCoef;
+
+        // 2x2 block solve
+        var xx = -bx; var xy = -by;
+        var det = kMassa * kMassc - kMassb * kMassb;
+        if (det == 0.0) {
+          if (kMassa != 0.0) { xx /= kMassa; } else { xx = 0.0; }
+          if (kMassc != 0.0) { xy /= kMassc; } else { xy = 0.0; }
+        } else {
+          det = 1.0 / det;
+          let t = det * (kMassc * xx - kMassb * xy);
+          xy = det * (kMassa * xy - kMassb * xx);
+          xx = t;
+        }
+
+        if (xx >= 0.0 && xy >= 0.0) {
+          let t1 = (xx + xy) * im1;
+          bd[b1 + B_POSX] -= gnormx * t1;
+          bd[b1 + B_POSY] -= gnormy * t1;
+          applyRotation(b1, -ii1 * (rn1a * xx + rn2a * xy));
+          let t2 = (xx + xy) * im2;
+          bd[b2 + B_POSX] += gnormx * t2;
+          bd[b2 + B_POSY] += gnormy * t2;
+          applyRotation(b2, ii2 * (rn1b * xx + rn2b * xy));
+        } else {
+          // Fallback: contact 1 only
+          xx = -bx / kMassa; xy = 0.0;
+          let vn2 = kMassb * xx + by;
+          if (xx >= 0.0 && vn2 >= 0.0) {
+            let t1 = xx * im1;
+            bd[b1 + B_POSX] -= gnormx * t1;
+            bd[b1 + B_POSY] -= gnormy * t1;
+            applyRotation(b1, -ii1 * rn1a * xx);
+            let t2 = xx * im2;
+            bd[b2 + B_POSX] += gnormx * t2;
+            bd[b2 + B_POSY] += gnormy * t2;
+            applyRotation(b2, ii2 * rn1b * xx);
+          } else {
+            // Fallback: contact 2 only
+            xx = 0.0; xy = -by / kMassc;
+            let vn1 = kMassb * xy + bx;
+            if (xy >= 0.0 && vn1 >= 0.0) {
+              let t1 = xy * im1;
+              bd[b1 + B_POSX] -= gnormx * t1;
+              bd[b1 + B_POSY] -= gnormy * t1;
+              applyRotation(b1, -ii1 * rn2a * xy);
+              let t2 = xy * im2;
+              bd[b2 + B_POSX] += gnormx * t2;
+              bd[b2 + B_POSY] += gnormy * t2;
+              applyRotation(b2, ii2 * rn2b * xy);
+            }
+          }
+        }
+      } else {
+        // Single contact
+        let rn1 = gnormy * c1r1x - gnormx * c1r1y;
+        let rn2 = gnormy * c1r2x - gnormx * c1r2y;
+        let K = bd[b2 + B_SMASS] + rn2 * rn2 * bd[b2 + B_SINERTIA]
+              + bd[b1 + B_SMASS] + rn1 * rn1 * bd[b1 + B_SINERTIA];
+        if (K != 0.0) {
+          let jn = (-biasCoef * err1) / K;
+          let Jx = gnormx * jn;
+          let Jy = gnormy * jn;
+          bd[b1 + B_POSX] -= Jx * im1;
+          bd[b1 + B_POSY] -= Jy * im1;
+          applyRotation(b1, -rn1 * ii1 * jn);
+          bd[b2 + B_POSX] += Jx * im2;
+          bd[b2 + B_POSY] += Jy * im2;
+          applyRotation(b2, rn2 * ii2 * jn);
+        }
+      }
+    }
+  }
 }
 `;

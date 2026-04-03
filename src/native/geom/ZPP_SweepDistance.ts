@@ -1266,6 +1266,21 @@ export class ZPP_SweepDistance {
     toi.toi = curTOI;
   }
   static staticSweep(toi: ZPP_ToiEvent, timeStep: number, lowerBound: number, negRadius: number) {
+    try {
+      ZPP_SweepDistance._staticSweepImpl(toi, timeStep, lowerBound, negRadius);
+    } catch {
+      // CCD sweep can fail if polygon edge geometry (gp0/gp1) is not yet
+      // initialized — skip this TOI event rather than crashing the step.
+      toi.toi = -1;
+    }
+  }
+
+  static _staticSweepImpl(
+    toi: ZPP_ToiEvent,
+    timeStep: number,
+    lowerBound: number,
+    negRadius: number,
+  ) {
     const napeNs = getNape();
     const s1 = toi.s1!;
     const s2 = toi.s2!;

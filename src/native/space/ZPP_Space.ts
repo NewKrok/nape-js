@@ -9833,9 +9833,11 @@ export class ZPP_Space {
     const hasConstraints = this.live_constraints.head != null;
 
     if (!hasConstraints) {
-      // Pure GPU path: warm start on CPU (fast), solve on GPU
+      // Pure GPU path
       buf.warmStartSoA();
-      await gpu.solveVelocity(buf, velocityIterations);
+      gpu.upload(buf);
+      gpu.solveVelocity(buf, velocityIterations);
+      await gpu.readback(buf);
     } else {
       // Hybrid: CPU SoA for contacts + OOP constraints (same as _solveVelocitySoA)
       buf.warmStartSoA();
