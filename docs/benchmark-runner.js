@@ -223,14 +223,14 @@ export async function runBenchmark(scenario, adapter, W, H, onStep) {
 
   // Warmup
   for (let i = 0; i < warmup; i++) {
-    adapter.step(world, dt);
+    await adapter.step(world, dt);
   }
 
   // Timed iterations
   const times = [];
   for (let i = 0; i < iterations; i++) {
     const t0 = performance.now();
-    adapter.step(world, dt);
+    await adapter.step(world, dt);
     const t1 = performance.now();
     times.push(t1 - t0);
 

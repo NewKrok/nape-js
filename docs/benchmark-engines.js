@@ -115,6 +115,51 @@ export const NapeAdapter = {
 };
 
 // ---------------------------------------------------------------------------
+// nape-js GPU (WebGPU compute shader path)
+// ---------------------------------------------------------------------------
+
+/**
+ * GPU adapter — identical scene setup to NapeAdapter, but uses
+ * space.initGPU() + space.stepGPU() for the velocity solver.
+ * Falls back gracefully to CPU if WebGPU is unavailable.
+ */
+export const NapeGPUAdapter = {
+  name: "nape-js (GPU)",
+  color: "#a371f7",
+  loaded: true,
+  _gpuInitialized: false,
+
+  createWorld(gravityY_px = 600) {
+    const space = new Space(new Vec2(0, gravityY_px));
+    // GPU init is async — we do it lazily on first step
+    space._benchGPUReady = false;
+    space.initGPU().then((ok) => {
+      space._benchGPUReady = ok;
+      NapeGPUAdapter._gpuInitialized = ok;
+    });
+    return space;
+  },
+
+  addStaticBox: NapeAdapter.addStaticBox,
+  addDynamicBox: NapeAdapter.addDynamicBox,
+  addDynamicCircle: NapeAdapter.addDynamicCircle,
+  addJoint: NapeAdapter.addJoint,
+  addFluidBox: NapeAdapter.addFluidBox,
+  enableCCD: NapeAdapter.enableCCD,
+
+  async step(space, dt) {
+    await space.stepGPU(dt);
+  },
+
+  getBodyCount: NapeAdapter.getBodyCount,
+  getBodies: NapeAdapter.getBodies,
+
+  destroyWorld(space) {
+    space.clear();
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Matter.js (loaded via <script> tag, global `Matter`)
 // ---------------------------------------------------------------------------
 export const MatterAdapter = {
@@ -439,4 +484,4 @@ export const RapierAdapter = {
 // ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
-export const ALL_ENGINES = [NapeAdapter, MatterAdapter, PlanckAdapter, RapierAdapter];
+export const ALL_ENGINES = [NapeAdapter, NapeGPUAdapter, MatterAdapter, PlanckAdapter, RapierAdapter];
