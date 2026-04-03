@@ -1684,6 +1684,110 @@ import {
 
 ---
 
+## GPU Acceleration (optional WebGPU path)
+
+Optional compute shader path for high-body-count scenes. Uses SoA typed-array buffers, graph coloring for parallel contact solving, and WGSL compute shaders. **Additive — no breaking changes.** `space.step()` continues to work exactly as before.
+
+### Space GPU Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `initGPU(options?)` | `Promise<boolean>` | Request WebGPU adapter/device, compile WGSL shaders. Returns `false` if WebGPU is unavailable. Call once at startup. |
+| `stepGPU(dt, velIter?, posIter?)` | `Promise<void>` | GPU-accelerated physics step. Dispatches contact solver, fluid solver, and warm start compute shaders. Async due to GPU readback. |
+
+**InitGPUOptions:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `precision` | `"f64" \| "f32"` | `"f64"` | Buffer precision. `"f32"` trades accuracy for speed on hardware where f64 is slow. |
+
+### GPUComputeSolver
+
+Low-level WebGPU pipeline manager. Use directly for custom game loops.
+
+```typescript
+new GPUComputeSolver()
+```
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `init()` | `Promise<boolean>` | Request adapter, create device, compile 3 WGSL compute shaders (contact solver, fluid solver, warm start). Returns `false` if unsupported. |
+| `solveVelocity(buffers, iterations)` | `Promise<void>` | Run velocity constraint solving on the GPU for the given iteration count. |
+| `solvePosition(buffers, iterations)` | `Promise<void>` | Run position correction on the GPU. |
+| `warmStart(buffers)` | `Promise<void>` | Apply cached impulses from the previous frame. |
+| `destroy()` | `void` | Release GPU device and pipeline resources. |
+
+### SolverBuffers
+
+SoA (Structure of Arrays) typed-array buffers that pack body and arbiter data into contiguous memory for GPU upload.
+
+```typescript
+SolverBuffers.fromSpace(space: Space, options?: { precision?: "f64" | "f32" }): SolverBuffers
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `positions` | `Float64Array \| Float32Array` | Interleaved `[x, y]` per body |
+| `velocities` | `Float64Array \| Float32Array` | Interleaved `[vx, vy]` per body |
+| `angularVelocities` | `Float64Array \| Float32Array` | One entry per body |
+| `inverseMasses` | `Float64Array \| Float32Array` | One entry per body |
+| `inverseInertias` | `Float64Array \| Float32Array` | One entry per body |
+| `contactData` | `Float64Array \| Float32Array` | Packed contact/arbiter data |
+| `colorOffsets` | `Uint32Array` | Graph coloring group boundaries — contacts within each color set are independent and can be solved in parallel |
+| `bodyCount` | `number` | Number of dynamic bodies |
+| `contactCount` | `number` | Number of active contacts |
+| `colorCount` | `number` | Number of color groups |
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `fromSpace(space, options?)` | `SolverBuffers` | Static factory — extracts data from a Space into SoA buffers |
+| `writeBackToSpace(space)` | `void` | Copy solved velocities/positions back into Space bodies |
+
+### WGSL Compute Shaders
+
+Three shaders are compiled at `initGPU()` time:
+
+1. **Contact solver** — iterative projected Gauss-Seidel for normal + friction impulses, parallelised by graph color
+2. **Fluid solver** — buoyancy and drag force accumulation for fluid-enabled shape overlaps
+3. **Warm start** — apply cached impulses from the previous frame to accelerate convergence
+
+### When to use GPU vs. CPU
+
+| Scenario | Recommendation |
+|----------|----------------|
+| 500+ dynamic bodies, mostly contacts | GPU path is faster |
+| Many constraints (joints, ragdolls) | CPU path — constraints not yet GPU-accelerated |
+| < 200 bodies | CPU path — GPU dispatch/readback overhead dominates |
+| Fluid simulation (buoyancy/drag) | GPU path accelerates fluid solving |
+
+### Usage Example
+
+```typescript
+import { Space, Body, BodyType, Vec2, Circle, Polygon } from "@newkrok/nape-js";
+
+const space = new Space(new Vec2(0, 600));
+// ... add 500+ bodies ...
+
+// One-time GPU init
+let useGPU = false;
+try {
+  useGPU = await space.initGPU();
+} catch {
+  useGPU = false;
+}
+
+// Game loop
+async function update() {
+  if (useGPU) {
+    await space.stepGPU(1 / 60, 10, 10);
+  } else {
+    space.step(1 / 60, 10, 10);
+  }
+}
+```
+
+---
+
 ## Web Worker Sub-Package (`@newkrok/nape-js/worker`)
 
 Run physics off the main thread using Web Workers + SharedArrayBuffer.

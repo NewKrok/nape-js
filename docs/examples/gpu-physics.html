@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js — GPU Physics (WebGPU)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d1117; color: #c9d1d9; font-family: system-ui, sans-serif; }
+    canvas { display: block; margin: 0 auto; background: #0a0e14; }
+    #info {
+      text-align: center;
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+    #info a { color: #58a6ff; text-decoration: none; }
+    #fps {
+      position: fixed;
+      top: 10px;
+      right: 14px;
+      background: rgba(0,0,0,0.7);
+      color: #3fb950;
+      font: bold 14px monospace;
+      padding: 6px 12px;
+      border-radius: 6px;
+      z-index: 10;
+    }
+    #status {
+      position: fixed;
+      top: 10px;
+      left: 14px;
+      background: rgba(0,0,0,0.7);
+      color: #58a6ff;
+      font: 13px monospace;
+      padding: 6px 12px;
+      border-radius: 6px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <a href="../examples.html">&larr; Back to Examples</a> &bull;
+    GPU-Accelerated Physics &mdash; 500+ circles via WebGPU with CPU fallback
+  </div>
+  <div id="fps">-- FPS</div>
+  <div id="status">Initializing...</div>
+  <canvas id="canvas" width="800" height="600"></canvas>
+
+  <script type="module">
+    // =========================================================================
+    // GPU Physics Example
+    //
+    // Demonstrates the optional WebGPU compute shader path:
+    //   1. space.initGPU()  — request a GPU adapter/device, compile WGSL shaders
+    //   2. space.stepGPU()  — run velocity + position solving on the GPU
+    //
+    // If WebGPU is unavailable the example falls back to the standard CPU path
+    // (space.step) automatically.  No other API changes are required — initGPU
+    // and stepGPU are purely additive; the rest of the API stays the same.
+    // =========================================================================
+
+    import {
+      Space, Body, BodyType, Vec2, Circle, Polygon, Material,
+    } from "../../dist/index.js";
+
+    // ── Configuration ────────────────────────────────────────────────────
+    const BODY_COUNT  = 600;   // number of dynamic circles
+    const RADIUS_MIN  = 5;
+    const RADIUS_MAX  = 12;
+    const CANVAS_W    = 800;
+    const CANVAS_H    = 600;
+    const WALL_T      = 20;    // wall thickness
+
+    // ── Create the physics space ─────────────────────────────────────────
+    const space = new Space(new Vec2(0, 600));
+
+    // Walls (static bodies forming an open-top box)
+    function addWall(x, y, w, h) {
+      const wall = new Body(BodyType.STATIC, new Vec2(x, y));
+      wall.shapes.add(new Polygon(Polygon.box(w, h)));
+      wall.space = space;
+    }
+    addWall(CANVAS_W / 2, CANVAS_H - WALL_T / 2, CANVAS_W, WALL_T);       // floor
+    addWall(WALL_T / 2, CANVAS_H / 2, WALL_T, CANVAS_H);                  // left
+    addWall(CANVAS_W - WALL_T / 2, CANVAS_H / 2, WALL_T, CANVAS_H);      // right
+
+    // Spawn dynamic circles spread across the top area
+    const circles = [];
+    for (let i = 0; i < BODY_COUNT; i++) {
+      const r  = RADIUS_MIN + Math.random() * (RADIUS_MAX - RADIUS_MIN);
+      const x  = WALL_T + r + Math.random() * (CANVAS_W - 2 * WALL_T - 2 * r);
+      const y  = 40 + Math.random() * 300;
+      const b  = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+      b.shapes.add(new Circle(r));
+      b.space  = space;
+      circles.push({ body: b, radius: r });
+    }
+
+    // ── Attempt GPU initialisation with CPU fallback ─────────────────────
+    const statusEl = document.getElementById("status");
+    let useGPU = false;
+
+    try {
+      // initGPU() returns a boolean: true if the WebGPU pipeline was created
+      // successfully, false if the browser lacks WebGPU support.
+      useGPU = await space.initGPU();
+    } catch (err) {
+      console.warn("GPU init failed, falling back to CPU:", err);
+      useGPU = false;
+    }
+
+    statusEl.textContent = useGPU ? "GPU (WebGPU)" : "CPU (fallback)";
+    statusEl.style.color  = useGPU ? "#3fb950" : "#d29922";
+
+    // ── Canvas debug draw ────────────────────────────────────────────────
+    const canvas = document.getElementById("canvas");
+    const ctx    = canvas.getContext("2d");
+
+    function draw() {
+      ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+
+      // Draw walls
+      ctx.fillStyle = "#30363d";
+      ctx.fillRect(0, CANVAS_H - WALL_T, CANVAS_W, WALL_T);
+      ctx.fillRect(0, 0, WALL_T, CANVAS_H);
+      ctx.fillRect(CANVAS_W - WALL_T, 0, WALL_T, CANVAS_H);
+
+      // Draw circles
+      ctx.fillStyle = "rgba(88, 166, 255, 0.7)";
+      ctx.strokeStyle = "#58a6ff";
+      ctx.lineWidth = 1;
+      for (const { body, radius } of circles) {
+        const px = body.position.x;
+        const py = body.position.y;
+        ctx.beginPath();
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    // ── FPS counter ──────────────────────────────────────────────────────
+    const fpsEl   = document.getElementById("fps");
+    let frames    = 0;
+    let lastTime  = performance.now();
+
+    function updateFPS() {
+      frames++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fpsEl.textContent = `${frames} FPS`;
+        frames   = 0;
+        lastTime = now;
+      }
+    }
+
+    // ── Main loop ────────────────────────────────────────────────────────
+    //
+    // stepGPU(dt, velIter, posIter) is an async method — it dispatches
+    // compute shaders and reads results back.  For scenes without
+    // constraints (pure contact solving), this can be significantly faster
+    // when there are 500+ dynamic bodies.
+    //
+    // The standard space.step(dt) is used as the fallback and works
+    // identically — no breaking changes.
+
+    async function loop() {
+      if (useGPU) {
+        await space.stepGPU(1 / 60, 10, 10);
+      } else {
+        space.step(1 / 60, 10, 10);
+      }
+
+      draw();
+      updateFPS();
+      requestAnimationFrame(loop);
+    }
+
+    // Kick off the loop
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

@@ -111,6 +111,13 @@ function update() {
 
 - [NapeList](https://newkrok.github.io/nape-js/api/classes/NapeList.html): Generic iterable list with `for...of` support, add/remove/push/pop
 
+## GPU Acceleration (optional)
+
+- [GPUComputeSolver](https://newkrok.github.io/nape-js/api/classes/GPUComputeSolver.html): WebGPU compute shader solver — `init(): Promise<boolean>`, `solveVelocity(buffers, iterations)`, manages WGSL pipeline
+- [SolverBuffers](https://newkrok.github.io/nape-js/api/classes/SolverBuffers.html): SoA typed-array buffers (Float64Array/Float32Array) for body/arbiter data, graph coloring for parallel solving
+- `Space.initGPU(options?): Promise<boolean>` — initialize WebGPU adapter, device, and compute shaders. Returns false if unsupported.
+- `Space.stepGPU(dt, velIter?, posIter?): Promise<void>` — GPU-accelerated physics step (contact solver, fluid solver, warm start via WGSL compute shaders)
+
 ## Web Worker (`@newkrok/nape-js/worker`)
 
 - `PhysicsWorkerManager`: Run physics off the main thread — SharedArrayBuffer zero-copy or postMessage fallback

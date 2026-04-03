@@ -2,7 +2,7 @@
 
 ## Completed Items
 
-Done: P21-P28, P30-P33, P35, P37-P43, P45-P48, P50-P55, P57, P63, P66, P68.
+Done: P21-P28, P30-P33, P35, P37-P43, P45-P48, P50-P55, P57, P63, P66, P68, P70.
 Cancelled: P34 (tree shaking — architectural limit), P36 (server demos — superseded by P52), P49 (ECS adapter — trivial pattern).
 
 ---
@@ -48,6 +48,7 @@ Cancelled: P34 (tree shaking — architectural limit), P36 (server demos — sup
 | P61 | **Bundle size reduction**                | S-M    | competitiveness | Close the 87 KB vs Phaser Box2D 65 KB gap. Dead code audit, hot path optimization                                                                                                                                                |
 | P68 | ~~Performance profiler / debug overlay~~ | S      | DX              | :white_check_mark: **Done.** `PerformanceOverlay` + `PhysicsMetrics` in `nape-js/profiler`. Canvas overlay with rolling graph, phase breakdown bar, entity counters. `space.profilerEnabled` + `space.metrics` API.               |
 | P69 | **Deterministic replay system**          | M      | features        | Input recording + playback on top of existing serialization + deterministic mode. Debug bug reproduction, multiplayer rollback foundation, shareable replays, deterministic regression tests — one feature that connects many others |
+| P70 | ~~**GPU Physics (WebGPU)**~~             | L      | performance     | :white_check_mark: **Done.** SoA typed-array solver buffers, graph coloring for parallel contacts, 3 WGSL compute shaders (contact, fluid, warm start), `GPUComputeSolver` class. Public API: `space.initGPU()` + `space.stepGPU(dt, velIter?, posIter?)`. Additive — no breaking changes |
 
 ---
 

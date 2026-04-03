@@ -32,6 +32,7 @@ Each recipe shows the minimal working code and explains the "why" behind key dec
 - [Kinematic Moving Platform](#kinematic-moving-platform)
 - [Custom Material Presets](#custom-material-presets)
 - [Performance Profiling](#performance-profiling)
+- [GPU-Accelerated Physics (WebGPU)](#gpu-accelerated-physics-webgpu)
 
 ---
 
@@ -799,3 +800,97 @@ function update() {
 - Metrics are **zero-allocation** (reused object, no GC pressure)
 - The overlay respects HiDPI (`devicePixelRatio`) automatically
 - When `profilerEnabled = false` (default), timing instrumentation is skipped — zero overhead in production
+
+---
+
+## GPU-Accelerated Physics (WebGPU)
+
+Optional compute shader path for high-body-count scenes. Uses SoA typed-array buffers, graph coloring for parallel contact solving, and WGSL compute shaders. **Not a breaking change** — `space.step()` still works exactly as before.
+
+### Basic usage
+
+```typescript
+import { Space, Body, BodyType, Vec2, Circle, Polygon } from "@newkrok/nape-js";
+
+const space = new Space(new Vec2(0, 600));
+// ... add bodies ...
+
+// Initialise WebGPU pipeline (returns false if unsupported)
+const gpuReady = await space.initGPU();
+
+function update() {
+  if (gpuReady) {
+    // GPU-accelerated step — async, returns a Promise
+    space.stepGPU(1 / 60, 10, 10);
+  } else {
+    // Standard CPU path — unchanged API
+    space.step(1 / 60, 10, 10);
+  }
+}
+```
+
+### Float32 precision mode
+
+By default the GPU solver uses Float64Array for maximum accuracy. On hardware where f64 is slow, pass `{ precision: "f32" }` to trade accuracy for speed:
+
+```typescript
+const gpuReady = await space.initGPU({ precision: "f32" });
+```
+
+### Robust fallback pattern
+
+```typescript
+let useGPU = false;
+try {
+  useGPU = await space.initGPU();
+} catch {
+  useGPU = false;
+}
+
+async function gameLoop() {
+  if (useGPU) {
+    await space.stepGPU(1 / 60);
+  } else {
+    space.step(1 / 60);
+  }
+  requestAnimationFrame(gameLoop);
+}
+```
+
+### When GPU helps vs. when it doesn't
+
+| Scenario | Recommendation |
+|----------|----------------|
+| 500+ dynamic bodies, mostly contacts | GPU path is faster |
+| Many constraints (joints, ragdolls) | CPU path is faster — constraints are not yet GPU-accelerated |
+| < 200 bodies | CPU path is faster — GPU dispatch/readback overhead dominates |
+| Fluid simulation (buoyancy/drag) | GPU path accelerates fluid solving too |
+
+### Direct GPUComputeSolver usage
+
+For custom game loops or advanced control, use `GPUComputeSolver` directly:
+
+```typescript
+import { GPUComputeSolver, SolverBuffers } from "@newkrok/nape-js";
+
+const solver = new GPUComputeSolver();
+const ready = await solver.init();
+
+if (ready) {
+  // Pack body/arbiter data into SoA buffers
+  const buffers = SolverBuffers.fromSpace(space);
+
+  // Run velocity iterations on the GPU
+  await solver.solveVelocity(buffers, 10);
+
+  // Read results back into the space
+  buffers.writeBackToSpace(space);
+}
+```
+
+**Key points:**
+- `initGPU()` is a one-time async call — do it at startup, not every frame
+- `stepGPU()` is `async` because GPU readback is asynchronous; `await` it or handle the promise
+- The GPU path runs 3 WGSL compute shaders: contact solver, fluid solver, and warm start
+- Graph coloring groups independent contacts so they can be solved in parallel without data races
+- All existing callbacks, listeners, and serialization work identically with the GPU path

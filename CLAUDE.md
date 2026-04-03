@@ -14,6 +14,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
 - **Serialization** — JSON + binary for save/load/multiplayer rollback
 - **Debug draw** — abstract `DebugDraw` interface, reference impls for Canvas/Three.js/PixiJS/p5.js
 - **Character controller** — geometric collide-and-slide (`CharacterController` class)
+- **GPU acceleration** — optional WebGPU compute shader path (`initGPU` + `stepGPU`), SoA typed arrays, graph coloring
 - **~87 KB** minified ESM bundle (~16 KB gzip), TSDoc documented, 4773 tests
 
 ## Build & Test
@@ -52,3 +53,4 @@ Engine bootstrap (src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 | Testing | `docs/guides/testing.md` | Vitest config, test patterns, coverage metrics, best practices |
 | Workflow | `docs/guides/workflow.md` | Build system, CI/CD, linting, commit conventions, doc update matrix, all scripts |
 | Multiplayer | `docs/guides/multiplayer-guide.md` | Server-authoritative architecture, binary protocol, prediction, deployment |
+| GPU Physics | `docs/guides/cookbook.md#gpu-accelerated-physics-webgpu` | initGPU/stepGPU usage, fallback pattern, GPUComputeSolver, when GPU helps |
