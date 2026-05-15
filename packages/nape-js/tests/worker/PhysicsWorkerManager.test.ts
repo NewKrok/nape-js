@@ -443,6 +443,58 @@ describe("PhysicsWorkerManager — frame callback (fallback mode)", () => {
       globalThis.SharedArrayBuffer = originalSAB;
     }
   });
+
+  it("copies postMessage frame buffers into readable transforms", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 16 });
+      const id1 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]);
+      const id2 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]);
+
+      const frame = new Float32Array(HEADER_FLOATS + 2 * FLOATS_PER_BODY);
+      frame[0] = 2;
+      frame[1] = 12;
+      frame[2] = 0.25;
+      frame[HEADER_FLOATS] = 10;
+      frame[HEADER_FLOATS + 1] = 20;
+      frame[HEADER_FLOATS + 2] = 0.5;
+      frame[HEADER_FLOATS + FLOATS_PER_BODY] = 30;
+      frame[HEADER_FLOATS + FLOATS_PER_BODY + 1] = 40;
+      frame[HEADER_FLOATS + FLOATS_PER_BODY + 2] = 1.5;
+
+      worker._emit({ type: "frame", buffer: frame });
+
+      expect(mgr.bodyCount).toBe(2);
+      expect(mgr.timestamp).toBe(12);
+      expect(mgr.stepTimeMs).toBeCloseTo(0.25);
+      expect(mgr.getTransform(id1)).toEqual({ x: 10, y: 20, rotation: 0.5 });
+      expect(mgr.getTransform(id2)).toEqual({ x: 30, y: 40, rotation: 1.5 });
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
+
+  it("keeps the previous local buffer when a fallback frame omits its buffer", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 16 });
+      const before = mgr.rawTransforms;
+
+      worker._emit({ type: "frame" });
+
+      expect(mgr.rawTransforms).toBe(before);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
 });
 
 describe("PhysicsWorkerManager — shared buffer mode", () => {
