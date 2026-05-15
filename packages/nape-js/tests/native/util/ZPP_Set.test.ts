@@ -226,6 +226,37 @@ describe("ZPP_Set", () => {
       set.remove(5);
       expect(SetClass.zpp_pool).not.toBeNull();
     });
+
+    it("reuses freed nodes without keeping stale tree links", () => {
+      SetClass.zpp_pool = null;
+      const set = makeSet();
+      const first = set.insert(5);
+      set.remove(5);
+
+      const reused = set.insert(10);
+
+      expect(reused).toBe(first);
+      expect(reused.parent).toBeNull();
+      expect(reused.prev).toBeNull();
+      expect(reused.next).toBeNull();
+      expect(reused.data).toBe(10);
+      expect(set.verify()).toBe(true);
+    });
+
+    it("can drain and reuse a freed batch in later insertions", () => {
+      SetClass.zpp_pool = null;
+      const set = makeSet();
+      const freed = [1, 2, 3, 4].map((value) => set.insert(value));
+      for (const value of [1, 2, 3, 4]) set.remove(value);
+
+      const reused = [10, 20, 30, 40].map((value) => set.insert(value));
+
+      expect(new Set(reused)).toEqual(new Set(freed));
+      expect(SetClass.zpp_pool).toBeNull();
+      expect(set.size()).toBe(4);
+      expect(set.verify()).toBe(true);
+      expect([10, 20, 30, 40].every((value) => set.has(value))).toBe(true);
+    });
   });
 
   describe("stress test — many insertions and removals", () => {
