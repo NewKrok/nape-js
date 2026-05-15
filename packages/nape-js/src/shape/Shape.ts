@@ -350,9 +350,10 @@ export class Shape extends Interactor {
 
   set sensorEnabled(value: boolean) {
     const zpp = (this as any).zpp_inner;
-    zpp.immutable_midstep("Shape::sensorEnabled");
-    zpp.sensorEnabled = value;
-    zpp.wake();
+    if (zpp.sensorEnabled !== value) {
+      zpp.sensorEnabled = value;
+      zpp.wake();
+    }
   }
 
   /** World-space AABB of this shape (updated each step). */
