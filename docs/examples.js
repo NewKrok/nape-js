@@ -73,6 +73,7 @@ import minigolf             from "./demos/minigolf.js?v=3.35.0";
 import wyrm                 from "./demos/wyrm.js?v=3.35.0";
 import brickline            from "./demos/brickline.js?v=3.35.0";
 import pulleyCrane          from "./demos/pulley-crane.js?v=3.35.0";
+import cordfall            from "./demos/cordfall.js?v=3.35.0";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -115,6 +116,7 @@ const ALL_DEMOS = [
   wyrm,
   brickline,
   pulleyCrane,
+  cordfall,
 ];
 
 const gtag = window.gtag || function() {};
