@@ -41,12 +41,16 @@ const CAR = {
 const DT = 1 / 60;
 const SHAKE_MIN_SPEED = 80;
 
-// World in nape pixel units (PIXEL_RATIO * world units).
-const WORLD_W = 280 * PIXEL_RATIO;   // 2800 px
-const WORLD_H = 170 * PIXEL_RATIO;   // 1700 px
+// World in nape pixel units (PIXEL_RATIO * world units). Expanded so the
+// new 3-lobed twisty track (span ≈ 322×256 units) fits with room to spare.
+const WORLD_W = 420 * PIXEL_RATIO;   // 4200 px
+const WORLD_H = 300 * PIXEL_RATIO;   // 3000 px
 
-// Track ribbon — wider than car-topdown's 13 so four cars can wheel-to-wheel.
-const TRACK_ROAD_WIDTH_UNITS = 22;
+// Track ribbon. 20 world units ≈ 15× the car width — wide enough for 4
+// cars wheel-to-wheel. The min centerline curvature radius (~11.5 units)
+// stays just above halfWidth (10 units), so the `_cleanOffsetEdge` step
+// never folds an offset edge.
+const TRACK_ROAD_WIDTH_UNITS = 20;
 const TRACK_SPLINE_SEGMENTS = 720; // dense enough that the _cleanOffsetEdge
                                    // doesn't leave large chords between kept
                                    // vertices on tight corners.
@@ -54,35 +58,85 @@ const TRACK_SPLINE_SEGMENTS = 720; // dense enough that the _cleanOffsetEdge
 // (0.5 world units × PIXEL_RATIO=10 → 5 px).
 const WALL_THICK = 5;
 
-// Closed-loop control points (world units, relative to world center). The
-// start/finish line sits at index 0 — a wide-ish straight along the top of
-// the layout so four cars can grid up side-by-side. The spline winds through
-// a mix of long sweepers and one tight chicane (right side) so the AI has
-// to actually slow for the turn rather than just plowing through.
+// Closed-loop control points (world units, relative to world centre).
+//
+// Generated from a parametric polar curve r(θ) = R + A1·sin(k1·θ) + A2·sin(k2·θ)
+// with R=100, A1=35 (k1=3), A2=6 (k2=5), and an x-stretch of 1.5. The
+// two harmonics give 3 *big* lobes (the dominant cornering features) with
+// finer ripples (subtle linking curves) — visually a flowing 3-corner
+// circuit with a long sweeping right-hand section and a tighter twisty
+// section on the left.
+//
+// 60 CPs sampled uniformly in θ; index 0 sits at the top (start/finish).
+// Geometric guarantee: min centerline curvature radius ≈ 11.5 units, just
+// above halfWidth (10 units), so the `_cleanOffsetEdge` cleaner doesn't
+// drop a single vertex and the wall ribbon has no folds or gaps.
 const TRACK_CONTROL_POINTS = [
-  { x:    0, y:  -65 },
-  { x:   40, y:  -67 },
-  { x:   80, y:  -60 },
-  { x:  108, y:  -42 },
-  { x:  118, y:  -15 },
-  { x:  108, y:   12 },
-  { x:   85, y:   28 },
-  { x:  100, y:   55 },
-  { x:   75, y:   72 },
-  { x:   35, y:   62 },
-  { x:    0, y:   68 },
-  { x:  -40, y:   60 },
-  { x:  -80, y:   62 },
-  { x: -110, y:   40 },
-  { x: -124, y:    5 },
-  { x: -114, y:  -28 },
-  { x:  -85, y:  -50 },
-  { x:  -45, y:  -58 },
+  { x:     0, y:  -100 },
+  { x:    18, y:  -113 },
+  { x:    39, y:  -123 },
+  { x:    62, y:  -128 },
+  { x:    84, y:  -127 },
+  { x:   103, y:  -120 },
+  { x:   118, y:  -108 },
+  { x:   126, y:   -93 },
+  { x:   129, y:   -77 },
+  { x:   127, y:   -62 },
+  { x:   123, y:   -47 },
+  { x:   118, y:   -35 },
+  { x:   113, y:   -25 },
+  { x:   110, y:   -16 },
+  { x:   107, y:    -8 },
+  { x:   107, y:     0 },
+  { x:   107, y:     8 },
+  { x:   110, y:    16 },
+  { x:   113, y:    25 },
+  { x:   118, y:    35 },
+  { x:   123, y:    47 },
+  { x:   127, y:    62 },
+  { x:   129, y:    77 },
+  { x:   126, y:    93 },
+  { x:   118, y:   108 },
+  { x:   103, y:   120 },
+  { x:    84, y:   127 },
+  { x:    62, y:   128 },
+  { x:    39, y:   123 },
+  { x:    18, y:   113 },
+  { x:     0, y:   100 },
+  { x:   -14, y:    86 },
+  { x:   -23, y:    73 },
+  { x:   -30, y:    62 },
+  { x:   -38, y:    56 },
+  { x:   -47, y:    54 },
+  { x:   -59, y:    54 },
+  { x:   -75, y:    56 },
+  { x:   -94, y:    57 },
+  { x:  -116, y:    56 },
+  { x:  -137, y:    53 },
+  { x:  -156, y:    46 },
+  { x:  -172, y:    37 },
+  { x:  -184, y:    26 },
+  { x:  -191, y:    13 },
+  { x:  -193, y:     0 },
+  { x:  -191, y:   -13 },
+  { x:  -184, y:   -26 },
+  { x:  -172, y:   -37 },
+  { x:  -156, y:   -46 },
+  { x:  -137, y:   -53 },
+  { x:  -116, y:   -56 },
+  { x:   -94, y:   -57 },
+  { x:   -75, y:   -56 },
+  { x:   -59, y:   -54 },
+  { x:   -47, y:   -54 },
+  { x:   -38, y:   -56 },
+  { x:   -30, y:   -62 },
+  { x:   -23, y:   -73 },
+  { x:   -14, y:   -86 },
 ];
 
 // ── Race rules ────────────────────────────────────────────────────────────
 const LAP_TARGET = 3;
-const RACER_COUNT = 4;              // 1 player + 3 AI
+const RACER_COUNT = 8;              // 1 player + 7 AI
 const COUNTDOWN_FRAMES = 180;       // 3s pre-race countdown ("3 · 2 · 1 · GO")
 const FINISH_HOLD_FRAMES = 240;     // 4s before letting the user restart
 const STARTING_GRID_SPACING_UNITS = 4.2; // back-to-front gap in world units
@@ -108,7 +162,7 @@ const AI_SOFT_TURN_RADIUS_PX = 270;
 // ── Item pads ─────────────────────────────────────────────────────────────
 // Mario-Kart-style "?" boxes laid out around the loop. Pickup grants a
 // random item into the car's single slot; Space (or AI controller) fires it.
-const BOOST_COUNT = 10;             // historical name — still controls pad count
+const BOOST_COUNT = 6;              // GROUP count — each group is 3 boxes side-by-side
 const BOOST_RADIUS = 18;
 const BOOST_RESPAWN_FRAMES = 360;
 const BOOST_OFFSET_UNITS = 2.8;
@@ -136,8 +190,8 @@ function rollItem() {
 // A mushroom now applies a sustained forward force for SPEED_BOOST_FRAMES,
 // not just a single-tick impulse. SPEED_BOOST_IMPULSE is split across those
 // frames as a per-frame impulse (the visual halo runs in sync).
-const SPEED_BOOST_FRAMES = 90;      // 1.5 s of sustained boost (user-requested 2× the previous duration)
-const SPEED_BOOST_IMPULSE = 90;     // total mass*pxFrames added over the whole boost
+const SPEED_BOOST_FRAMES = 45;      // 0.75 s of sustained boost
+const SPEED_BOOST_IMPULSE = 450;    // total mass*pxFrames added over the whole boost
 const SPEED_BOOST_VISUAL_FRAMES = SPEED_BOOST_FRAMES;
 const LIGHTNING_SLOW_FRAMES = 180;  // 3 s
 const LIGHTNING_SPIN_FRAMES = 30;   // tiny stagger
@@ -188,6 +242,7 @@ const _boosts = [];                 // [{ body, active, respawnTimer, idx, x, y 
 // Dropped bananas (sensor circles) and active shells (dynamic circles).
 const _bananas = []; // { body, ownerColorIdx, lifetime }
 const _shells = [];  // { body, ownerColorIdx, lifetime }
+const _obstacles = []; // { body, kind: "spinner" | "ball" } — static-ish track hazards
 
 // Race control
 let _raceState = "countdown";
@@ -480,11 +535,12 @@ function buildTrack(space) {
     return { sample, total };
   };
 
-  const STEP = 0.6 * PIXEL_RATIO;     // 6 px — denser than cars/Track.js (1.2u)
-                                      // because our spline has fewer control
-                                      // points so the cleaning step leaves
-                                      // longer chords between kept vertices.
-  const OVERLAP = 0.3 * PIXEL_RATIO;  // 3 px overlap on each box
+  // Wall segments are coarse here (1.8 world units between centres) because
+  // the new track's min curvature radius is well above halfWidth, so the
+  // cleaner doesn't have to drop vertices and the box chord stays short.
+  // ~1/3 the body count of the previous 6 px STEP, much lighter broadphase.
+  const STEP = 1.8 * PIXEL_RATIO;     // 18 px
+  const OVERLAP = 0.5 * PIXEL_RATIO;  // 5 px overlap so adjacent boxes meet
 
   for (const side of [-1, +1]) {
     const edge = cleanedEdge(side);
@@ -504,8 +560,12 @@ function buildTrack(space) {
       const my = (a.y + b.y) * 0.5;
       const wallBody = new Body(BodyType.STATIC, new Vec2(mx, my));
       wallBody.rotation = angle;
-      // No Material — Polygon + Material + Polygon wall = tunneling bug.
-      const shape = new Polygon(Polygon.box(boxLen, WALL_THICK));
+      // Wall material matches the `cars` repo: low elasticity + medium
+      // friction. Without this the wall used nape's default Material with
+      // dynamic friction = 1.0, which made cars stick along the wall on
+      // any wall-grazing contact.
+      const wallMat = new Material(0.3, 0.5, 0.5, 2, 0);
+      const shape = new Polygon(Polygon.box(boxLen, WALL_THICK), wallMat);
       shape.filter = new InteractionFilter(GROUP_WALL, WALL_MASK);
       wallBody.shapes.add(shape);
       try { wallBody.userData._colorIdx = 4; } catch (_) {}
@@ -569,35 +629,104 @@ function buildLapSensors(space) {
 function buildBoostPickups(space) {
   _boosts.length = 0;
   const cl = _centerline;
-  const step = Math.floor(cl.length / BOOST_COUNT);
-  for (let i = 0; i < BOOST_COUNT; i++) {
+  // BOOST_COUNT here means GROUP count — at each group position we lay out
+  // three `?` boxes across the road (left / centre / right). Mario-Kart-
+  // style: pick any one of them and the others stay around for opponents.
+  const groupCount = BOOST_COUNT;
+  const step = Math.floor(cl.length / groupCount);
+  const lateralUnits = [-4, 0, +4]; // 4-unit gaps across a 20-unit-wide road
+  let runningIdx = 0;
+  for (let g = 0; g < groupCount; g++) {
     // Skip the few indices right around the start/finish line so the boosts
     // never overlap the lap sensor or the grid.
-    const idx = ((i * step) + Math.floor(step / 2)) % cl.length;
+    const idx = ((g * step) + Math.floor(step / 2)) % cl.length;
     const c = cl[idx];
     const nm = _normals[idx];
-    const sideSign = i % 2 === 0 ? +1 : -1;
-    const offset = BOOST_OFFSET_UNITS * PIXEL_RATIO * sideSign;
-    const x = c.x + nm.x * offset;
-    const y = c.y + nm.y * offset;
-    const body = new Body(BodyType.STATIC, new Vec2(x, y));
-    const shape = new Circle(BOOST_RADIUS);
-    shape.sensorEnabled = true;
-    shape.filter = new InteractionFilter(GROUP_SENSOR, SENSOR_MASK);
+    for (const latUnits of lateralUnits) {
+      const offset = latUnits * PIXEL_RATIO;
+      const x = c.x + nm.x * offset;
+      const y = c.y + nm.y * offset;
+      const body = new Body(BodyType.STATIC, new Vec2(x, y));
+      const shape = new Circle(BOOST_RADIUS);
+      shape.sensorEnabled = true;
+      shape.filter = new InteractionFilter(GROUP_SENSOR, SENSOR_MASK);
+      body.shapes.add(shape);
+      try {
+        body.userData._colorIdx = 1;
+        body.userData._kind = "boost";
+        body.userData._boostIdx = runningIdx;
+      } catch (_) {}
+      body.cbTypes.add(_cbBoost);
+      body.space = space;
+      _boosts.push({ body, active: true, respawnTimer: 0, idx: runningIdx, x, y });
+      runningIdx++;
+    }
+  }
+}
+
+// Track hazards: a couple of rotating bars (kinematic — constant angular
+// velocity) and a few bouncy balls (dynamic Circles). The spinners sweep
+// across the road so the player has to time their pass. Balls drift around
+// the centerline and get knocked aside by cars.
+const SPINNER_LENGTH_UNITS = 8;     // total bar length (fits in the 20-unit road)
+const SPINNER_THICK_UNITS = 0.8;
+const SPINNER_ANG_VEL = 1.2;        // rad/sec — moderate
+const BALL_RADIUS_UNITS = 1.4;
+const BALL_COUNT = 3;
+const SPINNER_INDICES = [0.15, 0.45, 0.75]; // fraction-of-loop positions
+const BALL_INDICES    = [0.30, 0.60, 0.90];
+
+function buildObstacles(space) {
+  _obstacles.length = 0;
+  const cl = _centerline;
+  const n = cl.length;
+  const pr = PIXEL_RATIO;
+
+  for (const frac of SPINNER_INDICES) {
+    const idx = Math.floor(frac * n) % n;
+    const c = cl[idx];
+    const next = cl[(idx + 1) % n];
+    const tangent = Math.atan2(next.y - c.y, next.x - c.x);
+    const body = new Body(BodyType.KINEMATIC, new Vec2(c.x, c.y));
+    body.rotation = tangent;
+    body.angularVel = SPINNER_ANG_VEL * (Math.random() < 0.5 ? -1 : 1);
+    // No Material — spinners are kinematic Polygons but we keep the default
+    // material to dodge the Polygon+Material tunneling concern (cars do
+    // collide with them, and they don't tunnel because the spinner moves
+    // slowly).
+    const shape = new Polygon(Polygon.box(SPINNER_LENGTH_UNITS * pr, SPINNER_THICK_UNITS * pr));
+    shape.filter = new InteractionFilter(GROUP_WALL, WALL_MASK);
     body.shapes.add(shape);
     try {
-      body.userData._colorIdx = 1; // yellow-ish in the default palette
-      body.userData._kind = "boost";
-      body.userData._boostIdx = i;
+      body.userData._colorIdx = 3; // red-orange tone
+      body.userData._kind = "spinner";
     } catch (_) {}
-    body.cbTypes.add(_cbBoost);
     body.space = space;
-    _boosts.push({ body, active: true, respawnTimer: 0, idx: i, x, y });
+    _obstacles.push({ body, kind: "spinner" });
+  }
+
+  for (const frac of BALL_INDICES) {
+    const idx = Math.floor(frac * n) % n;
+    const c = cl[idx];
+    const body = new Body(BodyType.DYNAMIC, new Vec2(c.x, c.y));
+    // Light + very bouncy so it ricochets off the walls and cars push it
+    // around instead of bouncing back hard.
+    const ballMat = new Material(0.9, 0.1, 0.1, 0.3, 0);
+    const shape = new Circle(BALL_RADIUS_UNITS * pr, undefined, ballMat);
+    shape.filter = new InteractionFilter(GROUP_WALL, WALL_MASK);
+    body.shapes.add(shape);
+    body.allowRotation = true;
+    try {
+      body.userData._colorIdx = 0; // blue-purple
+      body.userData._kind = "ball";
+    } catch (_) {}
+    body.space = space;
+    _obstacles.push({ body, kind: "ball" });
   }
 }
 
 // ── Cars ──────────────────────────────────────────────────────────────────
-const AI_NAMES = ["Mira", "Kato", "Echo"];
+const AI_NAMES = ["Mira", "Kato", "Echo", "Zara", "Finn", "Nyx", "Orin"];
 
 function spawnCars(space) {
   _cars = [];
@@ -631,13 +760,18 @@ function spawnCars(space) {
     const y = base.y + ty * offsetAlong + ry * offsetLat;
 
     const car = new Body(BodyType.DYNAMIC, new Vec2(x, y));
-    // NOTE: do NOT pass a Material to the car Polygon — the engine has a bug
-    // where Polygon + explicit Material lets dynamic Polygons tunnel through
-    // static Polygon walls. With default material the car stays on track even
-    // when it hits a wall hard on a corner. See memory entry
-    // "Polygon + explicit Material = tunneling".
+    // Materials match the `cars` repo's tuning so cars don't stick to walls
+    // or to each other. Player car has normal friction (0.3) for a solid
+    // feel; AI cars get very low friction (0.05) so they slide apart on
+    // contact instead of interlocking. The known "Polygon + Material"
+    // tunneling bug doesn't fire at the speeds used here because
+    // car.isBullet = true (set below) enables CCD on the dynamic shape.
+    const carMat = isPlayer
+      ? new Material(0.2, 0.3, 0.3, 1.5, 0)
+      : new Material(0.3, 0.05, 0.05, 1.5, 0);
     const shape = new Polygon(
       Polygon.box(CAR.LENGTH * PIXEL_RATIO, CAR.WIDTH * PIXEL_RATIO),
+      carMat,
     );
     shape.filter = new InteractionFilter(
       isPlayer ? GROUP_PLAYER : GROUP_AI,
@@ -650,8 +784,9 @@ function spawnCars(space) {
     // a wall corner between two physics steps.
     car.isBullet = true;
 
-    // Map color index to renderer palette: player=blue (0), AI=orange/green/red
-    const colorIdx = isPlayer ? 0 : (i === 1 ? 1 : (i === 2 ? 2 : 3));
+    // Map color index to renderer palette: player=0 (blue), AI gets 1..7
+    // (orange/green/red/purple/pink/cyan/bronze, in order).
+    const colorIdx = i;
     try {
       car.userData._colorIdx = colorIdx;
       car.userData._kind = "car";
@@ -1284,7 +1419,16 @@ const SCREEN_W = 900;
 const SCREEN_H = 500;
 const HUD_H = 32;
 
-const CAR_HUD_COLORS = ["#58a6ff", "#d29922", "#3fb950", "#f85149"];
+const CAR_HUD_COLORS = [
+  "#58a6ff", // player blue
+  "#d29922", // orange
+  "#3fb950", // green
+  "#f85149", // red
+  "#a371f7", // purple
+  "#ec6cb9", // pink
+  "#39c5cf", // cyan
+  "#bf8b30", // bronze
+];
 
 // World-space FX drawn into the overlay canvas before the HUD strip. Takes
 // `camX, camY` from demo-runner and maps world → screen via the demo runner's
@@ -1614,6 +1758,14 @@ function resetRace(space) {
   }
   _shells.length = 0;
 
+  // Tear down obstacles and rebuild them so the balls return to their
+  // starting positions and the spinners get a fresh randomised direction.
+  for (const o of _obstacles) {
+    if (o.body && o.body.space) o.body.space = null;
+  }
+  _obstacles.length = 0;
+  buildObstacles(space);
+
   for (const b of _boosts) {
     b.active = true;
     b.respawnTimer = 0;
@@ -1672,6 +1824,7 @@ export default {
     "to roll a random item into your slot, then <b>E</b> to fire it. " +
     "<b>Mushroom</b> = speed burst, <b>Bolt</b> = slow all rivals, " +
     "<b>Banana</b> = drop trap behind, <b>Shell</b> = forward projectile. " +
+    "Watch for rotating bars and bouncy balls — they'll knock you off-line. " +
     "Controls: <b>↑ ↓ ← →</b> (or WASD), <b>Space</b> brake, <b>Shift</b> drift, <b>E</b> use item. " +
     "First to three laps wins.",
   walls: false,
@@ -1687,6 +1840,7 @@ export default {
     buildTrack(space);
     buildLapSensors(space);
     buildBoostPickups(space);
+    buildObstacles(space);
     spawnCars(space);
 
     _raceState = "countdown";
