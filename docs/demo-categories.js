@@ -27,6 +27,7 @@ export const GAME_DEMO_IDS = new Set([
   "minigolf",
   "wyrm",
   "brickline",
+  "tinywheels-cup",
 ]);
 
 export const CATEGORIES = [
