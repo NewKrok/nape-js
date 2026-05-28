@@ -28,6 +28,7 @@ export const GAME_DEMO_IDS = new Set([
   "wyrm",
   "brickline",
   "tinywheels-cup",
+  "tiltrun",
 ]);
 
 export const CATEGORIES = [
