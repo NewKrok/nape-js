@@ -1,5 +1,6 @@
 import {
   Body, BodyType, Vec2, Polygon, Material,
+  CbType, CbEvent, InteractionType, InteractionListener,
 } from "../nape-js.esm.js";
 import { drawBody, drawGrid } from "../renderer.js";
 
@@ -40,25 +41,34 @@ const SLIDER_MIN_X = 100;
 const SLIDER_MAX_X = SCREEN_W - 100;
 const RESPAWN_DELAY_STEPS = 25;           // ~0.4s pause before a new slider appears after a drop
 
-// Settle / scoring: a brick counts toward the tower once its vertical speed
-// is below SETTLE_EPS for SETTLE_FRAMES consecutive physics steps.
-const SETTLE_EPS = 8;
+// Settle / scoring: a brick counts toward the tower once its position has
+// not changed by more than SETTLE_POS_EPS pixels (and its rotation by more
+// than SETTLE_ROT_EPS rad) for SETTLE_FRAMES consecutive physics steps —
+// OR the engine puts it to sleep (whichever comes first).
+//
+// We use position deltas, not velocity, because two stacked bricks can
+// mutually nudge each other with velocity oscillations of |vx|+|vy| ≈ 10-15
+// even when their actual position is rock-solid (a 12px/sec velocity is
+// only 0.2 pixels per 60Hz step — visually motionless). A pure speed-based
+// threshold either rejects valid stacks or accepts moving bricks, depending
+// on where you draw the line.
+const SETTLE_POS_EPS = 0.5;             // pixels per step
+const SETTLE_ROT_EPS = 0.01;            // radians per step
 const SETTLE_FRAMES = 30;
 
-// "Missed the stack" check, applied when a brick settles. A brick that lands
-// stably on the tower top sits at y ≈ _stackTopWorldY - BRICK_H/2. A brick
-// that rolled off and landed alongside the stack sits at the floor — its y
-// is at or below _stackTopWorldY. We treat anything settling at
-// >= _stackTopWorldY + MISSED_STACK_PX (i.e. more than this far below the
-// existing stack top) as a miss and end the run.
-const MISSED_STACK_PX = BRICK_H * 0.5;
+// "Missed the stack" detection runs off an InteractionListener tied to a
+// dedicated sensor body sitting just above the floor surface. Every non-seed
+// brick carries the _cbBrick CbType; the seed brick (first drop after a
+// reset) does not, so it lands on the floor without firing the listener.
+// Using a sensor + listener rather than per-step interactingBodies() polling
+// is essential: a brick that settles instantly falls asleep, and a sleeping
+// body has no live arbiters — polling would silently miss the contact.
 
-// Tip detection on a settled brick:
-//   * it drops more than TIP_FALL_PX below its settled y, OR
-//   * its rotation deviates from horizontal by more than TIP_ANGLE_RAD.
-// The floor is wider than the slider range, so a settled brick will never
-// reach FALL_OFF_Y by itself — it'd just slide along the floor. Tracking the
-// settled y per brick catches the case where the brick rolls off the stack.
+// Tip detection on a settled brick (above the seed): requires BOTH a drop
+// past TIP_FALL_PX AND a tilt past TIP_ANGLE_RAD, so natural settling under
+// load (small tilt, small drift) doesn't trigger. A brick that actually
+// breaks off the tower drops AND rotates. The floor-touch check is the
+// primary collapse signal — this catches the in-air break before contact.
 const TIP_FALL_PX = 24;
 const TIP_ANGLE_RAD = Math.PI / 4; // 45°
 
@@ -88,6 +98,7 @@ const RESTART_LOCK_STEPS = 60;
 let _space = null;
 let _runner = null;
 let _floor = null;
+let _floorSensor = null;                  // STATIC sensor body just above the floor
 let _slider = null;                       // KINEMATIC brick currently moving
 let _sliderDir = 1;                       // +1 right, -1 left
 let _stack = [];                          // settled bricks — { body, settledY } for tip detection
@@ -100,6 +111,12 @@ let _restartLockTimer = 0;
 let _flashTimer = 0;
 let _dropPaletteIdx = 0;
 let _respawnTimer = 0;                    // steps remaining until the next slider appears
+
+// Sensor-based floor detection. Every non-seed brick that overlaps the floor
+// sensor triggers game-over via an InteractionListener. The seed brick is
+// distinguished by carrying a different CbType so the listener can ignore it.
+const _cbBrick = new CbType();            // tagged on every non-seed brick shape
+const _cbFloorSensor = new CbType();      // tagged on the floor's sensor shape
 
 let _lastKeyDown = null;
 
@@ -121,6 +138,24 @@ function spawnFloor() {
   return floor;
 }
 
+// Static sensor body positioned just above the floor surface. Any brick that
+// overlaps it fires the BEGIN listener, even after the brick falls asleep —
+// InteractionListener with allowSleepingCallbacks=true keeps sensor callbacks
+// flowing for sleeping bodies, which body.interactingBodies() does not.
+function spawnFloorSensor() {
+  const SENSOR_H = 8;
+  const sensor = new Body(
+    BodyType.STATIC,
+    new Vec2(SCREEN_W / 2, FLOOR_Y - SENSOR_H / 2 + 1),
+  );
+  const shape = new Polygon(Polygon.box(SCREEN_W * 4, SENSOR_H));
+  shape.sensorEnabled = true;
+  shape.cbTypes.add(_cbFloorSensor);
+  sensor.shapes.add(shape);
+  sensor.space = _space;
+  return sensor;
+}
+
 // Spawn the kinematic slider at the nominal gap above the current stack top.
 // The slider's y is fixed for its whole lifetime — stepSlider() only updates
 // x — so the brick always falls from the same screen height (no upward
@@ -137,9 +172,14 @@ function spawnSlider(randomStart) {
     _sliderDir = Math.random() < 0.5 ? -1 : 1;
   }
   const body = new Body(BodyType.KINEMATIC, new Vec2(startX, targetWorldY));
-  body.shapes.add(new Polygon(Polygon.box(BRICK_W, BRICK_H)));
+  const shape = new Polygon(Polygon.box(BRICK_W, BRICK_H));
   // Material can be assigned now — Kinematic→Dynamic conversion preserves it.
-  body.shapes.at(0).material = makeBrickMaterial();
+  shape.material = makeBrickMaterial();
+  // Tag non-seed bricks so the floor sensor's BEGIN listener can spot them.
+  // The seed brick (first drop after a reset, _dropPaletteIdx === 0) is
+  // allowed to land on the floor, so it doesn't carry the brick CbType.
+  if (_dropPaletteIdx > 0) shape.cbTypes.add(_cbBrick);
+  body.shapes.add(shape);
   try { body.userData._colorIdx = STRIPE_PALETTE[_dropPaletteIdx % STRIPE_PALETTE.length]; } catch (_) { /* userData may be frozen */ }
   try { body.userData._kind = "brick"; } catch (_) { /* same */ }
   body.space = _space;
@@ -169,6 +209,8 @@ function clearWorld() {
   _falling.length = 0;
   if (_floor && _floor.space) _floor.space = null;
   _floor = null;
+  if (_floorSensor && _floorSensor.space) _floorSensor.space = null;
+  _floorSensor = null;
   _stackTopWorldY = FLOOR_Y;
   _score = 0;
   _gameOver = false;
@@ -182,6 +224,7 @@ function clearWorld() {
 function resetGame() {
   clearWorld();
   _floor = spawnFloor();
+  _floorSensor = spawnFloorSensor();
   _slider = spawnSlider();
 }
 
@@ -195,7 +238,13 @@ function dropSlider() {
   _slider.type = BodyType.DYNAMIC;
   _slider.velocity = new Vec2(0, 0);
   _slider.angularVel = 0;
-  _falling.push({ body: _slider, frames: 0, settled: false });
+  _falling.push({
+    body: _slider,
+    frames: 0,
+    settled: false,
+    lastY: _slider.position.y,
+    lastRot: _slider.rotation,
+  });
   _dropPaletteIdx++;
   _slider = null;
   _respawnTimer = RESPAWN_DELAY_STEPS;
@@ -221,7 +270,20 @@ function stepSlider(dt) {
   _slider.velocity = new Vec2(_sliderDir * speed, 0);
 }
 
-// Walk the falling list and promote settled bricks into the stack.
+// Walk the falling list and promote settled bricks into the stack. The
+// "missed the stack" detection lives in the InteractionListener set up in
+// setup() — a brick overlapping the floor sensor fires game-over directly.
+//
+// Settle detection uses position-delta + isSleeping. Velocity is unreliable
+// because two stacked bricks can keep nudging each other with |v| ≈ 10 even
+// when their actual world position is motionless. The brick is considered
+// stable for the current step if EITHER:
+//   * its position hasn't moved more than SETTLE_POS_EPS pixels and its
+//     rotation hasn't changed more than SETTLE_ROT_EPS rad since the last
+//     step — actual visual motionlessness, AND
+//   * the engine reports body.isSleeping (definitive resting state).
+// We promote to _stack after SETTLE_FRAMES stable steps or immediately on
+// sleep.
 function updateFalling() {
   for (let i = _falling.length - 1; i >= 0; i--) {
     const f = _falling[i];
@@ -230,57 +292,56 @@ function updateFalling() {
       _falling.splice(i, 1);
       continue;
     }
-    // Game-over: any falling brick that crosses the fall-off line is a tip-out.
+    // Belt-and-braces: if a brick somehow falls past the fall-off line
+    // without ever overlapping the sensor (shouldn't happen, but a static
+    // sensor that didn't update during the step would let this slip).
     if (b.position.y > FALL_OFF_Y) {
       triggerGameOver();
       return;
     }
-    // A brick that ends up significantly tilted while still falling is
-    // tipping off the stack — end the run before it has a chance to "settle"
-    // in some unstable resting position on the floor.
     const angle = Math.abs(normalizeAngle(b.rotation));
-    const speed = Math.abs(b.velocity.y) + Math.abs(b.velocity.x);
-    if (speed < SETTLE_EPS) {
+    const dy = Math.abs(b.position.y - f.lastY);
+    const drot = Math.abs(b.rotation - f.lastRot);
+    const stable = dy < SETTLE_POS_EPS && drot < SETTLE_ROT_EPS;
+    const asleep = b.isSleeping;
+    f.lastY = b.position.y;
+    f.lastRot = b.rotation;
+    if (asleep || stable) f.frames++;
+    else f.frames = 0;
+    const settled = asleep || f.frames >= SETTLE_FRAMES;
+    if (settled && !f.settled) {
       if (angle > TIP_ANGLE_RAD) {
         triggerGameOver();
         return;
       }
-      f.frames++;
-      if (f.frames >= SETTLE_FRAMES && !f.settled) {
-        // Did the brick actually land on the tower? If its centre came to
-        // rest more than MISSED_STACK_PX below the current stack top, it
-        // missed the stack (rolled off the side). End the run.
-        if (b.position.y >= _stackTopWorldY + MISSED_STACK_PX) {
-          triggerGameOver();
-          return;
-        }
-        f.settled = true;
-        _stack.push({ body: b, settledY: b.position.y });
-        _score++;
-        if (_score > _highScore) _highScore = _score;
-        const topOfBrick = b.position.y - BRICK_H / 2;
-        if (topOfBrick < _stackTopWorldY) _stackTopWorldY = topOfBrick;
-        _falling.splice(i, 1);
-      }
-    } else {
-      f.frames = 0;
+      f.settled = true;
+      _stack.push({ body: b, settledY: b.position.y });
+      _score++;
+      if (_score > _highScore) _highScore = _score;
+      const topOfBrick = b.position.y - BRICK_H / 2;
+      if (topOfBrick < _stackTopWorldY) _stackTopWorldY = topOfBrick;
+      _falling.splice(i, 1);
     }
   }
 }
 
-// Game-over also fires when a settled brick later tips off the tower —
-// detected by (a) the brick dropping noticeably below its settled y, or
-// (b) its rotation deviating significantly from horizontal. The floor is
-// wide, so a tipped brick just slides along it instead of falling off —
-// the angle / drop checks catch the collapse before it bottoms out.
+// Game-over also fires when a settled brick later tips off the tower. The
+// floor-sensor listener catches "fell to the floor" cases; here we only need
+// the in-air break: a brick that has dropped meaningfully below its settled
+// y AND rotated past horizontal has separated from the tower mid-collapse.
 function checkStackIntegrity() {
-  for (let i = _stack.length - 1; i >= 0; i--) {
+  if (_stack.length === 0) return;
+  for (let i = _stack.length - 1; i >= 1; i--) {
     const s = _stack[i];
     const b = s.body;
     if (!b.space) continue;
+    if (b.position.y > FALL_OFF_Y) {
+      triggerGameOver();
+      return;
+    }
     const dropped = b.position.y - s.settledY;
     const angle = Math.abs(normalizeAngle(b.rotation));
-    if (dropped > TIP_FALL_PX || angle > TIP_ANGLE_RAD || b.position.y > FALL_OFF_Y) {
+    if (dropped > TIP_FALL_PX && angle > TIP_ANGLE_RAD) {
       triggerGameOver();
       return;
     }
@@ -330,6 +391,20 @@ export default {
     _space = space;
     _runner = this._runner ?? null;
     space.gravity = new Vec2(0, 900);
+
+    // Floor-sensor listener: a non-seed brick overlapping the sensor strip is
+    // an instant tip-out. allowSleepingCallbacks=true so a brick that lands
+    // and immediately falls asleep still triggers (sleeping bodies drop
+    // arbiters, but the sensor BEGIN fires before that happens).
+    const tipOutListener = new InteractionListener(
+      CbEvent.BEGIN,
+      InteractionType.SENSOR,
+      _cbBrick,
+      _cbFloorSensor,
+      () => { triggerGameOver(); },
+    );
+    tipOutListener.allowSleepingCallbacks = true;
+    space.listeners.add(tipOutListener);
 
     resetGame();
 
