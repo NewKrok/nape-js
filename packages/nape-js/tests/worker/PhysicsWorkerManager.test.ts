@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { FLOATS_PER_BODY, HEADER_FLOATS } from "../../src/worker/types";
+import { FLOATS_PER_BODY, HEADER_FLOATS, PROTOCOL_VERSION } from "../../src/worker/types";
 import type { WorkerOutMessage } from "../../src/worker/types";
 
 // ---------------------------------------------------------------------------
@@ -443,6 +443,27 @@ describe("PhysicsWorkerManager — frame callback (fallback mode)", () => {
       globalThis.SharedArrayBuffer = originalSAB;
     }
   });
+
+  it("keeps the previous local buffer when a fallback frame omits its buffer", async () => {
+    // Carried over from PR #173 (the postMessage no-buffer case) so #209 fully
+    // closes #168. A frame with no `buffer` payload must leave the last local
+    // copy in place rather than dropping the transforms view to undefined.
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 16 });
+      const before = mgr.rawTransforms;
+
+      worker._emit({ type: "frame" });
+
+      expect(mgr.rawTransforms).toBe(before);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
 });
 
 describe("PhysicsWorkerManager — shared buffer mode", () => {
@@ -503,6 +524,227 @@ describe("PhysicsWorkerManager — post after destroy", () => {
     expect(() => mgr.step()).not.toThrow();
     expect(() => mgr.applyForce(0, 1, 1)).not.toThrow();
     expect(() => mgr.setGravity(0, 0)).not.toThrow();
+  });
+});
+
+describe("PhysicsWorkerManager — slot mapping integrity (add/remove mid-run)", () => {
+  it("reuses the freed-up size as the slot index for newly added bodies", async () => {
+    // Slots are assigned as `bodySlots.size` at add time, so after removing a
+    // body the next add lands on whatever index the shrunk map now reports.
+    const { mgr } = await createAndInit({ maxBodies: 16 });
+    const id0 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]); // slot 0
+    const id1 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]); // slot 1
+    const id2 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]); // slot 2
+
+    // Remove the middle body — map shrinks to size 2.
+    mgr.removeBody(id1);
+    expect(mgr.getTransform(id1)).toBeNull();
+
+    // The next add reuses slot index 2 (current map size).
+    const id3 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]);
+
+    const buf = mgr.rawTransforms!;
+    const write = (slot: number, x: number, y: number, r: number) => {
+      const off = HEADER_FLOATS + slot * FLOATS_PER_BODY;
+      buf[off] = x;
+      buf[off + 1] = y;
+      buf[off + 2] = r;
+    };
+    write(0, 1, 1, 0.125); // id0 — float32-exact rotation
+    write(2, 3, 3, 0.25); // id2 keeps its original slot 2 …
+    // … and id3 also maps to slot 2 (collision is the documented append-only caveat)
+    expect(mgr.getTransform(id0)).toEqual({ x: 1, y: 1, rotation: 0.125 });
+    expect(mgr.getTransform(id2)).toEqual({ x: 3, y: 3, rotation: 0.25 });
+    expect(mgr.getTransform(id3)).toEqual({ x: 3, y: 3, rotation: 0.25 });
+    mgr.destroy();
+  });
+
+  it("surviving bodies keep their original slots after an unrelated removal", async () => {
+    const { mgr } = await createAndInit({ maxBodies: 16 });
+    const id0 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]);
+    const id1 = mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]);
+
+    const buf = mgr.rawTransforms!;
+    buf[HEADER_FLOATS + 1 * FLOATS_PER_BODY] = 7; // id1 at slot 1
+
+    mgr.removeBody(id0); // remove the first body
+    // id1's slot mapping is unchanged — still reads slot 1.
+    expect(mgr.getTransform(id1)!.x).toBe(7);
+    expect(mgr.getTransform(id0)).toBeNull();
+    mgr.destroy();
+  });
+});
+
+describe("PhysicsWorkerManager — useShared toggle path", () => {
+  it("sends the SharedArrayBuffer in the init message when SAB is available", async () => {
+    const { mgr, worker } = await createAndInit({ maxBodies: 8 });
+    const initMsg = worker.posted.find((m: any) => m.type === "init");
+    expect(mgr.isSharedBuffer).toBe(true);
+    expect(initMsg.buffer).not.toBeNull();
+    expect(mgr.rawTransforms!.buffer).toBeInstanceOf(SharedArrayBuffer);
+    mgr.destroy();
+  });
+
+  it("sends a null buffer and allocates a local Float32Array in fallback mode", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 8 });
+      const initMsg = worker.posted.find((m: any) => m.type === "init");
+      expect(mgr.isSharedBuffer).toBe(false);
+      expect(initMsg.buffer).toBeNull();
+      // Local buffer is correctly sized for the header + maxBodies.
+      expect(mgr.rawTransforms!.length).toBe(HEADER_FLOATS + 8 * FLOATS_PER_BODY);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
+});
+
+describe("PhysicsWorkerManager — worker re-init / restart", () => {
+  it("a fresh manager after destroy spins up a new independent worker", async () => {
+    const first = await createAndInit({ maxBodies: 8 });
+    const firstWorker = first.worker;
+    first.mgr.destroy();
+    expect(firstWorker.terminated).toBe(true);
+
+    // Re-create — a brand new worker is constructed and gets its own init.
+    const second = await createAndInit({ maxBodies: 8 });
+    expect(second.worker).not.toBe(firstWorker);
+    expect(second.worker.posted.some((m: any) => m.type === "init")).toBe(true);
+    expect(second.mgr.rawTransforms).toBeInstanceOf(Float32Array);
+    second.mgr.destroy();
+  });
+
+  it("init() is single-shot — a second init() on the same manager is a no-op", async () => {
+    const { PhysicsWorkerManager } = await import("../../src/worker/PhysicsWorkerManager");
+    const mgr = new PhysicsWorkerManager({ maxBodies: 8 });
+    const p1 = mgr.init();
+    lastWorker._emit({ type: "ready" });
+    await p1;
+    const workerCountBefore = lastWorker.posted.filter((m: any) => m.type === "init").length;
+
+    // Repeated init resolves the same cached promise without re-posting init.
+    const p2 = mgr.init();
+    await p2;
+    const workerCountAfter = lastWorker.posted.filter((m: any) => m.type === "init").length;
+    expect(workerCountAfter).toBe(workerCountBefore);
+    mgr.destroy();
+  });
+});
+
+describe("PhysicsWorkerManager — message-event robustness", () => {
+  it("a frame arriving before any body was added does not throw", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 8 });
+      const empty = new Float32Array(HEADER_FLOATS + 8 * FLOATS_PER_BODY);
+      expect(() => worker._emit({ type: "frame", buffer: empty })).not.toThrow();
+      expect(mgr.bodyCount).toBe(0);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
+
+  it("a frame delivered after destroy is ignored without throwing", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 8 });
+      const received: Float32Array[] = [];
+      mgr.onFrameCallback = (b) => received.push(b);
+      mgr.destroy();
+      // onmessage is still wired on the mock, but the manager has torn down.
+      const frame = new Float32Array(HEADER_FLOATS + 8 * FLOATS_PER_BODY);
+      expect(() => worker._emit({ type: "frame", buffer: frame })).not.toThrow();
+      // Callback still fires on the copy path, but reading transforms is safe (null).
+      expect(mgr.getTransform(0)).toBeNull();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
+
+  it("a callback that throws does not corrupt the manager's buffer state", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 8 });
+      mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 5 }]);
+      mgr.onFrameCallback = () => {
+        throw new Error("consumer blew up");
+      };
+      const frame = new Float32Array(HEADER_FLOATS + 8 * FLOATS_PER_BODY);
+      frame[0] = 1;
+      frame[HEADER_FLOATS] = 99;
+      // The throw propagates out of the synchronous emit, but the buffer swap
+      // happened first, so state stays consistent and readable afterwards.
+      expect(() => worker._emit({ type: "frame", buffer: frame })).toThrow("consumer blew up");
+      expect(mgr.getTransform(0)!.x).toBe(99);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
+});
+
+describe("PhysicsWorkerManager — fallback buffer copy under high body count", () => {
+  it("copies a large fallback frame and reads every slot correctly", async () => {
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+    try {
+      const COUNT = 256;
+      const { mgr, worker } = await createAndInit({ maxBodies: COUNT });
+      const ids: number[] = [];
+      for (let i = 0; i < COUNT; i++) {
+        ids.push(mgr.addBody("dynamic", 0, 0, [{ type: "circle", radius: 1 }]));
+      }
+
+      const frame = new Float32Array(HEADER_FLOATS + COUNT * FLOATS_PER_BODY);
+      frame[0] = COUNT;
+      for (let i = 0; i < COUNT; i++) {
+        const off = HEADER_FLOATS + i * FLOATS_PER_BODY;
+        frame[off] = i * 2;
+        frame[off + 1] = i * 2 + 1;
+        frame[off + 2] = i * 0.01;
+      }
+      worker._emit({ type: "frame", buffer: frame });
+
+      expect(mgr.bodyCount).toBe(COUNT);
+      // Spot-check first, middle, and last bodies.
+      expect(mgr.getTransform(ids[0])).toEqual({ x: 0, y: 1, rotation: 0 });
+      expect(mgr.getTransform(ids[128])!.x).toBe(256);
+      expect(mgr.getTransform(ids[COUNT - 1])!.y).toBe((COUNT - 1) * 2 + 1);
+
+      // readAllTransforms agrees with per-body reads across the whole set.
+      const out = new Map();
+      mgr.readAllTransforms(out);
+      expect(out.size).toBe(COUNT);
+      expect(out.get(ids[200])!.x).toBe(400);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
+});
+
+describe("PhysicsWorkerManager — PROTOCOL_VERSION", () => {
+  it("exposes a numeric protocol version", () => {
+    expect(typeof PROTOCOL_VERSION).toBe("number");
+    expect(PROTOCOL_VERSION).toBe(1);
+  });
+
+  it("is re-exported from the worker entry point", async () => {
+    const mod = await import("../../src/worker/index");
+    expect(mod.PROTOCOL_VERSION).toBe(PROTOCOL_VERSION);
   });
 });
 

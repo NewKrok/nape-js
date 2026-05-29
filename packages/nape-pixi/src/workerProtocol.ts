@@ -19,6 +19,17 @@ import type { Space } from "@newkrok/nape-js";
  * responsible for ensuring the order matches their sprite registration —
  * typically by only appending bodies and never removing from the middle.
  */
+/**
+ * Version of this transform wire layout.
+ *
+ * Bump this whenever the buffer layout changes
+ * ({@link TRANSFORM_FLOATS_PER_BODY}, {@link TRANSFORM_HEADER_FLOATS}, or the
+ * meaning of any header slot) so a stale worker bundle reading against a newer
+ * main thread fails loudly instead of decoding garbage. Kept in lockstep with
+ * `PROTOCOL_VERSION` in `@newkrok/nape-js`'s `worker/types.ts`.
+ */
+export const TRANSFORM_PROTOCOL_VERSION = 1;
+
 export const TRANSFORM_HEADER_FLOATS = 3;
 /** Floats per body (x, y, rotation). */
 export const TRANSFORM_FLOATS_PER_BODY = 3;

@@ -12,6 +12,17 @@
 
 // ── Transform buffer layout ────────────────────────────────────────────
 
+/**
+ * Version of the transform-buffer wire layout.
+ *
+ * Bump this whenever the float layout changes ({@link FLOATS_PER_BODY},
+ * {@link HEADER_FLOATS}, or the meaning of any slot) so that a mismatch
+ * between a cached worker bundle and the main thread is caught loudly
+ * instead of decoding garbage transforms. Must be kept in lockstep with
+ * `TRANSFORM_PROTOCOL_VERSION` in `@newkrok/nape-pixi`'s `workerProtocol.ts`.
+ */
+export const PROTOCOL_VERSION = 1;
+
 /** Floats per body in the transform buffer: x, y, rotation. */
 export const FLOATS_PER_BODY = 3;
 

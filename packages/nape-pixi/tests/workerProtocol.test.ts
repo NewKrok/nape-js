@@ -4,6 +4,7 @@ import {
   TRANSFORM_FLOATS_PER_BODY,
   TRANSFORM_HEADER,
   TRANSFORM_HEADER_FLOATS,
+  TRANSFORM_PROTOCOL_VERSION,
   createTransformsBuffer,
   writeTransforms,
 } from "../src/workerProtocol.js";
@@ -15,6 +16,23 @@ function makeBody(x: number, y: number, rotation: number) {
 function makeSpace(bodies: Array<ReturnType<typeof makeBody>>, timeStamp = 0) {
   return { bodies, timeStamp } as unknown as Space;
 }
+
+describe("TRANSFORM_PROTOCOL_VERSION", () => {
+  it("is a positive integer", () => {
+    expect(typeof TRANSFORM_PROTOCOL_VERSION).toBe("number");
+    expect(Number.isInteger(TRANSFORM_PROTOCOL_VERSION)).toBe(true);
+    expect(TRANSFORM_PROTOCOL_VERSION).toBeGreaterThan(0);
+  });
+
+  it("stays in lockstep with the nape-js worker layout constants", () => {
+    // The pixi protocol and the nape-js worker protocol describe the same wire
+    // layout — header + 3 floats per body. If either side changes its float
+    // layout, both versions must bump together.
+    expect(TRANSFORM_HEADER_FLOATS).toBe(3);
+    expect(TRANSFORM_FLOATS_PER_BODY).toBe(3);
+    expect(TRANSFORM_PROTOCOL_VERSION).toBe(1);
+  });
+});
 
 describe("createTransformsBuffer", () => {
   it("allocates a buffer sized for header + maxBodies", () => {
