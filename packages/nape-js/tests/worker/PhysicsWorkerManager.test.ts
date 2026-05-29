@@ -443,6 +443,27 @@ describe("PhysicsWorkerManager — frame callback (fallback mode)", () => {
       globalThis.SharedArrayBuffer = originalSAB;
     }
   });
+
+  it("keeps the previous local buffer when a fallback frame omits its buffer", async () => {
+    // Carried over from PR #173 (the postMessage no-buffer case) so #209 fully
+    // closes #168. A frame with no `buffer` payload must leave the last local
+    // copy in place rather than dropping the transforms view to undefined.
+    const originalSAB = globalThis.SharedArrayBuffer;
+    // @ts-expect-error -- temporarily remove
+    delete globalThis.SharedArrayBuffer;
+
+    try {
+      const { mgr, worker } = await createAndInit({ maxBodies: 16 });
+      const before = mgr.rawTransforms;
+
+      worker._emit({ type: "frame" });
+
+      expect(mgr.rawTransforms).toBe(before);
+      mgr.destroy();
+    } finally {
+      globalThis.SharedArrayBuffer = originalSAB;
+    }
+  });
 });
 
 describe("PhysicsWorkerManager — shared buffer mode", () => {
