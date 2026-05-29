@@ -2,7 +2,7 @@
 
 ## Completed Items
 
-Done: P21-P28, P30-P33, P35, P37-P43, P44, P45-P48, P50-P57, P60, P62, P63, P64, P66-P68, P69, P70, P71.
+Done: P21-P28, P30-P33, P35, P37-P43, P44, P45-P48, P50-P57, P60, P62, P63, P64, P66-P68, P69, P70, P71, P72, P76, P78, P79, P80, P81, P82, P85.
 Done (partial): P65 — platformer template + `/templates` page shipped; the `create-nape-game` CLI is implemented but **on hold** (kept private, not published) until adoption signal justifies the maintenance surface.
 Cancelled: P34 (tree shaking — architectural limit), P36 (server demos — superseded by P52), P49 (ECS adapter — trivial pattern).
 
@@ -39,12 +39,11 @@ already saturated.
 
 | #   | Priority                  | Effort | Impact          | Notes                                                                                                                                                                                                                                                              |
 | --- | ------------------------- | ------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P75 | **More game templates**   | M      | :fire: adoption | Follow-ups to the platformer: top-down car, pinball, ragdoll fighter, top-down shooter. Each adds another card on `/templates`. **Follow-up:** re-surface the `Templates` tab on the homepage (currently removed — only one starter justified hiding it) and decide whether to revive `create-nape-game` (currently `private: true`, parked) once template count grows |
-| P72 | **`convexCast` demo**     | S      | docs            | `Space.convexCast` / `convexMultiCast` is public API but invisible in the demo grid. A swept-shape hit-prediction demo (e.g. swung sword) makes it discoverable           |
+| P75 | **More game templates**   | M      | :fire: adoption | Standalone demos shipped (ragdoll #179, thrust-runner #181, block-stacking #182, minigolf #183, top-down kart #184, pulley #197, tilt-maze #200). **Remaining:** promote the strongest of these into a first-class `/templates` starter (clone/StackBlitz), re-surface the `Templates` tab on the homepage, and decide whether to revive `create-nape-game` (currently `private: true`, parked) once template count grows |
 | P61 | **Bundle size reduction** | S-M    | competitiveness | 123 KB vs Phaser Box2D 65 KB, gap is widening (+~36 KB from recent helpers). Real adoption blocker. Dead-code audit, hot-path review, helper opt-in re-export plan        |
 | P58 | **Phaser plugin/adapter** | M      | :fire: adoption | #1 JS game framework. Worth doing now that the platformer template is live — adapters need a working onboarding story to demo against                                     |
 | P59 | **React/R3F integration** | M      | adoption        | `@react-three/rapier`-style package for the React gamedev community. After P58                                                                                            |
-| P29 | Test coverage → 80%       | L      | safety          | :diamonds: ~72% statements (5761 tests). Background work, not blocking anything                                                                                           |
+| P29 | Test coverage → 80%       | L      | safety          | :diamonds: 6169 tests (+73 pixi). Background work, not blocking anything. Recent closes: #161, #163, #164, #165, #166, #168, #169, #170                                   |
 
 ---
 
@@ -61,10 +60,9 @@ Not blocking anything; revisit only when a concrete user request justifies the c
 
 ## Recommended Execution Order
 
-1. **P75** — More game templates (top-down car, pinball, ragdoll fighter); reuses the platformer pipeline (the CLI stays parked until template count or user demand justifies it)
-2. **P72** — `convexCast` demo (small, ships the visibility win quickly)
-3. **P61** — Bundle size reduction
-4. **P58** — Phaser plugin/adapter
-5. **P59** — React/R3F integration
-6. **P29** — Continue test coverage push toward 80% (background)
-7. (Defer **P73** and **P74** until a concrete user request appears)
+1. **P75** — Promote a shipped demo into a first-class `/templates` starter (the standalone game demos are done; the CLI stays parked until template count or user demand justifies it)
+2. **P61** — Bundle size reduction
+3. **P58** — Phaser plugin/adapter
+4. **P59** — React/R3F integration
+5. **P29** — Continue test coverage push toward 80% (background)
+6. (Defer **P73** and **P74** until a concrete user request appears)
