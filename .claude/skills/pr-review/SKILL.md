@@ -88,7 +88,7 @@ npm test
 npm run build
 ```
 
-Report each as ✅ / ❌ with specifics. **Format failures** can usually be fixed with `npm run format` (suggest this to the contributor). **Test counts**: baseline is 5761 (nape-js) + 71 (nape-pixi); anything below that is a regression. **Build failure** usually means a TypeScript error vitest skipped.
+Report each as ✅ / ❌ with specifics. **Format failures** can usually be fixed with `npm run format` (suggest this to the contributor). **Test counts**: baseline is 6169 (nape-js) + 73 (nape-pixi); anything below that is a regression. **Build failure** usually means a TypeScript error vitest skipped.
 
 ### 5. Manual review — what to look for
 
