@@ -42,6 +42,7 @@ export {
   TRANSFORM_FLOATS_PER_BODY,
   TRANSFORM_HEADER,
   TRANSFORM_HEADER_FLOATS,
+  TRANSFORM_PROTOCOL_VERSION,
   createTransformsBuffer,
   writeTransforms,
 } from "./workerProtocol.js";

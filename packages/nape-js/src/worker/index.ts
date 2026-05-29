@@ -13,7 +13,7 @@
 export { PhysicsWorkerManager } from "./PhysicsWorkerManager";
 export type { BodyTransform } from "./PhysicsWorkerManager";
 export { buildWorkerScript } from "./physics-worker-code";
-export { FLOATS_PER_BODY, HEADER_FLOATS } from "./types";
+export { FLOATS_PER_BODY, HEADER_FLOATS, PROTOCOL_VERSION } from "./types";
 export type {
   PhysicsWorkerOptions,
   ShapeDesc,
