@@ -187,6 +187,13 @@ const CRASH_SPIN_FRAMES = 14;   // ~0.23s of that spin before the rider bails
 // the body hangs naturally on those points — the hinges just keep the limbs
 // from flailing, they don't pose the body rigidly.
 const POSE_SOFT = 0.04;         // half-width of each hinge's rest window
+// Torso lean: how far the rider's upper body shifts when you lean the bike, and
+// the cap on forward dip so the torso can't fold down into the bike body.
+const TORSO_LEAN_BACK = -0.5;   // rad added to the torso rest angle on lean-back
+const TORSO_LEAN_FWD = 0.22;    // rad added on lean-forward (positive = nose-down)
+const TORSO_FWD_MAX = 0.22;     // hard cap on forward torso tilt past rest so the
+                                // upper body can't fold flat onto the bike
+const TORSO_LEAN_LERP = 0.12;   // how fast the torso eases to the new lean target
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -207,6 +214,9 @@ let _gripJoints = [];         // hand→handlebar pins (break away with the seat
 let _pegJoints = [];          // foot→footpeg pins (break away with the seat weld)
 let _riderParts = [];
 let _riderJoints = [];
+let _torsoHinge = null;       // pelvis→torso AngleJoint, retargeted on lean
+let _torsoBase = 0;           // its built rest angle (the upright seated pose)
+let _torsoLean = 0;           // current eased lean offset applied to the torso
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -281,14 +291,24 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   try { pelvis.userData._colorIdx = 1; } catch (_) {}
   pelvis.space = space;
 
-  // Torso — slightly forward-leaning rest pose (a rider crouches a touch over
-  // the bars). Its pose delta is the visible weight shift (crouch / stand).
+  // Torso — sits fairly upright. The torso hinge is special: step() retargets
+  // its window so the rider leans the upper body forward/back WITH the bike
+  // (the visible weight shift). We keep a module ref + its rest angle, and an
+  // ASYMMETRIC window: plenty of room to sit up / lean back, but limited
+  // forward dip so the rider can't fold down into the bike body.
   const torso = add(new Body(BodyType.DYNAMIC, new Vec2(seatX + 3, seatY - 21)));
   torso.rotation = -0.15;         // sit fairly upright (slight back lean at rest)
   torso.shapes.add(new Polygon(Polygon.box(14, 30), RM(0.5)));
   try { torso.userData._colorIdx = 1; } catch (_) {}
   torso.space = space;
-  poseHinge(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15), { freq: 9, damp: 0.8 });
+  new PivotJoint(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15)).space = space;
+  _torsoBase = torso.rotation - pelvis.rotation;
+  _torsoHinge = new AngleJoint(pelvis, torso, _torsoBase - POSE_SOFT, _torsoBase + POSE_SOFT);
+  _torsoHinge.stiff = false;
+  _torsoHinge.frequency = 13;    // strong enough to hold the torso up against the
+  _torsoHinge.damping = 0.9;     // forward pull of the arms gripping the bars
+  _torsoHinge.space = space;
+  _riderJoints.push(_torsoHinge);
 
   // Head — sits atop the torso, follows its lean.
   const head = add(new Body(BodyType.DYNAMIC, new Vec2(seatX + 7, seatY - 44)));
@@ -607,6 +627,8 @@ function teardownBikeAndRider() {
   _riderParts = [];
   for (const b of [_chassis, _fWheel, _rWheel, _swingarm]) { if (b && b.space) b.space = null; }
   _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
+  _torsoHinge = null;
+  _torsoLean = 0;
 }
 
 function respawn() {
@@ -789,11 +811,22 @@ export default {
       }
     }
 
-    // No active-pose driving: the rider is held to the bike only at the hands
-    // (handlebar) and feet (pegs), with soft limb hinges, so the body hangs and
-    // sways naturally between those four points. Leaning the bike moves the grip
-    // + peg anchors, which carries the rider's weight shift for free — no posed
-    // AngleJoint targets fighting the pins (that conflict caused the jitter).
+    // The rider is held to the bike at the hands (handlebar) and feet (pegs)
+    // with soft limb hinges, so the body hangs naturally. On top of that we
+    // shift the UPPER BODY with the lean keys: lean-back eases the torso back/up
+    // (the rider sits up and shifts weight rearward), lean-forward eases it
+    // forward over the bars. Only the torso hinge is retargeted (a soft spring,
+    // so it sways rather than snapping), and its window is clamped so the torso
+    // can't fold forward into the bike body (TORSO_FWD_MAX).
+    if (!_crashed && _torsoHinge && _torsoHinge.space) {
+      let leanTarget = 0;
+      if (leanBack) leanTarget = TORSO_LEAN_BACK;
+      else if (leanFwd) leanTarget = TORSO_LEAN_FWD;
+      _torsoLean += (leanTarget - _torsoLean) * TORSO_LEAN_LERP;
+      const t = _torsoBase + Math.min(TORSO_FWD_MAX, _torsoLean);
+      _torsoHinge.jointMin = t - POSE_SOFT;
+      _torsoHinge.jointMax = t + POSE_SOFT;
+    }
 
     // ── Distance HUD ───────────────────────────────────────────────────────
     const dist = Math.max(0, (_chassis.position.x - _spawnX));
