@@ -168,11 +168,9 @@ const SHOCK_FREQ = 4.4;         // holds ride height, but softer/livelier than 6
 const SHOCK_DAMP = 0.2;         // low → lively, springy rear (more dynamic feel)
 const SHOCK_MIN = -26;          // deep compression available for jumps/landings
 const SHOCK_MAX = 12;           // a little top-out travel
-// Visual swingarm + monoshock anchors (drawn only — no physics). Pivot under
-// the engine; SHOCK_TOP sits just above the rear axle so the coil drops nearly
-// straight down to the wheel instead of crossing the bike diagonally.
+// Visual swingarm anchor (drawn only — no physics). Pivot under the engine; the
+// cosmetic swingarm bar runs from here back to the rear axle.
 const SWINGARM_PIVOT = { x: -22, y: 8 };
-const SHOCK_TOP = { x: -44, y: -12 };
 
 const MOTOR_RATE = 48;          // rear-wheel motor target angular rate. Raised
                                 // for a notably faster top speed; paired with a
@@ -1242,29 +1240,6 @@ function updateGravel(emitter, wheel) {
   emitter.rate = GRAVEL_RATE_MAX * t;
 }
 
-// Draw the suspension springs (chassis anchor → wheel hub) in world space.
-function drawSpring(ctx, x1, y1, x2, y2, color, coils = 5, amp = 5) {
-  const dx = x2 - x1, dy = y2 - y1;
-  const len = Math.sqrt(dx * dx + dy * dy);
-  if (len < 2) return;
-  const ux = dx / len, uy = dy / len;
-  const px = -uy, py = ux;
-  const n = coils * 2;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x1 + ux * len * 0.1, y1 + uy * len * 0.1);
-  for (let i = 1; i <= n; i++) {
-    const t = 0.1 + (i / n) * 0.8;
-    const sign = i % 2 === 0 ? 1 : -1;
-    ctx.lineTo(x1 + ux * len * t + px * amp * sign, y1 + uy * len * t + py * amp * sign);
-  }
-  ctx.lineTo(x2, y2);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.setLineDash([]);
-  ctx.stroke();
-}
-
 function drawSuspension(ctx, camX, camY) {
   if (!_chassis || !_fWheel || !_rWheel) return;
   ctx.save();
@@ -1312,9 +1287,9 @@ function drawSuspension(ctx, camX, camY) {
   ctx.lineTo(rw.x, rw.y);
   ctx.stroke();
   ctx.lineCap = "butt";
-  // monoshock coil from a frame anchor just above the rear axle, straight down.
-  const shockTop = toWorld(SHOCK_TOP.x, SHOCK_TOP.y);
-  drawSpring(ctx, shockTop.x, shockTop.y, rw.x, rw.y, "#d29922cc", 6, 4);
+  // (No drawn monoshock coil — the rear suspension is left bare like the front,
+  // which only shows its fork tubes and no coil. The swingarm bar above is kept
+  // so the rear wheel still reads as connected to the frame.)
   ctx.restore();
 }
 
@@ -1322,10 +1297,11 @@ function drawHUD(ctx, sw) {
   ctx.save();
   ctx.textBaseline = "alphabetic";
 
-  // Distance + speed readout.
+  // Distance + speed readout. 40 px = 1 m, so px/s → m/s is /40 and m/s → km/h
+  // is ×3.6 — i.e. px/s ÷ 40 × 3.6.
   const meters = (_maxDist / 40).toFixed(1);
-  let speed = 0;
-  if (_chassis) speed = Math.hypot(_chassis.velocity.x, _chassis.velocity.y) / 40;
+  let kmh = 0;
+  if (_chassis) kmh = (Math.hypot(_chassis.velocity.x, _chassis.velocity.y) / 40) * 3.6;
   ctx.fillStyle = "rgba(13,17,23,0.78)";
   ctx.fillRect(10, 10, 188, 60);
   ctx.fillStyle = "#e6edf3";
@@ -1334,7 +1310,7 @@ function drawHUD(ctx, sw) {
   ctx.fillText(`Distance: ${meters} m`, 22, 34);
   ctx.font = "13px system-ui, sans-serif";
   ctx.fillStyle = "#8b949e";
-  ctx.fillText(`Speed: ${speed.toFixed(1)} m/s`, 22, 56);
+  ctx.fillText(`Speed: ${kmh.toFixed(0)} km/h`, 22, 56);
 
   // Crashed banner + restart hint.
   if (_crashed) {
