@@ -196,9 +196,6 @@ const TORSO_FWD_MAX = 0.29;     // hard cap on forward torso tilt past rest so t
 const TORSO_LEAN_LERP = 0.12;   // how fast the torso eases to the new lean target
 // Legs extend with the lean too (rider pushes up off the pegs), so the whole
 // body shifts — not just the torso. Hip opens by this much at full lean.
-const LEG_LEAN = 0.5;           // rad the hip opens (extends the leg) on lean
-const FOOT_ANGLE_SLACK = 0.25;  // ± rad the foot may rotate around the peg — keeps
-                                // the sole sitting on the peg, not dangling free
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -222,9 +219,6 @@ let _riderJoints = [];
 let _torsoHinge = null;       // pelvis→torso AngleJoint, retargeted on lean
 let _torsoBase = 0;           // its built rest angle (the upright seated pose)
 let _torsoLean = 0;           // current eased lean offset applied to the torso
-let _legExtend = 0;           // eased 0→1: how much the legs are extended on a lean
-let _legHinges = [];          // [{ joint, base }] hip hinges, retargeted on lean so
-                              // the legs extend with the weight shift
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -256,7 +250,6 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   _riderJoints = [];
   _gripJoints = [];
   _pegJoints = [];
-  _legHinges = [];
 
   const add = (body) => { _riderParts.push(body); return body; };
 
@@ -378,11 +371,8 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     thigh.shapes.add(new Polygon(Polygon.box(thighLen, legW), RM(0.5)));
     try { thigh.userData._colorIdx = 2; } catch (_) {}
     thigh.space = space;
-    const hipH = poseHinge(pelvis, thigh, new Vec2(8, 4), new Vec2(-thighLen / 2, 0),
-      { freq: 14, damp: 0.85 }); // firm: with no pelvis weld, the hips hold the
-                                 // seated posture up (and let lean swing the leg)
-    hips.push(hipH);
-    _legHinges.push(hipH);      // retargeted on lean to extend/tuck the legs
+    hips.push(poseHinge(pelvis, thigh, new Vec2(8, 4), new Vec2(-thighLen / 2, 0),
+      { freq: 14, damp: 0.85 }));  // firm hip holds the seated leg posture
 
     const kneeX = hipX + Math.cos(ta) * thighLen;
     const kneeY = hipY + Math.sin(ta) * thighLen;
@@ -646,8 +636,6 @@ function teardownBikeAndRider() {
   _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
   _torsoHinge = null;
   _torsoLean = 0;
-  _legExtend = 0;
-  _legHinges = [];
 }
 
 function respawn() {
@@ -846,17 +834,8 @@ export default {
       const t = _torsoBase + Math.max(-Math.abs(TORSO_LEAN_BACK), Math.min(TORSO_FWD_MAX, _torsoLean));
       _torsoHinge.jointMin = t - POSE_SOFT;
       _torsoHinge.jointMax = t + POSE_SOFT;
-
-      // Leg extension: extend on EITHER lean (rider rises off the pegs / stretches),
-      // bent when neutral. _legExtend eases 0→1; the hip opens by LEG_LEAN.
-      const wantExtend = (leanBack || leanFwd) ? 1 : 0;
-      _legExtend += (wantExtend - _legExtend) * TORSO_LEAN_LERP;
-      for (const h of _legHinges) {
-        if (!h || !h.joint || h.joint.space === null) continue;
-        const a = h.base - LEG_LEAN * _legExtend;   // open the hip → leg straightens
-        h.joint.jointMin = a - POSE_SOFT;
-        h.joint.jointMax = a + POSE_SOFT;
-      }
+      // Note: the legs are pinned at a fixed point on the pegs, so the visible
+      // weight shift comes from the torso; the legs intentionally stay planted.
     }
 
     // ── Distance HUD ───────────────────────────────────────────────────────
