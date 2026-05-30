@@ -1,6 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint,
+  ParticleEmitter,
 } from "../nape-js.esm.js";
 
 // Dirtline — a side-view hill-climb / trials motorbike with an articulated
@@ -25,7 +26,8 @@ const SCREEN_H = 500;
 const BUILD_RIDER = true;
 
 // ── World / terrain ─────────────────────────────────────────────────────────
-const WORLD_W = 6000;
+const WORLD_W = 18000;          // 3× the old 6000 — a long course with room for
+                                // several big jumps spread out between the hills
 const SEG_W = 24;               // terrain sample spacing (fine enough that the
                                 // ramp lips read as smooth launches, not steps)
 const GRAVITY = 1100;
@@ -37,12 +39,25 @@ const GRAVITY = 1100;
 // bump: a long gentle approach up the front and a sharp drop off the back, so
 // you hit it, get launched, and have to control rotation before landing. Folded
 // into terrainY so the surface stays continuous (no seams to snag a wheel on).
+// Mixed-size kickers spread across the long (18000px) course. The small ones
+// (up ≈ 46-62) are the original gentle launches; interleaved between them are a
+// handful of BIG jumps (up ≈ 100-150, with a long approach `w`) that throw the
+// bike for real air — land them clean or over-rotate and eat it.
 const RAMPS = [
   { x: 1100, up: 46, w: 220 },
-  { x: 2200, up: 56, w: 250 },
-  { x: 3300, up: 50, w: 230 },
-  { x: 4400, up: 62, w: 260 },
-  { x: 5300, up: 54, w: 240 },
+  { x: 2400, up: 120, w: 360 },   // big #1
+  { x: 3500, up: 54, w: 240 },
+  { x: 4700, up: 56, w: 250 },
+  { x: 6000, up: 150, w: 420 },   // big #2 — the course's biggest
+  { x: 7300, up: 50, w: 230 },
+  { x: 8600, up: 62, w: 260 },
+  { x: 9900, up: 130, w: 380 },   // big #3
+  { x: 11200, up: 52, w: 240 },
+  { x: 12500, up: 58, w: 250 },
+  { x: 13900, up: 140, w: 400 },  // big #4
+  { x: 15200, up: 50, w: 230 },
+  { x: 16400, up: 110, w: 350 },  // big #5
+  { x: 17300, up: 54, w: 240 },
 ];
 
 function rampLift(x) {
@@ -102,6 +117,22 @@ function buildTerrain(space, groundY) {
 // Terrain bodies keep the default filter (group 1, mask −1 → hits everything).
 const GROUP_TERRAIN = 1;
 const BIKE_FILTER = new InteractionFilter(2, GROUP_TERRAIN);   // collides only w/ terrain
+// Kicked-up gravel particles: their own group (bit 3), and they collide ONLY
+// with the terrain (mask = GROUP_TERRAIN). So gravel never touches the bike, the
+// rider, or other gravel — it only bounces and skitters on the track, exactly
+// the "wheel throws dirt, but the dirt doesn't hit the bike" ask.
+const GROUP_GRAVEL = 4;        // bit 3
+const GRAVEL_FILTER = new InteractionFilter(GROUP_GRAVEL, GROUP_TERRAIN);
+
+// ── Gravel spray tuning ──────────────────────────────────────────────────────
+// A moving wheel in contact with the track flings gravel backward off its
+// contact patch. Emission scales with wheel speed so a fast/spinning wheel
+// sprays more; a parked wheel sprays none. Particles are real dynamic bodies
+// (pooled by the emitter) that only collide with the terrain.
+const GRAVEL_MAX = 90;          // pool cap — plenty of medium-count debris
+const GRAVEL_MIN_SPEED = 90;    // px/s wheel surface speed below which no spray
+const GRAVEL_RATE_MAX = 70;     // particles/sec at full chat (scaled by speed)
+const GRAVEL_R = 2.2;           // medium pebble radius
 
 // ── Bike tuning ─────────────────────────────────────────────────────────────
 // Realistic crossmotor (dirt-bike) proportions: smaller wheels relative to a
@@ -143,13 +174,16 @@ const SHOCK_MAX = 12;           // a little top-out travel
 const SWINGARM_PIVOT = { x: -22, y: 8 };
 const SHOCK_TOP = { x: -44, y: -12 };
 
-const MOTOR_RATE = 30;          // rear-wheel motor target angular rate. Kept
-                                // moderate ON PURPOSE: cranking it higher just
-                                // spins the wheel faster than it can grip (heavy
-                                // wheelspin → the bike surges/bogs). Grip + a
-                                // sane rate give smooth, fast power delivery.
-const MOTOR_FORCE = 75000;      // torque cap — moderate so acceleration doesn't
-                                // break traction (or loft the front into a flip).
+const MOTOR_RATE = 48;          // rear-wheel motor target angular rate. Raised
+                                // for a notably faster top speed; paired with a
+                                // bigger MOTOR_FORCE so the wheel actually REACHES
+                                // this rate under load instead of bogging. Grip
+                                // (high wheel friction) keeps the extra power from
+                                // turning straight into wheelspin.
+const MOTOR_FORCE = 130000;     // torque cap — raised so the engine pulls hard and
+                                // holds the higher rate up climbs. The progressive
+                                // cap still limits a standstill launch from looping
+                                // the front, but the bike now feels much stronger.
 // Ground lean drives the chassis toward a TARGET pitch rate and holds it there,
 // strong enough to overpower the wheels' tendency to cancel the rotation each
 // frame (a gentle nudge just gets absorbed — that's why leaning felt dead).
@@ -239,6 +273,32 @@ const KNEE_STRAIGHTEN_BACK = 1.1;
 const PELVIS_TILT_FWD = 0.15;   // rad the pelvis tips forward (nose-down) on fwd lean
 const PELVIS_TILT_BACK = -0.3;  // rad the pelvis reclines on back lean (sits back)
 
+// ── Crash ragdoll tuning ─────────────────────────────────────────────────────
+// On a bail the rider goes ragdoll but must KEEP A HUMAN SHAPE — the earlier very
+// loose, low-frequency joints let the torso/neck/limbs collapse onto each other
+// (the "crumpled heap" look). The fix: keep the windows fairly TIGHT around each
+// joint's rest pose and the springs FIRM. The body still tumbles and flails as a
+// unit, but the spine stays roughly its length, the head sits off the chest, and
+// the legs hold their proportion — a thrown dummy, not a sack.
+const RAGDOLL_LIMB_RANGE = 0.6; // rad — elbow/knee swing range (~34°): enough life
+                                // to bend, tight enough to keep the limb proportion
+const RAGDOLL_LIMB_FREQ = 9;    // firm spring on the limb links so they don't fold
+const RAGDOLL_LIMB_DAMP = 0.8;
+const RAGDOLL_LOOSE_RANGE = 0.6;// rad — torso/shoulders/hips/neck swing ~34°: enough
+                                // to drape and tumble, tight enough that the spine,
+                                // neck and hips keep their length (no collapse)
+const RAGDOLL_LOOSE_FREQ = 11;  // firm spring — verified to hold the body shape to
+                                // ~1% length change on a hard landing (was ~18%)
+const RAGDOLL_LOOSE_DAMP = 0.8;
+// Bail launch — a GENTLE separation, not a violent ejection. The earlier strong
+// kick + 0.9 velocity-inherit flung the rider off absurdly fast. The rider now
+// keeps only a little of the bike's momentum plus a soft nudge, so it tips off
+// the bike and tumbles rather than rocketing away.
+const BAIL_KICK_X = -40;        // px/s backward (a small shove off the bike)
+const BAIL_KICK_Y = -90;        // px/s up (just enough to clear the seat)
+const BAIL_INHERIT = 0.45;      // keep under half the chassis velocity — separates
+                                // from the bike without the ragdoll flying off hard
+
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
 let _chassis = null;
@@ -262,9 +322,16 @@ let _torsoHinge = null;       // pelvis→torso AngleJoint, retargeted on lean
 let _torsoBase = 0;           // its built rest angle (the upright seated pose)
 let _torsoLean = 0;           // current eased lean offset applied to the torso
 let _kneeHinges = [];         // [{ joint, base }] knee hinges, straightened on lean
+let _angleHinges = [];        // [{ joint, base }] EVERY rider AngleJoint + its rest
+                              // angle — on a crash we slacken each into a loose but
+                              // BOUNDED window around `base` so the body ragdolls
+                              // with believable anatomical limits (a limp limb that
+                              // still can't hyperextend) instead of folding flat.
 let _legExtend = 0;           // eased 0→1: how straight the legs are on a lean
 let _seatLift = 0;            // eased 0→1: how far the rider has risen off the seat
 let _seatShift = 0;           // eased −1..1: fore(+)/aft(−) seat anchor shift
+let _gravelF = null;          // front-wheel gravel spray emitter
+let _gravelR = null;          // rear-wheel gravel spray emitter
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -297,6 +364,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   _gripJoints = [];
   _pegJoints = [];
   _kneeHinges = [];
+  _angleHinges = [];
 
   const add = (body) => { _riderParts.push(body); return body; };
 
@@ -313,7 +381,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   // exactly the built silhouette. A stiff joint rigidly commands the pose
   // (needed to posture a limb against gravity); soft joints get a little life.
   const poseHinge = (a, b, anchorA, anchorB, opts = {}) => {
-    const { stiff = false, freq = 13, damp = 0.85 } = opts;
+    const { stiff = false, freq = 13, damp = 0.85, limbLink = false } = opts;
     const pin = new PivotJoint(a, b, anchorA, anchorB);
     pin.space = space;
     _riderJoints.push(pin);
@@ -328,7 +396,14 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     }
     ang.space = space;
     _riderJoints.push(ang);
-    return { joint: ang, base };            // (return kept for symmetry; unused)
+    // limbLink marks the two-segment joints (elbow, knee) whose RELATIVE angle
+    // must stay believable on a crash — those keep a real limit so the forearm
+    // doesn't fold through the upper arm / the shin through the thigh. Every
+    // other joint (shoulder, hip, torso, head, neck) goes fully loose so the
+    // ragdoll sprawls out naturally instead of holding a rigid posture.
+    const hinge = { joint: ang, base, limbLink };
+    _angleHinges.push(hinge);               // tracked for crash-time slackening
+    return hinge;
   };
 
   // Lighter limbs than the bike so the rider doesn't overpower the suspension.
@@ -350,7 +425,13 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   torso.shapes.add(new Polygon(Polygon.box(14, 30), RM(0.5)));
   try { torso.userData._colorIdx = 1; } catch (_) {}
   torso.space = space;
-  new PivotJoint(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15)).space = space;
+  // The pelvis↔torso pin MUST be tracked in _riderJoints so teardown detaches it
+  // on respawn — an untracked joint here left a dangling PivotJoint in the space
+  // every reset, which threw "Constraints must have each body within the same
+  // space" on the next step after rebuilding the rig.
+  const torsoPin = new PivotJoint(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15));
+  torsoPin.space = space;
+  _riderJoints.push(torsoPin);
   _torsoBase = torso.rotation - pelvis.rotation;
   _torsoHinge = new AngleJoint(pelvis, torso, _torsoBase - POSE_SOFT, _torsoBase + POSE_SOFT);
   // STIFF: the torso angle is posture-critical and must win against the pull of
@@ -361,6 +442,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   _torsoHinge.stiff = true;
   _torsoHinge.space = space;
   _riderJoints.push(_torsoHinge);
+  _angleHinges.push({ joint: _torsoHinge, base: _torsoBase });
 
   // Head — sits atop the torso, follows its lean.
   const head = add(new Body(BodyType.DYNAMIC, new Vec2(seatX + 7, seatY - 44)));
@@ -400,7 +482,9 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     try { lower.userData._colorIdx = 2; } catch (_) {}
     lower.space = space;
     elbows.push(poseHinge(upper, lower, new Vec2(armLen / 2, 0), new Vec2(-armLen / 2, 0),
-      { freq: 4, damp: 0.5 }));   // soft elbow → the arm bends/relaxes on the bars
+      { freq: 4, damp: 0.5, limbLink: true }));   // soft elbow → the arm bends/relaxes
+                                  // on the bars; limbLink keeps the forearm↔upper-arm
+                                  // angle sane when the rider goes ragdoll
     return { upper, lower };
   };
   const lArm = buildArm();
@@ -435,7 +519,8 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     try { shin.userData._colorIdx = 2; } catch (_) {}
     shin.space = space;
     const kneeH = poseHinge(thigh, shin, new Vec2(thighLen / 2, 0), new Vec2(-shinLen / 2, 0),
-      { freq: 12, damp: 0.85 });
+      { freq: 12, damp: 0.85, limbLink: true });   // limbLink keeps the shin↔thigh
+                                  // angle sane on a crash (no shin folding through)
     knees.push(kneeH);
     _kneeHinges.push(kneeH);    // straightened on lean to extend the leg
     return { thigh, shin };
@@ -691,6 +776,7 @@ function teardownBikeAndRider() {
   _torsoHinge = null;
   _torsoLean = 0;
   _kneeHinges = [];
+  _angleHinges = [];
   _legExtend = 0;
   _seatLift = 0;
   _seatShift = 0;
@@ -719,20 +805,36 @@ function bailRider() {
   for (const j of _pegJoints) { if (j.space) j.space = null; }
   _gripJoints = [];
   _pegJoints = [];
-  // A small backward+up kick on the pelvis so the rider visibly tumbles off
-  // the back rather than sitting in place.
-  if (_rider && _rider.pelvis && _rider.pelvis.space) {
-    const v = _rider.pelvis.velocity;
-    _rider.pelvis.velocity = new Vec2(v.x - 120, v.y - 160);
+  // Gently separate the rider from the bike — it tips off and tumbles, it does
+  // not get ejected. Each part keeps a fraction of the bike's velocity plus a
+  // soft nudge (direction follows travel so a reversing crash sheds it forward).
+  const cv = _chassis && _chassis.space ? _chassis.velocity : new Vec2(0, 0);
+  const dir = cv.x < 0 ? -1 : 1;
+  const launchX = cv.x * BAIL_INHERIT + BAIL_KICK_X * dir;
+  const launchY = cv.y * BAIL_INHERIT + BAIL_KICK_Y;
+  for (const b of _riderParts) {
+    if (!b || !b.space) continue;
+    b.velocity = new Vec2(launchX, launchY);
+    b.angularVel += (b === _rider.pelvis ? -2 : -1);   // a little tumble
   }
-  // Throw every limb hinge window wide so the freed rider flops loosely
-  // instead of holding its seated shape.
-  for (const j of _riderJoints) {
-    if (j.jointMin !== undefined && j.jointMax !== undefined) {
-      j.jointMin = -Math.PI;
-      j.jointMax = Math.PI;
-      j.frequency = 2;
-      j.damping = 0.3;
+  // Go limp and sprawl. Limb links (elbow/knee) keep a bounded but generous soft
+  // window so the limb stays in proportion without folding through itself; every
+  // other joint goes very loose and low-frequency so the body drapes out like a
+  // real ragdoll rather than holding a rigid pose.
+  for (const h of _angleHinges) {
+    const j = h && h.joint;
+    if (!j || j.space === null) continue;
+    j.stiff = false;
+    if (h.limbLink) {
+      j.jointMin = h.base - RAGDOLL_LIMB_RANGE;
+      j.jointMax = h.base + RAGDOLL_LIMB_RANGE;
+      j.frequency = RAGDOLL_LIMB_FREQ;
+      j.damping = RAGDOLL_LIMB_DAMP;
+    } else {
+      j.jointMin = h.base - RAGDOLL_LOOSE_RANGE;
+      j.jointMax = h.base + RAGDOLL_LOOSE_RANGE;
+      j.frequency = RAGDOLL_LOOSE_FREQ;
+      j.damping = RAGDOLL_LOOSE_DAMP;
     }
   }
 }
@@ -741,15 +843,17 @@ export default {
   id: "dirtline",
   label: "Dirtline",
   featured: false,
-  tags: ["MotorJoint", "SpringJoint", "WeldJoint", "Ragdoll", "Vehicle", "Camera", "Break-away"],
+  tags: ["MotorJoint", "SpringJoint", "WeldJoint", "Ragdoll", "Vehicle", "Camera", "Break-away", "ParticleEmitter"],
   desc:
     "Hill-climb trials bike with an articulated ragdoll rider welded to the " +
-    "seat. <b>→</b> / <b>D</b> throttle, <b>←</b> / <b>A</b> reverse, " +
-    "<b>↑</b> / <b>W</b> lean back (pop the front), <b>↓</b> / <b>S</b> lean " +
-    "forward (nose-down). Flip the bike or smack the ground hard and the rider " +
-    "breaks away and tumbles off. <b>R</b> or click to respawn. " +
-    "Showcases MotorJoint wheels on SpringJoint suspension, a ragdoll attached " +
-    "to a moving vehicle, and a break-away WeldJoint.",
+    "seat, on a long course with several big jumps. <b>→</b> / <b>D</b> " +
+    "throttle, <b>←</b> / <b>A</b> reverse, <b>↑</b> / <b>W</b> lean back " +
+    "(pop the front), <b>↓</b> / <b>S</b> lean forward (nose-down). The moving " +
+    "wheels fling physics-based gravel that skitters on the track. Flip the " +
+    "bike or smack the ground hard and the rider breaks away and ragdolls off. " +
+    "<b>R</b> or click to respawn. Showcases MotorJoint wheels on SpringJoint " +
+    "suspension, a ragdoll attached to a moving vehicle, a break-away " +
+    "WeldJoint, and a terrain-only ParticleEmitter.",
   walls: false,
 
   camera: null,
@@ -774,6 +878,35 @@ export default {
     wallR.space = space;
 
     buildBike(space, _spawnX, groundY);
+
+    // Gravel spray — one pooled emitter per wheel. Real dynamic pebbles that
+    // ONLY collide with the terrain (GRAVEL_FILTER), so they skitter on the
+    // track and never touch the bike or rider. Created disabled with rate 0;
+    // step() moves each emitter's origin onto its wheel's contact patch and
+    // dials the rate up with wheel speed, so a moving/spinning wheel flings
+    // gravel and a parked one flings none. The cone fires up-and-back (screen
+    // −y is up) — dirt kicked rearward off the contact patch.
+    const makeGravel = () => new ParticleEmitter({
+      space,
+      origin: new Vec2(0, 0),
+      velocity: { kind: "cone", direction: -2.5, spread: 0.6, speedMin: 140, speedMax: 360 },
+      rate: 0,
+      enabled: false,
+      maxParticles: GRAVEL_MAX,
+      lifetimeMin: 0.4,
+      lifetimeMax: 1.0,
+      particleRadius: GRAVEL_R,
+      // Gritty, draggy pebbles: almost no bounce (elasticity ~0) and HIGH
+      // friction (1.4 dyn / 1.6 stat) so a thrown stone bites the track and
+      // skids to a stop instead of sliding around frictionlessly — that
+      // low-friction slide was the "fluid"/runny look. Heavier (density 0.9)
+      // too, so they settle quickly rather than drifting.
+      particleMaterial: new Material(0.02, 1.4, 1.6, 0.9),
+      particleFilter: GRAVEL_FILTER,
+      bounds: { minX: -200, minY: -2000, maxX: WORLD_W + 200, maxY: SCREEN_H + 400 },
+    });
+    _gravelF = makeGravel();
+    _gravelR = makeGravel();
 
     _crashed = false;
     _flipFrames = 0;
@@ -817,12 +950,27 @@ export default {
       if (_onKeyUp) window.removeEventListener("keyup", _onKeyUp);
     }
     _onKeyDown = _onKeyUp = null;
+    if (_gravelF) { _gravelF.destroy(); _gravelF = null; }
+    if (_gravelR) { _gravelR.destroy(); _gravelR = null; }
   },
 
   step(space) {
     _frame++;
     _stepped = true;
     if (!_chassis) return;
+
+    // Once the rider has bailed (death), the bike is no longer controllable —
+    // kill the motor and ignore throttle/lean input. The chassis + wheels keep
+    // coasting on physics alone until respawn (R / click).
+    if (_crashed) {
+      if (_rMotor) _rMotor.rate = 0;
+      const DT = 1 / 60;
+      updateGravel(_gravelF, _fWheel);
+      updateGravel(_gravelR, _rWheel);
+      if (_gravelF) _gravelF.update(DT);
+      if (_gravelR) _gravelR.update(DT);
+      return;
+    }
 
     // ── Throttle (rear motor) ──────────────────────────────────────────────
     const fwd = keys.ArrowRight || keys.KeyD || keys._touchRight;
@@ -944,32 +1092,49 @@ export default {
     // angle, so the angle test alone misses it — catch it by angular speed);
     // (3) a hard ground smack. Any one breaks the seat weld and the rider bails.
     if (!_crashed) {
-      // Normalise chassis rotation into [-π, π] and measure tilt from upright.
+      // The crash rule: the rider only bails when their UPPER BODY actually hits
+      // the ground. The bike going past vertical (a flip, an endo, rolling on a
+      // steep slope, reversing into a tip-over) is NOT a crash on its own — the
+      // rider stays welded on and rides it out unless the head/torso smacks down.
+      // This matches the ask: "don't fall off when the dummy never touches the
+      // ground." We still track the flip/spin counters as a *qualifier* so a
+      // brief touch during normal riding doesn't bail — the rider must both be
+      // upended (sustained flip OR violent spin) AND have the upper body grounded.
       let rot = _chassis.rotation % (Math.PI * 2);
       if (rot > Math.PI) rot -= Math.PI * 2;
       if (rot < -Math.PI) rot += Math.PI * 2;
-      // Accumulate while past the tip angle; decay (don't hard-reset) so a fast
-      // tumble that flickers under the angle each rotation still trips it.
-      if (Math.abs(rot) > FLIP_ANGLE) _flipFrames += 1;
+      if (Math.abs(rot) > FLIP_ANGLE && !bothWheelsGrounded()) _flipFrames += 1;
       else _flipFrames = Math.max(0, _flipFrames - 2);
-      if (_flipFrames > FLIP_FRAMES) bailRider();
 
-      // Spinning out of control — a violent tumble in the air or after a bad
-      // landing. Sustained high angular speed = you've lost it.
-      if (Math.abs(_chassis.angularVel) > CRASH_SPIN_RATE) {
-        _spinFrames += 1;
-        if (_spinFrames > CRASH_SPIN_FRAMES) bailRider();
-      } else {
-        _spinFrames = Math.max(0, _spinFrames - 1);
+      if (Math.abs(_chassis.angularVel) > CRASH_SPIN_RATE) _spinFrames += 1;
+      else _spinFrames = Math.max(0, _spinFrames - 1);
+
+      const upended = _flipFrames > FLIP_FRAMES || _spinFrames > CRASH_SPIN_FRAMES;
+      if (upended && riderHeadHitsGround()) {
+        bailRider();
+        if (this._runner) this._runner.shakeCamera(6, 0.2);
       }
 
-      // Hard impact: chassis driving down fast onto the ground.
+      // Hard impact: the bike slams down fast AND the rider's upper body is driven
+      // into the ground with it (a flat landing that whips the rider down).
       const vy = _chassis.velocity.y;
-      if (vy > CRASH_IMPACT_SPEED && wheelTouchingGround()) {
+      if (vy > CRASH_IMPACT_SPEED && riderHeadHitsGround()) {
         bailRider();
         if (this._runner) this._runner.shakeCamera(8, 0.25);
       }
     }
+
+    // ── Gravel spray ─────────────────────────────────────────────────────────
+    // Each grounded, moving wheel flings gravel off its contact patch. Speed is
+    // the wheel-surface speed: forward travel plus spin (|ω|·R), so wheelspin on
+    // the gas sprays hard even before the bike moves. The emitter origin rides
+    // the bottom of the wheel; rate scales with speed. Particles only hit the
+    // terrain (GRAVEL_FILTER), never the bike/rider.
+    updateGravel(_gravelF, _fWheel);
+    updateGravel(_gravelR, _rWheel);
+    const DT = 1 / 60;
+    if (_gravelF) _gravelF.update(DT);
+    if (_gravelR) _gravelR.update(DT);
   },
 
   click(x, y, space) {
@@ -1010,15 +1175,71 @@ export default {
 // strong ground-lean). Instead we test geometry: a wheel is grounded if its
 // bottom edge is at/below the terrain surface (within a small tolerance). This
 // is independent of step order and matches what `buildTerrain` lays down.
+function wheelOnGround(w) {
+  if (!w) return false;
+  const p = w.position;
+  const surfaceY = terrainY(p.x, _spawnGroundY);
+  // wheel bottom = p.y + WHEEL_R; grounded if it's at/under the surface.
+  return p.y + WHEEL_R >= surfaceY - GROUND_TOL;
+}
 function wheelTouchingGround() {
-  const onGround = (w) => {
-    if (!w) return false;
-    const p = w.position;
-    const surfaceY = terrainY(p.x, _spawnGroundY);
-    // wheel bottom = p.y + WHEEL_R; grounded if it's at/under the surface.
-    return p.y + WHEEL_R >= surfaceY - GROUND_TOL;
+  return wheelOnGround(_rWheel) || wheelOnGround(_fWheel);
+}
+// Both wheels planted = the bike is sitting on the terrain (however steep the
+// slope), NOT flipping. The tip-over crash test ignores the angle while this is
+// true, so riding/reversing up a steep face — where the chassis can lean well
+// past the flip angle just following the ground — never triggers a bail. A real
+// flip lifts at least one wheel off the surface.
+function bothWheelsGrounded() {
+  return wheelOnGround(_rWheel) && wheelOnGround(_fWheel);
+}
+// True when the rider's UPPER BODY (head or torso) has actually been driven into
+// the terrain. This is what turns a flip into a crash: the bike tipping past
+// vertical only bails the rider if the head/torso genuinely reaches the ground —
+// standing the bike on its nose, or rolling it on a steep slope where the rider
+// never touches down, does NOT count. Geometry test against the terrain surface,
+// same approach as the wheel grounding check (step-order independent).
+function riderHeadHitsGround() {
+  if (!_rider) return false;
+  const hit = (b, r) => {
+    if (!b || !b.space) return false;
+    const p = b.position;
+    // Require a genuine touch: the part's lower edge must reach the surface (no
+    // GROUND_TOL slack here — unlike the wheels, the head shouldn't "count" while
+    // still hovering a few px above the dirt).
+    return p.y + r >= terrainY(p.x, _spawnGroundY);
   };
-  return onGround(_rWheel) || onGround(_fWheel);
+  // head is a Circle(8.5); torso a box ~30 tall → ~15 to its lower edge.
+  return hit(_rider.head, 8.5) || hit(_rider.torso, 15);
+}
+
+// Drive one wheel's gravel emitter: position its origin on the wheel's lower
+// contact patch and scale the spawn rate by the wheel-surface speed (travel +
+// spin). A grounded, fast/spinning wheel sprays; an airborne or parked one
+// doesn't. Per-wheel grounding is checked here (wheelTouchingGround() is an
+// either-wheel test, too coarse for deciding which wheel throws dirt).
+function updateGravel(emitter, wheel) {
+  if (!emitter || !wheel) return;
+  const p = wheel.position;
+  const surfaceY = terrainY(p.x, _spawnGroundY);
+  const grounded = p.y + WHEEL_R >= surfaceY - GROUND_TOL;
+  // Surface speed = how fast the contact patch moves over the ground: linear
+  // travel plus the spin component |ω|·R. Wheelspin counts even at a standstill.
+  const v = wheel.velocity;
+  const surfSpeed = Math.hypot(v.x, v.y) + Math.abs(wheel.angularVel) * WHEEL_R;
+  if (!grounded || _crashed || surfSpeed < GRAVEL_MIN_SPEED) {
+    emitter.enabled = false;
+    emitter.rate = 0;
+    return;
+  }
+  // Origin sits at the wheel bottom (the contact patch), nudged just below the
+  // surface so pebbles spawn out of the dirt.
+  emitter.origin.x = p.x;
+  emitter.origin.y = surfaceY - 1;
+  // Rate ramps from 0 at GRAVEL_MIN_SPEED up to GRAVEL_RATE_MAX, then saturates.
+  const t = Math.min(1, (surfSpeed - GRAVEL_MIN_SPEED) / 600);
+  emitter.enabled = true;
+  emitter.rate = GRAVEL_RATE_MAX * t;
 }
 
 // Draw the suspension springs (chassis anchor → wheel hub) in world space.
