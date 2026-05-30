@@ -1,5 +1,5 @@
 import {
-  Body, BodyType, Vec2, Circle, Polygon, Material,
+  Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint,
 } from "../nape-js.esm.js";
 
@@ -19,6 +19,10 @@ import {
 
 const SCREEN_W = 900;
 const SCREEN_H = 500;
+
+// Dev toggle: build the bike alone (no rider) while iterating on the chassis +
+// suspension. Flip back to true once the bike looks/behaves right.
+const BUILD_RIDER = false;
 
 // ── World / terrain ─────────────────────────────────────────────────────────
 const WORLD_W = 6000;
@@ -89,22 +93,63 @@ function buildTerrain(space, groundY) {
   }
 }
 
+// ── Collision filters ───────────────────────────────────────────────────────
+// The bike's own parts (frame + both wheels) must NOT collide with each other —
+// when a big landing fully compresses the suspension the wheel can touch the
+// frame, and two solid bodies in contact "stick"/jam. Each bike part collides
+// ONLY with the terrain (group 1); their own groups are left out of each
+// other's mask, so frame↔wheel and wheel↔wheel pairs never generate contacts.
+// Terrain bodies keep the default filter (group 1, mask −1 → hits everything).
+const GROUP_TERRAIN = 1;
+const BIKE_FILTER = new InteractionFilter(2, GROUP_TERRAIN);   // collides only w/ terrain
+
 // ── Bike tuning ─────────────────────────────────────────────────────────────
-// Crossmotor (dirt-bike) proportions — bigger spoked wheels, longer wheelbase,
-// and a higher seat than a road bike so it reads as a trials/MX machine.
-const WHEEL_R = 26;
-const WHEEL_BASE = 58;          // half the axle-to-axle distance
-const CHASSIS_H = 14;
-const SUSP_REST = 40;           // spring rest length (chassis → wheel) — long MX travel
-const SUSP_FREQ = 3.2;
-const SUSP_DAMP = 0.55;
-const SUSP_MIN = -10;           // LineJoint travel limits — generous suspension stroke
-const SUSP_MAX = 38;
-const MOTOR_RATE = 18;          // rear-wheel motor target angular rate (caps top
-                                // wheel speed → caps how violently a wheelie develops)
-const MOTOR_FORCE = 200000;     // torque cap — high so the bike can actually
-                                // climb under load; the low RATE (not the force)
-                                // is what keeps it from instantly looping out
+// Realistic crossmotor (dirt-bike) proportions: smaller wheels relative to a
+// long-ish frame, with two DIFFERENT suspensions — a telescopic fork up front
+// and a swingarm + monoshock at the rear (see buildBike).
+const WHEEL_R = 19;             // MX wheel — smaller than the old 26 so the bike
+                                // reads as a motorcycle, not a monster truck
+const WHEEL_BASE = 60;          // half the axle-to-axle distance
+const CHASSIS_H = 12;
+
+// Front telescopic fork — the wheel slides along a RAKED axis. FORK_OFFSET is a
+// FIXED extension that places the wheel well forward/below the steering head
+// (long wheelbase, good reach); the spring then only travels a SMALL window
+// (FORK_MIN..FORK_MAX) around that offset. This keeps the wheel from wandering
+// far out under accel/landing — it sits at a fixed ride height and just rugóz a
+// little, instead of shooting out to the end of a long soft spring.
+const FORK_RAKE = 0.42;         // radians the fork leans back from vertical (~24°)
+const FORK_OFFSET = 40;         // fixed wheel-out distance from the steering head
+// Spring tuning, the way real suspension works: FREQ is high enough that the
+// bike's own weight only sags a little (it RESTS near FORK_OFFSET with travel to
+// spare), so a big hit (jump/landing/bump) drives it deep and then it springs
+// back to ride height. DAMP stays low so the spring-back stays lively (not dead).
+const FORK_FREQ = 6.5;          // firm enough to hold ride height under static weight
+const FORK_DAMP = 0.32;         // low → lively spring-back, but no endless pogo
+const FORK_MIN = -24;           // deep compression available for big hits
+const FORK_MAX = 10;            // a little top-out travel
+
+// Rear monoshock — the rear wheel rides a near-vertical sprung sliding axis on
+// the frame (canonical 3-body bike; no pivoting swingarm body — see buildBike).
+// Same idea: a fixed offset (the ride height) + a small spring window.
+const SHOCK_OFFSET = 30;        // fixed rear axle drop from the frame anchor
+const SHOCK_FREQ = 4.4;         // holds ride height, but softer/livelier than 6.0
+const SHOCK_DAMP = 0.2;         // low → lively, springy rear (more dynamic feel)
+const SHOCK_MIN = -26;          // deep compression available for jumps/landings
+const SHOCK_MAX = 12;           // a little top-out travel
+// Visual swingarm + monoshock anchors (drawn only — no physics). Pivot under
+// the engine; SHOCK_TOP sits just above the rear axle so the coil drops nearly
+// straight down to the wheel instead of crossing the bike diagonally.
+const SWINGARM_PIVOT = { x: -22, y: 8 };
+const SHOCK_TOP = { x: -44, y: -12 };
+
+const MOTOR_RATE = 30;          // rear-wheel motor target angular rate. Kept
+                                // moderate ON PURPOSE: cranking it higher just
+                                // spins the wheel faster than it can grip (heavy
+                                // wheelspin → the bike surges/bogs). Grip + a
+                                // sane rate give smooth, fast power delivery.
+const MOTOR_FORCE = 75000;      // torque cap — moderate so acceleration doesn't
+                                // break traction (or loft the front into a flip).
 const LEAN_TORQUE = 40;         // ground lean impulse per frame — pops a wheelie
                                 // / pushes the nose down for jump setup
 const AIR_SPIN_RATE = 0.45;     // rad/s added to chassis angularVel per frame
@@ -148,9 +193,11 @@ let _space = null;
 let _chassis = null;
 let _fWheel = null;
 let _rWheel = null;
+let _swingarm = null;         // rear swingarm body (pivots off the frame)
 let _rMotor = null;
-let _fSusp = null;
-let _rSusp = null;
+let _fSusp = null;            // front fork spring
+let _rSusp = null;            // rear monoshock spring
+const _bikeJoints = [];       // every bike constraint, for clean teardown
 
 // Rider rig — the welded ragdoll. `_seatWeld` is the break-away joint; the rest
 // are the articulation. `_riderParts` / `_riderJoints` are kept for teardown.
@@ -356,112 +403,167 @@ function applyPose() {
 // rear wheel gets a MotorJoint = throttle. The rider's pelvis is WELDED to the
 // chassis seat — that weld is the break-away joint.
 function buildBike(space, spawnX, groundY) {
-  const cy = groundY - 96;
+  const cy = groundY - 78;
+  _bikeJoints.length = 0;
+  const J = (j) => { j.space = space; _bikeJoints.push(j); return j; };
 
-  // Chassis — a crossmotor silhouette: low slim frame, kicked-up seat/tail at
-  // the back, sloped tank + number plate at the front. Default material on
-  // purpose (dodges the Polygon+Material tunneling bug on fast landings).
+  // ── Frame ────────────────────────────────────────────────────────────────
+  // A recognizable dirt-bike profile, drawn in chassis-local coords. The bike
+  // faces +x (right). Origin sits at the frame centre, roughly axle height.
+  // No explicit Material on the frame (dodges the Polygon+Material tunneling
+  // bug on hard landings). Layout (local x): rear axle ≈ -WHEEL_BASE via the
+  // swingarm, steering head ≈ +44, front axle ≈ +WHEEL_BASE via the fork.
   const chassis = new Body(BodyType.DYNAMIC, new Vec2(spawnX, cy));
-  // Main frame spar (slim, between the wheels).
+  // Central frame triangle (backbone + downtube) — the structural mass.
   chassis.shapes.add(new Polygon([
-    new Vec2(-50, 0), new Vec2(46, 0),
-    new Vec2(50, 6), new Vec2(44, 11),
-    new Vec2(-48, 11), new Vec2(-54, 6),
+    new Vec2(-20, -10), new Vec2(20, -8),
+    new Vec2(34, 6), new Vec2(2, 8),
+    new Vec2(-20, 4),
   ]));
-  // Kicked-up rear fender + seat (the high MX tail).
+  // Engine block slung low under the frame (the heavy bit, keeps CoM low).
   chassis.shapes.add(new Polygon([
-    new Vec2(-54, -16), new Vec2(-22, -12),
-    new Vec2(-16, 0), new Vec2(-50, 0),
+    new Vec2(-8, 4), new Vec2(20, 4),
+    new Vec2(22, 16), new Vec2(-6, 16),
   ]));
-  // Tank / shroud up front, sloping down toward the bars.
+  // Seat + rear subframe sweeping up to the tail (reaches back over the rear
+  // wheel so the bike reads as one connected machine).
   chassis.shapes.add(new Polygon([
-    new Vec2(4, -12), new Vec2(30, -7),
-    new Vec2(40, 0), new Vec2(4, 0),
+    new Vec2(-44, -14), new Vec2(-8, -11),
+    new Vec2(-6, -4), new Vec2(-44, -7),
   ]));
-  // Front number plate / fork shroud (thin, angled forward).
+  // Rear fender stub over the back wheel.
   chassis.shapes.add(new Polygon([
-    new Vec2(40, -4), new Vec2(54, -10),
-    new Vec2(58, -4), new Vec2(46, 2),
+    new Vec2(-52, -10), new Vec2(-40, -12),
+    new Vec2(-38, -6), new Vec2(-52, -4),
   ]));
-  // Handlebar riser + grip — gives the rider's hands a target to reach and
-  // reads as the cockpit. Riser climbs up from the front of the tank; the grip
-  // is a short crossbar at the top, pulled back toward the rider so the arms
-  // reach it.
+  // Fuel tank rising in front of the seat.
   chassis.shapes.add(new Polygon([
-    new Vec2(24, -8), new Vec2(30, -8),
-    new Vec2(28, -28), new Vec2(22, -28),
+    new Vec2(-8, -11), new Vec2(10, -16),
+    new Vec2(20, -8), new Vec2(0, -8),
+  ]));
+  // Steering head + a stub of the upper fork triple-clamp at the front.
+  chassis.shapes.add(new Polygon([
+    new Vec2(28, -6), new Vec2(40, -16),
+    new Vec2(46, -12), new Vec2(36, 2),
+  ]));
+  // Handlebar riser + grip above the steering head (cockpit + a hand target).
+  chassis.shapes.add(new Polygon([
+    new Vec2(36, -16), new Vec2(41, -18),
+    new Vec2(34, -34), new Vec2(29, -32),
   ]));
   chassis.shapes.add(new Polygon([
-    new Vec2(14, -30), new Vec2(30, -30),
-    new Vec2(30, -25), new Vec2(14, -25),
+    new Vec2(20, -36), new Vec2(36, -33),
+    new Vec2(35, -28), new Vec2(19, -31),
   ]));
   try { chassis.userData._colorIdx = 0; } catch (_) {}
+  // Frame collides only with the terrain, never with its own wheels.
+  for (const shape of chassis.shapes) shape.filter = BIKE_FILTER;
   chassis.space = space;
 
-  // Low bounce, grippy MX tyre. Friction kept moderate (1.2) on purpose: with
-  // the torque-capped motor, *too much* grip stalls the bike on a steep face
-  // (the contact locks before the wheel can roll up it). 1.2 climbs the hills
-  // cleanly while still biting enough to launch off jumps.
-  const wheelMat = new Material(0.15, 1.4, 1.4, 1.3);
-  const makeWheel = (dx) => {
-    const w = new Body(BodyType.DYNAMIC, new Vec2(spawnX + dx, cy + 52));
-    w.shapes.add(new Circle(WHEEL_R, undefined, wheelMat));
+  // Low bounce, grippy MX tyre. Friction at 1.6 — enough that the wheel hooks
+  // up and delivers power smoothly (less wheelspin / surging) without being so
+  // grippy it stalls the bike on a steep face.
+  const wheelMat = new Material(0.15, 1.6, 1.6, 1.2);
+  const makeWheel = (x, y) => {
+    const w = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+    // Same filter as the frame → wheel never collides with the frame or the
+    // other wheel (only the terrain), so a fully-compressed suspension can't
+    // jam the wheel against the frame.
+    w.shapes.add(new Circle(WHEEL_R, undefined, wheelMat, BIKE_FILTER));
     try { w.userData._colorIdx = 3; } catch (_) {}
+    // Continuous collision check — at the higher top speed a fast wheel could
+    // otherwise tunnel through a thin terrain segment between two steps.
+    w.isBullet = true;
     w.space = space;
     return w;
   };
-  const fWheel = makeWheel(WHEEL_BASE);
-  const rWheel = makeWheel(-WHEEL_BASE);
 
-  // Suspension: spring + vertical line constraint per wheel.
-  const suspend = (wheel, dx) => {
-    const spring = new SpringJoint(
-      chassis, wheel,
-      new Vec2(dx, CHASSIS_H / 2), new Vec2(0, 0),
-      SUSP_REST,
-    );
-    spring.frequency = SUSP_FREQ;
-    spring.damping = SUSP_DAMP;
-    spring.space = space;
-    new LineJoint(
-      chassis, wheel,
-      new Vec2(dx, CHASSIS_H / 2), new Vec2(0, 0),
-      new Vec2(0, 1), SUSP_MIN, SUSP_MAX,
-    ).space = space;
-    return spring;
-  };
-  _fSusp = suspend(fWheel, WHEEL_BASE);
-  _rSusp = suspend(rWheel, -WHEEL_BASE);
+  // ── Front telescopic fork ──────────────────────────────────────────────────
+  // The wheel slides along the RAKED fork axis (down-and-forward from the
+  // steering head). FORK_OFFSET fixes where the wheel sits; the LineJoint only
+  // allows a small window (FORK_MIN..FORK_MAX) around it, and the SpringJoint's
+  // rest length IS the offset so the wheel is held there and just rugóz a little.
+  const headLocal = new Vec2(40, -12);
+  const forkAxis = new Vec2(Math.sin(FORK_RAKE), Math.cos(FORK_RAKE)); // down-forward
+  const fWheel = makeWheel(
+    spawnX + headLocal.x + forkAxis.x * FORK_OFFSET,
+    cy + headLocal.y + forkAxis.y * FORK_OFFSET,
+  );
+  J(new LineJoint(
+    chassis, fWheel,
+    new Vec2(headLocal.x, headLocal.y), new Vec2(0, 0),
+    new Vec2(forkAxis.x, forkAxis.y), FORK_OFFSET + FORK_MIN, FORK_OFFSET + FORK_MAX,
+  ));
+  _fSusp = J(new SpringJoint(
+    chassis, fWheel,
+    new Vec2(headLocal.x, headLocal.y), new Vec2(0, 0),
+    FORK_OFFSET,
+  ));
+  _fSusp.frequency = FORK_FREQ;
+  _fSusp.damping = FORK_DAMP;
 
-  // Rear-wheel motor = throttle (rate set per frame in step()). maxForce caps
-  // the torque so the throttle is progressive — climbs hills without the rear
-  // wheel snapping the whole bike into an instant backflip.
-  _rMotor = new MotorJoint(chassis, rWheel, 0);
+  // ── Rear wheel — sprung sliding axle (the canonical 2D-bike model) ─────────
+  // Researching the genre (TeaGames-style motocross, Trials, Hill Climb, Box2D
+  // bike demos) the universal recipe is a 3-body bike — frame + 2 wheels — with
+  // NO separate swingarm body. A pivoting swingarm puts the motor's drive
+  // *reaction* torque onto a light, softly-sprung arm, which kicks it back ~23°
+  // (exactly what we saw). Instead the rear wheel rides a near-vertical sprung
+  // sliding axis bolted to the frame, and the motor drives the wheel relative
+  // to the FRAME: the reaction now lands on the heavy frame as a mild wheelie,
+  // not as a structural collapse. The swingarm + monoshock you SEE are drawn in
+  // drawSuspension purely for looks (drawn over this physics).
+  const rearAxleLocal = new Vec2(-52, 4);           // where the rear axle hangs
+  const rearAxis = new Vec2(0.05, 0.999);           // essentially vertical
+  const rWheel = makeWheel(
+    spawnX + rearAxleLocal.x + rearAxis.x * SHOCK_OFFSET,
+    cy + rearAxleLocal.y + rearAxis.y * SHOCK_OFFSET,
+  );
+  J(new LineJoint(
+    chassis, rWheel,
+    new Vec2(rearAxleLocal.x, rearAxleLocal.y), new Vec2(0, 0),
+    new Vec2(rearAxis.x, rearAxis.y), SHOCK_OFFSET + SHOCK_MIN, SHOCK_OFFSET + SHOCK_MAX,
+  ));
+  _rSusp = J(new SpringJoint(
+    chassis, rWheel,
+    new Vec2(rearAxleLocal.x, rearAxleLocal.y), new Vec2(0, 0),
+    SHOCK_OFFSET,
+  ));
+  _rSusp.frequency = SHOCK_FREQ;     // a touch stiffer than the fork
+  _rSusp.damping = SHOCK_DAMP;
+
+  // Rear-wheel motor = throttle, between FRAME and rear wheel. The drive
+  // reaction lands on the heavy low-CoM frame (mild wheelie), never tipping a
+  // swingarm. maxForce caps the torque so the throttle is progressive — the
+  // single most important anti-flip knob in the genre. (rate set in step()).
+  _rMotor = J(new MotorJoint(chassis, rWheel, 0));
   _rMotor.maxForce = MOTOR_FORCE;
-  _rMotor.space = space;
 
   _chassis = chassis;
   _fWheel = fWheel;
   _rWheel = rWheel;
+  // No physical swingarm body — it's drawn for looks in drawSuspension.
+  _swingarm = null;
 
-  // Rider welded to the seat over the kicked-up MX tail. The pelvis locks
-  // rigidly to that point so the chassis lean drives the whole rig; the *visible*
-  // weight shift comes from the active pose (applyPose), not from weld give — so
-  // this weld is firm. Breaking it (`_seatWeld.space = null`) is the break-away
-  // showcase on a crash.
-  const seatLocalX = -16;       // mid-bike seat — rider centered so the arms can
-  const seatLocalY = -14;       // reach forward to the bars and legs to the pegs
-  const seatX = chassis.position.x + seatLocalX;
-  const seatY = chassis.position.y + seatLocalY;
-  const pelvis = buildRider(space, seatX, seatY);
-  _seatWeld = new WeldJoint(
-    chassis, pelvis,
-    new Vec2(seatLocalX, seatLocalY), new Vec2(0, 0),
-  );
-  _seatWeld.stiff = false;       // soft-but-firm: high frequency so it holds tight
-  _seatWeld.frequency = 18;
-  _seatWeld.damping = 0.9;
-  _seatWeld.space = space;
+  // Rider welded to the seat. The pelvis locks rigidly to that point so the
+  // chassis lean drives the whole rig; the *visible* weight shift comes from
+  // the active pose (applyPose), not from weld give — so this weld is firm.
+  // Breaking it (`_seatWeld.space = null`) is the break-away showcase on a crash.
+  // (BUILD_RIDER lets us bring the bike up alone while iterating on it.)
+  if (BUILD_RIDER) {
+    const seatLocalX = -18;       // over the seat, just behind the tank
+    const seatLocalY = -16;
+    const seatX = chassis.position.x + seatLocalX;
+    const seatY = chassis.position.y + seatLocalY;
+    const pelvis = buildRider(space, seatX, seatY);
+    _seatWeld = new WeldJoint(
+      chassis, pelvis,
+      new Vec2(seatLocalX, seatLocalY), new Vec2(0, 0),
+    );
+    _seatWeld.stiff = false;       // soft-but-firm: high frequency so it holds tight
+    _seatWeld.frequency = 18;
+    _seatWeld.damping = 0.9;
+    _seatWeld.space = space;
+  }
 }
 
 // ── Reset / respawn ─────────────────────────────────────────────────────────
@@ -473,15 +575,15 @@ function teardownBikeAndRider() {
   _seatWeld = null;
   for (const j of _riderJoints) { if (j.space) j.space = null; }
   _riderJoints = [];
-  if (_fSusp && _fSusp.space) _fSusp.space = null;
-  if (_rSusp && _rSusp.space) _rSusp.space = null;
-  if (_rMotor && _rMotor.space) _rMotor.space = null;
+  // All bike constraints (fork line + spring, swingarm pivots, monoshock, motor).
+  for (const j of _bikeJoints) { if (j.space) j.space = null; }
+  _bikeJoints.length = 0;
   _fSusp = _rSusp = _rMotor = null;
 
   for (const b of _riderParts) { if (b.space) b.space = null; }
   _riderParts = [];
-  for (const b of [_chassis, _fWheel, _rWheel]) { if (b && b.space) b.space = null; }
-  _chassis = _fWheel = _rWheel = _rider = null;
+  for (const b of [_chassis, _fWheel, _rWheel, _swingarm]) { if (b && b.space) b.space = null; }
+  _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
   _poseJoints = null;
   _pose = { ...POSE_NEUTRAL };
 }
@@ -768,15 +870,49 @@ function drawSuspension(ctx, camX, camY) {
   const cp = _chassis.position;
   const ca = _chassis.rotation;
   const cos = Math.cos(ca), sin = Math.sin(ca);
-  const offY = CHASSIS_H / 2;
-  const anchor = (dx) => ({
-    x: cp.x + (dx * cos - offY * sin),
-    y: cp.y + (dx * sin + offY * cos),
+  // chassis local → world
+  const toWorld = (lx, ly) => ({
+    x: cp.x + (lx * cos - ly * sin),
+    y: cp.y + (lx * sin + ly * cos),
   });
-  const fa = anchor(WHEEL_BASE);
-  const ra = anchor(-WHEEL_BASE);
-  drawSpring(ctx, fa.x, fa.y, _fWheel.position.x, _fWheel.position.y, "#d2992299");
-  drawSpring(ctx, ra.x, ra.y, _rWheel.position.x, _rWheel.position.y, "#d2992299");
+
+  // Front fork: a pair of tubes from the steering head down to the front axle,
+  // following the (rotated) fork axis. Drawn as two parallel thick lines so it
+  // reads as upside-down telescopic forks.
+  const head = toWorld(40, -12);
+  const fw = _fWheel.position;
+  const fdx = fw.x - head.x, fdy = fw.y - head.y;
+  const flen = Math.hypot(fdx, fdy) || 1;
+  const fpx = -fdy / flen, fpy = fdx / flen;   // perpendicular for the two tubes
+  ctx.strokeStyle = "#9aa4ad";
+  ctx.lineWidth = 3;
+  ctx.setLineDash([]);
+  for (const s of [-2.5, 2.5]) {
+    ctx.beginPath();
+    ctx.moveTo(head.x + fpx * s, head.y + fpy * s);
+    ctx.lineTo(fw.x + fpx * s, fw.y + fpy * s);
+    ctx.stroke();
+  }
+
+  // Rear: cosmetic swingarm + monoshock over the sprung-axle physics. The
+  // swingarm bar runs from a pivot under the engine straight back to the rear
+  // axle; the monoshock coil drops nearly vertically from a frame anchor ABOVE
+  // the axle down to it (a real monoshock sits roughly over the wheel, not
+  // crossing the bike diagonally).
+  const rw = _rWheel.position;
+  const pivot = toWorld(SWINGARM_PIVOT.x, SWINGARM_PIVOT.y);
+  // swingarm bar (thick line, pivot → rear axle)
+  ctx.strokeStyle = "#8a939c";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(pivot.x, pivot.y);
+  ctx.lineTo(rw.x, rw.y);
+  ctx.stroke();
+  ctx.lineCap = "butt";
+  // monoshock coil from a frame anchor just above the rear axle, straight down.
+  const shockTop = toWorld(SHOCK_TOP.x, SHOCK_TOP.y);
+  drawSpring(ctx, shockTop.x, shockTop.y, rw.x, rw.y, "#d29922cc", 6, 4);
   ctx.restore();
 }
 
