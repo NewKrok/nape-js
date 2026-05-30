@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
-  SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint,
+  SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint, DistanceJoint,
 } from "../nape-js.esm.js";
 
 // Dirtline — a side-view hill-climb / trials motorbike with an articulated
@@ -189,11 +189,14 @@ const CRASH_SPIN_FRAMES = 14;   // ~0.23s of that spin before the rider bails
 const POSE_SOFT = 0.04;         // half-width of each hinge's rest window
 // Torso lean: how far the rider's upper body shifts when you lean the bike, and
 // the cap on forward dip so the torso can't fold down into the bike body.
-const TORSO_LEAN_BACK = -0.5;   // rad added to the torso rest angle on lean-back
-const TORSO_LEAN_FWD = 0.22;    // rad added on lean-forward (positive = nose-down)
-const TORSO_FWD_MAX = 0.22;     // hard cap on forward torso tilt past rest so the
+const TORSO_LEAN_BACK = -0.65;  // rad added to the torso rest angle on lean-back (×1.3)
+const TORSO_LEAN_FWD = 0.29;    // rad added on lean-forward (positive = nose-down) (×1.3)
+const TORSO_FWD_MAX = 0.29;     // hard cap on forward torso tilt past rest so the
                                 // upper body can't fold flat onto the bike
 const TORSO_LEAN_LERP = 0.12;   // how fast the torso eases to the new lean target
+// Legs extend with the lean too (rider pushes up off the pegs), so the whole
+// body shifts — not just the torso. Hip opens by this much at full lean.
+const LEG_LEAN = 0.5;           // rad the hip opens (extends the leg) on lean
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -217,6 +220,8 @@ let _riderJoints = [];
 let _torsoHinge = null;       // pelvis→torso AngleJoint, retargeted on lean
 let _torsoBase = 0;           // its built rest angle (the upright seated pose)
 let _torsoLean = 0;           // current eased lean offset applied to the torso
+let _legHinges = [];          // [{ joint, base }] hip + knee hinges, retargeted on
+                              // lean so the legs extend/tuck with the weight shift
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -248,6 +253,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   _riderJoints = [];
   _gripJoints = [];
   _pegJoints = [];
+  _legHinges = [];
 
   const add = (body) => { _riderParts.push(body); return body; };
 
@@ -369,8 +375,10 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     thigh.shapes.add(new Polygon(Polygon.box(thighLen, legW), RM(0.5)));
     try { thigh.userData._colorIdx = 2; } catch (_) {}
     thigh.space = space;
-    hips.push(poseHinge(pelvis, thigh, new Vec2(8, 4), new Vec2(-thighLen / 2, 0),
-      { freq: 4, damp: 0.6 }));
+    const hipH = poseHinge(pelvis, thigh, new Vec2(8, 4), new Vec2(-thighLen / 2, 0),
+      { freq: 9, damp: 0.8 });  // firmer so retargeting actually swings the leg
+    hips.push(hipH);
+    _legHinges.push(hipH);      // retargeted on lean to extend/tuck the legs
 
     const kneeX = hipX + Math.cos(ta) * thighLen;
     const kneeY = hipY + Math.sin(ta) * thighLen;
@@ -412,11 +420,21 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     }
   }
   if (chassis && pegLocal) {
+    // Feet use a SOFT DistanceJoint (not a rigid pivot) so the foot stays near
+    // the peg but the leg can EXTEND when the rider shifts weight on a lean —
+    // a rigid pin locked the leg and killed that motion. jointMin=0 lets the
+    // foot pull in; jointMax gives a little slack; the soft spring keeps it on
+    // the peg under normal riding.
     for (const leg of [lLeg, rLeg]) {
-      _pegJoints.push(new PivotJoint(
+      const d = new DistanceJoint(
         chassis, leg.shin,
         new Vec2(pegLocal.x, pegLocal.y), new Vec2(shinLen / 2, 0),
-      ));
+        0, 10,
+      );
+      d.stiff = false;
+      d.frequency = 6;
+      d.damping = 0.7;
+      _pegJoints.push(d);
     }
   }
   for (const j of _gripJoints) j.space = space;
@@ -629,6 +647,7 @@ function teardownBikeAndRider() {
   _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
   _torsoHinge = null;
   _torsoLean = 0;
+  _legHinges = [];
 }
 
 function respawn() {
@@ -826,6 +845,17 @@ export default {
       const t = _torsoBase + Math.min(TORSO_FWD_MAX, _torsoLean);
       _torsoHinge.jointMin = t - POSE_SOFT;
       _torsoHinge.jointMax = t + POSE_SOFT;
+
+      // Legs extend with the lean too: lean-back pushes the legs out (rider rises
+      // off the pegs), lean-forward tucks them. _torsoLean is negative on
+      // lean-back, so scale the hip offset off it for a synced whole-body shift.
+      const legOffset = (_torsoLean / Math.abs(TORSO_LEAN_BACK)) * -LEG_LEAN;
+      for (const h of _legHinges) {
+        if (!h || !h.joint || h.joint.space === null) continue;
+        const a = h.base + legOffset;
+        h.joint.jointMin = a - POSE_SOFT;
+        h.joint.jointMax = a + POSE_SOFT;
+      }
     }
 
     // ── Distance HUD ───────────────────────────────────────────────────────
