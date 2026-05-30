@@ -330,7 +330,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     upper.space = space;
     shoulders.push(poseHinge(torso, upper,
       new Vec2(shoulderX - (seatX + 3), shoulderY - (seatY - 21)), new Vec2(-armLen / 2, 0),
-      { stiff: true }));
+      { freq: 5, damp: 0.6 }));   // soft shoulder so the arm isn't rigid
 
     const elbowX = shoulderX + Math.cos(ua) * armLen;
     const elbowY = shoulderY + Math.sin(ua) * armLen;
@@ -343,7 +343,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     try { lower.userData._colorIdx = 2; } catch (_) {}
     lower.space = space;
     elbows.push(poseHinge(upper, lower, new Vec2(armLen / 2, 0), new Vec2(-armLen / 2, 0),
-      { stiff: true }));
+      { freq: 4, damp: 0.5 }));   // soft elbow → the arm bends/relaxes on the bars
     return { upper, lower };
   };
   const lArm = buildArm();
