@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
-  SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint, DistanceJoint,
+  SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint,
 } from "../nape-js.esm.js";
 
 // Dirtline — a side-view hill-climb / trials motorbike with an articulated
@@ -179,24 +179,65 @@ const CRASH_SPIN_RATE = 7;      // rad/s — above this the bike is tumbling out
                                 // control (a fast flip never sustains one angle)
 const CRASH_SPIN_FRAMES = 14;   // ~0.23s of that spin before the rider bails
 
-// ── Rider limb hinges ───────────────────────────────────────────────────────
-// Each limb is BUILT already rotated into its seated rest pose (arms reaching
-// up-forward to the bars, legs angled down to the pegs); each AngleJoint is a
-// soft spring around that built rest angle. The rider is attached to the bike
-// only at the hands (handlebar) and feet (pegs) plus a soft pelvis tether, so
-// the body hangs naturally on those points — the hinges just keep the limbs
-// from flailing, they don't pose the body rigidly.
-const POSE_SOFT = 0.04;         // half-width of each hinge's rest window
-// Torso lean: how far the rider's upper body shifts when you lean the bike, and
-// the cap on forward dip so the torso can't fold down into the bike body.
-const TORSO_LEAN_BACK = -0.65;  // rad added to the torso rest angle on lean-back (×1.3)
-const TORSO_LEAN_FWD = 0.29;    // rad added on lean-forward (positive = nose-down) (×1.3)
-const TORSO_FWD_MAX = 0.29;     // hard cap on forward torso tilt past rest so the
-                                // upper body can't fold flat onto the bike
-const TORSO_LEAN_LERP = 0.12;   // how fast the torso eases to the new lean target
-// Legs extend with the lean (rider pushes off the pegs): the knee straightens by
-// this much at full lean. Sign tuned so the leg straightens (less bend), not curls.
-const KNEE_STRAIGHTEN = 0.7;
+// ── Rider rig — two fixed points + a moving seat ─────────────────────────────
+// The rider is bolted to the bike at exactly TWO rigid points: the HANDS on the
+// handlebar grip and the FEET on the footpegs. Those never move relative to the
+// bike — they're the skeleton the whole pose hangs off. Between them the lower
+// body is held onto the seat by a SOFT weld whose chassis-side anchor we slide
+// at runtime. That moving seat anchor is the whole trick:
+//   • neutral     → seat anchor low/back → the rider SITS, knees bent, torso up
+//   • lean fwd/back → seat anchor rises (and shifts fore/aft) → the pelvis is
+//     pulled UP off the seat, so with the hands+feet pinned the rider STANDS,
+//     legs straightening, exactly like the reference frames 2 & 3.
+// Because hands & feet are rigid and the seat is soft, raising the seat target
+// makes the body unfold around the two fixed points instead of teleporting.
+const POSE_SOFT = 0.04;         // half-width of each limb hinge's rest window
+// Torso lean: how far the rider's upper body swings when you lean the bike.
+const TORSO_LEAN_BACK = -0.55;  // rad added to the torso rest angle on lean-back.
+                                // Modest: the upper body sits back but stays
+                                // tipped slightly FORWARD over the bars (a bigger
+                                // value stood the torso bolt-upright / hanyatt —
+                                // the rider should still reach toward the bars).
+const TORSO_LEAN_FWD = 0.27;    // rad added on lean-forward — torso pitches down
+                                // over the bars (positive = nose-down — frame 2).
+                                // Kept modest so the head/chest stay UP over the
+                                // bars and don't headbutt the cockpit (a big value
+                                // buried the head / clipped the bars — see images).
+const TORSO_LEAN_LERP = 0.14;   // how fast the torso eases to the new lean target
+// Seat lift — how the soft-weld's chassis anchor moves from its neutral seat
+// position when the rider stands on a lean. Local chassis coords (+x fwd, +y down).
+// The lift is DIRECTION-SPECIFIC: forward and back leans stand the rider up by
+// different amounts and shift the hips opposite ways, so each pose can be tuned
+// without the other going wrong (a shared lift made the back-lean hips skew).
+const SEAT_LOCAL = { x: -18, y: -16 };   // neutral pelvis-on-seat anchor
+// Forward and back leans move the hips OPPOSITE ways vertically:
+//   • FORWARD → hips RISE (rider stands tall, crouches over the bars).
+//   • BACK    → hips DROP and slide back — the rider pushes the whole body
+//     down-and-rearward off the pegs (the "pull-back" hang). NOT a stand-up;
+//     a positive value here LOWERS the hips (sy = SEAT_LOCAL.y − lift·amt).
+const SEAT_LIFT_FWD = 16;       // px the hips rise on lean-FWD → head comes up too
+const SEAT_LIFT_BACK = -7;      // px (negative → hips DROP) on lean-BACK: the whole
+                                // body sinks back-and-down, arms angling downward.
+                                // Kept mild — a big drop let the body slump into a
+                                // low pose the soft seat weld couldn't climb out of.
+const SEAT_SHIFT_FWD = 5;       // px forward hip shift on lean-forward (small — too
+                                // much pushed the chest into the bars)
+const SEAT_SHIFT_BACK = 14;     // px rearward hip shift on lean-back (big — the body
+                                // slides well back so the rider hangs off the rear)
+const SEAT_LERP = 0.14;         // how fast the seat anchor eases to its lean target
+// Knee extension on a lean. FORWARD: knee opens a lot (crouch over the bars).
+// BACK: knee opens HARD too — pushing the body down-and-back off the pegs takes
+// nearly straight legs (the rider extends to hang rearward), which was the
+// missing "leg isn't extended enough" in the back-lean pose.
+const KNEE_STRAIGHTEN_FWD = 1.0;
+const KNEE_STRAIGHTEN_BACK = 1.1;
+// Pelvis tilt — the soft seat weld locks the pelvis ROTATION to the chassis
+// (its phase). On a lean we rotate that target so the pelvis follows the body
+// instead of staying bolted level and getting skewed: tip slightly forward on a
+// forward lean, recline on a back lean. This is what stops the back-lean lower
+// body from twisting oddly — the pelvis reclines WITH the torso as one unit.
+const PELVIS_TILT_FWD = 0.15;   // rad the pelvis tips forward (nose-down) on fwd lean
+const PELVIS_TILT_BACK = -0.3;  // rad the pelvis reclines on back lean (sits back)
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -222,6 +263,8 @@ let _torsoBase = 0;           // its built rest angle (the upright seated pose)
 let _torsoLean = 0;           // current eased lean offset applied to the torso
 let _kneeHinges = [];         // [{ joint, base }] knee hinges, straightened on lean
 let _legExtend = 0;           // eased 0→1: how straight the legs are on a lean
+let _seatLift = 0;            // eased 0→1: how far the rider has risen off the seat
+let _seatShift = 0;           // eased −1..1: fore(+)/aft(−) seat anchor shift
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -310,9 +353,12 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   new PivotJoint(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15)).space = space;
   _torsoBase = torso.rotation - pelvis.rotation;
   _torsoHinge = new AngleJoint(pelvis, torso, _torsoBase - POSE_SOFT, _torsoBase + POSE_SOFT);
-  _torsoHinge.stiff = false;
-  _torsoHinge.frequency = 13;    // strong enough to hold the torso up against the
-  _torsoHinge.damping = 0.9;     // forward pull of the arms gripping the bars
+  // STIFF: the torso angle is posture-critical and must win against the pull of
+  // the rigidly-pinned hands. A soft joint just got dragged forward by the arms
+  // on a lean-back, so the rider never actually leaned back. A stiff joint
+  // authoritatively commands the torso angle; the soft arms then straighten /
+  // fold to keep the hands on the bars. step() retargets the window each frame.
+  _torsoHinge.stiff = true;
   _torsoHinge.space = space;
   _riderJoints.push(_torsoHinge);
 
@@ -420,21 +466,18 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     }
   }
   if (chassis && pegLocal) {
-    // Feet use a SOFT DistanceJoint (not a rigid pin) so the foot stays near the
-    // peg but can move a little when the rider extends a leg on a lean. A rigid
-    // pin locked the leg flat and killed that motion. jointMin=0 / jointMax give
-    // a small window; the soft spring keeps the foot on the peg under normal
-    // riding. step() straightens the KNEE on a lean to extend the leg.
+    // Feet are RIGIDLY pinned to the footpeg — one of the rider's two fixed
+    // anchor points (the other is the hands on the bars). The foot does NOT move
+    // relative to the bike. When the rider stands on a lean we raise the SEAT
+    // anchor (see step()), which pulls the pelvis up; with the foot pinned here
+    // the knee then opens to absorb the rise — that's what reads as "standing on
+    // the pegs". A rigid pin (not the old soft DistanceJoint) gives a solid,
+    // predictable foot↔peg join exactly as asked.
     for (const leg of [lLeg, rLeg]) {
-      const d = new DistanceJoint(
+      _pegJoints.push(new PivotJoint(
         chassis, leg.shin,
         new Vec2(pegLocal.x, pegLocal.y), new Vec2(shinLen / 2, 0),
-        0, 8,
-      );
-      d.stiff = false;
-      d.frequency = 7;
-      d.damping = 0.7;
-      _pegJoints.push(d);
+      ));
     }
   }
   for (const j of _gripJoints) j.space = space;
@@ -600,20 +643,25 @@ function buildBike(space, spawnX, groundY) {
   // Hands stay pinned to the bars, feet to the pegs. (BUILD_RIDER lets us bring
   // the bike up alone while iterating on it.)
   if (BUILD_RIDER) {
-    const seatLocalX = -18;       // where the pelvis sits, over the seat
-    const seatLocalY = -16;
-    const seatX = chassis.position.x + seatLocalX;
-    const seatY = chassis.position.y + seatLocalY;
+    // The seat is the rider's lower-body tether (NOT a fixed point — the two
+    // fixed points are hands + feet). Its chassis anchor starts at SEAT_LOCAL and
+    // step() slides it up/fore/aft on a lean to STAND the rider. seatX/seatY is
+    // the world build position of the pelvis.
+    const seatX = chassis.position.x + SEAT_LOCAL.x;
+    const seatY = chassis.position.y + SEAT_LOCAL.y;
     const gripLocal = new Vec2(27, -31);
     const pegLocal = new Vec2(-4, 10);
     const pelvis = buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal);
     _seatWeld = new WeldJoint(
       chassis, pelvis,
-      new Vec2(seatLocalX, seatLocalY), new Vec2(0, 0),
+      new Vec2(SEAT_LOCAL.x, SEAT_LOCAL.y), new Vec2(0, 0),
     );
     _seatWeld.stiff = false;
-    _seatWeld.frequency = 7;       // soft seat — holds the pelvis without bolting it
-    _seatWeld.damping = 0.7;
+    _seatWeld.frequency = 9;       // firm-ish seat — holds the pelvis, and (when
+    _seatWeld.damping = 0.8;       // its anchor is moved) drives it to the new spot
+                                   // AND reliably back to neutral on release. Too
+                                   // soft (≈6) let a dropped-hip back-lean slump
+                                   // into a low pose it couldn't recover from.
     _seatWeld.space = space;
   }
 }
@@ -644,6 +692,8 @@ function teardownBikeAndRider() {
   _torsoLean = 0;
   _kneeHinges = [];
   _legExtend = 0;
+  _seatLift = 0;
+  _seatShift = 0;
 }
 
 function respawn() {
@@ -826,32 +876,59 @@ export default {
       }
     }
 
-    // Active rider pose — the whole-body weight shift. The soft seat weld holds
-    // the rider on the bike; here we drive the torso + legs with the lean keys:
-    //   • lean BACK  → torso leans back, legs EXTEND (rider stretches rearward)
-    //   • lean FWD   → torso reaches up-and-forward, legs EXTEND (stands/reaches)
-    //   • neutral    → torso upright, legs bent (relaxed seated pose)
-    // Both lean directions extend the legs (the rider pushes off the pegs); only
-    // the torso angle differs. Everything is eased so it sways, not snaps.
+    // Active rider pose — the whole-body weight shift, built around the two FIXED
+    // points (hands on the bars, feet on the pegs). The lean keys do three things,
+    // all eased so the body sways rather than snaps:
+    //   • SEAT LIFT — raise the soft-weld's chassis anchor so the pelvis is pulled
+    //     UP off the seat. With the feet pinned, the rider rises into a stand.
+    //   • SEAT SHIFT — slide that anchor forward (lean fwd) or back (lean back),
+    //     so the standing rider's hips travel toward the bars or over the tail.
+    //   • TORSO + KNEES — pitch the upper body down over the bars (fwd) or extend
+    //     it rearward (back), and open the knees to feed the leg extension.
+    // Neutral relaxes all of it: hips drop back onto the seat, knees re-bend,
+    // torso returns upright — the compact seated rest pose (reference frame 1).
     if (!_crashed && _torsoHinge && _torsoHinge.space) {
-      // Torso target angle.
+      // Signed lean: +1 = full forward, −1 = full back, 0 = neutral. A single
+      // eased value drives every pose channel so forward/back stay opposite and
+      // neutral always relaxes cleanly back to the seated rest silhouette.
+      let leanTarget = 0;
+      if (leanFwd) leanTarget = 1;
+      else if (leanBack) leanTarget = -1;
+      _seatShift += (leanTarget - _seatShift) * SEAT_LERP;   // reused as signed lean
+      const s = _seatShift;
+      const fwdAmt = Math.max(0, s);    // 0..1 forward
+      const backAmt = Math.max(0, -s);  // 0..1 back
+
+      // ── Torso angle ── (eased toward the direction's target)
       let torsoTarget = 0;
-      if (leanBack) torsoTarget = TORSO_LEAN_BACK;
-      else if (leanFwd) torsoTarget = TORSO_LEAN_FWD;
+      if (leanFwd) torsoTarget = TORSO_LEAN_FWD;
+      else if (leanBack) torsoTarget = TORSO_LEAN_BACK;
       _torsoLean += (torsoTarget - _torsoLean) * TORSO_LEAN_LERP;
-      const t = _torsoBase + Math.max(-Math.abs(TORSO_LEAN_BACK), Math.min(TORSO_FWD_MAX, _torsoLean));
+      const t = _torsoBase + _torsoLean;
       _torsoHinge.jointMin = t - POSE_SOFT;
       _torsoHinge.jointMax = t + POSE_SOFT;
 
-      // Legs straighten on EITHER lean: the rider extends the legs (pushes off
-      // the pegs) when shifting weight back or forward, and tucks them when
-      // neutral. We straighten the KNEE toward 0 bend; the soft foot tether lets
-      // the foot follow. _legExtend eases 0→1.
-      const wantExtend = (leanBack || leanFwd) ? 1 : 0;
-      _legExtend += (wantExtend - _legExtend) * TORSO_LEAN_LERP;
+      // ── Seat anchor — the body-shift driver. Direction-specific and OPPOSITE
+      // vertically: forward RAISES the hips (stand tall, crouch over the bars);
+      // back DROPS + slides them rearward (the rider pushes the whole body down-
+      // and-back off the pegs, so the arms angle downward to the bars).
+      _seatLift = fwdAmt + backAmt;   // total shift amount (for any future use)
+      if (_seatWeld && _seatWeld.space) {
+        const sx = SEAT_LOCAL.x + SEAT_SHIFT_FWD * fwdAmt - SEAT_SHIFT_BACK * backAmt;
+        const sy = SEAT_LOCAL.y - (SEAT_LIFT_FWD * fwdAmt + SEAT_LIFT_BACK * backAmt);
+        _seatWeld.anchor1 = new Vec2(sx, sy);
+        // Recline / tip the pelvis WITH the lean so the lower body moves as one
+        // unit instead of staying bolted level and skewing on a back lean.
+        _seatWeld.phase = PELVIS_TILT_FWD * fwdAmt + PELVIS_TILT_BACK * backAmt;
+      }
+
+      // ── Knees — open as the rider stands; direction-specific so the back-lean
+      // leg stays bent and planted instead of folding the wrong way.
+      const kneeOpen = KNEE_STRAIGHTEN_FWD * fwdAmt + KNEE_STRAIGHTEN_BACK * backAmt;
+      _legExtend = kneeOpen;
       for (const h of _kneeHinges) {
         if (!h || !h.joint || h.joint.space === null) continue;
-        const a = h.base - KNEE_STRAIGHTEN * _legExtend;  // reduce the knee bend
+        const a = h.base - kneeOpen;   // reduce the knee bend by the open amount
         h.joint.jointMin = a - POSE_SOFT;
         h.joint.jointMax = a + POSE_SOFT;
       }
