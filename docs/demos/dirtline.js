@@ -194,8 +194,9 @@ const TORSO_LEAN_FWD = 0.29;    // rad added on lean-forward (positive = nose-do
 const TORSO_FWD_MAX = 0.29;     // hard cap on forward torso tilt past rest so the
                                 // upper body can't fold flat onto the bike
 const TORSO_LEAN_LERP = 0.12;   // how fast the torso eases to the new lean target
-// Legs extend with the lean too (rider pushes up off the pegs), so the whole
-// body shifts — not just the torso. Hip opens by this much at full lean.
+// Legs extend with the lean (rider pushes off the pegs): the knee straightens by
+// this much at full lean. Sign tuned so the leg straightens (less bend), not curls.
+const KNEE_STRAIGHTEN = 0.7;
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -219,6 +220,8 @@ let _riderJoints = [];
 let _torsoHinge = null;       // pelvis→torso AngleJoint, retargeted on lean
 let _torsoBase = 0;           // its built rest angle (the upright seated pose)
 let _torsoLean = 0;           // current eased lean offset applied to the torso
+let _kneeHinges = [];         // [{ joint, base }] knee hinges, straightened on lean
+let _legExtend = 0;           // eased 0→1: how straight the legs are on a lean
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -250,6 +253,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   _riderJoints = [];
   _gripJoints = [];
   _pegJoints = [];
+  _kneeHinges = [];
 
   const add = (body) => { _riderParts.push(body); return body; };
 
@@ -384,8 +388,10 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     shin.shapes.add(new Polygon(Polygon.box(shinLen, legW), RM(0.5)));
     try { shin.userData._colorIdx = 2; } catch (_) {}
     shin.space = space;
-    knees.push(poseHinge(thigh, shin, new Vec2(thighLen / 2, 0), new Vec2(-shinLen / 2, 0),
-      { freq: 12, damp: 0.85 }));
+    const kneeH = poseHinge(thigh, shin, new Vec2(thighLen / 2, 0), new Vec2(-shinLen / 2, 0),
+      { freq: 12, damp: 0.85 });
+    knees.push(kneeH);
+    _kneeHinges.push(kneeH);    // straightened on lean to extend the leg
     return { thigh, shin };
   };
   const lLeg = buildLeg();
@@ -414,21 +420,21 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     }
   }
   if (chassis && pegLocal) {
-    // Feet use a SOFT DistanceJoint (not a rigid pivot) so the foot stays near
-    // the peg but the leg can EXTEND when the rider shifts weight on a lean —
-    // a rigid pin locked the leg and killed that motion. jointMin=0 lets the
-    // foot pull in; jointMax gives a little slack; the soft spring keeps it on
-    // the peg under normal riding.
-    // The foot is pinned to the peg at a FIXED point (a rigid PivotJoint, like
-    // the hands on the bars) — the ankle. The knee/hip above it stay soft, so
-    // the leg can still bend/shift on a lean while the foot stays planted on the
-    // peg. The rider is attached to the bike ONLY here + at the hands (no pelvis
-    // weld), so the body genuinely hangs off the four contact points.
+    // Feet use a SOFT DistanceJoint (not a rigid pin) so the foot stays near the
+    // peg but can move a little when the rider extends a leg on a lean. A rigid
+    // pin locked the leg flat and killed that motion. jointMin=0 / jointMax give
+    // a small window; the soft spring keeps the foot on the peg under normal
+    // riding. step() straightens the KNEE on a lean to extend the leg.
     for (const leg of [lLeg, rLeg]) {
-      _pegJoints.push(new PivotJoint(
+      const d = new DistanceJoint(
         chassis, leg.shin,
         new Vec2(pegLocal.x, pegLocal.y), new Vec2(shinLen / 2, 0),
-      ));
+        0, 8,
+      );
+      d.stiff = false;
+      d.frequency = 7;
+      d.damping = 0.7;
+      _pegJoints.push(d);
     }
   }
   for (const j of _gripJoints) j.space = space;
@@ -636,6 +642,8 @@ function teardownBikeAndRider() {
   _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
   _torsoHinge = null;
   _torsoLean = 0;
+  _kneeHinges = [];
+  _legExtend = 0;
 }
 
 function respawn() {
@@ -834,8 +842,19 @@ export default {
       const t = _torsoBase + Math.max(-Math.abs(TORSO_LEAN_BACK), Math.min(TORSO_FWD_MAX, _torsoLean));
       _torsoHinge.jointMin = t - POSE_SOFT;
       _torsoHinge.jointMax = t + POSE_SOFT;
-      // Note: the legs are pinned at a fixed point on the pegs, so the visible
-      // weight shift comes from the torso; the legs intentionally stay planted.
+
+      // Legs straighten on EITHER lean: the rider extends the legs (pushes off
+      // the pegs) when shifting weight back or forward, and tucks them when
+      // neutral. We straighten the KNEE toward 0 bend; the soft foot tether lets
+      // the foot follow. _legExtend eases 0→1.
+      const wantExtend = (leanBack || leanFwd) ? 1 : 0;
+      _legExtend += (wantExtend - _legExtend) * TORSO_LEAN_LERP;
+      for (const h of _kneeHinges) {
+        if (!h || !h.joint || h.joint.space === null) continue;
+        const a = h.base - KNEE_STRAIGHTEN * _legExtend;  // reduce the knee bend
+        h.joint.jointMin = a - POSE_SOFT;
+        h.joint.jointMax = a + POSE_SOFT;
+      }
     }
 
     // ── Distance HUD ───────────────────────────────────────────────────────
