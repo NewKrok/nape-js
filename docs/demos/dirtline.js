@@ -222,8 +222,9 @@ let _riderJoints = [];
 let _torsoHinge = null;       // pelvis→torso AngleJoint, retargeted on lean
 let _torsoBase = 0;           // its built rest angle (the upright seated pose)
 let _torsoLean = 0;           // current eased lean offset applied to the torso
-let _legHinges = [];          // [{ joint, base }] hip + knee hinges, retargeted on
-                              // lean so the legs extend/tuck with the weight shift
+let _legExtend = 0;           // eased 0→1: how much the legs are extended on a lean
+let _legHinges = [];          // [{ joint, base }] hip hinges, retargeted on lean so
+                              // the legs extend with the weight shift
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -378,7 +379,8 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     try { thigh.userData._colorIdx = 2; } catch (_) {}
     thigh.space = space;
     const hipH = poseHinge(pelvis, thigh, new Vec2(8, 4), new Vec2(-thighLen / 2, 0),
-      { freq: 9, damp: 0.8 });  // firmer so retargeting actually swings the leg
+      { freq: 14, damp: 0.85 }); // firm: with no pelvis weld, the hips hold the
+                                 // seated posture up (and let lean swing the leg)
     hips.push(hipH);
     _legHinges.push(hipH);      // retargeted on lean to extend/tuck the legs
 
@@ -427,26 +429,16 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     // a rigid pin locked the leg and killed that motion. jointMin=0 lets the
     // foot pull in; jointMax gives a little slack; the soft spring keeps it on
     // the peg under normal riding.
+    // The foot is pinned to the peg at a FIXED point (a rigid PivotJoint, like
+    // the hands on the bars) — the ankle. The knee/hip above it stay soft, so
+    // the leg can still bend/shift on a lean while the foot stays planted on the
+    // peg. The rider is attached to the bike ONLY here + at the hands (no pelvis
+    // weld), so the body genuinely hangs off the four contact points.
     for (const leg of [lLeg, rLeg]) {
-      const d = new DistanceJoint(
+      _pegJoints.push(new PivotJoint(
         chassis, leg.shin,
         new Vec2(pegLocal.x, pegLocal.y), new Vec2(shinLen / 2, 0),
-        0, 10,
-      );
-      d.stiff = false;
-      d.frequency = 6;
-      d.damping = 0.7;
-      _pegJoints.push(d);
-      // Hold the FOOT at a fixed orientation on the peg (the sole rests flat,
-      // not dangling) with a soft AngleJoint to the chassis. A ± window keeps it
-      // soft enough that the leg can still shift a little on a lean. It breaks
-      // away with the other peg joints on a crash (it's in _pegJoints).
-      const footRest = leg.shin.rotation - chassis.rotation;
-      const foot = new AngleJoint(chassis, leg.shin, footRest - FOOT_ANGLE_SLACK, footRest + FOOT_ANGLE_SLACK);
-      foot.stiff = false;
-      foot.frequency = 6;
-      foot.damping = 0.7;
-      _pegJoints.push(foot);
+      ));
     }
   }
   for (const j of _gripJoints) j.space = space;
@@ -604,33 +596,28 @@ function buildBike(space, spawnX, groundY) {
   // No physical swingarm body — it's drawn for looks in drawSuspension.
   _swingarm = null;
 
-  // Rider welded to the seat. The pelvis locks rigidly to that point so the
-  // chassis lean drives the whole rig; the *visible* weight shift comes from
-  // the active pose (applyPose), not from weld give — so this weld is firm.
-  // Breaking it (`_seatWeld.space = null`) is the break-away showcase on a crash.
-  // (BUILD_RIDER lets us bring the bike up alone while iterating on it.)
+  // Rider attachment. The pelvis gets a SOFT WeldJoint to the seat — not rigid,
+  // so the body isn't bolted on, but firm enough that the upper body doesn't
+  // fold forward off the bars. step() then actively poses the torso + legs with
+  // the lean keys (lean back → body back + legs extend; lean forward → body
+  // up-and-forward + legs extend), so the rider visibly shifts its whole weight.
+  // Hands stay pinned to the bars, feet to the pegs. (BUILD_RIDER lets us bring
+  // the bike up alone while iterating on it.)
   if (BUILD_RIDER) {
-    const seatLocalX = -18;       // over the seat, just behind the tank
+    const seatLocalX = -18;       // where the pelvis sits, over the seat
     const seatLocalY = -16;
     const seatX = chassis.position.x + seatLocalX;
     const seatY = chassis.position.y + seatLocalY;
-    // Hand + foot anchor points on the frame (chassis-local): the handlebar grip
-    // (the crossbar at the top of the riser) and a footpeg under the seat.
     const gripLocal = new Vec2(27, -31);
     const pegLocal = new Vec2(-4, 10);
     const pelvis = buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal);
-    // The rider is attached to the bike ONLY at the hands (handlebar) and feet
-    // (pegs) — see the grip/peg pins in buildRider. The pelvis just rests on the
-    // seat with a very soft tether so the body hangs naturally between those four
-    // points (no rigid weld → no over-constraint jitter, not a stiff puppet). The
-    // tether is gentle enough to read as "sitting", not "bolted on".
     _seatWeld = new WeldJoint(
       chassis, pelvis,
       new Vec2(seatLocalX, seatLocalY), new Vec2(0, 0),
     );
     _seatWeld.stiff = false;
-    _seatWeld.frequency = 8;       // soft seat tether — holds the pelvis planted
-    _seatWeld.damping = 0.7;       // but with give, so the rider isn't bolted rigid
+    _seatWeld.frequency = 7;       // soft seat — holds the pelvis without bolting it
+    _seatWeld.damping = 0.7;
     _seatWeld.space = space;
   }
 }
@@ -659,6 +646,7 @@ function teardownBikeAndRider() {
   _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
   _torsoHinge = null;
   _torsoLean = 0;
+  _legExtend = 0;
   _legHinges = [];
 }
 
@@ -672,15 +660,15 @@ function respawn() {
 }
 
 // ── Crash / break-away ──────────────────────────────────────────────────────
-// On a sustained flip or a hard impact, break the seat weld so the rider
-// ragdolls free. We only break once (the weld is gone afterward).
+// On a sustained flip or a hard impact, release the rider's hand + foot pins so
+// the whole body comes free and ragdolls. We only break once.
 function bailRider() {
-  if (_crashed || !_seatWeld) return;
+  if (_crashed || !_rider) return;
   _crashed = true;
-  if (_seatWeld.space) _seatWeld.space = null;
+  // Release the seat weld + the hands from the bars + the feet from the pegs so
+  // the rider comes off the bike entirely.
+  if (_seatWeld && _seatWeld.space) _seatWeld.space = null;
   _seatWeld = null;
-  // Release the hands from the bars and the feet from the pegs too, so the whole
-  // rider comes free (not just the pelvis).
   for (const j of _gripJoints) { if (j.space) j.space = null; }
   for (const j of _pegJoints) { if (j.space) j.space = null; }
   _gripJoints = [];
@@ -842,29 +830,30 @@ export default {
       }
     }
 
-    // The rider is held to the bike at the hands (handlebar) and feet (pegs)
-    // with soft limb hinges, so the body hangs naturally. On top of that we
-    // shift the UPPER BODY with the lean keys: lean-back eases the torso back/up
-    // (the rider sits up and shifts weight rearward), lean-forward eases it
-    // forward over the bars. Only the torso hinge is retargeted (a soft spring,
-    // so it sways rather than snapping), and its window is clamped so the torso
-    // can't fold forward into the bike body (TORSO_FWD_MAX).
+    // Active rider pose — the whole-body weight shift. The soft seat weld holds
+    // the rider on the bike; here we drive the torso + legs with the lean keys:
+    //   • lean BACK  → torso leans back, legs EXTEND (rider stretches rearward)
+    //   • lean FWD   → torso reaches up-and-forward, legs EXTEND (stands/reaches)
+    //   • neutral    → torso upright, legs bent (relaxed seated pose)
+    // Both lean directions extend the legs (the rider pushes off the pegs); only
+    // the torso angle differs. Everything is eased so it sways, not snaps.
     if (!_crashed && _torsoHinge && _torsoHinge.space) {
-      let leanTarget = 0;
-      if (leanBack) leanTarget = TORSO_LEAN_BACK;
-      else if (leanFwd) leanTarget = TORSO_LEAN_FWD;
-      _torsoLean += (leanTarget - _torsoLean) * TORSO_LEAN_LERP;
-      const t = _torsoBase + Math.min(TORSO_FWD_MAX, _torsoLean);
+      // Torso target angle.
+      let torsoTarget = 0;
+      if (leanBack) torsoTarget = TORSO_LEAN_BACK;
+      else if (leanFwd) torsoTarget = TORSO_LEAN_FWD;
+      _torsoLean += (torsoTarget - _torsoLean) * TORSO_LEAN_LERP;
+      const t = _torsoBase + Math.max(-Math.abs(TORSO_LEAN_BACK), Math.min(TORSO_FWD_MAX, _torsoLean));
       _torsoHinge.jointMin = t - POSE_SOFT;
       _torsoHinge.jointMax = t + POSE_SOFT;
 
-      // Legs extend with the lean too: lean-back pushes the legs out (rider rises
-      // off the pegs), lean-forward tucks them. _torsoLean is negative on
-      // lean-back, so scale the hip offset off it for a synced whole-body shift.
-      const legOffset = (_torsoLean / Math.abs(TORSO_LEAN_BACK)) * -LEG_LEAN;
+      // Leg extension: extend on EITHER lean (rider rises off the pegs / stretches),
+      // bent when neutral. _legExtend eases 0→1; the hip opens by LEG_LEAN.
+      const wantExtend = (leanBack || leanFwd) ? 1 : 0;
+      _legExtend += (wantExtend - _legExtend) * TORSO_LEAN_LERP;
       for (const h of _legHinges) {
         if (!h || !h.joint || h.joint.space === null) continue;
-        const a = h.base + legOffset;
+        const a = h.base - LEG_LEAN * _legExtend;   // open the hip → leg straightens
         h.joint.jointMin = a - POSE_SOFT;
         h.joint.jointMax = a + POSE_SOFT;
       }
