@@ -197,6 +197,8 @@ const TORSO_LEAN_LERP = 0.12;   // how fast the torso eases to the new lean targ
 // Legs extend with the lean too (rider pushes up off the pegs), so the whole
 // body shifts — not just the torso. Hip opens by this much at full lean.
 const LEG_LEAN = 0.5;           // rad the hip opens (extends the leg) on lean
+const FOOT_ANGLE_SLACK = 0.25;  // ± rad the foot may rotate around the peg — keeps
+                                // the sole sitting on the peg, not dangling free
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -435,6 +437,16 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
       d.frequency = 6;
       d.damping = 0.7;
       _pegJoints.push(d);
+      // Hold the FOOT at a fixed orientation on the peg (the sole rests flat,
+      // not dangling) with a soft AngleJoint to the chassis. A ± window keeps it
+      // soft enough that the leg can still shift a little on a lean. It breaks
+      // away with the other peg joints on a crash (it's in _pegJoints).
+      const footRest = leg.shin.rotation - chassis.rotation;
+      const foot = new AngleJoint(chassis, leg.shin, footRest - FOOT_ANGLE_SLACK, footRest + FOOT_ANGLE_SLACK);
+      foot.stiff = false;
+      foot.frequency = 6;
+      foot.damping = 0.7;
+      _pegJoints.push(foot);
     }
   }
   for (const j of _gripJoints) j.space = space;
