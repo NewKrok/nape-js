@@ -179,24 +179,14 @@ const CRASH_SPIN_RATE = 7;      // rad/s — above this the bike is tumbling out
                                 // control (a fast flip never sustains one angle)
 const CRASH_SPIN_FRAMES = 14;   // ~0.23s of that spin before the rider bails
 
-// ── Rider active-pose targets ───────────────────────────────────────────────
+// ── Rider limb hinges ───────────────────────────────────────────────────────
 // Each limb is BUILT already rotated into its seated rest pose (arms reaching
-// up-forward to the bars, legs angled down to the pegs), and each AngleJoint
-// holds its hinge at the relative angle that *reproduces* that built pose. The
-// pose values below are therefore small lean DELTAS layered on top of that rest
-// pose (jointMin === jointMax = an always-active hard/soft lock around the rest
-// angle + delta — see the AngleJoint slack note). step() lerps between a NEUTRAL
-// seat, a CROUCH (lean forward / on the gas — tucked low over the bars) and a
-// STAND (lean back — weight up and off the back). Sign: +torso leans back,
-// −torso leans forward; limb deltas were tuned so the silhouette reads.
-//
-// pose = { torso, head, shoulder, elbow, hip, knee }  (radians, deltas)
-const POSE_NEUTRAL = { torso:  0.00, head: 0.00, shoulder:  0.00, elbow: 0.00, hip:  0.00, knee: 0.00 };
-const POSE_CROUCH  = { torso: -0.55, head: 0.25, shoulder: -0.35, elbow: 0.20, hip: -0.30, knee: 0.35 };
-const POSE_STAND   = { torso:  0.55, head: -0.18, shoulder: 0.35, elbow: -0.30, hip:  0.55, knee: -0.45 };
-const POSE_LERP = 0.14;         // how fast the rider settles into a new target pose
-const POSE_SOFT = 0.04;         // half-width kept around each target so the spring
-                                // isn't perfectly rigid (a hair of natural give)
+// up-forward to the bars, legs angled down to the pegs); each AngleJoint is a
+// soft spring around that built rest angle. The rider is attached to the bike
+// only at the hands (handlebar) and feet (pegs) plus a soft pelvis tether, so
+// the body hangs naturally on those points — the hinges just keep the limbs
+// from flailing, they don't pose the body rigidly.
+const POSE_SOFT = 0.04;         // half-width of each hinge's rest window
 
 // ── Module state ────────────────────────────────────────────────────────────
 let _space = null;
@@ -217,11 +207,6 @@ let _gripJoints = [];         // hand→handlebar pins (break away with the seat
 let _pegJoints = [];          // foot→footpeg pins (break away with the seat weld)
 let _riderParts = [];
 let _riderJoints = [];
-// Pose-driving AngleJoints, grouped so step() can push each toward its target.
-// { torso, head, shoulders[], elbows[], hips[], knees[] }
-let _poseJoints = null;
-// The rider's current (lerped) pose — driven toward POSE_* targets each step.
-let _pose = { ...POSE_NEUTRAL };
 let _crashed = false;
 let _flipFrames = 0;
 let _spinFrames = 0;
@@ -284,7 +269,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     }
     ang.space = space;
     _riderJoints.push(ang);
-    return { joint: ang, base };            // keep base so applyPose adds the delta
+    return { joint: ang, base };            // (return kept for symmetry; unused)
   };
 
   // Lighter limbs than the bike so the rider doesn't overpower the suspension.
@@ -299,18 +284,18 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   // Torso — slightly forward-leaning rest pose (a rider crouches a touch over
   // the bars). Its pose delta is the visible weight shift (crouch / stand).
   const torso = add(new Body(BodyType.DYNAMIC, new Vec2(seatX + 3, seatY - 21)));
-  torso.rotation = 0.18;          // lean a little forward at rest
+  torso.rotation = -0.15;         // sit fairly upright (slight back lean at rest)
   torso.shapes.add(new Polygon(Polygon.box(14, 30), RM(0.5)));
   try { torso.userData._colorIdx = 1; } catch (_) {}
   torso.space = space;
-  const jTorso = poseHinge(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15), { stiff: true });
+  poseHinge(pelvis, torso, new Vec2(0, -5), new Vec2(-2, 15), { freq: 9, damp: 0.8 });
 
   // Head — sits atop the torso, follows its lean.
   const head = add(new Body(BodyType.DYNAMIC, new Vec2(seatX + 7, seatY - 44)));
   head.shapes.add(new Circle(8.5, undefined, RM(0.5)));
   try { head.userData._colorIdx = 1; } catch (_) {}
   head.space = space;
-  const jHead = poseHinge(torso, head, new Vec2(0, -15), new Vec2(0, 8.5), { freq: 14, damp: 0.9 });
+  poseHinge(torso, head, new Vec2(0, -15), new Vec2(0, 8.5), { freq: 14, damp: 0.9 });
 
   // Arms — built reaching UP-FORWARD from the shoulder toward the handlebars at
   // the front of the bike. Upper arm angled ~ -0.5 rad (up-forward), forearm
@@ -365,7 +350,7 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
     try { thigh.userData._colorIdx = 2; } catch (_) {}
     thigh.space = space;
     hips.push(poseHinge(pelvis, thigh, new Vec2(8, 4), new Vec2(-thighLen / 2, 0),
-      { stiff: true }));
+      { freq: 4, damp: 0.6 }));
 
     const kneeX = hipX + Math.cos(ta) * thighLen;
     const kneeY = hipY + Math.sin(ta) * thighLen;
@@ -417,30 +402,8 @@ function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   for (const j of _gripJoints) j.space = space;
   for (const j of _pegJoints) j.space = space;
 
-  _poseJoints = { torso: jTorso, head: jHead, shoulders, elbows, hips, knees };
-  _pose = { ...POSE_NEUTRAL };
   _rider = { pelvis, torso, head, lArm, rArm, lLeg, rLeg };
   return pelvis;
-}
-
-// Push every pose joint's target toward the current lerped `_pose`. Each entry
-// is { joint, base }; the commanded angle is base (the built rest pose) + the
-// lean delta. Setting jointMin/jointMax to a near-point around it keeps the
-// lock always-active (a real window would let the limb go slack inside it).
-function applyPose() {
-  if (!_poseJoints) return;
-  const set = (h, delta) => {
-    if (!h || !h.joint || h.joint.space === null) return;
-    const t = h.base + delta;
-    h.joint.jointMin = t - POSE_SOFT;
-    h.joint.jointMax = t + POSE_SOFT;
-  };
-  set(_poseJoints.torso, _pose.torso);
-  set(_poseJoints.head, _pose.head);
-  for (const h of _poseJoints.shoulders) set(h, _pose.shoulder);
-  for (const h of _poseJoints.elbows) set(h, _pose.elbow);
-  for (const h of _poseJoints.hips) set(h, _pose.hip);
-  for (const h of _poseJoints.knees) set(h, _pose.knee);
 }
 
 // ── Bike ────────────────────────────────────────────────────────────────────
@@ -606,13 +569,18 @@ function buildBike(space, spawnX, groundY) {
     const gripLocal = new Vec2(27, -31);
     const pegLocal = new Vec2(-4, 10);
     const pelvis = buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal);
+    // The rider is attached to the bike ONLY at the hands (handlebar) and feet
+    // (pegs) — see the grip/peg pins in buildRider. The pelvis just rests on the
+    // seat with a very soft tether so the body hangs naturally between those four
+    // points (no rigid weld → no over-constraint jitter, not a stiff puppet). The
+    // tether is gentle enough to read as "sitting", not "bolted on".
     _seatWeld = new WeldJoint(
       chassis, pelvis,
       new Vec2(seatLocalX, seatLocalY), new Vec2(0, 0),
     );
-    _seatWeld.stiff = false;       // soft-but-firm: high frequency so it holds tight
-    _seatWeld.frequency = 18;
-    _seatWeld.damping = 0.9;
+    _seatWeld.stiff = false;
+    _seatWeld.frequency = 8;       // soft seat tether — holds the pelvis planted
+    _seatWeld.damping = 0.7;       // but with give, so the rider isn't bolted rigid
     _seatWeld.space = space;
   }
 }
@@ -639,8 +607,6 @@ function teardownBikeAndRider() {
   _riderParts = [];
   for (const b of [_chassis, _fWheel, _rWheel, _swingarm]) { if (b && b.space) b.space = null; }
   _chassis = _fWheel = _rWheel = _swingarm = _rider = null;
-  _poseJoints = null;
-  _pose = { ...POSE_NEUTRAL };
 }
 
 function respawn() {
@@ -672,9 +638,8 @@ function bailRider() {
     const v = _rider.pelvis.velocity;
     _rider.pelvis.velocity = new Vec2(v.x - 120, v.y - 160);
   }
-  // Stop driving the pose and throw every limb window wide so the freed rider
-  // flops loosely instead of holding its seated shape.
-  _poseJoints = null;
+  // Throw every limb hinge window wide so the freed rider flops loosely
+  // instead of holding its seated shape.
   for (const j of _riderJoints) {
     if (j.jointMin !== undefined && j.jointMax !== undefined) {
       j.jointMin = -Math.PI;
@@ -824,22 +789,11 @@ export default {
       }
     }
 
-    // ── Active rider pose (the visible weight shift) ───────────────────────
-    // Choose a target pose from the lean keys and lerp toward it, then push the
-    // pose joints. Lean back → STAND (weight off the back); lean forward / on
-    // the gas → CROUCH (tucked over the bars); otherwise the NEUTRAL seat.
-    if (!_crashed && _poseJoints) {
-      let target = POSE_NEUTRAL;
-      if (leanBack) target = POSE_STAND;
-      else if (leanFwd || fwd) target = POSE_CROUCH;
-      _pose.torso += (target.torso - _pose.torso) * POSE_LERP;
-      _pose.head += (target.head - _pose.head) * POSE_LERP;
-      _pose.shoulder += (target.shoulder - _pose.shoulder) * POSE_LERP;
-      _pose.elbow += (target.elbow - _pose.elbow) * POSE_LERP;
-      _pose.hip += (target.hip - _pose.hip) * POSE_LERP;
-      _pose.knee += (target.knee - _pose.knee) * POSE_LERP;
-      applyPose();
-    }
+    // No active-pose driving: the rider is held to the bike only at the hands
+    // (handlebar) and feet (pegs), with soft limb hinges, so the body hangs and
+    // sways naturally between those four points. Leaning the bike moves the grip
+    // + peg anchors, which carries the rider's weight shift for free — no posed
+    // AngleJoint targets fighting the pins (that conflict caused the jitter).
 
     // ── Distance HUD ───────────────────────────────────────────────────────
     const dist = Math.max(0, (_chassis.position.x - _spawnX));
