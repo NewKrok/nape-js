@@ -153,11 +153,13 @@ const MOTOR_FORCE = 75000;      // torque cap — moderate so acceleration doesn
 // Ground lean drives the chassis toward a TARGET pitch rate and holds it there,
 // strong enough to overpower the wheels' tendency to cancel the rotation each
 // frame (a gentle nudge just gets absorbed — that's why leaning felt dead).
-const LEAN_GROUND_VEL = 6.0;     // target pitch rate while a lean key is held (rad/s)
-const LEAN_GROUND_GAIN = 0.6;    // how hard we drive angularVel toward that target
+const LEAN_GROUND_VEL = 7.0;     // target pitch rate while a lean key is held (rad/s)
+const LEAN_GROUND_GAIN = 0.4;    // how hard we drive angularVel toward that target
 const LEAN_MAX_ANGLE = 1.15;     // rad (~66°) — past this we brake the spin so a
                                  // held lean gives a big wheelie/endo that HOLDS,
                                  // instead of looping the bike all the way over
+const GROUND_TOL = 6;            // px — a wheel counts as grounded if its bottom
+                                 // is within this of the terrain surface.
 const LEAN_TORQUE = 110;        // ground lean impulse per frame — pops a wheelie
                                 // / pushes the nose down for jump setup
 const AIR_SPIN_RATE = 0.45;     // rad/s added to chassis angularVel per frame
@@ -857,20 +859,22 @@ export default {
 //    CodePen extractor picks them up as preamble) ────────────────────────────
 
 // True if either wheel currently has a contact arbiter (ground touch).
+// True if either wheel is resting on the terrain. NOTE: we can't rely on
+// `space.arbiters` here — the demo runner calls demo.step() BEFORE space.step(),
+// so the arbiter list is empty/stale at this point (it always read 0 → the bike
+// was wrongly treated as permanently airborne, which silently disabled the
+// strong ground-lean). Instead we test geometry: a wheel is grounded if its
+// bottom edge is at/below the terrain surface (within a small tolerance). This
+// is independent of step order and matches what `buildTerrain` lays down.
 function wheelTouchingGround() {
-  if (!_space || !_rWheel) return false;
-  try {
-    const arbs = _space.arbiters;
-    const count = arbs.zpp_gl();
-    for (let i = 0; i < count; i++) {
-      const a = arbs.at(i);
-      if (a.body1 === _rWheel || a.body2 === _rWheel ||
-          a.body1 === _fWheel || a.body2 === _fWheel) {
-        return true;
-      }
-    }
-  } catch (_) {}
-  return false;
+  const onGround = (w) => {
+    if (!w) return false;
+    const p = w.position;
+    const surfaceY = terrainY(p.x, _spawnGroundY);
+    // wheel bottom = p.y + WHEEL_R; grounded if it's at/under the surface.
+    return p.y + WHEEL_R >= surfaceY - GROUND_TOL;
+  };
+  return onGround(_rWheel) || onGround(_fWheel);
 }
 
 // Draw the suspension springs (chassis anchor → wheel hub) in world space.
