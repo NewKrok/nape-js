@@ -153,8 +153,11 @@ const MOTOR_FORCE = 75000;      // torque cap — moderate so acceleration doesn
 // Ground lean drives the chassis toward a TARGET pitch rate and holds it there,
 // strong enough to overpower the wheels' tendency to cancel the rotation each
 // frame (a gentle nudge just gets absorbed — that's why leaning felt dead).
-const LEAN_GROUND_VEL = 5.0;     // target pitch rate while a lean key is held (rad/s)
-const LEAN_GROUND_GAIN = 0.5;    // how hard we drive angularVel toward that target
+const LEAN_GROUND_VEL = 6.0;     // target pitch rate while a lean key is held (rad/s)
+const LEAN_GROUND_GAIN = 0.6;    // how hard we drive angularVel toward that target
+const LEAN_MAX_ANGLE = 1.15;     // rad (~66°) — past this we brake the spin so a
+                                 // held lean gives a big wheelie/endo that HOLDS,
+                                 // instead of looping the bike all the way over
 const LEAN_TORQUE = 110;        // ground lean impulse per frame — pops a wheelie
                                 // / pushes the nose down for jump setup
 const AIR_SPIN_RATE = 0.45;     // rad/s added to chassis angularVel per frame
@@ -740,19 +743,31 @@ export default {
       if (leanFwd) _chassis.angularVel += AIR_SPIN_RATE;
     } else {
       // On the ground the grounded wheels cancel a pure torque each frame, so a
-      // nudge feels dead. Instead drive angularVel TOWARD a target pitch rate and
-      // hold it — this lifts the front (wheelie, nose-up = negative) or pushes it
-      // down (endo) authoritatively, while the rear/front wheel keeps the bike
-      // from simply spinning. The torque impulse adds a bit more bite.
+      // nudge feels dead. Instead drive angularVel TOWARD a strong target pitch
+      // rate and hold it — this snaps the front up (wheelie, nose-up = negative)
+      // or down (endo) authoritatively. An ANGLE GUARD stops driving once the
+      // bike is already pitched past LEAN_MAX_ANGLE, so a held key gives a big,
+      // fast lean that HOLDS there instead of looping the bike over.
+      let pitch = _chassis.rotation % (Math.PI * 2);
+      if (pitch > Math.PI) pitch -= Math.PI * 2;
+      if (pitch < -Math.PI) pitch += Math.PI * 2;
       if (leanBack) {
-        const target = -LEAN_GROUND_VEL;
-        _chassis.angularVel += (target - _chassis.angularVel) * LEAN_GROUND_GAIN;
-        _chassis.applyAngularImpulse(-LEAN_TORQUE);
+        if (pitch > -LEAN_MAX_ANGLE) {
+          // still within the wheelie range → drive the pitch up hard
+          _chassis.angularVel += (-LEAN_GROUND_VEL - _chassis.angularVel) * LEAN_GROUND_GAIN;
+          _chassis.applyAngularImpulse(-LEAN_TORQUE);
+        } else if (_chassis.angularVel < 0) {
+          // reached the wheelie cap → kill the spin so it HOLDS, not loops
+          _chassis.angularVel = 0;
+        }
       }
       if (leanFwd) {
-        const target = LEAN_GROUND_VEL;
-        _chassis.angularVel += (target - _chassis.angularVel) * LEAN_GROUND_GAIN;
-        _chassis.applyAngularImpulse(LEAN_TORQUE);
+        if (pitch < LEAN_MAX_ANGLE) {
+          _chassis.angularVel += (LEAN_GROUND_VEL - _chassis.angularVel) * LEAN_GROUND_GAIN;
+          _chassis.applyAngularImpulse(LEAN_TORQUE);
+        } else if (_chassis.angularVel > 0) {
+          _chassis.angularVel = 0;
+        }
       }
     }
 
