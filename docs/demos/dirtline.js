@@ -150,7 +150,10 @@ const MOTOR_RATE = 30;          // rear-wheel motor target angular rate. Kept
                                 // sane rate give smooth, fast power delivery.
 const MOTOR_FORCE = 75000;      // torque cap — moderate so acceleration doesn't
                                 // break traction (or loft the front into a flip).
-const LEAN_TORQUE = 40;         // ground lean impulse per frame — pops a wheelie
+const LEAN_GROUND_ASSIST = 0.9;  // rad/s of direct pitch added per frame on the
+                                 // ground so leaning is FELT (not absorbed by grip)
+const LEAN_GROUND_VEL = 4.5;     // cap on that ground-lean pitch rate (controllable)
+const LEAN_TORQUE = 110;        // ground lean impulse per frame — pops a wheelie
                                 // / pushes the nose down for jump setup
 const AIR_SPIN_RATE = 0.45;     // rad/s added to chassis angularVel per frame
                                 // while airborne — strong enough that holding a
@@ -734,8 +737,19 @@ export default {
       if (leanBack) _chassis.angularVel -= AIR_SPIN_RATE;
       if (leanFwd) _chassis.angularVel += AIR_SPIN_RATE;
     } else {
-      if (leanBack) _chassis.applyAngularImpulse(-LEAN_TORQUE);
-      if (leanFwd) _chassis.applyAngularImpulse(LEAN_TORQUE);
+      // On the ground the grounded wheels resist a pure torque (it mostly gets
+      // absorbed). To make leaning actually FEEL like a weight shift, combine a
+      // strong torque impulse with a direct angular-velocity bias toward the
+      // lean direction (capped, so the bike can lift a wheel into a wheelie /
+      // endo but the wheels still keep traction). Sign: nose-up = negative.
+      if (leanBack) {
+        _chassis.applyAngularImpulse(-LEAN_TORQUE);
+        if (_chassis.angularVel > -LEAN_GROUND_VEL) _chassis.angularVel -= LEAN_GROUND_ASSIST;
+      }
+      if (leanFwd) {
+        _chassis.applyAngularImpulse(LEAN_TORQUE);
+        if (_chassis.angularVel < LEAN_GROUND_VEL) _chassis.angularVel += LEAN_GROUND_ASSIST;
+      }
     }
 
     // ── Active rider pose (the visible weight shift) ───────────────────────
