@@ -22,7 +22,7 @@ const SCREEN_H = 500;
 
 // Dev toggle: build the bike alone (no rider) while iterating on the chassis +
 // suspension. Flip back to true once the bike looks/behaves right.
-const BUILD_RIDER = false;
+const BUILD_RIDER = true;
 
 // ── World / terrain ─────────────────────────────────────────────────────────
 const WORLD_W = 6000;
@@ -379,6 +379,14 @@ function buildRider(space, seatX, seatY) {
   };
   const lLeg = buildLeg();
   const rLeg = buildLeg();
+
+  // Rider parts share the bike's collision filter: they collide with the
+  // terrain (so a bailed rider tumbles on the ground) but NOT with the bike or
+  // with each other — the seated rig would otherwise jam its own legs against
+  // the wheels/frame.
+  for (const b of _riderParts) {
+    for (const shape of b.shapes) shape.filter = BIKE_FILTER;
+  }
 
   _poseJoints = { torso: jTorso, head: jHead, shoulders, elbows, hips, knees };
   _pose = { ...POSE_NEUTRAL };
