@@ -213,6 +213,8 @@ const _bikeJoints = [];       // every bike constraint, for clean teardown
 // are the articulation. `_riderParts` / `_riderJoints` are kept for teardown.
 let _rider = null;            // { pelvis, torso, head, ... } refs for drawing
 let _seatWeld = null;
+let _gripJoints = [];         // hand→handlebar pins (break away with the seat weld)
+let _pegJoints = [];          // foot→footpeg pins (break away with the seat weld)
 let _riderParts = [];
 let _riderJoints = [];
 // Pose-driving AngleJoints, grouped so step() can push each toward its target.
@@ -246,9 +248,11 @@ let _spawnGroundY = 0;
 // rewrites those targets each frame so the rider crouches on the gas and stands
 // when you lean back — exactly the TeaGames-style weight shift. On a crash the
 // targets are abandoned and the windows thrown wide so the rig goes limp.
-function buildRider(space, seatX, seatY) {
+function buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal) {
   _riderParts = [];
   _riderJoints = [];
+  _gripJoints = [];
+  _pegJoints = [];
 
   const add = (body) => { _riderParts.push(body); return body; };
 
@@ -387,6 +391,31 @@ function buildRider(space, seatX, seatY) {
   for (const b of _riderParts) {
     for (const shape of b.shapes) shape.filter = BIKE_FILTER;
   }
+
+  // Pin the hands to the handlebar grip and the feet to the footpeg. These are
+  // PivotJoints fixing the lower-arm end (the hand) and the shin end (the foot)
+  // onto the chassis at the given local anchors, so the rider actually GRIPS the
+  // bars and rests on the pegs instead of its limbs flapping. They break away
+  // together with the seat weld on a crash (see bailRider) so the rider ragdolls
+  // free. The AngleJoint poses still shape the limbs; these just lock the ends.
+  if (chassis && gripLocal) {
+    for (const arm of [lArm, rArm]) {
+      _gripJoints.push(new PivotJoint(
+        chassis, arm.lower,
+        new Vec2(gripLocal.x, gripLocal.y), new Vec2(armLen / 2, 0),
+      ));
+    }
+  }
+  if (chassis && pegLocal) {
+    for (const leg of [lLeg, rLeg]) {
+      _pegJoints.push(new PivotJoint(
+        chassis, leg.shin,
+        new Vec2(pegLocal.x, pegLocal.y), new Vec2(shinLen / 2, 0),
+      ));
+    }
+  }
+  for (const j of _gripJoints) j.space = space;
+  for (const j of _pegJoints) j.space = space;
 
   _poseJoints = { torso: jTorso, head: jHead, shoulders, elbows, hips, knees };
   _pose = { ...POSE_NEUTRAL };
@@ -572,7 +601,11 @@ function buildBike(space, spawnX, groundY) {
     const seatLocalY = -16;
     const seatX = chassis.position.x + seatLocalX;
     const seatY = chassis.position.y + seatLocalY;
-    const pelvis = buildRider(space, seatX, seatY);
+    // Hand + foot anchor points on the frame (chassis-local): the handlebar grip
+    // (the crossbar at the top of the riser) and a footpeg under the seat.
+    const gripLocal = new Vec2(27, -31);
+    const pegLocal = new Vec2(-4, 10);
+    const pelvis = buildRider(space, seatX, seatY, chassis, gripLocal, pegLocal);
     _seatWeld = new WeldJoint(
       chassis, pelvis,
       new Vec2(seatLocalX, seatLocalY), new Vec2(0, 0),
@@ -591,6 +624,10 @@ function buildBike(space, spawnX, groundY) {
 function teardownBikeAndRider() {
   if (_seatWeld && _seatWeld.space) _seatWeld.space = null;
   _seatWeld = null;
+  for (const j of _gripJoints) { if (j.space) j.space = null; }
+  for (const j of _pegJoints) { if (j.space) j.space = null; }
+  _gripJoints = [];
+  _pegJoints = [];
   for (const j of _riderJoints) { if (j.space) j.space = null; }
   _riderJoints = [];
   // All bike constraints (fork line + spring, swingarm pivots, monoshock, motor).
@@ -623,6 +660,12 @@ function bailRider() {
   _crashed = true;
   if (_seatWeld.space) _seatWeld.space = null;
   _seatWeld = null;
+  // Release the hands from the bars and the feet from the pegs too, so the whole
+  // rider comes free (not just the pelvis).
+  for (const j of _gripJoints) { if (j.space) j.space = null; }
+  for (const j of _pegJoints) { if (j.space) j.space = null; }
+  _gripJoints = [];
+  _pegJoints = [];
   // A small backward+up kick on the pelvis so the rider visibly tumbles off
   // the back rather than sitting in place.
   if (_rider && _rider.pelvis && _rider.pelvis.space) {
