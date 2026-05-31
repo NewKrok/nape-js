@@ -29,6 +29,7 @@ export const GAME_DEMO_IDS = new Set([
   "brickline",
   "tinywheels-cup",
   "tiltrun",
+  "dirtline",
 ]);
 
 export const CATEGORIES = [
