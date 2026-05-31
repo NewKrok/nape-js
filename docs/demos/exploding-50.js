@@ -285,7 +285,7 @@ function reform() {
 }
 
 export default {
-  id: "star-fountain",
+  id: "exploding-50",
   label: "Exploding 50",
   tags: ["Impulse", "Collision", "Fracture", "Many-body"],
   featured: false,
