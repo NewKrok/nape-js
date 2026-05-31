@@ -225,6 +225,8 @@ const COLORS = [
 ];
 let _showOutlines = __OUTLINES__;
 function bodyColor(body) {
+  const custom = body.userData?._color;
+  if (custom) return custom;
   if (body.isStatic()) return { fill: "rgba(120,160,200,0.15)", stroke: "#607888" };
   const idx = (body.userData?._colorIdx ?? 0) % COLORS.length;
   return COLORS[idx];
@@ -320,8 +322,11 @@ function addBodyMesh(body) {
     }
     if (!geom) continue;
     const isSensor = shape.sensorEnabled || shape.fluidEnabled;
+    const _cc = body.userData?._color;
     const cIdx = (body.userData?._colorIdx ?? 0) % MESH_COLORS.length;
-    const color = body.isStatic() ? 0x607888 : MESH_COLORS[cIdx];
+    const color = _cc
+      ? parseInt(_cc.stroke.replace("#", ""), 16)
+      : body.isStatic() ? 0x607888 : MESH_COLORS[cIdx];
     const mat = isSensor
       ? new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.5 })
       : new THREE.MeshPhongMaterial({ color, shininess: 80, specular: 0x444444, side: THREE.DoubleSide });
@@ -373,6 +378,8 @@ const _debug = new PixiDebugDraw({
   staticColor: STATIC_FILL,
   showOutlines: __OUTLINES__,
   colorResolver: (body) => {
+    const custom = body.userData?._color;
+    if (custom) return parseInt(custom.stroke.replace("#", ""), 16);
     if (body.isStatic()) return STATIC_FILL;
     const idx = body.userData?._colorIdx;
     if (idx != null && idx >= 0) return FILL_COLORS[idx % FILL_COLORS.length];
@@ -418,6 +425,27 @@ _demo.setup(space, W, H);
 // ── Camera ──────────────────────────────────────────────────────────────────
 let _camX = 0, _camY = 0;
 const _camCfg = _demo.camera || null;
+// ── Camera shake ──────────────────────────────────────────────────────────
+// Mirrors the docs DemoRunner: demos call shakeCamera(amplitude, duration)
+// via _demo._runner; the offset decays quadratically and is added to the
+// camera each frame. Without this, shake-driven demos run but feel static.
+let _shakeAmp = 0, _shakeRemaining = 0, _shakeTotal = 0, _shakeOffX = 0, _shakeOffY = 0;
+function shakeCamera(amplitude, duration = 0.25) {
+  if (!(amplitude > 0) || !(duration > 0)) return;
+  if (amplitude < _shakeAmp && _shakeRemaining > 0) return;
+  _shakeAmp = amplitude; _shakeRemaining = duration; _shakeTotal = duration;
+}
+function _updateShake(frameSec) {
+  if (_shakeRemaining <= 0) { _shakeOffX = 0; _shakeOffY = 0; return; }
+  _shakeRemaining = Math.max(0, _shakeRemaining - frameSec);
+  const t = _shakeTotal > 0 ? _shakeRemaining / _shakeTotal : 0;
+  const amp = _shakeAmp * t * t;
+  const ang = Math.random() * Math.PI * 2;
+  _shakeOffX = Math.cos(ang) * amp;
+  _shakeOffY = Math.sin(ang) * amp;
+}
+// Expose to demos that call this._runner?.shakeCamera?.(...)
+_demo._runner = { shakeCamera };
 function _updateCamera() {
   const cfg = _camCfg;
   if (!cfg) return;
@@ -464,19 +492,21 @@ function _loop() {
   if (_demo.step) _demo.step(space, W, H);
   space.step(1 / 60, __VEL_ITER__, __POS_ITER__);
   _updateCamera();
+  _updateShake(1 / 60);
+  const _cx = _camX + _shakeOffX, _cy = _camY + _shakeOffY;
   ctx.clearRect(0, 0, W, H);
   if (_demo.render) {
-    _demo.render(ctx, space, W, H, _showOutlines, _camX, _camY);
+    _demo.render(ctx, space, W, H, _showOutlines, _cx, _cy);
   } else {
     ctx.save();
-    ctx.translate(-_camX, -_camY);
+    ctx.translate(-_cx, -_cy);
     drawGrid();
     for (const body of space.bodies) drawBody(body);
     drawConstraintLines();
     ctx.restore();
   }
   // HUD overlay (legend, labels) — same as canvas2d-adapter locally
-  if (_demo.render3dOverlay) _demo.render3dOverlay(ctx, space, W, H, _camX, _camY);
+  if (_demo.render3dOverlay) _demo.render3dOverlay(ctx, space, W, H, _cx, _cy);
   requestAnimationFrame(_loop);
 }
 _loop();
@@ -548,6 +578,27 @@ _demo.setup(space, W, H);
 // ── Camera ──────────────────────────────────────────────────────────────────
 let _camX = 0, _camY = 0;
 const _camCfg = _demo.camera || null;
+// ── Camera shake ──────────────────────────────────────────────────────────
+// Mirrors the docs DemoRunner: demos call shakeCamera(amplitude, duration)
+// via _demo._runner; the offset decays quadratically and is added to the
+// camera each frame. Without this, shake-driven demos run but feel static.
+let _shakeAmp = 0, _shakeRemaining = 0, _shakeTotal = 0, _shakeOffX = 0, _shakeOffY = 0;
+function shakeCamera(amplitude, duration = 0.25) {
+  if (!(amplitude > 0) || !(duration > 0)) return;
+  if (amplitude < _shakeAmp && _shakeRemaining > 0) return;
+  _shakeAmp = amplitude; _shakeRemaining = duration; _shakeTotal = duration;
+}
+function _updateShake(frameSec) {
+  if (_shakeRemaining <= 0) { _shakeOffX = 0; _shakeOffY = 0; return; }
+  _shakeRemaining = Math.max(0, _shakeRemaining - frameSec);
+  const t = _shakeTotal > 0 ? _shakeRemaining / _shakeTotal : 0;
+  const amp = _shakeAmp * t * t;
+  const ang = Math.random() * Math.PI * 2;
+  _shakeOffX = Math.cos(ang) * amp;
+  _shakeOffY = Math.sin(ang) * amp;
+}
+// Expose to demos that call this._runner?.shakeCamera?.(...)
+_demo._runner = { shakeCamera };
 function _updateCamera() {
   const cfg = _camCfg;
   if (!cfg) return;
@@ -591,20 +642,25 @@ function _loop() {
   if (_demo.step) _demo.step(space, W, H);
   space.step(1 / 60, __VEL_ITER__, __POS_ITER__);
   _updateCamera();
+  _updateShake(1 / 60);
+  const _cx = _camX + _shakeOffX, _cy = _camY + _shakeOffY;
   if (!_demo.render3d) syncBodies3D(space);
   if (_demo.render3d) {
-    _demo.render3d(renderer, scene, camera, space, W, H, _camX, _camY);
+    _demo.render3d(renderer, scene, camera, space, W, H, _cx, _cy);
   } else {
-    if (_camCfg) {
+    // Offset the 3D camera for follow-camera and/or active shake. When neither
+    // applies, _cx/_cy are 0 so the camera stays at its default framing.
+    if (_camCfg || _shakeOffX || _shakeOffY) {
       const _baseCamX = W / 2, _baseCamY = -H / 2, _camZZ = camera.position.z;
-      camera.position.set(_baseCamX + _camX, _baseCamY - _camY, _camZZ);
-      camera.lookAt(_baseCamX + _camX, _baseCamY - _camY, 0);
+      const _tx = _baseCamX + _cx, _ty = _baseCamY - _cy;
+      camera.position.set(_tx, _ty, _camZZ);
+      camera.lookAt(_tx, _ty, 0);
     }
     renderer.render(scene, camera);
   }
   if (_overlayCtx) {
     _overlayCtx.clearRect(0, 0, W, H);
-    _demo.render3dOverlay(_overlayCtx, space, W, H, _camX, _camY);
+    _demo.render3dOverlay(_overlayCtx, space, W, H, _cx, _cy);
   }
   requestAnimationFrame(_loop);
 }
@@ -646,6 +702,27 @@ _demo.setup(space, W, H);
 // ── Camera ──────────────────────────────────────────────────────────────────
 let _camX = 0, _camY = 0;
 const _camCfg = _demo.camera || null;
+// ── Camera shake ──────────────────────────────────────────────────────────
+// Mirrors the docs DemoRunner: demos call shakeCamera(amplitude, duration)
+// via _demo._runner; the offset decays quadratically and is added to the
+// camera each frame. Without this, shake-driven demos run but feel static.
+let _shakeAmp = 0, _shakeRemaining = 0, _shakeTotal = 0, _shakeOffX = 0, _shakeOffY = 0;
+function shakeCamera(amplitude, duration = 0.25) {
+  if (!(amplitude > 0) || !(duration > 0)) return;
+  if (amplitude < _shakeAmp && _shakeRemaining > 0) return;
+  _shakeAmp = amplitude; _shakeRemaining = duration; _shakeTotal = duration;
+}
+function _updateShake(frameSec) {
+  if (_shakeRemaining <= 0) { _shakeOffX = 0; _shakeOffY = 0; return; }
+  _shakeRemaining = Math.max(0, _shakeRemaining - frameSec);
+  const t = _shakeTotal > 0 ? _shakeRemaining / _shakeTotal : 0;
+  const amp = _shakeAmp * t * t;
+  const ang = Math.random() * Math.PI * 2;
+  _shakeOffX = Math.cos(ang) * amp;
+  _shakeOffY = Math.sin(ang) * amp;
+}
+// Expose to demos that call this._runner?.shakeCamera?.(...)
+_demo._runner = { shakeCamera };
 function _updateCamera() {
   const cfg = _camCfg;
   if (!cfg) return;
@@ -689,18 +766,21 @@ function _loop() {
   if (_demo.step) _demo.step(space, W, H);
   space.step(1 / 60, __VEL_ITER__, __POS_ITER__);
   _updateCamera();
+  _updateShake(1 / 60);
+  const _cx = _camX + _shakeOffX, _cy = _camY + _shakeOffY;
   if (_demo.renderPixi) {
-    _demo.renderPixi({ syncBodies, getEngine: () => ({ PIXI, app }) }, space, W, H, false, _camX, _camY);
+    _demo.renderPixi({ syncBodies, getEngine: () => ({ PIXI, app }) }, space, W, H, false, _cx, _cy);
   } else {
     drawGrid();
     syncBodies(space);
     if (!_demo.render3dOverlay) drawConstraintLines();
-    if (_camCfg) { app.stage.x = -_camX; app.stage.y = -_camY; }
+    // Offset the stage for follow-camera and/or active shake.
+    if (_camCfg || _shakeOffX || _shakeOffY) { app.stage.x = -_cx; app.stage.y = -_cy; }
     app.render();
   }
   if (_overlayCtx) {
     _overlayCtx.clearRect(0, 0, W, H);
-    _demo.render3dOverlay(_overlayCtx, space, W, H, _camX, _camY);
+    _demo.render3dOverlay(_overlayCtx, space, W, H, _cx, _cy);
   }
   requestAnimationFrame(_loop);
 }

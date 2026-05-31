@@ -76,6 +76,7 @@ import pulleyCrane          from "./demos/pulley-crane.js?v=3.35.0";
 import tinywheelsCup        from "./demos/tinywheels-cup.js?v=3.35.0";
 import tiltrun               from "./demos/tiltrun.js?v=3.35.0";
 import dirtline              from "./demos/dirtline.js?v=3.35.0";
+import starFountain          from "./demos/star-fountain.js?v=3.35.0";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -121,6 +122,7 @@ const ALL_DEMOS = [
   tinywheelsCup,
   tiltrun,
   dirtline,
+  starFountain,
 ];
 
 const gtag = window.gtag || function() {};
