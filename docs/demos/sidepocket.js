@@ -1,11 +1,12 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
-  CbType, CbEvent, InteractionType, InteractionListener,
+  CbType, CbEvent, InteractionType, InteractionListener, InteractionFilter,
 } from "../nape-js.esm.js";
+import { spaceToJSON, spaceFromJSON } from "../serialization/index.js";
 import { drawBody } from "../renderer.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sidepocket — top-down drag-to-aim billiards
+// Billiards — top-down drag-to-aim pool
 //
 // A zero-gravity pool table. Drag back from the cue ball to set aim direction
 // and power, release to strike. Balls roll with a per-step linear drag (rolling
@@ -47,11 +48,35 @@ const POCKETS = [
 // ── Ball / shot tuning ───────────────────────────────────────────────────────
 // Lively, low-friction felt: high elasticity for clean clacks, modest friction.
 const BALL_MATERIAL = new Material(0.95, 0.2, 0.3, 1);
-const DRAG = 0.018;          // per-step linear drag (rolling friction); 0 = ice
-const STOP_EPS = 5;          // |v| under which a ball counts as stopped
+// Rolling resistance on cloth is ~constant deceleration (Coulomb-like), NOT a
+// velocity-proportional drag. A proportional `v *= (1 - k)` decays toward zero
+// exponentially, so the ball never truly stops — it crawls forever at a sliver
+// of speed until a cutoff kills it, which reads as a mushy, unnatural slowdown.
+// Real billiard balls lose a fixed amount of speed per second and stop crisply
+// after a finite roll. We model that: subtract a constant DECEL each step along
+// the velocity direction, clamping to rest. DECEL is in px/s of speed shed per
+// physics step (60 Hz), so per second a ball sheds 60·DECEL px/s.
+const ROLL_DECEL = 4;        // px/s of speed shed per step (≈240 px/s²)
+const STOP_EPS = ROLL_DECEL; // |v| at/under which a ball is snapped to rest
 const STOP_FRAMES = 6;       // consecutive settled frames before input re-opens
 const MAX_PULL = 150;        // max drag distance in px (clamps power)
-const MAX_SHOT_SPEED = 950;  // cue speed at full power
+const MAX_SHOT_SPEED = 2200; // cue speed at full power
+
+// Camera-shake tuning: collisions closing faster than SHAKE_MIN_SPEED jolt
+// the table, amplitude ramping from SHAKE_MIN_AMP up to SHAKE_MAX_AMP at a
+// full-power break.
+const SHAKE_MIN_SPEED = 120;
+const SHAKE_MIN_AMP = 2;
+const SHAKE_MAX_AMP = 11;
+
+// Length of the struck-ball direction guide drawn at the ghost.
+const GHOST_LINE_LEN = 70;
+
+// Pockets sit in their own collision group purely for tidiness/future use; the
+// mask is all-bits so the live ball↔pocket sensor interaction is unaffected.
+// (The shadow-sim predictor needs no special filtering — pockets are sensors,
+// so a ball naturally passes through them in the cloned step.)
+const GROUP_POCKET = 2;
 const TABLE_HEAD_X = TABLE_L + 190; // cue ball spot ("head spot")
 const RACK_APEX_X = TABLE_R - 200;  // rack apex ("foot spot")
 
@@ -82,11 +107,18 @@ let _scratches = 0;
 let _racks = 0;
 let _cueScratched = false; // cue sank — respawn it once the table settles
 let _winFrames = 0;        // grace period after a rack is cleared
+let _impactSpeed = 0;      // peak closing speed of collisions since last step
+
+// Cushion bounciness — also used by the shot predictor to shrink the roll
+// budget at each rail bounce (a real cushion sheds energy, so a bounced ball
+// dies sooner than a straight roll of the same length).
+const RAIL_ELASTICITY = 0.6;
+const RAIL_MATERIAL = new Material(RAIL_ELASTICITY, 0.4, 0.5, 1);
 
 // ── Builders ─────────────────────────────────────────────────────────────────
 function makeRail(space, cx, cy, w, h) {
   const body = new Body(BodyType.STATIC, new Vec2(cx, cy));
-  body.shapes.add(new Polygon(Polygon.box(w, h), new Material(0.6, 0.4, 0.5, 1)));
+  body.shapes.add(new Polygon(Polygon.box(w, h), RAIL_MATERIAL));
   body.userData._kind = KIND_RAIL;
   body.space = space;
   return body;
@@ -121,6 +153,9 @@ function buildPockets(space) {
     const body = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
     const shape = new Circle(POCKET_R);
     shape.sensorEnabled = true;
+    // Own collision group (mask = all bits) so the ball↔pocket sensor still
+    // fires; the group is otherwise unused now (see GROUP_POCKET note).
+    shape.filter = new InteractionFilter(GROUP_POCKET, -1);
     body.shapes.add(shape);
     body.cbTypes.add(cbPocket);
     body.userData._kind = KIND_POCKET;
@@ -130,6 +165,7 @@ function buildPockets(space) {
   }
 }
 
+let _nextBallId = 0;
 function makeBall(space, x, y, color, colorIdx, isCue) {
   const ball = new Body(BodyType.DYNAMIC, new Vec2(x, y));
   ball.shapes.add(new Circle(BALL_R, undefined, BALL_MATERIAL));
@@ -137,6 +173,9 @@ function makeBall(space, x, y, color, colorIdx, isCue) {
   ball.isBullet = true; // CCD — fast shots shouldn't tunnel through rails/balls
   ball.cbTypes.add(cbBall);
   ball.userData._kind = isCue ? KIND_CUE : KIND_BALL;
+  // Stable id carried through serialization so the shadow-sim predictor can
+  // match the cloned cue and report which object ball it strikes.
+  ball.userData._predId = isCue ? -1 : _nextBallId++;
   if (isCue) ball.userData._color = color;
   else ball.userData._colorIdx = colorIdx;
   ball.space = space;
@@ -175,6 +214,7 @@ function clearBalls(space) {
 
 function rerack(space) {
   clearBalls(space);
+  _nextBallId = 0;
   _objectBalls = rackBalls(space);
   _cueBall = spawnCue(space);
   _cueScratched = false;
@@ -220,7 +260,7 @@ function sinkBall(body) {
 // ── Demo definition ──────────────────────────────────────────────────────────
 export default {
   id: "sidepocket",
-  label: "Sidepocket",
+  label: "Billiards",
   tags: ["Billiards", "Sensor", "Material", "Drag", "TopDown"],
   featured: false,
   desc:
@@ -239,6 +279,7 @@ export default {
     _scratches = 0;
     _racks = 0;
     _winFrames = 0;
+    _impactSpeed = 0;
 
     buildRails(space);
     buildPockets(space);
@@ -261,9 +302,44 @@ export default {
         }
       },
     ));
+
+    // Ball-on-ball clack → camera shake scaled by the closing speed of the
+    // impact, so a hard break jolts and a soft kiss barely registers. Only
+    // balls carry cbBall, so rail bounces don't fire this (the satisfying
+    // crack is ball-on-ball). The peak speed is recorded here and consumed
+    // in step(); the runner's shakeCamera() is applied additively on top of
+    // the (un-followed) camera.
+    space.listeners.add(new InteractionListener(
+      CbEvent.BEGIN,
+      InteractionType.COLLISION,
+      cbBall,
+      cbBall,
+      (cb) => {
+        const b1 = cb.int1.castBody ?? cb.int1.castShape?.body;
+        const b2 = cb.int2.castBody ?? cb.int2.castShape?.body;
+        if (!b1 || !b2) return;
+        // Closing speed = magnitude of the two balls' relative velocity.
+        const rvx = b1.velocity.x - b2.velocity.x;
+        const rvy = b1.velocity.y - b2.velocity.y;
+        const closing = Math.hypot(rvx, rvy);
+        _impactSpeed = Math.max(_impactSpeed, closing);
+      },
+    ));
   },
 
   step(space) {
+    // 0. Fire a camera shake for the hardest collision since the last step.
+    //    Below SHAKE_MIN_SPEED hits are kisses and don't shake; amplitude
+    //    ramps linearly with closing speed up to a capped maximum.
+    if (_impactSpeed > SHAKE_MIN_SPEED) {
+      const t = Math.min(
+        (_impactSpeed - SHAKE_MIN_SPEED) / (MAX_SHOT_SPEED - SHAKE_MIN_SPEED),
+        1,
+      );
+      this._runner?.shakeCamera(SHAKE_MIN_AMP + t * (SHAKE_MAX_AMP - SHAKE_MIN_AMP), 0.18);
+    }
+    _impactSpeed = 0;
+
     // 1. Drain pocketed balls (sensor BEGIN queue + off-table safety net).
     for (const body of _pocketed) {
       if (body.space) sinkBall(body);
@@ -274,13 +350,23 @@ export default {
       if (b.space && isOffTable(b)) sinkBall(b);
     }
 
-    // 2. Per-step linear drag (rolling friction) on every live ball.
+    // 2. Rolling resistance: shed a CONSTANT amount of speed each step along
+    //    the velocity direction (Coulomb-like), so balls coast naturally and
+    //    then stop crisply after a finite roll — not the endless exponential
+    //    crawl a proportional drag produces.
     const balls = _cueBall ? [_cueBall, ..._objectBalls] : _objectBalls;
     for (const b of balls) {
       if (!b.space) continue;
       const v = b.velocity;
-      b.velocity = new Vec2(v.x * (1 - DRAG), v.y * (1 - DRAG));
-      b.angularVel *= 1 - DRAG;
+      const speed = Math.hypot(v.x, v.y);
+      if (speed <= ROLL_DECEL) {
+        b.velocity = new Vec2(0, 0);
+        b.angularVel = 0;
+      } else {
+        const k = (speed - ROLL_DECEL) / speed; // keep direction, drop magnitude
+        b.velocity = new Vec2(v.x * k, v.y * k);
+        b.angularVel *= k;
+      }
     }
 
     // 3. Settle detection — the table is "ready" once every ball has been
@@ -367,8 +453,20 @@ export default {
   // ── Canvas2D rendering ──────────────────────────────────────────────────────
   // Felt + rails + balls. Pockets, aim line and HUD live in render3dOverlay,
   // which the canvas2d adapter also invokes (so they're drawn exactly once).
-  render(ctx, space, W, H, showOutlines) {
+  render(ctx, space, W, H, showOutlines, camX = 0, camY = 0) {
     ctx.clearRect(0, 0, W, H);
+
+    // Full-canvas backdrop in screen space so the shake never exposes a bare
+    // edge strip as the (translated) table jolts.
+    ctx.fillStyle = "#1a1008";
+    ctx.fillRect(0, 0, W, H);
+
+    // Apply the camera offset (driven entirely by shakeCamera on impact — the
+    // demo has no follow target, so camX/camY are the shake offset). The HUD
+    // and pockets live in render3dOverlay and stay in screen space, so they
+    // don't shake.
+    ctx.save();
+    ctx.translate(-camX, -camY);
 
     // Wooden surround + green felt.
     ctx.fillStyle = "#3a2417";
@@ -381,6 +479,8 @@ export default {
       if (body.userData._hidden) continue;
       drawBody(ctx, body, showOutlines);
     }
+
+    ctx.restore();
   },
 
   // Threejs / Pixi auto-render the bodies; this overlay adds the pockets, the
@@ -433,24 +533,14 @@ function drawAim(ctx) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Forward aim arrow — colour shifts toward red at full power.
-  const len = power * MAX_PULL;
-  const tipX = bx + ux * len, tipY = by + uy * len;
+  // Predicted path — full shadow simulation: clone the live space, fire the
+  // exact shot into the clone, step the real engine forward, and trace the
+  // cue's actual path (rail bounces and all) plus the first object ball it
+  // strikes. Because it's the same solver the live shot uses, the prediction
+  // matches reality — no hand-rolled reflection/ghost geometry to drift.
   const col = power > 0.7 ? "#f85149" : "#3fb950";
-  ctx.strokeStyle = col;
-  ctx.fillStyle = col;
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.moveTo(bx, by);
-  ctx.lineTo(tipX, tipY);
-  ctx.stroke();
-  const head = 9;
-  ctx.beginPath();
-  ctx.moveTo(tipX, tipY);
-  ctx.lineTo(tipX - ux * head - uy * head * 0.5, tipY - uy * head + ux * head * 0.5);
-  ctx.lineTo(tipX - ux * head + uy * head * 0.5, tipY - uy * head - ux * head * 0.5);
-  ctx.closePath();
-  ctx.fill();
+  const pred = predictShot(ux, uy, power);
+  drawPrediction(ctx, pred, col);
 
   // Power gauge (top-right).
   const gx = SCREEN_W - 150, gy = 40, gw = 120, gh = 10;
@@ -461,6 +551,171 @@ function drawAim(ctx) {
   ctx.strokeStyle = "rgba(255,255,255,0.4)";
   ctx.lineWidth = 1;
   ctx.strokeRect(gx, gy, gw, gh);
+}
+
+// ── Shot prediction (shadow simulation) ──────────────────────────────────────
+// Clone the live space, fire the exact shot into the clone, and step the real
+// engine forward — tracing the cue's true path (rail bounces included) and the
+// first object ball it wakes. Because the prediction IS the engine, it can't
+// disagree with the real shot the way hand-rolled ray/reflection geometry did.
+//
+// Cost is ~1–2 ms (clone + ~PREDICT_FRAMES steps); we only run it while aiming,
+// and memoise on the shot parameters so a stationary aim doesn't re-simulate.
+const PREDICT_FRAMES = 90;     // how far ahead to simulate (1.5 s @ 60 Hz)
+const PREDICT_WAKE = 8;        // px/s — object ball counts as "struck" above this
+const PREDICT_PATH_STEP = 2;   // record the cue path every N frames (keeps it light)
+
+let _predCache = null;         // { key, result }
+
+function predictShot(ux, uy, power) {
+  const empty = { path: [], ghost: null, objectDir: null, balls: [] };
+  if (!_space || !_cueBall || !_cueBall.space) return empty;
+
+  // Memoise: the shadow sim is deterministic in (cue pos, dir, power, table),
+  // so only re-run when the aim actually changes. Table layout is captured by
+  // the live ball count + cue position (re-racks/pots change one of them).
+  const cp = _cueBall.position;
+  const key =
+    `${cp.x.toFixed(1)},${cp.y.toFixed(1)},${ux.toFixed(4)},${uy.toFixed(4)},` +
+    `${power.toFixed(3)},${_objectBalls.length}`;
+  if (_predCache && _predCache.key === key) return _predCache.result;
+
+  let clone;
+  try {
+    clone = spaceFromJSON(spaceToJSON(_space));
+  } catch {
+    return empty; // serialization unavailable → no guide (fail safe)
+  }
+
+  // Find the cloned cue + object balls by their stable ids.
+  let cue = null;
+  const objs = [];
+  for (const b of clone.bodies) {
+    const k = b.userData?._kind;
+    if (k === KIND_CUE) cue = b;
+    else if (k === KIND_BALL) objs.push(b);
+  }
+  if (!cue) return empty;
+
+  // Per-ball record: where it started and how it first started moving. `frame`
+  // (when it first exceeded the wake threshold) separates balls the cue strikes
+  // directly/early from those nudged later down the chain reaction.
+  const motion = objs.map((o) => ({
+    body: o,
+    from: { x: o.position.x, y: o.position.y },
+    dir: null,
+    frame: -1,
+  }));
+
+  // Fire the exact shot the live release() would (impulse = dir·speed·mass).
+  const speed = power * MAX_SHOT_SPEED;
+  cue.applyImpulse(new Vec2(ux * speed * cue.mass, uy * speed * cue.mass));
+
+  const path = [{ x: cue.position.x, y: cue.position.y }];
+  let ghost = null;
+  let objectDir = null;
+
+  for (let f = 0; f < PREDICT_FRAMES; f++) {
+    clone.step(1 / 60, 8, 3);
+
+    // Apply the same rolling deceleration the demo's step() uses, so the clone
+    // slows exactly like the live table.
+    for (const b of [cue, ...objs]) {
+      const v = b.velocity;
+      const s = Math.hypot(v.x, v.y);
+      if (s <= ROLL_DECEL) {
+        b.velocity = new Vec2(0, 0);
+        b.angularVel = 0;
+      } else {
+        const k = (s - ROLL_DECEL) / s;
+        b.velocity = new Vec2(v.x * k, v.y * k);
+        b.angularVel *= k;
+      }
+    }
+
+    if (f % PREDICT_PATH_STEP === 0) path.push({ x: cue.position.x, y: cue.position.y });
+
+    // Record each object ball's launch direction the first frame it wakes.
+    for (const m of motion) {
+      if (m.frame >= 0) continue;
+      const v = m.body.velocity;
+      const s = Math.hypot(v.x, v.y);
+      if (s > PREDICT_WAKE) {
+        m.dir = { x: v.x / s, y: v.y / s };
+        m.frame = f;
+      }
+    }
+
+    // The first ball to move = the contact we draw the cue's ghost for.
+    if (!ghost) {
+      const first = motion.find((m) => m.frame === f);
+      if (first) {
+        ghost = { x: cue.position.x, y: cue.position.y };
+        objectDir = first.dir;
+      }
+    }
+
+    // Stop tracing once the cue has come to rest (nothing more to show).
+    if (Math.hypot(cue.velocity.x, cue.velocity.y) === 0) {
+      path.push({ x: cue.position.x, y: cue.position.y });
+      break;
+    }
+  }
+
+  // Balls that moved → start point + launch direction, ordered by when they
+  // moved. The earliest is "primary" (struck by the cue), the rest secondary.
+  const moved = motion
+    .filter((m) => m.frame >= 0 && m.dir)
+    .sort((a, b) => a.frame - b.frame);
+  const firstFrame = moved.length ? moved[0].frame : 0;
+  const balls = moved.map((m) => ({
+    from: m.from,
+    dir: m.dir,
+    primary: m.frame <= firstFrame + 2, // within ~2 frames of first contact
+  }));
+
+  const result = { path, ghost, objectDir, balls };
+  _predCache = { key, result };
+  return result;
+}
+
+function drawPrediction(ctx, pred, col) {
+  // Cue path polyline — the real trajectory (bounces and all).
+  if (pred.path.length > 1) {
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(pred.path[0].x, pred.path[0].y);
+    for (let i = 1; i < pred.path.length; i++) ctx.lineTo(pred.path[i].x, pred.path[i].y);
+    ctx.stroke();
+  }
+
+  // Every ball the shot sets in motion gets a launch-direction arrow drawn
+  // from its own starting position. Balls the cue strikes directly (primary)
+  // are bright and full length; balls nudged later down the chain reaction
+  // (secondary) are faint and short, so a break reads as "these go roughly
+  // here" without the cosmetic clutter implying false precision.
+  for (const b of pred.balls) {
+    const len = b.primary ? GHOST_LINE_LEN : GHOST_LINE_LEN * 0.5;
+    ctx.strokeStyle = b.primary ? "#f2cc60" : "rgba(242,204,96,0.35)";
+    ctx.lineWidth = b.primary ? 2 : 1.25;
+    ctx.beginPath();
+    ctx.moveTo(b.from.x, b.from.y);
+    ctx.lineTo(b.from.x + b.dir.x * len, b.from.y + b.dir.y * len);
+    ctx.stroke();
+  }
+
+  if (!pred.ghost) return;
+  const { x: gx, y: gy } = pred.ghost;
+
+  // Ghost ball outline at the moment the cue strikes the first object ball.
+  ctx.strokeStyle = "rgba(255,255,255,0.7)";
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.arc(gx, gy, BALL_R, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
 }
 
 function drawHud(ctx, W) {
@@ -480,22 +735,25 @@ function drawHud(ctx, W) {
   ctx.fillStyle = _cueScratched ? "#f85149" : "#9da7b3";
   ctx.fillText(`Scratches: ${_scratches}`, 350, 19);
 
-  // Centre status line.
+  // Transient status messages — drawn on their own banner row below the HUD
+  // bar so they never collide with the left-hand counters. The "how to play"
+  // instructions live in the demo description, so we don't repeat them here.
   ctx.textAlign = "center";
   if (_objectBalls.length === 0 && !_cueScratched) {
-    ctx.fillStyle = "rgba(0,0,0,0.65)";
-    ctx.fillRect(W / 2 - 110, 36, 220, 28);
-    ctx.fillStyle = "#9be9a8";
-    ctx.fillText("Rack cleared! Re-racking…", W / 2, 55);
+    drawBanner(ctx, W, "Rack cleared! Re-racking…", "#9be9a8");
   } else if (_cueScratched) {
-    ctx.fillStyle = "#f85149";
-    ctx.fillText("Scratch! cue resets when the table settles", W / 2, 19);
-  } else if (_settled && !_aiming) {
-    ctx.fillStyle = "#9da7b3";
-    ctx.fillText("drag back from the cue ball to aim — release to shoot", W / 2, 19);
-  } else if (!_settled) {
-    ctx.fillStyle = "#9da7b3";
-    ctx.fillText("balls in motion…", W / 2, 19);
+    drawBanner(ctx, W, "Scratch! cue resets when the table settles", "#f85149");
   }
   ctx.restore();
+}
+
+// A centred status banner on its own row, just under the top HUD bar.
+function drawBanner(ctx, W, text, color) {
+  ctx.font = "bold 13px monospace";
+  ctx.textAlign = "center";
+  const w = ctx.measureText(text).width + 24;
+  ctx.fillStyle = "rgba(0,0,0,0.65)";
+  ctx.fillRect(W / 2 - w / 2, 36, w, 26);
+  ctx.fillStyle = color;
+  ctx.fillText(text, W / 2, 53);
 }
