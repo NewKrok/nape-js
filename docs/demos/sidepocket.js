@@ -31,9 +31,16 @@ const TABLE_CX = (TABLE_L + TABLE_R) / 2; // 450
 const TABLE_CY = (TABLE_T + TABLE_B) / 2; // 250
 
 const CUSHION = 16;          // cushion (rail) thickness
-const POCKET_R = 20;         // pocket sensor radius
+const POCKET_R = 20;         // pocket mouth radius (visual)
 const BALL_R = 11;           // ball radius
 const POCKET_GAP = POCKET_R + BALL_R; // cushion ends stop this far from a pocket
+// A ball drops only once its CENTRE reaches the pocket throat — not when its
+// edge first grazes the mouth. With a sensor the BEGIN event fires at a
+// centre distance of POCKET_R + BALL_R (= 31 px), so a ball "falls in" while
+// still mostly on the felt. Instead we test centre distance against this
+// capture radius each step: the centre must be well over the hole.
+const POCKET_CAPTURE = POCKET_R - BALL_R * 0.5; // 14.5 px
+const POCKET_CAPTURE_SQ = POCKET_CAPTURE * POCKET_CAPTURE;
 
 // Six pockets: four corners + two side midpoints.
 const POCKETS = [
@@ -96,7 +103,6 @@ const cbPocket = new CbType();
 let _space = null;
 let _cueBall = null;
 let _objectBalls = [];     // remaining numbered balls
-let _pocketed = [];        // bodies pending removal (collected in the BEGIN callback)
 let _settleFrames = 0;
 let _settled = true;
 let _aiming = false;
@@ -237,11 +243,22 @@ function isPointNearCue(x, y) {
   return dx * dx + dy * dy <= grab * grab;
 }
 
-// A ball is off the table if it slipped through a pocket mouth without the
-// sensor catching it — treat it as pocketed too (belt-and-braces).
+// A ball is off the table if it slipped through a pocket mouth without being
+// captured — treat it as pocketed too (belt-and-braces).
 function isOffTable(body) {
   const p = body.position;
   return p.x < 10 || p.x > SCREEN_W - 10 || p.y < 10 || p.y > SCREEN_H - 10;
+}
+
+// A ball is captured once its CENTRE reaches a pocket throat. Squared compare
+// to skip the sqrt — POCKET_CAPTURE² is hoisted as a module constant.
+function isOverPocket(body) {
+  const p = body.position;
+  for (const k of POCKETS) {
+    const dx = p.x - k.x, dy = p.y - k.y;
+    if (dx * dx + dy * dy <= POCKET_CAPTURE_SQ) return true;
+  }
+  return false;
 }
 
 function sinkBall(body) {
@@ -274,7 +291,6 @@ export default {
     _space = space;
     space.gravity = new Vec2(0, 0);
 
-    _pocketed = [];
     _shots = 0;
     _scratches = 0;
     _racks = 0;
@@ -287,21 +303,10 @@ export default {
 
     // Pocket sensor → queue the ball for removal. We don't remove inside the
     // callback (mutating the space mid-step is unsafe) — step() drains the queue.
-    space.listeners.add(new InteractionListener(
-      CbEvent.BEGIN,
-      InteractionType.SENSOR,
-      cbBall,
-      cbPocket,
-      (cb) => {
-        const b1 = cb.int1.castBody ?? cb.int1.castShape?.body;
-        const b2 = cb.int2.castBody ?? cb.int2.castShape?.body;
-        if (!b1 || !b2) return;
-        const ball = b1.userData._kind === KIND_POCKET ? b2 : b1;
-        if (ball.userData._kind !== KIND_POCKET && !_pocketed.includes(ball)) {
-          _pocketed.push(ball);
-        }
-      },
-    ));
+    // Pocketing is handled geometrically in step() by a centre-distance test
+    // against POCKET_CAPTURE — the pocket sensors no longer drive capture (a
+    // sensor BEGIN fires the instant a ball's edge grazes the mouth, which made
+    // balls drop far too easily, especially the side pockets).
 
     // Ball-on-ball clack → camera shake scaled by the closing speed of the
     // impact, so a hard break jolts and a soft kiss barely registers. Only
@@ -340,14 +345,13 @@ export default {
     }
     _impactSpeed = 0;
 
-    // 1. Drain pocketed balls (sensor BEGIN queue + off-table safety net).
-    for (const body of _pocketed) {
-      if (body.space) sinkBall(body);
-    }
-    _pocketed.length = 0;
-    if (_cueBall && _cueBall.space && isOffTable(_cueBall)) sinkBall(_cueBall);
-    for (const b of _objectBalls.slice()) {
-      if (b.space && isOffTable(b)) sinkBall(b);
+    // 1. Pocketing: a ball drops only once its CENTRE reaches a pocket throat
+    //    (centre distance < POCKET_CAPTURE), plus an off-table safety net for
+    //    anything that slipped through a mouth without being captured.
+    const allBalls = _cueBall ? [_cueBall, ..._objectBalls] : _objectBalls.slice();
+    for (const b of allBalls) {
+      if (!b.space) continue;
+      if (isOffTable(b) || isOverPocket(b)) sinkBall(b);
     }
 
     // 2. Rolling resistance: shed a CONSTANT amount of speed each step along
