@@ -41,6 +41,11 @@ const POCKET_GAP = POCKET_R + BALL_R; // cushion ends stop this far from a pocke
 // capture radius each step: the centre must be well over the hole.
 const POCKET_CAPTURE = POCKET_R - BALL_R * 0.5; // 14.5 px
 const POCKET_CAPTURE_SQ = POCKET_CAPTURE * POCKET_CAPTURE;
+// How far outside the playfield the pocket "bag" extends before a backstop
+// wall closes it. Deep enough that a ball rolling into a pocket passes within
+// the capture radius of the hole centre, but closed so a non-captured ball
+// bounces back onto the felt instead of escaping into open space.
+const BAG_DEPTH = POCKET_R + BALL_R; // 31 px
 
 // Six pockets: four corners + two side midpoints.
 const POCKETS = [
@@ -152,6 +157,26 @@ function buildRails(space) {
     makeRail(space, cx, TABLE_CY, CUSHION, (TABLE_B - POCKET_GAP) - (TABLE_T + POCKET_GAP));
   vSeg(railX_L);
   vSeg(railX_R);
+
+  // Backstop frame — a closed box just OUTSIDE the pockets. The rail gaps let a
+  // ball roll into a pocket bag; if it isn't captured (a fast ball can skim the
+  // centre, or skip the capture zone between frames) the backstop bounces it
+  // back onto the table instead of letting it escape into open space. Depth
+  // BAG_DEPTH gives the bag room for a ball to sit over the hole.
+  const W = 30; // backstop thickness (well outside the felt, never seen)
+  const bagL = TABLE_L - BAG_DEPTH, bagR = TABLE_R + BAG_DEPTH;
+  const bagT = TABLE_T - BAG_DEPTH, bagB = TABLE_B + BAG_DEPTH;
+  const span = (bagR - bagL) + 2 * W;
+  const height = (bagB - bagT) + 2 * W;
+  const backstop = (cx, cy, w, h) => {
+    const b = makeRail(space, cx, cy, w, h);
+    b.userData._hidden = true; // sits off-felt; never rendered
+    b.userData._hidden3d = true;
+  };
+  backstop((bagL + bagR) / 2, bagT - W / 2, span, W); // top
+  backstop((bagL + bagR) / 2, bagB + W / 2, span, W); // bottom
+  backstop(bagL - W / 2, (bagT + bagB) / 2, W, height); // left
+  backstop(bagR + W / 2, (bagT + bagB) / 2, W, height); // right
 }
 
 function buildPockets(space) {
