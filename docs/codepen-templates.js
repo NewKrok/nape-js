@@ -15,6 +15,11 @@ const THREE_VERSION = "0.170.0";
 const PIXI_VERSION = "8";
 
 const NAPE_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/index.js`;
+// Serialization (spaceToJSON / spaceFromJSON) lives in a subpath bundle, not
+// the main one — emitted only for demos that use it (e.g. sidepocket's
+// shadow-sim shot prediction). Bare specifier resolves via the import map.
+const NAPE_SERIALIZATION_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/serialization/index.js`;
+const NAPE_SERIALIZATION_BARE = `@newkrok/nape-js/serialization`;
 const NAPE_PIXI_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-pixi@0.1.0/dist/index.js`;
 const THREE_CDN = `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/build/three.module.js`;
 const PIXI_CDN = `https://cdn.jsdelivr.net/npm/pixi.js@${PIXI_VERSION}/dist/pixi.min.mjs`;
@@ -828,6 +833,15 @@ const napeImports = (specifier) => `import {\n  ${NAPE_IMPORT_NAMES},\n} from "$
 const NAPE_IMPORTS = napeImports(NAPE_CDN);
 const NAPE_IMPORTS_BARE = napeImports("@newkrok/nape-js");
 
+// Demos that use the serialization subpath (spaceToJSON / spaceFromJSON — e.g.
+// the shadow-sim shot predictor) need a second import line, since those symbols
+// aren't in the main bundle. Returns "" for demos that don't reference them.
+function serializationImport(code, bare) {
+  if (!/\bspace(?:To|From)JSON\b/.test(code)) return "";
+  const spec = bare ? NAPE_SERIALIZATION_BARE : NAPE_SERIALIZATION_CDN;
+  return `\nimport { spaceToJSON, spaceFromJSON } from "${spec}";`;
+}
+
 /**
  * Convert a method-shorthand .toString() result to a standalone function.
  * e.g. "setup(space, W, H) { ... }" → "function setup(space, W, H) { ... }"
@@ -1097,10 +1111,10 @@ function autoGenerateCode(demo, adapterId, preamble = "") {
 
 // Build the canvas2d body. `napeImport` is the nape-js import line. `wrap` is
 // true for the legacy explicit-code path (extra `canvasWrap` alias).
-function buildCanvas2dBody(code, { napeImport, auto, wrap }) {
+function buildCanvas2dBody(code, { napeImport, auto, wrap, bare }) {
   const water = /\bdrawWaveSurface2D\b/.test(code) ? WATER_HELPERS : "";
   const canvasWrapLine = wrap && !auto ? `\nconst canvasWrap = canvas;` : "";
-  return `${napeImport}
+  return `${napeImport}${serializationImport(code, bare)}
 
 const canvas = document.getElementById("demoCanvas");${canvasWrapLine}
 const ctx = canvas.getContext("2d");
@@ -1111,22 +1125,22 @@ ${WALLS_HELPER}
 ${water}${code}`;
 }
 
-function buildThreeBody(code, { napeImport, threeImport, auto }) {
+function buildThreeBody(code, { napeImport, threeImport, auto, bare }) {
   const water = /\bcreateWater3D\b/.test(code) ? WATER_HELPERS_3D : "";
   const renderer = auto ? `${RENDERER_3D}\n` : "";
   return `${threeImport}
-${napeImport}
+${napeImport}${serializationImport(code, bare)}
 
 ${renderer}${SPAWN_RANDOM}
 ${WALLS_HELPER}
 ${water}${code}`;
 }
 
-function buildPixiBody(code, { napeImport, pixiImport, napePixiImport }) {
+function buildPixiBody(code, { napeImport, pixiImport, napePixiImport, bare }) {
   const water = /\bdrawWaterPixi\b/.test(code) ? WATER_HELPERS_PIXI : "";
   return `${pixiImport}
 ${napePixiImport}
-${napeImport}
+${napeImport}${serializationImport(code, bare)}
 
 const container = document.getElementById("container");
 const W = 900, H = 500;
@@ -1153,9 +1167,9 @@ const TEMPLATES = {
   canvas2d: {
     html: SHARED_HTML.canvas2d,
     buildJS: (code, auto = false) =>
-      buildCanvas2dBody(code, { napeImport: NAPE_IMPORTS, auto, wrap: true }),
+      buildCanvas2dBody(code, { napeImport: NAPE_IMPORTS, auto, wrap: true, bare: false }),
     buildJSBare: (code, auto = false) =>
-      buildCanvas2dBody(code, { napeImport: NAPE_IMPORTS_BARE, auto, wrap: false }),
+      buildCanvas2dBody(code, { napeImport: NAPE_IMPORTS_BARE, auto, wrap: false, bare: true }),
   },
 
   threejs: {
@@ -1165,12 +1179,14 @@ const TEMPLATES = {
         napeImport: NAPE_IMPORTS,
         threeImport: `import * as THREE from "${THREE_CDN}";`,
         auto,
+        bare: false,
       }),
     buildJSBare: (code, auto = false) =>
       buildThreeBody(code, {
         napeImport: NAPE_IMPORTS_BARE,
         threeImport: `import * as THREE from "three";`,
         auto,
+        bare: true,
       }),
   },
 
@@ -1181,12 +1197,14 @@ const TEMPLATES = {
         napeImport: NAPE_IMPORTS,
         pixiImport: `import * as PIXI from "${PIXI_CDN}";`,
         napePixiImport: `import { PixiDebugDraw } from "${NAPE_PIXI_CDN}";`,
+        bare: false,
       }),
     buildJSBare: (code) =>
       buildPixiBody(code, {
         napeImport: NAPE_IMPORTS_BARE,
         pixiImport: `import * as PIXI from "pixi.js";`,
         napePixiImport: `import { PixiDebugDraw } from "@newkrok/nape-pixi";`,
+        bare: true,
       }),
   },
 };
