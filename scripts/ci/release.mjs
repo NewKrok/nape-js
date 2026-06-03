@@ -181,11 +181,25 @@ function releasePackage(pkg, isFirstRelease, bump) {
     // Skip hooks in CI — the commit is deterministic and has already passed CI.
     run(`git commit -m "release(${pkg.shortName}): ${newVersion}"`);
   }
-  // Use an annotated tag — `git push --follow-tags` only pushes annotated tags,
-  // so a lightweight `git tag <name>` here would silently leave the tag local-only
-  // (which would also prevent `gh release create` from finding it on the remote).
+  // Push the branch BEFORE creating/pushing the tag, and rebase onto the
+  // remote first. This ordering matters:
+  //   - Concurrent advances of the target branch (a merge, another release
+  //     run) would otherwise make the push a non-fast-forward and fail.
+  //     Rebasing our single release commit on top resolves that cleanly.
+  //   - The previous `git push HEAD --follow-tags` pushed the branch AND the
+  //     tag in one shot. When the branch half was rejected, the tag half had
+  //     already gone — leaving an ORPHANED tag on the remote pointing at a
+  //     commit not on any branch, and skipping npm publish entirely. By
+  //     pushing the branch first and only tagging after it lands, a rejected
+  //     push fails before any tag exists.
+  const branch = shq(`git rev-parse --abbrev-ref HEAD`) || "master";
+  run(`git pull --rebase origin ${branch}`);
+  run(`git push origin HEAD:${branch}`);
+
+  // Branch is safely on the remote — now tag that exact commit and push the
+  // tag on its own. Annotated so `git push <tag>` and `gh release` see it.
   run(`git tag -a ${newTag} -m "Release ${pkg.fullName} v${newVersion}"`);
-  run(`git push origin HEAD --follow-tags`);
+  run(`git push origin ${newTag}`);
 
   // Publish to npm
   run(`npm publish -w ${pkg.fullName} --access public`);
