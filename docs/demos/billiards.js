@@ -301,7 +301,7 @@ function sinkBall(body) {
 
 // ── Demo definition ──────────────────────────────────────────────────────────
 export default {
-  id: "sidepocket",
+  id: "billiards",
   label: "Billiards",
   tags: ["Billiards", "Sensor", "Material", "Drag", "TopDown"],
   featured: false,
