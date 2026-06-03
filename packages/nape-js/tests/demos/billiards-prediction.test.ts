@@ -1,5 +1,5 @@
 /**
- * Fidelity harness for the Sidepocket (Billiards) demo's shot prediction.
+ * Fidelity harness for the Billiards demo's shot prediction.
  *
  * The demo predicts a shot by SHADOW SIMULATION: it clones the live space with
  * spaceToJSON/spaceFromJSON, fires the exact shot into the clone, and steps the
@@ -14,7 +14,7 @@
  * velocities, bullet flag, …) the two diverge and the assertions fail.
  *
  * Mirrors the demo's table build + shot physics — keep in sync with
- * docs/demos/sidepocket.js.
+ * docs/demos/billiards.js.
  */
 import { describe, it, expect } from "vitest";
 import {
@@ -29,7 +29,7 @@ import {
 } from "../../src";
 import { spaceToJSON, spaceFromJSON } from "../../src/serialization";
 
-// ── Demo constants (mirror docs/demos/sidepocket.js) ─────────────────────────
+// ── Demo constants (mirror docs/demos/billiards.js) ──────────────────────────
 const TABLE_L = 70;
 const TABLE_R = 830;
 const TABLE_T = 80;
@@ -210,7 +210,7 @@ function randPos(rng: () => number) {
   };
 }
 
-describe("Sidepocket shadow-sim prediction fidelity", () => {
+describe("Billiards shadow-sim prediction fidelity", () => {
   const N = 200;
 
   const stats = (() => {

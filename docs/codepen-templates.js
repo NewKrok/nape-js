@@ -16,7 +16,7 @@ const PIXI_VERSION = "8";
 
 const NAPE_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/index.js`;
 // Serialization (spaceToJSON / spaceFromJSON) lives in a subpath bundle, not
-// the main one — emitted only for demos that use it (e.g. sidepocket's
+// the main one — emitted only for demos that use it (e.g. billiards'
 // shadow-sim shot prediction). Bare specifier resolves via the import map.
 const NAPE_SERIALIZATION_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/serialization/index.js`;
 const NAPE_SERIALIZATION_BARE = `@newkrok/nape-js/serialization`;
