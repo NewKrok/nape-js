@@ -128,6 +128,15 @@ const BLADE_SLOTS = [
   { x: 250, y: 290 }, { x: 650, y: 290 },
 ];
 
+// ── Pickups ────────────────────────────────────────────────────────────────
+// Heart drops: enemies have a chance to leave a healing heart on death (a
+// boss always drops a few). Hearts are collected by walking over them, but
+// only when you're actually wounded — at full HP they're left on the floor.
+const HEART_R = 9;
+const HEART_HEAL = 18;
+const HEART_DROP_CHANCE = 0.18;
+const HEART_LIFETIME = 600;   // ~10s before it fades out
+
 // ── Perks (drafted one-of-three after every room) ──────────────────────────
 // Stackable numeric perks track a count; one-shot perks are booleans removed
 // from the draft pool once owned. Effects are read lazily at fire time.
@@ -213,6 +222,7 @@ let _cbPlayer, _cbEnemy, _cbPlayerBullet, _cbEnemyBullet, _cbWall, _cbHazard;
 let _spikes = [];   // { x, y, t }   t = phase timer within SPIKE_CYCLE
 let _lava = [];     // { x, y }
 let _blades = [];   // { body, pivot }
+let _hearts = [];   // { x, y, life }  healing pickups
 let _time = 0;      // frame counter for cosmetic animation
 
 // Runner handle — lets us trigger camera shake without coupling to the page.
@@ -646,13 +656,48 @@ function explodeBullet(bullet) {
   shake(5, 0.16);
 }
 
+// ── Pickups ────────────────────────────────────────────────────────────────
+function dropHeart(x, y) {
+  _hearts.push({ x, y, life: HEART_LIFETIME });
+}
+
+// Age hearts and collect any the (wounded) player walks over. Heals directly;
+// full-HP players leave hearts on the floor for later.
+function updateHearts() {
+  if (_hearts.length === 0) return;
+  const px = _player?.space ? _player.position.x : null;
+  const py = _player?.space ? _player.position.y : null;
+  const rr = HEART_R + PLAYER_R;
+  const kept = [];
+  for (const hbody of _hearts) {
+    if (px !== null && _playerHP < PLAYER_MAX_HP &&
+        distSq(px, py, hbody.x, hbody.y) < rr * rr) {
+      _playerHP = Math.min(PLAYER_MAX_HP, _playerHP + HEART_HEAL);
+      shake(2, 0.1);
+      continue; // collected
+    }
+    if (--hbody.life > 0) kept.push(hbody);
+  }
+  _hearts = kept;
+}
+
 // ── Deaths ──────────────────────────────────────────────────────────────
 function killEnemy(enemy) {
   if (!enemy.space) return;
   const boss = enemy.userData._kind === "boss";
+  const x = enemy.position.x, y = enemy.position.y;
   enemy.space = null;
   if (perkActive("bloodthirst")) {
     _playerHP = Math.min(PLAYER_MAX_HP, _playerHP + 3);
+  }
+  // Bosses always leave a little first aid; regular foes drop occasionally.
+  if (boss) {
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2;
+      dropHeart(x + Math.cos(a) * 26, y + Math.sin(a) * 26);
+    }
+  } else if (Math.random() < HEART_DROP_CHANCE) {
+    dropHeart(x, y);
   }
   shake(boss ? 14 : 3, boss ? 0.45 : 0.1);
 }
@@ -858,6 +903,7 @@ function resetGame(space) {
   clearTransientBodies(space);
   clearHazards();
   resetPerks();
+  _hearts = [];
   _time = 0;
   _player = spawnPlayer(space);
   _playerHP = PLAYER_MAX_HP;
@@ -1029,6 +1075,28 @@ function drawHazards(ctx) {
     ctx.fillStyle = "#30363d";
     ctx.fill();
     ctx.strokeStyle = "#8b949e";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+function drawHearts(ctx) {
+  for (const hbody of _hearts) {
+    // Fade-blink in the last ~1.3s of life.
+    if (hbody.life < 80 && Math.floor(hbody.life / 6) % 2 === 0) continue;
+    const x = hbody.x, y = hbody.y;
+    const r = HEART_R * (1 + Math.sin(_time * 0.15) * 0.08);
+    const top = y - r * 0.35;
+    ctx.beginPath();
+    ctx.moveTo(x, top + r * 0.3);
+    ctx.bezierCurveTo(x, top, x - r, top, x - r, top + r * 0.45);
+    ctx.bezierCurveTo(x - r, top + r, x, top + r * 1.2, x, y + r * 0.85);
+    ctx.bezierCurveTo(x, top + r * 1.2, x + r, top + r, x + r, top + r * 0.45);
+    ctx.bezierCurveTo(x + r, top, x, top, x, top + r * 0.3);
+    ctx.closePath();
+    ctx.fillStyle = "#f85149";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.85)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
   }
@@ -1290,7 +1358,7 @@ export default {
   tags: ["Gameplay", "Roguelite", "Callbacks", "Kinematic", "Camera shake", "Mobile"],
   featured: false,
   desc:
-    "A top-down <b>stand-still-to-shoot</b> roguelite. Your hero auto-fires at the nearest foe <b>only while standing still</b> — the instant you move, the weapon goes cold, so each fight is stop-shoot-dodge. Clear every enemy in a room and <b>draft one of three permanent perks</b> (split shot, ricochet, piercing, crit, blast arrows, …) that stack for the whole run. <b>Melee</b> rush with charges, <b>ranged</b> kite and snipe, <b>dashers</b> blink in, and every 5th room is a <b>boss</b> with shotguns and bullet rings. Deeper rooms add <b>active hazards</b>: telegraphed <b>spike traps</b>, <b>lava pools</b>, and spinning <b>sawblades</b> (kinematic bars that sweep the arena and block shots). Move with <b>WASD</b> / arrows or the bottom-left virtual stick. <b>Camera shake</b> on every kill, hit, trap, and boss slam.",
+    "A top-down <b>stand-still-to-shoot</b> roguelite. Your hero auto-fires at the nearest foe <b>only while standing still</b> — the instant you move, the weapon goes cold, so each fight is stop-shoot-dodge. Clear every enemy in a room and <b>draft one of three permanent perks</b> (split shot, ricochet, piercing, crit, blast arrows, …) that stack for the whole run. <b>Melee</b> rush with charges, <b>ranged</b> kite and snipe, <b>dashers</b> blink in, and every 5th room is a <b>boss</b> with shotguns and bullet rings. Deeper rooms add <b>active hazards</b>: telegraphed <b>spike traps</b>, <b>lava pools</b>, and spinning <b>sawblades</b> (kinematic bars that sweep the arena and block shots). Fallen enemies sometimes drop a <b>healing heart</b> — walk over it while wounded to patch up. Move with <b>WASD</b> / arrows or the bottom-left virtual stick. <b>Camera shake</b> on every kill, hit, trap, and boss slam.",
   walls: false,
   workerCompatible: false,
 
@@ -1452,6 +1520,7 @@ export default {
     applyPlayerVelocity();
     steerEnemies();
     updateHazards();
+    updateHearts();
 
     if (_playerInvuln > 0) _playerInvuln--;
 
@@ -1542,6 +1611,7 @@ export default {
     ctx.save();
     ctx.translate(-camX, -camY);
     drawHazards(ctx);
+    drawHearts(ctx);
     drawAimLine(ctx);
     drawEnemyExtras(ctx);
     drawPlayerRing(ctx);
