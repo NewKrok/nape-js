@@ -97,6 +97,37 @@ const BOSS_CHARGE_MULT = 2.5;
 const BOSS_RING_INTERVAL = 220;    // radial bullet ring
 const BOSS_RING_PELLETS = 12;
 
+// ── Active hazards (environmental threats) ─────────────────────────────────
+// Spike traps: telegraphed floor traps that cycle idle → warn → strike.
+// Lava pools: static zones that chip HP while you stand in them.
+// Sawblades: KINEMATIC spinning bars that physically sweep the arena and
+// hurt on contact (also block bullets, like a moving wall). All three are
+// introduced gradually as you descend into deeper rooms.
+const SPIKE_R = 24;
+const SPIKE_DAMAGE = 12;
+const SPIKE_CYCLE = 190;       // frames per full idle→warn→strike cycle
+const SPIKE_WARN_AT = 118;     // telegraph (rumbling) begins
+const SPIKE_STRIKE_AT = 158;   // spikes are live (dangerous) from here…
+const SPIKE_STRIKE_END = 186;  // …back to idle here
+const SPIKE_SLOTS = [
+  { x: 450, y: 140 }, { x: 450, y: 440 },
+  { x: 140, y: 290 }, { x: 760, y: 290 },
+];
+
+const LAVA_R = 42;
+const LAVA_DAMAGE = 4;         // per tick, gated by player i-frames
+const LAVA_SLOTS = [
+  { x: 150, y: 140 }, { x: 750, y: 140 },
+  { x: 150, y: 440 }, { x: 750, y: 440 },
+];
+
+const BLADE_DAMAGE = 14;
+const BLADE_HALF_LEN = 78;     // sweep radius (tips reach this far from pivot)
+const BLADE_ANGVEL = 1.7;      // rad/s
+const BLADE_SLOTS = [
+  { x: 250, y: 290 }, { x: 650, y: 290 },
+];
+
 // ── Perks (drafted one-of-three after every room) ──────────────────────────
 // Stackable numeric perks track a count; one-shot perks are booleans removed
 // from the draft pool once owned. Effects are read lazily at fire time.
@@ -175,7 +206,14 @@ const _moveDir = { x: 0, y: 0 };
 let _onKeyDown = null;
 let _onKeyUp = null;
 
-let _cbPlayer, _cbEnemy, _cbPlayerBullet, _cbEnemyBullet, _cbWall;
+let _cbPlayer, _cbEnemy, _cbPlayerBullet, _cbEnemyBullet, _cbWall, _cbHazard;
+
+// Active hazards. Spikes/lava are pure step-loop zones (no physics body);
+// sawblades are real KINEMATIC bodies that spin and collide.
+let _spikes = [];   // { x, y, t }   t = phase timer within SPIKE_CYCLE
+let _lava = [];     // { x, y }
+let _blades = [];   // { body, pivot }
+let _time = 0;      // frame counter for cosmetic animation
 
 // Runner handle — lets us trigger camera shake without coupling to the page.
 let _runnerRef = null;
@@ -681,6 +719,7 @@ function startRoom() {
   _toSpawn = 5 + Math.floor(_room * 1.5) + (_bossPending ? 1 : 0);
   _spawnInterval = Math.max(28, 64 - _room * 2);
   _spawnTimer = 24;
+  buildHazards(_room);
 }
 
 function spawnForRoom() {
@@ -718,6 +757,92 @@ function anyEnemyAlive() {
   return false;
 }
 
+// ── Hazards ────────────────────────────────────────────────────────────────
+function makeBlade(pivot) {
+  const body = new Body(BodyType.KINEMATIC, new Vec2(pivot.x, pivot.y));
+  // No Material on the Polygon (P53 tunneling workaround).
+  const shape = new Polygon(Polygon.box(BLADE_HALF_LEN * 2, 12));
+  shape.filter = new InteractionFilter(GROUP_WALL, -1);
+  body.shapes.add(shape);
+  body.cbTypes.add(_cbWall);    // bullets collide with it like a moving wall
+  body.cbTypes.add(_cbHazard);  // … and it damages the player on contact
+  body.userData._hazardBlade = true;
+  body.userData._colorIdx = 3;
+  body.angularVel = BLADE_ANGVEL;
+  body.space = _space;
+  return body;
+}
+
+function clearHazards() {
+  for (const b of _blades) if (b.body.space) b.body.space = null;
+  _blades = [];
+  _spikes = [];
+  _lava = [];
+}
+
+// Lay out hazards appropriate for the given room. Difficulty ramps: spikes
+// from room 2, sawblades from room 4, lava from room 6, each adding more
+// instances deeper in.
+function buildHazards(room) {
+  clearHazards();
+  if (room >= 2) {
+    const n = Math.min(SPIKE_SLOTS.length, 2 + Math.floor((room - 2) / 3));
+    for (let i = 0; i < n; i++) {
+      // Stagger the phase so traps don't all strike on the same frame.
+      _spikes.push({ ...SPIKE_SLOTS[i], t: Math.floor((i * SPIKE_CYCLE) / n) });
+    }
+  }
+  if (room >= 4) {
+    const n = room >= 8 ? 2 : 1;
+    for (let i = 0; i < n; i++) _blades.push({ body: makeBlade(BLADE_SLOTS[i]), pivot: BLADE_SLOTS[i] });
+  }
+  if (room >= 6) {
+    const n = room >= 10 ? 4 : 2;
+    for (let i = 0; i < n; i++) _lava.push({ ...LAVA_SLOTS[i] });
+  }
+}
+
+// Advance spike/lava zones and apply their damage. Sawblade damage is handled
+// by the _cbHazard ↔ _cbPlayer collision listener. Player hits go through the
+// shared _pending.playerHit queue, so i-frames + shake apply uniformly.
+function updateHazards() {
+  if (!_player?.space) return;
+  const px = _player.position.x, py = _player.position.y;
+
+  for (const s of _spikes) {
+    s.t = (s.t + 1) % SPIKE_CYCLE;
+    const live = s.t >= SPIKE_STRIKE_AT && s.t < SPIKE_STRIKE_END;
+    if (!live) continue;
+    const rr = SPIKE_R + PLAYER_R;
+    if (distSq(px, py, s.x, s.y) < rr * rr) {
+      _pending.playerHit.push({ damage: SPIKE_DAMAGE });
+    }
+    // On the first live frame, impale any enemy standing on the trap and kick
+    // the camera — spikes are an equal-opportunity threat.
+    if (s.t === SPIKE_STRIKE_AT) {
+      for (const body of _space.bodies) {
+        const ud = body.userData;
+        if (!ud?._enemy) continue;
+        const er = body.shapes.at(0).castCircle.radius;
+        const sr = SPIKE_R + er;
+        if (distSq(body.position.x, body.position.y, s.x, s.y) < sr * sr) {
+          ud._hp -= SPIKE_DAMAGE;
+          ud._hitFlash = 4;
+          if (ud._hp <= 0) killEnemy(body);
+        }
+      }
+      shake(4, 0.14);
+    }
+  }
+
+  for (const l of _lava) {
+    const rr = LAVA_R + PLAYER_R * 0.5;
+    if (distSq(px, py, l.x, l.y) < rr * rr) {
+      _pending.playerHit.push({ damage: LAVA_DAMAGE });
+    }
+  }
+}
+
 function clearTransientBodies(space) {
   const toKill = [];
   for (const body of space.bodies) {
@@ -731,7 +856,9 @@ function clearTransientBodies(space) {
 
 function resetGame(space) {
   clearTransientBodies(space);
+  clearHazards();
   resetPerks();
+  _time = 0;
   _player = spawnPlayer(space);
   _playerHP = PLAYER_MAX_HP;
   _playerInvuln = 0;
@@ -827,6 +954,84 @@ function drawHpBar(ctx, body) {
   ctx.fillRect(x - w / 2, y, w, 3);
   ctx.fillStyle = ud._kind === "boss" ? "#d29922" : "#3fb950";
   ctx.fillRect(x - w / 2, y, w * Math.max(0, ud._hp / ud._maxHp), 3);
+}
+
+function drawSpikeTeeth(ctx, x, y) {
+  ctx.fillStyle = "#d0d7de";
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    const ox = Math.cos(a), oy = Math.sin(a);
+    ctx.beginPath();
+    ctx.moveTo(x + oy * 4, y - ox * 4);
+    ctx.lineTo(x + ox * SPIKE_R, y + oy * SPIKE_R);
+    ctx.lineTo(x - oy * 4, y + ox * 4);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.fillStyle = "#f85149";
+  ctx.beginPath();
+  ctx.arc(x, y, 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawHazards(ctx) {
+  // Lava pools — translucent, gently flickering.
+  for (const l of _lava) {
+    const flick = 0.5 + 0.5 * Math.sin(_time * 0.12 + l.x);
+    ctx.beginPath();
+    ctx.arc(l.x, l.y, LAVA_R, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,${(90 + flick * 60) | 0},40,0.30)`;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,140,40,0.65)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Spike traps — base plate, a warn ring while telegraphing, teeth when live.
+  for (const s of _spikes) {
+    const live = s.t >= SPIKE_STRIKE_AT && s.t < SPIKE_STRIKE_END;
+    const warn = s.t >= SPIKE_WARN_AT && !live;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, SPIKE_R, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(48,54,61,0.7)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(110,118,129,0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    if (warn) {
+      const p = (s.t - SPIKE_WARN_AT) / (SPIKE_STRIKE_AT - SPIKE_WARN_AT);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, SPIKE_R * (0.5 + 0.5 * p), 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(248,81,73,${0.3 + 0.55 * p})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+    if (live) drawSpikeTeeth(ctx, s.x, s.y);
+  }
+
+  // Sawblades — the body is drawn by the engine; overlay a red danger bar +
+  // hub so the spinning threat reads clearly.
+  for (const b of _blades) {
+    const body = b.body;
+    if (!body.space) continue;
+    const a = body.rotation;
+    const ex = Math.cos(a) * BLADE_HALF_LEN, ey = Math.sin(a) * BLADE_HALF_LEN;
+    ctx.beginPath();
+    ctx.moveTo(body.position.x - ex, body.position.y - ey);
+    ctx.lineTo(body.position.x + ex, body.position.y + ey);
+    ctx.strokeStyle = "#f85149";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.stroke();
+    ctx.lineCap = "butt";
+    ctx.beginPath();
+    ctx.arc(b.pivot.x, b.pivot.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = "#30363d";
+    ctx.fill();
+    ctx.strokeStyle = "#8b949e";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
 }
 
 function drawEnemyExtras(ctx) {
@@ -1082,10 +1287,10 @@ function drawGameOver(ctx) {
 export default {
   id: "standoff",
   label: "Standoff",
-  tags: ["Gameplay", "Roguelite", "Callbacks", "Camera shake", "Mobile"],
+  tags: ["Gameplay", "Roguelite", "Callbacks", "Kinematic", "Camera shake", "Mobile"],
   featured: false,
   desc:
-    "A top-down <b>stand-still-to-shoot</b> roguelite. Your hero auto-fires at the nearest foe <b>only while standing still</b> — the instant you move, the weapon goes cold, so each fight is stop-shoot-dodge. Clear every enemy in a room and <b>draft one of three permanent perks</b> (split shot, ricochet, piercing, crit, blast arrows, …) that stack for the whole run. <b>Melee</b> rush with charges, <b>ranged</b> kite and snipe, <b>dashers</b> blink in, and every 5th room is a <b>boss</b> with shotguns and bullet rings. Move with <b>WASD</b> / arrows or the bottom-left virtual stick. <b>Camera shake</b> on every kill, hit, and boss slam.",
+    "A top-down <b>stand-still-to-shoot</b> roguelite. Your hero auto-fires at the nearest foe <b>only while standing still</b> — the instant you move, the weapon goes cold, so each fight is stop-shoot-dodge. Clear every enemy in a room and <b>draft one of three permanent perks</b> (split shot, ricochet, piercing, crit, blast arrows, …) that stack for the whole run. <b>Melee</b> rush with charges, <b>ranged</b> kite and snipe, <b>dashers</b> blink in, and every 5th room is a <b>boss</b> with shotguns and bullet rings. Deeper rooms add <b>active hazards</b>: telegraphed <b>spike traps</b>, <b>lava pools</b>, and spinning <b>sawblades</b> (kinematic bars that sweep the arena and block shots). Move with <b>WASD</b> / arrows or the bottom-left virtual stick. <b>Camera shake</b> on every kill, hit, trap, and boss slam.",
   walls: false,
   workerCompatible: false,
 
@@ -1099,6 +1304,7 @@ export default {
     _cbPlayerBullet = new CbType();
     _cbEnemyBullet = new CbType();
     _cbWall = new CbType();
+    _cbHazard = new CbType();
 
     buildArena(space);
     resetGame(space);
@@ -1203,6 +1409,14 @@ export default {
       },
     ));
 
+    // Sawblade sweeps into the player → damage (i-frames cap the rate).
+    space.listeners.add(new InteractionListener(
+      CbEvent.BEGIN, InteractionType.COLLISION, _cbHazard, _cbPlayer,
+      () => {
+        if (_player?.space) _pending.playerHit.push({ damage: BLADE_DAMAGE });
+      },
+    ));
+
     // Keyboard — window-scoped. Remove any stale handlers from a previous
     // load first (the runner doesn't call a teardown hook), then re-bind.
     if (_onKeyDown) window.removeEventListener("keydown", _onKeyDown);
@@ -1232,10 +1446,12 @@ export default {
       return;
     }
 
+    _time++;
     processPending();
     computeMoveDir();
     applyPlayerVelocity();
     steerEnemies();
+    updateHazards();
 
     if (_playerInvuln > 0) _playerInvuln--;
 
@@ -1325,6 +1541,7 @@ export default {
     // offset) so these overlays stay glued to the shaking bodies.
     ctx.save();
     ctx.translate(-camX, -camY);
+    drawHazards(ctx);
     drawAimLine(ctx);
     drawEnemyExtras(ctx);
     drawPlayerRing(ctx);
