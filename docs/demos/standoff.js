@@ -1,6 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType,
+  PreListener, PreFlag,
 } from "../nape-js.esm.js";
 
 // Standoff — a top-down "stand-still-to-shoot" roguelite arena.
@@ -8,7 +9,7 @@ import {
 // The hook: your hero ONLY auto-fires while standing still. The moment you
 // move, your weapon goes cold — so every fight is a dance of "stop, shoot,
 // reposition, dodge the incoming fire". Clear every enemy in a room and you
-// draft one of three permanent perks (extra arrows, ricochet, piercing,
+// draft one of three permanent perks (extra arrows, wall ricochet, piercing,
 // crit, …) that stack across the whole run. Every 5th room is a boss.
 //
 // Camera shake punctuates the action: a tiny kick on every kill, a sharper
@@ -40,12 +41,16 @@ const WT = 6;
 
 // A handful of circular pillars for cover — convex, so chasing enemies slide
 // around them cleanly with no concave traps (no raycast avoidance needed).
+// Corner pillars only — no centre pillar. A centre pillar (450, 290) would
+// overlap the hero's spawn point at (450, 265), leaving the hero jammed
+// inside static geometry and getting shoved out on frame 1 — which twisted
+// bullet aim, made piercing/wall-ricochet appear broken, and made shots vanish
+// near the player. Kept as four corner cover pieces.
 const PILLARS = [
   { x: 250, y: 180, r: 26 },
   { x: 650, y: 180, r: 26 },
   { x: 250, y: 400, r: 26 },
   { x: 650, y: 400, r: 26 },
-  { x: 450, y: 290, r: 32 },
 ];
 
 // Spawn points — 4 edges, inset from the arena bounds.
@@ -141,15 +146,15 @@ const HEART_LIFETIME = 600;   // ~10s before it fades out
 // Stackable numeric perks track a count; one-shot perks are booleans removed
 // from the draft pool once owned. Effects are read lazily at fire time.
 const PERK_DEFS = [
-  { id: "extraArrow", label: "Split Shot", icon: "»",
-    desc: "+1 forward arrow", max: 4 },
+  { id: "extraArrow", label: "Front Arrow", icon: "»",
+    desc: "+1 parallel forward arrow", max: 4 },
   { id: "side", label: "Side Arrows", icon: "⇆",
     desc: "Fire two arrows sideways", max: 1 },
   { id: "rear", label: "Rear Arrow", icon: "↩",
     desc: "Fire one arrow backward", max: 1 },
   { id: "diagonal", label: "Diagonal Arrows", icon: "✕",
     desc: "Fire two diagonal arrows", max: 1 },
-  { id: "ricochet", label: "Ricochet", icon: "◣",
+  { id: "ricochet", label: "Wall Ricochet", icon: "◣",
     desc: "+1 wall bounce per arrow", max: 3 },
   { id: "pierce", label: "Piercing", icon: "→",
     desc: "+1 enemy pierce per arrow", max: 3 },
@@ -159,13 +164,34 @@ const PERK_DEFS = [
     desc: "+1 arrow damage", max: 5 },
   { id: "crit", label: "Deadeye", icon: "◎",
     desc: "+12% chance to deal double", max: 4 },
-  { id: "explosive", label: "Blast Arrows", icon: "✺",
+  { id: "explosive", label: "Explosive Shot", icon: "✺",
     desc: "Arrows explode on impact", max: 1 },
   { id: "bloodthirst", label: "Bloodthirst", icon: "✚",
     desc: "Heal 3 HP per kill", max: 1 },
   { id: "swift", label: "Swift Feet", icon: "≫",
     desc: "+move speed & faster recovery", max: 3 },
+  { id: "orbital", label: "Spirit", icon: "◈",
+    desc: "+1 spinning orb around you", max: 2 },
+  { id: "ricochetEnemy", label: "Ricochet", icon: "↝",
+    desc: "+1 arrow bounce between enemies", max: 3 },
+  { id: "freeze", label: "Freeze", icon: "❄",
+    desc: "Arrows slow enemies for 1.5s", max: 1 },
+  { id: "poison", label: "Poisoned Touch", icon: "☠",
+    desc: "Arrows poison enemies (3s DoT)", max: 1 },
+  { id: "chain", label: "Bolt", icon: "⚡",
+    desc: "Arrows arc lightning to a nearby enemy (50% dmg)", max: 1 },
 ];
+
+const ORBITAL_RADIUS = 55;
+const ORBITAL_ANGULAR = 0.06;   // rad per frame — full rev in ~1.75s
+const ORBITAL_HIT_R = 14;       // half-side of the blade hitbox
+const ORBITAL_COOLDOWN = 24;    // per-enemy per-blade re-hit cooldown (frames)
+const FREEZE_FRAMES = 90;
+const FREEZE_MUL = 0.4;
+const POISON_FRAMES = 180;
+const POISON_TICK = 30;
+const CHAIN_RANGE = 200;
+const CHAIN_CHANCE = 0.5;
 
 const EX_RADIUS = 64;
 const EX_IMPULSE = 90;
@@ -187,11 +213,21 @@ let _firingHot = false;     // true while standing still long enough to shoot
 
 let _room = 0;
 let _roomActive = false;
-let _breakTimer = 0;
 let _toSpawn = 0;
 let _spawnTimer = 0;
 let _spawnInterval = 0;
 let _bossPending = false;
+
+// Room transitions. A cleared room shows an exit door on a random wall side;
+// walking into it triggers a fade-out, teleport to the opposite wall of the
+// next room, and a fade-in — giving the roguelite "room-to-room" feel without
+// a real world-space camera pan.
+let _transitionPhase = null;    // null | "door" | "fade-out" | "fade-in"
+let _doorSide = "top";          // "top" | "right" | "bottom" | "left"
+let _fadeT = 0;                 // 0..1
+const DOOR_HALF_W = 34;         // half-width of the visual door opening
+const DOOR_TRIGGER_DIST = 24;   // distance from door center that enters fade
+const FADE_FRAMES = 24;         // per fade-out / fade-in leg
 
 let _gameOver = false;
 let _muzzle = 0;            // counts down a brief muzzle-flash after firing
@@ -225,6 +261,11 @@ let _blades = [];   // { body, pivot }
 let _hearts = [];   // { x, y, life }  healing pickups
 let _time = 0;      // frame counter for cosmetic animation
 
+// Orbital blades — WeakMap of per-enemy last-hit frame so a spinning blade
+// doesn't keep re-damaging the same enemy at 60 Hz while overlapping.
+let _orbitalAngle = 0;
+let _orbitalLastHit = new WeakMap();
+
 // Runner handle — lets us trigger camera shake without coupling to the page.
 let _runnerRef = null;
 
@@ -234,6 +275,7 @@ const _pending = {
   enemyHit: [],     // { enemy, damage, crit }
   removeBullet: [], // bullet body
   bounce: [],       // { bullet, nx, ny }
+  ricochetRedirect: [], // { bullet, target }  bullet retargeted to next enemy
   aoeDetonate: [],  // bullet body (explosive)
   playerHit: [],    // { damage }
 };
@@ -245,12 +287,22 @@ function bodyFromInt(intObj) {
 
 // First contact normal from a BEGIN interaction callback. InteractionCallback
 // exposes `arbiters` (a list) — unlike PreCallback, which has `.arbiter`.
-function firstCollisionNormal(cb) {
+// The returned normal always points AWAY from `awayFromBody` (i.e. outward
+// from the surface the caller is bouncing off), regardless of which shape
+// happens to be arb.shape1 vs arb.shape2. Nape's raw normal points
+// shape1 → shape2, so we flip it when the caller's body is on shape1's side.
+function firstCollisionNormal(cb, awayFromBody = null) {
   try {
     const arbs = cb.arbiters;
     for (let i = 0; i < arbs.length; i++) {
-      const carb = arbs.at(i).collisionArbiter;
-      if (carb?.normal) return carb.normal;
+      const arb = arbs.at(i);
+      const carb = arb.collisionArbiter;
+      if (!carb?.normal) continue;
+      // Extract as plain floats — the Vec2 returned here is engine-pooled
+      // and may be reused for another contact by the time _pending.bounce
+      // is processed, silently flipping the reflection direction.
+      const flip = awayFromBody && arb.shape1?.body === awayFromBody ? -1 : 1;
+      return { x: carb.normal.x * flip, y: carb.normal.y * flip };
     }
   } catch (_) { /* no arbiter available */ }
   return null;
@@ -477,7 +529,7 @@ function steerEnemies() {
 
     const charging = ud._chargeTimer > 0;
     const dashing = ud._dashTimer > 0;
-    let speed = ud._speed;
+    let speed = ud._speed * enemySpeedMul(ud);
     if (charging) speed *= (ud._kind === "boss" ? BOSS_CHARGE_MULT : MELEE_CHARGE_MULT);
     if (dashing) speed *= DASHER_DASH_MULT;
 
@@ -524,12 +576,35 @@ function findNearestEnemy() {
   return best;
 }
 
-function spawnPlayerBullet(dx, dy) {
+// A bullet spawned inside a pillar (side-arrow lane grazing one, hero pressed
+// up against cover) instantly collides on frame 0 and gets swept away —
+// looks to the player like a "shot that just vanished". Guard: if the
+// spawn point sits inside a pillar, nudge it out toward the fire direction.
+function nudgeSpawnOutOfPillar(sx, sy, nx, ny) {
+  for (const p of PILLARS) {
+    const dx = sx - p.x, dy = sy - p.y;
+    const clearance = p.r + 4;    // + bullet radius margin
+    if (dx * dx + dy * dy < clearance * clearance) {
+      // Push spawn forward along fire direction until it exits this pillar.
+      // At most ~2× pillar diameter — beyond that we just skip the bullet.
+      for (let step = 0; step < 20; step++) {
+        sx += nx * 6;
+        sy += ny * 6;
+        const ddx = sx - p.x, ddy = sy - p.y;
+        if (ddx * ddx + ddy * ddy >= clearance * clearance) break;
+      }
+    }
+  }
+  return { sx, sy };
+}
+
+function spawnPlayerBullet(dx, dy, ox = 0, oy = 0) {
   const d = Math.hypot(dx, dy) || 1;
   const nx = dx / d, ny = dy / d;
   const off = PLAYER_R + 4;
-  const sx = _player.position.x + nx * off;
-  const sy = _player.position.y + ny * off;
+  let sx = _player.position.x + nx * off + ox;
+  let sy = _player.position.y + ny * off + oy;
+  ({ sx, sy } = nudgeSpawnOutOfPillar(sx, sy, nx, ny));
 
   const crit = Math.random() < perkCount("crit") * 0.12;
   const explosive = perkActive("explosive");
@@ -549,6 +624,7 @@ function spawnPlayerBullet(dx, dy) {
   bullet.userData._explosive = explosive;
   bullet.userData._pierceLeft = perkCount("pierce");
   bullet.userData._bounceLeft = perkCount("ricochet");
+  bullet.userData._enemyBounceLeft = perkCount("ricochetEnemy");
   bullet.userData._hits = new Set();
   bullet.userData._life = 110;
   bullet.cbTypes.add(_cbPlayerBullet);
@@ -566,27 +642,33 @@ function firePlayerShot() {
   const d = Math.hypot(ax, ay) || 1;
   const nx = ax / d, ny = ay / d;
 
-  const dirs = [];
-  // Forward fan — 1 + Split Shot count, spread evenly.
-  const fwd = 1 + perkCount("extraArrow");
-  const spread = 0.16;
-  const half = spread * (fwd - 1) / 2;
-  for (let i = 0; i < fwd; i++) {
-    dirs.push(rotate(nx, ny, -half + i * spread));
+  // Front arrows — Archero-style: all forward arrows fly in parallel lanes,
+  // offset laterally by a small step. Base 1, each Front Arrow rank adds one
+  // more parallel arrow (→ 1, 2, 3, 4, 5). Middle arrow stays perfectly
+  // on-target so aim always lands the primary hit.
+  const fwdCount = 1 + perkCount("extraArrow");
+  const laneStep = 12;                // px between adjacent parallel lanes
+  const px = -ny, py = nx;            // unit perpendicular (right-hand normal)
+  const shots = [];
+  for (let i = 0; i < fwdCount; i++) {
+    const offset = (i - (fwdCount - 1) / 2) * laneStep;
+    shots.push({ dx: nx, dy: ny, ox: px * offset, oy: py * offset });
   }
   if (perkActive("side")) {
-    dirs.push(rotate(nx, ny, Math.PI / 2));
-    dirs.push(rotate(nx, ny, -Math.PI / 2));
+    shots.push({ dx: -ny, dy: nx, ox: 0, oy: 0 });
+    shots.push({ dx: ny, dy: -nx, ox: 0, oy: 0 });
   }
   if (perkActive("diagonal")) {
-    dirs.push(rotate(nx, ny, Math.PI / 4));
-    dirs.push(rotate(nx, ny, -Math.PI / 4));
+    const d1 = rotate(nx, ny, Math.PI / 4);
+    const d2 = rotate(nx, ny, -Math.PI / 4);
+    shots.push({ dx: d1.x, dy: d1.y, ox: 0, oy: 0 });
+    shots.push({ dx: d2.x, dy: d2.y, ox: 0, oy: 0 });
   }
   if (perkActive("rear")) {
-    dirs.push(rotate(nx, ny, Math.PI));
+    shots.push({ dx: -nx, dy: -ny, ox: 0, oy: 0 });
   }
 
-  for (const dir of dirs) spawnPlayerBullet(dir.x, dir.y);
+  for (const s of shots) spawnPlayerBullet(s.dx, s.dy, s.ox, s.oy);
   _muzzle = 4;
   return true;
 }
@@ -633,8 +715,11 @@ function fireBossRing(boss) {
 }
 
 // Radial AOE around an explosive bullet — damages enemies and shoves dynamic
-// bodies, both tapering to zero at the edge.
-function explodeBullet(bullet) {
+// bodies, both tapering to zero at the edge. Bolt (chain lightning) rolls
+// independently for every enemy the AoE actually damages, so a wide blast
+// can arc into a second target off the burst. Set `keepAlive` when the
+// bullet still has pierce/ricochet charges left and should keep flying.
+function explodeBullet(bullet, keepAlive = false) {
   const bx = bullet.position.x, by = bullet.position.y;
   const r2 = EX_RADIUS * EX_RADIUS;
   for (const body of _space.bodies) {
@@ -647,13 +732,23 @@ function explodeBullet(bullet) {
     body.applyImpulse(new Vec2((dx / dd) * EX_IMPULSE * falloff,
                                (dy / dd) * EX_IMPULSE * falloff));
     if (body.userData?._enemy) {
-      body.userData._hp -= bullet.userData._damage * falloff;
+      const dmg = bullet.userData._damage * falloff;
+      body.userData._hp -= dmg;
       body.userData._hitFlash = 4;
+      applyStatusOnHit(body);
+      tryChainLightning(body, dmg);
       if (body.userData._hp <= 0) killEnemy(body);
     }
   }
-  bullet.space = null;
+  _explosionFx.push({ x: bx, y: by, r: EX_RADIUS, life: 18, maxLife: 18 });
+  if (!keepAlive) bullet.space = null;
   shake(5, 0.16);
+}
+
+function updateExplosionFx() {
+  const kept = [];
+  for (const fx of _explosionFx) if (--fx.life > 0) kept.push(fx);
+  _explosionFx = kept;
 }
 
 // ── Pickups ────────────────────────────────────────────────────────────────
@@ -679,6 +774,132 @@ function updateHearts() {
     if (--hbody.life > 0) kept.push(hbody);
   }
   _hearts = kept;
+}
+
+// ── Orbital blades ─────────────────────────────────────────────────────────
+// Each rank of the "orbital" perk adds one small blade that spins around the
+// hero at a fixed radius. Enemies overlapping a blade take arrow damage; a
+// per-enemy cooldown per frame stamp prevents 60 Hz re-damage.
+function orbitalCount() {
+  return perkCount("orbital");
+}
+
+function orbitalPositions() {
+  const n = orbitalCount();
+  if (n === 0 || !_player?.space) return [];
+  const cx = _player.position.x, cy = _player.position.y;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const a = _orbitalAngle + (i * Math.PI * 2) / n;
+    out.push({ x: cx + Math.cos(a) * ORBITAL_RADIUS,
+               y: cy + Math.sin(a) * ORBITAL_RADIUS });
+  }
+  return out;
+}
+
+function updateOrbitals() {
+  const n = orbitalCount();
+  if (n === 0 || !_player?.space || _transitionPhase) return;
+  _orbitalAngle = (_orbitalAngle + ORBITAL_ANGULAR) % (Math.PI * 2);
+  const blades = orbitalPositions();
+  const dmg = 1 + perkCount("damage");
+  for (const body of _space.bodies) {
+    const ud = body.userData;
+    if (!ud?._enemy) continue;
+    const er = body.shapes.at(0).castCircle.radius;
+    const rr = ORBITAL_HIT_R + er;
+    const rrSq = rr * rr;
+    let hit = false;
+    for (const b of blades) {
+      if (distSq(b.x, b.y, body.position.x, body.position.y) < rrSq) {
+        hit = true;
+        break;
+      }
+    }
+    if (!hit) continue;
+    const last = _orbitalLastHit.get(body) ?? -Infinity;
+    if (_time - last < ORBITAL_COOLDOWN) continue;
+    _orbitalLastHit.set(body, _time);
+    _pending.enemyHit.push({ enemy: body, damage: dmg, crit: false });
+    applyStatusOnHit(body);
+  }
+}
+
+// ── Status effects ─────────────────────────────────────────────────────────
+// Freeze + poison. Both live in enemy userData so they persist across frames
+// and are cleaned up naturally when the enemy body leaves the space.
+function applyStatusOnHit(enemy) {
+  const ud = enemy.userData;
+  if (!ud || !ud._enemy) return;
+  if (perkActive("freeze")) ud._frozenUntil = _time + FREEZE_FRAMES;
+  if (perkActive("poison")) {
+    ud._poisonUntil = _time + POISON_FRAMES;
+    ud._poisonNextTick = _time + POISON_TICK;
+  }
+}
+
+function updateStatusEffects() {
+  for (const body of _space.bodies) {
+    const ud = body.userData;
+    if (!ud?._enemy) continue;
+    if (ud._poisonUntil && _time <= ud._poisonUntil &&
+        _time >= (ud._poisonNextTick ?? 0)) {
+      ud._poisonNextTick = _time + POISON_TICK;
+      _pending.enemyHit.push({ enemy: body, damage: 1, crit: false });
+    }
+  }
+}
+
+function enemySpeedMul(ud) {
+  return ud._frozenUntil && _time <= ud._frozenUntil ? FREEZE_MUL : 1;
+}
+
+// ── Chain lightning ────────────────────────────────────────────────────────
+// Fired when an arrow lands. Rolls the perk chance and, if it hits, damages
+// the closest OTHER enemy within CHAIN_RANGE for half. Purely damage — no
+// projectile physics — with a short-lived visual pushed onto _chainFx.
+let _chainFx = []; // [{ ax, ay, bx, by, life }]
+let _explosionFx = []; // [{ x, y, r, life, maxLife }]
+
+// Find the closest OTHER enemy the bullet hasn't already hit — for Ricochet
+// redirect (physical bullet retarget). Uses the CHAIN_RANGE cap so a bullet
+// doesn't teleport across the whole arena.
+function findRicochetTarget(bullet, sourceEnemy) {
+  const hits = bullet.userData._hits;
+  const sx = sourceEnemy.position.x, sy = sourceEnemy.position.y;
+  let best = null, bestD = CHAIN_RANGE * CHAIN_RANGE;
+  for (const body of _space.bodies) {
+    const ud = body.userData;
+    if (!ud?._enemy || body === sourceEnemy || hits.has(body)) continue;
+    const d2 = distSq(sx, sy, body.position.x, body.position.y);
+    if (d2 < bestD) { bestD = d2; best = body; }
+  }
+  return best;
+}
+
+function tryChainLightning(sourceEnemy, baseDmg) {
+  if (!perkActive("chain")) return;
+  if (Math.random() >= CHAIN_CHANCE) return;
+  const sx = sourceEnemy.position.x, sy = sourceEnemy.position.y;
+  let best = null, bestD = CHAIN_RANGE * CHAIN_RANGE;
+  for (const body of _space.bodies) {
+    const ud = body.userData;
+    if (!ud?._enemy || body === sourceEnemy) continue;
+    const d2 = distSq(sx, sy, body.position.x, body.position.y);
+    if (d2 < bestD) { bestD = d2; best = body; }
+  }
+  if (!best) return;
+  const dmg = Math.max(1, Math.floor(baseDmg * 0.5));
+  _pending.enemyHit.push({ enemy: best, damage: dmg, crit: false });
+  applyStatusOnHit(best);
+  _chainFx.push({ ax: sx, ay: sy,
+    bx: best.position.x, by: best.position.y, life: 8 });
+}
+
+function updateChainFx() {
+  const kept = [];
+  for (const fx of _chainFx) if (--fx.life > 0) kept.push(fx);
+  _chainFx = kept;
 }
 
 // ── Deaths ──────────────────────────────────────────────────────────────
@@ -731,13 +952,43 @@ function processPending() {
       bullet.position.x + (rx / rl) * 6,
       bullet.position.y + (ry / rl) * 6,
     );
-    bullet.userData._life = Math.max(bullet.userData._life, 60);
+    // Refresh life on every bounce so a ricochet bullet gets a full extra
+    // second of travel time per bounce instead of ageing out mid-arc.
+    bullet.userData._life = 90;
     bullet.userData._hits.clear(); // can hit previously-passed enemies again
   }
   _pending.bounce.length = 0;
 
+  // Ricochet: retarget the bullet toward the next enemy at the current speed.
+  for (const { bullet, target } of _pending.ricochetRedirect) {
+    if (!bullet.space || !target.space) continue;
+    const dx = target.position.x - bullet.position.x;
+    const dy = target.position.y - bullet.position.y;
+    const dd = Math.hypot(dx, dy) || 1;
+    const speed = Math.hypot(bullet.velocity.x, bullet.velocity.y) || 620;
+    bullet.velocity = new Vec2((dx / dd) * speed, (dy / dd) * speed);
+    bullet.rotation = Math.atan2(dy, dx);
+    bullet.userData._life = 90;
+  }
+  _pending.ricochetRedirect.length = 0;
+
+  // Dedupe per frame — a pierce bullet passing through several enemies pushes
+  // itself onto the queue once per hit but should only detonate once at each
+  // physical impact frame. (We process the queue at frame boundaries anyway,
+  // so the same bullet at the same frame only needs one explosion FX + AoE
+  // regardless of how many hits it accumulated.)
+  const detonated = new Set();
   for (const bullet of _pending.aoeDetonate) {
-    if (bullet.space) explodeBullet(bullet);
+    if (!bullet.space || detonated.has(bullet)) continue;
+    detonated.add(bullet);
+    const ud = bullet.userData;
+    // Keep the bullet alive if it still has pierce/ricochet routing to do —
+    // the enemy-BEGIN handler will have queued the redirect / decremented
+    // pierce this same frame. Only wall detonations (marked `_wallDetonate`)
+    // and terminal blast hits actually despawn.
+    const keepAlive = !ud._wallDetonate && (ud._pierceLeft > 0 || ud._enemyBounceLeft > 0);
+    explodeBullet(bullet, keepAlive);
+    ud._wallDetonate = false;
   }
   _pending.aoeDetonate.length = 0;
 
@@ -757,13 +1008,95 @@ function processPending() {
 }
 
 // ── Rooms ──────────────────────────────────────────────────────────────────
+
+// Return the center point of the door on the given wall side.
+function doorCenter(side) {
+  const arenaTop = HUD_H;
+  const midX = SCREEN_W / 2;
+  const midY = (arenaTop + SCREEN_H) / 2;
+  if (side === "top") return { x: midX, y: arenaTop + PLAYER_R + 6 };
+  if (side === "bottom") return { x: midX, y: SCREEN_H - PLAYER_R - 6 };
+  if (side === "left") return { x: PLAYER_R + 6, y: midY };
+  return { x: SCREEN_W - PLAYER_R - 6, y: midY };  // right
+}
+
+function oppositeSide(side) {
+  if (side === "top") return "bottom";
+  if (side === "bottom") return "top";
+  if (side === "left") return "right";
+  return "left";
+}
+
+// Called after the perk draft closes. Picks a random wall side and marks the
+// room in "door" phase; the step-loop watches for the player to walk into it.
+// Also sweeps stray leftovers (enemy bullets that were mid-flight when the
+// last enemy died, any lingering player bullets, all hazards) so the arena
+// is quiet while the player walks to the exit.
+function openDoor() {
+  const sides = ["top", "right", "bottom", "left"];
+  _doorSide = sides[Math.floor(Math.random() * sides.length)];
+  _transitionPhase = "door";
+  _fadeT = 0;
+  for (const body of _space.bodies) {
+    const ud = body.userData;
+    if (ud?._playerBullet || ud?._enemyBullet) body.space = null;
+  }
+  clearHazards();
+  _hearts = [];
+}
+
+// Drive the between-room transition. The player position moves at physics
+// pace during "door" (they walk to the exit); the fade legs freeze input via
+// _transitionPhase !== null being read by applyPlayerVelocity/spawnForRoom.
+function updateTransition(space) {
+  if (_transitionPhase === "door") {
+    if (!_player?.space) return;
+    const c = doorCenter(_doorSide);
+    const dx = _player.position.x - c.x;
+    const dy = _player.position.y - c.y;
+    if (dx * dx + dy * dy < DOOR_TRIGGER_DIST * DOOR_TRIGGER_DIST) {
+      _transitionPhase = "fade-out";
+      _fadeT = 0;
+    }
+    return;
+  }
+  if (_transitionPhase === "fade-out") {
+    _fadeT = Math.min(1, _fadeT + 1 / FADE_FRAMES);
+    if (_fadeT >= 1) {
+      // Sweep the arena and warp the hero to the opposite wall of the next room.
+      clearTransientBodies(space);
+      _hearts = [];
+      for (const q in _pending) _pending[q].length = 0;
+      _player = spawnPlayer(space);
+      const entry = doorCenter(oppositeSide(_doorSide));
+      _player.position = new Vec2(entry.x, entry.y);
+      _player.velocity = new Vec2(0, 0);
+      _playerInvuln = 30;
+      _stillFrames = 0;
+      _firingHot = false;
+      _transitionPhase = "fade-in";
+    }
+    return;
+  }
+  if (_transitionPhase === "fade-in") {
+    _fadeT = Math.max(0, _fadeT - 1 / FADE_FRAMES);
+    if (_fadeT <= 0) {
+      _transitionPhase = null;
+      _fadeT = 0;
+    }
+    return;
+  }
+}
+
 function startRoom() {
   _room++;
   _roomActive = true;
   _bossPending = _room % 5 === 0;
-  _toSpawn = 5 + Math.floor(_room * 1.5) + (_bossPending ? 1 : 0);
-  _spawnInterval = Math.max(28, 64 - _room * 2);
-  _spawnTimer = 24;
+  // Gentler ramp: room 1 = 3 enemies, +1 per room. Boss rooms add one for the boss.
+  _toSpawn = 2 + _room + (_bossPending ? 1 : 0);
+  // Slower spawn cadence early — ~1.5s in room 1, tightening to ~0.5s deep in.
+  _spawnInterval = Math.max(30, 90 - _room * 4);
+  _spawnTimer = 40;
   buildHazards(_room);
 }
 
@@ -779,11 +1112,16 @@ function spawnForRoom() {
     _toSpawn = 0;
     return;
   }
-  // Mix shifts toward ranged/dashers in later rooms; boss rooms stay melee-heavy.
+  // Difficulty tiers: melee-only for the first couple of rooms, ranged joins
+  // at room 3, dashers at room 5. Boss rooms stay melee-heavy for readability.
   const roll = Math.random();
   let kind;
   if (_room % 5 === 0) {
     kind = roll < 0.7 ? "melee" : "ranged";
+  } else if (_room <= 2) {
+    kind = "melee";
+  } else if (_room <= 4) {
+    kind = roll < 0.65 ? "melee" : "ranged";
   } else if (roll < 0.45) {
     kind = "melee";
   } else if (roll < 0.75) {
@@ -813,6 +1151,9 @@ function makeBlade(pivot) {
   body.cbTypes.add(_cbHazard);  // … and it damages the player on contact
   body.userData._hazardBlade = true;
   body.userData._colorIdx = 3;
+  // For a kinematic body, `angularVel` is the value the engine integrates
+  // into `rotation` each step. `kinAngVel` (despite its name) does not
+  // rotate a kinematic — verified empirically against nape-js.
   body.angularVel = BLADE_ANGVEL;
   body.space = _space;
   return body;
@@ -905,6 +1246,10 @@ function resetGame(space) {
   resetPerks();
   _hearts = [];
   _time = 0;
+  _orbitalAngle = 0;
+  _orbitalLastHit = new WeakMap();
+  _chainFx = [];
+  _explosionFx = [];
   _player = spawnPlayer(space);
   _playerHP = PLAYER_MAX_HP;
   _playerInvuln = 0;
@@ -913,7 +1258,8 @@ function resetGame(space) {
   _firingHot = false;
   _room = 0;
   _roomActive = false;
-  _breakTimer = 110;
+  _transitionPhase = null;
+  _fadeT = 0;
   _toSpawn = 0;
   _bossPending = false;
   _gameOver = false;
@@ -982,7 +1328,8 @@ function pickDraft(x, y) {
       _drafting = false;
       _draftChoices = [];
       _hoverCard = -1;
-      _breakTimer = 70; // short breather before the next room
+      // Only open the exit door if the room is actually cleared.
+      if (!_roomActive) openDoor();
       shake(4, 0.15);
       return;
     }
@@ -1123,8 +1470,79 @@ function drawEnemyExtras(ctx) {
       ctx.fillStyle = "rgba(255,255,255,0.5)";
       ctx.fill();
     }
+    // Frozen halo.
+    if (ud._frozenUntil && _time <= ud._frozenUntil) {
+      ctx.beginPath();
+      ctx.arc(x, y, r + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(120,180,255,0.75)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+    // Poison bubbles.
+    if (ud._poisonUntil && _time <= ud._poisonUntil) {
+      const p = ((_time * 0.15) + (x + y) * 0.01) % 1;
+      ctx.beginPath();
+      ctx.arc(x - r * 0.3, y - r - p * 8, 2, 0, Math.PI * 2);
+      ctx.arc(x + r * 0.4, y - r - ((p + 0.5) % 1) * 8, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(63,185,80,0.85)";
+      ctx.fill();
+    }
     drawHpBar(ctx, body);
   }
+}
+
+function drawOrbitals(ctx) {
+  const blades = orbitalPositions();
+  if (blades.length === 0) return;
+  ctx.save();
+  for (const b of blades) {
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, ORBITAL_HIT_R, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(88,166,255,0.28)";
+    ctx.fill();
+    ctx.strokeStyle = "#58a6ff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawChainFx(ctx) {
+  if (_chainFx.length === 0) return;
+  ctx.save();
+  ctx.strokeStyle = "#f2cc60";
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+  for (const fx of _chainFx) {
+    const a = Math.max(0, fx.life / 8);
+    ctx.globalAlpha = a;
+    ctx.beginPath();
+    ctx.moveTo(fx.ax, fx.ay);
+    ctx.lineTo(fx.bx, fx.by);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawExplosionFx(ctx) {
+  if (_explosionFx.length === 0) return;
+  ctx.save();
+  for (const fx of _explosionFx) {
+    // Expanding ring: radius grows to EX_RADIUS over lifetime, alpha fades.
+    const t = 1 - fx.life / fx.maxLife;      // 0..1
+    const r = fx.r * (0.35 + t * 0.65);
+    const alpha = 1 - t;
+    ctx.globalAlpha = alpha * 0.85;
+    ctx.fillStyle = "rgba(210,153,34,0.35)"; // gold, matches explosive bullet
+    ctx.beginPath();
+    ctx.arc(fx.x, fx.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = "#f2cc60";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
 function drawPlayerRing(ctx) {
@@ -1212,12 +1630,11 @@ function drawTopHUD(ctx) {
   // Right side: room status.
   ctx.textAlign = "right";
   ctx.font = "13px system-ui, sans-serif";
-  if (!_roomActive && !_drafting && _breakTimer > 0 && !_gameOver) {
-    const s = Math.ceil(_breakTimer / 60);
+  if (_transitionPhase === "door" && !_gameOver) {
     const next = _room + 1;
-    const label = next % 5 === 0 ? "BOSS ROOM" : "Next room";
-    ctx.fillStyle = next % 5 === 0 ? "#f85149" : "rgba(255,255,255,0.6)";
-    ctx.fillText(`${label} in ${s}s`, SCREEN_W - 12, HUD_H / 2);
+    const label = next % 5 === 0 ? "BOSS DOOR →" : "Reach the door →";
+    ctx.fillStyle = next % 5 === 0 ? "#f85149" : "rgba(255,255,255,0.7)";
+    ctx.fillText(label, SCREEN_W - 12, HUD_H / 2);
   } else if (_roomActive && _room % 5 === 0) {
     ctx.fillStyle = "#f85149";
     ctx.font = "bold 13px system-ui, sans-serif";
@@ -1335,6 +1752,57 @@ function drawJoystick(ctx) {
   ctx.fill();
 }
 
+// Draw the exit door + arrow on the wall opening. Purely visual — the walls
+// don't actually open, since a moving hero touching the frame would already
+// be within DOOR_TRIGGER_DIST of the center and trigger the fade.
+function drawDoor(ctx) {
+  if (_transitionPhase !== "door") return;
+  const c = doorCenter(_doorSide);
+  const boss = (_room + 1) % 5 === 0;
+  const fill = boss ? "rgba(248,81,73,0.20)" : "rgba(63,185,80,0.20)";
+  const stroke = boss ? "#f85149" : "#3fb950";
+  const vertical = _doorSide === "left" || _doorSide === "right";
+  const w = vertical ? 14 : DOOR_HALF_W * 2;
+  const h = vertical ? DOOR_HALF_W * 2 : 14;
+  ctx.save();
+  ctx.fillStyle = fill;
+  ctx.fillRect(c.x - w / 2, c.y - h / 2, w, h);
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(c.x - w / 2, c.y - h / 2, w, h);
+
+  // Pulsing arrow points into the room from the door (so the player reads
+  // "walk this way"). Beat is ~1s.
+  const pulse = 0.5 + 0.5 * Math.sin(_time * 0.15);
+  ctx.globalAlpha = 0.5 + pulse * 0.5;
+  ctx.fillStyle = stroke;
+  ctx.font = "bold 20px system-ui, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const glyph =
+    _doorSide === "top" ? "↑" :
+    _doorSide === "bottom" ? "↓" :
+    _doorSide === "left" ? "←" : "→";
+  const ax =
+    _doorSide === "left" ? c.x - 22 :
+    _doorSide === "right" ? c.x + 22 : c.x;
+  const ay =
+    _doorSide === "top" ? c.y - 22 :
+    _doorSide === "bottom" ? c.y + 22 : c.y;
+  ctx.fillText(glyph, ax, ay);
+  ctx.restore();
+}
+
+// Full-screen fade during a room transition. Rendered on top of everything
+// including the HUD so the whole viewport goes black between rooms.
+function drawFade(ctx) {
+  if (_fadeT <= 0) return;
+  ctx.save();
+  ctx.fillStyle = `rgba(0,0,0,${_fadeT})`;
+  ctx.fillRect(0, 0, SCREEN_W, SCREEN_H);
+  ctx.restore();
+}
+
 function drawGameOver(ctx) {
   if (!_gameOver) return;
   ctx.fillStyle = "rgba(0,0,0,0.65)";
@@ -1358,7 +1826,7 @@ export default {
   tags: ["Gameplay", "Roguelite", "Callbacks", "Kinematic", "Camera shake", "Mobile"],
   featured: false,
   desc:
-    "A top-down <b>stand-still-to-shoot</b> roguelite. Your hero auto-fires at the nearest foe <b>only while standing still</b> — the instant you move, the weapon goes cold, so each fight is stop-shoot-dodge. Clear every enemy in a room and <b>draft one of three permanent perks</b> (split shot, ricochet, piercing, crit, blast arrows, …) that stack for the whole run. <b>Melee</b> rush with charges, <b>ranged</b> kite and snipe, <b>dashers</b> blink in, and every 5th room is a <b>boss</b> with shotguns and bullet rings. Deeper rooms add <b>active hazards</b>: telegraphed <b>spike traps</b>, <b>lava pools</b>, and spinning <b>sawblades</b> (kinematic bars that sweep the arena and block shots). Fallen enemies sometimes drop a <b>healing heart</b> — walk over it while wounded to patch up. Move with <b>WASD</b> / arrows or the bottom-left virtual stick. <b>Camera shake</b> on every kill, hit, trap, and boss slam.",
+    "A top-down <b>stand-still-to-shoot</b> roguelite. Your hero auto-fires at the nearest foe <b>only while standing still</b> — the instant you move, the weapon goes cold, so each fight is stop-shoot-dodge. Clear every enemy in a room and <b>draft one of three permanent perks</b> (front arrow, wall ricochet, piercing, ricochet, crit, explosive shot, spirit orbs, freeze, poison, bolt, …) that stack for the whole run. <b>Melee</b> rush with charges, <b>ranged</b> kite and snipe, <b>dashers</b> blink in, and every 5th room is a <b>boss</b> with shotguns and bullet rings. Deeper rooms add <b>active hazards</b>: telegraphed <b>spike traps</b>, <b>lava pools</b>, and spinning <b>sawblades</b> (kinematic bars that sweep the arena and block shots). Fallen enemies sometimes drop a <b>healing heart</b> — walk over it while wounded to patch up. Move with <b>WASD</b> / arrows or the bottom-left virtual stick. <b>Camera shake</b> on every kill, hit, trap, and boss slam.",
   walls: false,
   workerCompatible: false,
 
@@ -1383,7 +1851,42 @@ export default {
       (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0)
     );
 
-    // Player bullet hits enemy → pierce / explode / damage.
+    // Piercing / Ricochet bullets should pass through enemies without being
+    // physically deflected — the BEGIN callback still fires for damage +
+    // routing (pierce, ricochet redirect), but Nape's own collision
+    // resolution is skipped so the bullet keeps flying.
+    space.listeners.add(new PreListener(
+      InteractionType.COLLISION, _cbPlayerBullet, _cbEnemy,
+      (cb) => {
+        const b1 = bodyFromInt(cb.int1), b2 = bodyFromInt(cb.int2);
+        const bullet = b1?.userData?._playerBullet ? b1 : b2;
+        const ud = bullet?.userData;
+        if (ud && (ud._pierceLeft > 0 || ud._enemyBounceLeft > 0)) {
+          return PreFlag.IGNORE;
+        }
+        return PreFlag.ACCEPT;
+      },
+    ));
+
+    // Wall Ricochet bullets: we compute the reflection ourselves in _pending.bounce.
+    // Suppress Nape's own resolution — otherwise Nape drains the bullet's
+    // velocity before our reflect step runs, and the bullet slides through
+    // the wall instead of bouncing back.
+    space.listeners.add(new PreListener(
+      InteractionType.COLLISION, _cbPlayerBullet, _cbWall,
+      (cb) => {
+        const b1 = bodyFromInt(cb.int1), b2 = bodyFromInt(cb.int2);
+        const bullet = b1?.userData?._playerBullet ? b1 : b2;
+        if (bullet?.userData?._bounceLeft > 0) return PreFlag.IGNORE;
+        return PreFlag.ACCEPT;
+      },
+    ));
+
+    // Player bullet hits enemy → damage, apply status, then combo-route:
+    // Blast (AoE + FX), Ricochet redirect, Piercing carry-through, or remove.
+    // Blast no longer eats the bullet: the arrow explodes at the impact and
+    // still pierces or ricochets onward if those perks are active, matching
+    // Archero's "Blast + Piercing" / "Blast + Ricochet" stacking.
     space.listeners.add(new InteractionListener(
       CbEvent.BEGIN, InteractionType.COLLISION, _cbPlayerBullet, _cbEnemy,
       (cb) => {
@@ -1396,11 +1899,25 @@ export default {
         if (ud._hits.has(enemy)) return;   // already pierced this one
         ud._hits.add(enemy);
 
-        if (ud._explosive) {
-          if (!ud._spent) { ud._spent = true; _pending.aoeDetonate.push(bullet); }
-          return;
-        }
+        // Direct damage + status always applies on a fresh enemy contact.
         _pending.enemyHit.push({ enemy, damage: ud._damage });
+        applyStatusOnHit(enemy);
+        tryChainLightning(enemy, ud._damage);
+
+        // Blast: fire the AOE at the impact point. Do NOT despawn the bullet
+        // here — the combo routing below decides whether it keeps flying.
+        if (ud._explosive) _pending.aoeDetonate.push(bullet);
+
+        // Ricochet has priority over piercing when both are present.
+        if (ud._enemyBounceLeft > 0) {
+          const next = findRicochetTarget(bullet, enemy);
+          if (next) {
+            ud._enemyBounceLeft--;
+            _pending.ricochetRedirect.push({ bullet, target: next });
+            return;
+          }
+          // No other enemy reachable — fall through to pierce/remove.
+        }
         if (ud._pierceLeft > 0) {
           ud._pierceLeft--;
         } else if (!ud._spent) {
@@ -1419,12 +1936,11 @@ export default {
                      : b2?.userData?._playerBullet ? b2 : null;
         if (!bullet?.space) return;
         const ud = bullet.userData;
-        if (ud._explosive) {
-          if (!ud._spent) { ud._spent = true; _pending.aoeDetonate.push(bullet); }
-          return;
-        }
+        // Ricochet takes priority on walls even for explosive bullets — only
+        // detonate on wall impact once all bounces are used up. Explosive
+        // still detonates on enemy contact (see bullet↔enemy listener).
         if (ud._bounceLeft > 0) {
-          const n = firstCollisionNormal(cb);
+          const n = firstCollisionNormal(cb, bullet);
           if (n) {
             ud._bounceLeft--;
             _pending.bounce.push({ bullet, nx: n.x, ny: n.y });
@@ -1432,7 +1948,19 @@ export default {
             ud._spent = true;
             _pending.removeBullet.push(bullet);
           }
-        } else if (!ud._spent) {
+          return;
+        }
+        if (ud._explosive) {
+          // Explode on the terminal wall contact and mark it so the aoeDetonate
+          // loop despawns the bullet even if pierce/ricochet counters exist.
+          if (!ud._spent) {
+            ud._spent = true;
+            ud._wallDetonate = true;
+            _pending.aoeDetonate.push(bullet);
+          }
+          return;
+        }
+        if (!ud._spent) {
           ud._spent = true;
           _pending.removeBullet.push(bullet);
         }
@@ -1521,6 +2049,10 @@ export default {
     steerEnemies();
     updateHazards();
     updateHearts();
+    updateOrbitals();
+    updateStatusEffects();
+    updateChainFx();
+    updateExplosionFx();
 
     if (_playerInvuln > 0) _playerInvuln--;
 
@@ -1536,18 +2068,26 @@ export default {
     }
 
     if (_shotCooldown > 0) _shotCooldown--;
-    if (_firingHot && _shotCooldown <= 0 && _player?.space) {
+    if (_firingHot && _shotCooldown <= 0 && _player?.space && !_transitionPhase) {
       if (firePlayerShot()) _shotCooldown = shotCooldown();
     }
 
     // Room flow.
     if (!_roomActive) {
-      if (_breakTimer > 0) _breakTimer--;
-      else startRoom();
+      if (_transitionPhase == null && !_drafting) startRoom();
+      else updateTransition(space);
     } else {
       spawnForRoom();
       if (_toSpawn <= 0 && !anyEnemyAlive()) {
         _roomActive = false;
+        // Sweep leftover projectiles + hazards so the arena is quiet during
+        // the draft. The drafting freeze below zeroes remaining velocities
+        // for cosmetic consistency, but there should be nothing to freeze.
+        for (const body of space.bodies) {
+          const ud = body.userData;
+          if (ud?._playerBullet || ud?._enemyBullet) body.space = null;
+        }
+        clearHazards();
         // Offer a perk draft, then a short breather before the next room.
         _drafting = true;
         _draftChoices = rollDraft();
@@ -1615,6 +2155,10 @@ export default {
     drawAimLine(ctx);
     drawEnemyExtras(ctx);
     drawPlayerRing(ctx);
+    drawOrbitals(ctx);
+    drawChainFx(ctx);
+    drawExplosionFx(ctx);
+    drawDoor(ctx);
     ctx.restore();
 
     // Screen-space HUD — unaffected by camera shake.
@@ -1623,5 +2167,6 @@ export default {
     drawTopHUD(ctx);
     drawDraft(ctx);
     drawGameOver(ctx);
+    drawFade(ctx);
   },
 };
