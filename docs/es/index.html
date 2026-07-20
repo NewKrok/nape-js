@@ -1,32 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="nape-prerendered" content="es" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nape-js — 2D Physics Engine for TypeScript &amp; JavaScript</title>
-  <meta name="description" content="nape-js is a fully typed 2D physics engine for TypeScript &amp; JavaScript — rigid body dynamics, constraints, fluid buoyancy, raycasting, fracture, deterministic multiplayer, web worker. Tree-shakeable, zero dependencies, ~27 KB gzip. Free &amp; open source (MIT)." />
+  <title>nape-js — Motor de física 2D para TypeScript y JavaScript</title>
+  <meta name="description" content="nape-js es un motor de física 2D totalmente tipado para TypeScript y JavaScript — dinámica de cuerpos rígidos, restricciones, flotabilidad de fluidos, raycasting, fractura, multijugador determinista, web worker. Compatible con tree-shaking, cero dependencias, ~27 KB gzip. Gratis y de código abierto (MIT)." />
   <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, tree-shakeable, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="author" content="Istvan Krisztian Somoracz" />
-  <link rel="canonical" href="https://napejs.org/" />
+  <link rel="canonical" href="https://napejs.org/es/" />
   <!-- Open Graph -->
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="nape-js — 2D Physics Engine for TypeScript &amp; JavaScript" />
-  <meta property="og:description" content="High-performance 2D physics engine — rigid bodies, constraints, fluid simulation, raycasting, fracture, soft body, and deterministic multiplayer. Tree-shakeable, zero dependencies, ~27 KB gzip." />
-  <meta property="og:url" content="https://napejs.org/" />
+  <meta property="og:description" content="nape-js es un motor de física 2D totalmente tipado para TypeScript y JavaScript — dinámica de cuerpos rígidos, restricciones, flotabilidad de fluidos, raycasting, fractura, multijugador determinista, web worker. Compatible con tree-shaking, cero dependencias, ~27 KB gzip. Gratis y de código abierto (MIT)." />
+  <meta property="og:url" content="https://napejs.org/es/" />
   <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="nape-js logo on a dark gradient — 2D Physics Engine for TypeScript &amp; JavaScript" />
-  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale" content="es_ES" />
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:site" content="@KSomoracz" />
   <meta name="twitter:title" content="nape-js — 2D Physics Engine for TypeScript &amp; JavaScript" />
-  <meta name="twitter:description" content="High-performance 2D physics engine — rigid bodies, constraints, fluid simulation, raycasting, fracture, soft body, and deterministic multiplayer. Tree-shakeable, zero dependencies, ~27 KB gzip." />
+  <meta name="twitter:description" content="nape-js es un motor de física 2D totalmente tipado para TypeScript y JavaScript — dinámica de cuerpos rígidos, restricciones, flotabilidad de fluidos, raycasting, fractura, multijugador determinista, web worker. Compatible con tree-shaking, cero dependencias, ~27 KB gzip. Gratis y de código abierto (MIT)." />
   <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
   <!-- JSON-LD: SoftwareSourceCode -->
   <script type="application/ld+json">
@@ -128,8 +129,8 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="icon" type="image/svg+xml" href="logo.svg" />
-  <link rel="stylesheet" href="style.css?v=3.39.1" />
+  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
+  <link rel="stylesheet" href="../style.css?v=3.39.1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.39.1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.39.1" />
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual></script>
@@ -151,21 +152,16 @@
     <div class="container">
       <span class="lang-switcher hero-lang-switcher" id="langSwitcher"></span>
       <h1><svg class="hero-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#3fb950"/></linearGradient></defs><g transform="translate(0,287) scale(0.1,-0.1)" fill="url(#logoGrad)" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>nape-js</h1>
-      <p class="subtitle" data-i18n="home.hero.subtitle">Fully typed 2D physics engine for TypeScript &amp; JavaScript &mdash; modern rewrite of Nape</p>
-      <p class="tagline" data-i18n="home.hero.tagline">
-        Rigid bodies &bull; Circles, Polygons &amp; Capsules &bull; Constraints &bull;
-        Fluid simulation &bull; Collision callbacks &bull; Raycasting &amp; spatial queries &bull;
-        Fracture &bull; Soft body &bull; Deterministic multiplayer &bull;
-        Serialization &bull; Web Worker support &mdash; tree-shakeable, zero dependencies, ~27&nbsp;KB gzip.
-      </p>
+      <p class="subtitle" data-i18n="home.hero.subtitle">Motor de física 2D totalmente tipado para TypeScript y JavaScript — reescritura moderna de Nape</p>
+      <p class="tagline" data-i18n="home.hero.tagline">Cuerpos rígidos • Círculos, polígonos y cápsulas • Restricciones • Simulación de fluidos • Callbacks de colisión • Raycasting y consultas espaciales • Fractura • Cuerpo blando • Multijugador determinista • Serialización • Compatible con Web Worker — apto para tree-shaking, cero dependencias, ~27 KB gzip.</p>
       <div class="hero-meta">
         <span class="version-badge" id="versionBadge"></span>
       </div>
       <div class="hero-actions">
         <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" target="_blank" rel="noopener" data-i18n="nav.github" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
-        <a href="#demos" class="btn btn-secondary" data-i18n="nav.tryDemos" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Try the Demos</a>
+        <a href="#demos" class="btn btn-secondary" data-i18n="nav.tryDemos" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Probar las demos</a>
         <a href="#benchmarks" class="btn btn-secondary" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">Benchmarks</a>
-        <a href="api/index.html" class="btn btn-secondary" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">API Docs</a>
+        <a href="../api/index.html" class="btn btn-secondary" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">Documentación de la API</a>
       </div>
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
@@ -176,23 +172,23 @@
   <!-- ===== DEMOS ===== -->
   <section id="demos" class="section">
     <div class="container">
-      <h2 data-i18n="home.demos.heading">Interactive Demos</h2>
+      <h2 data-i18n="home.demos.heading">Demos interactivas</h2>
       <p class="section-desc">
-        <span data-i18n="home.demos.desc">Click/drag on the canvas to interact. Pick a demo below.</span>
+        <span data-i18n="home.demos.desc">Haz clic o arrastra sobre el lienzo para interactuar. Elige una demo abajo.</span>
         <span class="cat-legend">
-          <span class="cat-legend-item"><span class="tab-cat-dot tab-cat-dot-physics"></span><span data-i18n="cat.physics.label">Physics</span></span>
-          <span class="cat-legend-item"><span class="tab-cat-dot tab-cat-dot-game"></span><span data-i18n="cat.game.label">Game</span></span>
+          <span class="cat-legend-item"><span class="tab-cat-dot tab-cat-dot-physics"></span><span data-i18n="cat.physics.label">Física</span></span>
+          <span class="cat-legend-item"><span class="tab-cat-dot tab-cat-dot-game"></span><span data-i18n="cat.game.label">Juego</span></span>
         </span>
       </p>
 
       <nav class="demo-tabs" id="demoTabs">
-        <a href="examples/" class="tab tab-more" data-i18n="home.demos.more" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'more_examples'})">More &rarr;</a>
-        <a href="multiplayer.html" class="tab tab-mp" data-i18n="home.demos.multiplayer" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'multiplayer'})">&#9654; Multiplayer</a>
+        <a href="../examples/" class="tab tab-more" data-i18n="home.demos.more" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'more_examples'})">Más →</a>
+        <a href="../multiplayer.html" class="tab tab-mp" data-i18n="home.demos.multiplayer" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'multiplayer'})">► Multijugador</a>
       </nav>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
-        <div class="canvas-overlay" id="canvasOverlay" data-i18n="home.demos.loading">Loading engine&hellip;</div>
+        <div class="canvas-overlay" id="canvasOverlay" data-i18n="home.demos.loading">Cargando el motor…</div>
         <!-- Canvas overlay controls (top-right, matching examples page) -->
         <div class="canvas-controls" id="canvasControls" style="opacity:1">
           <div class="card-render-toggle" id="renderModeToggle">
@@ -200,22 +196,22 @@
             <button class="card-render-btn" data-mode="3d">3D</button>
             <button class="card-render-btn" data-mode="pixi">PixiJS</button>
           </div>
-          <button class="canvas-outline-btn active" id="outlineBtn" title="Toggle outlines" data-i18n-attr="title:canvas.outline">
+          <button class="canvas-outline-btn active" id="outlineBtn" title="Alternar contornos" data-i18n-attr="title:canvas.outline">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="2" width="12" height="12" rx="2"/><circle cx="8" cy="8" r="3"/>
             </svg>
           </button>
-          <button class="canvas-fs-btn canvas-profiler-btn" id="profilerBtn" title="Toggle profiler overlay" data-i18n-attr="title:canvas.profiler">
+          <button class="canvas-fs-btn canvas-profiler-btn" id="profilerBtn" title="Alternar la superposición del profiler" data-i18n-attr="title:canvas.profiler">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="1,12 4,5 7,9 10,2 14,7"/><line x1="1" y1="14" x2="14" y2="14"/>
             </svg>
           </button>
-          <button class="canvas-fs-btn canvas-worker-btn" id="workerBtn" title="Toggle Web Worker physics" data-i18n-attr="title:canvas.worker" style="display:none">
+          <button class="canvas-fs-btn canvas-worker-btn" id="workerBtn" title="Alternar física en Web Worker" data-i18n-attr="title:canvas.worker" style="display:none">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/>
             </svg>
           </button>
-          <button class="canvas-fs-btn canvas-reset-btn" id="resetBtn" title="Reset demo" data-i18n-attr="title:canvas.reset">
+          <button class="canvas-fs-btn canvas-reset-btn" id="resetBtn" title="Reiniciar la demo" data-i18n-attr="title:canvas.reset">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M2.5 8a5.5 5.5 0 1 1 1.1 3.3"/><polyline points="2.5,3.5 2.5,8 7,8"/>
             </svg>
@@ -226,8 +222,8 @@
 
       <div class="demo-bar">
         <span id="fpsLabel" data-i18n="demoBar.fps">FPS: —</span>
-        <span id="bodyCount" data-i18n="demoBar.bodies">Bodies: —</span>
-        <span id="stepTime" data-i18n="demoBar.step">Step: —</span>
+        <span id="bodyCount" data-i18n="demoBar.bodies">Cuerpos: —</span>
+        <span id="stepTime" data-i18n="demoBar.step">Paso: —</span>
       </div>
 
       <div class="demo-description" id="demoDescription"></div>
@@ -235,11 +231,11 @@
       <!-- Code Preview Panel -->
       <div class="code-panel" id="codePanel">
         <div class="code-panel-header">
-          <span class="code-panel-title" data-i18n="code.title">Source Code</span>
+          <span class="code-panel-title" data-i18n="code.title">Código fuente</span>
           <div class="code-panel-actions">
-            <button class="btn btn-small" id="copyCodeBtn" title="Copy to clipboard" data-i18n="code.copy" data-i18n-attr="title:code.copyTitle">Copy</button>
-            <button class="btn btn-small btn-codepen" id="codepenBtn" title="Open in CodePen" data-i18n="code.codepen" data-i18n-attr="title:code.codepenTitle">CodePen</button>
-            <button class="btn btn-small btn-stackblitz" id="stackblitzBtn" title="Open in StackBlitz (real npm install)" data-i18n="code.stackblitz" data-i18n-attr="title:code.stackblitzTitle">StackBlitz</button>
+            <button class="btn btn-small" id="copyCodeBtn" title="Copiar al portapapeles" data-i18n="code.copy" data-i18n-attr="title:code.copyTitle">Copiar</button>
+            <button class="btn btn-small btn-codepen" id="codepenBtn" title="Abrir en CodePen" data-i18n="code.codepen" data-i18n-attr="title:code.codepenTitle">CodePen</button>
+            <button class="btn btn-small btn-stackblitz" id="stackblitzBtn" title="Abrir en StackBlitz (npm install real)" data-i18n="code.stackblitz" data-i18n-attr="title:code.stackblitzTitle">StackBlitz</button>
           </div>
         </div>
         <pre class="code-panel-body"><code id="codePreview"></code></pre>
@@ -251,13 +247,10 @@
   <section id="benchmarks" class="section">
     <div class="container">
       <h2 data-i18n="bench.heading">Benchmarks</h2>
-      <p class="section-desc" data-i18n-html="bench.desc">
-        Measured in your browser right now. Each test runs the physics <code>step()</code>
-        in a tight loop and reports the median time per step.
-      </p>
-      <button class="btn btn-primary" id="runBenchmark" data-i18n="bench.run">Run Benchmarks</button>
+      <p class="section-desc" data-i18n-html="bench.desc">Medido en tu navegador ahora mismo. Cada prueba ejecuta el <code>step()</code> de física en un bucle cerrado e informa la mediana del tiempo por paso.</p>
+      <button class="btn btn-primary" id="runBenchmark" data-i18n="bench.run">Ejecutar benchmarks</button>
       <div class="bench-results" id="benchResults">
-        <p class="bench-hint" data-i18n="bench.hint">Press the button to start.</p>
+        <p class="bench-hint" data-i18n="bench.hint">Presiona el botón para comenzar.</p>
       </div>
     </div>
   </section>
@@ -265,66 +258,55 @@
   <!-- ===== FEATURES (SEO-friendly summary) ===== -->
   <section class="section">
     <div class="container">
-      <h2 data-i18n="features.heading">Why nape-js?</h2>
-      <p class="section-desc" data-i18n-html="features.p1">
-        nape-js is one of the few <strong>2D physics engines for JavaScript and TypeScript</strong> that ships
-        rigid&nbsp;body&nbsp;dynamics, joints (PivotJoint, DistanceJoint, WeldJoint, AngleJoint, MotorJoint, LineJoint, PulleyJoint, SpringJoint),
-        <strong>fluid&nbsp;buoyancy</strong>, <strong>fracture</strong>, <strong>soft&nbsp;body</strong>, raycasting and convex sweeps,
-        a built-in character controller, deterministic stepping for <strong>multiplayer rollback</strong>,
-        binary serialization, replay recording, and an off-thread <strong>Web Worker</strong> bridge — all in a
-        single tree-shakeable ESM bundle (~27&nbsp;KB gzip), with full TypeScript types and zero DOM dependencies.
-      </p>
-      <p class="section-desc" data-i18n-html="features.p2">
-        Looking for an alternative to <em>Box2D</em>, <em>Matter.js</em>, <em>Planck.js</em>, or <em>Rapier</em>?
-        Run the <a href="benchmark.html">in-browser benchmark</a> to compare them head-to-head, or jump into the
-        <a href="examples/">interactive examples</a> — physics demos and playable mini-games (platformer, MOBA, tower defense, slingshot, pinball, top-down shooter).
-      </p>
+      <h2 data-i18n="features.heading">¿Por qué nape-js?</h2>
+      <p class="section-desc" data-i18n-html="features.p1">nape-js es uno de los pocos <strong>motores de física 2D para JavaScript y TypeScript</strong> que incluye dinámica de cuerpos rígidos, juntas (PivotJoint, DistanceJoint, WeldJoint, AngleJoint, MotorJoint, LineJoint, PulleyJoint, SpringJoint), <strong>flotabilidad de fluidos</strong>, <strong>fractura</strong>, <strong>cuerpo blando</strong>, raycasting y barridos convexos, un controlador de personaje integrado, avance determinista para <strong>rollback multijugador</strong>, serialización binaria, grabación de repeticiones y un puente <strong>Web Worker</strong> fuera del hilo principal — todo en un único paquete ESM apto para tree-shaking (~27 KB gzip), con tipos TypeScript completos y cero dependencias del DOM.</p>
+      <p class="section-desc" data-i18n-html="features.p2">¿Buscas una alternativa a <em>Box2D</em>, <em>Matter.js</em>, <em>Planck.js</em> o <em>Rapier</em>? Ejecuta el <a href="../benchmark.html">benchmark en el navegador</a> para compararlos cara a cara, o entra directo a los <a href="../examples/">ejemplos interactivos</a> — demos de física y mini-juegos jugables (plataformas, MOBA, tower defense, resortera, pinball, shooter cenital).</p>
     </div>
   </section>
 
   <!-- ===== API OVERVIEW ===== -->
   <section class="section section-alt">
     <div class="container">
-      <h2 data-i18n="api.heading">API at a Glance</h2>
+      <h2 data-i18n="api.heading">La API de un vistazo</h2>
       <div class="api-grid">
         <div class="api-card">
-          <h3 data-i18n="api.core">Core</h3>
+          <h3 data-i18n="api.core">Núcleo</h3>
           <ul>
-            <li><a href="api/classes/Space.html" target="_blank" rel="noopener"><b>Space</b></a> — <span data-i18n="api.core.space">physics world</span></li>
-            <li><a href="api/classes/Body.html" target="_blank" rel="noopener"><b>Body</b></a> — <span data-i18n="api.core.body">rigid body</span></li>
-            <li><a href="api/classes/Vec2.html" target="_blank" rel="noopener"><b>Vec2</b></a> — <span data-i18n="api.core.vec2">2D vector</span></li>
-            <li><a href="api/classes/AABB.html" target="_blank" rel="noopener"><b>AABB</b></a> — <span data-i18n="api.core.aabb">bounding box</span></li>
+            <li><a href="../api/classes/Space.html" target="_blank" rel="noopener"><b>Space</b></a> — <span data-i18n="api.core.space">mundo físico</span></li>
+            <li><a href="../api/classes/Body.html" target="_blank" rel="noopener"><b>Body</b></a> — <span data-i18n="api.core.body">cuerpo rígido</span></li>
+            <li><a href="../api/classes/Vec2.html" target="_blank" rel="noopener"><b>Vec2</b></a> — <span data-i18n="api.core.vec2">vector 2D</span></li>
+            <li><a href="../api/classes/AABB.html" target="_blank" rel="noopener"><b>AABB</b></a> — <span data-i18n="api.core.aabb">caja envolvente</span></li>
           </ul>
         </div>
         <div class="api-card">
-          <h3 data-i18n="api.shapes">Shapes</h3>
+          <h3 data-i18n="api.shapes">Formas</h3>
           <ul>
-            <li><a href="api/classes/Circle.html" target="_blank" rel="noopener"><b>Circle</b></a> — <span data-i18n="api.shapes.circle">radius-based</span></li>
-            <li><a href="api/classes/Polygon.html" target="_blank" rel="noopener"><b>Polygon</b></a> — <span data-i18n="api.shapes.polygon">convex hull</span></li>
-            <li><a href="api/classes/Capsule.html" target="_blank" rel="noopener"><b>Capsule</b></a> — <span data-i18n="api.shapes.capsule">rounded ends</span></li>
+            <li><a href="../api/classes/Circle.html" target="_blank" rel="noopener"><b>Circle</b></a> — <span data-i18n="api.shapes.circle">basada en radio</span></li>
+            <li><a href="../api/classes/Polygon.html" target="_blank" rel="noopener"><b>Polygon</b></a> — <span data-i18n="api.shapes.polygon">envolvente convexa</span></li>
+            <li><a href="../api/classes/Capsule.html" target="_blank" rel="noopener"><b>Capsule</b></a> — <span data-i18n="api.shapes.capsule">extremos redondeados</span></li>
             <li><code>Polygon.box(w, h)</code></li>
           </ul>
         </div>
         <div class="api-card">
-          <h3 data-i18n="api.constraints">Constraints</h3>
+          <h3 data-i18n="api.constraints">Restricciones</h3>
           <ul>
-            <li><a href="api/classes/PivotJoint.html" target="_blank" rel="noopener"><b>PivotJoint</b></a></li>
-            <li><a href="api/classes/DistanceJoint.html" target="_blank" rel="noopener"><b>DistanceJoint</b></a></li>
-            <li><a href="api/classes/WeldJoint.html" target="_blank" rel="noopener"><b>WeldJoint</b></a></li>
-            <li><a href="api/classes/AngleJoint.html" target="_blank" rel="noopener"><b>AngleJoint</b></a></li>
-            <li><a href="api/classes/MotorJoint.html" target="_blank" rel="noopener"><b>MotorJoint</b></a></li>
-            <li><a href="api/classes/LineJoint.html" target="_blank" rel="noopener"><b>LineJoint</b></a></li>
-            <li><a href="api/classes/PulleyJoint.html" target="_blank" rel="noopener"><b>PulleyJoint</b></a></li>
+            <li><a href="../api/classes/PivotJoint.html" target="_blank" rel="noopener"><b>PivotJoint</b></a></li>
+            <li><a href="../api/classes/DistanceJoint.html" target="_blank" rel="noopener"><b>DistanceJoint</b></a></li>
+            <li><a href="../api/classes/WeldJoint.html" target="_blank" rel="noopener"><b>WeldJoint</b></a></li>
+            <li><a href="../api/classes/AngleJoint.html" target="_blank" rel="noopener"><b>AngleJoint</b></a></li>
+            <li><a href="../api/classes/MotorJoint.html" target="_blank" rel="noopener"><b>MotorJoint</b></a></li>
+            <li><a href="../api/classes/LineJoint.html" target="_blank" rel="noopener"><b>LineJoint</b></a></li>
+            <li><a href="../api/classes/PulleyJoint.html" target="_blank" rel="noopener"><b>PulleyJoint</b></a></li>
           </ul>
         </div>
         <div class="api-card">
           <h3 data-i18n="api.callbacks">Callbacks</h3>
           <ul>
-            <li><a href="api/classes/InteractionListener.html" target="_blank" rel="noopener"><b>InteractionListener</b></a></li>
-            <li><a href="api/classes/BodyListener.html" target="_blank" rel="noopener"><b>BodyListener</b></a></li>
-            <li><a href="api/classes/ConstraintListener.html" target="_blank" rel="noopener"><b>ConstraintListener</b></a></li>
-            <li><a href="api/classes/PreListener.html" target="_blank" rel="noopener"><b>PreListener</b></a></li>
-            <li><a href="api/classes/CbType.html" target="_blank" rel="noopener"><b>CbType</b></a> + <a href="api/classes/CbEvent.html" target="_blank" rel="noopener"><b>CbEvent</b></a></li>
+            <li><a href="../api/classes/InteractionListener.html" target="_blank" rel="noopener"><b>InteractionListener</b></a></li>
+            <li><a href="../api/classes/BodyListener.html" target="_blank" rel="noopener"><b>BodyListener</b></a></li>
+            <li><a href="../api/classes/ConstraintListener.html" target="_blank" rel="noopener"><b>ConstraintListener</b></a></li>
+            <li><a href="../api/classes/PreListener.html" target="_blank" rel="noopener"><b>PreListener</b></a></li>
+            <li><a href="../api/classes/CbType.html" target="_blank" rel="noopener"><b>CbType</b></a> + <a href="../api/classes/CbEvent.html" target="_blank" rel="noopener"><b>CbEvent</b></a></li>
           </ul>
         </div>
       </div>
@@ -335,34 +317,30 @@
   <footer class="footer">
     <div class="container">
       <p class="footer-links">
-        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener" data-i18n="footer.cookbook" onclick="gtag('event','navigation',{event_category:'footer',event_label:'cookbook'})">Cookbook</a>
+        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener" data-i18n="footer.cookbook" onclick="gtag('event','navigation',{event_category:'footer',event_label:'cookbook'})">Recetario</a>
         &bull;
-        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener" data-i18n="footer.troubleshooting" onclick="gtag('event','navigation',{event_category:'footer',event_label:'troubleshooting'})">Troubleshooting</a>
+        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener" data-i18n="footer.troubleshooting" onclick="gtag('event','navigation',{event_category:'footer',event_label:'troubleshooting'})">Solución de problemas</a>
         &bull;
-        <a href="api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs" onclick="gtag('event','navigation',{event_category:'footer',event_label:'api_docs'})">API Docs</a>
+        <a href="../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs" onclick="gtag('event','navigation',{event_category:'footer',event_label:'api_docs'})">Documentación de la API</a>
         &bull;
         <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github" onclick="gtag('event','navigation',{event_category:'footer',event_label:'github'})">GitHub</a>
         &bull;
         <a href="https://x.com/KSomoracz" target="_blank" rel="noopener" data-i18n="footer.twitter" onclick="gtag('event','navigation',{event_category:'footer',event_label:'twitter'})">Twitter / X</a>
       </p>
-      <p data-i18n-html="footer.credits">
-        Based on the original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a>
-        &bull; JS port scaffolded by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a>
-        &bull; TypeScript rewrite &amp; ongoing development by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a>
-      </p>
-      <p data-i18n="footer.license">MIT License</p>
+      <p data-i18n-html="footer.credits">Basado en el motor original en Haxe de <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> • Port a JS estructurado por <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> • Reescritura en TypeScript y desarrollo continuo por <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">Licencia MIT</p>
       <p class="footer-support">
-        <a href="https://ko-fi.com/newkrok" target="_blank" rel="noopener" class="kofi-link" data-i18n="footer.kofi" onclick="gtag('event','navigation',{event_category:'footer',event_label:'kofi'})">&#9749; Support me on Ko-fi</a>
+        <a href="https://ko-fi.com/newkrok" target="_blank" rel="noopener" class="kofi-link" data-i18n="footer.kofi" onclick="gtag('event','navigation',{event_category:'footer',event_label:'kofi'})">☕ Apóyame en Ko-fi</a>
       </p>
     </div>
   </footer>
 
   <script type="module">
-    import { initI18n } from "./i18n/i18n.js?v=3.39.1";
-    import { mountLangSwitcher } from "./i18n/lang-switcher.js?v=3.39.1";
+    import { initI18n } from "../i18n/i18n.js?v=3.39.1";
+    import { mountLangSwitcher } from "../i18n/lang-switcher.js?v=3.39.1";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="app.js?v=3.39.1"></script>
+  <script type="module" src="../app.js?v=3.39.1"></script>
 </body>
 </html>

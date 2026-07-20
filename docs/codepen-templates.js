@@ -9,18 +9,18 @@
  *  2. Auto-generation from demo hooks (setup/step/click/drag/release) via .toString()
  */
 
-const NAPE_VERSION = "3.35.0";
-const NAPE_PIXI_VERSION = "0.1.0";
+const NAPE_VERSION = "3.39.1";
+const NAPE_PIXI_VERSION = "0.1.1";
 const THREE_VERSION = "0.170.0";
 const PIXI_VERSION = "8";
 
-const NAPE_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/index.js`;
+const NAPE_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.39.1/dist/index.js`;
 // Serialization (spaceToJSON / spaceFromJSON) lives in a subpath bundle, not
 // the main one — emitted only for demos that use it (e.g. billiards'
 // shadow-sim shot prediction). Bare specifier resolves via the import map.
 const NAPE_SERIALIZATION_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/serialization/index.js`;
 const NAPE_SERIALIZATION_BARE = `@newkrok/nape-js/serialization`;
-const NAPE_PIXI_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-pixi@0.1.0/dist/index.js`;
+const NAPE_PIXI_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-pixi@0.1.1/dist/index.js`;
 const THREE_CDN = `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/build/three.module.js`;
 const PIXI_CDN = `https://cdn.jsdelivr.net/npm/pixi.js@${PIXI_VERSION}/dist/pixi.min.mjs`;
 

@@ -1,38 +1,182 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://napejs.org/</loc>
-    <lastmod>2026-05-02</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/" />
   </url>
   <url>
-    <loc>https://napejs.org/examples</loc>
-    <lastmod>2026-05-02</lastmod>
+    <loc>https://napejs.org/de/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/zh/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/hu/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/es/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/fr/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/examples/</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/de/examples/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/zh/examples/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/hu/examples/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/es/examples/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/fr/examples/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/" />
   </url>
   <url>
     <loc>https://napejs.org/benchmark.html</loc>
-    <lastmod>2026-05-02</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://napejs.org/multiplayer.html</loc>
-    <lastmod>2026-05-02</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://napejs.org/templates.html</loc>
-    <lastmod>2026-05-04</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://napejs.org/api/index.html</loc>
-    <lastmod>2026-05-02</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

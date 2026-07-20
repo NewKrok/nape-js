@@ -2,84 +2,93 @@
  * nape-js Examples Page — grid of interactive physics demos with play overlay,
  * per-card stats, search/tag filtering, size toggle, outline toggle, and View Code.
  */
-import { VERSION } from "./nape-js.esm.js?v=3.35.0";
-import { installErrorOverlay } from "./renderer.js?v=3.35.0";
-import { DemoRunner } from "./demo-runner.js?v=3.35.0";
-import { Canvas2DAdapter } from "./renderers/canvas2d-adapter.js?v=3.35.0";
-import { ThreeJSAdapter, loadThree } from "./renderers/threejs-adapter.js?v=3.35.0";
-import { PixiJSAdapter, loadPixi } from "./renderers/pixijs-adapter.js?v=3.35.0";
-import { openInCodePen as _openInCodePen, getPreviewCode } from "./codepen-templates.js?v=3.35.0";
-import { openInStackBlitz as _openInStackBlitz } from "./stackblitz-templates.js?v=3.35.0";
-import { CATEGORIES, categoryOf } from "./demo-categories.js?v=3.35.0";
+import { VERSION } from "./nape-js.esm.js?v=3.39.1";
+import { installErrorOverlay } from "./renderer.js?v=3.39.1";
+import { DemoRunner } from "./demo-runner.js?v=3.39.1";
+import { Canvas2DAdapter } from "./renderers/canvas2d-adapter.js?v=3.39.1";
+import { ThreeJSAdapter, loadThree } from "./renderers/threejs-adapter.js?v=3.39.1";
+import { PixiJSAdapter, loadPixi } from "./renderers/pixijs-adapter.js?v=3.39.1";
+import { openInCodePen as _openInCodePen, getPreviewCode } from "./codepen-templates.js?v=3.39.1";
+import { openInStackBlitz as _openInStackBlitz } from "./stackblitz-templates.js?v=3.39.1";
+import { CATEGORIES, categoryOf } from "./demo-categories.js?v=3.39.1";
+import { t as i18n } from "./i18n/i18n.js?v=3.39.1";
+
+// Localized demo text with English-source fallback. Demo files keep their
+// original label/desc/tags; the dictionary overrides them by id when a
+// translation exists.
+const demoLabel = (demo) => i18n(`demo.${demo.id}.label`, demo.label);
+const demoDesc = (demo) => i18n(`demo.${demo.id}.desc`, demo.desc ?? "");
+const tagText = (tag) => i18n(`tag.${tag}`, tag);
+const catLabel = (catId) => i18n(`cat.${catId}.label`, catId === "game" ? "Game" : "Physics");
 
 // All demos
-import falling     from "./demos/falling.js?v=3.35.0";
-import pyramid     from "./demos/pyramid.js?v=3.35.0";
-import chain       from "./demos/chain.js?v=3.35.0";
-import explosion   from "./demos/explosion.js?v=3.35.0";
-import constraints from "./demos/constraints.js?v=3.35.0";
-import gravity     from "./demos/gravity.js?v=3.35.0";
-import stacking    from "./demos/stacking.js?v=3.35.0";
-import ragdoll     from "./demos/ragdoll.js?v=3.35.0";
-import strandbeast from "./demos/strandbeast.js?v=3.35.0";
-import carSideview    from "./demos/car-sideview.js?v=3.35.0";
-import trackedVehicle from "./demos/tracked-vehicle.js?v=3.35.0";
-import carTopdown     from "./demos/car-topdown.js?v=3.35.0";
-import ropeBridge     from "./demos/rope-bridge.js?v=3.35.0";
-import wreckingBall   from "./demos/wrecking-ball.js?v=3.35.0";
-import newtonsCradle  from "./demos/newtons-cradle.js?v=3.35.0";
-import dominos        from "./demos/dominos.js?v=3.35.0";
-import conveyorBelts  from "./demos/conveyor-belts.js?v=3.35.0";
-import trebuchet      from "./demos/trebuchet.js?v=3.35.0";
-import seesaw         from "./demos/seesaw.js?v=3.35.0";
-import pinball        from "./demos/pinball.js?v=3.35.0";
-import cloth          from "./demos/cloth.js?v=3.35.0";
-import funnel         from "./demos/funnel.js?v=3.35.0";
-import softBody       from "./demos/soft-body.js?v=3.35.0";
-import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.35.0";
-import filteringInteractions from "./demos/filtering-interactions.js?v=3.35.0";
-import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.35.0";
-import dropImageBody     from "./demos/drop-image-body.js?v=3.35.0";
-import capsule           from "./demos/capsule.js?v=3.35.0";
-import destructibleTerrain from "./demos/destructible-terrain.js?v=3.35.0";
-import webWorker           from "./demos/web-worker.js?v=3.35.0";
-import asteroidField       from "./demos/asteroid-field.js?v=3.35.0";
-import fluidBuoyancy       from "./demos/fluid-buoyancy.js?v=3.35.0";
-import deterministic       from "./demos/deterministic.js?v=3.35.0";
-import subStepping         from "./demos/sub-stepping.js?v=3.35.0";
-import characterController from "./demos/character-controller.js?v=3.35.0";
-import triggerZones        from "./demos/trigger-zones.js?v=3.35.0";
-import fracture            from "./demos/fracture.js?v=3.35.0";
-import slingshot           from "./demos/slingshot.js?v=3.35.0";
-import springJoint         from "./demos/spring-joint.js?v=3.35.0";
-import portals             from "./demos/portals.js?v=3.35.0";
-import towerDefense        from "./demos/tower-defense.js?v=3.35.0";
-import topDownShooter      from "./demos/top-down-shooter.js?v=3.35.0";
-import mobaLite            from "./demos/moba-lite.js?v=3.35.0";
-import plinko              from "./demos/plinko.js?v=3.35.0";
-import threeBody           from "./demos/three-body.js?v=3.35.0";
-import tilemap             from "./demos/tilemap.js?v=3.35.0";
-import planetPlatformer    from "./demos/planet-platformer.js?v=3.35.0";
-import volcano             from "./demos/volcano.js?v=3.35.0";
-import destructibleArena   from "./demos/destructible-arena.js?v=3.35.0";
-import arenaDefense        from "./demos/arena-defense.js?v=3.35.0";
-import saveLoadRewind      from "./demos/save-load-rewind.js?v=3.35.0";
-import replayRecorder      from "./demos/replay-recorder.js?v=3.35.0";
-import popcorn             from "./demos/popcorn.js?v=3.35.0";
-import rollercoaster       from "./demos/rollercoaster.js?v=3.35.0";
-import convexCast          from "./demos/convex-cast.js?v=3.35.0";
-import floppyFists         from "./demos/floppy-fists.js?v=3.35.0";
-import minigolf             from "./demos/minigolf.js?v=3.35.0";
-import wyrm                 from "./demos/wyrm.js?v=3.35.0";
-import brickline            from "./demos/brickline.js?v=3.35.0";
-import pulleyCrane          from "./demos/pulley-crane.js?v=3.35.0";
-import tinywheelsCup        from "./demos/tinywheels-cup.js?v=3.35.0";
-import tiltrun               from "./demos/tiltrun.js?v=3.35.0";
-import dirtline              from "./demos/dirtline.js?v=3.35.0";
-import explodingFifty        from "./demos/exploding-50.js?v=3.35.0";
-import billiards             from "./demos/billiards.js?v=3.35.0";
-import standoff              from "./demos/standoff.js?v=3.35.0";
-import stickyBuilder         from "./demos/sticky-builder.js?v=3.35.0";
+import falling     from "./demos/falling.js?v=3.39.1";
+import pyramid     from "./demos/pyramid.js?v=3.39.1";
+import chain       from "./demos/chain.js?v=3.39.1";
+import explosion   from "./demos/explosion.js?v=3.39.1";
+import constraints from "./demos/constraints.js?v=3.39.1";
+import gravity     from "./demos/gravity.js?v=3.39.1";
+import stacking    from "./demos/stacking.js?v=3.39.1";
+import ragdoll     from "./demos/ragdoll.js?v=3.39.1";
+import strandbeast from "./demos/strandbeast.js?v=3.39.1";
+import carSideview    from "./demos/car-sideview.js?v=3.39.1";
+import trackedVehicle from "./demos/tracked-vehicle.js?v=3.39.1";
+import carTopdown     from "./demos/car-topdown.js?v=3.39.1";
+import ropeBridge     from "./demos/rope-bridge.js?v=3.39.1";
+import wreckingBall   from "./demos/wrecking-ball.js?v=3.39.1";
+import newtonsCradle  from "./demos/newtons-cradle.js?v=3.39.1";
+import dominos        from "./demos/dominos.js?v=3.39.1";
+import conveyorBelts  from "./demos/conveyor-belts.js?v=3.39.1";
+import trebuchet      from "./demos/trebuchet.js?v=3.39.1";
+import seesaw         from "./demos/seesaw.js?v=3.39.1";
+import pinball        from "./demos/pinball.js?v=3.39.1";
+import cloth          from "./demos/cloth.js?v=3.39.1";
+import funnel         from "./demos/funnel.js?v=3.39.1";
+import softBody       from "./demos/soft-body.js?v=3.39.1";
+import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.39.1";
+import filteringInteractions from "./demos/filtering-interactions.js?v=3.39.1";
+import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.39.1";
+import dropImageBody     from "./demos/drop-image-body.js?v=3.39.1";
+import capsule           from "./demos/capsule.js?v=3.39.1";
+import destructibleTerrain from "./demos/destructible-terrain.js?v=3.39.1";
+import webWorker           from "./demos/web-worker.js?v=3.39.1";
+import asteroidField       from "./demos/asteroid-field.js?v=3.39.1";
+import fluidBuoyancy       from "./demos/fluid-buoyancy.js?v=3.39.1";
+import deterministic       from "./demos/deterministic.js?v=3.39.1";
+import subStepping         from "./demos/sub-stepping.js?v=3.39.1";
+import characterController from "./demos/character-controller.js?v=3.39.1";
+import triggerZones        from "./demos/trigger-zones.js?v=3.39.1";
+import fracture            from "./demos/fracture.js?v=3.39.1";
+import slingshot           from "./demos/slingshot.js?v=3.39.1";
+import springJoint         from "./demos/spring-joint.js?v=3.39.1";
+import portals             from "./demos/portals.js?v=3.39.1";
+import towerDefense        from "./demos/tower-defense.js?v=3.39.1";
+import topDownShooter      from "./demos/top-down-shooter.js?v=3.39.1";
+import mobaLite            from "./demos/moba-lite.js?v=3.39.1";
+import plinko              from "./demos/plinko.js?v=3.39.1";
+import threeBody           from "./demos/three-body.js?v=3.39.1";
+import tilemap             from "./demos/tilemap.js?v=3.39.1";
+import planetPlatformer    from "./demos/planet-platformer.js?v=3.39.1";
+import volcano             from "./demos/volcano.js?v=3.39.1";
+import destructibleArena   from "./demos/destructible-arena.js?v=3.39.1";
+import arenaDefense        from "./demos/arena-defense.js?v=3.39.1";
+import saveLoadRewind      from "./demos/save-load-rewind.js?v=3.39.1";
+import replayRecorder      from "./demos/replay-recorder.js?v=3.39.1";
+import popcorn             from "./demos/popcorn.js?v=3.39.1";
+import rollercoaster       from "./demos/rollercoaster.js?v=3.39.1";
+import convexCast          from "./demos/convex-cast.js?v=3.39.1";
+import floppyFists         from "./demos/floppy-fists.js?v=3.39.1";
+import minigolf             from "./demos/minigolf.js?v=3.39.1";
+import wyrm                 from "./demos/wyrm.js?v=3.39.1";
+import brickline            from "./demos/brickline.js?v=3.39.1";
+import pulleyCrane          from "./demos/pulley-crane.js?v=3.39.1";
+import tinywheelsCup        from "./demos/tinywheels-cup.js?v=3.39.1";
+import tiltrun               from "./demos/tiltrun.js?v=3.39.1";
+import dirtline              from "./demos/dirtline.js?v=3.39.1";
+import explodingFifty        from "./demos/exploding-50.js?v=3.39.1";
+import billiards             from "./demos/billiards.js?v=3.39.1";
+import standoff              from "./demos/standoff.js?v=3.39.1";
+import stickyBuilder         from "./demos/sticky-builder.js?v=3.39.1";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -188,10 +197,10 @@ function createCard(demo, { onTagClick } = {}) {
   const fpsEl    = document.createElement("span");
   const bodiesEl = document.createElement("span");
   const stepEl   = document.createElement("span");
-  fpsEl.textContent    = "FPS: —";
-  bodiesEl.textContent = "Bodies: —";
+  fpsEl.textContent    = i18n("demoBar.fps", "FPS: —");
+  bodiesEl.textContent = i18n("demoBar.bodies", "Bodies: —");
   stepEl.className = "card-stats-step";
-  stepEl.textContent = "Step: —";
+  stepEl.textContent = i18n("demoBar.step", "Step: —");
   statsBar.append(fpsEl, " · ", bodiesEl, " · ", stepEl);
   card.appendChild(statsBar);
 
@@ -424,25 +433,35 @@ function createCard(demo, { onTagClick } = {}) {
   const titleRow = document.createElement("div");
   titleRow.className = "card-title-row";
   const h3 = document.createElement("h3");
+  const tagSpans = [];
 
   const catId = categoryOf(demo);
   const catBadge = document.createElement("span");
   catBadge.className = "card-category-badge category-pill-" + catId;
-  catBadge.textContent = catId === "game" ? "Game" : "Physics";
-  catBadge.title = "Filter to " + (catId === "game" ? "Game" : "Physics") + " demos";
   catBadge.addEventListener("click", (e) => {
     e.stopPropagation();
     setActiveCategory(activeCategory === catId ? null : catId);
   });
+  const labelNode = document.createTextNode(demoLabel(demo));
   h3.appendChild(catBadge);
-  h3.appendChild(document.createTextNode(demo.label));
+  h3.appendChild(labelNode);
+
+  // Refresh the card's localized text (title, badge, description, tags).
+  // Called on build and again on language change.
+  function applyCardText() {
+    labelNode.textContent = demoLabel(demo);
+    catBadge.textContent = catLabel(catId);
+    catBadge.title = i18n("examples.filterTo", "Filter to {cat} demos").replace("{cat}", catLabel(catId));
+    p.innerHTML = demoDesc(demo);
+    for (const span of tagSpans) span.textContent = tagText(span.dataset.tag);
+  }
 
   const btnGroup = document.createElement("div");
   btnGroup.className = "card-btn-group";
 
   const codeToggle = document.createElement("button");
   codeToggle.className = "btn btn-small code-toggle-btn";
-  codeToggle.textContent = "{ } Code";
+  codeToggle.textContent = i18n("code.toggle", "{ } Code");
 
   const codePanel = document.createElement("pre");
   codePanel.className = "card-code-panel";
@@ -534,20 +553,22 @@ function createCard(demo, { onTagClick } = {}) {
   info.appendChild(titleRow);
 
   const p = document.createElement("p");
-  p.innerHTML = demo.desc ?? "";
+  p.innerHTML = demoDesc(demo);
   info.appendChild(p);
 
   if (demo.tags?.length) {
     const tagWrap = document.createElement("div");
-    for (const t of demo.tags) {
+    for (const tag of demo.tags) {
       const span = document.createElement("span");
       span.className = "example-tag";
-      span.textContent = t;
+      span.dataset.tag = tag;
+      span.textContent = tagText(tag);
       span.addEventListener("click", (e) => {
         e.stopPropagation();
-        onTagClick?.(t);
+        onTagClick?.(tag);
       });
       tagWrap.appendChild(span);
+      tagSpans.push(span);
     }
     info.appendChild(tagWrap);
   }
@@ -602,6 +623,7 @@ function createCard(demo, { onTagClick } = {}) {
     isStarted: () => started,
     startDemo,
     ensurePreview,
+    applyCardText,
     setExpanded,
     setMode: async (mode) => {
       const adapterId = modeMap[mode] ?? mode;
@@ -673,7 +695,9 @@ tagToggle.addEventListener("click", () => {
   tagsExpanded = !tagsExpanded;
   tagBar.classList.toggle("collapsed", !tagsExpanded);
   tagBar.classList.toggle("expanded", tagsExpanded);
-  tagToggle.textContent = tagsExpanded ? "Tags ▴" : "Tags ▾";
+  tagToggle.textContent = tagsExpanded
+    ? i18n("examples.tagsExpanded", "Tags ▴")
+    : i18n("examples.tags", "Tags ▾");
 });
 
 const allTags = [...new Set(ALL_DEMOS.flatMap(d => d.tags ?? []))].sort();
@@ -688,7 +712,7 @@ function buildCategoryBar() {
   // "All" pill
   const all = document.createElement("button");
   all.className = "category-pill" + (!activeCategory ? " active" : "");
-  all.textContent = `All (${ALL_DEMOS.length})`;
+  all.textContent = `${i18n("examples.all", "All")} (${ALL_DEMOS.length})`;
   all.addEventListener("click", () => setActiveCategory(null));
   categoryBar.appendChild(all);
 
@@ -696,7 +720,7 @@ function buildCategoryBar() {
     const count = ALL_DEMOS.filter(d => categoryOf(d) === cat.id).length;
     const btn = document.createElement("button");
     btn.className = "category-pill category-pill-" + cat.id + (activeCategory === cat.id ? " active" : "");
-    btn.textContent = `${cat.label} (${count})`;
+    btn.textContent = `${catLabel(cat.id)} (${count})`;
     btn.title = cat.desc;
     btn.addEventListener("click", () => setActiveCategory(activeCategory === cat.id ? null : cat.id));
     categoryBar.appendChild(btn);
@@ -708,14 +732,14 @@ function buildTagBar() {
   for (const tag of allTags) {
     const btn = document.createElement("button");
     btn.className = "filter-tag" + (activeTag === tag ? " active" : "");
-    btn.textContent = tag;
+    btn.textContent = tagText(tag);
     btn.addEventListener("click", () => setActiveTag(activeTag === tag ? null : tag));
     tagBar.appendChild(btn);
   }
   if (activeTag) {
     const clear = document.createElement("button");
     clear.className = "filter-tag filter-tag-clear";
-    clear.textContent = "✕ Clear";
+    clear.textContent = i18n("examples.tagsClear", "✕ Clear");
     clear.addEventListener("click", () => setActiveTag(null));
     tagBar.appendChild(clear);
   }
@@ -728,7 +752,7 @@ function setActiveTag(tag) {
     tagsExpanded = true;
     tagBar.classList.remove("collapsed");
     tagBar.classList.add("expanded");
-    tagToggle.textContent = "Tags ▴";
+    tagToggle.textContent = i18n("examples.tagsExpanded", "Tags ▴");
   }
   buildTagBar();
   applyFilter();
@@ -748,7 +772,10 @@ function applyFilter() {
     const matchesSearch = !q
       || demo.label?.toLowerCase().includes(q)
       || demo.desc?.toLowerCase().includes(q)
-      || demo.tags?.some(t => t.toLowerCase().includes(q));
+      || demo.tags?.some(t => t.toLowerCase().includes(q))
+      || demoLabel(demo).toLowerCase().includes(q)
+      || demoDesc(demo).toLowerCase().includes(q)
+      || demo.tags?.some(t => tagText(t).toLowerCase().includes(q));
     const matchesTag = !activeTag || demo.tags?.includes(activeTag);
     const matchesCategory = !activeCategory || categoryOf(demo) === activeCategory;
     const visible = matchesSearch && matchesTag && matchesCategory;
@@ -761,7 +788,7 @@ function applyFilter() {
     if (!noResults) {
       noResults = document.createElement("div");
       noResults.className = "no-results";
-      noResults.textContent = "No demos match your search.";
+      noResults.textContent = i18n("examples.noResults", "No demos match your search.");
       grid.appendChild(noResults);
     }
     noResults.style.display = "";
@@ -792,6 +819,20 @@ const cardEntries = [...ALL_DEMOS].reverse().map((demo) => {
 
 buildCategoryBar();
 buildTagBar();
+
+// Re-localize all JS-generated text when the language changes. Static
+// [data-i18n] elements are handled by the i18n runtime's applyTranslations();
+// here we refresh the dynamic demo cards, filter bars, and toggle label.
+document.addEventListener("nape:langchange", () => {
+  for (const entry of cardEntries) entry.applyCardText?.();
+  buildCategoryBar();
+  buildTagBar();
+  tagToggle.textContent = tagsExpanded
+    ? i18n("examples.tagsExpanded", "Tags ▴")
+    : i18n("examples.tags", "Tags ▾");
+  const noResults = grid.querySelector(".no-results");
+  if (noResults) noResults.textContent = i18n("examples.noResults", "No demos match your search.");
+});
 
 // =========================================================================
 // Deep-link auto-start

@@ -54,6 +54,11 @@ for (const htmlFile of ["index.html", "examples/index.html"]) {
         return `src="${stripV(ref)}?${v}"`;
       },
     ],
+    // Inline `<script type="module">` imports: import { x } from "./i18n/i18n.js"
+    [
+      /from\s+"(\.\.?\/[^"]+\.js)(\?v=[^"]*)?"/g,
+      (_m, ref) => `from "${stripV(ref)}?${v}"`,
+    ],
   ]);
 }
 
@@ -63,6 +68,8 @@ for (const jsFile of [
   "examples.js",
   "stackblitz-templates.js",
   "renderers/pixijs-adapter.js",
+  "i18n/i18n.js",
+  "i18n/lang-switcher.js",
 ]) {
   stamp(resolve(docs, jsFile), [
     // from "./nape-js.esm.js" or from "../nape-pixi.esm.js" or from "./renderer.js"
