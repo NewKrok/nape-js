@@ -7,15 +7,18 @@ import { drawBody, drawGrid } from "../renderer.js";
 // ---------------------------------------------------------------------------
 // Sticky Builder — physics construction mini-game.
 //
-// A chasm separates two platforms. The player drags spare "blobs" onto a
-// growing truss structure: releasing a blob near at least two existing nodes
-// welds it in with soft DistanceJoints (springy struts). Spare blobs wander
-// along the struts while they wait. Bridge the chasm and touch the beacon
-// hovering past the far edge — every spare blob still alive is then pulled
-// in and counted. Run out of spare blobs before connecting and the level is
-// lost. Struts snap when stretched too far, and a node that loses all of its
-// struts drops off the structure as a loose blob (rescue it before it rolls
-// into the pit!).
+// A wide chasm with a low rock pillar separates two platforms — the far one
+// elevated, with the beacon hovering above it. The player drags spare
+// "blobs" onto a growing truss structure: releasing a blob near at least two
+// existing nodes welds it in with soft DistanceJoints (springy struts).
+// Spare blobs wander along the struts while they wait. Bridge the chasm
+// (the pillar makes a handy mid-span support) and touch the beacon — every
+// spare blob still alive then marches home along the struts to the
+// connecting node and beams into the beacon. Run out of spare blobs before
+// connecting and the level is lost. Struts stretch visibly under load and
+// snap past ~25% sustained strain, and a node that loses all of its struts
+// drops off the structure as a loose blob (rescue it before it rolls into
+// the pit!).
 //
 // Engine features showcased:
 //   * Soft DistanceJoint constraints (stiff=false + frequency/damping) as
@@ -34,33 +37,43 @@ const SCREEN_H = 500;
 const HUD_H = 40;
 
 // ── Level geometry ───────────────────────────────────────────────────────
-const PLATFORM_TOP = 400;
-const LEFT_EDGE = 300;                    // right edge of the left platform
-const RIGHT_EDGE = 580;                   // left edge of the right platform
-const GOAL = { x: 615, y: 330 };          // beacon hovering past the far edge
+// A wide chasm with a low rock pillar in the middle. The right platform is
+// elevated, so the bridge has to climb as it crosses; the pillar offers a
+// mid-span resting point for a sagging truss.
+const PLATFORM_TOP = 400;                 // left platform surface
+const LEFT_EDGE = 260;                    // right edge of the left platform
+const RIGHT_EDGE = 660;                   // left edge of the right platform
+const RIGHT_TOP = 340;                    // elevated right platform surface
+const PILLAR_X = 450;                     // mid-chasm pillar center
+const PILLAR_W = 44;
+const PILLAR_TOP = 452;                   // pillar surface (below both platforms)
+const GOAL = { x: 700, y: 285 };          // beacon hovering above the far platform
 const GOAL_RANGE = 60;                    // a node inside this radius connects
 const FALL_OFF_Y = SCREEN_H + 40;         // below this, a loose blob is lost
 
 // ── Blob / structure tuning ──────────────────────────────────────────────
 const BALL_R = 9;                         // structure node radius
 const WALKER_R = 6;                       // wandering spare blob radius
-const START_WALKERS = 20;                 // spare-blob budget per level
+const START_WALKERS = 24;                 // spare-blob budget per level
 const GRAB_R = 40;                        // pick-up radius around the pointer
 const LINK_RANGE = 90;                    // max strut length at attach time
 const MAX_LINKS = 3;                      // new node welds to up to 3 nodes
 const MIN_NODE_GAP = BALL_R * 2;          // can't drop a node onto another
-const STRUT_FREQ = 20;                    // soft-joint spring frequency (Hz)
+const STRUT_FREQ = 12;                    // soft-joint spring frequency (Hz)
 const STRUT_DAMP = 0.9;                   // soft-joint damping ratio
 
 // Struts snap when strained: sustained moderate overstretch (a sagging
 // bridge slowly pulling apart) or a single violent yank both break the
-// joint. Strain is |current - rest| / rest, recomputed every step.
-const BREAK_STRAIN = 0.65;                // sustained-strain threshold
-const BREAK_SUSTAIN = 15;                 // steps above threshold before snap
-const BREAK_INSTANT = 1.15;               // immediate snap threshold
+// joint. Strain is |current - rest| / rest, recomputed every step. The
+// thresholds are tuned so a triangulated truss holds while a long
+// untriangulated cantilever visibly stretches and tears.
+const BREAK_STRAIN = 0.35;                // sustained-strain threshold
+const BREAK_SUSTAIN = 25;                 // steps above threshold before snap
+const BREAK_INSTANT = 0.8;                // immediate snap threshold
 
 const WALKER_SPEED_MIN = 40;              // px/sec along struts
 const WALKER_SPEED_MAX = 75;
+const HOME_SPEED = 130;                   // px/sec marching home along struts
 const SUCK_SPEED = 240;                   // px/sec toward the beacon on win
 const LOSE_DELAY_STEPS = 45;              // grace period before "out of blobs"
 const RESTART_LOCK_STEPS = 45;            // ignore clicks right after end
@@ -90,7 +103,12 @@ const BLOB_EYE = "#0d1117";
 let _space = null;
 let _nodes = [];                          // { body, links: Link[] }
 let _links = [];                          // { a, b, joint, rest, strain, over }
-let _walkers = [];                        // { link, t, dir, speed } or { sucked, x, y }
+// Walker modes: "wander" roams the struts at random; once the beacon
+// connects, "home" marches along the struts (BFS shortest path) to the
+// tractor node, "approach" flies a rescued loose blob to the nearest node
+// to join the march, and "beam" is the final hop from the tractor node
+// into the beacon.
+let _walkers = [];                        // { mode, link, t, dir, speed, x, y, target }
 let _freeBodies = [];                     // loose dynamic blob bodies
 let _held = null;                         // { x, y, targets: node[] } while dragging
 let _mouse = null;                        // last hover position for highlights
@@ -127,9 +145,13 @@ function spawnPlatforms() {
   left.space = _space;
 
   const rw = SCREEN_W - RIGHT_EDGE;
-  const right = new Body(BodyType.STATIC, new Vec2(RIGHT_EDGE + rw / 2, (PLATFORM_TOP + SCREEN_H) / 2));
-  right.shapes.add(new Polygon(Polygon.box(rw, SCREEN_H - PLATFORM_TOP)));
+  const right = new Body(BodyType.STATIC, new Vec2(RIGHT_EDGE + rw / 2, (RIGHT_TOP + SCREEN_H) / 2));
+  right.shapes.add(new Polygon(Polygon.box(rw, SCREEN_H - RIGHT_TOP)));
   right.space = _space;
+
+  const pillar = new Body(BodyType.STATIC, new Vec2(PILLAR_X, (PILLAR_TOP + SCREEN_H) / 2));
+  pillar.shapes.add(new Polygon(Polygon.box(PILLAR_W, SCREEN_H - PILLAR_TOP)));
+  pillar.space = _space;
 }
 
 function spawnBlobBody(x, y) {
@@ -182,12 +204,13 @@ function addLink(a, b) {
 
 function addWalkerOnLink(link, t) {
   _walkers.push({
+    mode: "wander",
     link,
     t,
     dir: Math.random() < 0.5 ? -1 : 1,
     speed: WALKER_SPEED_MIN + Math.random() * (WALKER_SPEED_MAX - WALKER_SPEED_MIN),
-    sucked: false,
     x: 0, y: 0,
+    target: null,
   });
 }
 
@@ -218,9 +241,9 @@ function resetGame() {
   // Seed truss: a triangle at the edge of the left platform whose two feet
   // are anchor blobs pinned to the terrain.
   const restY = PLATFORM_TOP - BALL_R;
-  const a = addAnchorNode(205, restY);
-  const b = addAnchorNode(265, restY);
-  const c = addNode(235, restY - 52);
+  const a = addAnchorNode(185, restY);
+  const b = addAnchorNode(245, restY);
+  const c = addNode(215, restY - 52);
   addLink(a, b);
   addLink(a, c);
   addLink(b, c);
@@ -241,7 +264,7 @@ function dist(x1, y1, x2, y2) {
 }
 
 function walkerPos(w) {
-  if (w.sucked) return { x: w.x, y: w.y };
+  if (w.mode === "beam" || w.mode === "approach") return { x: w.x, y: w.y };
   const pa = w.link.a.body.position;
   const pb = w.link.b.body.position;
   const x = pa.x + (pb.x - pa.x) * w.t;
@@ -294,7 +317,7 @@ function removeLink(link, withFx) {
   // structure; with the whole truss gone they simply drop as loose blobs.
   for (let i = _walkers.length - 1; i >= 0; i--) {
     const w = _walkers[i];
-    if (w.sucked || w.link !== link) continue;
+    if ((w.mode !== "wander" && w.mode !== "home") || w.link !== link) continue;
     const pos = walkerPos(w);
     const home = nearestNodeWithLinks(pos.x, pos.y);
     if (home) {
@@ -373,10 +396,13 @@ function updateFreeBodies() {
       if (b.space) b.space = null;
       continue;
     }
-    if (_connected) {                    // beacon reels loose blobs in too
+    if (_connected) {                    // loose blobs fly to the truss and join the march
       _freeBodies.splice(i, 1);
       if (b.space) b.space = null;
-      _walkers.push({ link: null, t: 0, dir: 1, speed: 0, sucked: true, x: p.x, y: p.y });
+      _walkers.push({
+        mode: "approach", link: null, t: 0, dir: 1, speed: 0,
+        x: p.x, y: p.y, target: nearestNodeWithLinks(p.x, p.y),
+      });
       continue;
     }
     // A loose blob that comes to rest near the truss climbs back on.
@@ -394,18 +420,59 @@ function updateFreeBodies() {
   }
 }
 
+// BFS hop counts from every reachable node to the tractor node — the
+// homing walkers follow this gradient downhill along the struts.
+function hopsToTractor() {
+  const hops = new Map();
+  if (!_tractorNode) return hops;
+  hops.set(_tractorNode, 0);
+  const queue = [_tractorNode];
+  while (queue.length) {
+    const n = queue.shift();
+    const d = hops.get(n);
+    for (const link of n.links) {
+      const other = link.a === n ? link.b : link.a;
+      if (!hops.has(other)) {
+        hops.set(other, d + 1);
+        queue.push(other);
+      }
+    }
+  }
+  return hops;
+}
+
+// The strut out of `node` whose far end is closest (in hops) to the
+// tractor node. Falls back to any strut when the map has no path.
+function pickHomeLink(node, hops) {
+  let best = null, bestH = Infinity;
+  for (const link of node.links) {
+    const other = link.a === node ? link.b : link.a;
+    const h = hops.has(other) ? hops.get(other) : Infinity;
+    if (h < bestH) { bestH = h; best = link; }
+  }
+  if (!best && node.links.length > 0) best = node.links[0];
+  return best;
+}
+
+function beamFrom(w, x, y) {
+  w.mode = "beam";
+  w.x = x;
+  w.y = y;
+}
+
 function updateWalkers(dt) {
+  const hops = _connected ? hopsToTractor() : null;
+
   for (let i = _walkers.length - 1; i >= 0; i--) {
     const w = _walkers[i];
 
-    if (_connected && !w.sucked) {       // switch to tractor-beam mode
-      const pos = walkerPos(w);
-      w.sucked = true;
-      w.x = pos.x;
-      w.y = pos.y;
+    // Beacon connected: wanderers stop drifting and march home instead.
+    if (_connected && w.mode === "wander") {
+      w.mode = "home";
+      w.speed = HOME_SPEED;
     }
 
-    if (w.sucked) {
+    if (w.mode === "beam") {
       const d = dist(w.x, w.y, GOAL.x, GOAL.y);
       if (d < 12) {
         _walkers.splice(i, 1);
@@ -419,13 +486,62 @@ function updateWalkers(dt) {
       continue;
     }
 
-    // Wander: advance along the strut, hop to a random strut at each node.
+    if (w.mode === "approach") {
+      // Fly a rescued loose blob to its entry node, then continue on foot.
+      if (!w.target || w.target.links.length === 0) {
+        w.target = nearestNodeWithLinks(w.x, w.y);
+        if (!w.target) { beamFrom(w, w.x, w.y); continue; }
+      }
+      const tp = w.target.body.position;
+      const d = dist(w.x, w.y, tp.x, tp.y);
+      const step = SUCK_SPEED * dt;
+      if (d <= step) {
+        const node = w.target;
+        w.target = null;
+        if (node === _tractorNode) { beamFrom(w, tp.x, tp.y); continue; }
+        const entry = hops ? pickHomeLink(node, hops) : null;
+        if (!entry) { beamFrom(w, tp.x, tp.y); continue; }
+        w.mode = "home";
+        w.speed = HOME_SPEED;
+        w.link = entry;
+        w.t = entry.a === node ? 0 : 1;
+        w.dir = w.t === 0 ? 1 : -1;
+        continue;
+      }
+      w.x += ((tp.x - w.x) / d) * step;
+      w.y += ((tp.y - w.y) / d) * step;
+      continue;
+    }
+
+    // On a strut ("wander" | "home"): advance along it.
     const pa = w.link.a.body.position, pb = w.link.b.body.position;
     const len = dist(pa.x, pa.y, pb.x, pb.y) || 1;
+
+    if (w.mode === "home") {
+      // Head toward whichever end of the current strut is closer to the
+      // tractor node; a walker cut off from the structure beams straight in.
+      const ha = hops.has(w.link.a) ? hops.get(w.link.a) : Infinity;
+      const hb = hops.has(w.link.b) ? hops.get(w.link.b) : Infinity;
+      if (ha === Infinity && hb === Infinity) {
+        const pos = walkerPos(w);
+        beamFrom(w, pos.x, pos.y);
+        continue;
+      }
+      if (hb < ha) w.dir = 1;
+      else if (ha < hb) w.dir = -1;
+    }
+
     w.t += (w.dir * w.speed * dt) / len;
     if (w.t >= 1 || w.t <= 0) {
       const node = w.t >= 1 ? w.link.b : w.link.a;
-      const next = node.links[Math.floor(Math.random() * node.links.length)];
+      if (w.mode === "home" && node === _tractorNode) {
+        const p = node.body.position;
+        beamFrom(w, p.x, p.y);
+        continue;
+      }
+      const next = w.mode === "home"
+        ? pickHomeLink(node, hops)
+        : node.links[Math.floor(Math.random() * node.links.length)];
       if (next) {
         w.link = next;
         w.t = next.a === node ? 0 : 1;
@@ -462,8 +578,9 @@ export default {
   desc:
     "Physics construction game. <b>Drag</b> a spare blob near the truss and <b>release</b> to weld it in " +
     "with springy <b>DistanceJoint</b> struts (soft constraints — <code>stiff=false</code>). " +
-    "Bridge the chasm and touch the beacon before the spare blobs run out. Struts show live " +
-    "<b>strain</b> and snap when overstretched; orphaned nodes drop off as loose blobs. " +
+    "Bridge the wide chasm — a mid-span rock pillar helps — and reach the beacon above the far " +
+    "platform before the spare blobs run out; on connect the survivors march home along the struts. " +
+    "Struts show live <b>strain</b> and snap when overstretched; orphaned nodes drop off as loose blobs. " +
     "The seed's feet are pinned with <b>PivotJoint</b> anchors, and blobs never collide " +
     "with each other thanks to <b>InteractionFilter</b> groups.",
   walls: false,
@@ -529,7 +646,7 @@ export default {
     // Grab the nearest spare blob (walker or loose body) under the pointer.
     let bestWalker = -1, bestFree = -1, bestD = GRAB_R;
     for (let i = 0; i < _walkers.length; i++) {
-      if (_walkers[i].sucked) continue;
+      if (_walkers[i].mode !== "wander") continue;
       const p = walkerPos(_walkers[i]);
       const d = dist(x, y, p.x, p.y);
       if (d < bestD) { bestD = d; bestWalker = i; bestFree = -1; }
@@ -731,7 +848,7 @@ function drawWalkers(ctx) {
   if (_mouse && !_held && _phase === "play" && !_connected) {
     let best = null, bestD = GRAB_R;
     for (const w of _walkers) {
-      if (w.sucked) continue;
+      if (w.mode !== "wander") continue;
       const p = walkerPos(w);
       const d = dist(_mouse.x, _mouse.y, p.x, p.y);
       if (d < bestD) { bestD = d; best = p; }
