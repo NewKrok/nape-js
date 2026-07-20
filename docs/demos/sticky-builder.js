@@ -15,10 +15,12 @@ import { drawBody, drawGrid } from "../renderer.js";
 // (the pillar makes a handy mid-span support) and touch the beacon — every
 // spare blob still alive then marches home along the struts to the
 // connecting node and beams into the beacon. Run out of spare blobs before
-// connecting and the level is lost. Struts stretch visibly under load and
-// snap past ~25% sustained strain, and a node that loses all of its struts
-// drops off the structure as a loose blob (rescue it before it rolls into
-// the pit!).
+// connecting and the level is lost. Grabbing a welded node (with no spare
+// blob under the pointer) attaches a springy pivot "hand": yank it and the
+// struts stretch, redden and snap — sustained overstretch or one violent
+// pull both tear. A node that loses all of its struts pops off as a loose
+// blob, so tearing doubles as demolition/recycling (rescue it before it
+// rolls into the pit!).
 //
 // Engine features showcased:
 //   * Soft DistanceJoint constraints (stiff=false + frequency/damping) as
@@ -63,13 +65,16 @@ const STRUT_FREQ = 12;                    // soft-joint spring frequency (Hz)
 const STRUT_DAMP = 0.9;                   // soft-joint damping ratio
 
 // Struts snap when strained: sustained moderate overstretch (a sagging
-// bridge slowly pulling apart) or a single violent yank both break the
-// joint. Strain is |current - rest| / rest, recomputed every step. The
-// thresholds are tuned so a triangulated truss holds while a long
-// untriangulated cantilever visibly stretches and tears.
-const BREAK_STRAIN = 0.35;                // sustained-strain threshold
-const BREAK_SUSTAIN = 25;                 // steps above threshold before snap
-const BREAK_INSTANT = 0.8;                // immediate snap threshold
+// span left hanging without support) or a single violent yank both break
+// the joint. Strain is |current - rest| / rest, recomputed every step.
+// The overload counter decays instead of resetting, so an oscillating
+// strut that spends most of its time overstretched still accumulates
+// damage — but the brief swing after each weld is forgiven. Tuned so a
+// settled, supported bridge (resting strain ≈ 0.11) holds while a long
+// unsupported span (persistently ≥ threshold) tears within a second.
+const BREAK_STRAIN = 0.18;                // sustained-strain threshold
+const BREAK_SUSTAIN = 45;                 // net steps above threshold before snap
+const BREAK_INSTANT = 0.6;                // immediate snap threshold
 
 const WALKER_SPEED_MIN = 40;              // px/sec along struts
 const WALKER_SPEED_MAX = 75;
@@ -111,6 +116,7 @@ let _links = [];                          // { a, b, joint, rest, strain, over }
 let _walkers = [];                        // { mode, link, t, dir, speed, x, y, target }
 let _freeBodies = [];                     // loose dynamic blob bodies
 let _held = null;                         // { x, y, targets: node[] } while dragging
+let _grabbed = null;                      // { body, joint } while yanking a welded node
 let _mouse = null;                        // last hover position for highlights
 
 let _phase = "play";                      // "play" | "won" | "lost"
@@ -121,6 +127,7 @@ let _best = 0;
 let _losePending = 0;
 let _restartLockTimer = 0;
 let _fx = [];                             // snap rings — { x, y, life }
+let _snapCount = 0;                       // struts torn by strain this round
 let _tick = 0;                            // animation clock (beacon pulse)
 let _lastKeyDown = null;
 
@@ -214,7 +221,14 @@ function addWalkerOnLink(link, t) {
   });
 }
 
+function releaseGrab() {
+  if (!_grabbed) return;
+  if (_grabbed.joint.space) _grabbed.joint.space = null;
+  _grabbed = null;
+}
+
 function clearWorld() {
+  releaseGrab();
   for (const l of _links) if (l.joint.space) l.joint.space = null;
   for (const n of _nodes) {
     if (n.pin && n.pin.space) n.pin.space = null;
@@ -233,6 +247,7 @@ function clearWorld() {
   _losePending = 0;
   _restartLockTimer = 0;
   _fx = [];
+  _snapCount = 0;
 }
 
 function resetGame() {
@@ -309,6 +324,7 @@ function removeLink(link, withFx) {
   if (il >= 0) _links.splice(il, 1);
 
   if (withFx) {
+    _snapCount++;
     const pa = link.a.body.position, pb = link.b.body.position;
     _fx.push({ x: (pa.x + pb.x) / 2, y: (pa.y + pb.y) / 2, life: 18 });
   }
@@ -354,7 +370,7 @@ function updateLinks() {
     } else if (link.strain > BREAK_STRAIN) {
       if (++link.over >= BREAK_SUSTAIN) doomed.push(link);
     } else {
-      link.over = 0;
+      link.over = Math.max(0, link.over - 1);
     }
   }
   for (const link of doomed) removeLink(link, true);
@@ -366,6 +382,7 @@ function updateNodes() {
     if (n.anchored) continue;            // pinned to the terrain, never lost
     // Fell out of the world (dragged down by a collapsing cluster).
     if (n.body.position.y > FALL_OFF_Y) {
+      if (_grabbed && _grabbed.body === n.body) releaseGrab();
       for (const link of [...n.links]) removeLink(link, false);
       _nodes.splice(i, 1);
       if (n.body.space) n.body.space = null;
@@ -390,6 +407,9 @@ function updateNodes() {
 function updateFreeBodies() {
   for (let i = _freeBodies.length - 1; i >= 0; i--) {
     const b = _freeBodies[i];
+    // A ripped-out node still in the player's hand: leave it alone until
+    // release — converting it would strand the live grab joint.
+    if (_grabbed && _grabbed.body === b) continue;
     const p = b.position;
     if (p.y > FALL_OFF_Y) {              // lost in the pit
       _freeBodies.splice(i, 1);
@@ -561,6 +581,7 @@ function checkGoal() {
       _connected = true;
       _tractorNode = n;
       _losePending = 0;
+      releaseGrab();                     // hands off during the tractor beam
       return;
     }
   }
@@ -580,7 +601,8 @@ export default {
     "with springy <b>DistanceJoint</b> struts (soft constraints — <code>stiff=false</code>). " +
     "Bridge the wide chasm — a mid-span rock pillar helps — and reach the beacon above the far " +
     "platform before the spare blobs run out; on connect the survivors march home along the struts. " +
-    "Struts show live <b>strain</b> and snap when overstretched; orphaned nodes drop off as loose blobs. " +
+    "Struts show live <b>strain</b> and snap when overstretched — <b>yank</b> a welded node " +
+    "(springy <b>PivotJoint</b> hand) to tear the truss apart and reclaim its blob. " +
     "The seed's feet are pinned with <b>PivotJoint</b> anchors, and blobs never collide " +
     "with each other thanks to <b>InteractionFilter</b> groups.",
   walls: false,
@@ -663,6 +685,24 @@ export default {
       const b = _freeBodies.splice(bestFree, 1)[0];
       if (b.space) b.space = null;
     } else {
+      // No spare under the pointer — yank a welded node instead. A springy
+      // pivot "hand" lets the player stress the truss for real: pulled
+      // struts stretch, redden and snap, and a node that loses every strut
+      // pops off as a reclaimable loose blob (demolition!). Anchors are
+      // pinned to the terrain and can't be yanked.
+      let node = null, nodeD = GRAB_R;
+      for (const n of _nodes) {
+        if (n.anchored) continue;
+        const d = dist(x, y, n.body.position.x, n.body.position.y);
+        if (d < nodeD) { nodeD = d; node = n; }
+      }
+      if (!node) return;
+      const joint = new PivotJoint(_space.world, node.body, new Vec2(x, y), new Vec2(0, 0));
+      joint.stiff = false;
+      joint.frequency = 20;
+      joint.damping = 1.2;
+      joint.space = _space;
+      _grabbed = { body: node.body, joint };
       return;
     }
     _held = { x, y, targets: computeAttachTargets(x, y) };
@@ -670,6 +710,10 @@ export default {
 
   drag(x, y) {
     _mouse = { x, y };
+    if (_grabbed) {
+      _grabbed.joint.anchor1 = new Vec2(x, y);
+      return;
+    }
     if (!_held) return;
     _held.x = x;
     _held.y = y;
@@ -677,6 +721,10 @@ export default {
   },
 
   release() {
+    if (_grabbed) {
+      releaseGrab();
+      return;
+    }
     if (!_held) return;
     const { x, y, targets } = _held;
     _held = null;
@@ -710,7 +758,7 @@ export default {
     return {
       phase: _phase, connected: _connected, collected: _collected,
       nodes: _nodes, links: _links, walkers: _walkers, freeBodies: _freeBodies,
-      spare: spareCount(), walkerPos,
+      spare: spareCount(), walkerPos, snaps: _snapCount,
     };
   },
 
@@ -863,11 +911,45 @@ function drawWalkers(ctx) {
       ctx.beginPath();
       ctx.arc(best.x, best.y, WALKER_R + 6, 0, Math.PI * 2);
       ctx.stroke();
+    } else if (!_grabbed) {
+      // No spare in reach — hint that a welded node can be yanked instead.
+      let node = null, nodeD = GRAB_R;
+      for (const n of _nodes) {
+        if (n.anchored) continue;
+        const d = dist(_mouse.x, _mouse.y, n.body.position.x, n.body.position.y);
+        if (d < nodeD) { nodeD = d; node = n; }
+      }
+      if (node) {
+        const p = node.body.position;
+        ctx.strokeStyle = "rgba(240,136,62,0.6)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, BALL_R + 5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
     }
   }
 }
 
 function drawHeld(ctx) {
+  if (_grabbed) {
+    // Yank line from the pointer to the grabbed node.
+    const p = _grabbed.body.position;
+    const a = _grabbed.joint.anchor1;
+    ctx.strokeStyle = "rgba(255,255,255,0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 5]);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = "#f0883e";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, BALL_R + 4, 0, Math.PI * 2);
+    ctx.stroke();
+  }
   if (!_held) return;
   const ok = _held.targets.length >= 2;
 
@@ -925,7 +1007,7 @@ function drawHUD(ctx, W, H) {
   ctx.fillStyle = "#58a6ff";
   ctx.font = "13px system-ui, sans-serif";
   ctx.fillText(
-    _connected ? "Connected! Collecting blobs…" : "Drag a blob near the truss · release to weld · R restarts",
+    _connected ? "Connected! Collecting blobs…" : "Drag blobs to build · yank nodes to tear · R restarts",
     W / 2, HUD_H / 2,
   );
 
