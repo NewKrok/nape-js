@@ -79,6 +79,7 @@ import dirtline              from "./demos/dirtline.js?v=3.35.0";
 import explodingFifty        from "./demos/exploding-50.js?v=3.35.0";
 import billiards             from "./demos/billiards.js?v=3.35.0";
 import standoff              from "./demos/standoff.js?v=3.35.0";
+import stickyBuilder         from "./demos/sticky-builder.js?v=3.35.0";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -127,6 +128,7 @@ const ALL_DEMOS = [
   explodingFifty,
   billiards,
   standoff,
+  stickyBuilder,
 ];
 
 const gtag = window.gtag || function() {};

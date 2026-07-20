@@ -32,6 +32,7 @@ export const GAME_DEMO_IDS = new Set([
   "dirtline",
   "billiards",
   "standoff",
+  "sticky-builder",
 ]);
 
 export const CATEGORIES = [
