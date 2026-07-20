@@ -186,23 +186,39 @@ function applyCanonical(html, page, lang) {
 }
 
 /**
- * Fix relative asset paths when a page moves one directory deeper.
- * index.html (root) uses "app.js", "style.css?...", "i18n/...", "api/..." etc.
- * When placed at /<lang>/index.html those must become "../app.js" etc.
- * examples/index.html already uses "../" (it lives one level deep); at
- * /<lang>/examples/index.html the depth is the same relative to its own dir,
- * so only the root-page assets need the extra "../".
+ * Fix relative asset paths for a page that moved one directory deeper.
+ *
+ * Source pages and their prerendered variants:
+ *   index.html            (depth 0)  →  <lang>/index.html            (depth 1)
+ *   examples/index.html   (depth 1)  →  <lang>/examples/index.html   (depth 2)
+ *
+ * Both variants sit exactly ONE level deeper than their source, so every local
+ * reference needs one extra "../". The one exception is the examples page's
+ * "Home" link (href="../"), which must keep pointing at the LANGUAGE home
+ * (<lang>/), not the site root — so it stays "../".
  */
 function bumpRelativePaths(html, page) {
-  if (page.src !== "index.html") return html; // examples paths already ../-relative and depth-preserved
-  // Prefix "../" to root-relative-ish local refs in href/src/import that don't
-  // already start with http, /, #, ../, or data:.
+  const isExamples = page.src !== "index.html";
+
   const fix = (ref) => {
-    if (/^(https?:|\/\/|\/|#|\.\.\/|data:|mailto:)/.test(ref)) return ref;
-    // Normalize a leading "./" so "./i18n/x" becomes "../i18n/x", not ".././".
+    // Leave absolute/external/in-page refs alone.
+    if (/^(https?:|\/\/|\/|#|data:|mailto:)/.test(ref)) return ref;
+
+    // Keep links between the two LOCALIZED pages pointing within the same
+    // language folder (do NOT bump these up a level):
+    //  - examples page → Home: href="../" targets <lang>/   → stays "../"
+    //  - home page → examples: href="examples/" targets <lang>/examples/
+    //    (with optional query, e.g. "examples/?open=falling") → stays as-is
+    if (isExamples && ref === "../") return ref;
+    if (!isExamples && /^\.?\/?examples\/(\?|$)/.test(ref)) return ref;
+
+    // Everything else (assets, api/, shared benchmark/multiplayer pages, the
+    // i18n modules) lives at the site root, one level up. Normalize a leading
+    // "./" so "./i18n/x" → "../i18n/x", not ".././i18n/x".
     const bare = ref.replace(/^\.\//, "");
     return "../" + bare;
   };
+
   html = html.replace(/\b(href|src)="([^"]+)"/g, (m, attr, ref) => `${attr}="${fix(ref)}"`);
   html = html.replace(/\bfrom\s+"([^"]+)"/g, (m, ref) => `from "${fix(ref)}"`);
   return html;
