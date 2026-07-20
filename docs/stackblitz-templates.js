@@ -14,7 +14,7 @@ import {
   getDemoSourceForBundler,
   getAdapterHostHtml,
   PACKAGE_VERSIONS,
-} from "./codepen-templates.js?v=3.35.0";
+} from "./codepen-templates.js?v=3.39.1";
 
 const SDK_URL = "https://cdn.jsdelivr.net/npm/@stackblitz/sdk@1/bundles/sdk.m.js";
 const VITE_VERSION = "5.4.0";

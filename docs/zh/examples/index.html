@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
+  <meta name="nape-prerendered" content="zh" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2D Physics Examples — nape-js | TypeScript Physics Engine Demos</title>
-  <meta name="description" content="50+ interactive 2D physics demos in TypeScript &amp; JavaScript — rigid bodies, constraints, ragdolls, vehicles, cloth, fluid buoyancy, fracture, soft body, raycasting, and playable mini-games. Open the source on CodePen." />
+  <title>nape-js — 面向 TypeScript 和 JavaScript 的 2D 物理引擎</title>
+  <meta name="description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
   <meta name="keywords" content="2D physics engine demos, TypeScript physics examples, JavaScript physics demos, rigid body simulation, ragdoll physics, constraint demo, cloth simulation, fluid buoyancy, raycasting demo, soft body, deterministic physics, fracture, slingshot, tower defense, platformer physics, nape-js examples, Box2D alternative, Matter.js alternative" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
-  <link rel="canonical" href="https://napejs.org/examples/" />
+  <link rel="canonical" href="https://napejs.org/zh/examples/" />
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
   {
@@ -39,8 +40,8 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="2D Physics Examples — nape-js" />
-  <meta property="og:description" content="50+ interactive demos — rigid bodies, constraints, ragdolls, vehicles, cloth, fluid, fracture, soft body, and playable mini-games in 2D and 3D." />
-  <meta property="og:url" content="https://napejs.org/examples/" />
+  <meta property="og:description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
+  <meta property="og:url" content="https://napejs.org/zh/examples/" />
   <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -48,7 +49,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="2D Physics Examples — nape-js" />
-  <meta name="twitter:description" content="50+ interactive demos — rigid bodies, constraints, ragdolls, vehicles, cloth, fluid, fracture, soft body, and playable mini-games in 2D and 3D." />
+  <meta name="twitter:description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
   <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
   <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
@@ -58,8 +59,8 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
-  <link rel="stylesheet" href="../style.css?v=3.39.1" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <link rel="stylesheet" href="../../style.css?v=3.39.1" />
   <style>
     .examples-hero {
       position: relative;
@@ -423,10 +424,10 @@
 <body>
   <header class="examples-hero">
     <div class="container">
-      <a href="../" class="back-link" data-i18n="examples.back" onclick="gtag('event','navigation',{event_category:'examples',event_label:'back_to_home'})">&larr; Back to Home</a>
+      <a href="../" class="back-link" data-i18n="examples.back" onclick="gtag('event','navigation',{event_category:'examples',event_label:'back_to_home'})">← 返回首页</a>
       <span class="lang-switcher" id="langSwitcher"></span>
-      <h1 data-i18n="examples.heading">nape-js — 2D Physics Engine Examples</h1>
-      <p data-i18n-html="examples.intro">50+ interactive demos for the <a href="../">nape-js</a> TypeScript physics engine. Tap or drag on the canvas to play with the simulation.</p>
+      <h1 data-i18n="examples.heading">nape-js — 2D 物理引擎示例</h1>
+      <p data-i18n-html="examples.intro">为 <a href="../">nape-js</a> TypeScript 物理引擎提供的 50 多个交互式演示。在画布上点按或拖动即可体验模拟。</p>
 
       <!-- Controls row -->
       <div class="examples-controls">
@@ -435,25 +436,25 @@
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="6.5" cy="6.5" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
           </svg>
-          <input id="searchInput" type="search" placeholder="Search demos…" data-i18n-attr="placeholder:examples.search.placeholder" autocomplete="off" />
+          <input id="searchInput" type="search" placeholder="搜索演示…" data-i18n-attr="placeholder:examples.search.placeholder" autocomplete="off" />
         </div>
 
         <!-- Grid size -->
         <div class="grid-size-toggle" id="gridSizeToggle">
-          <button class="grid-size-btn" data-size="small" title="Small cards (many per row)" data-i18n-attr="title:examples.gridSmall">
+          <button class="grid-size-btn" data-size="small" title="小卡片（每行多个）" data-i18n-attr="title:examples.gridSmall">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <rect x="1" y="1" width="4" height="4" rx="1"/><rect x="6" y="1" width="4" height="4" rx="1"/><rect x="11" y="1" width="4" height="4" rx="1"/>
               <rect x="1" y="6" width="4" height="4" rx="1"/><rect x="6" y="6" width="4" height="4" rx="1"/><rect x="11" y="6" width="4" height="4" rx="1"/>
               <rect x="1" y="11" width="4" height="4" rx="1"/><rect x="6" y="11" width="4" height="4" rx="1"/><rect x="11" y="11" width="4" height="4" rx="1"/>
             </svg>
           </button>
-          <button class="grid-size-btn active" data-size="large" title="Large cards (2 per row)" data-i18n-attr="title:examples.gridLarge">
+          <button class="grid-size-btn active" data-size="large" title="大卡片（每行 2 个）" data-i18n-attr="title:examples.gridLarge">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
               <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
             </svg>
           </button>
-          <button class="grid-size-btn" data-size="full" title="Full width (1 per row)" data-i18n-attr="title:examples.gridFull">
+          <button class="grid-size-btn" data-size="full" title="整宽（每行 1 个）" data-i18n-attr="title:examples.gridFull">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <rect x="1" y="1" width="14" height="5" rx="1"/>
               <rect x="1" y="8" width="14" height="5" rx="1"/>
@@ -467,7 +468,7 @@
 
       <!-- Tag filter bar (collapsible, populated by JS) -->
       <div class="examples-tags-wrapper" id="tagFilterWrapper">
-        <button class="btn btn-small examples-tags-toggle" id="tagToggleBtn" data-i18n="examples.tags">Tags ▾</button>
+        <button class="btn btn-small examples-tags-toggle" id="tagToggleBtn" data-i18n="examples.tags">标签 ▾</button>
         <div class="examples-tags collapsed" id="tagFilterBar"></div>
       </div>
     </div>
@@ -478,20 +479,20 @@
       <!-- Multiplayer banner (top of list) -->
       <div class="multiplayer-banner">
         <div style="flex:1;min-width:180px;text-align:left">
-          <div style="font-size:11px;color:var(--accent);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700" data-i18n="examples.mp.badge">Live Demo</div>
-          <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px" data-i18n="examples.mp.title">Multiplayer Physics</div>
-          <div style="font-size:13px;color:var(--text-dim)" data-i18n="examples.mp.desc">Real-time server-authoritative simulation — move a character, push objects, see other players live.</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700" data-i18n="examples.mp.badge">在线演示</div>
+          <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px" data-i18n="examples.mp.title">多人联机物理</div>
+          <div style="font-size:13px;color:var(--text-dim)" data-i18n="examples.mp.desc">实时的服务器权威模拟——移动角色、推动物体、实时看到其他玩家。</div>
         </div>
-        <a href="../multiplayer.html" class="btn btn-primary" style="white-space:nowrap" data-i18n="examples.mp.cta" onclick="gtag('event','navigation',{event_category:'examples',event_label:'multiplayer'})">Play &rarr;</a>
+        <a href="../../multiplayer.html" class="btn btn-primary" style="white-space:nowrap" data-i18n="examples.mp.cta" onclick="gtag('event','navigation',{event_category:'examples',event_label:'multiplayer'})">开始游玩 →</a>
       </div>
       <!-- Benchmark banner -->
       <div class="multiplayer-banner" style="margin-top:12px">
         <div style="flex:1;min-width:180px;text-align:left">
-          <div style="font-size:11px;color:var(--orange);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700" data-i18n="examples.bench.badge">Performance</div>
-          <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px" data-i18n="examples.bench.title">Engine Benchmarks</div>
-          <div style="font-size:13px;color:var(--text-dim)" data-i18n="examples.bench.desc">Compare nape-js vs Matter.js vs Planck.js vs Rapier — run benchmarks in your browser.</div>
+          <div style="font-size:11px;color:var(--orange);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700" data-i18n="examples.bench.badge">性能</div>
+          <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px" data-i18n="examples.bench.title">引擎性能测试</div>
+          <div style="font-size:13px;color:var(--text-dim)" data-i18n="examples.bench.desc">对比 nape-js、Matter.js、Planck.js 和 Rapier——在你的浏览器中运行性能测试。</div>
         </div>
-        <a href="../benchmark.html" class="btn btn-primary" style="white-space:nowrap" data-i18n="examples.bench.cta" onclick="gtag('event','navigation',{event_category:'examples',event_label:'benchmarks'})">Run &rarr;</a>
+        <a href="../../benchmark.html" class="btn btn-primary" style="white-space:nowrap" data-i18n="examples.bench.cta" onclick="gtag('event','navigation',{event_category:'examples',event_label:'benchmarks'})">运行 →</a>
       </div>
       <div class="examples-grid" id="examplesGrid"></div>
     </div>
@@ -500,22 +501,18 @@
   <footer class="footer">
     <div class="container">
       <p class="footer-links">
-        <a href="../" data-i18n="footer.home">Home</a>
+        <a href="../" data-i18n="footer.home">首页</a>
         &bull;
         <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
         &bull;
         <a href="https://x.com/KSomoracz" target="_blank" rel="noopener" data-i18n="footer.twitter">Twitter / X</a>
       </p>
-      <p data-i18n-html="footer.credits">
-        Based on the original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a>
-        &bull; JS port scaffolded by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a>
-        &bull; TypeScript rewrite &amp; ongoing development by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a>
-      </p>
-      <p data-i18n="footer.license">MIT License</p>
+      <p data-i18n-html="footer.credits">基于 <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> 的原始 Haxe 引擎 • JS 移植由 <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> 搭建 • TypeScript 重写及持续开发由 <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a> 负责</p>
+      <p data-i18n="footer.license">MIT 许可证</p>
     </div>
   </footer>
 
-  <button class="scroll-top-btn" id="scrollTopBtn" title="Scroll to top" aria-label="Scroll to top" data-i18n-attr="title:examples.scrollTop,aria-label:examples.scrollTop">
+  <button class="scroll-top-btn" id="scrollTopBtn" title="回到顶部" aria-label="回到顶部" data-i18n-attr="title:examples.scrollTop,aria-label:examples.scrollTop">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="4,10 8,5 12,10"/>
     </svg>
@@ -532,11 +529,11 @@
     })();
   </script>
   <script type="module">
-    import { initI18n } from "../i18n/i18n.js?v=3.39.1";
-    import { mountLangSwitcher } from "../i18n/lang-switcher.js?v=3.39.1";
+    import { initI18n } from "../../i18n/i18n.js?v=3.39.1";
+    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.39.1";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="../examples.js?v=3.39.1"></script>
+  <script type="module" src="../../examples.js?v=3.39.1"></script>
 </body>
 </html>

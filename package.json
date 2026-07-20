@@ -22,7 +22,7 @@
     "benchmark:json": "npm run build && node benchmarks/run.mjs --json",
     "benchmark:compare": "node benchmarks/compare.mjs",
     "benchmark:update-baseline": "npm run benchmark:json -- > benchmarks/baseline.json && echo 'baseline.json updated'",
-    "build:docs": "npm run build && cp packages/nape-js/dist/index.js docs/nape-js.esm.js && rm -f docs/chunk-*.js && cp packages/nape-js/dist/chunk-*.js docs/ && mkdir -p docs/serialization docs/replay && cp packages/nape-js/dist/serialization/index.js docs/serialization/index.js && cp packages/nape-js/dist/replay/index.js docs/replay/index.js && cp packages/nape-pixi/dist/index.js docs/nape-pixi.esm.js && cp packages/nape-js/llms.txt packages/nape-js/llms-full.txt docs/ && node scripts/stamp-docs.mjs && npm run build:typedoc",
+    "build:docs": "npm run build && cp packages/nape-js/dist/index.js docs/nape-js.esm.js && rm -f docs/chunk-*.js && cp packages/nape-js/dist/chunk-*.js docs/ && mkdir -p docs/serialization docs/replay && cp packages/nape-js/dist/serialization/index.js docs/serialization/index.js && cp packages/nape-js/dist/replay/index.js docs/replay/index.js && cp packages/nape-pixi/dist/index.js docs/nape-pixi.esm.js && cp packages/nape-js/llms.txt packages/nape-js/llms-full.txt docs/ && node scripts/stamp-docs.mjs && node scripts/prerender-i18n.mjs && npm run build:typedoc",
     "build:typedoc": "typedoc",
     "serve:docs": "npx serve docs",
     "dev:pixi": "npm run build -w @newkrok/nape-js && npm run dev -w @newkrok/nape-pixi",

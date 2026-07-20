@@ -39,10 +39,14 @@ a:hover { text-decoration: underline; }
 
 /* ---------- Hero ---------- */
 .hero {
+  position: relative;
   text-align: center;
   padding: 80px 24px 60px;
   background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
   border-bottom: 1px solid var(--border);
+}
+.hero .container {
+  position: relative;
 }
 .hero-logo {
   display: inline-block;
@@ -87,6 +91,57 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border);
   color: var(--text-dim);
   letter-spacing: 0.02em;
+}
+
+/* Language switcher */
+.lang-switcher {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+.lang-switcher-select {
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 4px 26px 4px 12px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4,6 8,10 12,6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  transition: border-color 0.15s, color 0.15s;
+}
+.lang-switcher-select:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.lang-switcher-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.lang-switcher-select option {
+  background: var(--bg-alt);
+  color: var(--text);
+}
+/* Top-right corner placement (home hero + examples hero). */
+.hero-lang-switcher,
+.examples-hero .lang-switcher {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  margin-left: 0;
+  z-index: 2;
+}
+@media (max-width: 640px) {
+  .hero-lang-switcher,
+  .examples-hero .lang-switcher {
+    top: 12px;
+    right: 12px;
+  }
 }
 .hero-actions {
   margin-top: 20px;
