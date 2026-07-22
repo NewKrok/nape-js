@@ -33,6 +33,7 @@ export const GAME_DEMO_IDS = new Set([
   "billiards",
   "standoff",
   "sticky-builder",
+  "contraption-garage",
 ]);
 
 export const CATEGORIES = [

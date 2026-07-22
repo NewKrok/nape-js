@@ -175,6 +175,8 @@
   "demo.cloth.desc": "Una cuadrícula de partículas conectadas por resortes, simulando una tela con una textura de logo. <b>Arrastra</b> la tela con el ratón. Un obstáculo circular la atraviesa a la deriva.",
   "demo.constraints.label": "Escaparate de restricciones",
   "demo.constraints.desc": "Los 8 tipos de restricción integrados en una cuadrícula de 3×3. <b>Arrastra</b> cualquier cuerpo para sentir cómo reacciona cada restricción.",
+  "demo.contraption-garage.label": "Taller de artilugios",
+  "demo.contraption-garage.desc": "Constructor de vehículos al estilo Fantastic Contraption. En la zona de construcción, <b>haz clic</b> para colocar ruedas motorizadas (avance a la derecha / izquierda) y nodos de armazón, y <b>arrastra de pieza a pieza</b> para conectarlas con varillas elásticas. Pulsa <b>Test</b> y el diseño cobra vida como cuerpos reales: las varillas se convierten en <b>DistanceJoint</b>s blandas y cada rueda impulsa mediante un <b>MotorJoint</b> contra su armazón. Sobrevive al foso y sube la rampa hasta la bandera — las varillas muestran su <b>tensión</b> en vivo y se rompen al sobrecargarse, y durante la prueba puedes <b>agarrar</b> cualquier pieza con una mano de pivote elástica para empujar tu máquina. Detener una prueba reconstruye el mismo diseño para editarlo (las piezas solo colisionan con el terreno gracias a los grupos de <b>InteractionFilter</b>). <b>Espacio</b> alterna la prueba, <b>1–4</b> eligen herramienta, <b>R</b> reinicia.",
   "demo.convex-cast.label": "Barrido convexo",
   "demo.convex-cast.desc": "Una hoja giratoria barre obstáculos usando <code>space.convexCast()</code> y <code>space.convexMultiCast()</code>. El marcador <b>rojo</b> es el primer impacto en el siguiente fotograma; los puntos <b>amarillos</b> son todos los impactos dentro de los próximos 0.35 s. <b>Haz clic</b> para generar cuerpos dinámicos en la zona de barrido.",
   "demo.conveyor-belts.label": "Cintas transportadoras",
@@ -299,6 +301,7 @@
     "demo.strandbeast.label",
     "demo.fracture.label",
     "demo.billiards.desc",
-    "tag.Momentum"
+    "tag.Momentum",
+    "demo.contraption-garage.desc"
   ]
 }

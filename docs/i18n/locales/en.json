@@ -175,6 +175,8 @@
   "demo.cloth.desc": "A grid of particles connected by springs, simulating cloth with a logo texture. <b>Drag</b> the cloth with the mouse. A circle obstacle drifts across.",
   "demo.constraints.label": "Constraints Showcase",
   "demo.constraints.desc": "All 8 built-in constraint types in a 3×3 grid. <b>Drag</b> any body to feel how each constraint reacts.",
+  "demo.contraption-garage.label": "Contraption Garage",
+  "demo.contraption-garage.desc": "Fantastic-Contraption-style vehicle builder. In the build zone, <b>click</b> to place powered wheels (drive right / drive left) and frame nodes, and <b>drag part-to-part</b> to connect them with springy rods. Hit <b>Test</b> and the design spawns as real bodies: rods become soft <b>DistanceJoint</b>s and each wheel drives via a <b>MotorJoint</b> against its frame. Survive the pit and climb the ramp to the flag — rods show live <b>strain</b> and snap when overloaded, and mid-test you can <b>grab</b> any part with a springy pivot hand to shove your machine. Stopping a test rebuilds the same design for editing (parts collide only with the terrain thanks to <b>InteractionFilter</b> groups). <b>Space</b> toggles test, <b>1–4</b> pick tools, <b>R</b> resets.",
   "demo.convex-cast.label": "Convex Cast",
   "demo.convex-cast.desc": "A spinning blade sweeps obstacles using <code>space.convexCast()</code> and <code>space.convexMultiCast()</code>. The <b>red</b> marker is the first hit in the next frame; <b>yellow</b> dots are all hits within the next 0.35 s. <b>Click</b> to spawn dynamic bodies into the sweep zone.",
   "demo.conveyor-belts.label": "Conveyor Belts",
