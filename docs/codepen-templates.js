@@ -1012,9 +1012,13 @@ async function fetchModulePreamble(demo) {
   if (!demo.id) return "";
   if (_preambleCache.has(demo.id)) return _preambleCache.get(demo.id);
 
-  const url = new URL(`./demos/${demo.id}.js`, import.meta.url).href;
+  // Same ?v= cache-buster as the module imports in examples.js — without
+  // it the browser may serve a STALE demo source here while the live module
+  // is fresh, and the generated pen mixes old preamble with new hooks
+  // (symptom: ReferenceError inside _demo.setup for a newly added constant).
+  const url = new URL(`./demos/${demo.id}.js?v=${NAPE_VERSION}`, import.meta.url).href;
   try {
-    const resp = await fetch(url);
+    const resp = await fetch(url, { cache: "no-cache" });
     if (!resp.ok) throw new Error(resp.status);
     const text = await resp.text();
     const preamble = extractModulePreamble(text);
