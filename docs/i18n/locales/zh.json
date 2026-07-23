@@ -176,7 +176,7 @@
   "demo.constraints.label": "约束展示",
   "demo.constraints.desc": "3×3 网格中展示全部 8 种内置约束类型。<b>拖动</b>任意刚体，感受每种约束的反应。",
   "demo.contraption-garage.label": "机械车库",
-  "demo.contraption-garage.desc": "Fantastic Contraption 风格的载具建造游戏。在建造区<b>点击</b>放置动力轮（向右 / 向左驱动）和框架节点，并<b>从部件拖到部件</b>用弹性连杆连接它们。按下<b>测试</b>，设计就会变成真实刚体：连杆成为柔性 <b>DistanceJoint</b>，每个轮子通过 <b>MotorJoint</b> 相对框架驱动。挺过深坑、爬上坡道抵达旗帜——连杆实时显示<b>应变</b>，过载时会断裂；测试中你可以用弹性枢轴之手<b>抓住</b>任意部件推动你的机器。停止测试会重建同一设计供继续编辑（得益于 <b>InteractionFilter</b> 分组，部件只与地形碰撞）。<b>空格</b>切换测试，<b>1–4</b> 选择工具，<b>R</b> 重置。",
+  "demo.contraption-garage.desc": "Fantastic Contraption 风格的载具建造游戏。在建造区<b>点击</b>放置动力轮（向右 / 向左驱动）和框架节点，并<b>从部件拖到部件</b>用弹性连杆连接它们。按下<b>测试</b>：连杆成为柔性 <b>DistanceJoint</b>，每个轮子通过 <b>MotorJoint</b> 相对框架驱动，镜头会跟随你的机器驶过三屏长的赛道——深坑、连续颠簸、需要跨越的沟壑、阶梯爬坡和悬崖滑道。机器自己到达旗帜毫无意义：高台上有一颗粉色<b>货物球</b>在等着，必须让它抵达旗帜。动力轮缘会带着回旋把球踢开，光秃秃的车只会碾过它——试试用反转的轮子做进料滚轮，并带上足够的牵引力把货物推上最后的坡道。连杆实时显示<b>应变</b>，过载时会断裂；测试中你可以用弹性枢轴之手<b>抓住</b>部件，而且得益于 <b>InteractionFilter</b> 分组，部件可以自由重叠。<b>空格</b>切换测试，<b>1–4</b> 选择工具，<b>R</b> 重置。",
   "demo.convex-cast.label": "凸形投射",
   "demo.convex-cast.desc": "一把旋转的刀片使用 <code>space.convexCast()</code> 和 <code>space.convexMultiCast()</code> 扫过障碍物。<b>红色</b>标记是下一帧的首次命中；<b>黄色</b>圆点是接下来 0.35 s 内的所有命中。<b>点击</b>可在扫掠区内生成动态刚体。",
   "demo.conveyor-belts.label": "传送带",

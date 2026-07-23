@@ -13,11 +13,17 @@ import { drawBody, drawGrid } from "../renderer.js";
 // springy rods (drag from part to part). Hitting TEST spawns the design as
 // real bodies: every rod becomes a soft DistanceJoint, and every wheel gets a
 // MotorJoint against its frame, so the whole machine drives itself off the
-// platform. The course is a pit with a sloped far wall, a middle shelf and a
-// long ramp up to the goal flag; reach the flag with any surviving part to
-// win (fastest time is kept as the session best). Rods carry live strain and
-// snap when overstretched — a bad frame shakes itself apart halfway up the
-// ramp, and parts that lose the machine tumble into the pit. During a test
+// platform. The course is a three-screen scrolling run — warm-up pit, ramp,
+// whoop bumps, a kill gap, a stair climb, a cliff drop and a final ramp
+// (the camera follows the machine). Winning is Fantastic-Contraption-true:
+// the machine reaching the flag counts for nothing — a loose cargo ball
+// waits on the high plateau, and the machine has to shepherd IT to the flag
+// (fastest delivery is kept as the session best). The starter buggy dies at
+// the gap, and a naive "more wheels" car tramples the ball and parks at the
+// flag for nothing — delivering takes ball-control engineering (an intake
+// roller made from a reverse-spinning wheel) plus the traction to back it.
+// Rods carry live strain and snap when overstretched — a bad frame shakes
+// itself apart on the whoops, and lost parts tumble into the gaps. During a test
 // the player can grab any part with a springy pivot "hand" and shove the
 // struggling contraption. The design data outlives the physics: stopping a
 // test (or wrecking) rebuilds the same machine for another round of editing.
@@ -38,29 +44,97 @@ const SCREEN_H = 500;
 const HUD_H = 44;
 
 // ── Course geometry ──────────────────────────────────────────────────────
-// Surface polyline, left to right: start platform, a pit with a climbable
-// sloped far wall, a middle shelf, a long ramp, and the goal plateau. Each
+// The course is a ~3250px scrolling run (the camera follows the machine).
+// Terrain is a list of surface polylines ("chains"), left to right; the
+// horizontal space BETWEEN chains is a bottomless kill gap — parts that
+// drop in fall past FALL_OFF_Y and are lost. Within a chain, each
 // non-vertical span becomes one static quad down to the skirt; vertical
-// drops are covered by the neighbouring quads' edges.
-const SURFACE = [
-  [-20, 420], [300, 420],            // start platform (build zone lives here)
-  [300, 488], [500, 488],            // pit floor
-  [580, 420],                        // sloped exit — steep but drivable
-  [640, 420],                        // middle shelf
-  [750, 356],                        // ramp up
-  [920, 356],                        // goal plateau
+// rises/drops are covered by the neighbouring quads' edges.
+//
+// Course tour: start platform → warm-up pit → first ramp → whoop bumps
+// (rod-strain shaker) → kill gap (jump it with speed or bridge it with a
+// long wheelbase) → stair climb → high plateau → cliff drop (frame impact
+// test) → final ramp → goal flag. The starter buggy clears the warm-up
+// sections but dies at the gap — the player has to actually build.
+const CHAINS = [
+  [
+    [-20, 420], [540, 420],          // start platform (build zone lives here)
+    [540, 488], [720, 488],          // warm-up pit floor
+    [816, 420],                      // sloped exit (~35°) — drivable even
+    [880, 420],                      // with nose gear on the front · shelf
+    [1000, 350],                     // first ramp
+    [1160, 350],                     // plateau
+    [1220, 404],                     // downhill into the whoops
+    [1260, 404], [1300, 376],        // whoop bumps — springy frames shake,
+    [1340, 404], [1380, 372],        // rigid ones carry through
+    [1420, 404], [1460, 376],
+    [1500, 404],
+    [1640, 396],                     // gap run-up, slight launch lip
+  ],
+  [
+    // Landing zone — long enough that a gap-bridging machine is fully
+    // across before its nose meets the stairs, and only ~50px below the
+    // takeoff lip so a long machine tips, not somersaults, into it. The
+    // 104px gap before it is wider than the starter's whole diagonal
+    // reach (its longest wheel↔node rod, stretched to snap-threshold,
+    // plus both radii — see seedStarter): failures fall clean instead of
+    // wedging across or snagging a part on this lip.
+    [1744, 445], [2034, 445],
+    // Stair climb — 11px steps with slanted risers (a 20px wheel stalls
+    // against a vertical face but bites up a short 38° one).
+    [2048, 434], [2080, 434],
+    [2094, 423], [2126, 423],
+    [2140, 412], [2172, 412],
+    [2186, 401], [2218, 401],
+    [2232, 390], [2264, 390],
+    [2278, 379], [2310, 379],
+    [2324, 368], [2356, 368],
+    [2370, 357], [2396, 357],        // high plateau — the cargo ball waits here
+    [2404, 349], [2412, 357],        // small lip: keeps a fumbled ball from
+    [2594, 357],                     // rolling straight back down the stairs
+    // Cliff chute — too steep to climb back (one-way), but a slope, not a
+    // sheer wall: the pushed ball ROLLS down and away instead of parking at
+    // the base where the airborne machine would overfly it forever. The
+    // floor tilts gently forward so ball and machine both drift into the
+    // valley at the ramp's foot, keeping the pusher behind its cargo.
+    [2646, 470], [2794, 476],
+    [3050, 352],                     // final ramp (~26° — pushable with the ball)
+    [3294, 352],                     // goal plateau — runs under the backstop
+  ],                                 //   wall so no crack swallows a wheel
 ];
+const WORLD_W = 3254;
 const SKIRT_Y = 560;
 const FALL_OFF_Y = SCREEN_H + 60;    // below this a loose part is lost
 
-const GOAL = { x: 830, y: 330 };     // capture point beside the flag pole
+const GOAL = { x: 3194, y: 326 };    // capture point beside the flag pole
 const GOAL_RANGE = 48;
-const FLAG_BASE_Y = 356;
+const FLAG_BASE_Y = 352;
+
+// ── Cargo ────────────────────────────────────────────────────────────────
+// Fantastic-Contraption-style win condition: the machine reaching the flag
+// means nothing — a loose cargo ball waits on the high plateau and IT has
+// to reach the flag. The machine must shepherd it down the cliff chute and
+// up the final ramp. It collides with terrain and with contraption parts
+// (it's in the terrain group), so wheels and nodes can push, cradle or
+// fling it. Physics note that IS the puzzle: a forward-driven rim moving
+// down its front face gives the ball backspin and spits it out backwards
+// (or the nose climbs straight over it) — a REVERSE-spinning elevated
+// wheel rolls the ball forward instead, at the price of braking the
+// machine, so delivering also takes extra traction behind it.
+// Mid-plateau: far enough past the stair crest that the arriving machine
+// has leveled out before first contact.
+const CARGO_START = { x: 2524, y: 333 };  // resting on the plateau (y 357 - R)
+// Bigger than a wheel on purpose: a small ball just gets trampled by the
+// arriving machine; this one has to be met face-on and pushed.
+const CARGO_R = 24;
+// Dense enough that one lone wheel can't shove it up the final ramp —
+// sustained uphill pushing takes a machine with real traction behind it.
+const CARGO_MAT = () => new Material(0.1, 1.2, 1.4, 0.9, 0.02);
 
 // Parts must be placed inside the build zone (their centers). The zone
 // floats over the start platform; wheels dropped at the bottom edge rest
 // straight onto the ground when the test starts.
-const ZONE = { x0: 36, y0: 96, x1: 284, y1: 402 };
+const ZONE = { x0: 36, y0: 96, x1: 498, y1: 402 };
 
 // ── Part / rod tuning ────────────────────────────────────────────────────
 const WHEEL_R = 20;
@@ -100,6 +174,13 @@ const MOTOR_FORCE = 2e6;
 // the whole drive and the wheel never turns, at 12000 the starter buggy
 // clears pit + ramp in under 5s while the node's reaction spin stays mild.)
 const NODE_INERTIA = 12000;
+
+// Inertia alone isn't enough on a LONG climb (the stairs): sustained motor
+// torque pumps angular momentum into the node until its backspin satisfies
+// the relative rate and the wheel stalls. Bleeding node spin every step
+// models the torsional friction of a real frame and gives the reaction
+// torque a terminal rate, so wheels keep their drive on any climb length.
+const NODE_SPIN_DAMP = 0.9;
 
 // Contraption parts share collision group 2 and exclude it from their mask:
 // they collide with the terrain (group 1) but never with each other, so
@@ -144,6 +225,8 @@ let _rods = [];                      // { a, b, rest, joint, strain, over, broke
 let _motors = [];                    // { wheel, partner, joint }
 
 let _phase = "build";                // "build" | "run" | "won" | "wreck"
+let _wreckReason = "";               // overlay line for the wreck screen
+let _cargo = null;                   // cargo ball body — exists while testing
 let _tool = "wheel";
 let _linking = null;                 // { from: part, x, y } while dragging a rod
 let _hand = null;                    // { part, joint } while shoving mid-test
@@ -160,27 +243,58 @@ let _snapCount = 0;
 let _tick = 0;
 let _lastKeyDown = null;
 
+// Camera. The runner follows _camTarget (machine centroid during a test,
+// the build zone while editing) and hands the smoothed offset back to the
+// render hooks; the demo keeps the last offset for world↔screen conversion
+// of the screen-anchored HUD.
+const CAM_HOME = { x: SCREEN_W / 2, y: SCREEN_H / 2 };
+let _camTarget = { x: CAM_HOME.x, y: CAM_HOME.y };
+let _lastCamX = 0;
+let _lastCamY = 0;
+
 // ---------------------------------------------------------------------------
 // World construction
 // ---------------------------------------------------------------------------
 
 function spawnTerrain() {
-  for (let i = 0; i < SURFACE.length - 1; i++) {
-    const [x0, y0] = SURFACE[i];
-    const [x1, y1] = SURFACE[i + 1];
-    if (x1 <= x0) continue;          // vertical drop — neighbours cover the wall
-    const seg = new Body(BodyType.STATIC);
-    seg.shapes.add(new Polygon([
-      new Vec2(x0, y0), new Vec2(x1, y1),
-      new Vec2(x1, SKIRT_Y), new Vec2(x0, SKIRT_Y),
-    ]));
-    try { seg.userData._colorIdx = 5; } catch (_) { /* userData may be frozen */ }
-    seg.space = _space;
+  for (const surface of CHAINS) {
+    for (let i = 0; i < surface.length - 1; i++) {
+      const [x0, y0] = surface[i];
+      const [x1, y1] = surface[i + 1];
+      if (x1 <= x0) continue;        // vertical rise/drop — neighbours cover it
+      const seg = new Body(BodyType.STATIC);
+      seg.shapes.add(new Polygon([
+        new Vec2(x0, y0), new Vec2(x1, y1),
+        new Vec2(x1, SKIRT_Y), new Vec2(x0, SKIRT_Y),
+      ]));
+      try { seg.userData._colorIdx = 5; } catch (_) { /* userData may be frozen */ }
+      seg.space = _space;
+    }
   }
+  // Backstop past the flag so a winning machine doesn't sail off the edge.
+  const wall = new Body(BodyType.STATIC, new Vec2(WORLD_W + 30, 380));
+  wall.shapes.add(new Polygon(Polygon.box(20, 360)));
+  try { wall.userData._colorIdx = 5; } catch (_) { /* same */ }
+  wall.space = _space;
 }
 
 function partFilter() {
   return new InteractionFilter(PART_FILTER_GROUP, ~PART_FILTER_GROUP);
+}
+
+function spawnCargo() {
+  _cargo = new Body(BodyType.DYNAMIC, new Vec2(CARGO_START.x, CARGO_START.y));
+  // Default filter (group 1): collides with terrain AND with parts — parts
+  // mask out only their own group 2.
+  _cargo.shapes.add(new Circle(CARGO_R, undefined, CARGO_MAT()));
+  try { _cargo.userData._cargo = true; } catch (_) { /* userData may be frozen */ }
+  try { _cargo.userData._colorIdx = 3; } catch (_) { /* same */ }
+  _cargo.space = _space;
+}
+
+function despawnCargo() {
+  if (_cargo && _cargo.space) _cargo.space = null;
+  _cargo = null;
 }
 
 function makePartBody(p) {
@@ -267,12 +381,16 @@ function setHint(text) {
 }
 
 // The starter design: a simple two-wheel buggy with a braced roof node —
-// the preview thumbnail sells the idea, and pressing TEST right away gives
-// an instant (if bumpy) win to imitate and improve on.
+// the preview thumbnail sells the idea, and pressing TEST right away shows
+// the loop: it clears the warm-up pit, the ramp and the whoops, then drops
+// into the kill gap. Beating the course takes a longer, braced machine.
+// Sized so it can NOT wedge diagonally across the kill gap: its longest
+// wheel↔node rod (~60px) stretched to snap-threshold (×1.25) plus wheel and
+// node radii stays under the 104px gap — a failed jump always falls clean.
 function seedStarter() {
-  const w1 = addPartDesign("wheel", 1, 118, 398);
-  const w2 = addPartDesign("wheel", 1, 224, 398);
-  const n1 = addPartDesign("node", 0, 171, 330);
+  const w1 = addPartDesign("wheel", 1, 130, 398);
+  const w2 = addPartDesign("wheel", 1, 210, 398);
+  const n1 = addPartDesign("node", 0, 170, 354);
   addRodDesign(w1, w2);
   addRodDesign(w1, n1);
   addRodDesign(w2, n1);
@@ -338,9 +456,12 @@ function startRun() {
   // Clock off the space's own elapsed physics time — demo.step() runs once
   // per FRAME while the space may substep several times per frame, so a
   // frame counter would drift on slow displays.
+  spawnCargo();
+
   _timeBase = _space.elapsedTime;
   _time = 0;
   _phase = "run";
+  updateCamTarget();                 // don't let the camera chase last run's spot
 }
 
 function releaseHand() {
@@ -351,6 +472,7 @@ function releaseHand() {
 
 function despawnRun() {
   releaseHand();
+  despawnCargo();
   for (const m of _motors) if (m.joint.space) m.joint.space = null;
   _motors = [];
   for (const r of _rods) {
@@ -455,6 +577,7 @@ function updateParts() {
   let lost = false;
   for (const p of _parts) {
     if (p.dead || !p.body) continue;
+    if (p.kind === "node") p.body.angularVel *= NODE_SPIN_DAMP;
     if (p.body.position.y > FALL_OFF_Y) {
       if (_hand && _hand.part === p) releaseHand();
       p.dead = true;
@@ -469,17 +592,38 @@ function updateParts() {
   if (lost) fixMotors();
 }
 
-function checkGoal() {
+// Camera chases the centroid of the surviving parts; while parts are dying
+// the target just stops updating, so won/wreck overlays hold the last view.
+function updateCamTarget() {
+  let n = 0, sx = 0, sy = 0;
   for (const p of _parts) {
     if (p.dead || !p.body) continue;
-    if (dist(p.body.position.x, p.body.position.y, GOAL.x, GOAL.y) <= GOAL_RANGE) {
-      _winTime = _time;
-      if (_best === null || _winTime < _best) _best = _winTime;
-      releaseHand();
-      _phase = "won";
-      _lockTimer = RESTART_LOCK_STEPS;
-      return;
-    }
+    n++;
+    sx += p.body.position.x;
+    sy += p.body.position.y;
+  }
+  if (n > 0) _camTarget = { x: sx / n, y: sy / n };
+}
+
+// Win when the CARGO reaches the flag — the machine's own position never
+// wins, so brute "just drive there" designs don't count. Lose the run when
+// the cargo drops off the course.
+function checkGoal() {
+  if (!_cargo) return;
+  if (_cargo.position.y > FALL_OFF_Y) {
+    despawnCargo();
+    releaseHand();
+    _wreckReason = "The cargo ball fell off the course.";
+    _phase = "wreck";
+    _lockTimer = RESTART_LOCK_STEPS;
+    return;
+  }
+  if (dist(_cargo.position.x, _cargo.position.y, GOAL.x, GOAL.y) <= GOAL_RANGE) {
+    _winTime = _time;
+    if (_best === null || _winTime < _best) _best = _winTime;
+    releaseHand();
+    _phase = "won";
+    _lockTimer = RESTART_LOCK_STEPS;
   }
 }
 
@@ -495,15 +639,19 @@ export default {
   desc:
     "Fantastic-Contraption-style vehicle builder. In the build zone, <b>click</b> to place powered " +
     "wheels (drive right / drive left) and frame nodes, and <b>drag part-to-part</b> to connect them " +
-    "with springy rods. Hit <b>Test</b> and the design spawns as real bodies: rods become soft " +
-    "<b>DistanceJoint</b>s and each wheel drives via a <b>MotorJoint</b> against its frame. Survive " +
-    "the pit and climb the ramp to the flag — rods show live <b>strain</b> and snap when overloaded, " +
-    "and mid-test you can <b>grab</b> any part with a springy pivot hand to shove your machine. " +
-    "Stopping a test rebuilds the same design for editing (parts collide only with the terrain " +
-    "thanks to <b>InteractionFilter</b> groups). <b>Space</b> toggles test, <b>1–4</b> pick tools, " +
-    "<b>R</b> resets.",
+    "with springy rods. Hit <b>Test</b>: rods become soft <b>DistanceJoint</b>s, each wheel drives " +
+    "via a <b>MotorJoint</b> against its frame, and the camera follows your machine down a " +
+    "three-screen course — pit, whoop bumps, a gap to bridge, a stair climb and a cliff chute. " +
+    "Reaching the flag yourself wins nothing: a pink <b>cargo ball</b> waits on the high plateau, " +
+    "and IT has to get to the flag. Driven rims kick the ball away with backspin, so a bare car " +
+    "just tramples it — try a reverse-spinning wheel as an intake roller, and bring enough " +
+    "traction to push the cargo up the final ramp. Rods show live <b>strain</b> and snap when " +
+    "overloaded, mid-test you can <b>grab</b> parts with a springy pivot hand, and parts overlap " +
+    "freely thanks to <b>InteractionFilter</b> groups. <b>Space</b> toggles test, <b>1–4</b> pick " +
+    "tools, <b>R</b> resets.",
   walls: false,
   workerCompatible: false,
+  camera: null,
 
   setup(space) {
     _space = space;
@@ -518,15 +666,29 @@ export default {
     _mouse = null;
     _hint = null;
     _phase = "build";
+    _wreckReason = "";
+    _cargo = null;                   // previous load's body died with its space
     _tool = "wheel";
     _time = 0;
     _lockTimer = 0;
     _fx = [];
     _snapCount = 0;
     _tick = 0;
+    _camTarget = { x: CAM_HOME.x, y: CAM_HOME.y };
+    _lastCamX = 0;
+    _lastCamY = 0;
 
     spawnTerrain();
     seedStarter();
+
+    // Follow the machine while testing, rest on the build zone otherwise.
+    // Vertical bounds equal the viewport height, so the camera only scrolls
+    // horizontally and the screen-anchored HUD math stays simple.
+    this.camera = {
+      follow: () => (_phase === "build" ? CAM_HOME : _camTarget),
+      bounds: { minX: 0, minY: 0, maxX: WORLD_W, maxY: SCREEN_H },
+      lerp: 0.08,
+    };
 
     if (typeof window !== "undefined") {
       if (_lastKeyDown) window.removeEventListener("keydown", _lastKeyDown);
@@ -560,10 +722,12 @@ export default {
     _time = Math.max(0, _space.elapsedTime - _timeBase);
     updateRods();
     updateParts();
+    updateCamTarget();
     checkGoal();
     if (_phase !== "run") return;
 
     if (_parts.every((p) => p.dead)) {
+      _wreckReason = "Every part fell off the course.";
       _phase = "wreck";
       _lockTimer = RESTART_LOCK_STEPS;
     }
@@ -575,17 +739,22 @@ export default {
       return;
     }
 
-    // Canvas UI — the Test/Build toggle (bottom-right) and the toolbar.
-    if (x >= GO_RECT.x && x <= GO_RECT.x + GO_RECT.w
-      && y >= GO_RECT.y && y <= GO_RECT.y + GO_RECT.h) {
+    // Canvas UI is screen-anchored while clicks arrive in world coords —
+    // convert with the camera offset the render pass last saw.
+    const sx = x - _lastCamX;
+    const sy = y - _lastCamY;
+
+    // The Test/Build toggle (bottom-right) and the toolbar.
+    if (sx >= GO_RECT.x && sx <= GO_RECT.x + GO_RECT.w
+      && sy >= GO_RECT.y && sy <= GO_RECT.y + GO_RECT.h) {
       if (_phase === "build") startRun();
       else backToBuild();
       return;
     }
-    if (y < HUD_H) {
+    if (sy < HUD_H) {
       for (let i = 0; i < TOOLS.length; i++) {
         const bx = TOOL_BTN.x + i * (TOOL_BTN.w + TOOL_BTN.gap);
-        if (x >= bx && x <= bx + TOOL_BTN.w && y >= TOOL_BTN.y && y <= TOOL_BTN.y + TOOL_BTN.h) {
+        if (sx >= bx && sx <= bx + TOOL_BTN.w && sy >= TOOL_BTN.y && sy <= TOOL_BTN.y + TOOL_BTN.h) {
           _tool = TOOLS[i].id;
           return;
         }
@@ -685,37 +854,52 @@ export default {
     return {
       phase: _phase, tool: _tool, time: _time, winTime: _winTime, best: _best,
       parts: _parts, rods: _rods, motors: _motors, snaps: _snapCount,
+      cargo: _cargo, wreckReason: _wreckReason,
       startRun, backToBuild, resetGame, addPartDesign, addRodDesign,
       goRect: GO_RECT, goal: GOAL,
     };
   },
 
-  render(ctx, space, W, H, showOutlines) {
-    drawGrid(ctx, W, H, 0, 0);
+  render(ctx, space, W, H, showOutlines, camX = 0, camY = 0) {
+    _lastCamX = camX;
+    _lastCamY = camY;
+    ctx.save();
+    ctx.translate(-camX, -camY);
+    drawGrid(ctx, W, H, camX, camY);
     for (const body of space.bodies) {
       if (!body.userData._part) drawBody(ctx, body, showOutlines);
     }
     drawFlag(ctx);
+    drawCargo(ctx);
     drawBuildZone(ctx);
     drawRods(ctx);
     drawParts(ctx, true);
     drawLinking(ctx);
     drawHand(ctx);
     drawFx(ctx);
+    ctx.restore();
     drawHUD(ctx, W, H);
   },
 
-  // Three.js / PixiJS render bodies natively; everything game-specific is
-  // painted on the shared overlay canvas (parts get decoration-only passes
-  // while bodies exist, full ghosts while editing).
-  render3dOverlay(ctx, space, W, H) {
+  // Three.js / PixiJS render bodies natively (camera applied by the
+  // adapter); everything game-specific is painted on the shared overlay
+  // canvas (parts get decoration-only passes while bodies exist, full
+  // ghosts while editing). World-space passes get the camera translate,
+  // the HUD stays screen-anchored.
+  render3dOverlay(ctx, space, W, H, camX = 0, camY = 0) {
+    _lastCamX = camX;
+    _lastCamY = camY;
+    ctx.save();
+    ctx.translate(-camX, -camY);
     drawFlag(ctx);
+    drawCargo(ctx);
     drawBuildZone(ctx);
     drawRods(ctx);
     drawParts(ctx, false);
     drawLinking(ctx);
     drawHand(ctx);
     drawFx(ctx);
+    ctx.restore();
     drawHUD(ctx, W, H);
   },
 };
@@ -763,6 +947,26 @@ function drawFlag(ctx) {
   ctx.lineTo(GOAL.x + 34, FLAG_BASE_Y - 52 + wave);
   ctx.lineTo(GOAL.x, FLAG_BASE_Y - 44);
   ctx.closePath();
+  ctx.fill();
+}
+
+// Pulsing halo + crosshair dot over the cargo ball so the objective reads
+// at a glance in every render mode (the ball body itself is drawn by the
+// active renderer).
+function drawCargo(ctx) {
+  if (!_cargo) return;
+  const p = _cargo.position;
+  const pulse = 1 + 0.12 * Math.sin(_tick * 0.1);
+  ctx.strokeStyle = "rgba(219,109,183,0.8)";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 5]);
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, (CARGO_R + 7) * pulse, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#db6db7";
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
   ctx.fill();
 }
 
@@ -929,6 +1133,39 @@ function drawFx(ctx) {
   }
 }
 
+// Course progress strip along the bottom edge of the HUD — the course is
+// three screens wide, so this is the player's map. The right end stops
+// short of the corner where the demo page overlays its render-mode
+// controls.
+function drawProgress(ctx, W) {
+  const x0 = 16, x1 = W - 270, y = HUD_H - 6;
+  const startX = (ZONE.x0 + ZONE.x1) / 2;
+  const frac = (x) => Math.max(0, Math.min(1, (x - startX) / (GOAL.x - startX)));
+  ctx.strokeStyle = "rgba(139,148,158,0.4)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x0, y);
+  ctx.lineTo(x1, y);
+  ctx.stroke();
+  // Flag tick at the far end.
+  ctx.strokeStyle = "#f85149";
+  ctx.beginPath();
+  ctx.moveTo(x1, y - 4);
+  ctx.lineTo(x1, y + 4);
+  ctx.stroke();
+  // Cargo dot (pink), then machine dot (blue) on top.
+  if (_cargo) {
+    ctx.fillStyle = "#db6db7";
+    ctx.beginPath();
+    ctx.arc(x0 + (x1 - x0) * frac(_cargo.position.x), y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = "#58a6ff";
+  ctx.beginPath();
+  ctx.arc(x0 + (x1 - x0) * frac(_camTarget.x), y, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 function drawButton(ctx, rect, label, active, accent) {
   ctx.fillStyle = active ? "rgba(88,166,255,0.22)" : "rgba(48,54,61,0.7)";
   ctx.strokeStyle = active ? "#58a6ff" : "#30363d";
@@ -971,6 +1208,7 @@ function drawHUD(ctx, W, H) {
       ctx.font = "13px system-ui, sans-serif";
       ctx.fillText(`Best ${_best.toFixed(1)}s`, 130, HUD_H / 2);
     }
+    drawProgress(ctx, W);
   }
 
   const running = _phase === "run";
@@ -1000,7 +1238,7 @@ function drawHUD(ctx, W, H) {
     );
   } else {
     ctx.fillText(
-      `Parts ${liveParts} · Rods ${liveRods} — grab a part to shove it`,
+      `Parts ${liveParts} · Rods ${liveRods} — get the pink ball to the flag`,
       statusX, HUD_H / 2,
     );
   }
@@ -1014,7 +1252,7 @@ function drawHUD(ctx, W, H) {
   if (_phase === "won") {
     ctx.fillStyle = "#7ee787";
     ctx.font = "bold 36px system-ui, sans-serif";
-    ctx.fillText("Reached the flag!", W / 2, H / 2 - 24);
+    ctx.fillText("Cargo delivered!", W / 2, H / 2 - 24);
     ctx.fillStyle = "#c9d1d9";
     ctx.font = "14px system-ui, sans-serif";
     ctx.fillText(
@@ -1027,7 +1265,7 @@ function drawHUD(ctx, W, H) {
     ctx.fillText("Contraption lost", W / 2, H / 2 - 24);
     ctx.fillStyle = "#c9d1d9";
     ctx.font = "14px system-ui, sans-serif";
-    ctx.fillText("Every part fell off the course.", W / 2, H / 2 + 6);
+    ctx.fillText(_wreckReason, W / 2, H / 2 + 6);
   }
   ctx.fillStyle = "rgba(255,255,255,0.7)";
   ctx.font = "14px system-ui, sans-serif";
