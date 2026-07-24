@@ -90,6 +90,7 @@
   "render.pixi": "PixiJS",
   "tag.AI": "IA",
   "tag.Balance": "Équilibre",
+  "tag.Breakable": "Cassable",
   "tag.Building": "Construction",
   "tag.Camera": "Caméra",
   "tag.Camera Shake": "Secousse de caméra",
@@ -181,6 +182,8 @@
   "demo.convex-cast.desc": "Une lame en rotation balaie les obstacles à l'aide de <code>space.convexCast()</code> et <code>space.convexMultiCast()</code>. Le marqueur <b>rouge</b> est le premier impact de la prochaine frame ; les points <b>jaunes</b> sont tous les impacts dans les prochaines 0.35 s. <b>Cliquez</b> pour faire apparaître des corps dynamiques dans la zone de balayage.",
   "demo.conveyor-belts.label": "Tapis roulants",
   "demo.conveyor-belts.desc": "Les objets se déplacent le long de tapis roulants grâce à la vitesse de surface cinématique.",
+  "demo.crash-test-hero.label": "Héros du crash-test",
+  "demo.crash-test-hero.desc": "Score de crash façon Turbo Dismount. Posez le mannequin ragdoll sur son chariot en <b>faisant glisser</b> n'importe quelle partie du corps, puis <b>maintenez Espace</b> (ou le bouton LAUNCH) pour charger la jauge de puissance en va-et-vient et relâchez pour le lancer — en bas de la rampe, par-dessus la fosse, dans l'escalier puis dans le trampoline, la roue à pales en rotation et le mur de caisses. Les dégâts SONT le score : chaque contact violent rapporte des points selon le <code>totalContactsImpulse</code> mesuré (coups à la tête ×3), et la ceinture, le cou, les épaules et les hanches sont de vraies <b>contraintes cassables</b> (<code>maxForce</code> + <code>breakUnderForce</code>) qui cèdent pour des points bonus via un <code>ConstraintListener(BREAK)</code>. Les gros impacts figent le temps et secouent la caméra. En plein vol, vous pouvez encore <b>attraper</b> le mannequin, ou appuyer sur <b>Espace</b> pour gesticuler de panique (3 charges). <b>R</b> relance.",
   "demo.destructible-arena.label": "Arène destructible",
   "demo.destructible-arena.desc": "Shooter en vue de côté construit à partir de <b>buildTilemapBody</b> + <b>CharacterController</b> + deux <b>ParticleEmitter</b> + <b>fractureBody</b>. L'arène fait 3× la largeur du canvas ; la caméra suit le joueur et tremble à chaque élimination. <b>WASD/Flèches</b> pour se déplacer, <b>Space</b> pour sauter. Maintenez <b>contre un mur</b> en l'air pour glisser dessus, et appuyez sur <b>Space</b> pour en faire un saut mural. Sautez à travers les plateformes violettes à sens unique par le bas ; la plateforme cyan glisse d'avant en arrière en tant que corps cinématique. Maintenez la <b>souris</b> pour tirer vers le curseur.",
   "demo.destructible-terrain.label": "Terrain destructible",
@@ -301,6 +304,7 @@
     "demo.character-controller.desc",
     "demo.strandbeast.desc",
     "demo.pulley-crane.desc",
-    "demo.contraption-garage.desc"
+    "demo.contraption-garage.desc",
+    "demo.crash-test-hero.desc"
   ]
 }

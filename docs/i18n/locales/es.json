@@ -90,6 +90,7 @@
   "render.pixi": "PixiJS",
   "tag.AI": "IA",
   "tag.Balance": "Equilibrio",
+  "tag.Breakable": "Rompible",
   "tag.Building": "Construcción",
   "tag.Camera": "Cámara",
   "tag.Camera Shake": "Sacudida de cámara",
@@ -181,6 +182,8 @@
   "demo.convex-cast.desc": "Una hoja giratoria barre obstáculos usando <code>space.convexCast()</code> y <code>space.convexMultiCast()</code>. El marcador <b>rojo</b> es el primer impacto en el siguiente fotograma; los puntos <b>amarillos</b> son todos los impactos dentro de los próximos 0.35 s. <b>Haz clic</b> para generar cuerpos dinámicos en la zona de barrido.",
   "demo.conveyor-belts.label": "Cintas transportadoras",
   "demo.conveyor-belts.desc": "Los objetos viajan por cintas transportadoras usando velocidad de superficie cinemática.",
+  "demo.crash-test-hero.label": "Héroe de pruebas de choque",
+  "demo.crash-test-hero.desc": "Puntuación de choques al estilo Turbo Dismount. Posa el muñeco ragdoll en su carrito <b>arrastrando</b> cualquier parte del cuerpo, luego <b>mantén Espacio</b> (o el botón LAUNCH) para cargar el medidor de potencia oscilante y suelta para lanzarlo rampa abajo, sobre el foso, escaleras abajo y contra el trampolín, la rueda de paletas giratoria y el muro de cajas. El daño ES la puntuación: cada contacto fuerte paga puntos según el <code>totalContactsImpulse</code> medido (golpes en la cabeza ×3), y el cinturón, el cuello, los hombros y las caderas son <b>restricciones rompibles</b> reales (<code>maxForce</code> + <code>breakUnderForce</code>) que se parten dando bonificación vía <code>ConstraintListener(BREAK)</code>. Los grandes impactos congelan el tiempo y sacuden la cámara. En pleno vuelo aún puedes <b>agarrar</b> al muñeco, o pulsar <b>Espacio</b> para agitarte en pánico (3 cargas). <b>R</b> reinicia.",
   "demo.destructible-arena.label": "Arena destructible",
   "demo.destructible-arena.desc": "Shooter de vista lateral construido con <b>buildTilemapBody</b> + <b>CharacterController</b> + dos <b>ParticleEmitter</b> + <b>fractureBody</b>. La arena tiene 3× el ancho del lienzo; la cámara sigue al jugador y se sacude en cada muerte. <b>WASD/flechas</b> para moverse, <b>Space</b> para saltar. Mantén <b>contra una pared</b> en el aire para deslizarte por ella, y presiona <b>Space</b> para saltar desde ella. Salta hacia arriba a través de las plataformas moradas unidireccionales; la plataforma cian se desliza de ida y vuelta como un cuerpo cinemático. Mantén el <b>ratón</b> para disparar hacia el cursor.",
   "demo.destructible-terrain.label": "Terreno destructible",
@@ -302,6 +305,7 @@
     "demo.fracture.label",
     "demo.billiards.desc",
     "tag.Momentum",
-    "demo.contraption-garage.desc"
+    "demo.contraption-garage.desc",
+    "demo.crash-test-hero.desc"
   ]
 }

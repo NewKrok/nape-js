@@ -90,6 +90,7 @@
   "render.pixi": "PixiJS",
   "tag.AI": "MI",
   "tag.Balance": "Egyensúly",
+  "tag.Breakable": "Törhető",
   "tag.Building": "Építés",
   "tag.Camera": "Kamera",
   "tag.Camera Shake": "Kamerarázás",
@@ -181,6 +182,8 @@
   "demo.convex-cast.desc": "Egy pörgő penge söpri az akadályokat a <code>space.convexCast()</code> és a <code>space.convexMultiCast()</code> használatával. A <b>piros</b> jelölő az első találat a következő képkockában; a <b>sárga</b> pontok az összes találat a következő 0.35 s-en belül. <b>Kattints</b> dinamikus testek létrehozásához a söprési zónában.",
   "demo.conveyor-belts.label": "Szállítószalagok",
   "demo.conveyor-belts.desc": "Az objektumok szállítószalagokon haladnak kinematikus felületi sebesség használatával.",
+  "demo.crash-test-hero.label": "Töréstesztek hőse",
+  "demo.crash-test-hero.desc": "Turbo Dismount-stílusú karambolpontozás. Pózold be a próbababát a kiskocsin bármelyik testrésze <b>húzásával</b>, majd <b>tartsd nyomva a Space-t</b> (vagy a LAUNCH gombot) az oda-vissza pattogó erőmérő felhúzásához, és engedd el az indításhoz — le a rámpán, át a gödör felett, le a lépcsőn, bele a trambulinba, a forgó lapátkerékbe és a ládafalba. A sérülés MAGA a pontszám: minden kemény ütközés a mért <code>totalContactsImpulse</code> alapján fizet (fejtalálat ×3), a biztonsági öv, a nyak, a vállak és a csípők pedig valódi <b>törhető kényszerek</b> (<code>maxForce</code> + <code>breakUnderForce</code>), amelyek bónuszpontokért pattannak el egy <code>ConstraintListener(BREAK)</code>-en keresztül. A nagy ütések megfagyasztják az időt és megrázzák a kamerát. Repülés közben is <b>megragadhatod</b> a babát, vagy a <b>Space</b>-szel pánikcsapkodhatsz (3 töltet). Az <b>R</b> újraindít.",
   "demo.destructible-arena.label": "Rombolható aréna",
   "demo.destructible-arena.desc": "Oldalnézetes lövölde, amely <b>buildTilemapBody</b> + <b>CharacterController</b> + két <b>ParticleEmitter</b> + <b>fractureBody</b> elemekből épül fel. Az aréna 3× vászonszélességű; a kamera követi a játékost, és minden ölésnél megrázkódik. <b>WASD/nyilak</b> a mozgáshoz, <b>Space</b> az ugráshoz. Tartsd magad <b>a falnak</b> a levegőben a falcsúszáshoz, és nyomd meg a <b>Space</b>-t a falugráshoz. Ugorj fel a lila egyirányú platformokon keresztül; a ciánkék platform kinematikus testként siklik előre-hátra. Tartsd lenyomva az <b>egeret</b> a kurzor felé tüzeléshez.",
   "demo.destructible-terrain.label": "Rombolható terep",
@@ -302,6 +305,7 @@
     "demo.tilemap.desc",
     "demo.sticky-builder.desc",
     "api.core.aabb",
-    "demo.contraption-garage.desc"
+    "demo.contraption-garage.desc",
+    "demo.crash-test-hero.desc"
   ]
 }
