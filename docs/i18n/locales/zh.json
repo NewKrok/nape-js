@@ -183,7 +183,7 @@
   "demo.conveyor-belts.label": "传送带",
   "demo.conveyor-belts.desc": "物体利用运动学表面速度沿传送带移动。",
   "demo.crash-test-hero.label": "碰撞测试英雄",
-  "demo.crash-test-hero.desc": "Turbo Dismount 风格的碰撞计分。<b>拖拽</b>布娃娃假人的任意身体部位来摆姿势，然后<b>按住空格键</b>（或 LAUNCH 按钮）为往返摆动的力量条蓄力，松开即发射——冲下坡道、飞越深坑、滚下楼梯，撞进蹦床、旋转桨轮和木箱墙。伤害就是分数：每次硬碰撞都按测得的 <code>totalContactsImpulse</code> 付分（头部命中 ×3），安全带、脖子、肩膀和髋部都是真正的<b>可断裂约束</b>（<code>maxForce</code> + <code>breakUnderForce</code>），通过 <code>ConstraintListener(BREAK)</code> 断裂并奖励加分。重击会冻结时间并震动镜头。飞行途中仍可<b>抓住</b>假人，或按<b>空格</b>惊慌挥舞（3 次）。<b>R</b> 重新开始。",
+  "demo.crash-test-hero.desc": "Turbo Dismount 风格的碰撞计分。<b>拖拽</b>布娃娃假人的任意身体部位来摆姿势，然后<b>按住空格键</b>（或 LAUNCH 按钮）为往返摆动的力量条蓄力，松开即发射——冲下坡道、飞越深坑、滚下楼梯，撞进蹦床、旋转桨轮和木箱墙。伤害就是分数：每次硬碰撞都按测得的 <code>totalContactsImpulse</code> 付分（头部命中 ×3），安全带、脖子、肩膀和髋部都是真正的<b>可断裂约束</b>（<code>maxForce</code> + <code>breakUnderForce</code>），通过 <code>ConstraintListener(BREAK)</code> 断裂并奖励加分。重击会冻结时间并震动镜头。下坡途中时间几乎冻结——再按<b>空格</b>：假人按快速摆动的瞄准箭头角度<b>弹射</b>而出——FlatOut 风格——直冲障碍长廊：保龄球瓶、拆迁铁球、只有精准弧线才够得着的旋转转子阵、跷跷板和木箱墙。弹射后按空格惊慌挥舞（3 次）。<b>R</b> 重新开始。",
   "demo.destructible-arena.label": "可破坏竞技场",
   "demo.destructible-arena.desc": "由 <b>buildTilemapBody</b> + <b>CharacterController</b> + 两个 <b>ParticleEmitter</b> + <b>fractureBody</b> 构建的侧视射击游戏。竞技场宽度为画布的 3 倍；摄像机跟随玩家，并在每次击杀时抖动。<b>WASD/方向键</b>移动，<b>Space</b> 跳跃。在半空中<b>贴住墙壁</b>可贴墙下滑，按 <b>Space</b> 可蹬墙跳。向上穿过紫色的单向平台；青色平台作为运动学刚体来回滑行。按住<b>鼠标</b>向光标方向开火。",
   "demo.destructible-terrain.label": "可破坏地形",

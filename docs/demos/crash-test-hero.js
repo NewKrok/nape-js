@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
-  PivotJoint, AngleJoint, InteractionFilter,
+  PivotJoint, AngleJoint, DistanceJoint, InteractionFilter,
   CbEvent, CbType, ConstraintListener,
 } from "../nape-js.esm.js";
 import { drawBody, drawGrid } from "../renderer.js";
@@ -8,20 +8,28 @@ import { drawBody, drawGrid } from "../renderer.js";
 // ---------------------------------------------------------------------------
 // Crash Test Hero — Turbo-Dismount-style crash scoring mini-game.
 //
-// A ragdoll crash-test dummy sits on a two-wheeled cart at the top of a
-// launch tower. The player poses the dummy by yanking any body part with a
-// springy pivot "hand", then holds SPACE (or the LAUNCH button) to charge a
-// ping-ponging power meter and releases to launch. The cart tears down the
-// ramp, hits a kicker, flies a pit, and the dummy tumbles down a staircase
-// into a trampoline, a spinning kinematic paddle wheel and a crate wall.
+// A ragdoll crash-test dummy sits on a two-wheeled cart parked ON the big
+// ramp, nose downhill. The player poses the dummy by yanking any body part
+// with a springy pivot "hand", then holds SPACE (or the LAUNCH button) to
+// charge a ping-ponging power meter and releases to launch. The cart tears
+// down the ramp in near-frozen bullet time — and SPACE (or a click) EJECTS
+// the dummy out of the seat at the fast-sweeping aim arrow's angle,
+// FlatOut-stunt style, into the obstacle gauntlet: trampoline, paddle
+// wheel, bowling pins, hanging wrecking balls, a rotor field (three
+// airborne rotors placed on real ejection arcs — deliberately out of
+// reach of the no-eject tumble, so AIMING is what pays — plus a low
+// valley rotor), a seesaw and the crate wall. Left in the seat instead,
+// the cart hits a kicker, flies a pit, and the dummy tumbles down the
+// staircase into the same gauntlet.
 // Damage IS the score: every hard contact on a dummy part pays out points
 // from measured contact impulse (head hits ×3, torso ×2), the seatbelt and
 // the dummy's neck/shoulders/hips are real breakable constraints that snap
 // under load for bonus points, and scattered crates pay a demolition bonus.
 // Big hits trigger a hit-stop freeze + camera shake. When the dummy comes
-// to rest the run is graded and the session best is kept. Mid-flight the
-// player can still grab the dummy with the hand, or press SPACE to panic-
-// flail (3 charges) for extra chaos.
+// to rest the run is graded and the session best is kept. After the
+// ejection the player can press SPACE to panic-flail (3 charges) for
+// extra chaos; the pose-grab hand only works during setup. The breakable
+// joints arm at the ejection (or the kicker), never during the descent.
 //
 // Engine features showcased:
 //   * Constraint breaking — PivotJoints with maxForce + breakUnderForce +
@@ -51,34 +59,64 @@ const HUD_H = 40;
 // scheme as contraption-garage). The world is closed — side walls left and
 // right — so nothing is ever lost, it just crashes somewhere.
 //
-// Course tour: launch deck → big ramp → flat run-up → kicker lip → pit
-// (only shenanigans fall in — every launch power clears it) → landing
-// table → 8-drop staircase → valley with trampoline, paddle wheel, crate
-// stack and the backstop wall.
-const WORLD_W = 2260;
+// Course tour: launch deck → LONG curved ski slope (the ride is the show)
+// → flat run-up → kicker lip → pit (only shenanigans fall in — every
+// launch power clears it) → landing table → 8-drop staircase → long
+// obstacle-gauntlet valley: trampoline, paddle wheel, bowling pins, two
+// hanging wrecking balls, a rotor field (three airborne + one low), a
+// seesaw, the crate stack and the backstop wall.
+const WORLD_W = 3542;
 const WORLD_H = 940;
 const SKIRT_Y = WORLD_H + 20;
 
+// The long descent is a proper ski-slope curve, not a straight plank:
+// steep (~28°) off the shoulder, easing concavely to horizontal at the
+// bottom. Concave-up also means the surface always pushes INTO the cart —
+// no air-hops on the way down. y(t) = y0 + Δy·(2t − t²), slope 2·Δy/Δx·(1−t).
+// The curve terminates EXACTLY at the run-up level (1240,470) with zero
+// slope — any step or dip at the junction reads as a kink and launches a
+// fast cart off the ground.
+const RAMP_X0 = 380, RAMP_Y0 = 240;
+const RAMP_X1 = 1240, RAMP_Y1 = 470;
+const RAMP_SURF_Y = (x) => {
+  const t = (x - RAMP_X0) / (RAMP_X1 - RAMP_X0);
+  return RAMP_Y0 + (RAMP_Y1 - RAMP_Y0) * (2 * t - t * t);
+};
+const RAMP_ANGLE_AT = (x) => {
+  const t = (x - RAMP_X0) / (RAMP_X1 - RAMP_X0);
+  return Math.atan((2 * (RAMP_Y1 - RAMP_Y0) * (1 - t)) / (RAMP_X1 - RAMP_X0));
+};
+const RAMP_PTS = (() => {
+  const pts = [];
+  const N = 16;
+  for (let i = 1; i <= N; i++) {
+    const x = RAMP_X0 + ((RAMP_X1 - RAMP_X0) * i) / N;
+    pts.push([x, Math.round(RAMP_SURF_Y(x) * 10) / 10]);
+  }
+  return pts;
+})();
+
 const CHAINS = [
   [
-    [-20, 200], [300, 200],          // launch deck (cart parks here)
+    [-20, 200], [300, 200],          // launch deck
     [380, 240],                      // rounded shoulder into...
-    [620, 425],                      // ...the big ramp (~37°)
-    [700, 462],                      // flare-out at the bottom
-    [760, 470], [860, 470],          // flat run-up
-    [950, 435],                      // kicker lip (~21°) — then airborne
+    ...RAMP_PTS,                     // ...the curved ski slope (cart parks
+                                     //   near its top), easing out at the
+                                     //   run-up level (1240,470) seamlessly
+    [1340, 470],                     // flat run-up
+    [1430, 435],                     // kicker lip (~21°) — then airborne
   ],
   [
-    [950, 880], [1040, 880],         // pit floor (vertical walls implicit)
-    [1040, 550],                     // ← vertical face, skipped as a quad
-    [1086, 550],                     // staircase starts AT the pit lip — no
-    [1086, 580], [1132, 580],        //   landing table for a low-power
-    [1132, 610], [1178, 610],        //   dummy to strand or teeter on
-    [1178, 640], [1224, 640],        // 8 drops of 30px, 46px treads
-    [1224, 670], [1270, 670],        //   (Stair Dismount!)
-    [1270, 700], [1316, 700],
-    [1316, 730], [1362, 730],
-    [1362, 760], [2260, 760],        // valley floor — runs UNDER the right
+    [1430, 880], [1520, 880],        // pit floor (vertical walls implicit)
+    [1520, 550],                     // ← vertical face, skipped as a quad
+    [1566, 550],                     // staircase starts AT the pit lip — no
+    [1566, 580], [1612, 580],        //   landing table for a low-power
+    [1612, 610], [1658, 610],        //   dummy to strand or teeter on
+    [1658, 640], [1704, 640],        // 8 drops of 30px, 46px treads
+    [1704, 670], [1750, 670],        //   (Stair Dismount!)
+    [1750, 700], [1796, 700],
+    [1796, 730], [1842, 730],
+    [1842, 760], [3542, 760],        // valley floor — runs UNDER the right
   ],                                 //   wall so no crack swallows the dummy
 ];
 
@@ -90,34 +128,77 @@ const TERRAIN_MAT = () => new Material(0, 0.28, 0.36, 1, 0.005);
 // Trampoline pad — static, high elasticity, parked DIRECTLY UNDER the
 // paddle wheel (blade tips stop 2px above it): whatever lands there gets
 // bounced up into the blades and slapped on toward the crate wall.
-const PAD = { x: 1895, y: 747, w: 230, h: 26 };
+const PAD = { x: 2375, y: 747, w: 230, h: 26 };
 const PAD_MAT = () => new Material(1.7, 0.5, 0.7, 1, 0.001);
 
 // Paddle wheel — kinematic cross spinning at constant rate. Blade tips
 // sweep down to y ≈ 732 — 28px clear of the valley floor on purpose, so a
 // part lying flat under it settles instead of being batted forever, while
 // anything airborne (trampoline!) or piled up still gets smacked.
-const WHEEL_POS = { x: 1905, y: 585 };
+const WHEEL_POS = { x: 2385, y: 585 };
 const WHEEL_ARM = 280;               // full blade length (box major axis)
 const WHEEL_RATE = 3.2;              // rad/s
+
+// ── Obstacle gauntlet (staircase → backstop, left to right) ─────────────
+// Varied hazards so a flat-thrown dummy can snag on SOMETHING all the way
+// down the valley. All the dynamic props respawn each run.
+// Bowling pins — tall light boxes standing on the floor, satisfying to strike.
+const PIN_X0 = 2600;
+const PIN_COUNT = 6;
+const PIN_SPACING = 36;
+const PIN_W = 10, PIN_H = 46;
+// Wrecking balls — heavy circles on rigid DistanceJoint ropes, hanging at
+// staggered heights so both a low flier and a bouncing tumbler connect.
+const PENDULUMS = [                  // anchor x, anchor y, rope length
+  { ax: 2860, ay: 330, len: 340 },
+  { ax: 2950, ay: 300, len: 405 },
+];
+const BALL_R = 22;
+// Extra kinematic rotors — the aim-worthy targets. The three AIRBORNE ones
+// sit on real ejection arcs (calibrated by simulation), deliberately above
+// the no-eject kicker tumble's path (y≈385-700 at those x) and far above
+// any ground slide: batting through them is what an AIMED throw buys, and
+// every rotor slap pays impact damage (head ×3). The low valley rotor's
+// tips stay 50px above the floor (same idea as the paddle's clearance):
+// a part lying flat underneath settles instead of being milled forever.
+const ROTORS = [
+  { x: 2050, y: 280, len: 160, rate: 3.0, cross: false },
+  { x: 2480, y: 380, len: 170, rate: -2.6, cross: true },
+  { x: 2900, y: 340, len: 200, rate: 3.2, cross: false },
+  { x: 3080, y: 585, len: 250, rate: 2.4, cross: false },  // low valley rotor
+];
+// Seesaw — dynamic plank on a static fulcrum, launches whatever lands on
+// the far end.
+const SEESAW_X = 3240;
+const SEESAW_Y = 719;                // plank center (fulcrum apex + half)
+const SEESAW_LEN = 230;
 
 // Crate wall — light boxes in front of the backstop, scattered for bonus.
 const CRATE = 26;
 const CRATE_COLS = 4;
 const CRATE_ROWS = 4;
-const CRATE_X0 = 2055;               // snug against the backstop wall (no
-                                     //   dummy-swallowing crack behind) and
-                                     //   outside the paddle blade sweep
+const CRATE_X0 = 3383;               // snug against the backstop wall (no
+                                     //   dummy-swallowing crack behind)
 const CRATE_SCATTER_DIST = 36;       // displaced this far = demolished
 const CRATE_BONUS = 80;
 
 // ── Cart ─────────────────────────────────────────────────────────────────
+// The rig is BUILT axis-aligned around (CART_X, BOARD_Y) — a virtual flat
+// pose — then placeOnRamp() rotates the whole convoy onto the big ramp,
+// nose downhill. Parking on the slope means the descent is actually ridden
+// and the power choice sets the speed it is ridden AT.
 const CART_X = 150;
 const DECK_Y = 200;
 const BOARD_W = 92, BOARD_H = 12;
 const BOARD_Y = DECK_Y - 24;         // board center (wheels reach the deck)
 const CART_WHEEL_R = 13;
 const CART_WHEEL_MAT = () => new Material(0.1, 1.6, 1.9, 1.2, 0.01);
+
+// The cart parks near the top of the curved slope; its stance angle and
+// launch direction come from the curve's LOCAL slope at the parking spot.
+const RAMP_START_X = 420;            // surface x where the cart parks
+const CART_RIDE_H = CART_WHEEL_R * 2; // board center sits this far off the
+                                      //   surface (wheel center + radius)
 
 // ── Dummy rig ────────────────────────────────────────────────────────────
 const TORSO_W = 20, TORSO_H = 40;
@@ -140,14 +221,49 @@ const MASK_CART = ~GROUP_CART & 0xffffffff;
 // velocity jump Δv in one step carries force ≈ m·Δv·60. The seatbelt is
 // sized to survive the ramp and the kicker but fail at the pit landing.
 const SEATBELT_FORCE = 22000;
-const NECK_FORCE = 5200;
-const LIMB_FORCE = 6500;
+const NECK_FORCE = 11000;
+const LIMB_FORCE = 14000;
 const BREAK_BONUS = 350;
 
 // ── Launch ───────────────────────────────────────────────────────────────
+// Deliberately a teleport-velocity, aimed down the slope from the ramp
+// stance: the descent is ridden at whatever speed the power meter picked
+// (at full power the cart blasts off the flare-out and flies most of the
+// course — that chaos is the fun). A gentler push+booster variant was
+// tried and felt worse.
 const LAUNCH_MIN = 430;              // px/s at 0% power
 const LAUNCH_MAX = 1020;             // px/s at 100% power
 const POWER_RATE = 1.5;              // ping-pong sweeps per second (×2)
+
+// ── Eject (FlatOut stunt mode) ───────────────────────────────────────────
+// While the cart rides down, an aim arrow sweeps on the dummy; SPACE (or a
+// click) fires the whole ragdoll out of the seat at that angle, into the
+// obstacle gauntlet. The breakable joints only arm at the ejection (or at
+// the kicker if the player never ejects) — the bumpy descent itself must
+// never shake the dummy apart.
+// Flat-biased sweep (−3°…49°): the fun crashes live at ground level in the
+// obstacle gauntlet, so the throw should skim into it, not lob over it.
+const EJECT_MIN_ANG = -0.05;         // rad above horizontal, sweep floor
+const EJECT_MAX_ANG = 0.85;          // sweep ceiling (~49°)
+const EJECT_SWEEP_RATE = 3.4;        // rad/s ping-pong — fast on purpose,
+                                     //   nailing the angle is the skill
+const EJECT_KICK = 380;              // px/s added on top of the cart speed —
+                                     //   sized so a good throw can involve
+                                     //   the FAR end of the gauntlet
+const KICKER_ARM_X = 1430;           // no eject by the lip → joints arm here
+
+// Bullet time while aiming: the descent all but freezes so the fast
+// sweeping arrow (which keeps full speed) is the whole challenge.
+// Implemented as velocity scaling — every body ×SCALE, gravity ×SCALE² —
+// because that preserves trajectories exactly (same paths, slower
+// traversal) and works at any display refresh rate; the runner has no
+// time-scale knob and physicsPaused duty-cycling would freeze the camera
+// follow.
+const SLOWMO_SCALE = 0.08;
+const SLOWMO_START_X = 1150;         // engages only at the very END of the
+                                     //   curve — the descent itself plays
+                                     //   at full speed
+const SLOWMO_END_X = 1415;           // disengages just before the kicker
 
 // ── Damage scoring ───────────────────────────────────────────────────────
 // Per step, per dummy part: |totalContactsImpulse| above the threshold pays
@@ -169,19 +285,19 @@ const HITSTOP_FRAMES = 5;
 const HITSTOP_COOLDOWN = 45;
 
 // ── Run flow ─────────────────────────────────────────────────────────────
-const RUN_TIME_CAP = 22;             // seconds — force the results screen
+const RUN_TIME_CAP = 28;             // seconds — force the results screen
 const QUIET_SPEED = 30;              // px/s — "the dummy has come to rest"
 const QUIET_FRAMES = 75;
 const QUIET_MIN_T = 2;               // never end in the first 2 seconds
 const QUIET_SNAP_FRAMES = 90;        // displacement fallback sampling period
 const QUIET_SNAP_DIST = 26;          // px moved per period that counts as rest
-const PIT_ZONE = { x0: 940, x1: 1050, y: 780 };
+const PIT_ZONE = { x0: 1420, x1: 1530, y: 780 };
 const PIT_FRAMES = 150;              // torso parked in the pit → run over
 const RESTART_LOCK_STEPS = 30;       // ignore clicks right after an overlay
 const FLAILS_PER_RUN = 3;
 
 const GRADES = [                     // total damage → grade letter
-  [16000, "S"], [10000, "A"], [5000, "B"], [1500, "C"],
+  [12000, "S"], [7500, "A"], [4000, "B"], [1200, "C"],
 ];
 
 // Shove/pose hand — soft pivot the player can attach to any dummy part.
@@ -189,8 +305,8 @@ const HAND_FREQ = 8;
 const HAND_DAMP = 1.2;
 const GRAB_R = 46;
 
-// Setup-phase camera rest point (shows deck + ramp head).
-const SETUP_CAM = { x: 430, y: 300 };
+// Setup-phase camera rest point (cart on the ramp + run-up to the kicker).
+const SETUP_CAM = { x: 520, y: 320 };
 
 // Launch button (canvas UI, screen coords — bottom-right like the other
 // game demos; the demo page overlays its render-mode controls top-right).
@@ -214,6 +330,10 @@ let _dummy = null;                   // rig struct, see buildDummy()
 let _seatbelt = null;
 let _crates = [];                    // { body, x0, y0, scattered }
 let _paddle = null;
+let _rotors = [];                    // extra kinematic rotors (see ROTORS)
+let _pins = [];                      // bowling pins (dynamic, respawned)
+let _pendulums = [];                 // { ax, ay, body, joint }
+let _seesaw = null;                  // { plank, joint }
 
 // Breakable-joint registry: pivot → { angle, label, part }. The BREAK
 // listener only queues; step() drains (never mutate the space mid-callback).
@@ -222,6 +342,14 @@ let _paddle = null;
 let _cbBreakable = null;
 let _breakables = new Map();
 const _pendingBreaks = [];
+
+let _ejected = false;                // dummy fired out of the seat
+let _armed = false;                  // breakable joints live
+let _slowmo = false;                 // bullet time active (_timeScale < 1)
+let _timeScale = 1;                  // current world time scale
+let _railSpeed = null;               // scaled speed held by rails mode
+let _ejectAngle = 0.4;               // current sweep angle (rad above horiz)
+let _ejectDir = 1;
 
 let _score = 0;
 let _impactScore = 0;
@@ -297,6 +425,81 @@ function spawnPaddle() {
   // lying in the valley gets scooped toward the crate wall, not back up
   // the stairs.
   _paddle.angularVel = -WHEEL_RATE;
+
+  // The rotor field — kinematic like the paddle: unstoppable. Airborne
+  // ones guard the ejection arcs, the low one churns the valley floor.
+  for (const r of ROTORS) {
+    const rotor = new Body(BodyType.KINEMATIC, new Vec2(r.x, r.y));
+    rotor.shapes.add(new Polygon(Polygon.box(r.len, 12)));
+    if (r.cross) rotor.shapes.add(new Polygon(Polygon.box(12, r.len)));
+    try { rotor.userData._colorIdx = 3; } catch (_) { /* same */ }
+    rotor.space = _space;
+    rotor.angularVel = r.rate;
+    _rotors.push(rotor);
+  }
+
+  // Seesaw fulcrum — static wedge; the plank pivots on its apex.
+  const fulcrum = new Body(BodyType.STATIC);
+  fulcrum.shapes.add(new Polygon([
+    new Vec2(SEESAW_X - 20, 760), new Vec2(SEESAW_X + 20, 760),
+    new Vec2(SEESAW_X, SEESAW_Y + 5),
+  ], TERRAIN_MAT()));
+  try { fulcrum.userData._colorIdx = 5; } catch (_) { /* same */ }
+  fulcrum.space = _space;
+}
+
+// Dynamic gauntlet props — respawned every run so a demolished course
+// resets with the dummy.
+function spawnGauntlet() {
+  despawnGauntlet();
+  for (let i = 0; i < PIN_COUNT; i++) {
+    const pin = new Body(BodyType.DYNAMIC,
+      new Vec2(PIN_X0 + i * PIN_SPACING, 760 - PIN_H / 2));
+    // No Material override on dynamic Polygons (P53 tunneling bug).
+    pin.shapes.add(new Polygon(Polygon.box(PIN_W, PIN_H)));
+    try { pin.userData._colorIdx = 2; } catch (_) { /* same */ }
+    pin.space = _space;
+    _pins.push(pin);
+  }
+  for (const { ax, ay, len } of PENDULUMS) {
+    const ball = new Body(BodyType.DYNAMIC, new Vec2(ax, ay + len));
+    // Heavy: a wrecking ball should barely notice the dummy. (Circle +
+    // Material is safe from the P53 bug.)
+    ball.shapes.add(new Circle(BALL_R, undefined,
+      new Material(0.3, 0.5, 0.7, 6, 0.01)));
+    try { ball.userData._colorIdx = 3; } catch (_) { /* same */ }
+    ball.space = _space;
+    const joint = new DistanceJoint(_space.world, ball,
+      new Vec2(ax, ay), new Vec2(0, 0), len, len);
+    joint.space = _space;
+    _pendulums.push({ ax, ay, body: ball, joint });
+  }
+  const plank = new Body(BodyType.DYNAMIC, new Vec2(SEESAW_X, SEESAW_Y));
+  plank.shapes.add(new Polygon(Polygon.box(SEESAW_LEN, 10)));
+  try { plank.userData._colorIdx = 1; } catch (_) { /* same */ }
+  plank.space = _space;
+  const pivot = new PivotJoint(_space.world, plank,
+    new Vec2(SEESAW_X, SEESAW_Y), new Vec2(0, 0));
+  pivot.space = _space;
+  _seesaw = { plank, joint: pivot };
+}
+
+function despawnGauntlet() {
+  // Joints detach before bodies (same rule as the dummy rig).
+  for (const p of _pendulums) {
+    if (p.joint.space) p.joint.space = null;
+    if (p.body.space) p.body.space = null;
+  }
+  _pendulums = [];
+  if (_seesaw) {
+    if (_seesaw.joint.space) _seesaw.joint.space = null;
+    if (_seesaw.plank.space) _seesaw.plank.space = null;
+    _seesaw = null;
+  }
+  for (const pin of _pins) {
+    if (pin.space) pin.space = null;
+  }
+  _pins = [];
 }
 
 function spawnCrates() {
@@ -351,12 +554,33 @@ function spawnCart() {
     wheels.push(w);
   }
 
-  // Parking brake — a stiff pivot to the static world, removed at launch.
-  _holder = new PivotJoint(_space.world, board,
-    new Vec2(CART_X, BOARD_Y), new Vec2(0, 0));
-  _holder.space = _space;
-
   _cart = { board, wheels, joints };
+}
+
+// Rotate the flat-built convoy (cart + dummy, joints ride along — all
+// anchors are body-local) onto the big ramp, nose downhill, and park it
+// there with the holder pivot. AngleJoint limits are relative angles, so
+// the rig's pose survives the transform untouched.
+function placeOnRamp() {
+  const ang = RAMP_ANGLE_AT(RAMP_START_X);
+  const cos = Math.cos(ang);
+  const sin = Math.sin(ang);
+  // Outward surface normal is (sin, -cos): board center hovers CART_RIDE_H
+  // above the parking spot, perpendicular to the slope.
+  const cx = RAMP_START_X + CART_RIDE_H * sin;
+  const cy = RAMP_SURF_Y(RAMP_START_X) - CART_RIDE_H * cos;
+  const bodies = [_cart.board, ..._cart.wheels,
+    ..._dummy.parts.map((p) => p.body)];
+  for (const b of bodies) {
+    const rx = b.position.x - CART_X;
+    const ry = b.position.y - BOARD_Y;
+    b.position = new Vec2(cx + rx * cos - ry * sin, cy + rx * sin + ry * cos);
+    b.rotation += ang;
+  }
+  // Parking brake — a stiff pivot to the static world, removed at launch.
+  _holder = new PivotJoint(_space.world, _cart.board,
+    new Vec2(cx, cy), new Vec2(0, 0));
+  _holder.space = _space;
 }
 
 function despawnCart() {
@@ -375,7 +599,7 @@ function dummyPart(x, y, shape, name, mult, colorIdx) {
   shape.filter = new InteractionFilter(GROUP_DUMMY, MASK_DUMMY);
   try { body.userData._colorIdx = colorIdx; } catch (_) { /* same */ }
   body.space = _space;
-  return { body, name, mult, cd: 0 };
+  return { body, name, mult, cd: 0, hits: 0 };
 }
 
 function addAngle(b1, b2, min, max, joints) {
@@ -392,10 +616,10 @@ function addAngle(b1, b2, min, max, joints) {
 // maxForce in one step. The paired AngleJoint is remembered so the BREAK
 // drain can detach it too — otherwise the "severed" limb would stay tethered
 // by the soft angular spring.
-function addBreakablePivot(b1, b2, a1, a2, maxForce, label, joints) {
+// Created DISARMED (unbreakable) — posing the dummy with the drag hand must
+// never tear it apart; doLaunch() arms every registered breakable.
+function addBreakablePivot(b1, b2, a1, a2, joints) {
   const j = new PivotJoint(b1, b2, a1, a2);
-  j.maxForce = maxForce;
-  j.breakUnderForce = true;
   j.removeOnBreak = true;
   j.cbTypes.add(_cbBreakable);
   j.space = _space;
@@ -430,10 +654,9 @@ function buildDummy() {
     "head", MULT_HEAD, 0);
 
   const neck = addBreakablePivot(torso.body, head.body,
-    new Vec2(0, -TORSO_H / 2 - 1), new Vec2(0, HEAD_R - 1),
-    NECK_FORCE, "NECK SNAP", joints);
+    new Vec2(0, -TORSO_H / 2 - 1), new Vec2(0, HEAD_R - 1), joints);
   const neckAngle = addAngle(torso.body, head.body, -0.6, 0.6, joints);
-  registerBreakable(neck, neckAngle, "NECK SNAP", head);
+  registerBreakable(neck, neckAngle, "NECK SNAP", head, NECK_FORCE);
 
   const limbs = [];
   // Arms — two segments hanging at the torso's sides.
@@ -448,10 +671,9 @@ function buildDummy() {
 
     const shoulder = addBreakablePivot(torso.body, upper.body,
       new Vec2(side * (TORSO_W / 2 - 2), -TORSO_H / 2 + 8),
-      new Vec2(0, -ARM_LEN / 2 + 1),
-      LIMB_FORCE, "ARM OFF", joints);
+      new Vec2(0, -ARM_LEN / 2 + 1), joints);
     const shoulderAngle = addAngle(torso.body, upper.body, -2.2, 2.2, joints);
-    registerBreakable(shoulder, shoulderAngle, "ARM OFF", upper);
+    registerBreakable(shoulder, shoulderAngle, "ARM OFF", upper, LIMB_FORCE);
 
     addPivot(upper.body, lower.body,
       new Vec2(0, ARM_LEN / 2 - 1), new Vec2(0, -ARM_LEN / 2 + 1), joints);
@@ -473,9 +695,9 @@ function buildDummy() {
 
     const hip = addBreakablePivot(torso.body, upper.body,
       new Vec2(6, TORSO_H / 2 - 3 + side * 2), new Vec2(-LEG_LEN / 2 + 1, 0),
-      LIMB_FORCE, "LEG OFF", joints);
+      joints);
     const hipAngle = addAngle(torso.body, upper.body, -1.8, 1.8, joints);
-    registerBreakable(hip, hipAngle, "LEG OFF", upper);
+    registerBreakable(hip, hipAngle, "LEG OFF", upper, LIMB_FORCE);
 
     addPivot(upper.body, lower.body,
       new Vec2(LEG_LEN / 2 - 1, 0), new Vec2(-LEG_LEN / 2 + 1, 0), joints);
@@ -487,19 +709,90 @@ function buildDummy() {
   _dummy = { torso, head, parts, joints };
 
   // Seatbelt — dummy pelvis strapped to the board. Weak on purpose: it
-  // holds through the launch and lets go at the first real shock.
+  // holds through the launch and lets go at the first real shock. Like the
+  // limb joints it starts disarmed so posing can't snap it.
   _seatbelt = new PivotJoint(_cart.board, torso.body,
     new Vec2(-10, -BOARD_H / 2), new Vec2(0, TORSO_H / 2 - 4));
-  _seatbelt.maxForce = SEATBELT_FORCE;
-  _seatbelt.breakUnderForce = true;
   _seatbelt.removeOnBreak = true;
   _seatbelt.cbTypes.add(_cbBreakable);
   _seatbelt.space = _space;
-  registerBreakable(_seatbelt, null, "SEATBELT!", torso);
+  registerBreakable(_seatbelt, null, "SEATBELT!", torso, SEATBELT_FORCE);
 }
 
-function registerBreakable(pivot, angle, label, part) {
-  _breakables.set(pivot, { angle, label, part });
+function registerBreakable(pivot, angle, label, part, force) {
+  _breakables.set(pivot, { angle, label, part, force });
+}
+
+// Every breakable joint goes live. Deferred all the way to the EJECTION
+// (or the kicker lip, if the player never ejects): until then they are
+// plain unbreakable pivots (maxForce = Infinity), so neither the posing
+// hand nor the bumpy ramp descent can shake the dummy apart.
+function armBreakables() {
+  if (_armed) return;
+  _armed = true;
+  for (const [pivot, info] of _breakables) {
+    pivot.maxForce = info.force;
+    pivot.breakUnderForce = true;
+  }
+}
+
+// Bullet-time scaling. Scaling every non-static body's velocity by s and
+// gravity by s² is a proper time reparametrization: ballistic arcs, friction
+// decel and restitution all stay on identical paths, just traversed slower.
+// Soft spring frequencies must stretch along (they act at REAL rate and
+// would otherwise snap the slumped dummy back into pose 12× too fast).
+// The scale is applied GRADUALLY (see step()): the solver's positional
+// corrections — contact slop, joint bias — do NOT scale with velocity, and
+// a single 12× jump lets them lever the cart into a slow-motion wheelie;
+// easing over ~a dozen steps lets the contacts re-settle at each level.
+function applyTimeScale(next) {
+  if (!_space || next === _timeScale) return;
+  const s = next / _timeScale;
+  // ×s² is the true time reparametrization (paths preserved, and crucially
+  // the friction-to-momentum ratio too — gravity ×s was tried and the
+  // dummy's leg drag, suddenly 12× stronger relative to the scaled
+  // momentum, stalled the convoy mid-window). The cart staying seated is
+  // the rails-mode servo's job, not gravity's.
+  _space.gravity = new Vec2(0, 800 * next * next);
+  for (const body of _space.bodies) {
+    if (body.type === BodyType.STATIC) continue;
+    const v = body.velocity;
+    body.velocity = new Vec2(v.x * s, v.y * s);
+    body.angularVel *= s;
+  }
+  if (_dummy) {
+    for (const j of _dummy.joints) {
+      if (j.stiff === false) j.frequency *= s;
+    }
+  }
+  if (_railSpeed !== null) _railSpeed *= s;
+  _timeScale = next;
+  _slowmo = next < 0.999;
+}
+
+// FlatOut-style ejection: unbuckle, fire the whole ragdoll along the aim
+// arrow at cart speed + kick, and only NOW arm the breakable joints. The
+// belt is unregistered (removed, not broken — no snap bonus for leaving
+// the seat on purpose).
+function doEject() {
+  if (_phase !== "run" || _ejected || !_dummy || !_seatbelt) return;
+  applyTimeScale(1);                 // restore real time (and real speeds)
+  _ejected = true;
+  _breakables.delete(_seatbelt);
+  if (_seatbelt.space) _seatbelt.space = null;
+  _seatbelt = null;
+  const tv = _dummy.torso.body.velocity;
+  const v = Math.hypot(tv.x, tv.y) + EJECT_KICK;
+  const vx = Math.cos(_ejectAngle) * v;
+  const vy = -Math.sin(_ejectAngle) * v;
+  for (const p of _dummy.parts) {
+    if (p.body.space) p.body.velocity = new Vec2(vx, vy);
+  }
+  armBreakables();
+  const tp = _dummy.torso.body.position;
+  addFloater(tp.x, tp.y - 40, "EJECT!", "#7ee787");
+  _fx.push({ x: tp.x, y: tp.y, life: 16, color: "126,231,135" });
+  if (_runnerRef) _runnerRef.shakeCamera?.(5, 0.15);
 }
 
 function despawnDummy() {
@@ -522,15 +815,23 @@ function despawnDummy() {
 // ---------------------------------------------------------------------------
 
 function enterSetup() {
+  applyTimeScale(1);                 // retry mid-aim must restore gravity
   despawnDummy();
   despawnCart();
   spawnCrates();
+  spawnGauntlet();
   spawnCart();
   buildDummy();
+  placeOnRamp();
   _phase = "setup";
   _power = 0;
   _powerDir = 1;
   _charging = false;
+  _ejected = false;
+  _armed = false;
+  _ejectAngle = 0.4;
+  _ejectDir = 1;
+  _railSpeed = null;
   _score = 0;
   _impactScore = 0;
   _breakCount = 0;
@@ -549,14 +850,20 @@ function enterSetup() {
 
 function doLaunch() {
   if (_phase !== "setup" || !_cart || !_dummy) return;
-  const v = LAUNCH_MIN + _power * (LAUNCH_MAX - LAUNCH_MIN);
+  releaseHand();                     // a held pose-grab must not ride along
   if (_holder && _holder.space) _holder.space = null;
   _holder = null;
   // Whole convoy gets the same velocity — no internal spikes, so the
-  // seatbelt survives the launch itself and fails somewhere funnier.
+  // seatbelt survives the launch itself and fails somewhere funnier. The
+  // velocity points DOWN THE SLOPE: a horizontal shove on a 37° descent
+  // points out of the surface and would lift the cart off the ramp.
+  const v = LAUNCH_MIN + _power * (LAUNCH_MAX - LAUNCH_MIN);
+  const ang = RAMP_ANGLE_AT(RAMP_START_X);
+  const vx = v * Math.cos(ang);
+  const vy = v * Math.sin(ang);
   const movers = [_cart.board, ..._cart.wheels,
     ..._dummy.parts.map((p) => p.body)];
-  for (const b of movers) b.velocity = new Vec2(v, 0);
+  for (const b of movers) b.velocity = new Vec2(vx, vy);
   for (const w of _cart.wheels) w.angularVel = v / CART_WHEEL_R;
   _charging = false;
   _phase = "run";
@@ -569,6 +876,7 @@ function doLaunch() {
 }
 
 function finishRun() {
+  applyTimeScale(1);                 // never leave the world slowed
   releaseHand();
   _grade = "D";
   for (const [min, g] of GRADES) {
@@ -623,7 +931,13 @@ function scoreImpacts() {
       mag = 0;
     }
     if (mag <= IMP_THRESH) continue;
-    const dmg = (mag - IMP_THRESH) * DMG_SCALE * p.mult;
+    // Repeat hits on the same part fade geometrically — a dummy juggled
+    // between the trampoline and a rotor is spectacle, not an infinite
+    // point farm; without this a lucky wedge out-scores every honest run
+    // by 20×.
+    const fade = Math.max(0.12, Math.pow(0.85, p.hits));
+    p.hits++;
+    const dmg = (mag - IMP_THRESH) * DMG_SCALE * p.mult * fade;
     p.cd = PART_DMG_COOLDOWN;
     stepDmg += dmg;
     _impactScore += dmg;
@@ -749,8 +1063,11 @@ function releaseHand() {
   _hand = null;
 }
 
+// Pose-grab — setup phase only. Once the run starts the dummy is on its
+// own; a drag hand mid-flight would let the player puppet it across the
+// course (or farm damage against the paddle wheel).
 function grabAt(x, y) {
-  if (!_dummy) return false;
+  if (_phase !== "setup" || !_dummy) return false;
   let best = null, bestD = GRAB_R;
   for (const p of _dummy.parts) {
     if (!p.body.space) continue;
@@ -787,8 +1104,11 @@ export default {
     "points from measured <code>totalContactsImpulse</code> (head hits ×3), and the seatbelt, neck, " +
     "shoulders and hips are real <b>breakable constraints</b> (<code>maxForce</code> + " +
     "<code>breakUnderForce</code>) that snap for bonus points via a " +
-    "<code>ConstraintListener(BREAK)</code>. Big hits freeze time and shake the camera. Mid-flight you " +
-    "can still <b>grab</b> the dummy, or press <b>Space</b> to panic-flail (3 charges). " +
+    "<code>ConstraintListener(BREAK)</code>. Big hits freeze time and shake the camera. On the way " +
+    "down time nearly freezes — press <b>Space</b> again to <b>eject</b> the dummy at the fast-sweeping " +
+    "aim arrow's angle, FlatOut-style, into the obstacle gauntlet: bowling pins, wrecking balls, " +
+    "a field of spinning rotors only a good arc can reach, a seesaw and the crate wall. " +
+    "After ejecting, Space panic-flails (3 charges). " +
     "<b>R</b> restarts.",
   walls: false,
   workerCompatible: false,
@@ -802,12 +1122,18 @@ export default {
 
     // Hard-reset module state — the previous load's bodies died with its space.
     _phase = "setup";
+    _slowmo = false;                 // fresh space is already at real time
+    _timeScale = 1;
     _cart = null;
     _holder = null;
     _dummy = null;
     _seatbelt = null;
     _crates = [];
     _paddle = null;
+    _rotors = [];
+    _pins = [];
+    _pendulums = [];
+    _seesaw = null;
     _breakables = new Map();
     _pendingBreaks.length = 0;
     _best = _best ?? null;           // session best survives reloads
@@ -857,8 +1183,10 @@ export default {
           e.preventDefault();
           if (e.repeat) return;
           if (_phase === "setup") _charging = true;
-          else if (_phase === "run") panicFlail();
-          else if (_lockTimer <= 0) enterSetup();
+          else if (_phase === "run") {
+            if (!_ejected && _seatbelt) doEject();
+            else panicFlail();
+          } else if (_lockTimer <= 0) enterSetup();
         }
       };
       _lastKeyUp = (e) => {
@@ -903,10 +1231,86 @@ export default {
 
     if (_phase !== "run") return;
     _runT = Math.max(0, _space.elapsedTime - _runBase);
+    // Aim arrow ping-pongs while the dummy is still in the seat.
+    if (!_ejected && _seatbelt) {
+      _ejectAngle += (_ejectDir * EJECT_SWEEP_RATE) / 60;
+      if (_ejectAngle >= EJECT_MAX_ANG) { _ejectAngle = EJECT_MAX_ANG; _ejectDir = -1; }
+      if (_ejectAngle <= EJECT_MIN_ANG) { _ejectAngle = EJECT_MIN_ANG; _ejectDir = 1; }
+    }
+    // Bullet time tracks the aiming window: engaged while the belted dummy
+    // rides the end of the curve, released at the kicker approach (or by
+    // ejecting). The scale EASES toward its target in equal log-ratio
+    // steps (~12 steps for the full swing) — see applyTimeScale for why a
+    // hard jump misbehaves.
+    if (_cart) {
+      const bx = _cart.board.position.x;
+      const want = (!_ejected && _seatbelt
+        && bx > SLOWMO_START_X && bx < SLOWMO_END_X) ? SLOWMO_SCALE : 1;
+      if (_timeScale !== want) {
+        let next = _timeScale * Math.pow(want / _timeScale, 0.25);
+        if (Math.abs(Math.log(next / want)) < 0.05) next = want;
+        applyTimeScale(next);
+      }
+    }
+    // Rails mode while aiming: bullet time is a UI window, not a physics
+    // showcase. The solver's positional corrections (contact slop, joint
+    // bias) act at REAL rate regardless of the time scale, and over a
+    // several-second window they lever the crawling cart into a wheelie
+    // and float it off the ground. Pin the pitch to the local surface
+    // angle with a damped spring and bleed any upward drift; downward
+    // motion is left alone so the cart still tracks the slope.
+    if (_slowmo && _cart && _cart.board.space) {
+      // Full rails: re-aim the velocity along the surface tangent every
+      // step with a height servo toward the nominal ride height, and hold
+      // the speed the cart ENTERED bullet time with — the slow-mo solver
+      // churn (dummy ground-drag corrections at real rate) otherwise
+      // bleeds ~40% of it, which real time would never do. The surface
+      // model covers curve tail + flat + kicker face, so the servo tracks
+      // the ground all the way to the slow-mo cutoff at 1415.
+      const surfInfo = (x) => {
+        if (x < RAMP_X1) return { y: RAMP_SURF_Y(x), a: RAMP_ANGLE_AT(x) };
+        if (x < 1340) return { y: 470, a: 0 };
+        return { y: 470 - ((x - 1340) * 35) / 90, a: -Math.atan2(35, 90) };
+      };
+      const b = _cart.board;
+      const bs = surfInfo(b.position.x);
+      b.angularVel = b.angularVel * 0.4 - (b.rotation - bs.a) * 0.45;
+      const expected = bs.y - CART_RIDE_H / Math.cos(bs.a);
+      const v = b.velocity;
+      // Capture the held speed only once the scale has fully settled — a
+      // mid-transition capture would be half-scaled and the rails would
+      // then pump the cart up to several times its real speed.
+      if (_railSpeed === null && _timeScale === SLOWMO_SCALE) {
+        _railSpeed = Math.hypot(v.x, v.y);
+      }
+      const sp = Math.max(Math.hypot(v.x, v.y), _railSpeed ?? 0);
+      b.velocity = new Vec2(
+        sp * Math.cos(bs.a),
+        sp * Math.sin(bs.a) + (expected - b.position.y) * 0.25,
+      );
+      // The wheels need the same servo — the positional corrections shove
+      // THEM up, and the pivots then lever the height-pinned board.
+      for (const w of _cart.wheels) {
+        if (!w.space) continue;
+        const ws = surfInfo(w.position.x);
+        const wexp = ws.y - CART_WHEEL_R / Math.cos(ws.a);
+        w.velocity = new Vec2(
+          sp * Math.cos(ws.a),
+          sp * Math.sin(ws.a) + (wexp - w.position.y) * 0.25,
+        );
+      }
+    }
+    // Never ejected: the joints (and the belt) go live at the kicker lip so
+    // the crash still snaps them — with a 6 s fallback for a pre-kicker
+    // wreck that would otherwise stay unbreakable forever.
+    if (!_armed && _cart
+      && (_cart.board.position.x > KICKER_ARM_X || _runT > 6)) {
+      armBreakables();
+    }
     // Parked carts stop churning: the near-frictionless wheels otherwise
     // keep spinning for minutes and conveyor-belt any limb resting on them,
     // which stalls the rest detector.
-    if (_cart) {
+    if (_cart && !_slowmo) {
       const bv = _cart.board.velocity;
       if (Math.hypot(bv.x, bv.y) < 60) {
         for (const w of _cart.wheels) w.angularVel *= 0.96;
@@ -915,18 +1319,23 @@ export default {
     // The head is a near-perfect ball and the course is polished steel —
     // material rolling friction pairs too low to matter, so bleed its spin
     // directly or a snapped-off head rolls end to end for half a minute.
-    if (_dummy && _dummy.head.body.space) {
+    // Skipped in bullet time: scaled-down speeds sit under the settling
+    // thresholds, and per-frame damping would silently eat the convoy's
+    // real velocity over the stretched aiming window.
+    if (_dummy && !_slowmo && _dummy.head.body.space) {
       _dummy.head.body.angularVel *= 0.98;
     }
     // Settling drag: parts below flight speed bleed velocity so the slick
     // course doesn't keep them creeping for half a minute after the show
-    // is over. Anything actually flying (>80 px/s) is untouched.
-    if (_dummy) {
+    // is over. Anything actually moving (>60 px/s) is untouched — the
+    // threshold is deliberately low so a slider can carry deep into the
+    // long gauntlet.
+    if (_dummy && !_slowmo) {
       for (const p of _dummy.parts) {
         const b = p.body;
         if (!b.space) continue;
         const v = b.velocity;
-        if (v.x * v.x + v.y * v.y < 6400) {
+        if (v.x * v.x + v.y * v.y < 3600) {
           b.velocity = new Vec2(v.x * 0.98, v.y * 0.98);
           b.angularVel *= 0.98;
         }
@@ -951,10 +1360,15 @@ export default {
     if (sx >= GO_RECT.x && sx <= GO_RECT.x + GO_RECT.w
       && sy >= GO_RECT.y && sy <= GO_RECT.y + GO_RECT.h) {
       if (_phase === "setup") _charging = true;   // hold-to-charge
-      else enterSetup();                          // mid-run retry
+      else if (!_ejected && _seatbelt) doEject(); // same button = eject
+      else enterSetup();                          // then it turns into retry
       return;
     }
 
+    if (_phase === "run") {
+      if (!_ejected && _seatbelt) doEject();      // click = eject too
+      return;
+    }
     grabAt(x, y);
   },
 
@@ -983,10 +1397,14 @@ export default {
       impactScore: _impactScore, breakCount: _breakCount,
       crateCount: _crateCount, best: _best, grade: _grade,
       runT: _runT, quiet: _quiet, flails: _flails,
+      ejected: _ejected, armed: _armed,
+      ejectAngle: _ejectAngle, slowmo: _slowmo,
+      pins: _pins, pendulums: _pendulums, seesaw: _seesaw, rotors: _rotors,
       dummy: _dummy, cart: _cart, crates: _crates, paddle: _paddle,
       breakables: _breakables, seatbelt: _seatbelt,
-      enterSetup, doLaunch, finishRun, panicFlail,
+      enterSetup, doLaunch, finishRun, panicFlail, doEject,
       setPower: (p) => { _power = Math.max(0, Math.min(1, p)); },
+      setEjectAngle: (a) => { _ejectAngle = a; },
       goRect: GO_RECT,
     };
   },
@@ -1025,7 +1443,9 @@ export default {
 function drawWorldOverlay(ctx) {
   drawPad(ctx);
   drawPaddleHub(ctx);
+  drawRopes(ctx);
   drawSeatbelt(ctx);
+  drawAim(ctx);
   drawFace(ctx);
   drawHoverRing(ctx);
   drawHand(ctx);
@@ -1064,15 +1484,86 @@ function drawPaddleHub(ctx) {
   ctx.setLineDash([]);
 }
 
+// Wrecking-ball ropes + rotor hubs — the joints/kinematics are invisible
+// to the body renderer, so sketch them here.
+function drawRopes(ctx) {
+  ctx.strokeStyle = "#8b949e";
+  ctx.lineWidth = 2;
+  for (const p of _pendulums) {
+    if (!p.body.space) continue;
+    const b = p.body.position;
+    ctx.beginPath();
+    ctx.moveTo(p.ax, p.ay);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+    ctx.fillStyle = "#8b949e";
+    ctx.beginPath();
+    ctx.arc(p.ax, p.ay, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = "#f85149";
+  for (const r of ROTORS) {
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// Sweeping eject-aim arrow + a faint ballistic preview of where the dummy
+// would fly if fired right now. Visible while the dummy is in the seat.
+function drawAim(ctx) {
+  if (_phase !== "run" || _ejected || !_seatbelt || !_dummy) return;
+  const torso = _dummy.torso.body;
+  const p = torso.position;
+  const dx = Math.cos(_ejectAngle);
+  const dy = -Math.sin(_ejectAngle);
+  ctx.strokeStyle = "#7ee787";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(p.x + dx * 54, p.y + dy * 54);
+  ctx.stroke();
+  ctx.fillStyle = "#7ee787";
+  ctx.beginPath();
+  ctx.moveTo(p.x + dx * 64, p.y + dy * 64);
+  ctx.lineTo(p.x + dx * 48 - dy * 7, p.y + dy * 48 + dx * 7);
+  ctx.lineTo(p.x + dx * 48 + dy * 7, p.y + dy * 48 - dx * 7);
+  ctx.closePath();
+  ctx.fill();
+  // Ballistic dots — cart speed + kick, gravity 800, ~1.1 s ahead. The
+  // ejection happens in real time, so in bullet time the scaled-down
+  // velocity must be read back at full speed for an honest preview.
+  const tv = torso.velocity;
+  const v = Math.hypot(tv.x, tv.y) / _timeScale + EJECT_KICK;
+  ctx.fillStyle = "rgba(126,231,135,0.45)";
+  for (let i = 1; i <= 9; i++) {
+    const t = i * 0.12;
+    const px = p.x + dx * v * t;
+    const py = p.y + dy * v * t + 400 * t * t;
+    ctx.beginPath();
+    ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 function drawSeatbelt(ctx) {
   if (!_seatbelt || !_seatbelt.space || !_cart || !_dummy) return;
-  const a = _cart.board.position;
-  const b = _dummy.torso.body.position;
+  // The joint anchors are body-local; rotate them into world space so the
+  // belt stays glued to its mount points on the tilted ramp stance.
+  const board = _cart.board;
+  const torso = _dummy.torso.body;
+  const bc = Math.cos(board.rotation), bs = Math.sin(board.rotation);
+  const tc = Math.cos(torso.rotation), ts = Math.sin(torso.rotation);
+  const ax = board.position.x + (-10) * bc - (-BOARD_H / 2) * bs;
+  const ay = board.position.y + (-10) * bs + (-BOARD_H / 2) * bc;
+  const tly = TORSO_H / 2 - 4;
+  const bx = torso.position.x - tly * ts;
+  const by = torso.position.y + tly * tc;
   ctx.strokeStyle = "#d29922";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(a.x - 10, a.y - BOARD_H / 2);
-  ctx.lineTo(b.x, b.y + TORSO_H / 2 - 4);
+  ctx.moveTo(ax, ay);
+  ctx.lineTo(bx, by);
   ctx.stroke();
 }
 
@@ -1107,7 +1598,7 @@ function drawFace(ctx) {
 
 function drawHoverRing(ctx) {
   if (!_mouse || _hand || !_dummy) return;
-  if (_phase === "done") return;
+  if (_phase !== "setup") return;
   let best = null, bestD = GRAB_R;
   for (const p of _dummy.parts) {
     if (!p.body.space) continue;
@@ -1229,18 +1720,39 @@ function drawHUD(ctx, W, H) {
   ctx.fillText(`Crates ${_crateCount}`, x, HUD_H / 2);
   x += 84;
   if (_phase === "run") {
-    ctx.fillStyle = "#dbabff";
-    ctx.fillText(`Flail ${"●".repeat(_flails)}${"○".repeat(FLAILS_PER_RUN - _flails)} (Space)`, x, HUD_H / 2);
+    if (!_ejected && _seatbelt) {
+      ctx.fillStyle = "#7ee787";
+      ctx.fillText("EJECT with Space / click — aim the arrow!", x, HUD_H / 2);
+    } else {
+      ctx.fillStyle = "#dbabff";
+      ctx.fillText(`Flail ${"●".repeat(_flails)}${"○".repeat(FLAILS_PER_RUN - _flails)} (Space)`, x, HUD_H / 2);
+    }
   } else if (_phase === "setup") {
     ctx.fillStyle = "#58a6ff";
     ctx.fillText("Drag the dummy to pose it · hold Space to charge", x, HUD_H / 2);
   }
 
+  // Bullet-time letterbox — cinematic bars so the slowdown reads as a
+  // deliberate aiming window, not a performance hiccup.
+  if (_slowmo && _phase === "run") {
+    ctx.fillStyle = "rgba(0,0,0,0.45)";
+    ctx.fillRect(0, HUD_H, W, 22);
+    ctx.fillRect(0, H - 22, W, 22);
+    ctx.fillStyle = "#7ee787";
+    ctx.font = "bold 11px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("◉ BULLET TIME — EJECT with Space / click", W / 2, H - 11);
+  }
+
+  // One button, three lives: hold-to-charge on the tower, EJECT during the
+  // slow-mo descent, retry once the dummy is loose.
   if (_phase === "setup") {
     drawPowerMeter(ctx);
     drawButton(ctx, GO_RECT, "▶ LAUNCH (hold)", true);
   } else if (_phase === "run") {
-    drawButton(ctx, GO_RECT, "↺ Retry", false);
+    if (!_ejected && _seatbelt) drawButton(ctx, GO_RECT, "⏏ EJECT", true);
+    else drawButton(ctx, GO_RECT, "↺ Retry", false);
   }
 
   if (_phase !== "done") return;
