@@ -823,8 +823,8 @@ app.canvas.addEventListener("wheel", (e) => {
 const NAPE_IMPORT_NAMES = `Space, Body, BodyType, Vec2, Circle, Polygon, Capsule,
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint, PulleyJoint, SpringJoint,
   Material, FluidProperties, InteractionFilter, InteractionGroup, AABB, MarchingSquares,
-  CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
-  CharacterController, fractureBody, UserConstraint, TriggerZone,
+  CbType, CbEvent, InteractionType, InteractionListener, ConstraintListener, PreListener, PreFlag,
+  CharacterController, fractureBody, computeVoronoi, generateFractureSites, UserConstraint, TriggerZone,
   Ray, RayResult,
   buildTilemapBody, meshTilemap, RadialGravityField, RadialGravityFieldGroup,
   ParticleEmitter, ParticleEmitterGroup`;
