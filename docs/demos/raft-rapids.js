@@ -1,41 +1,50 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
-  FluidProperties, DistanceJoint, PivotJoint, InteractionFilter,
+  FluidProperties, DistanceJoint, PivotJoint, AngleJoint, InteractionFilter,
 } from "../nape-js.esm.js";
 import { drawBody, drawGrid } from "../renderer.js";
 
 // ---------------------------------------------------------------------------
-// Raft Rapids — build-a-raft cargo run down a river.
+// Raft Rapids — build-a-raft passenger run down a river.
 //
 // The buoyancy sibling of Contraption Garage: in the BUILD phase the player
-// assembles a raft over the calm loading pool from two part types — buoyant
-// barrels and light deck nodes — and connects them with springy rods (drag
-// from part to part). Hitting LAUNCH spawns the design as real bodies: they
-// splash in, the engine's fluid buoyancy floats the barrels, and the crane
-// drops the cargo crate onto whatever is waiting under the hook. The crate
-// is DENSER THAN WATER — in the drink it sinks, and sunk cargo loses the
-// run — so the raft is the only thing keeping it alive while the current
-// carries everything down a three-screen river: a boulder slalom, an
-// accelerating headrace, a dam spillway plunge (the classic raft-wrecker)
-// and the lower rapids, to the delivery dock. Rods carry live strain and
-// snap when overstretched — a rock hit at speed shakes a sloppy frame
-// apart, and barrels that float away take their lift with them. Mid-run
-// the player can grab any PART with a springy pivot "hand" to steer around
-// rocks (the cargo itself can't be grabbed — no carrying it by hand). The
+// assembles a raft over the calm loading pool from three part types —
+// buoyant barrels, light deck nodes and wind-catching sails — and connects
+// them with springy rods (drag from part to part). Hitting LAUNCH spawns
+// the design as real bodies: they splash in, the engine's fluid buoyancy
+// floats the barrels, and the crane lowers a ragdoll passenger onto
+// whatever is waiting under the hook. The passenger is DENSER THAN WATER —
+// overboard he goes under, and a drowned passenger loses the run — so the
+// raft is the only thing keeping him alive while the current carries
+// everything down a four-screen river: a staircase of THREE waterfalls,
+// each taller than the last (a 60px shelf, a 120px chute, a 190px plunge),
+// with boulder slaloms and accelerating headraces between them, to the
+// delivery dock. Rods carry live strain and snap when
+// overstretched — a rock hit at speed shakes a sloppy frame apart, and
+// barrels that float away take their lift with them. Sails add a gusty
+// tailwind pull while they stay dry. Once LAUNCH is pressed the run is
+// hands-off — no steering, no grabbing: the raft you designed either makes
+// it or it doesn't, which is the entire point of a building game. The
 // design data outlives the physics: stopping a run (or wrecking) rebuilds
 // the same raft for another round of editing.
 //
 // Engine features showcased:
 //   * Fluid buoyancy — fluidEnabled static water volumes with
 //     FluidProperties(density, viscosity); barrels (density 0.28) float,
-//     the cargo crate (density 1.8) sinks, and a loaded raft rides low.
+//     the passenger (density 1.8) sinks, and a loaded raft rides low.
 //   * River current — manual drag toward a per-region target velocity,
 //     scaled by each body's measured submergence fraction, so lift and
-//     drift both die the moment a body leaves the water.
+//     drift both die the moment a body leaves the water. The dam crest
+//     doubles as a weir: extra flow boost + lift flush deep hulls over,
+//     and the falling sheet carries anything on the spillway face down.
+//   * Ragdoll rig — Crash Test Hero's dummy: a Circle head plus box torso
+//     and two-segment arms/legs, stiff PivotJoints and soft AngleJoint
+//     limits, drawn by the engine's own renderer in every mode.
 //   * Soft DistanceJoint rods (stiff=false + frequency/damping) with live
 //     strain measurement, a stress color ramp and break-under-load rules.
 //   * InteractionFilter groups — raft parts overlap freely and collide
-//     only with the world and the cargo, like the builder genre expects.
+//     only with the world and the passenger, like the builder genre
+//     expects; the ragdoll gets its own group so limbs never self-collide.
 //   * Design/simulation split — bodies are (re)spawned from pure design
 //     data on every launch, so edit → launch → edit is lossless.
 // ---------------------------------------------------------------------------
@@ -46,32 +55,60 @@ const HUD_H = 44;
 
 // ── River geometry ───────────────────────────────────────────────────────
 // Two pools at different levels, joined by a dam spillway. The upper pool
-// holds the loading bay (build zone + crane) and the boulder slalom; past
-// the dam crest the water sheet ends, the raft slides down the spillway
-// face and splashes into the lower pool, which runs through one last rock
-// to the delivery dock. The camera follows the cargo.
-const UP_SURF = 385;                 // upper pool water surface
-const LO_SURF = 460;                 // lower pool water surface
-const UP_X0 = 20;                    // upper pool left edge
-const DAM_X0 = 1500;                 // dam crest left edge — water ends here
-const DAM_X1 = 1560;                 // dam crest right edge
-const DAM_TOP = 392;                 // crest top, just below UP_SURF —
-                                     //   floating bodies wash over it
-const SPILL_X1 = 1660;               // spillway foot
-const SPILL_Y1 = 472;                // spillway meets the lower pool here
-const LO_X1 = 2880;                  // lower pool right edge (dock face)
-const BED_Y = 545;                   // riverbed top — cargo grave
-const WORLD_W = 2900;
+// holds the loading bay (build zone + crane); at each crest the water
+// sheet ends, the raft slides down the spillway face and splashes into the
+// pool below, and the last one runs through a final rock to the delivery
+// dock. The camera follows the passenger down the staircase.
+const UP_X0 = 20;                    // topmost pool's left edge
+const BED_Y = 700;                   // riverbed top — passenger grave
+const WORLD_W = 3400;
 
-// Delivery dock — the cargo has to reach the capture point floating beside
+// ── The staircase ────────────────────────────────────────────────────────
+// The river is a flight of pools separated by WEIRS, described by data so
+// the whole model (water volumes, dam bodies, slippery armor, surface and
+// current lookup, sheet carry, the painted falls) derives from this one
+// table. Each weir: the crest span [x0, x1], the crest top (`top`, which
+// must sit just under the upstream surface so floating hulls wash over
+// instead of hitting a wall), and the spillway foot (`footX`, `footY`)
+// where the face meets the pool below.
+//
+// The drops grow as the run goes on: a 60px shelf to teach the move, a
+// 120px chute, and a 190px plunge at the end that wrecks anything but a
+// properly walled raft. Each pool's surface is the next step down.
+const POOL_SURF = [330, 390, 510, 640];   // one per pool, upstream → down
+const WEIRS = [
+  { x0: 900,  x1: 950,  top: 342, footX: 1030, footY: 402 },
+  { x0: 1700, x1: 1755, top: 402, footX: 1880, footY: 522 },
+  { x0: 2500, x1: 2560, top: 522, footX: 2700, footY: 652 },
+];
+const LO_X1 = 3380;                  // last pool's right edge (dock face)
+
+// Derived pool spans: pool i runs from the previous weir's crest END to
+// this weir's crest END (so water still covers each crest — a body keeps
+// its lift while washing over) and the last one runs to the dock.
+const POOLS = POOL_SURF.map((surf, i) => ({
+  x0: i === 0 ? UP_X0 : WEIRS[i - 1].x1,
+  x1: i < WEIRS.length ? WEIRS[i].x1 : LO_X1,
+  surf,
+}));
+
+// Unit downslope vector of each spillway face, plus its length.
+const FACES = WEIRS.map((w) => {
+  const len = Math.hypot(w.footX - w.x1, w.footY - w.top);
+  return { dx: (w.footX - w.x1) / len, dy: (w.footY - w.top) / len };
+});
+
+const UP_SURF = POOL_SURF[0];        // loading-bay surface (build zone, crane)
+
+// Delivery dock — the passenger has to reach the capture point floating beside
 // the dock face (the dock itself is the downstream backstop).
-const DOCK_X0 = 2760;
-const DOCK_TOP = 428;
-const GOAL = { x: 2708, y: 448 };
+const DOCK_X0 = 3260;
+const DOCK_TOP = 608;
+const GOAL = { x: 3208, y: 628 };
 const GOAL_RANGE = 60;
 
 // ── Water ────────────────────────────────────────────────────────────────
-// Denser than every raft part, lighter than the cargo — that asymmetry IS
+// Denser than every raft part, lighter than the passenger — that asymmetry IS
 // the game. Viscosity gives the engine's own drag; horizontal transport
 // comes from the current model below.
 const FLUID_DENSITY = 1.6;
@@ -79,34 +116,107 @@ const FLUID_VISCOSITY = 2.0;
 
 // Current: per-region target surface velocity (px/s). Bodies are dragged
 // toward it in proportion to how deep they sit — see applyCurrent().
-const CUR_POOL = 70;                 // upper pool cruise
-const CUR_HEADRACE = 150;            // accelerating approach to the dam
-const CUR_RAPIDS = 110;              // lower pool rapids
+const CUR_POOL = 70;                 // pool cruise
+const CUR_HEADRACE = 150;            // accelerating approach to a weir
+const CUR_RAPIDS = 110;              // below-the-falls rapids
 const CUR_DELIVERY = 45;             // calm water beside the dock
-const HEADRACE_X = 1300;             // faster current from here to the dam
-const DELIVERY_X = 2600;             // calmer current from here to the dock
+// Each weir has a headrace: the water speeds up over this distance as it
+// approaches the lip, so every drop is entered with commitment.
+const HEADRACE_LEN = 220;
+const DELIVERY_X = 3100;             // calmer current from here to the dock
 // Per-second approach rate toward the current at full submergence.
 const CURRENT_GAIN = 4.0;
 const STEP_DT = 1 / 60;
 
-// ── Cargo ────────────────────────────────────────────────────────────────
-// The crane drops the crate at CARGO_X when a run starts — onto the raft
-// if one is waiting under the hook, into the water (and to its doom) if
-// not. Density 1.8 vs water 1.6: overboard it sinks, slowly enough to
-// snatch the raft back under it with the hand.
-const CARGO_X = 205;
-const CARGO_HALF = 16;               // crate half-extent (32×32)
-const CARGO_MAT = () => new Material(0.02, 1.3, 1.6, 1.8, 0.01);
-const SINK_DEPTH = 34;               // center this far under the surface…
-const SINK_STEPS = 26;               // …for this many steps = sunk
-const CARGO_CATCH_R = 90;            // parts this close to the hook catch the drop
+// ── Passenger ────────────────────────────────────────────────────────────
+// The crane lowers a ragdoll onto the raft at DROP_X when a run starts —
+// into the water (and to his doom) if nothing waits under the hook.
+// Density 1.8 vs water 1.6: overboard he goes under, slowly enough to
+// snatch the raft back under him with the hand. He sinks because the limb
+// boxes carry the engine's DEFAULT density (1) against water at 1.6 — a
+// custom Material is impossible here: dynamic Polygon + explicit Material
+// is the P53 tunneling bug.
+const DROP_X = 205;
+const DROP_CATCH_R = 44;             // parts this close to the hook set the
+                                     //   drop height — narrow, so the crane
+                                     //   hugs what is actually UNDER him
+const SINK_DEPTH = 32;               // HEAD center this far under the surface…
+const SINK_STEPS = 26;               // …for this many steps = drowned
+// Rig dimensions, straight from Crash Test Hero's dummy (scaled ~0.8 for
+// this smaller-scale river) — the proportions that already read as a body.
+const TORSO_W = 16, TORSO_H = 32;
+const HEAD_R = 8;
+const ARM_LEN = 19, ARM_W = 6;
+const LEG_LEN = 21, LEG_W = 7;
+// The crane lowers him on a winch (a stiff world pivot whose anchor sinks
+// at WINCH_SPEED) and lets go once he is supported — dropping a ragdoll
+// into the launch splash slips him straight between the bobbing barrels.
+const WINCH_SPEED = 55;              // px/s cable payout
+const WINCH_TIMEOUT = 240;           // steps — release no matter what
+// Mooring spring that holds the raft under the hook while he descends.
+const MOOR_GAIN = 6.0;               // 1/s — position error to target speed
+const MOOR_DAMP = 12.0;              // 1/s — approach rate to that speed
+// Exactly Crash Test Hero's construction: box limbs built with NO Material
+// constructor argument (dynamic Polygon + Material in the ctor is the P53
+// tunneling bug). The passenger still has to be denser than the water, so
+// the limb shapes get their density MUTATED after construction instead —
+// same physical result, without handing a Material to the Polygon ctor.
+// The Circle head can safely take a real Material (rolling friction, or a
+// bobbing head spins forever). The bodies are drawn by the engine's own
+// renderer in every mode; the demo only paints the face on top.
+const DUDE_DENSITY = 1.9;            // vs water 1.6 — he sinks, not fast
+const HEAD_MAT = () => new Material(0.1, 0.5, 0.7, DUDE_DENSITY, 0.4);
+// Ragdoll limbs share a private group so they never collide with each
+// other, but they DO collide with raft parts (group 2) and the world.
+const DUDE_GROUP = 16;
+// Soft angular limits — floppy enough to slump, firm enough to read human.
+const JOINT_FREQ = 3;
+const JOINT_DAMP = 0.6;
+// Hips and neck get an always-active soft spring (jointMin === jointMax —
+// a min<max AngleJoint applies NO force inside its window) so he keeps
+// trying to sit up and hold his head high. An unstabilized ragdoll is an
+// inverted pendulum: he flops flat on the deck and his head laps the
+// waterline all the way down the river.
+const SIT_FREQ = 2.2;
+const SIT_DAMP = 0.7;
+// He also HOLDS ON: a breakable soft pivot from his pelvis to the nearest
+// raft part (crash-test-hero's seatbelt pattern). Loose-cargo ragdolls
+// slide off a bobbing deck within seconds — grip is what makes any honest
+// raft work. A violent shock (rock at headrace speed, the spillway slam)
+// tears the grip and he tumbles; if the current washes the raft back under
+// him, he grabs hold again after a short cooldown.
+const GRIP_R = 26;                   // pelvis-to-part reach (surface distance)
+const GRIP_FORCE = 6000;             // maxForce — slalom bumps hold, slams don't
+const GRIP_FREQ = 8;
+const GRIP_DAMP = 1.0;
+const GRIP_COOLDOWN = 45;            // steps before he can re-grab
+const GRIP_REL_V = 90;               // max relative speed for a re-grab
+
+// ── Wind / sails ─────────────────────────────────────────────────────────
+// A gusty tailwind blows downstream. A sail pulls the raft toward the wind
+// speed while it stays DRY — a dunked sail is just wet cloth — so masts
+// want to ride high, and a swamped raft loses its wind assist exactly when
+// it is in the most trouble. The pull is scaled by the whole raft's mass,
+// so one sail gives the same acceleration to a big raft as to a small one;
+// more sails stack.
+const SAIL_R = 8;
+const SAIL_MAT = () => new Material(0.1, 0.6, 0.8, 0.35, 0.03);
+const WIND_BASE = 140;               // px/s — mean wind speed
+const WIND_GUST = 70;                // px/s — gust amplitude on top
+const SAIL_GAIN = 0.3;               // raft-mass fraction pulled per second
+const SAIL_DV_CAP = 120;             // px/s — cap so launch gusts don't yank
+const MAST_H = 30;                   // visual mast height above the deck
 
 // Parts must be placed inside the build zone (their centers). It floats
 // over the loading pool; parts splash in and float when the run starts.
-const ZONE = { x0: 56, y0: 236, x1: 380, y1: 378 };
+const ZONE = { x0: 56, y0: 182, x1: 380, y1: 324 };
 
 // ── Part / rod tuning ────────────────────────────────────────────────────
-const BARREL_R = 15;
+// Barrels sized against the passenger's weight: the ragdoll masses ~3.3,
+// so one fully-submerged barrel must lift a useful fraction of that or no
+// buildable raft floats him. r=21 displaces ~2.2 — three barrels carry him
+// with freeboard to spare, two leave him awash (which is the starter).
+const BARREL_R = 21;
 const NODE_R = 7;
 const PART_CAP = 24;                 // sanity cap — plenty for this river
 const MIN_PART_GAP = 24;             // min center distance between placed parts
@@ -128,19 +238,14 @@ const BREAK_STRAIN = 0.22;
 const BREAK_SUSTAIN = 50;
 
 // Raft parts share collision group 2 and exclude it from their mask: they
-// collide with the world (group 1) and the cargo but never with each
+// collide with the world (group 1) and the passenger but never with each
 // other, so barrels can sit shoulder-to-shoulder under one deck.
 const PART_FILTER_GROUP = 2;
 
 // Barrels: light enough to float high (0.28 vs water 1.6 ≈ 17% draft),
-// grippy enough that the cargo doesn't skate off the first bump.
+// grippy enough that the passenger doesn't skate off the first bump.
 const BARREL_MAT = () => new Material(0.15, 0.9, 1.1, 0.28, 0.02);
 const NODE_MAT = () => new Material(0.05, 1.0, 1.2, 0.5, 0.05);
-
-// Steer hand — a soft pivot the player can attach to any part mid-run.
-const HAND_FREQ = 8;
-const HAND_DAMP = 1.2;
-const GRAB_R = 40;
 
 const RESTART_LOCK_STEPS = 30;       // ignore clicks right after an overlay
 
@@ -148,9 +253,10 @@ const RESTART_LOCK_STEPS = 30;       // ignore clicks right after an overlay
 const TOOLS = [
   { id: "barrel", label: "1 Barrel" },
   { id: "node",   label: "2 Node" },
-  { id: "erase",  label: "3 Erase" },
+  { id: "sail",   label: "3 Sail" },
+  { id: "erase",  label: "4 Erase" },
 ];
-const TOOL_BTN = { x: 10, y: 7, w: 92, h: 30, gap: 6 };
+const TOOL_BTN = { x: 10, y: 7, w: 82, h: 30, gap: 6 };
 // The Launch/Build toggle lives at the bottom-right — the demo page overlays
 // its own render-mode controls over the canvas's top-right corner.
 const GO_RECT = { x: SCREEN_W - 148, y: SCREEN_H - 42, w: 138, h: 32 };
@@ -166,12 +272,21 @@ let _rods = [];                      // { a, b, rest, joint, strain, over, broke
 
 let _phase = "build";                // "build" | "run" | "won" | "wreck"
 let _wreckReason = "";               // overlay line for the wreck screen
-let _cargo = null;                   // cargo crate body — exists while running
-let _sinkTimer = 0;                  // steps the cargo has spent too deep
-let _cargoWasDry = true;             // splash edge-detect for the crate
+let _dude = null;                    // { torso, head, parts: [{body, r}], joints }
+let _winch = null;                   // { joint, y, timer } while the crane lowers him
+let _flowRamp = 0;                   // 0→1 fade-in of current/wind after the winch
+                                     //   lets go — a step-function surge pitched
+                                     //   the raft and tobogganed him off the bow
+let _grip = null;                    // { joint, part } while he holds onto the raft
+let _gripCd = 0;                     // steps until he may re-grab
+let _stallSteps = 0;                 // steps since the raft last made progress
+let _stallMarkX = 0;                 // raft x at the last progress check
+let _stallMarkT = 0;                 // _tick at the last progress check
+let _sinkTimer = 0;                  // steps the head has spent too deep
+let _dudeSplash = { wasDry: true };  // splash edge-detect for the passenger
+let _raftMass = 0;                   // live part mass at launch — sail pull scale
 let _tool = "barrel";
 let _linking = null;                 // { from: part, x, y } while dragging a rod
-let _hand = null;                    // { part, joint } while steering mid-run
 let _mouse = null;
 let _hint = null;                    // { text, life } transient toolbar message
 
@@ -180,12 +295,12 @@ let _timeBase = 0;                   // space.elapsedTime when the run started
 let _winTime = 0;
 let _best = null;                    // best win time (seconds), session-wide
 let _lockTimer = 0;
-let _fx = [];                        // { kind: "snap"|"splash"|"bubble", x, y, vx, vy, life }
+let _fx = [];                        // { kind: "snap"|"splash"|"drop", x, y, vx, vy, life }
 let _snapCount = 0;
 let _tick = 0;
 let _lastKeyDown = null;
 
-// Camera. The runner follows _camTarget (the cargo during a run, the
+// Camera. The runner follows _camTarget (the passenger during a run, the
 // loading bay while editing) and hands the smoothed offset back to the
 // render hooks; the demo keeps the last offset for world↔screen conversion
 // of the screen-anchored HUD.
@@ -198,19 +313,30 @@ let _lastCamY = 0;
 // River model — surface level and current by x
 // ---------------------------------------------------------------------------
 
-// Water covers the upper pool up to the dam crest's right edge (so bodies
-// keep their lift while washing over the crest), nothing over the spillway
-// face, then the lower pool to the dock.
+// Water covers each pool up to its weir's crest END (so a body keeps its
+// lift while washing over the lip), nothing over the spillway faces, and
+// the last pool runs to the dock.
 function surfaceAt(x) {
-  if (x >= UP_X0 && x <= DAM_X1) return UP_SURF;
-  if (x > DAM_X1 && x <= LO_X1) return LO_SURF;
-  return null;
+  if (x < UP_X0 || x > LO_X1) return null;
+  for (const pool of POOLS) {
+    if (x >= pool.x0 && x <= pool.x1) return pool.surf;
+  }
+  return null;                       // over a spillway face — free fall
 }
 
+// Calm in the loading bay, rapids between the falls, and a headrace surge
+// over the last stretch before every lip.
 function currentAt(x) {
-  if (x <= DAM_X1) return x >= HEADRACE_X ? CUR_HEADRACE : CUR_POOL;
-  if (x <= LO_X1) return x >= DELIVERY_X ? CUR_DELIVERY : CUR_RAPIDS;
-  return 0;
+  if (x > LO_X1) return 0;
+  if (x >= DELIVERY_X) return CUR_DELIVERY;
+  for (const w of WEIRS) {
+    if (x > w.x1) continue;
+    if (x >= w.x0 - HEADRACE_LEN) return CUR_HEADRACE;
+    // Above the FIRST weir is the loading bay — deliberately placid so the
+    // player can watch the crane work; every pool after it is rapids.
+    return w === WEIRS[0] ? CUR_POOL : CUR_RAPIDS;
+  }
+  return CUR_RAPIDS;                 // past the last weir, before the dock
 }
 
 // Submergence fraction of a body approximated by a bounding circle of
@@ -226,8 +352,30 @@ function submergence(body, r) {
 // (the horizontal current alone just pins it there). Returns { boost,
 // lift }: current multiplier and upward push (px/s²) near rock crowns.
 const ROCK_FLOW_R = 90;
-const ROCK_FLOW_BOOST = 0.9;
-const ROCK_FLOW_LIFT = 260;
+const ROCK_FLOW_BOOST = 1.1;
+const ROCK_FLOW_LIFT = 380;
+
+// Wedge breaker. A hull whose barrel pair straddles a rock crown can jam
+// solid: the crown holds it up, the rods hold the pair apart, and the
+// horizontal current just presses it home — the raft parks there forever.
+// Rather than tune the geometry until no raft can ever wedge (impossible
+// for a player-built hull), detect the stall and let the river rise: the
+// lift ramps up the longer nothing moves, and dies the moment it does.
+// Progress, not speed, is the test: a wedged hull still jiggles at 5–12
+// px/s against the rock forever, so a velocity threshold never trips.
+const STALL_WINDOW = 90;             // steps between progress checks
+const STALL_PROGRESS = 30;           // px of downstream gain that counts
+const SURGE_RAMP = 150;              // steps to reach full surge
+const SURGE_LIFT = 620;              // px/s² at full surge
+const SURGE_PUSH = 320;              // px/s² downstream at full surge
+
+// Every crest is a weir: the whole river piles up and accelerates over it.
+// A stronger, wider version of the shoal flow centered on each upstream
+// lip flushes deep-riding hulls up and across instead of letting them park
+// against the crest corner.
+const CREST_R = 150;
+const CREST_BOOST = 0.6;
+const CREST_LIFT = 650;
 
 function shoalFlow(x) {
   let boost = 1, lift = 0;
@@ -237,6 +385,13 @@ function shoalFlow(x) {
     const k = 1 - d / ROCK_FLOW_R;
     boost += ROCK_FLOW_BOOST * k;
     lift += ROCK_FLOW_LIFT * k;
+  }
+  for (const w of WEIRS) {
+    const dc = Math.abs(x - w.x0);
+    if (dc >= CREST_R) continue;
+    const k = 1 - dc / CREST_R;
+    boost += CREST_BOOST * k;
+    lift += CREST_LIFT * k;
   }
   return { boost, lift };
 }
@@ -251,9 +406,57 @@ function applyCurrent(body, r) {
   const target = currentAt(body.position.x) * boost;
   const dv = target - body.velocity.x;
   body.applyImpulse(new Vec2(
-    dv * body.mass * f * CURRENT_GAIN * STEP_DT,
-    -lift * body.mass * f * STEP_DT,
+    dv * body.mass * f * CURRENT_GAIN * _flowRamp * STEP_DT,
+    -lift * body.mass * f * _flowRamp * STEP_DT,
   ));
+}
+
+// The falling sheet over the crest and down the spillway face. Submergence
+// is zero here (the upper pool's surface ends at the crest), so the current
+// model goes silent exactly where a raft can teeter half-on half-off the
+// lip — this carry force is the water that is still very much flowing:
+// anything riding within SHEET_DEPTH of the crest/face gets pushed along
+// the sheet's own direction until it splashes into the lower pool.
+const SHEET_DEPTH = 26;              // reach above the crest/face (px)
+const SHEET_PUSH = 320;              // px/s² at full contact
+
+function applySheetCarry(body, r) {
+  const x = body.position.x;
+  for (let i = 0; i < WEIRS.length; i++) {
+    const w = WEIRS[i];
+    if (x < w.x0 || x > w.footX + 8) continue;
+    const onCrest = x <= w.x1;
+    const faceY = onCrest
+      ? w.top
+      : w.top + (w.footY - w.top) * ((x - w.x1) / (w.footX - w.x1));
+    const gap = faceY - (body.position.y + r); // clearance above the sheet bed
+    if (gap > SHEET_DEPTH) return;             // flying high above the face
+    const k = 1 - Math.max(0, gap) / SHEET_DEPTH;
+    const dx = onCrest ? 1 : FACES[i].dx;
+    const dy = onCrest ? 0.2 : FACES[i].dy;
+    body.applyImpulse(new Vec2(
+      dx * SHEET_PUSH * k * body.mass * STEP_DT,
+      dy * SHEET_PUSH * k * body.mass * STEP_DT,
+    ));
+    return;
+  }
+}
+
+// Gusty tailwind — two beat frequencies so the gusts feel irregular.
+function windSpeed() {
+  const t = _tick * STEP_DT;
+  return WIND_BASE + WIND_GUST * (0.5 + 0.5 * Math.sin(t * 0.6) * Math.sin(t * 0.23 + 1.7));
+}
+
+// Sail pull: approach the wind speed while the sail is dry. Scaled by the
+// raft's TOTAL launch mass (not the sail body's own tiny mass) so a sail
+// moves a big raft as decisively as a small one; the rods transmit the tug.
+function applyWind(body) {
+  const dry = 1 - submergence(body, SAIL_R * 2);
+  if (dry <= 0) return;
+  const dv = Math.min(SAIL_DV_CAP, windSpeed() - body.velocity.x);
+  if (dv <= 0) return;                         // sails can't outrun the wind
+  body.applyImpulse(new Vec2(dv * _raftMass * dry * SAIL_GAIN * _flowRamp * STEP_DT, 0));
 }
 
 // ---------------------------------------------------------------------------
@@ -286,8 +489,8 @@ function addRock(x, surf, r, clearance) {
   _rockFoam.push({ x, r });
 }
 
-function addWater(x0, x1, surf) {
-  const w = x1 - x0, h = BED_Y - surf;
+function addWater(x0, x1, surf, floorY) {
+  const w = x1 - x0, h = floorY - surf;
   const b = new Body(BodyType.STATIC, new Vec2(x0 + w / 2, surf + h / 2));
   const s = new Polygon(Polygon.box(w, h));
   s.fluidEnabled = true;
@@ -300,35 +503,83 @@ function addWater(x0, x1, surf) {
   b.space = _space;
 }
 
-function spawnTerrain() {
-  _rockFoam.length = 0;              // previous load registered its own rocks
-  // Riverbed under everything, and banks that seal both ends.
-  addStaticBox(WORLD_W / 2, BED_Y + 15, WORLD_W + 40, 30, 5);
-  addStaticBox(8, 380, 20, 340, 5);                       // upstream backstop
-  addStaticBox((DOCK_X0 + WORLD_W) / 2, (DOCK_TOP + BED_Y) / 2 + 8,
-    WORLD_W - DOCK_X0, BED_Y - DOCK_TOP + 16, 5);         // delivery dock
-
-  // Dam: crest just below the upper surface, then a spillway face down to
-  // the lower pool. Floating bodies wash over the crest, ground for a
-  // moment, and toboggan the face — the drop is the frame test.
+// One weir: the stone step itself plus its slippery armor. The dam polygon
+// keeps the engine's default (grippy) material — an explicit Material on a
+// static Polygon risks the P53 tunneling bug against dynamic shapes — so a
+// row of low-friction circles rides ~2px proud of the stone instead, like
+// the rounded apron blocks of a real weir: everything that grinds across
+// touches only these. The upstream lip circle turns the crest's sharp 90°
+// corner into an arc that hulls can ride up.
+function addWeir(w, face, floorY) {
   const dam = new Body(BodyType.STATIC);
   dam.shapes.add(new Polygon([
-    new Vec2(DAM_X0, DAM_TOP), new Vec2(DAM_X1, DAM_TOP),
-    new Vec2(SPILL_X1, SPILL_Y1), new Vec2(SPILL_X1, BED_Y),
-    new Vec2(DAM_X0, BED_Y),
+    new Vec2(w.x0, w.top), new Vec2(w.x1, w.top),
+    new Vec2(w.footX, w.footY), new Vec2(w.footX, floorY),
+    new Vec2(w.x0, floorY),
   ]));
   try { dam.userData._colorIdx = 5; } catch (_) { /* same */ }
   dam.space = _space;
 
-  // Shoal run in the upper pool, one last tooth in the rapids.
-  addRock(740, UP_SURF, 26, 14);
-  addRock(1060, UP_SURF, 30, 10);
-  addRock(1210, UP_SURF, 22, 12);
-  addRock(2200, LO_SURF, 26, 12);
+  const slipMat = () => new Material(0.05, 0.05, 0.1, 1, 0.01);
+  const armor = new Body(BodyType.STATIC);
+  armor.shapes.add(new Circle(12, new Vec2(w.x0 + 4, w.top + 11), slipMat()));
+  for (let x = w.x0 + 24; x <= w.x1; x += 20) {
+    armor.shapes.add(new Circle(10, new Vec2(x, w.top + 8), slipMat()));
+  }
+  // Face blocks — centers pushed below the face line (along the interior
+  // normal (-dy, dx)) so only a 2px crown stands proud of the slope. Long
+  // faces get more blocks so no bare stone shows between them.
+  const faceLen = Math.hypot(w.footX - w.x1, w.footY - w.top);
+  const blocks = Math.max(4, Math.round(faceLen / 42));
+  for (let i = 1; i <= blocks; i++) {
+    const t = i / (blocks + 1);
+    const fx = w.x1 + (w.footX - w.x1) * t;
+    const fy = w.top + (w.footY - w.top) * t;
+    armor.shapes.add(new Circle(10, new Vec2(fx - face.dy * 8, fy + face.dx * 8), slipMat()));
+  }
+  try { armor.userData._colorIdx = 5; } catch (_) { /* same */ }
+  try { armor.userData._hidden = true; } catch (_) { /* same */ }
+  try { armor.userData._hidden3d = true; } catch (_) { /* same */ }
+  armor.space = _space;
+}
 
-  // Water volumes last, so the fluid shapes sit over the rocks/dam base.
-  addWater(UP_X0, DAM_X1, UP_SURF);
-  addWater(DAM_X1, LO_X1, LO_SURF);
+function spawnTerrain() {
+  _rockFoam.length = 0;              // previous load registered its own rocks
+  // Riverbed under everything, and banks that seal both ends.
+  addStaticBox(WORLD_W / 2, BED_Y + 15, WORLD_W + 40, 30, 5);
+  addStaticBox(8, UP_SURF - 5, 20, 340, 5);               // upstream backstop
+  addStaticBox((DOCK_X0 + WORLD_W) / 2, (DOCK_TOP + BED_Y) / 2 + 8,
+    WORLD_W - DOCK_X0, BED_Y - DOCK_TOP + 16, 5);         // delivery dock
+
+  // The staircase. Each pool's floor is the next pool's surface (the step
+  // below holds the water in), and the last one runs down to the bed.
+  for (let i = 0; i < WEIRS.length; i++) {
+    addWeir(WEIRS[i], FACES[i], poolFloor(i));
+  }
+
+  // Shoals scattered through the pools — clearances are set against the
+  // BARREL_R hull: a barrel drafts ~a third of its radius, so a crown
+  // deeper than that lets an empty raft skim while a loaded one grinds.
+  // Too shallow and a big hull simply beaches, parking on the crown with
+  // the current unable to shift it.
+  addRock(700, POOL_SURF[0], 26, 22);                     // loading-bay shoal
+  addRock(1180, POOL_SURF[1], 30, 20);                    // …then the slalom
+  addRock(1370, POOL_SURF[1], 22, 19);
+  addRock(1560, POOL_SURF[1], 26, 21);
+  addRock(2080, POOL_SURF[2], 28, 20);
+  addRock(2300, POOL_SURF[2], 22, 19);
+  addRock(2960, POOL_SURF[3], 26, 20);                    // last tooth
+
+  // Water volumes last, so the fluid shapes sit over the rocks/dam bases.
+  for (let i = 0; i < POOLS.length; i++) {
+    addWater(POOLS[i].x0, POOLS[i].x1, POOLS[i].surf, poolFloor(i));
+  }
+}
+
+// A pool's floor: deep enough to drown a passenger, but stopping at the
+// next step down so the fluid volume doesn't swallow the weir below it.
+function poolFloor(i) {
+  return i < WEIRS.length ? Math.max(WEIRS[i].footY, POOL_SURF[i] + 120) : BED_Y;
 }
 
 function partFilter() {
@@ -337,43 +588,298 @@ function partFilter() {
 
 function makePartBody(p) {
   const body = new Body(BodyType.DYNAMIC, new Vec2(p.x, p.y));
-  const r = p.kind === "barrel" ? BARREL_R : NODE_R;
-  const mat = p.kind === "barrel" ? BARREL_MAT() : NODE_MAT();
-  body.shapes.add(new Circle(r, undefined, mat, partFilter()));
+  const mat = p.kind === "barrel" ? BARREL_MAT() : p.kind === "sail" ? SAIL_MAT() : NODE_MAT();
+  body.shapes.add(new Circle(partRadius(p), undefined, mat, partFilter()));
   try { body.userData._part = true; } catch (_) { /* same */ }
-  try { body.userData._colorIdx = p.kind === "barrel" ? 1 : 2; } catch (_) { /* same */ }
+  try {
+    body.userData._colorIdx = p.kind === "barrel" ? 1 : p.kind === "sail" ? 0 : 2;
+  } catch (_) { /* same */ }
   body.space = _space;
   return body;
 }
 
 function partRadius(p) {
-  return p.kind === "barrel" ? BARREL_R : NODE_R;
+  return p.kind === "barrel" ? BARREL_R : p.kind === "sail" ? SAIL_R : NODE_R;
 }
 
-// The crane drops the crate onto whatever waits under the hook: the spawn
-// height hugs the tallest part near CARGO_X so the drop is a gentle set-down
-// on a good raft, and a plunge into the pool on no raft at all.
-function spawnCargo() {
-  let top = UP_SURF - 4;
+function dudePart(x, y, shape, r, colorIdx) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+  shape.filter = new InteractionFilter(DUDE_GROUP, ~DUDE_GROUP);
+  // Post-construction density (see DUDE_DENSITY) — the boxes must outweigh
+  // the water without a ctor Material. Circles already carry theirs.
+  if (shape.material.density !== DUDE_DENSITY) shape.material.density = DUDE_DENSITY;
+  body.shapes.add(shape);
+  try { body.userData._dude = true; } catch (_) { /* same */ }
+  try { body.userData._colorIdx = colorIdx; } catch (_) { /* same */ }
+  body.space = _space;
+  return { body, r };
+}
+
+function dudePivot(b1, b2, a1, a2, joints) {
+  const j = new PivotJoint(b1, b2, a1, a2);
+  j.space = _space;
+  joints.push(j);
+  return j;
+}
+
+function dudeAngle(b1, b2, min, max, joints) {
+  const j = new AngleJoint(b1, b2, min, max);
+  j.stiff = false;
+  j.frequency = min === max ? SIT_FREQ : JOINT_FREQ;
+  j.damping = min === max ? SIT_DAMP : JOINT_DAMP;
+  j.space = _space;
+  joints.push(j);
+  return j;
+}
+
+// Tallest raft top under the hook (the water surface when nothing is
+// there) — where the winch aims its set-down.
+function dropTargetTop() {
+  let top = UP_SURF - 2;
   for (const p of _parts) {
     if (!p.body) continue;
-    if (Math.abs(p.body.position.x - CARGO_X) > CARGO_CATCH_R) continue;
+    if (Math.abs(p.body.position.x - DROP_X) > DROP_CATCH_R) continue;
     top = Math.min(top, p.body.position.y - partRadius(p));
   }
-  _cargo = new Body(BodyType.DYNAMIC, new Vec2(CARGO_X, top - CARGO_HALF - 6));
-  // Default filter (group 1): collides with the world AND with parts —
-  // parts mask out only their own group 2.
-  _cargo.shapes.add(new Polygon(Polygon.box(CARGO_HALF * 2, CARGO_HALF * 2), CARGO_MAT()));
-  try { _cargo.userData._cargo = true; } catch (_) { /* same */ }
-  try { _cargo.userData._colorIdx = 3; } catch (_) { /* same */ }
-  _cargo.space = _space;
-  _sinkTimer = 0;
-  _cargoWasDry = true;
+  return top;
 }
 
-function despawnCargo() {
-  if (_cargo && _cargo.space) _cargo.space = null;
-  _cargo = null;
+// The crane lowers the passenger toward whatever waits under the hook. He
+// spawns seated high above the pool, hanging from a winch (see
+// updateWinch) that pays out cable until he is supported — onto the raft
+// if one floats under the hook, into the water (and to his doom) if not.
+//
+// The rig is Crash Test Hero's dummy verbatim: an upright box torso, a
+// Circle head, two-piece arms hanging at the sides and legs stretched
+// forward in a luge/seated pose (the leg boxes are built WIDE, major axis
+// = x, so rotation 0 IS the seated pose and no body.rotation is needed
+// anywhere). All limb boxes are Material-free — dynamic Polygon + explicit
+// Material is the P53 tunneling bug.
+function spawnDude() {
+  const joints = [];
+  const x = DROP_X;
+  const deckTop = dropTargetTop() - 85;     // spawn high; the winch lowers him
+  const torsoY = deckTop - TORSO_H / 2;
+
+  const torso = dudePart(x, torsoY,
+    new Polygon(Polygon.box(TORSO_W, TORSO_H)), TORSO_H / 2, 3);
+  const head = dudePart(x, torsoY - TORSO_H / 2 - HEAD_R - 2,
+    new Circle(HEAD_R, undefined, HEAD_MAT()), HEAD_R, 3);
+
+  dudePivot(torso.body, head.body,
+    new Vec2(0, -TORSO_H / 2 - 1), new Vec2(0, HEAD_R - 1), joints);
+  dudeAngle(torso.body, head.body, 0, 0, joints);
+
+  const limbs = [];
+  // Arms — two segments hanging at the torso's sides.
+  for (const side of [-1, 1]) {
+    const ax = x + side * (TORSO_W / 2 + ARM_W / 2 + 1);
+    const upper = dudePart(ax, torsoY - TORSO_H / 2 + 7 + ARM_LEN / 2,
+      new Polygon(Polygon.box(ARM_W, ARM_LEN)), ARM_LEN / 2, 4);
+    const lower = dudePart(ax, upper.body.position.y + ARM_LEN,
+      new Polygon(Polygon.box(ARM_W, ARM_LEN)), ARM_LEN / 2, 4);
+
+    dudePivot(torso.body, upper.body,
+      new Vec2(side * (TORSO_W / 2 - 2), -TORSO_H / 2 + 7),
+      new Vec2(0, -ARM_LEN / 2 + 1), joints);
+    dudeAngle(torso.body, upper.body, -2.2, 2.2, joints);
+
+    dudePivot(upper.body, lower.body,
+      new Vec2(0, ARM_LEN / 2 - 1), new Vec2(0, -ARM_LEN / 2 + 1), joints);
+    dudeAngle(upper.body, lower.body,
+      side > 0 ? -0.1 : -2.4, side > 0 ? 2.4 : 0.1, joints);
+    limbs.push(upper, lower);
+  }
+
+  // Legs — two horizontal segments stretched forward (seated pose).
+  for (const side of [-1, 1]) {
+    const hipY = torsoY + TORSO_H / 2 - 3 + side * 2;
+    const upper = dudePart(x + 5 + LEG_LEN / 2, hipY,
+      new Polygon(Polygon.box(LEG_LEN, LEG_W)), LEG_LEN / 2, 4);
+    const lower = dudePart(upper.body.position.x + LEG_LEN, hipY,
+      new Polygon(Polygon.box(LEG_LEN, LEG_W)), LEG_LEN / 2, 4);
+
+    dudePivot(torso.body, upper.body,
+      new Vec2(5, TORSO_H / 2 - 3 + side * 2), new Vec2(-LEG_LEN / 2 + 1, 0), joints);
+    // Always-active spring: he keeps trying to sit up rather than flop flat
+    // with his head at the waterline (a min<max AngleJoint gives no force
+    // inside its window).
+    dudeAngle(torso.body, upper.body, 0, 0, joints);
+
+    dudePivot(upper.body, lower.body,
+      new Vec2(LEG_LEN / 2 - 1, 0), new Vec2(-LEG_LEN / 2 + 1, 0), joints);
+    dudeAngle(upper.body, lower.body, -2.0, 2.0, joints);
+    limbs.push(upper, lower);
+  }
+
+  _dude = { torso, head, parts: [torso, head, ...limbs], joints };
+  _sinkTimer = 0;
+  _dudeSplash = { wasDry: true };
+
+  // Hook the harness — a stiff pivot from the world to the torso's top
+  // whose anchor descends each step until the set-down (updateWinch).
+  const hookY = torsoY - TORSO_H / 2;
+  const winchJoint = new PivotJoint(
+    _space.world, torso.body, new Vec2(x, hookY), new Vec2(0, -TORSO_H / 2),
+  );
+  winchJoint.space = _space;
+  _winch = { joint: winchJoint, y: hookY, timer: 0 };
+  _flowRamp = 0;
+}
+
+function releaseWinch() {
+  if (!_winch) return;
+  if (_winch.joint.space) _winch.joint.space = null;
+  _winch = null;
+  tryGrip();                         // grab hold of whatever he landed on
+}
+
+// World position of the pelvis — the grip's mount point. The box torso's
+// pelvis sits at local (0, +TORSO_H/2 - 2).
+function pelvisPos() {
+  const t = _dude.torso.body;
+  const d = TORSO_H / 2 - 2;
+  return {
+    x: t.position.x - Math.sin(t.rotation) * d,
+    y: t.position.y + Math.cos(t.rotation) * d,
+  };
+}
+
+function tryGrip() {
+  if (!_dude || _grip) return;
+  const pv = pelvisPos();
+  const torso = _dude.torso.body;
+  let part = null, bestD = Infinity;
+  for (const p of _parts) {
+    if (!p.body) continue;
+    const d = dist(pv.x, pv.y, p.body.position.x, p.body.position.y) - partRadius(p);
+    if (d <= GRIP_R && d < bestD) {
+      const rvx = p.body.velocity.x - torso.velocity.x;
+      const rvy = p.body.velocity.y - torso.velocity.y;
+      if (rvx * rvx + rvy * rvy > GRIP_REL_V * GRIP_REL_V) continue;
+      bestD = d;
+      part = p;
+    }
+  }
+  if (!part) return;
+  const b = part.body;
+  // Part-local coordinates of the pelvis point (parts are circles, but
+  // respect their rotation anyway).
+  const dx = pv.x - b.position.x, dy = pv.y - b.position.y;
+  const c = Math.cos(-b.rotation), s = Math.sin(-b.rotation);
+  const joint = new PivotJoint(
+    b, torso, new Vec2(dx * c - dy * s, dx * s + dy * c),
+    new Vec2(0, TORSO_H / 2 - 2),
+  );
+  joint.stiff = false;
+  joint.frequency = GRIP_FREQ;
+  joint.damping = GRIP_DAMP;
+  joint.maxForce = GRIP_FORCE;
+  joint.breakUnderForce = true;
+  joint.removeOnBreak = true;
+  joint.space = _space;
+  _grip = { joint, part };
+}
+
+function releaseGrip(cooldown) {
+  if (!_grip) return;
+  if (_grip.joint.space) _grip.joint.space = null;
+  _grip = null;
+  _gripCd = cooldown;
+}
+
+// Poll the breakable grip: removeOnBreak clears joint.space when the shock
+// tears it. While loose, he re-grabs the first part that drifts within
+// reach at a survivable relative speed.
+function updateGrip() {
+  if (!_dude) return;
+  if (_grip) {
+    if (!_grip.joint.space || !_grip.part.body) {
+      const wasBroken = !_grip.joint.space;
+      _grip = null;
+      _gripCd = GRIP_COOLDOWN;
+      if (wasBroken) {
+        const pv = pelvisPos();
+        _fx.push({ kind: "snap", x: pv.x, y: pv.y, vx: 0, vy: 0, life: 18 });
+      }
+    }
+    return;
+  }
+  if (_gripCd > 0) { _gripCd--; return; }
+  tryGrip();
+}
+
+// Pay out cable until the passenger is actually resting on the raft (or
+// the timeout expires over open water). The raft has time to splash in and
+// settle while he descends — dropping him INTO the launch splash used to
+// slip him straight between the bobbing barrels.
+function updateWinch() {
+  if (!_winch || !_dude) return;
+  _winch.timer++;
+  _winch.y += WINCH_SPEED * STEP_DT;
+  _winch.joint.anchor1 = new Vec2(DROP_X, _winch.y);
+  // Let go once the seat reaches the deck. Waiting for actual contact was
+  // tried and is worse: he already brushes a barrel while still dangling,
+  // so the cable went slack with his weight nowhere near the deck.
+  if (pelvisPos().y >= dropTargetTop() - LEG_W || _winch.timer >= WINCH_TIMEOUT) {
+    releaseWinch();
+  }
+}
+
+// Sample the raft's downstream progress every STALL_WINDOW steps. If it
+// hasn't gained STALL_PROGRESS px, the surge grows; any real progress
+// resets it to zero.
+function updateStall() {
+  if (_winch || _phase !== "run") { _stallSteps = 0; return; }
+  let n = 0, sx = 0;
+  for (const p of _parts) {
+    if (!p.body) continue;
+    n++;
+    sx += p.body.position.x;
+  }
+  // Nothing afloat, or the raft is already at the dock: no surge.
+  if (n === 0 || sx / n > DELIVERY_X) { _stallSteps = 0; return; }
+  const x = sx / n;
+  if (_tick - _stallMarkT < STALL_WINDOW) return;
+  if (x - _stallMarkX >= STALL_PROGRESS) _stallSteps = 0;
+  else _stallSteps += STALL_WINDOW;
+  _stallMarkX = x;
+  _stallMarkT = _tick;
+}
+
+function surgeStrength() {
+  if (_stallSteps <= 0) return 0;
+  return Math.min(1, _stallSteps / SURGE_RAMP);
+}
+
+// The river rising under a wedged hull: lift plus a downstream shove,
+// scaled by submergence so a beached raft still feels it.
+function applySurge(body, r) {
+  const k = surgeStrength();
+  if (k <= 0) return;
+  const f = Math.max(0.35, submergence(body, r));
+  body.applyImpulse(new Vec2(
+    SURGE_PUSH * k * f * body.mass * STEP_DT,
+    -SURGE_LIFT * k * f * body.mass * STEP_DT,
+  ));
+}
+
+// Current/wind fade back in over ~1.5s once the passenger is aboard.
+function updateFlowRamp() {
+  if (_winch) return;
+  _flowRamp = Math.min(1, _flowRamp + 1 / 90);
+}
+
+function despawnDude() {
+  if (_winch) {                      // bare release — no re-grip during teardown
+    if (_winch.joint.space) _winch.joint.space = null;
+    _winch = null;
+  }
+  releaseGrip(0);
+  if (!_dude) return;
+  for (const j of _dude.joints) if (j.space) j.space = null;
+  for (const p of _dude.parts) if (p.body.space) p.body.space = null;
+  _dude = null;
 }
 
 // ---------------------------------------------------------------------------
@@ -445,23 +951,22 @@ function setHint(text) {
   _hint = { text, life: 150 };
 }
 
-// The starter design: three barrels and a ridge node under the hook —
-// enough to catch the crate and float it (decks awash) through the shoal
-// run, and then lose it on the spillway plunge: nothing walls the crate
-// in, so it pitches over the bow when the raft noses into the lower pool.
-// The lesson is the loop: more barrels for freeboard, node rails for a cage.
+// The starter design is deliberately the crudest raft that floats at all:
+// three barrels and a two-node deck, no walls, no sail. It carries the
+// passenger out of the loading bay riding low and loses him within a few
+// hundred px — barely out of the bay. That IS the tutorial: the tools to
+// fix it (a fourth barrel for freeboard, wall nodes for a cockpit, a sail
+// for speed) are one click away, and the player discovers each by losing
+// without it.
 function seedStarter() {
-  const b1 = addPartDesign("barrel", 155, 360);
-  const b2 = addPartDesign("barrel", 205, 360);
-  const b3 = addPartDesign("barrel", 255, 360);
-  const n1 = addPartDesign("node", 155, 322);
-  const n2 = addPartDesign("node", 255, 322);
-  addRodDesign(b1, b2);
-  addRodDesign(b2, b3);
-  addRodDesign(b1, n1);
-  addRodDesign(b2, n1);
-  addRodDesign(b2, n2);
-  addRodDesign(b3, n2);
+  const bs = [160, 205, 250].map((x) => addPartDesign("barrel", x, 307));
+  for (let i = 0; i + 1 < bs.length; i++) addRodDesign(bs[i], bs[i + 1]);
+  const d1 = addPartDesign("node", 178, 275);
+  const d2 = addPartDesign("node", 232, 275);
+  addRodDesign(d1, d2);
+  for (const d of [d1, d2]) {
+    for (const b of bs) if (Math.abs(d.x - b.x) < 62) addRodDesign(d, b);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -488,7 +993,11 @@ function startRun() {
     r.joint.damping = ROD_DAMP;
     r.joint.space = _space;
   }
-  spawnCargo();
+  _raftMass = _parts.reduce((m, p) => m + p.body.mass, 0);
+  _stallSteps = 0;
+  _stallMarkX = 0;
+  _stallMarkT = _tick;
+  spawnDude();
 
   // Clock off the space's own elapsed physics time — demo.step() runs once
   // per FRAME while the space may substep several times per frame, so a
@@ -499,15 +1008,8 @@ function startRun() {
   updateCamTarget();                 // don't let the camera chase last run's spot
 }
 
-function releaseHand() {
-  if (!_hand) return;
-  if (_hand.joint.space) _hand.joint.space = null;
-  _hand = null;
-}
-
 function despawnRun() {
-  releaseHand();
-  despawnCargo();
+  despawnDude();
   for (const r of _rods) {
     if (r.joint && r.joint.space) r.joint.space = null;
     r.joint = null;
@@ -601,16 +1103,30 @@ function trackSplash(body, r, state) {
 function updateParts() {
   for (const p of _parts) {
     if (!p.body) continue;
-    applyCurrent(p.body, partRadius(p));
+    // The raft stays moored in the calm loading bay until the passenger is
+    // aboard: no current, and a soft horizontal spring back to the design
+    // x. Without the spring the descending ragdoll's own contact shoves the
+    // raft downstream and it slides out from under the hook before he ever
+    // reaches the deck.
+    if (_winch) {
+      const dvx = (p.x - p.body.position.x) * MOOR_GAIN - p.body.velocity.x;
+      p.body.applyImpulse(new Vec2(dvx * p.body.mass * MOOR_DAMP * STEP_DT, 0));
+    } else {
+      applyCurrent(p.body, partRadius(p));
+      applySheetCarry(p.body, partRadius(p));
+      applySurge(p.body, partRadius(p));
+      if (p.kind === "sail") applyWind(p.body);
+    }
     trackSplash(p.body, partRadius(p), p);
   }
 }
 
-// Camera chases the crate — it IS the run. Won/wreck overlays hold the
+// Camera chases the passenger — he IS the run. Won/wreck overlays hold the
 // last view because the target simply stops updating.
 function updateCamTarget() {
-  if (_cargo) {
-    _camTarget = { x: _cargo.position.x, y: _cargo.position.y };
+  if (_dude) {
+    const p = _dude.torso.body.position;
+    _camTarget = { x: p.x, y: p.y };
     return;
   }
   let n = 0, sx = 0, sy = 0;
@@ -623,31 +1139,26 @@ function updateCamTarget() {
   if (n > 0) _camTarget = { x: sx / n, y: sy / n };
 }
 
-// Win when the CARGO floats into the dock's capture ring; lose when it
-// spends SINK_STEPS deeper than SINK_DEPTH under the local surface (or
-// meets the riverbed). The raft's own fate never scores.
-function checkCargo() {
-  if (!_cargo) return;
-  applyCurrent(_cargo, CARGO_HALF);
-  trackSplash(_cargo, CARGO_HALF, { wasDry: _cargoWasDry });
-  {
-    const surf = surfaceAt(_cargo.position.x);
-    _cargoWasDry = surf === null || _cargo.position.y + CARGO_HALF < surf;
+// Win when the PASSENGER floats into the dock's capture ring; lose when
+// his head spends SINK_STEPS deeper than SINK_DEPTH under the local
+// surface (or he meets the riverbed). The raft's own fate never scores.
+function checkDude() {
+  if (!_dude) return;
+  for (const p of _dude.parts) {
+    applyCurrent(p.body, p.r);
+    applySheetCarry(p.body, p.r);
+    applySurge(p.body, p.r);
   }
+  const torso = _dude.torso.body;
+  const head = _dude.head.body;
+  trackSplash(torso, TORSO_H / 2, _dudeSplash);
 
-  const surf = surfaceAt(_cargo.position.x);
-  const depth = surf === null ? 0 : _cargo.position.y - surf;
-  if (depth > SINK_DEPTH || _cargo.position.y > BED_Y - CARGO_HALF - 2) {
+  const surf = surfaceAt(head.position.x);
+  const depth = surf === null ? 0 : head.position.y - surf;
+  if (!_winch && (depth > SINK_DEPTH || head.position.y > BED_Y - HEAD_R - 4)) {
     _sinkTimer++;
-    if ((_tick & 3) === 0) {
-      _fx.push({
-        kind: "bubble", x: _cargo.position.x + (Math.sin(_tick * 1.7) * 10),
-        y: _cargo.position.y - CARGO_HALF, vx: 0, vy: -55, life: 40,
-      });
-    }
-    if (_sinkTimer >= SINK_STEPS || _cargo.position.y > BED_Y - CARGO_HALF - 2) {
-      releaseHand();
-      _wreckReason = "The cargo sank.";
+    if (_sinkTimer >= SINK_STEPS || head.position.y > BED_Y - HEAD_R - 4) {
+      _wreckReason = "The passenger went under.";
       _phase = "wreck";
       _lockTimer = RESTART_LOCK_STEPS;
     }
@@ -655,10 +1166,9 @@ function checkCargo() {
   }
   _sinkTimer = Math.max(0, _sinkTimer - 1);
 
-  if (dist(_cargo.position.x, _cargo.position.y, GOAL.x, GOAL.y) <= GOAL_RANGE) {
+  if (dist(torso.position.x, torso.position.y, GOAL.x, GOAL.y) <= GOAL_RANGE) {
     _winTime = _time;
     if (_best === null || _winTime < _best) _best = _winTime;
-    releaseHand();
     _phase = "won";
     _lockTimer = RESTART_LOCK_STEPS;
   }
@@ -671,19 +1181,22 @@ function checkCargo() {
 export default {
   id: "raft-rapids",
   label: "Raft Rapids",
-  tags: ["Fluid", "Buoyancy", "DistanceJoint", "Building", "Drag", "Gameplay"],
+  tags: ["Fluid", "Buoyancy", "DistanceJoint", "Ragdoll", "Building", "Drag", "Gameplay"],
   featured: false,
   desc:
-    "Build-a-raft cargo run on real <b>fluid buoyancy</b>. In the loading bay, <b>click</b> to " +
-    "place floating barrels and deck nodes, and <b>drag part-to-part</b> to connect them with " +
-    "springy rods. Hit <b>Launch</b>: the raft splashes in, the crane drops a crate that is " +
-    "<b>denser than water</b> — overboard it sinks and the run is lost — and the current " +
-    "carries everything down a three-screen river: a boulder slalom, an accelerating headrace, " +
-    "a <b>dam spillway plunge</b> and the lower rapids, to the delivery dock. Rods are soft " +
-    "<b>DistanceJoint</b>s with live strain that snap on hard rock hits, drift and lift both " +
-    "scale with each body's measured submergence, and mid-run you can <b>grab</b> raft parts " +
-    "with a springy pivot hand to steer (the crate itself can't be grabbed). <b>Space</b> " +
-    "launches, <b>1–3</b> pick tools, <b>R</b> resets.",
+    "Build-a-raft passenger run on real <b>fluid buoyancy</b>. In the loading bay, <b>click</b> " +
+    "to place floating barrels, deck nodes and wind-catching sails, and <b>drag part-to-part</b> " +
+    "to connect them with springy rods. Hit <b>Launch</b>: the raft splashes in, the crane " +
+    "lowers a <b>ragdoll passenger</b> who is denser than water — overboard he goes under and " +
+    "the run is lost — and the current carries everything down a four-screen river: a " +
+    "<b>staircase of three waterfalls</b>, each taller than the last, with boulder slaloms and " +
+    "accelerating headraces between them, to the delivery dock. The passenger <b>holds on</b> " +
+    "with a breakable joint: slalom bumps he rides out, a big drop tears his grip and he " +
+    "tumbles — and if the current washes the raft back under him, he grabs hold again. Rods " +
+    "are soft <b>DistanceJoint</b>s with live strain that snap on hard rock hits, and sails " +
+    "pull toward a <b>gusty tailwind</b> while they stay dry. Once you launch, the run is " +
+    "<b>hands-off</b>: the raft you designed either makes it or it doesn't. <b>Space</b> " +
+    "launches, <b>1–4</b> pick tools, <b>R</b> resets.",
   walls: false,
   workerCompatible: false,
   camera: null,
@@ -696,14 +1209,21 @@ export default {
     _parts = [];
     _rods = [];
     _linking = null;
-    _hand = null;
     _mouse = null;
     _hint = null;
     _phase = "build";
     _wreckReason = "";
-    _cargo = null;                   // previous load's body died with its space
+    _dude = null;                    // previous load's bodies died with its space
+    _winch = null;
+    _flowRamp = 0;
+    _grip = null;
+    _gripCd = 0;
+    _stallSteps = 0;
+    _stallMarkX = 0;
+    _stallMarkT = 0;
     _sinkTimer = 0;
-    _cargoWasDry = true;
+    _dudeSplash = { wasDry: true };
+    _raftMass = 0;
     _tool = "barrel";
     _time = 0;
     _lockTimer = 0;
@@ -717,12 +1237,15 @@ export default {
     spawnTerrain();
     seedStarter();
 
-    // Follow the crate while running, rest on the loading bay otherwise.
+    // Follow the passenger while running, rest on the loading bay otherwise.
     // Vertical bounds equal the viewport height, so the camera only scrolls
     // horizontally and the screen-anchored HUD math stays simple.
     this.camera = {
       follow: () => (_phase === "build" ? CAM_HOME : _camTarget),
-      bounds: { minX: 0, minY: 0, maxX: WORLD_W, maxY: SCREEN_H },
+      // The staircase descends ~370px, so the camera has to track down the
+      // river as well as along it. Screen-anchored HUD math still works:
+      // click() converts through _lastCamY (see the render hooks).
+      bounds: { minX: 0, minY: 0, maxX: WORLD_W, maxY: BED_Y + 60 },
       lerp: 0.08,
     };
 
@@ -756,9 +1279,6 @@ export default {
         f.x += f.vx * STEP_DT;
         f.y += f.vy * STEP_DT;
         f.vy += 600 * STEP_DT;
-      } else if (f.kind === "bubble") {
-        f.y += f.vy * STEP_DT;
-        f.x += Math.sin(f.life * 0.4) * 0.6;
       }
       if (--f.life <= 0) _fx.splice(i, 1);
     }
@@ -766,8 +1286,12 @@ export default {
 
     _time = Math.max(0, _space.elapsedTime - _timeBase);
     updateRods();
+    updateStall();
     updateParts();
-    checkCargo();
+    updateWinch();
+    updateFlowRamp();
+    updateGrip();
+    checkDude();
     updateCamTarget();
   },
 
@@ -800,24 +1324,11 @@ export default {
       return;
     }
 
-    if (_phase === "run") {
-      // Mid-run steering: soft pivot hand on the nearest live part. The
-      // cargo is deliberately not grabbable — no carrying it by hand.
-      let part = null, bestD = GRAB_R;
-      for (const p of _parts) {
-        if (!p.body) continue;
-        const d = dist(x, y, p.body.position.x, p.body.position.y);
-        if (d < bestD) { bestD = d; part = p; }
-      }
-      if (!part) return;
-      const joint = new PivotJoint(_space.world, part.body, new Vec2(x, y), new Vec2(0, 0));
-      joint.stiff = false;
-      joint.frequency = HAND_FREQ;
-      joint.damping = HAND_DAMP;
-      joint.space = _space;
-      _hand = { part, joint };
-      return;
-    }
+    // Once launched, the run is hands-off: the raft you built either makes
+    // it or it doesn't. A draggable steering hand was tried and removed —
+    // being able to haul any part around let a bad raft be carried over
+    // every waterfall by hand, which hollowed out the whole building game.
+    if (_phase === "run") return;
 
     // Build phase.
     const part = partAt(x, y);
@@ -845,17 +1356,13 @@ export default {
     for (const p of _parts) {
       if (dist(x, y, p.x, p.y) < MIN_PART_GAP) return;
     }
-    const placed = addPartDesign(_tool === "node" ? "node" : "barrel", x, y);
+    const placed = addPartDesign(_tool, x, y);
     // Chain into a rod drag so place-and-connect is one gesture.
     _linking = { from: placed, x, y };
   },
 
   drag(x, y) {
     _mouse = { x, y };
-    if (_hand) {
-      _hand.joint.anchor1 = new Vec2(x, y);
-      return;
-    }
     if (_linking) {
       _linking.x = x;
       _linking.y = y;
@@ -863,10 +1370,6 @@ export default {
   },
 
   release() {
-    if (_hand) {
-      releaseHand();
-      return;
-    }
     if (!_linking) return;
     const { from, x, y } = _linking;
     _linking = null;
@@ -890,12 +1393,12 @@ export default {
   _testState() {
     return {
       phase: _phase, tool: _tool, time: _time, winTime: _winTime, best: _best,
-      parts: _parts, rods: _rods, cargo: _cargo, snaps: _snapCount,
+      parts: _parts, rods: _rods, dude: _dude, snaps: _snapCount,
       sinkTimer: _sinkTimer, wreckReason: _wreckReason,
       startRun, backToBuild, resetGame, addPartDesign, addRodDesign,
       removePartDesign,
-      surfaceAt, currentAt, submergence,
-      goRect: GO_RECT, goal: GOAL, cargoX: CARGO_X,
+      surfaceAt, currentAt, submergence, windSpeed,
+      goRect: GO_RECT, goal: GOAL, dropX: DROP_X,
     };
   },
 
@@ -905,21 +1408,21 @@ export default {
     ctx.save();
     ctx.translate(-camX, -camY);
     drawGrid(ctx, W, H, camX, camY);
+    drawWindStreaks(ctx, camX, W);
     drawWaterFill(ctx, camX, W);
     drawWaterfall(ctx);
     for (const body of space.bodies) {
-      if (body.userData._water || body.userData._part || body.userData._cargo) continue;
+      if (body.userData._water || body.userData._part || body.userData._hidden) continue;
       drawBody(ctx, body, showOutlines);
     }
     drawDock(ctx);
     drawRods(ctx);
     drawParts(ctx, true);
-    drawCrate(ctx, true);
+    drawDude(ctx);
     drawWaterSurface(ctx, camX, W);
     drawCrane(ctx);
     drawBuildZone(ctx);
     drawLinking(ctx);
-    drawHand(ctx);
     drawFx(ctx);
     ctx.restore();
     drawHUD(ctx, W, H);
@@ -927,7 +1430,7 @@ export default {
 
   // Three.js / PixiJS render bodies natively (camera applied by the
   // adapter); everything game-specific is painted on the shared overlay
-  // canvas (parts/crate get decoration-only passes while bodies exist, full
+  // canvas (parts/passenger get decoration-only passes while bodies exist, full
   // ghosts while editing). World-space passes get the camera translate,
   // the HUD stays screen-anchored. Water volumes are _hidden and painted
   // here instead.
@@ -936,17 +1439,17 @@ export default {
     _lastCamY = camY;
     ctx.save();
     ctx.translate(-camX, -camY);
+    drawWindStreaks(ctx, camX, W);
     drawWaterFill(ctx, camX, W);
     drawWaterfall(ctx);
     drawDock(ctx);
     drawRods(ctx);
     drawParts(ctx, false);
-    drawCrate(ctx, false);
+    drawDude(ctx);
     drawWaterSurface(ctx, camX, W);
     drawCrane(ctx);
     drawBuildZone(ctx);
     drawLinking(ctx);
-    drawHand(ctx);
     drawFx(ctx);
     ctx.restore();
     drawHUD(ctx, W, H);
@@ -954,7 +1457,7 @@ export default {
 };
 
 // ---------------------------------------------------------------------------
-// Rendering — water, dam, crane, parts, crate, toolbar HUD
+// Rendering — water, dam, crane, parts, passenger, toolbar HUD
 // ---------------------------------------------------------------------------
 
 // Purely cosmetic ripple — deliberately local (not the shared
@@ -966,26 +1469,22 @@ function rippleY(x, t) {
        + Math.sin(x * 0.07 + t * 3.0) * 1;
 }
 
-// The two pools, world-space, clipped to the visible span for cheap draws.
-const POOLS = [
-  { x0: UP_X0, x1: DAM_X1, surf: UP_SURF },
-  { x0: DAM_X1, x1: LO_X1, surf: LO_SURF },
-];
-
 function drawWaterFill(ctx, camX, W) {
   const t = _tick / 60;
-  for (const pool of POOLS) {
+  for (let i = 0; i < POOLS.length; i++) {
+    const pool = POOLS[i];
+    const floorY = poolFloor(i);
     const x0 = Math.max(pool.x0, camX - 30);
     const x1 = Math.min(pool.x1, camX + W + 30);
     if (x1 <= x0) continue;
     ctx.beginPath();
-    ctx.moveTo(x0, BED_Y);
+    ctx.moveTo(x0, floorY);
     for (let x = x0; x <= x1; x += 4) {
       ctx.lineTo(x, pool.surf + rippleY(x, t));
     }
-    ctx.lineTo(x1, BED_Y);
+    ctx.lineTo(x1, floorY);
     ctx.closePath();
-    const grad = ctx.createLinearGradient(0, pool.surf - 10, 0, BED_Y);
+    const grad = ctx.createLinearGradient(0, pool.surf - 10, 0, floorY);
     grad.addColorStop(0, "rgba(30,144,255,0.26)");
     grad.addColorStop(0.35, "rgba(20,100,200,0.33)");
     grad.addColorStop(1, "rgba(10,50,120,0.42)");
@@ -1022,20 +1521,25 @@ function drawWaterSurface(ctx, camX, W) {
     ctx.lineWidth = 1;
     ctx.stroke();
   }
-  // Foam boils over the shoal rocks — the hazards read on the surface even
-  // though the stone itself hides under it.
+  // Shoal marker: a standing wave over each hidden rock. A ripple crest
+  // that rises and falls in place reads as "shallow water, hazard here"
+  // without the bubble-blob look of scattered dots.
   const tt = _tick / 60;
   for (const rock of _rockFoam) {
     const surf = surfaceAt(rock.x);
     if (surf === null) continue;
-    for (let i = -1; i <= 1; i++) {
-      const bx = rock.x + i * (rock.r * 0.5) + Math.sin(tt * 4 + i * 2.1 + rock.x) * 3;
-      const by = surf + rippleY(bx, tt) - 1 + Math.sin(tt * 6 + i * 1.3) * 1.5;
-      ctx.fillStyle = "rgba(220,240,255,0.4)";
-      ctx.beginPath();
-      ctx.arc(bx, by, 3.5 - Math.abs(i), 0, Math.PI * 2);
-      ctx.fill();
+    const span = rock.r * 1.3;
+    ctx.beginPath();
+    for (let d = -span; d <= span; d += 3) {
+      const bx = rock.x + d;
+      const hump = Math.cos((d / span) * (Math.PI / 2)) ** 2;
+      const by = surf + rippleY(bx, tt) - hump * (5 + Math.sin(tt * 3 + rock.x) * 1.5);
+      if (d === -span) ctx.moveTo(bx, by);
+      else ctx.lineTo(bx, by);
     }
+    ctx.strokeStyle = "rgba(190,230,255,0.7)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
   }
   ctx.restore();
 }
@@ -1044,34 +1548,49 @@ function drawWaterSurface(ctx, camX, W) {
 function drawWaterfall(ctx) {
   const t = _tick / 60;
   ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(DAM_X0, UP_SURF - 2);
-  ctx.lineTo(DAM_X1, DAM_TOP - 3);
-  ctx.lineTo(SPILL_X1 + 6, SPILL_Y1);
-  ctx.lineTo(SPILL_X1 - 46, SPILL_Y1);
-  ctx.closePath();
-  ctx.fillStyle = "rgba(120,190,255,0.30)";
-  ctx.fill();
-  // Streaks sliding along the face.
-  ctx.strokeStyle = "rgba(200,235,255,0.5)";
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 4; i++) {
-    const u = ((t * 0.9 + i * 0.25) % 1);
-    const x0 = DAM_X1 + (SPILL_X1 - 24 - DAM_X1) * u;
-    const y0 = DAM_TOP + (SPILL_Y1 - DAM_TOP) * u;
+  for (let i = 0; i < WEIRS.length; i++) {
+    const w = WEIRS[i];
+    const upSurf = POOL_SURF[i];
+    const loSurf = POOL_SURF[i + 1];
+    const drop = w.footY - w.top;
+    // The falling sheet: over the lip, down the face, into the pool.
     ctx.beginPath();
-    ctx.moveTo(x0 - 8, y0 - 6);
-    ctx.lineTo(x0 + 4, y0 + 4);
-    ctx.stroke();
-  }
-  // Foam boil where the sheet lands.
-  for (let i = 0; i < 5; i++) {
-    const bx = SPILL_X1 - 26 + i * 14 + Math.sin(t * 5 + i * 1.9) * 4;
-    const by = LO_SURF - 2 + Math.sin(t * 7 + i * 2.7) * 3;
-    ctx.fillStyle = "rgba(220,240,255,0.35)";
-    ctx.beginPath();
-    ctx.arc(bx, by, 4 + (i % 3), 0, Math.PI * 2);
+    ctx.moveTo(w.x0, upSurf - 2);
+    ctx.lineTo(w.x1, w.top - 3);
+    ctx.lineTo(w.footX + 6, w.footY);
+    ctx.lineTo(w.footX - 46, w.footY);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(120,190,255,0.30)";
     ctx.fill();
+    // Streaks sliding along the face — more of them on a taller fall, and
+    // they run faster the further the water drops.
+    const streaks = Math.max(4, Math.round(drop / 26));
+    ctx.strokeStyle = "rgba(200,235,255,0.5)";
+    ctx.lineWidth = 2;
+    for (let k = 0; k < streaks; k++) {
+      const u = ((t * (0.7 + drop / 400) + k / streaks) % 1);
+      const x0 = w.x1 + (w.footX - 24 - w.x1) * u;
+      const y0 = w.top + (w.footY - w.top) * u;
+      ctx.beginPath();
+      ctx.moveTo(x0 - 8, y0 - 6);
+      ctx.lineTo(x0 + 4, y0 + 4);
+      ctx.stroke();
+    }
+    // Churn where the sheet lands — short choppy strokes, not blobs. A
+    // bigger drop throws its spray wider.
+    const churn = Math.max(5, Math.round(drop / 22));
+    ctx.strokeStyle = "rgba(220,240,255,0.45)";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    for (let k = 0; k < churn; k++) {
+      const bx = w.footX - 30 + k * 14;
+      const by = loSurf - 3 + Math.sin(t * 7 + k * 2.7) * 3;
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx + 9, by + Math.sin(t * 5 + k * 1.9) * 3);
+      ctx.stroke();
+    }
+    ctx.lineCap = "butt";
   }
   ctx.restore();
 }
@@ -1108,41 +1627,63 @@ function drawDock(ctx) {
 }
 
 // Crane over the loading bay — gantry, cable and hook (or the reason the
-// hook is empty). Marks where the crate will drop.
+// hook is empty). Marks where the passenger will drop.
 function drawCrane(ctx) {
-  const topY = 178;
+  const topY = 124;                  // gantry beam, above the loading bay
   ctx.strokeStyle = "#6e7681";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(CARGO_X - 70, topY);
-  ctx.lineTo(CARGO_X + 70, topY);
+  ctx.moveTo(DROP_X - 70, topY);
+  ctx.lineTo(DROP_X + 70, topY);
   ctx.stroke();
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(CARGO_X - 70, topY);
-  ctx.lineTo(CARGO_X - 70, topY - 14);
-  ctx.moveTo(CARGO_X + 70, topY);
-  ctx.lineTo(CARGO_X + 70, topY - 14);
+  ctx.moveTo(DROP_X - 70, topY);
+  ctx.lineTo(DROP_X - 70, topY - 14);
+  ctx.moveTo(DROP_X + 70, topY);
+  ctx.lineTo(DROP_X + 70, topY - 14);
   ctx.stroke();
 
+  // Live cable while the winch lowers the passenger onto the raft.
+  if (_winch && _dude) {
+    const t = _dude.torso.body;
+    const hx = t.position.x + Math.sin(t.rotation) * (TORSO_H / 2);
+    const hy = t.position.y - Math.cos(t.rotation) * (TORSO_H / 2);
+    ctx.strokeStyle = "rgba(139,148,158,0.9)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(DROP_X, topY);
+    ctx.lineTo(hx, hy);
+    ctx.stroke();
+  }
+
   if (_phase !== "build") return;
-  // Cable + ghost crate while editing, so the drop point reads at a glance.
+  // Cable + ghost passenger while editing, so the drop point reads at a
+  // glance.
   ctx.strokeStyle = "rgba(139,148,158,0.8)";
   ctx.lineWidth = 1.5;
   ctx.setLineDash([4, 5]);
   ctx.beginPath();
-  ctx.moveTo(CARGO_X, topY);
-  ctx.lineTo(CARGO_X, ZONE.y0 - 4);
+  ctx.moveTo(DROP_X, topY);
+  ctx.lineTo(DROP_X, ZONE.y0 - 4);
   ctx.stroke();
   ctx.setLineDash([]);
+  const gy = ZONE.y0 + 14;           // ghost torso center
   ctx.strokeStyle = "rgba(229,83,75,0.65)";
   ctx.lineWidth = 2;
-  ctx.strokeRect(CARGO_X - CARGO_HALF, ZONE.y0 - 2, CARGO_HALF * 2, CARGO_HALF * 2);
+  ctx.beginPath();
+  ctx.arc(DROP_X, gy - TORSO_H / 2 - HEAD_R - 2, HEAD_R, 0, Math.PI * 2);
+  ctx.moveTo(DROP_X, gy - TORSO_H / 2 + 4);
+  ctx.lineTo(DROP_X, gy + TORSO_H / 2 - 2);
+  ctx.lineTo(DROP_X + LEG_LEN * 2 - 4, gy + TORSO_H / 2 - 2);
+  ctx.moveTo(DROP_X, gy - TORSO_H / 2 + 7);
+  ctx.lineTo(DROP_X + 2, gy - TORSO_H / 2 + 7 + ARM_LEN * 2 - 4);
+  ctx.stroke();
   ctx.fillStyle = "rgba(229,83,75,0.7)";
   ctx.font = "11px system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
-  ctx.fillText("cargo drops here", CARGO_X, ZONE.y0 - 8);
+  ctx.fillText("passenger drops here", DROP_X, ZONE.y0 - 8);
 }
 
 function drawBuildZone(ctx) {
@@ -1211,12 +1752,58 @@ function drawBarrel(ctx, x, y, rot, solid) {
   ctx.stroke();
 }
 
+// Mast + cloth above the sail's hull circle. The mast follows the body's
+// rotation; the cloth bellies downstream with the live wind (limp when the
+// sail is dunked or the raft outruns the gust).
+function drawSail(ctx, pos, rot, body) {
+  const tx = pos.x - Math.sin(rot) * MAST_H;
+  const ty = pos.y - Math.cos(rot) * MAST_H;
+  let belly = 8;
+  if (body) {
+    const dry = 1 - submergence(body, SAIL_R * 2);
+    const dv = Math.max(0, windSpeed() - body.velocity.x);
+    belly = Math.max(0, Math.min(1, dv / SAIL_DV_CAP)) * dry * 12 + 2;
+  }
+  const flutter = Math.sin(_tick * 0.25) * 1.5;
+  ctx.strokeStyle = "#c8a060";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+  ctx.lineTo(tx, ty);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(tx, ty);
+  ctx.quadraticCurveTo(
+    (tx + pos.x) / 2 + belly + flutter, (ty + pos.y) / 2 - 2,
+    pos.x, pos.y - 4,
+  );
+  ctx.closePath();
+  ctx.fillStyle = "rgba(235,235,220,0.85)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(180,180,165,0.9)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
 function drawParts(ctx, solid) {
   for (const p of _parts) {
     const pos = p.body ? p.body.position : p;
     const rot = p.body ? p.body.rotation : 0;
     if (p.kind === "barrel") {
       drawBarrel(ctx, pos.x, pos.y, rot, solid || !p.body);
+    } else if (p.kind === "sail") {
+      drawSail(ctx, pos, rot, p.body);
+      if (solid || !p.body) {
+        ctx.fillStyle = "#58a6ff";
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, SAIL_R, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.strokeStyle = "#0d1117";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, SAIL_R - 1.5, 0, Math.PI * 2);
+      ctx.stroke();
     } else {
       if (solid || !p.body) {
         ctx.fillStyle = "#3fb950";
@@ -1233,7 +1820,7 @@ function drawParts(ctx, solid) {
   }
 
   // Hover ring — pick target for grab/erase/rod-drag.
-  if (_mouse && !_linking && !_hand && (_phase === "build" || _phase === "run")) {
+  if (_mouse && !_linking && _phase === "build") {
     const p = partAt(_mouse.x, _mouse.y);
     if (p) {
       const pos = p.body ? p.body.position : p;
@@ -1248,40 +1835,35 @@ function drawParts(ctx, solid) {
   }
 }
 
-// The crate: solid pass for the 2D renderer, decoration + halo only when a
-// native renderer already draws the body.
-function drawCrate(ctx, solid) {
-  if (!_cargo) return;
-  const p = _cargo.position;
-  const rot = _cargo.rotation;
+// The passenger's bodies are drawn by the engine's own renderer in every
+// mode (Crash Test Hero does the same) — this only paints the face and the
+// objective halo on top.
+function drawDude(ctx) {
+  if (!_dude) return;
+  const [torso, head] = _dude.parts;
+
+  const hp = head.body.position;
   ctx.save();
-  ctx.translate(p.x, p.y);
-  ctx.rotate(rot);
-  if (solid) {
-    ctx.fillStyle = "#a03c36";
-    ctx.fillRect(-CARGO_HALF, -CARGO_HALF, CARGO_HALF * 2, CARGO_HALF * 2);
+  ctx.translate(hp.x, hp.y);
+  ctx.rotate(head.body.rotation);
+  ctx.fillStyle = "#c9d1d9";
+  for (const ex of [-3, 3]) {
+    ctx.beginPath();
+    ctx.arc(ex, -1.5, 1.4, 0, Math.PI * 2);
+    ctx.fill();
   }
-  ctx.strokeStyle = "#e5534b";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(-CARGO_HALF + 1, -CARGO_HALF + 1, CARGO_HALF * 2 - 2, CARGO_HALF * 2 - 2);
-  ctx.beginPath();
-  ctx.moveTo(-CARGO_HALF + 3, -CARGO_HALF + 3);
-  ctx.lineTo(CARGO_HALF - 3, CARGO_HALF - 3);
-  ctx.moveTo(CARGO_HALF - 3, -CARGO_HALF + 3);
-  ctx.lineTo(-CARGO_HALF + 3, CARGO_HALF - 3);
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
   ctx.restore();
 
   // Pulsing halo so the objective reads at a glance in every render mode;
-  // it flips red while the crate is going under.
+  // it flips red while the passenger is going under.
+  const p = torso.body.position;
   const sinking = _sinkTimer > 0;
   const pulse = 1 + 0.12 * Math.sin(_tick * (sinking ? 0.3 : 0.1));
   ctx.strokeStyle = sinking ? "rgba(248,81,73,0.9)" : "rgba(219,109,183,0.8)";
   ctx.lineWidth = 2;
   ctx.setLineDash([4, 5]);
   ctx.beginPath();
-  ctx.arc(p.x, p.y, (CARGO_HALF + 9) * pulse, 0, Math.PI * 2);
+  ctx.arc(p.x, p.y, (TORSO_H / 2 + 14) * pulse, 0, Math.PI * 2);
   ctx.stroke();
   ctx.setLineDash([]);
 }
@@ -1305,24 +1887,6 @@ function drawLinking(ctx) {
   ctx.setLineDash([]);
 }
 
-function drawHand(ctx) {
-  if (!_hand || !_hand.part.body) return;
-  const p = _hand.part.body.position;
-  const a = _hand.joint.anchor1;
-  ctx.strokeStyle = "rgba(255,255,255,0.6)";
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([4, 5]);
-  ctx.beginPath();
-  ctx.moveTo(a.x, a.y);
-  ctx.lineTo(p.x, p.y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.strokeStyle = "#f0883e";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, partRadius(_hand.part) + 4, 0, Math.PI * 2);
-  ctx.stroke();
-}
 
 function drawFx(ctx) {
   for (const f of _fx) {
@@ -1345,13 +1909,27 @@ function drawFx(ctx) {
       ctx.beginPath();
       ctx.arc(f.x, f.y, 2, 0, Math.PI * 2);
       ctx.fill();
-    } else if (f.kind === "bubble") {
-      ctx.strokeStyle = `rgba(180,225,255,${(f.life / 40 * 0.8).toFixed(3)})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(f.x, f.y, 3, 0, Math.PI * 2);
-      ctx.stroke();
     }
+  }
+}
+
+// Drifting dashes in the sky make the tailwind visible: they scroll at the
+// live wind speed, so a gust literally speeds the sky up.
+function drawWindStreaks(ctx, camX, W) {
+  const wind = windSpeed();
+  const span = W + 160;
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 6; i++) {
+    const lane = 70 + ((i * 53) % 170);
+    const drift = _tick * STEP_DT * wind * (0.75 + (i % 3) * 0.12);
+    const x = camX - 80 + (((i * 331 + drift) % span) + span) % span;
+    const len = 12 + (wind - WIND_BASE + WIND_GUST) * 0.12 + (i % 2) * 6;
+    const alpha = 0.05 + ((wind - WIND_BASE) / (2 * WIND_GUST) + 0.5) * 0.1;
+    ctx.strokeStyle = `rgba(160,200,235,${alpha.toFixed(3)})`;
+    ctx.beginPath();
+    ctx.moveTo(x, lane + Math.sin(_tick * 0.02 + i) * 4);
+    ctx.lineTo(x + len, lane + Math.sin(_tick * 0.02 + i) * 4);
+    ctx.stroke();
   }
 }
 
@@ -1360,29 +1938,33 @@ function drawFx(ctx) {
 // the corner where the demo page overlays its render-mode controls.
 function drawProgress(ctx, W) {
   const x0 = 16, x1 = W - 270, y = HUD_H - 6;
-  const frac = (x) => Math.max(0, Math.min(1, (x - CARGO_X) / (GOAL.x - CARGO_X)));
+  const frac = (x) => Math.max(0, Math.min(1, (x - DROP_X) / (GOAL.x - DROP_X)));
   ctx.strokeStyle = "rgba(139,148,158,0.4)";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(x0, y);
   ctx.lineTo(x1, y);
   ctx.stroke();
-  // Dam tick mid-strip, flag tick at the far end.
-  const damX = x0 + (x1 - x0) * frac(DAM_X0);
+  // A tick per waterfall — taller drops get a taller tick — and the flag
+  // tick at the far end.
   ctx.strokeStyle = "rgba(139,148,158,0.8)";
-  ctx.beginPath();
-  ctx.moveTo(damX, y - 4);
-  ctx.lineTo(damX, y + 4);
-  ctx.stroke();
+  for (const w of WEIRS) {
+    const wx = x0 + (x1 - x0) * frac(w.x0);
+    const h = 3 + (w.footY - w.top) / 60;
+    ctx.beginPath();
+    ctx.moveTo(wx, y - h);
+    ctx.lineTo(wx, y + h);
+    ctx.stroke();
+  }
   ctx.strokeStyle = "#f85149";
   ctx.beginPath();
   ctx.moveTo(x1, y - 4);
   ctx.lineTo(x1, y + 4);
   ctx.stroke();
-  if (_cargo) {
+  if (_dude) {
     ctx.fillStyle = "#db6db7";
     ctx.beginPath();
-    ctx.arc(x0 + (x1 - x0) * frac(_cargo.position.x), y, 3.5, 0, Math.PI * 2);
+    ctx.arc(x0 + (x1 - x0) * frac(_dude.torso.body.position.x), y, 3.5, 0, Math.PI * 2);
     ctx.fill();
   }
 }
@@ -1458,7 +2040,7 @@ function drawHUD(ctx, W, H) {
     );
   } else {
     ctx.fillText(
-      `Rods ${liveRods} — keep the crate dry to the dock`,
+      `Rods ${liveRods} — keep the passenger's head up to the dock`,
       statusX, HUD_H / 2,
     );
   }
@@ -1472,7 +2054,7 @@ function drawHUD(ctx, W, H) {
   if (_phase === "won") {
     ctx.fillStyle = "#7ee787";
     ctx.font = "bold 36px system-ui, sans-serif";
-    ctx.fillText("Cargo delivered!", W / 2, H / 2 - 24);
+    ctx.fillText("Passenger delivered!", W / 2, H / 2 - 24);
     ctx.fillStyle = "#c9d1d9";
     ctx.font = "14px system-ui, sans-serif";
     ctx.fillText(
@@ -1482,7 +2064,7 @@ function drawHUD(ctx, W, H) {
   } else {
     ctx.fillStyle = "#f85149";
     ctx.font = "bold 36px system-ui, sans-serif";
-    ctx.fillText("Cargo lost", W / 2, H / 2 - 24);
+    ctx.fillText("Passenger lost", W / 2, H / 2 - 24);
     ctx.fillStyle = "#c9d1d9";
     ctx.font = "14px system-ui, sans-serif";
     ctx.fillText(_wreckReason, W / 2, H / 2 + 6);
