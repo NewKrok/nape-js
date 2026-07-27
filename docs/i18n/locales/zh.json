@@ -238,6 +238,8 @@
   "demo.pulley-crane.desc": "跨过两个滑轮的一根<b>刚性绳索</b>连接着一节吊舱（左）和一个配重（右）。<code>PulleyJoint</code> 强制绳索总长固定，因此往一侧加货物会使其下沉并抬升另一侧。<b>点击</b>左半边向吊舱投球，点击右半边向配重投放重物。",
   "demo.pyramid.label": "金字塔压力测试",
   "demo.pyramid.desc": "经典的方块堆叠金字塔。<b>点击</b>可向其投下一个沉重的球。",
+  "demo.raft-rapids.label": "木筏激流",
+  "demo.raft-rapids.desc": "基于真实<b>流体浮力</b>的木筏货运挑战。在装载湾中<b>点击</b>放置漂浮的木桶和甲板节点，并<b>从部件拖到部件</b>用弹性连杆连接。按下<b>出发</b>：木筏落水，起重机放下一只<b>密度大于水</b>的货箱——落水即沉没、本轮失败——水流会带着一切顺流而下，穿过三屏长的河道：礁石回旋、加速引水道、<b>大坝溢洪道跌落</b>和下游激流，直到交付码头。连杆是带实时应变显示的软性 <b>DistanceJoint</b>，撞上礁石过猛就会断裂；漂移与浮力都随每个刚体实测的浸没程度缩放，途中你还可以用弹性枢轴“手”<b>抓住</b>木筏部件来控制方向（货箱本身不可抓取）。<b>空格</b>出发，<b>1–3</b> 切换工具，<b>R</b> 重置。",
   "demo.ragdoll.label": "布娃娃",
   "demo.ragdoll.desc": "由 <code>PivotJoint</code> 和 <code>AngleJoint</code> 约束构建的布娃娃人偶。<b>点击</b>可在光标处生成一个新布娃娃。",
   "demo.replay-recorder.label": "确定性回放",
@@ -304,6 +306,7 @@
     "demo.three-body.desc",
     "api.core.aabb",
     "demo.contraption-garage.desc",
-    "demo.crash-test-hero.desc"
+    "demo.crash-test-hero.desc",
+    "demo.raft-rapids.desc"
   ]
 }

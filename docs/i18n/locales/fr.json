@@ -238,6 +238,8 @@
   "demo.pulley-crane.desc": "Une <b>corde rigide</b> passant sur deux poulies relie une cabine (à gauche) et un contrepoids (à droite). <code>PulleyJoint</code> impose une longueur totale de corde fixe, de sorte qu'ajouter une charge d'un côté le fait descendre et lève l'autre. <b>Cliquez</b> sur la moitié gauche pour lâcher une boule dans la cabine, sur la moitié droite pour lâcher un poids sur le contrepoids.",
   "demo.pyramid.label": "Test de charge pyramidal",
   "demo.pyramid.desc": "Une pyramide classique de boîtes empilées. <b>Cliquez</b> pour y lâcher une lourde boule.",
+  "demo.raft-rapids.label": "Radeau des rapides",
+  "demo.raft-rapids.desc": "Livraison de cargaison en radeau avec une vraie <b>flottabilité des fluides</b>. Dans la baie de chargement, <b>cliquez</b> pour poser des tonneaux flottants et des nœuds de pont, puis <b>glissez de pièce en pièce</b> pour les relier par des tiges élastiques. Appuyez sur <b>Lancer</b> : le radeau plonge, la grue lâche une caisse <b>plus dense que l'eau</b> — par-dessus bord elle coule et la descente est perdue — et le courant emporte le tout le long d'une rivière de trois écrans : slalom de rochers, bief qui accélère, <b>plongeon dans le déversoir du barrage</b> et rapides inférieurs, jusqu'au quai de livraison. Les tiges sont des <b>DistanceJoint</b>s souples à contrainte visible en direct qui cassent sur les gros chocs contre les rochers ; dérive et portance suivent l'immersion mesurée de chaque corps, et en pleine descente vous pouvez <b>saisir</b> des pièces du radeau avec une main pivot élastique pour diriger (la caisse elle-même est insaisissable). <b>Espace</b> lance, <b>1–3</b> choisissent les outils, <b>R</b> réinitialise.",
   "demo.ragdoll.label": "Ragdoll",
   "demo.ragdoll.desc": "Des figures ragdoll construites à partir de contraintes <code>PivotJoint</code> et <code>AngleJoint</code>. <b>Cliquez</b> pour faire apparaître un nouveau ragdoll au niveau du curseur.",
   "demo.replay-recorder.label": "Replay déterministe",
@@ -305,6 +307,7 @@
     "demo.strandbeast.desc",
     "demo.pulley-crane.desc",
     "demo.contraption-garage.desc",
-    "demo.crash-test-hero.desc"
+    "demo.crash-test-hero.desc",
+    "demo.raft-rapids.desc"
   ]
 }

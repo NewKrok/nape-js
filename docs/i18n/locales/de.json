@@ -238,6 +238,8 @@
   "demo.pulley-crane.desc": "Ein <b>starres Seil</b> über zwei Flaschenzugrollen koppelt eine Kabine (links) und ein Gegengewicht (rechts). <code>PulleyJoint</code> erzwingt eine feste Gesamt-Seillänge, sodass zusätzliche Ladung auf einer Seite diese absenkt und die andere hebt. <b>Klicke</b> auf die linke Hälfte, um eine Kugel in die Kabine fallen zu lassen, auf die rechte Hälfte, um ein Gewicht auf das Gegengewicht fallen zu lassen.",
   "demo.pyramid.label": "Pyramiden-Stresstest",
   "demo.pyramid.desc": "Eine klassische Box-Stapel-Pyramide. <b>Klicke</b>, um eine schwere Kugel darauf fallen zu lassen.",
+  "demo.raft-rapids.label": "Floß-Stromschnellen",
+  "demo.raft-rapids.desc": "Floßbau-Frachtfahrt mit echtem <b>Fluid-Auftrieb</b>. In der Ladebucht platzierst du per <b>Klick</b> schwimmende Fässer und Deckknoten und verbindest sie per <b>Ziehen von Teil zu Teil</b> mit federnden Streben. Drücke <b>Start</b>: das Floß platscht ins Wasser, der Kran lässt eine Kiste fallen, die <b>dichter als Wasser</b> ist — über Bord sinkt sie und die Fahrt ist verloren —, und die Strömung trägt alles einen drei Bildschirme langen Fluss hinab: Felsen-Slalom, beschleunigender Zulauf, <b>Sturz über die Damm-Schussrinne</b> und die unteren Stromschnellen bis zum Lieferdock. Die Streben sind weiche <b>DistanceJoint</b>s mit Live-Dehnung, die bei harten Felstreffern reißen; Drift und Auftrieb skalieren mit der gemessenen Eintauchtiefe jedes Körpers, und während der Fahrt kannst du Floßteile mit einer federnden Greifhand <b>packen</b> und steuern (die Kiste selbst ist nicht greifbar). <b>Leertaste</b> startet, <b>1–3</b> wählt Werkzeuge, <b>R</b> setzt zurück.",
   "demo.ragdoll.label": "Ragdoll",
   "demo.ragdoll.desc": "Ragdoll-Figuren, aufgebaut aus <code>PivotJoint</code>- und <code>AngleJoint</code>-Constraints. <b>Klicke</b>, um am Cursor einen neuen Ragdoll zu erzeugen.",
   "demo.replay-recorder.label": "Deterministisches Replay",
@@ -305,6 +307,7 @@
     "demo.pulley-crane.desc",
     "tag.Momentum",
     "demo.contraption-garage.desc",
-    "demo.crash-test-hero.desc"
+    "demo.crash-test-hero.desc",
+    "demo.raft-rapids.desc"
   ]
 }

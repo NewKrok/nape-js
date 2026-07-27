@@ -91,6 +91,7 @@ import standoff              from "./demos/standoff.js?v=3.39.1";
 import stickyBuilder         from "./demos/sticky-builder.js?v=3.39.1";
 import contraptionGarage     from "./demos/contraption-garage.js?v=3.39.1";
 import crashTestHero         from "./demos/crash-test-hero.js?v=3.39.1";
+import raftRapids            from "./demos/raft-rapids.js?v=3.39.1";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -142,6 +143,7 @@ const ALL_DEMOS = [
   stickyBuilder,
   contraptionGarage,
   crashTestHero,
+  raftRapids,
 ];
 
 const gtag = window.gtag || function() {};

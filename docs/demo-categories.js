@@ -35,6 +35,7 @@ export const GAME_DEMO_IDS = new Set([
   "sticky-builder",
   "contraption-garage",
   "crash-test-hero",
+  "raft-rapids",
 ]);
 
 export const CATEGORIES = [
