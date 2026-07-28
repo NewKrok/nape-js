@@ -252,6 +252,8 @@
   "demo.save-load-rewind.desc": "演示 <code>spaceToBinary</code> / <code>spaceFromBinary</code>。<b>点击</b>引爆一次爆破。<b>拖动时间轴</b>可拖拽浏览最近 3 秒。<b>Save 1-5</b> 捕获状态，<b>Load</b> 恢复，<b>Branch</b> 从拖拽点分叉出新的时间线。",
   "demo.seesaw.label": "跷跷板",
   "demo.seesaw.desc": "一个平衡的跷跷板，当物体落到上面时会倾斜。点击可投下沉重的球。",
+  "demo.sky-hook.label": "天钩救援",
+  "demo.sky-hook.desc": "直升机医疗救援，吊挂布娃娃。用<b>方向键/WASD</b>飞行（触屏按住指针转向），将链节绳索的挂钩悬停到伤员旁，按<b>空格</b>把他绞入吊带——然后带着在机身下摇摆的他穿过高塔回旋、桥下通道、摆动的破碎球和旋转风扇，抵达医院停机坪。他的颈部、肩部和髋部是真正的<b>可断裂约束</b>（<code>maxForce</code> + <code>breakUnderForce</code>，阈值由实测链条重量推导）——撞上障碍会扯断肢体；猛拉过头连<b>吊带本身也会断裂</b>。直升机或伤员的剧烈碰撞会通过实测的 <code>totalContactsImpulse</code> <b>震动镜头</b>；特别猛烈的一击会直接坠毁直升机。<b>空格</b>释放，<b>R</b> 重新开始。",
   "demo.slingshot.label": "弹弓攻城",
   "demo.slingshot.desc": "从弹弓向后<b>拖动</b>瞄准，<b>松开</b>发射！球撞上城堡时会将其击碎。<b>点击</b>弹弓可重新装填。",
   "demo.soft-body.label": "软体",
@@ -307,6 +309,7 @@
     "api.core.aabb",
     "demo.contraption-garage.desc",
     "demo.crash-test-hero.desc",
-    "demo.raft-rapids.desc"
+    "demo.raft-rapids.desc",
+    "demo.sky-hook.desc"
   ]
 }

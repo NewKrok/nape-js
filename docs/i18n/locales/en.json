@@ -252,6 +252,8 @@
   "demo.save-load-rewind.desc": "Demonstrates <code>spaceToBinary</code> / <code>spaceFromBinary</code>. <b>Click</b> to detonate a blast. <b>Drag the timeline</b> to scrub through the last 3 seconds. <b>Save 1-5</b> to capture state, <b>Load</b> to restore, <b>Branch</b> to fork a new timeline from the scrubbed point.",
   "demo.seesaw.label": "Seesaw",
   "demo.seesaw.desc": "A balanced seesaw that tilts when objects land on it. Click to drop heavy balls.",
+  "demo.sky-hook.label": "Sky Hook",
+  "demo.sky-hook.desc": "Helicopter medevac with a slung ragdoll. Fly with <b>arrows/WASD</b> (hold the pointer to steer on touch), hover the chain-link rope's hook by the patient and press <b>Space</b> to winch him into the harness — then carry him swinging under the chopper through a tower slalom, a bridge underpass, swinging wrecking balls and a spinning fan to the hospital pad. His neck, shoulders and hips are real <b>breakable constraints</b> (<code>maxForce</code> + <code>breakUnderForce</code>, thresholds derived from measured chain weights) — slam him and limbs tear off; yank hard enough and the <b>harness itself snaps</b>. Hard contacts on chopper or patient <b>shake the camera</b> via measured <code>totalContactsImpulse</code>; a really hard one wrecks the chopper. <b>Space</b> releases, <b>R</b> restarts.",
   "demo.slingshot.label": "Slingshot Siege",
   "demo.slingshot.desc": "<b>Drag</b> from the slingshot to aim, <b>release</b> to fire! Balls shatter the castle on impact. <b>Click</b> slingshot to reload.",
   "demo.soft-body.label": "Soft Body",

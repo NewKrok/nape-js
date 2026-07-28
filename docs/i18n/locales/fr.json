@@ -252,6 +252,8 @@
   "demo.save-load-rewind.desc": "Démontre <code>spaceToBinary</code> / <code>spaceFromBinary</code>. <b>Cliquez</b> pour déclencher un souffle. <b>Glissez la timeline</b> pour parcourir les 3 dernières secondes. <b>Save 1-5</b> pour capturer l'état, <b>Load</b> pour le restaurer, <b>Branch</b> pour bifurquer vers une nouvelle timeline à partir du point parcouru.",
   "demo.seesaw.label": "Balançoire à bascule",
   "demo.seesaw.desc": "Une balançoire à bascule équilibrée qui s'incline quand des objets s'y posent. Cliquez pour lâcher de lourdes boules.",
+  "demo.sky-hook.label": "Crochet céleste",
+  "demo.sky-hook.desc": "Évacuation médicale en hélicoptère avec un ragdoll suspendu. Volez avec les <b>flèches/WASD</b> (sur tactile, maintenez le pointeur pour diriger), amenez le crochet de la corde à maillons près du patient et appuyez sur <b>Espace</b> pour le treuiller dans le harnais — puis transportez-le, se balançant sous l'hélicoptère, à travers un slalom de tours, un passage sous un pont, des boules de démolition oscillantes et un ventilateur en rotation jusqu'à la plateforme de l'hôpital. Son cou, ses épaules et ses hanches sont de vraies <b>contraintes cassables</b> (<code>maxForce</code> + <code>breakUnderForce</code>, seuils dérivés des poids mesurés de chaque chaîne) — percutez-le et des membres s'arrachent ; tirez assez fort et le <b>harnais lui-même se rompt</b>. Les contacts violents sur l'hélicoptère ou le patient <b>secouent la caméra</b> via le <code>totalContactsImpulse</code> mesuré ; un choc vraiment violent détruit l'hélicoptère. <b>Espace</b> relâche, <b>R</b> redémarre.",
   "demo.slingshot.label": "Siège au lance-pierre",
   "demo.slingshot.desc": "<b>Glissez</b> depuis le lance-pierre pour viser, <b>relâchez</b> pour tirer ! Les balles fracassent le château à l'impact. <b>Cliquez</b> sur le lance-pierre pour recharger.",
   "demo.soft-body.label": "Corps souple",
@@ -308,6 +310,7 @@
     "demo.pulley-crane.desc",
     "demo.contraption-garage.desc",
     "demo.crash-test-hero.desc",
-    "demo.raft-rapids.desc"
+    "demo.raft-rapids.desc",
+    "demo.sky-hook.desc"
   ]
 }

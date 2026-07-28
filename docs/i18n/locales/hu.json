@@ -252,6 +252,8 @@
   "demo.save-load-rewind.desc": "Bemutatja a <code>spaceToBinary</code> / <code>spaceFromBinary</code> elemeket. <b>Kattints</b> egy robbanás kirobbantásához. <b>Húzd az idővonalat</b> az utolsó 3 másodperc átpörgetéséhez. <b>Mentés 1-5</b> az állapot rögzítéséhez, <b>Betöltés</b> a visszaállításhoz, <b>Elágazás</b> egy új idővonal létrehozásához az átpörgetett pontból.",
   "demo.seesaw.label": "Libikóka",
   "demo.seesaw.desc": "Egy kiegyensúlyozott libikóka, amely megbillen, amikor objektumok landolnak rajta. Kattints nehéz golyók ledobásához.",
+  "demo.sky-hook.label": "Égi horog",
+  "demo.sky-hook.desc": "Helikopteres mentőakció függesztett rongybabával. Repülj a <b>nyilakkal/WASD-vel</b> (érintőkijelzőn tartsd nyomva a mutatót a kormányzáshoz), lebegtesd a lánctagokból álló kötél horgát a beteg mellé, és nyomd meg a <b>Space</b>-t, hogy a hevederbe csörlőzd — majd vidd őt a gép alatt lengve a toronyszlalomon, a híd alatti átjárón, a lengő bontógolyók között és a pörgő ventilátor mellett a kórházi leszállóhelyre. A nyaka, vállai és csípői valódi <b>törhető kényszerek</b> (<code>maxForce</code> + <code>breakUnderForce</code>, a küszöbök a mért lánctömegekből származnak) — ha nekicsapod, végtagok szakadnak le; ha elég erőset rántasz rajta, maga a <b>heveder szakad el</b>. A helikoptert vagy a beteget érő kemény ütközések a mért <code>totalContactsImpulse</code> alapján <b>rázzák a kamerát</b>; egy igazán nagy becsapódás a helikoptert is lezúzza. A <b>Space</b> old, az <b>R</b> újraindít.",
   "demo.slingshot.label": "Csúzli ostrom",
   "demo.slingshot.desc": "<b>Húzz</b> a csúzlitól a célzáshoz, <b>engedd el</b> a tüzeléshez! A golyók becsapódáskor szilánkokra törik a várat. <b>Kattints</b> a csúzlira az újratöltéshez.",
   "demo.soft-body.label": "Lágy test",
@@ -309,6 +311,7 @@
     "api.core.aabb",
     "demo.contraption-garage.desc",
     "demo.crash-test-hero.desc",
-    "demo.raft-rapids.desc"
+    "demo.raft-rapids.desc",
+    "demo.sky-hook.desc"
   ]
 }

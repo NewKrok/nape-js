@@ -252,6 +252,8 @@
   "demo.save-load-rewind.desc": "Demuestra <code>spaceToBinary</code> / <code>spaceFromBinary</code>. <b>Haz clic</b> para detonar una explosión. <b>Arrastra la línea de tiempo</b> para desplazarte por los últimos 3 segundos. <b>Guardar 1-5</b> para capturar el estado, <b>Cargar</b> para restaurar, <b>Ramificar</b> para bifurcar una nueva línea de tiempo desde el punto desplazado.",
   "demo.seesaw.label": "Balancín",
   "demo.seesaw.desc": "Un balancín equilibrado que se inclina cuando los objetos aterrizan sobre él. Haz clic para dejar caer bolas pesadas.",
+  "demo.sky-hook.label": "Gancho celeste",
+  "demo.sky-hook.desc": "Evacuación médica en helicóptero con un ragdoll colgante. Vuela con las <b>flechas/WASD</b> (en táctil, mantén el puntero pulsado para dirigir), acerca el gancho de la cuerda de eslabones al paciente y pulsa <b>Espacio</b> para izarlo al arnés — luego llévalo balanceándose bajo el helicóptero por un eslalon de torres, un paso bajo un puente, bolas de demolición oscilantes y un ventilador giratorio hasta la plataforma del hospital. Su cuello, hombros y caderas son auténticas <b>restricciones rompibles</b> (<code>maxForce</code> + <code>breakUnderForce</code>, con umbrales derivados de los pesos medidos de cada cadena) — estréllalo y se arrancan extremidades; da un tirón lo bastante fuerte y el propio <b>arnés se rompe</b>. Los contactos duros del helicóptero o del paciente <b>sacuden la cámara</b> mediante el <code>totalContactsImpulse</code> medido; uno realmente fuerte destroza el helicóptero. <b>Espacio</b> suelta, <b>R</b> reinicia.",
   "demo.slingshot.label": "Asedio con resortera",
   "demo.slingshot.desc": "<b>Arrastra</b> desde la resortera para apuntar, <b>suelta</b> para disparar. Las bolas hacen añicos el castillo al impactar. <b>Haz clic</b> en la resortera para recargar.",
   "demo.soft-body.label": "Cuerpo blando",
@@ -309,6 +311,7 @@
     "tag.Momentum",
     "demo.contraption-garage.desc",
     "demo.crash-test-hero.desc",
-    "demo.raft-rapids.desc"
+    "demo.raft-rapids.desc",
+    "demo.sky-hook.desc"
   ]
 }
