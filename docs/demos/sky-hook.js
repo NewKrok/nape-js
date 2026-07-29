@@ -8,23 +8,34 @@ import { drawBody, drawGrid } from "../renderer.js";
 // ---------------------------------------------------------------------------
 // Sky Hook — helicopter medevac mini-game.
 //
-// The ragdoll dummy from the other demos is the PATIENT. He waits on pad A;
-// the player flies a physical helicopter (arrows/WASD, full flight-assist:
-// hover, velocity targets, banking tilt) trailing a real chain-link rope
-// with a hook. Hover the hook next to the patient, press SPACE to winch him
-// into the harness, then carry him — swinging under the chopper like any
-// slung load — through the obstacle course to the hospital pad B: a tower
-// slalom, a bridge underpass whose antennas force you low, a gantry with
-// two swinging wrecking balls, and a spinning fan that guards the final
-// approach. SPACE again releases the harness — over the pad, ideally.
+// THREE ragdoll patients are stranded across a 7000px canyon — one on the
+// valley floor at the far west, one on top of a lone tower to the east, one
+// on the ground at the far east end. The hospital pad sits in the MIDDLE of
+// the map and the player's physical helicopter (arrows/WASD, full
+// flight-assist: hover, velocity targets, banking tilt) lifts off from it,
+// trailing a real chain-link rope with a hook. Hover the hook next to a
+// patient, press SPACE to winch him into the harness, carry him — swinging
+// under the chopper like any slung load — back to the hospital and release
+// over the pad. Repeat until all three are home.
 //
-// The cargo is fragile, exactly like Crash Test Hero's dummy: the neck,
-// shoulders and hips are real breakable constraints. Slam the patient into
-// an obstacle and limbs tear off (–20% each, the neck is –60%); at 0% the
-// mission is lost. Yank the rope hard enough — full speed while the patient
-// is snagged behind a pylon — and the harness itself snaps and drops him.
-// Hard contacts on the helicopter OR the patient shake the camera; a really
-// hard one wrecks the chopper outright. R restarts.
+// The course is a gauntlet in both directions — and the ceiling is NOT a
+// free highway: nine blocks hang from the sky lid, the bridge pylons reach
+// all the way up (the underpass is the only way through), a hanger caps
+// the wrecking-ball gantry so the balls must be threaded, and two of the
+// five rotors spin just under the lid. The rest: a tower slalom with a
+// slow I-rotor in the gap, a slow X-rotor whose only cargo lane is a
+// slow climb over the top, two patrolling kinematic platforms and a fast
+// fan guarding the far-east approach.
+//
+// The cargo is fragile, exactly like Crash Test Hero's dummy: each
+// patient's neck, shoulders and hips are real breakable constraints. Slam
+// him into an obstacle and limbs tear off (–20% each, the neck is –60%);
+// any patient at 0% loses the mission. Yank the rope hard enough — full
+// speed while the patient is snagged behind a pylon — and the harness
+// itself snaps and drops him. The chopper is mortal too: EVERY hard
+// contact chips its hull (measured contact Δv), rotor hazards take a fixed
+// bite, and at 0% hull — or one truly catastrophic slam — it drops out of
+// the sky. R restarts.
 //
 // Engine features showcased:
 //   * Slung-load physics — a chain of PivotJoint rope links hanging off a
@@ -36,10 +47,11 @@ import { drawBody, drawGrid } from "../renderer.js";
 //     are derived from measured chain weights (mass × gravity × k), so
 //     steady hanging never snaps and violent yanks always do.
 //   * body.totalContactsImpulse() — per-step contact Δv drives camera
-//     shake, bruise damage and the chopper-wreck threshold.
+//     shake, patient bruises AND the chopper's hull damage.
 //   * InteractionFilter groups — rope collides with the world only (never
-//     the chopper or the patient), the ragdoll never self-collides.
-//   * KINEMATIC fan + free pendulum wrecking balls as moving hazards.
+//     the chopper or the patients), the ragdolls never self-collide.
+//   * KINEMATIC rotors (X / I / cross at mixed speeds), KINEMATIC patrol
+//     platforms and free pendulum wrecking balls as moving hazards.
 //   * Camera follow + shakeCamera via the DemoRunner host.
 // ---------------------------------------------------------------------------
 
@@ -50,43 +62,84 @@ const SCREEN_H = 500;
 const HUD_H = 40;
 
 // ── World ────────────────────────────────────────────────────────────────
-const WORLD_W = 3400;
+const WORLD_W = 7000;
 const WORLD_H = 900;
 const GROUND_Y = 800;                // ground top — the valley floor
 const GRAVITY = 700;
 
-// Pads. A is a painted zone on the ground; B is a hospital rooftop.
-const PAD_A = { x0: 110, x1: 350 };
-const PAD_B = { x0: 3110, x1: 3330, top: 560 };
+// Hospital rooftop pad — dead centre of the map; the chopper starts here.
+const HOSPITAL = { x0: 3320, x1: 3580, top: 560 };
+
+// The three stranded patients: far-west valley floor, the lone east tower
+// top, and the far-east valley floor behind the fast fan.
+const PATIENT_SPOTS = [
+  { x: 280, standY: GROUND_Y, zx0: 160, zx1: 400 },
+  { x: 5220, standY: 400, zx0: 5150, zx1: 5290 },
+  { x: 6720, standY: GROUND_Y, zx0: 6600, zx1: 6840 },
+];
 
 // ── Obstacles ────────────────────────────────────────────────────────────
-// Three towers of alternating height to weave over...
+// Towers to weave over — three west of the hospital, one east.
 const TOWERS = [
   { x: 660, w: 64, top: 540 },
   { x: 920, w: 64, top: 430 },
   { x: 1160, w: 64, top: 560 },
+  { x: 3900, w: 64, top: 560 },
 ];
-// ...a bridge underpass — antennas on the deck force you UNDER it with the
-// cargo swinging; the piers hang from the deck viaduct-style, so the space
-// beneath them stays open (pierBottom → ground)...
+// The lone tower the second patient is stranded on.
+const PATIENT_TOWER = { x0: 5140, x1: 5300, top: 400 };
+// A bridge underpass — its pylons reach all the way to the sky lid, so the
+// underpass is the ONLY way through; the piers hang from the deck
+// viaduct-style, so the space beneath them stays open (pierBottom → ground).
 // (pier stubs end at 470: the carried patient hangs ~250 below the chopper,
 // so the under-pier corridor 470→800 leaves ~80px of play — tight, on purpose)
 const BRIDGE = {
   x0: 1420, x1: 1920, deckY: 372, deckH: 28,
   pierXs: [1540, 1760], pierW: 40, pierBottom: 470,
-  antennaXs: [1560, 1780], antennaTop: 130,
+  antennaXs: [1560, 1780], antennaTop: 0,
 };
-// ...a gantry with two hanging wrecking balls (in phase, so they never
-// clack into each other) whose lowest sweep leaves only a sliver of air
-// above the ground-clearance limit of the hanging cargo...
+// A gantry with two hanging wrecking balls (in phase, so they never clack
+// into each other) whose lowest sweep leaves only a sliver of air above
+// the ground-clearance limit of the hanging cargo.
 const GANTRY = { x0: 2020, x1: 2340, y: 210, h: 24 };
 const BALLS = [
   { px: 2080, len: 230, r: 28, a0: 0.9 },
   { px: 2280, len: 230, r: 28, a0: 0.9 },
 ];
-// ...and a spinning fan guarding the final approach: the only way past is a
-// slow vertical climb in the narrow slot after the gantry, then over the top.
-const FAN = { x: 2800, y: 665, half: 125, rate: 3.2 };
+// Blocks hanging down from the sky lid — they break up the ceiling lane so
+// hugging the top is never a free ride. Depths are tuned so every cargo
+// route stays flyable: the deep ones sit where the carry is already low,
+// and the one over the gantry (bottom 170 vs beam top 210) seals the
+// over-the-beam route so the wrecking balls must be threaded.
+const HANGERS = [
+  { x0: 430, x1: 510, bottom: 360 },
+  { x0: 1250, x1: 1330, bottom: 300 },
+  { x0: 2140, x1: 2220, bottom: 170 },
+  { x0: 2520, x1: 2600, bottom: 340 },
+  { x0: 3050, x1: 3130, bottom: 300 },
+  { x0: 4150, x1: 4230, bottom: 380 },
+  { x0: 4520, x1: 4600, bottom: 200 },
+  { x0: 5600, x1: 5680, bottom: 300 },
+  { x0: 6520, x1: 6600, bottom: 320 },
+];
+// Kinematic rotors: slow I in the west tower gap, slow X west of the
+// hospital (its only cargo lane is a slow climb over the top, heli ≤230),
+// a slow ceiling cross and a slow ceiling I on the eastern run, and the
+// fast fan guarding the final far-east approach. Touching any of them
+// bites the hull / patient.
+const SPINNERS = [
+  { x: 1072, y: 640, half: 80, rate: -0.8, kind: "I" },
+  { x: 2880, y: 620, half: 110, rate: 0.85, kind: "X" },
+  { x: 4900, y: 150, half: 100, rate: -0.9, kind: "+" },
+  { x: 5450, y: 160, half: 80, rate: 0.9, kind: "I" },
+  { x: 6280, y: 665, half: 125, rate: 3.2, kind: "+" },
+];
+// Kinematic patrol platforms — a vertical piston east of the hospital and
+// a horizontal drifter in front of the fast fan.
+const MOVERS = [
+  { axis: "y", x: 4560, y: 490, min: 340, max: 640, w: 96, h: 24, speed: 95 },
+  { axis: "x", x: 6000, y: 500, min: 5850, max: 6150, w: 110, h: 24, speed: 80 },
+];
 
 // ── Helicopter flight assist ─────────────────────────────────────────────
 // step() steers toward a target velocity from the pressed keys: the force
@@ -109,7 +162,7 @@ const HOOK_RADIUS = 60;              // attach reach around the hook
 const LINK_MAT = () => new Material(0, 0.4, 0.5, 4, 0.01);
 const HOOK_MAT = () => new Material(0, 0.4, 0.5, 6, 0.01);
 
-// ── Patient (the shared ragdoll rig, same proportions as ragdoll.js) ────
+// ── Patients (the shared ragdoll rig, same proportions as ragdoll.js) ───
 const TORSO_W = 24, TORSO_H = 48;
 const HEAD_R = 12;
 const ARM_LEN = 28, ARM_W = 8;
@@ -133,19 +186,26 @@ const BRUISE_SCALE = 0.05;           // integrity %/px/s over the threshold
 const BRUISE_MAX = 25;               // cap per hit
 const BRUISE_COOLDOWN = 30;          // frames per part between bruises
 
-// ── Impact → camera shake / chopper wreck ───────────────────────────────
+// ── Impact → hull damage / camera shake / chopper wreck ─────────────────
 // totalContactsImpulse ÷ mass = this step's contact Δv, scale-free again.
+// EVERY contact past HULL_DV chips the hull; rotor blades take a fixed
+// bite; a single catastrophic slam still wrecks the chopper outright.
+const HULL_DV = 100;                 // px/s contact Δv before hull damage
+const HULL_SCALE = 0.12;             // hull %/px/s over the threshold
+const HULL_HIT_MAX = 30;             // cap per hit
+const HULL_COOLDOWN = 20;            // frames between hull chips
 const HELI_SHAKE_DV = 120;           // hard landing / obstacle clip
 const HELI_WRECK_DV = 380;           // beyond any survivable slam
 const DUMMY_SHAKE_DV = 260;
-const FAN_DMG = 35;                  // integrity loss per fan-blade hit
-const FAN_HIT_COOLDOWN = 45;         // frames between fan hits on the patient
+const SPIN_DMG_HELI = 30;            // hull loss per rotor-blade strike
+const SPIN_DMG_PATIENT = 30;         // integrity loss per rotor-blade hit
+const SPIN_HIT_COOLDOWN = 45;        // frames between rotor bites
 
-const WIN_ZONE_FRAMES = 50;          // patient calm on pad B this long → won
+const WIN_ZONE_FRAMES = 50;          // patient calm on the pad this long → in
 const WIN_SPEED = 50;
 
 // ── Collision groups ─────────────────────────────────────────────────────
-// world/static/hazards: default group 1. Chopper: 2. Ragdoll: bit 8 with a
+// world/static/hazards: default group 1. Chopper: 2. Ragdolls: bit 8 with a
 // negative group so limbs never self-collide. Rope: negative group, world
 // mask only — it must never tangle with its own carrier or its own cargo.
 const F_HELI = () => new InteractionFilter(2, 1 | 8);
@@ -159,15 +219,17 @@ const F_DUMMY = () => new InteractionFilter(-8, 1 | 2);
 let _space = null;
 let _runnerRef = null;
 let _cbBreakable = null;
-let _cbFan = null;
+let _cbSpin = null;
 let _cbHeli = null;
 let _cbDummy = null;
-let _fanHitCd = 0;
+let _spinHeliCd = 0;
+let _spinDummyCd = 0;
+let _hullCd = 0;
 
 let _phase = "run";                  // "run" | "won" | "lost"
 let _lostReason = "";
 let _grade = "";
-let _integrity = 100;
+let _hull = 100;
 let _t0 = 0;                         // space.elapsedTime at run start
 let _finalTime = 0;
 let _tick = 0;
@@ -180,17 +242,17 @@ let _ropeJoints = [];
 let _hook = null;                    // Body
 let _harness = null;                 // PivotJoint while cargo attached
 let _harnessT = 0;                   // frames since attach (soft-catch window)
-let _everHooked = false;
+let _hooked = null;                  // the patient currently in the harness
 
-let _dummy = null;                   // { torso, head, parts, joints }
-let _dummyMass = 0;
-let _breakables = new Map();         // pivot → { angle, label, dmg }
+let _patients = [];                  // [{ torso, head, parts, joints, mass,
+                                     //    integrity, everHooked, rescued, winT }]
+let _breakables = new Map();         // pivot → { angle, label, dmg, pIdx }
 const _pendingBreaks = [];
 
 let _balls = [];                     // pendulum ball Bodies
-let _fan = null;
+let _spinners = [];                  // [{ body, cfg }]
+let _movers = [];                    // [{ body, cfg }]
 
-let _winT = 0;
 let _shakeCount = 0;                 // headless-test observability
 let _steer = null;                   // pointer-held fly-to target
 let _mouse = null;
@@ -230,6 +292,21 @@ function contactDv(body) {
   return body.mass > 0 ? mag / body.mass : 0;
 }
 
+function rescuedCount() {
+  let n = 0;
+  for (const p of _patients) if (p.rescued) n++;
+  return n;
+}
+
+// Box vertices rotated by ang — shape.rotation doesn't move collision
+// geometry, so the X-rotor's diagonal blades are baked into the polygon.
+function rotatedBox(w, h, ang) {
+  const c = Math.cos(ang), s = Math.sin(ang);
+  return [
+    [-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2],
+  ].map(([px, py]) => new Vec2(px * c - py * s, px * s + py * c));
+}
+
 // ---------------------------------------------------------------------------
 // Static world
 // ---------------------------------------------------------------------------
@@ -255,6 +332,7 @@ function spawnTerrain() {
   staticBox(-40, -40, WORLD_W + 40, 0);
 
   for (const t of TOWERS) staticBox(t.x, t.top, t.x + t.w, GROUND_Y);
+  staticBox(PATIENT_TOWER.x0, PATIENT_TOWER.top, PATIENT_TOWER.x1, GROUND_Y);
 
   // Bridge: deck + hanging piers + the antennas that force the underpass.
   staticBox(BRIDGE.x0, BRIDGE.deckY, BRIDGE.x1, BRIDGE.deckY + BRIDGE.deckH);
@@ -268,8 +346,11 @@ function spawnTerrain() {
   // Wrecking-ball gantry beam.
   staticBox(GANTRY.x0, GANTRY.y, GANTRY.x1, GANTRY.y + GANTRY.h);
 
-  // Hospital building under pad B.
-  staticBox(PAD_B.x0, PAD_B.top, PAD_B.x1, GROUND_Y);
+  // Blocks hanging from the sky lid.
+  for (const hg of HANGERS) staticBox(hg.x0, 0, hg.x1, hg.bottom);
+
+  // Hospital building under the pad.
+  staticBox(HOSPITAL.x0, HOSPITAL.top, HOSPITAL.x1, GROUND_Y);
 }
 
 function spawnHazards() {
@@ -287,13 +368,52 @@ function spawnHazards() {
     _balls.push(ball);
   }
 
-  _fan = new Body(BodyType.KINEMATIC, new Vec2(FAN.x, FAN.y));
-  _fan.shapes.add(new Polygon(Polygon.box(FAN.half * 2, 14)));
-  _fan.shapes.add(new Polygon(Polygon.box(14, FAN.half * 2)));
-  try { _fan.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
-  _fan.cbTypes.add(_cbFan);
-  _fan.space = _space;
-  _fan.angularVel = FAN.rate;
+  _spinners = [];
+  for (const cfg of SPINNERS) {
+    const b = new Body(BodyType.KINEMATIC, new Vec2(cfg.x, cfg.y));
+    const arm = cfg.half * 2;
+    if (cfg.kind === "X") {
+      b.shapes.add(new Polygon(rotatedBox(arm, 14, Math.PI / 4)));
+      b.shapes.add(new Polygon(rotatedBox(arm, 14, -Math.PI / 4)));
+    } else if (cfg.kind === "I") {
+      b.shapes.add(new Polygon(Polygon.box(14, arm)));
+    } else {
+      b.shapes.add(new Polygon(Polygon.box(arm, 14)));
+      b.shapes.add(new Polygon(Polygon.box(14, arm)));
+    }
+    try { b.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
+    b.cbTypes.add(_cbSpin);
+    b.space = _space;
+    b.angularVel = cfg.rate;
+    _spinners.push({ body: b, cfg });
+  }
+
+  _movers = [];
+  for (const cfg of MOVERS) {
+    const b = new Body(BodyType.KINEMATIC, new Vec2(cfg.x, cfg.y));
+    b.shapes.add(new Polygon(Polygon.box(cfg.w, cfg.h)));
+    try { b.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
+    b.space = _space;
+    b.velocity = cfg.axis === "y"
+      ? new Vec2(0, cfg.speed)
+      : new Vec2(cfg.speed, 0);
+    _movers.push({ body: b, cfg });
+  }
+}
+
+// Rotors hold their spin and patrol platforms bounce between their bounds.
+function driveHazards() {
+  for (const s of _spinners) s.body.angularVel = s.cfg.rate;
+  for (const m of _movers) {
+    const b = m.body, cfg = m.cfg;
+    if (cfg.axis === "y") {
+      if (b.position.y <= cfg.min && b.velocity.y < 0) b.velocity = new Vec2(0, cfg.speed);
+      else if (b.position.y >= cfg.max && b.velocity.y > 0) b.velocity = new Vec2(0, -cfg.speed);
+    } else {
+      if (b.position.x <= cfg.min && b.velocity.x < 0) b.velocity = new Vec2(cfg.speed, 0);
+      else if (b.position.x >= cfg.max && b.velocity.x > 0) b.velocity = new Vec2(-cfg.speed, 0);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -301,9 +421,9 @@ function spawnHazards() {
 // ---------------------------------------------------------------------------
 
 function spawnHeli() {
-  // Spawns hovering over pad A with the whole chain dangling in free air —
-  // spawning on the ground would bury the rope inside the terrain box.
-  const x = 190, y = GROUND_Y - 170;
+  // Lifts off from the hospital pad — spawns hovering over it with the
+  // whole chain dangling in free air above the rooftop.
+  const x = (HOSPITAL.x0 + HOSPITAL.x1) / 2, y = HOSPITAL.top - 190;
   _heli = new Body(BodyType.DYNAMIC, new Vec2(x, y));
   const filter = F_HELI();
   const fuse = new Polygon(Polygon.box(FUSE_W, FUSE_H), HELI_MAT());
@@ -352,14 +472,17 @@ function spawnHeli() {
 }
 
 // ---------------------------------------------------------------------------
-// Patient — the shared ragdoll rig with breakable joints
+// Patients — the shared ragdoll rig with breakable joints
 // ---------------------------------------------------------------------------
 
-function dummyPart(x, y, shape, colorIdx) {
+function dummyPart(x, y, shape, colorIdx, pIdx) {
   const body = new Body(BodyType.DYNAMIC, new Vec2(x, y));
   shape.filter = F_DUMMY();
   body.shapes.add(shape);
-  try { body.userData._colorIdx = colorIdx; } catch (_) { /* worker proxy */ }
+  try {
+    body.userData._colorIdx = colorIdx;
+    body.userData._pIdx = pIdx;
+  } catch (_) { /* worker proxy */ }
   body.cbTypes.add(_cbDummy);
   body.space = _space;
   return { body, bruiseCd: 0 };
@@ -386,7 +509,7 @@ function addPivot(b1, b2, a1, a2, joints) {
 // maxForce in one step. The paired soft AngleJoint is remembered so the
 // BREAK drain detaches it too, or the severed limb would stay tethered by
 // the angular spring. maxForce is set AFTER the rig exists, from measured
-// chain masses (see armBreakables).
+// chain masses (see registerBreakable).
 function addBreakablePivot(b1, b2, a1, a2, joints) {
   const j = new PivotJoint(b1, b2, a1, a2);
   j.removeOnBreak = true;
@@ -396,45 +519,45 @@ function addBreakablePivot(b1, b2, a1, a2, joints) {
   return j;
 }
 
-function registerBreakable(pivot, angle, label, dmg, carriedMass, gMult) {
+function registerBreakable(pivot, angle, label, dmg, carriedMass, gMult, pIdx) {
   pivot.maxForce = carriedMass * GRAVITY * gMult;
   pivot.breakUnderForce = true;
-  _breakables.set(pivot, { angle, label, dmg });
+  _breakables.set(pivot, { angle, label, dmg, pIdx });
 }
 
-function spawnDummy() {
+function spawnPatient(pIdx, spot) {
   const joints = [];
-  const x = 290;
-  // Feet on the pad; he slumps into a heap while the player lifts off,
-  // which is half the charm.
-  const torsoY = GROUND_Y - LEG_LEN * 2 - TORSO_H / 2 + 6;
+  const x = spot.x;
+  // Feet on the ground / tower top; he slumps into a heap while the player
+  // flies over, which is half the charm.
+  const torsoY = spot.standY - LEG_LEN * 2 - TORSO_H / 2 + 6;
 
   const torso = dummyPart(x, torsoY,
-    new Polygon(Polygon.box(TORSO_W, TORSO_H)), 0);
+    new Polygon(Polygon.box(TORSO_W, TORSO_H)), 0, pIdx);
   // Rolling friction on the head or a torn-off one rolls forever.
   const head = dummyPart(x, torsoY - TORSO_H / 2 - HEAD_R - 2,
-    new Circle(HEAD_R, undefined, new Material(0.1, 0.5, 0.7, 1, 0.4)), 0);
+    new Circle(HEAD_R, undefined, new Material(0.1, 0.5, 0.7, 1, 0.4)), 0, pIdx);
 
   const neck = addBreakablePivot(torso.body, head.body,
     new Vec2(0, -TORSO_H / 2 - 1), new Vec2(0, HEAD_R - 1), joints);
   const neckAngle = addAngle(torso.body, head.body, -0.6, 0.6, joints);
   registerBreakable(neck, neckAngle, "NECK SNAP", DMG_NECK,
-    head.body.mass, NECK_G);
+    head.body.mass, NECK_G, pIdx);
 
   const limbs = [];
   for (const side of [-1, 1]) {
     const ax = x + side * (TORSO_W / 2 + ARM_W / 2 + 1);
     const upper = dummyPart(ax, torsoY - TORSO_H / 2 + 8 + ARM_LEN / 2,
-      new Polygon(Polygon.box(ARM_W, ARM_LEN)), 1);
+      new Polygon(Polygon.box(ARM_W, ARM_LEN)), 1, pIdx);
     const lower = dummyPart(ax, upper.body.position.y + ARM_LEN,
-      new Polygon(Polygon.box(ARM_W, ARM_LEN)), 1);
+      new Polygon(Polygon.box(ARM_W, ARM_LEN)), 1, pIdx);
 
     const shoulder = addBreakablePivot(torso.body, upper.body,
       new Vec2(side * (TORSO_W / 2 - 2), -TORSO_H / 2 + 8),
       new Vec2(0, -ARM_LEN / 2 + 1), joints);
     const shoulderAngle = addAngle(torso.body, upper.body, -2.2, 2.2, joints);
     registerBreakable(shoulder, shoulderAngle, "ARM OFF", DMG_LIMB,
-      upper.body.mass + lower.body.mass, ARM_G);
+      upper.body.mass + lower.body.mass, ARM_G, pIdx);
 
     addPivot(upper.body, lower.body,
       new Vec2(0, ARM_LEN / 2 - 1), new Vec2(0, -ARM_LEN / 2 + 1), joints);
@@ -445,15 +568,15 @@ function spawnDummy() {
 
   for (const side of [-1, 1]) {
     const upper = dummyPart(x + side * 6, torsoY + TORSO_H / 2 + LEG_LEN / 2 - 2,
-      new Polygon(Polygon.box(LEG_W, LEG_LEN)), 1);
+      new Polygon(Polygon.box(LEG_W, LEG_LEN)), 1, pIdx);
     const lower = dummyPart(upper.body.position.x, upper.body.position.y + LEG_LEN,
-      new Polygon(Polygon.box(LEG_W, LEG_LEN)), 1);
+      new Polygon(Polygon.box(LEG_W, LEG_LEN)), 1, pIdx);
 
     const hip = addBreakablePivot(torso.body, upper.body,
       new Vec2(side * 6, TORSO_H / 2 - 3), new Vec2(0, -LEG_LEN / 2 + 1), joints);
     const hipAngle = addAngle(torso.body, upper.body, -1.8, 1.8, joints);
     registerBreakable(hip, hipAngle, "LEG OFF", DMG_LIMB,
-      upper.body.mass + lower.body.mass, LEG_G);
+      upper.body.mass + lower.body.mass, LEG_G, pIdx);
 
     addPivot(upper.body, lower.body,
       new Vec2(0, LEG_LEN / 2 - 1), new Vec2(0, -LEG_LEN / 2 + 1), joints);
@@ -462,8 +585,14 @@ function spawnDummy() {
   }
 
   const parts = [torso, head, ...limbs];
-  _dummy = { torso, head, parts, joints };
-  _dummyMass = parts.reduce((m, p) => m + p.body.mass, 0);
+  return {
+    torso, head, parts, joints,
+    mass: parts.reduce((m, p) => m + p.body.mass, 0),
+    integrity: 100,
+    everHooked: false,
+    rescued: false,
+    winT: 0,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -471,27 +600,32 @@ function spawnDummy() {
 // ---------------------------------------------------------------------------
 
 function tryToggleHook() {
-  if (_phase !== "run" || _wrecked || !_hook || !_dummy) return;
+  if (_phase !== "run" || _wrecked || !_hook || _patients.length === 0) return;
   if (_harness) {
     _breakables.delete(_harness);
     if (_harness.space) _harness.space = null;
     _harness = null;
+    _hooked = null;
     addFloater(_hook.position.x, _hook.position.y - 20, "RELEASED", "#7ee787");
     return;
   }
   const hp = _hook.position;
-  let near = false;
-  for (const p of _dummy.parts) {
-    if (!p.body.space) continue;
-    const pos = p.body.position;
-    if (Math.hypot(hp.x - pos.x, hp.y - pos.y) < HOOK_RADIUS) { near = true; break; }
+  let target = null;
+  for (const p of _patients) {
+    if (p.rescued || !p.torso.body.space) continue;
+    for (const part of p.parts) {
+      if (!part.body.space) continue;
+      const pos = part.body.position;
+      if (Math.hypot(hp.x - pos.x, hp.y - pos.y) < HOOK_RADIUS) { target = p; break; }
+    }
+    if (target) break;
   }
-  if (!near || !_dummy.torso.body.space) return;
+  if (!target) return;
   // Soft catch: the harness starts as a springy joint so winching the
   // patient off the ground is a tug, not an instant rigid snap that whips
   // him into the terrain. step() stiffens it (and only then arms the
   // break threshold) once he has settled into the strap.
-  _harness = new PivotJoint(_hook, _dummy.torso.body,
+  _harness = new PivotJoint(_hook, target.torso.body,
     new Vec2(0, 0), new Vec2(0, -TORSO_H / 2 + 2));
   _harness.stiff = false;
   _harness.frequency = 5;
@@ -500,8 +634,9 @@ function tryToggleHook() {
   _harness.cbTypes.add(_cbBreakable);
   _harness.space = _space;
   _harnessT = 0;
-  _everHooked = true;
-  const tp = _dummy.torso.body.position;
+  _hooked = target;
+  target.everHooked = true;
+  const tp = target.torso.body.position;
   addFloater(tp.x, tp.y - 30, "HOOKED!", "#7ee787");
 }
 
@@ -514,13 +649,14 @@ function despawnRun() {
   // its bodies to still be in the space when it is removed.
   if (_harness && _harness.space) _harness.space = null;
   _harness = null;
+  _hooked = null;
   for (const j of _ropeJoints) if (j.space) j.space = null;
   _ropeJoints = [];
-  if (_dummy) {
-    for (const j of _dummy.joints) if (j.space) j.space = null;
-    for (const p of _dummy.parts) if (p.body.space) p.body.space = null;
+  for (const p of _patients) {
+    for (const j of p.joints) if (j.space) j.space = null;
+    for (const part of p.parts) if (part.body.space) part.body.space = null;
   }
-  _dummy = null;
+  _patients = [];
   for (const l of _links) if (l.space) l.space = null;
   _links = [];
   if (_hook && _hook.space) _hook.space = null;
@@ -536,15 +672,18 @@ function enterRun() {
   _phase = "run";
   _lostReason = "";
   _grade = "";
-  _integrity = 100;
-  _winT = 0;
-  _everHooked = false;
+  _hull = 100;
+  _hullCd = 0;
+  _spinHeliCd = 0;
+  _spinDummyCd = 0;
   _steer = null;
   _floaters.length = 0;
   _fx.length = 0;
   _t0 = _space.elapsedTime;
   spawnHeli();
-  spawnDummy();
+  for (let i = 0; i < PATIENT_SPOTS.length; i++) {
+    _patients.push(spawnPatient(i, PATIENT_SPOTS[i]));
+  }
 }
 
 function loseRun(reason) {
@@ -554,17 +693,36 @@ function loseRun(reason) {
   _finalTime = _space.elapsedTime - _t0;
 }
 
+function avgIntegrity() {
+  if (_patients.length === 0) return 0;
+  return Math.round(
+    _patients.reduce((s, p) => s + p.integrity, 0) / _patients.length);
+}
+
 function winRun() {
   if (_phase !== "run") return;
   _phase = "won";
   _finalTime = _space.elapsedTime - _t0;
-  _grade = _integrity >= 100 ? "PERFECT"
-    : _integrity >= 80 ? "A"
-      : _integrity >= 60 ? "B"
-        : _integrity >= 40 ? "C" : "D";
-  const tp = _dummy.torso.body.position;
-  addFloater(tp.x, tp.y - 40, "DELIVERED!", "#7ee787");
-  _fx.push({ x: tp.x, y: tp.y - 20, life: 24, color: "126,231,135" });
+  const avg = avgIntegrity();
+  _grade = avg >= 100 ? "PERFECT"
+    : avg >= 85 ? "A"
+      : avg >= 65 ? "B"
+        : avg >= 45 ? "C" : "D";
+  const bx = (HOSPITAL.x0 + HOSPITAL.x1) / 2;
+  addFloater(bx, HOSPITAL.top - 80, "ALL RESCUED!", "#7ee787");
+  _fx.push({ x: bx, y: HOSPITAL.top - 40, life: 24, color: "126,231,135" });
+}
+
+function rescuePatient(p) {
+  p.rescued = true;
+  const n = rescuedCount();
+  const pos = p.torso.body.position;
+  if (n < _patients.length) {
+    addFloater(pos.x, pos.y - 40, `RESCUED ${n}/${_patients.length}`, "#7ee787");
+    _fx.push({ x: pos.x, y: pos.y - 20, life: 24, color: "126,231,135" });
+  } else {
+    winRun();
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -602,34 +760,54 @@ function flyHeli() {
 function wreckHeli() {
   if (_wrecked || !_heli || !_heli.space) return;
   _wrecked = true;
+  _hull = 0;
   const p = _heli.position;
   addFloater(p.x, p.y - 30, "MAYDAY!", "#f85149");
   _fx.push({ x: p.x, y: p.y, life: 26, color: "248,81,73" });
   doShake(16, 0.5);
 }
 
+function damageHull(dmg, label) {
+  if (_wrecked || _phase !== "run" || !_heli || !_heli.space) return;
+  _hull = Math.max(0, _hull - dmg);
+  const p = _heli.position;
+  addFloater(p.x, p.y - 34, `${label} −${dmg}%`, "#e3b341");
+  if (_hull <= 0) wreckHeli();
+}
+
 function checkImpacts() {
   if (_heli && _heli.space && !_wrecked) {
+    if (_hullCd > 0) _hullCd--;
     const dv = contactDv(_heli);
     if (dv > HELI_WRECK_DV) {
       wreckHeli();
-    } else if (dv > HELI_SHAKE_DV) {
-      doShake(Math.min(14, 4 + dv / 25), 0.3);
+    } else {
+      // Every hard contact chips the hull — walls, towers, wrecking balls,
+      // patrol platforms, hard landings alike.
+      if (dv > HULL_DV && _hullCd === 0) {
+        const dmg = Math.min(HULL_HIT_MAX, Math.round((dv - HULL_DV) * HULL_SCALE));
+        if (dmg >= 2) {
+          _hullCd = HULL_COOLDOWN;
+          damageHull(dmg, "HULL");
+        }
+      }
+      if (dv > HELI_SHAKE_DV) doShake(Math.min(14, 4 + dv / 25), 0.3);
     }
   }
-  if (_dummy) {
-    for (const p of _dummy.parts) {
+  for (const pat of _patients) {
+    if (pat.rescued) continue;
+    for (const p of pat.parts) {
       if (p.bruiseCd > 0) { p.bruiseCd--; continue; }
       if (!p.body.space) continue;
       const dv = contactDv(p.body);
       if (dv <= DUMMY_SHAKE_DV) continue;
-      // Grace until the first hook-up: the spawn slump onto the pad and the
+      // Grace until this patient's first hook-up: the spawn slump and the
       // winching tug must not bruise a patient nobody has flown anywhere.
-      if (!_everHooked) continue;
+      if (!pat.everHooked) continue;
       p.bruiseCd = BRUISE_COOLDOWN;
       const dmg = Math.min(BRUISE_MAX, (dv - BRUISE_DV) * BRUISE_SCALE);
       if (dmg > 1 && _phase === "run") {
-        _integrity = Math.max(0, _integrity - Math.round(dmg));
+        pat.integrity = Math.max(0, pat.integrity - Math.round(dmg));
         const pos = p.body.position;
         addFloater(pos.x, pos.y - 18, `OUCH −${Math.round(dmg)}%`, "#e3b341");
       }
@@ -645,12 +823,13 @@ function drainBreaks() {
     const info = _pendingBreaks.shift();
     if (!info) continue;
     if (info.angle && info.angle.space) info.angle.space = null;
-    if (info.label === "HARNESS SNAP") _harness = null;
-    if (_phase === "run" && info.dmg > 0) {
-      _integrity = Math.max(0, _integrity - info.dmg);
+    if (info.label === "HARNESS SNAP") { _harness = null; _hooked = null; }
+    const pat = info.pIdx !== undefined ? _patients[info.pIdx] : null;
+    if (_phase === "run" && info.dmg > 0 && pat) {
+      pat.integrity = Math.max(0, pat.integrity - info.dmg);
     }
-    const pos = _dummy && _dummy.torso.body.space
-      ? _dummy.torso.body.position
+    const pos = pat && pat.torso.body.space
+      ? pat.torso.body.position
       : _hook ? _hook.position : { x: 0, y: 0 };
     addFloater(pos.x, pos.y - 30,
       info.dmg > 0 ? `${info.label} −${info.dmg}%` : info.label, "#f85149");
@@ -661,24 +840,25 @@ function drainBreaks() {
 
 function checkEndConditions() {
   if (_phase !== "run") return;
-  if (_integrity <= 0) { loseRun("PATIENT LOST"); return; }
+  for (const p of _patients) {
+    if (p.integrity <= 0) { loseRun("PATIENT LOST"); return; }
+  }
   if (_wrecked && ++_wreckT > 90) { loseRun("CHOPPER DOWN"); return; }
 
   // Delivered: patient unhooked, calm, torso on the hospital pad.
-  const torso = _dummy.torso.body;
-  if (!_harness && torso.space) {
-    const p = torso.position;
-    const v = torso.velocity;
+  for (const p of _patients) {
+    if (p.rescued || !p.torso.body.space) continue;
+    if (_harness && _hooked === p) { p.winT = 0; continue; }
+    const pos = p.torso.body.position;
+    const v = p.torso.body.velocity;
     const calm = Math.hypot(v.x, v.y) < WIN_SPEED;
-    const onPad = p.x > PAD_B.x0 && p.x < PAD_B.x1
-      && p.y > PAD_B.top - 90 && p.y < PAD_B.top + 4;
+    const onPad = pos.x > HOSPITAL.x0 && pos.x < HOSPITAL.x1
+      && pos.y > HOSPITAL.top - 90 && pos.y < HOSPITAL.top + 4;
     if (calm && onPad) {
-      if (++_winT >= WIN_ZONE_FRAMES) winRun();
+      if (++p.winT >= WIN_ZONE_FRAMES) rescuePatient(p);
     } else {
-      _winT = 0;
+      p.winT = 0;
     }
-  } else {
-    _winT = 0;
   }
 }
 
@@ -686,17 +866,13 @@ function currentHint() {
   if (_phase === "won") return "Click / R for another flight";
   if (_phase === "lost") return "Click / R to retry";
   if (_wrecked) return "";
-  if (!_everHooked || (!_harness && _dummy)) {
-    return _harness
-      ? "Deliver the patient to the H pad →"
-      : "Fly: ARROWS / WASD · hover the hook by the patient · SPACE to hook";
+  if (_harness && _hooked) {
+    const p = _hooked.torso.body.position;
+    if (p.x > HOSPITAL.x0 && p.x < HOSPITAL.x1) return "SPACE to release the harness";
+    const arrow = _heli && _heli.position.x > (HOSPITAL.x0 + HOSPITAL.x1) / 2 ? "←" : "→";
+    return `Deliver the patient to the hospital ${arrow}`;
   }
-  if (_harness) {
-    const p = _dummy.torso.body.position;
-    if (p.x > PAD_B.x0 && p.x < PAD_B.x1) return "SPACE to release the harness";
-    return "Deliver the patient to the H pad →";
-  }
-  return "";
+  return "Fly: ARROWS / WASD · hover the hook by a patient · SPACE to hook";
 }
 
 // ---------------------------------------------------------------------------
@@ -708,14 +884,15 @@ export default {
   label: "Sky Hook",
   tags: ["Gameplay", "Ragdoll", "Breakable", "Callbacks", "Camera", "Keyboard"],
   desc:
-    "Helicopter medevac with a slung ragdoll. Fly with <b>arrows/WASD</b> (hold the pointer to steer " +
-    "on touch), hover the chain-link rope's hook by the patient and press <b>Space</b> to winch him " +
-    "into the harness — then carry him swinging under the chopper through a tower slalom, a bridge " +
-    "underpass, swinging wrecking balls and a spinning fan to the hospital pad. His neck, shoulders " +
-    "and hips are real <b>breakable constraints</b> (<code>maxForce</code> + <code>breakUnderForce</code>, " +
-    "thresholds derived from measured chain weights) — slam him and limbs tear off; yank hard enough " +
-    "and the <b>harness itself snaps</b>. Hard contacts on chopper or patient <b>shake the camera</b> via " +
-    "measured <code>totalContactsImpulse</code>; a really hard one wrecks the chopper. <b>Space</b> releases, " +
+    "Helicopter medevac with slung ragdolls — <b>three patients</b> stranded across a canyon, the hospital " +
+    "pad in the middle. Fly with <b>arrows/WASD</b> (hold the pointer to steer on touch), hover the " +
+    "chain-link rope's hook by a patient and press <b>Space</b> to winch him into the harness — then carry " +
+    "him swinging under the chopper past towers, a bridge underpass, blocks hanging from the sky, " +
+    "patrolling platforms, wrecking balls and spinning <b>X / I / cross rotors</b> back to the hospital. " +
+    "Necks, shoulders and hips are real <b>breakable constraints</b> (<code>maxForce</code> + " +
+    "<code>breakUnderForce</code>) — slam a patient and limbs tear off; yank hard enough and the " +
+    "<b>harness snaps</b>. Every hard contact chips the chopper's <b>hull</b> via measured " +
+    "<code>totalContactsImpulse</code> — at zero it drops out of the sky. <b>Space</b> releases, " +
     "<b>R</b> restarts.",
   walls: false,
   workerCompatible: false,
@@ -726,10 +903,12 @@ export default {
     _runnerRef = this._runner ?? null;
     space.gravity = new Vec2(0, GRAVITY);
     _cbBreakable = new CbType();
-    _cbFan = new CbType();
+    _cbSpin = new CbType();
     _cbHeli = new CbType();
     _cbDummy = new CbType();
-    _fanHitCd = 0;
+    _spinHeliCd = 0;
+    _spinDummyCd = 0;
+    _hullCd = 0;
 
     // Hard-reset module state — the previous load's bodies died with its space.
     _phase = "run";
@@ -738,11 +917,13 @@ export default {
     _ropeJoints = [];
     _hook = null;
     _harness = null;
-    _dummy = null;
+    _hooked = null;
+    _patients = [];
     _breakables = new Map();
     _pendingBreaks.length = 0;
     _balls = [];
-    _fan = null;
+    _spinners = [];
+    _movers = [];
     _shakeCount = 0;
     _tick = 0;
     _mouse = null;
@@ -763,20 +944,29 @@ export default {
       },
     ));
 
-    // The fan is a game-logic hazard, not an impulse one: its thin blades
-    // move tangentially and the flight assist shrugs the contact off, so
-    // measured impulse stays small — touching it must still be lethal.
+    // Rotors are game-logic hazards, not impulse ones: the thin blades move
+    // tangentially and the flight assist shrugs the contact off, so measured
+    // impulse stays small — touching one must still take a fixed bite.
     space.listeners.add(new InteractionListener(
-      CbEvent.BEGIN, InteractionType.COLLISION, _cbFan, _cbHeli,
-      () => { wreckHeli(); },
+      CbEvent.BEGIN, InteractionType.COLLISION, _cbSpin, _cbHeli,
+      () => {
+        if (_phase !== "run" || _wrecked || _spinHeliCd > 0) return;
+        _spinHeliCd = SPIN_HIT_COOLDOWN;
+        damageHull(SPIN_DMG_HELI, "ROTOR STRIKE");
+        doShake(10, 0.3);
+      },
     ));
     space.listeners.add(new InteractionListener(
-      CbEvent.BEGIN, InteractionType.COLLISION, _cbFan, _cbDummy,
-      () => {
-        if (_phase !== "run" || _fanHitCd > 0) return;
-        _fanHitCd = FAN_HIT_COOLDOWN;
-        _integrity = Math.max(0, _integrity - FAN_DMG);
-        addFloater(FAN.x, FAN.y - FAN.half - 20, `FAN HIT −${FAN_DMG}%`, "#f85149");
+      CbEvent.BEGIN, InteractionType.COLLISION, _cbSpin, _cbDummy,
+      (cb) => {
+        if (_phase !== "run" || _spinDummyCd > 0) return;
+        const b = cb.int2.castBody ?? cb.int2.castShape?.body ?? null;
+        const pat = b ? _patients[b.userData?._pIdx] : null;
+        if (!pat || pat.rescued) return;
+        _spinDummyCd = SPIN_HIT_COOLDOWN;
+        pat.integrity = Math.max(0, pat.integrity - SPIN_DMG_PATIENT);
+        const pos = b.position;
+        addFloater(pos.x, pos.y - 24, `BLADE HIT −${SPIN_DMG_PATIENT}%`, "#f85149");
         doShake(10, 0.3);
       },
     ));
@@ -818,11 +1008,13 @@ export default {
     for (let i = _fx.length - 1; i >= 0; i--) {
       if (--_fx[i].life <= 0) _fx.splice(i, 1);
     }
-    if (_fan) _fan.angularVel = FAN.rate;
-    if (_fanHitCd > 0) _fanHitCd--;
-    if (_harness && !_harness.stiff && ++_harnessT > 40) {
+    driveHazards();
+    if (_spinHeliCd > 0) _spinHeliCd--;
+    if (_spinDummyCd > 0) _spinDummyCd--;
+    if (_harness && !_harness.stiff && ++_harnessT > 40 && _hooked) {
       _harness.stiff = true;
-      registerBreakable(_harness, null, "HARNESS SNAP", 0, _dummyMass, HARNESS_G);
+      registerBreakable(_harness, null, "HARNESS SNAP", 0,
+        _hooked.mass, HARNESS_G, undefined);
     }
     flyHeli();
     drainBreaks();
@@ -833,11 +1025,12 @@ export default {
   click(x, y) {
     _runnerRef = this._runner ?? _runnerRef;
     if (_phase !== "run") { enterRun(); return; }
-    // A tap near the hook or the patient toggles the harness; anywhere else
+    // A tap near the hook or a patient toggles the harness; anywhere else
     // becomes a held fly-to target (touch flight).
     const near = (b) => b && b.space
       && Math.hypot(x - b.position.x, y - b.position.y) < 90;
-    if (near(_hook) || (_dummy && near(_dummy.torso.body))) {
+    if (near(_hook)
+      || _patients.some((p) => !p.rescued && near(p.torso.body))) {
       tryToggleHook();
       return;
     }
@@ -865,16 +1058,19 @@ export default {
       phase: () => _phase,
       lostReason: () => _lostReason,
       grade: () => _grade,
-      integrity: () => _integrity,
+      hull: () => _hull,
+      patients: () => _patients,
+      rescued: () => rescuedCount(),
       shakes: () => _shakeCount,
       wrecked: () => _wrecked,
       attached: () => !!_harness,
+      hooked: () => _hooked,
       heli: () => _heli,
       hook: () => _hook,
-      dummy: () => _dummy,
       links: () => _links,
       balls: () => _balls,
-      dummyMass: () => _dummyMass,
+      spinners: () => _spinners,
+      movers: () => _movers,
       breakables: () => _breakables,
       toggleHook: tryToggleHook,
       enterRun,
@@ -920,35 +1116,39 @@ function drawWorldOverlay(ctx) {
 }
 
 function drawPads(ctx) {
-  // Pad A: dashed pickup zone painted on the ground.
-  ctx.strokeStyle = "rgba(126,231,135,0.7)";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([8, 8]);
-  ctx.strokeRect(PAD_A.x0, GROUND_Y - 4, PAD_A.x1 - PAD_A.x0, 4);
-  ctx.setLineDash([]);
-  ctx.fillStyle = "rgba(126,231,135,0.9)";
+  // Pickup zones: dashed lines painted where each un-rescued patient waits.
   ctx.font = "bold 15px system-ui, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("A · PICKUP", (PAD_A.x0 + PAD_A.x1) / 2, GROUND_Y - 14);
+  for (let i = 0; i < PATIENT_SPOTS.length; i++) {
+    if (_patients[i] && _patients[i].rescued) continue;
+    const spot = PATIENT_SPOTS[i];
+    ctx.strokeStyle = "rgba(126,231,135,0.7)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 8]);
+    ctx.strokeRect(spot.zx0, spot.standY - 4, spot.zx1 - spot.zx0, 4);
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(126,231,135,0.9)";
+    ctx.fillText("PICKUP", (spot.zx0 + spot.zx1) / 2, spot.standY - 14);
+  }
 
-  // Pad B: hospital rooftop with the H circle.
-  const bx = (PAD_B.x0 + PAD_B.x1) / 2;
+  // Hospital rooftop with the pulsing H circle.
+  const bx = (HOSPITAL.x0 + HOSPITAL.x1) / 2;
   const pulse = (Math.sin(_tick * 0.08) + 1) / 2;
   ctx.strokeStyle = `rgba(126,231,135,${(0.5 + pulse * 0.4).toFixed(3)})`;
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.arc(bx, PAD_B.top - 26, 20, 0, Math.PI * 2);
+  ctx.arc(bx, HOSPITAL.top - 26, 20, 0, Math.PI * 2);
   ctx.stroke();
   ctx.fillStyle = "rgba(126,231,135,0.9)";
   ctx.font = "bold 24px system-ui, sans-serif";
-  ctx.fillText("H", bx, PAD_B.top - 18);
+  ctx.fillText("H", bx, HOSPITAL.top - 18);
   ctx.font = "bold 13px system-ui, sans-serif";
-  ctx.fillText("B · HOSPITAL", bx, PAD_B.top - 56);
+  ctx.fillText("HOSPITAL", bx, HOSPITAL.top - 56);
   ctx.textAlign = "left";
 }
 
-// Pendulum cables + fan hub — the joints/kinematics are invisible to the
-// body renderer, so sketch them here.
+// Pendulum cables, rotor hubs and patrol rails — the joints/kinematics are
+// invisible to the body renderer, so sketch them here.
 function drawCables(ctx) {
   ctx.strokeStyle = "#8b949e";
   ctx.lineWidth = 2;
@@ -966,10 +1166,27 @@ function drawCables(ctx) {
     ctx.arc(cfg.px, GANTRY.y + GANTRY.h, 4, 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.setLineDash([4, 6]);
+  ctx.strokeStyle = "rgba(139,148,158,0.5)";
+  ctx.lineWidth = 1;
+  for (const m of MOVERS) {
+    ctx.beginPath();
+    if (m.axis === "y") {
+      ctx.moveTo(m.x, m.min);
+      ctx.lineTo(m.x, m.max);
+    } else {
+      ctx.moveTo(m.min, m.y);
+      ctx.lineTo(m.max, m.y);
+    }
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
   ctx.fillStyle = "#f85149";
-  ctx.beginPath();
-  ctx.arc(FAN.x, FAN.y, 7, 0, Math.PI * 2);
-  ctx.fill();
+  for (const s of SPINNERS) {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 7, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function drawRope(ctx) {
@@ -987,8 +1204,8 @@ function drawRope(ctx) {
   if (_hook.space) ctx.lineTo(_hook.position.x, _hook.position.y);
   ctx.stroke();
   // Harness strap.
-  if (_harness && _dummy && _dummy.torso.body.space && _hook.space) {
-    const t = _dummy.torso.body.localPointToWorld(new Vec2(0, -TORSO_H / 2 + 2));
+  if (_harness && _hooked && _hooked.torso.body.space && _hook.space) {
+    const t = _hooked.torso.body.localPointToWorld(new Vec2(0, -TORSO_H / 2 + 2));
     ctx.strokeStyle = "#7ee787";
     ctx.beginPath();
     ctx.moveTo(_hook.position.x, _hook.position.y);
@@ -1044,13 +1261,17 @@ function drawHeliDecor(ctx) {
 }
 
 function drawHookHint(ctx) {
-  if (_phase !== "run" || _harness || !_hook || !_hook.space || !_dummy) return;
+  if (_phase !== "run" || _harness || !_hook || !_hook.space) return;
   const hp = _hook.position;
   let near = false;
-  for (const p of _dummy.parts) {
-    if (!p.body.space) continue;
-    const pos = p.body.position;
-    if (Math.hypot(hp.x - pos.x, hp.y - pos.y) < HOOK_RADIUS) { near = true; break; }
+  for (const pat of _patients) {
+    if (pat.rescued) continue;
+    for (const p of pat.parts) {
+      if (!p.body.space) continue;
+      const pos = p.body.position;
+      if (Math.hypot(hp.x - pos.x, hp.y - pos.y) < HOOK_RADIUS) { near = true; break; }
+    }
+    if (near) break;
   }
   if (!near) return;
   const pulse = (Math.sin(_tick * 0.25) + 1) / 2;
@@ -1093,23 +1314,38 @@ function drawHUD(ctx, W, H) {
   ctx.textBaseline = "middle";
   ctx.fillText("SKY HOOK", 14, HUD_H / 2);
 
-  // Patient integrity bar.
-  const bx = 120, bw = 150;
+  // Chopper hull bar.
   ctx.fillStyle = "#8b949e";
   ctx.font = "12px system-ui, sans-serif";
-  ctx.fillText("PATIENT", bx, HUD_H / 2);
+  ctx.fillText("HULL", 106, HUD_H / 2);
   ctx.strokeStyle = "#30363d";
-  ctx.strokeRect(bx + 58, HUD_H / 2 - 6, bw, 12);
-  const frac = _integrity / 100;
-  ctx.fillStyle = frac > 0.6 ? "#3fb950" : frac > 0.3 ? "#e3b341" : "#f85149";
-  ctx.fillRect(bx + 58, HUD_H / 2 - 6, bw * frac, 12);
-  ctx.fillStyle = "#e6edf3";
-  ctx.fillText(`${_integrity}%`, bx + 58 + bw + 8, HUD_H / 2);
+  ctx.strokeRect(142, HUD_H / 2 - 6, 90, 12);
+  const hFrac = _hull / 100;
+  ctx.fillStyle = hFrac > 0.6 ? "#3fb950" : hFrac > 0.3 ? "#e3b341" : "#f85149";
+  ctx.fillRect(142, HUD_H / 2 - 6, 90 * hFrac, 12);
+
+  // One integrity chip per patient; a check mark once he is rescued.
+  for (let i = 0; i < _patients.length; i++) {
+    const p = _patients[i];
+    const cx = 258 + i * 74;
+    ctx.fillStyle = "#8b949e";
+    ctx.fillText(`${i + 1}`, cx, HUD_H / 2);
+    ctx.strokeStyle = "#30363d";
+    ctx.strokeRect(cx + 10, HUD_H / 2 - 6, 44, 12);
+    const frac = p.integrity / 100;
+    ctx.fillStyle = p.rescued ? "#3fb950"
+      : frac > 0.6 ? "#3fb950" : frac > 0.3 ? "#e3b341" : "#f85149";
+    ctx.fillRect(cx + 10, HUD_H / 2 - 6, 44 * frac, 12);
+    if (p.rescued) {
+      ctx.fillStyle = "#7ee787";
+      ctx.fillText("✓", cx + 58, HUD_H / 2);
+    }
+  }
 
   // Timer.
   const t = _phase === "run" ? (_space ? _space.elapsedTime - _t0 : 0) : _finalTime;
   ctx.fillStyle = "#8b949e";
-  ctx.fillText(`T ${t.toFixed(1)}s`, bx + 58 + bw + 60, HUD_H / 2);
+  ctx.fillText(`T ${t.toFixed(1)}s`, 258 + _patients.length * 74 + 12, HUD_H / 2);
 
   // Contextual hint.
   const hint = currentHint();
@@ -1131,13 +1367,13 @@ function drawHUD(ctx, W, H) {
     ctx.fillStyle = _phase === "won" ? "#7ee787" : "#f85149";
     ctx.font = "bold 26px system-ui, sans-serif";
     ctx.fillText(
-      _phase === "won" ? `DELIVERED — GRADE ${_grade}` : _lostReason,
+      _phase === "won" ? `ALL RESCUED — GRADE ${_grade}` : _lostReason,
       W / 2, H / 2 - 18);
     ctx.fillStyle = "#e6edf3";
     ctx.font = "14px system-ui, sans-serif";
     ctx.fillText(
       _phase === "won"
-        ? `Patient integrity ${_integrity}% · time ${_finalTime.toFixed(1)}s`
+        ? `Average integrity ${avgIntegrity()}% · hull ${_hull}% · time ${_finalTime.toFixed(1)}s`
         : "The mission is over.",
       W / 2, H / 2 + 12);
     ctx.fillStyle = "#8b949e";
