@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
-  PivotJoint, AngleJoint, DistanceJoint, InteractionGroup, InteractionType,
+  PivotJoint, AngleJoint, InteractionGroup, InteractionType,
   CbEvent, CbType, ConstraintListener, InteractionListener,
 } from "../nape-js.esm.js";
 import { drawBody, drawGrid } from "../renderer.js";
@@ -26,10 +26,10 @@ import { drawBody, drawGrid } from "../renderer.js";
 //                       elevations — the only hazard that crosses the
 //                       galleries horizontally, and the travel is what stops
 //                       a volley from raking the same single row
-//   wave 3  DROP      — every platform and the podium vanish underfoot
-//   wave 4  HAMMERS   — two amplitude-regulated wrecking balls sweep the pit
-//                       (deliberately after the drop: a pendulum whose arc
-//                       crosses a standing deck just jams against it)
+//   wave 3  ROCKFALL  — seven ceiling hatches telegraph, then drop heavy
+//                       boulders of seeded size; pure gravity, and the one
+//                       hazard that reaches a gallery from directly above
+//   wave 4  DROP      — every platform and the podium vanish underfoot
 //   wave 5  ROTORS    — two kinematic X-rotors spin up, re-rolling direction
 //                       and speed on a seeded timer while riding their shafts
 //                       up and down so no height stays out of reach
@@ -62,23 +62,25 @@ import { drawBody, drawGrid } from "../renderer.js";
 //     non-dynamic bodies, so every joint in the rig would fail validate().)
 //   * Runtime world mutation — platforms and floor tiles are static bodies
 //     removed mid-simulation while dummies stand on them.
-//   * DistanceJoint pendulums with amplitude regulation — a free wrecking ball
-//     hands all its energy to the ragdolls it hits and stops mattering within
-//     seconds, so the peak swing angle is tracked per half-period and topped up
-//     with a tangential impulse near the bottom of the arc. Regulating
-//     amplitude rather than speed is what keeps it stable: a speed cap lets the
-//     pendulum gain energy on every pass and it ends up spinning over the
-//     anchor.
+//   * Unconstrained projectiles over constrained ones — the rockfall and the
+//     cannon volleys are plain dynamic bodies given one initial velocity and
+//     then left entirely to gravity and contact. An earlier version of this
+//     wave used rope-hung wrecking balls (DistanceJoint) and needed spawn
+//     kicks, an amplitude regulator and a stuck-ball rescue to stay watchable,
+//     each of which visibly fought the solver. See the wrecking-hail block: in
+//     a 500-body brawl the unconstrained version is not merely simpler, it is
+//     the only one with no failure mode.
 //   * KINEMATIC hazards moved by velocity, not teleport — rotors write
 //     angularVel for spin and velocity for their vertical travel, so contacts
 //     resolve with the true relative motion instead of tunnelling between
 //     steps; an InteractionListener(BEGIN) takes a fixed bite per blade hit.
-//   * Seeded rounds — vent placement, cannon volleys and heights, rotor
-//     direction and lift rolls, hazard timing and the shuffled collapse order
-//     all come from a per-round mulberry32 stream. Anything that draws from it
-//     must therefore run ONLY while the round is live: rotors used to tick in
-//     the "done" phase too, burning RNG for however long the victory screen
-//     stayed up and desyncing the next round from its seed.
+//   * Seeded rounds — vent placement, cannon volleys and heights, boulder sizes
+//     and hatch timing, rotor direction and lift rolls, wave schedule and the
+//     shuffled collapse order all come from a per-round mulberry32 stream.
+//     Anything that draws from it must therefore run ONLY while the round is
+//     live: rotors used to tick in the "done" phase too, burning RNG for
+//     however long the victory screen stayed up and desyncing the next round
+//     from its seed.
 // ---------------------------------------------------------------------------
 
 // Named SCREEN_W/SCREEN_H — the CodePen runtime declares its own `W`/`H`
@@ -157,18 +159,23 @@ const SPIN_COOLDOWN = 40;            // frames per dummy between blade bites
 
 // ── Hazard schedule (frames since GO) ────────────────────────────────────
 const COUNT_FRAMES = 150;            // betting-closed countdown (2.5 s)
-// The hammers deliberately come AFTER the platforms drop. A pendulum whose arc
-// crosses a still-standing deck simply jams against it — measured: the ball
-// wedged between the left gallery and the wall and sat there dead for eight
-// seconds. Once the decks are gone the swing has clear air all the way down.
+// The hail comes while the decks are still standing — falling rock is the one
+// hazard that reaches a gallery from above, so it is what makes the upper tiers
+// stop being the safe seats. (Its predecessor, a rope-hung pendulum, had to be
+// scheduled after the drop instead because its arc jammed on any deck it
+// crossed; see the wrecking-hail block for why that mechanic was retired.)
+// Timings are pulled in tight because the field really does thin out: rounds
+// resolve in 30-37 s, and at the old spacing the floor-collapse finale fired so
+// late it scored 0-2 eliminations — the round was already over. Every wave now
+// gets time to matter.
 const WAVES = [
   { t: 30, id: "geysers", label: "GEYSERS ARMED" },
-  { t: 330, id: "cannons", label: "CANNONS HOT" },
-  { t: 780, id: "plat-warn", label: "" },
-  { t: 870, id: "plat-drop", label: "PLATFORMS DROP" },
-  { t: 960, id: "hammers", label: "HAMMERS!" },
-  { t: 1350, id: "rotors", label: "ROTORS ONLINE" },
-  { t: 1740, id: "collapse", label: "FLOOR COLLAPSE" },
+  { t: 300, id: "cannons", label: "CANNONS HOT" },
+  { t: 600, id: "hail", label: "ROCKFALL!" },
+  { t: 840, id: "plat-warn", label: "" },
+  { t: 930, id: "plat-drop", label: "PLATFORMS DROP" },
+  { t: 1140, id: "rotors", label: "ROTORS ONLINE" },
+  { t: 1380, id: "collapse", label: "FLOOR COLLAPSE" },
 ];
 
 // Roaming geyser vents — each of the N slots picks a fresh (still intact)
@@ -187,37 +194,35 @@ const GEYSER_SIDE_DV = 90;           // seeded lateral kick
 // Wrecking balls hang from ceiling anchors on a rope of `len`, released from
 // `a0` radians off vertical — the angle is measured from straight down, so the
 // ball spawns at (ax + sin(a0)·len, CEIL_Y + cos(a0)·len).
+// ── Wrecking hail ────────────────────────────────────────────────────────
+// Heavy boulders dropped through hatches in the ceiling. This replaced a pair
+// of rope-hung wrecking-ball pendulums, and the swap was a deliberate retreat
+// from a fundamentally fragile mechanic rather than one more patch on it.
 //
-//   len = 300 puts the low point of the arc at y = CEIL_Y + 300 = 340, so the
-//     ball's underside clears the floor (460) by ~94 px. An earlier len of 380
-//     parked the ball ON the floor, where it plowed into the ragdoll heap and
-//     ground to a halt — measured swing collapsed from 189 px to 18 px within
-//     ten seconds. It has to swing THROUGH the pile at chest height, not bury
-//     itself in it.
-//   The regulated amplitude (HAMMER_AMP) rather than a0 sets how far the ball
-//     eventually travels: ax ± sin(0.85)·len. With ax 350/550 that is x 125..775,
-//     a healthy margin from the walls. Getting this wrong jams the hammer for
-//     good — at ax 300 the ball reached x 45 and wedged against the left wall,
-//     and at |a0| = 1.35 it spawned at x ≈ -4, *inside* the wall, where the rope
-//     hauled it to the ceiling anchor and welded it there.
-const HAMMERS = [
-  { ax: 350, len: 300, r: 26, a0: -0.7 },
-  { ax: 550, len: 300, r: 26, a0: 0.7 },
-];
-
-// A free pendulum bleeds energy into every ragdoll it hits, so within seconds
-// it is barely rocking. These hammers are amplitude-regulated instead: the peak
-// swing angle is tracked per half-period and a tangential impulse tops the
-// swing up whenever it falls short of HAMMER_AMP, applied only near the bottom
-// of the arc where it is most efficient. Regulating AMPLITUDE rather than speed
-// is what makes it stable — a speed cap lets the pendulum gain energy every
-// pass (it is always under the cap at the top) and it spins over the anchor.
-const HAMMER_AMP = 0.85;             // target swing amplitude (rad off vertical)
-const HAMMER_PUMP = 4;               // Δv per step injected while under target
-const HAMMER_PUMP_ZONE = 0.4;        // pump only within this fraction of AMP
-const HAMMER_STALL_V = 25;           // px/s below which the ball counts as stuck
-const HAMMER_UNSTICK = 9;            // Δv per step shoving a stuck ball downhill
-const HAMMER_LAUNCH = 210;           // Δv given at spawn so it swings at once
+// A constrained pendulum inside a 500-body brawl has no stable configuration:
+// hang it low enough to matter and it plows into the ragdoll pile and stops
+// (measured sweep decaying 189 px → 18 px in ten seconds); route its arc past
+// any standing platform and it wedges in the corner (one sat dead for eight
+// seconds); regulate the swing to keep it alive and the correcting impulses
+// start fighting gravity, so the ball visibly floats and hangs at the top of
+// its arc. Each fix bought one round of plausibility and created the next edge
+// case — the classic sign that the mechanic, not the tuning, is wrong.
+//
+// Free-falling boulders have no such failure mode. There is no constraint to
+// violate, no energy to top up, and nothing to wedge against: gravity does
+// every bit of the work, an impact is a plain contact, and a spent boulder
+// simply rolls away and despawns. The threat also reads better — a telegraphed
+// hatch is legible from anywhere on screen, where a swinging rope was not.
+const HAIL_HATCH_N = 7;              // ceiling hatches, evenly spaced
+const HAIL_R_MIN = 15;               // boulder radius (min)
+const HAIL_R_VAR = 13;               // + seeded 0..VAR
+const HAIL_WARN = 38;                // hatch telegraph frames before a drop
+const HAIL_MIN_GAP = 120;            // frames between drops per hatch (min)
+const HAIL_VAR = 240;                // + seeded 0..VAR
+const HAIL_SPIN = 6;                 // seeded angularVel spread (rad/s)
+const HAIL_DRIFT = 60;               // seeded horizontal entry speed (px/s)
+const HAIL_LIFE = 420;               // frames before a spent boulder despawns
+const HAIL_MAX = 10;                 // live boulders cap (perf guard)
 
 // Rotors don't hold a fixed spin — they re-roll direction and rate on a timer
 // so the blade sweep never becomes a memorisable rhythm, and they ride up and
@@ -234,10 +239,13 @@ const ROTOR_RATE_VAR = 2.0;          // + seeded 0..VAR
 const ROTOR_HOLD_MIN = 90;           // frames on one setting (min)
 const ROTOR_HOLD_VAR = 150;          // + seeded 0..VAR
 const ROTOR_SPINUP = 0.06;           // rad/s per frame ramp toward the target
-const ROTOR_LIFT_MIN = 26;           // px/s vertical travel speed (min)
-const ROTOR_LIFT_VAR = 34;           // + seeded 0..VAR
-const ROTOR_DWELL_MIN = 40;          // frames paused at a reached target (min)
-const ROTOR_DWELL_VAR = 90;          // + seeded 0..VAR
+// Rotors only arrive at t=1140 of a round that resolves around t=1700, so they
+// have roughly ten seconds on stage. Lift speed and dwell are sized so they
+// visibly work their shaft in that window rather than creeping a few pixels.
+const ROTOR_LIFT_MIN = 40;           // px/s vertical travel speed (min)
+const ROTOR_LIFT_VAR = 45;           // + seeded 0..VAR
+const ROTOR_DWELL_MIN = 25;          // frames paused at a reached target (min)
+const ROTOR_DWELL_VAR = 55;          // + seeded 0..VAR
 
 // Ball cannons — muzzles that ride up and down the side walls and fire on a
 // seeded schedule. Unlike the geysers these are lateral, so they sweep the
@@ -261,7 +269,9 @@ const CANNON_MAX = 8;                // live balls cap (perf guard)
 const CANNON_LIFT_MIN = 30;          // px/s muzzle travel speed (min)
 const CANNON_LIFT_VAR = 45;          // + seeded 0..VAR
 const CANNON_COLUMN = 90;            // muzzles stay this far apart on a wall
-const COLLAPSE_EVERY = 70;           // frames between floor tiles crumbling
+// 15 tiles at this cadence takes ~8 s to eat the whole floor. Any slower and
+// the finale outlasts the round it is supposed to finish.
+const COLLAPSE_EVERY = 34;           // frames between floor tiles crumbling
 
 // ---------------------------------------------------------------------------
 // Module state
@@ -293,9 +303,8 @@ let _held = false;                   // rigs pinned in their standing pose?
 let _floorTiles = [];                // [{ body, x0, x1, gone }] per tile
 let _plats = [];                     // platform static Bodies
 let _platWarnT = 0;
-let _hammers = [];                   // pendulum ball Bodies
-let _hammerJoints = [];
-let _hammerAmp = [];                 // [{ peak, lastDir }] swing regulation
+let _hatches = [];                   // [{ x, state, t, r }] ceiling hatches
+let _hail = [];                      // [{ body, life }] falling boulders
 let _rotors = [];                    // [{ body, cfg, rate, target, holdT,
                                      //    y, yTarget, lift, dwellT }]
 let _cannons = [];                   // [{ cfg, state, t, y, yTarget, lift }]
@@ -607,11 +616,9 @@ function despawnRound() {
   }
   _dummies = [];
   _held = false;
-  for (const j of _hammerJoints) if (j.space) j.space = null;
-  _hammerJoints = [];
-  for (const b of _hammers) if (b.space) b.space = null;
-  _hammers = [];
-  _hammerAmp = [];
+  for (const b of _hail) if (b.body.space) b.body.space = null;
+  _hail = [];
+  _hatches = [];
   for (const r of _rotors) if (r.body.space) r.body.space = null;
   _rotors = [];
   for (const b of _balls) if (b.body.space) b.body.space = null;
@@ -793,81 +800,75 @@ function stepGeysers() {
   }
 }
 
-// The rope hangs from (ax, CEIL_Y) and the ball is released at a0 radians off
-// straight-down. A DistanceJoint is a rigid rod of the spawn radius, so the
-// anchor has to be seeded at exactly rope length from the pivot — spawn it
-// anywhere else (in particular inside a wall, as an over-wide release angle
-// does) and the joint hauls the ball to the anchor and welds it there instead
-// of letting it swing.
-function spawnHammers() {
-  for (const cfg of HAMMERS) {
-    const bx = cfg.ax + Math.sin(cfg.a0) * cfg.len;
-    const by = CEIL_Y + Math.cos(cfg.a0) * cfg.len;
-    const ball = new Body(BodyType.DYNAMIC, new Vec2(bx, by));
-    ball.shapes.add(new Circle(cfg.r, undefined,
-      new Material(0.3, 0.3, 0.4, 8, 0.005)));
-    try { ball.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
-    ball.space = _space;
-    const j = new DistanceJoint(_space.world, ball,
-      new Vec2(cfg.ax, CEIL_Y), new Vec2(0, 0), cfg.len, cfg.len);
-    j.space = _space;
-    // Launch it downhill straight away. Released from rest at a0 the ball sits
-    // outside the pump zone, so it took six seconds of gravity alone to build a
-    // useful arc — an eternity when the wave has only just been announced.
-    // Tangent as in stepHammers; the sign sends it toward the bottom of the arc
-    // (inward, away from the wall it was released next to).
-    const tx = -Math.cos(cfg.a0), ty = Math.sin(cfg.a0);
-    const kick = Math.sign(cfg.a0) * HAMMER_LAUNCH * ball.mass;
-    ball.applyImpulse(new Vec2(tx * kick, ty * kick));
-    _hammers.push(ball);
-    _hammerJoints.push(j);
-    // peak = amplitude of the half-swing in progress; lastDir detects the
-    // reversals that delimit one half-period.
-    _hammerAmp.push({ peak: Math.abs(cfg.a0), lastDir: 0 });
+// Arm the ceiling hatches. Each cycles idle → warn → drop on its own seeded
+// timer, so the hail walks the arena instead of falling in unison.
+function armHail() {
+  _hatches = [];
+  for (let i = 0; i < HAIL_HATCH_N; i++) {
+    _hatches.push({
+      // Evenly spaced across the ceiling, inset half a slot from each wall.
+      x: SCREEN_W * ((i + 0.5) / HAIL_HATCH_N),
+      state: "idle",
+      t: _runT + 20 + i * 26 + Math.floor(_rng() * 80),
+      r: 0,
+    });
   }
 }
 
-// Top the swing back up to HAMMER_AMP. Without this the hammers hand all their
-// energy to the ragdolls they hit and are reduced to a feeble rocking within
-// seconds (measured: 189 px of sweep down to 18 px in ten seconds).
-function stepHammers() {
-  for (let i = 0; i < _hammers.length; i++) {
-    const ball = _hammers[i];
-    if (!ball.space) continue;
-    const cfg = HAMMERS[i];
-    const st = _hammerAmp[i];
-    const dx = ball.position.x - cfg.ax;
-    const dy = ball.position.y - CEIL_Y;
-    const L = Math.hypot(dx, dy) || 1;
-    const ang = Math.atan2(dx, dy);       // 0 = hanging straight down
-    const v = ball.velocity;
-    // Unit tangent to the arc (perpendicular to the rope). It is NOT oriented —
-    // `dir` below carries the sign of travel, so the same vector serves both the
-    // pump (push along travel) and the unstick (push downhill).
-    const tx = -dy / L, ty = dx / L;
-    const dir = Math.sign(tx * v.x + ty * v.y) || 1;
+function dropBoulder(h) {
+  // Draw the seeded values BEFORE the cap check, and always exactly two of
+  // them. Bailing out early would make the number of _rng() calls depend on how
+  // many rocks happen to be airborne — a physics-dependent quantity — which
+  // desyncs the whole remaining schedule from the seed.
+  const drift = (_rng() * 2 - 1) * HAIL_DRIFT;
+  const spin = (_rng() * 2 - 1) * HAIL_SPIN;
+  if (_hail.length >= HAIL_MAX) return;
 
-    // A direction reversal ends a half-swing: whatever |ang| is at that moment
-    // IS that half-swing's peak, so the estimate re-seeds rather than drifting.
-    if (st.lastDir && dir !== st.lastDir) st.peak = Math.abs(ang);
-    st.lastDir = dir;
-    st.peak = Math.max(st.peak, Math.abs(ang));
+  const body = new Body(BodyType.DYNAMIC, new Vec2(h.x, CEIL_Y + h.r + 2));
+  // Circle + explicit Material is safe; the P53 tunneling bug is Polygon-only.
+  // Low elasticity so a boulder thuds and stays in the pit rather than
+  // trampolining back up to the ceiling.
+  body.shapes.add(new Circle(h.r, undefined,
+    new Material(0.15, 0.4, 0.5, 7, 0.01)));
+  try { body.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
+  body.isBullet = true;
+  body.space = _space;
+  // A touch of drift and spin: purely vertical drops looked like a test
+  // fixture, and the spin makes the roll-out afterwards read as weight.
+  body.velocity = new Vec2(drift, 0);
+  body.angularVel = spin;
+  _hail.push({ body, life: HAIL_LIFE });
+  _fx.push({ x: h.x, y: CEIL_Y + 8, life: 18, color: "248,81,73" });
+  doShake(3, 0.14);
+}
 
-    const speed = Math.hypot(v.x, v.y);
-    if (speed < HAMMER_STALL_V) {
-      // Wedged against something (a deck corner, a wall, a body pile). Shove it
-      // downhill toward the bottom of the arc regardless of the pump zone —
-      // otherwise a ball stuck outside the zone can never recover, which is
-      // exactly how one sat motionless for eight seconds.
-      const down = -Math.sign(ang) || 1;
-      const k = down * HAMMER_UNSTICK * ball.mass;
-      ball.applyImpulse(new Vec2(tx * k, ty * k));
-    } else if (st.peak < HAMMER_AMP
-      && Math.abs(ang) < HAMMER_AMP * HAMMER_PUMP_ZONE) {
-      const k = dir * HAMMER_PUMP * ball.mass;
-      ball.applyImpulse(new Vec2(tx * k, ty * k));
+// Age out spent boulders so the live cap always has room for the next drop.
+// RNG-free, so it is safe to keep running after the round is decided.
+function retireHail() {
+  for (let i = _hail.length - 1; i >= 0; i--) {
+    const b = _hail[i];
+    if (--b.life <= 0 || !b.body.space || b.body.position.y > DESPAWN_Y) {
+      if (b.body.space) b.body.space = null;
+      _hail.splice(i, 1);
     }
   }
+}
+
+// Boulders need no per-step steering at all — gravity is the whole mechanic.
+// This only runs the hatch timers.
+function stepHail() {
+  for (const h of _hatches) {
+    if (h.state === "idle" && _runT >= h.t) {
+      h.state = "warn";
+      h.r = HAIL_R_MIN + _rng() * HAIL_R_VAR;   // size is known during the warn
+      h.t = _runT + HAIL_WARN;
+    } else if (h.state === "warn" && _runT >= h.t) {
+      dropBoulder(h);
+      h.state = "idle";
+      h.t = _runT + HAIL_MIN_GAP + Math.floor(_rng() * HAIL_VAR);
+    }
+  }
+  retireHail();
 }
 
 function rollRotor(r) {
@@ -1011,7 +1012,14 @@ function armCannons() {
 }
 
 function fireCannon(c) {
+  // Seeded draws come first and are unconditional — see dropBoulder for why a
+  // cap check must never gate an _rng() call.
+  const speed = CANNON_SPEED + _rng() * CANNON_SPEED_VAR;
+  // Elevation spans both ways around level, so a high muzzle can also shoot
+  // down onto a lower deck instead of only lobbing upward.
+  const elev = (_rng() * 2 - 1) * CANNON_AIM;
   if (_balls.length >= CANNON_MAX) return;
+
   const cfg = c.cfg;
   const ball = new Body(BodyType.DYNAMIC,
     new Vec2(cfg.x + cfg.dir * (CANNON_R + 4), c.y));
@@ -1022,10 +1030,6 @@ function fireCannon(c) {
   try { ball.userData._colorIdx = 4; } catch (_) { /* worker proxy */ }
   ball.isBullet = true;
   ball.space = _space;
-  const speed = CANNON_SPEED + _rng() * CANNON_SPEED_VAR;
-  // Elevation spans both ways around level, so a high muzzle can also shoot
-  // down onto a lower deck instead of only lobbing upward.
-  const elev = (_rng() * 2 - 1) * CANNON_AIM;
   ball.velocity = new Vec2(
     cfg.dir * speed * Math.cos(elev),
     -speed * Math.sin(elev),
@@ -1116,7 +1120,7 @@ function stepWaves() {
     }
     if (w.id === "geysers") armGeysers();
     else if (w.id === "cannons") armCannons();
-    else if (w.id === "hammers") spawnHammers();
+    else if (w.id === "hail") armHail();
     else if (w.id === "plat-warn") _platWarnT = WAVES[_waveIdx].t - _runT;
     else if (w.id === "plat-drop") { _platWarnT = 0; dropPlatforms(); }
     else if (w.id === "rotors") spawnRotors();
@@ -1216,10 +1220,10 @@ export default {
     "Battle-royale spectator sport with <b>50 numbered ragdolls</b> standing to attention across five " +
     "decks. The world holds its breath until you make your one decision (click a dummy to bet on it, " +
     "<b>Space</b> picks at random) — then a seeded hazard schedule eats the arena: telegraphed <b>geyser</b> " +
-    "blasts, <b>ball cannons</b> that ride up and down the walls, platforms yanked from under everyone, " +
-    "amplitude-regulated <b>wrecking balls</b>, <b>kinematic rotors</b> that randomly reverse while riding " +
-    "their shafts, and a floor that <b>crumbles in random order</b> into the void. Damage is measured, " +
-    "not scripted — hard contacts bruise via " +
+    "blasts, <b>ball cannons</b> that ride up and down the walls, <b>rockfall</b> from telegraphed ceiling " +
+    "hatches, platforms yanked from under everyone, <b>kinematic rotors</b> that reverse at random while " +
+    "riding their shafts, and a floor that <b>crumbles in random order</b> into the void. Damage is " +
+    "measured, not scripted — hard contacts bruise via " +
     "<code>totalContactsImpulse</code>, necks/shoulders/hips are <b>breakable constraints</b> that tear " +
     "off under violent yanks, and 0% is a KO. Last dummy in play wins; the banner grades your bet by " +
     "placement. Per-rig <code>InteractionGroup</code> keeps 500 ragdoll parts colliding with each other " +
@@ -1238,9 +1242,8 @@ export default {
     // Hard-reset module state — the previous load's bodies died with its space.
     _dummies = [];
     _held = false;
-    _hammers = [];
-    _hammerJoints = [];
-    _hammerAmp = [];
+    _hail = [];
+    _hatches = [];
     _rotors = [];
     _cannons = [];
     _balls = [];
@@ -1329,7 +1332,7 @@ export default {
       stepWaves();
       stepGeysers();
       stepCannons();
-      stepHammers();
+      stepHail();
       // Rotors draw from the seeded stream (direction rolls, lift targets), so
       // they may only be stepped while the round is running. Ticking them in
       // "done" too would burn RNG for as many frames as the victory screen
@@ -1341,12 +1344,13 @@ export default {
       checkEliminations();
       sweepFallen();
     } else if (_phase === "done") {
-      // Keep the hammers swinging and the rotors turning through the victory
-      // lap — frozen hazards read as a broken demo. Both paths here are
-      // RNG-free: coastRotors() holds the last rolled settings instead of
-      // drawing new ones.
-      stepHammers();
+      // Keep the rotors turning through the victory lap — a frozen hazard reads
+      // as a broken demo. coastRotors() holds the last rolled settings rather
+      // than drawing new ones, so it stays out of the seeded stream. The hail
+      // hatches deliberately stop firing (that WOULD draw from the stream);
+      // boulders already in the air simply finish falling under gravity.
       coastRotors();
+      retireHail();
       drainBreaks();
       sweepFallen();
     }
@@ -1384,7 +1388,8 @@ export default {
       floorTiles: () => _floorTiles,
       collapseOrder: () => _collapseOrder,
       plats: () => _plats,
-      hammers: () => _hammers,
+      hatches: () => _hatches,
+      hail: () => _hail,
       rotors: () => _rotors,
       cannons: () => _cannons,
       balls: () => _balls,
@@ -1422,7 +1427,7 @@ function drawWorldOverlay(ctx) {
   drawCannons(ctx);
   drawPlatWarn(ctx);
   drawCollapseWarn(ctx);
-  drawHammerCables(ctx);
+  drawHatches(ctx);
   drawRotorHubs(ctx);
   drawBadges(ctx);
   drawFx(ctx);
@@ -1502,22 +1507,41 @@ function drawCollapseWarn(ctx) {
   ctx.strokeRect(tile.x0 + 2, FLOOR_Y + 2, TILE_W - 4, 36);
 }
 
-function drawHammerCables(ctx) {
-  ctx.strokeStyle = "#8b949e";
-  ctx.lineWidth = 2;
-  for (let i = 0; i < _hammers.length; i++) {
-    const b = _hammers[i];
-    if (!b.space) continue;
-    const cfg = HAMMERS[i];
-    const p = b.position;
+// Ceiling hatches: a permanent mouth once armed, and during the telegraph a
+// widening pair of jaws plus a drop line down the column the rock will fall
+// through, sized to the boulder that is about to come out.
+function drawHatches(ctx) {
+  for (const h of _hatches) {
+    const warn = h.state === "warn";
+    const t = warn ? 1 - (h.t - _runT) / HAIL_WARN : 0;
+
+    ctx.fillStyle = warn
+      ? `rgba(248,81,73,${(0.35 + t * 0.65).toFixed(3)})`
+      : "rgba(248,81,73,0.3)";
+    ctx.fillRect(h.x - 16, CEIL_Y - 6, 32, 6);
+    if (!warn) continue;
+
+    // Jaws opening to exactly the boulder's width.
+    ctx.strokeStyle = `rgba(248,81,73,${(0.4 + t * 0.6).toFixed(3)})`;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(cfg.ax, CEIL_Y);
-    ctx.lineTo(p.x, p.y);
+    ctx.moveTo(h.x - 16, CEIL_Y);
+    ctx.lineTo(h.x - h.r * t, CEIL_Y + 7 * t);
+    ctx.moveTo(h.x + 16, CEIL_Y);
+    ctx.lineTo(h.x + h.r * t, CEIL_Y + 7 * t);
     ctx.stroke();
-    ctx.fillStyle = "#8b949e";
+
+    // Drop line: a thin centre thread marking the column. Deliberately faint
+    // and hairline — an earlier version drew it at the boulder's full width and
+    // two of them shouted over the entire arena, hiding the actual carnage.
+    ctx.strokeStyle = `rgba(248,81,73,${(0.10 + t * 0.22).toFixed(3)})`;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 13]);
     ctx.beginPath();
-    ctx.arc(cfg.ax, CEIL_Y, 4, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(h.x, CEIL_Y + 8);
+    ctx.lineTo(h.x, FLOOR_Y - 10);
+    ctx.stroke();
+    ctx.setLineDash([]);
   }
 }
 
