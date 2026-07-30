@@ -93,6 +93,7 @@ import contraptionGarage     from "./demos/contraption-garage.js?v=3.39.1";
 import crashTestHero         from "./demos/crash-test-hero.js?v=3.39.1";
 import raftRapids            from "./demos/raft-rapids.js?v=3.39.1";
 import skyHook               from "./demos/sky-hook.js?v=3.39.1";
+import ragdollRoyale         from "./demos/ragdoll-royale.js?v=3.39.1";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -146,6 +147,7 @@ const ALL_DEMOS = [
   crashTestHero,
   raftRapids,
   skyHook,
+  ragdollRoyale,
 ];
 
 const gtag = window.gtag || function() {};
