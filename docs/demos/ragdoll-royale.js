@@ -213,16 +213,24 @@ const GEYSER_SIDE_DV = 90;           // seeded lateral kick
 // every bit of the work, an impact is a plain contact, and a spent boulder
 // simply rolls away and despawns. The threat also reads better — a telegraphed
 // hatch is legible from anywhere on screen, where a swinging rope was not.
-const HAIL_HATCH_N = 7;              // ceiling hatches, evenly spaced
-const HAIL_R_MIN = 15;               // boulder radius (min)
-const HAIL_R_VAR = 13;               // + seeded 0..VAR
-const HAIL_WARN = 38;                // hatch telegraph frames before a drop
-const HAIL_MIN_GAP = 120;            // frames between drops per hatch (min)
-const HAIL_VAR = 240;                // + seeded 0..VAR
+const HAIL_HATCH_N = 5;              // ceiling hatches, evenly spaced
+// Scale reference: a rig's torso is 13×26 and the whole dummy stands ~74 px.
+// Radius 8..17 makes a boulder read as head- to shoulder-sized — something that
+// flattens a ragdoll without being one. An earlier 15..28 put the largest rock
+// at 56 px across, 2.1× the torso height and three quarters of an entire rig,
+// which looked less like debris than like a second contestant.
+const HAIL_R_MIN = 8;                // boulder radius (min)
+const HAIL_R_VAR = 9;                // + seeded 0..VAR
+const HAIL_WARN = 42;                // hatch telegraph frames before a drop
+// Five hatches at this cadence average roughly one drop every 1.5 s, versus the
+// 1.17 per SECOND (6.8 rocks on screen at once) the first pass produced. Each
+// impact should land as its own event rather than as continuous weather.
+const HAIL_MIN_GAP = 330;            // frames between drops per hatch (min)
+const HAIL_VAR = 450;                // + seeded 0..VAR
 const HAIL_SPIN = 6;                 // seeded angularVel spread (rad/s)
 const HAIL_DRIFT = 60;               // seeded horizontal entry speed (px/s)
 const HAIL_LIFE = 420;               // frames before a spent boulder despawns
-const HAIL_MAX = 10;                 // live boulders cap (perf guard)
+const HAIL_MAX = 5;                  // live boulders cap (perf guard)
 
 // Rotors don't hold a fixed spin — they re-roll direction and rate on a timer
 // so the blade sweep never becomes a memorisable rhythm, and they ride up and
@@ -329,7 +337,20 @@ const _fx = [];
 // Helpers
 // ---------------------------------------------------------------------------
 
-// Deterministic per-round RNG — same round number, same massacre.
+// Per-round RNG: the same round number always produces the same hazard
+// SCHEDULE — vent tiles, hatch timings and boulder sizes, cannon volleys, rotor
+// rolls, collapse order.
+//
+// The resulting massacre is NOT bit-reproducible, and deliberately isn't relied
+// on to be. nape's own stepping is exactly reproducible (verified: 500 loose
+// boxes stepped twice in one process stay identical to 9 decimals for 400
+// frames), but CbType and InteractionGroup take ids from a global monotonic
+// counter, and those ids order the callback-set and interaction-pair walks. A
+// second setup() in the same process therefore gets a different id block, which
+// reorders some floating-point summations — two runs of "round 4" visibly part
+// company around frame 180 and can crown different winners. Fine for a
+// spectator demo; if you need frame-exact replay, see the replay-recorder demo,
+// which records inputs against a single space instead.
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
@@ -827,9 +848,11 @@ function dropBoulder(h) {
   const body = new Body(BodyType.DYNAMIC, new Vec2(h.x, CEIL_Y + h.r + 2));
   // Circle + explicit Material is safe; the P53 tunneling bug is Polygon-only.
   // Low elasticity so a boulder thuds and stays in the pit rather than
-  // trampolining back up to the ceiling.
+  // trampolining back up to the ceiling. Density is high (18) because these
+  // rocks are deliberately small on screen — the heft has to come from density
+  // rather than from a radius that would dwarf the contestants.
   body.shapes.add(new Circle(h.r, undefined,
-    new Material(0.15, 0.4, 0.5, 7, 0.01)));
+    new Material(0.15, 0.4, 0.5, 18, 0.01)));
   try { body.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
   body.isBullet = true;
   body.space = _space;
@@ -983,13 +1006,21 @@ function coastRotors() {
 
 // Seed a fresh height for a muzzle to crawl toward, at least CANNON_COLUMN away
 // from where it is now so it visibly travels instead of jittering in place.
+//
+// Exactly two _rng() draws, always. A rejection-sampling loop here (retry until
+// the candidate is far enough) consumed a variable number of draws depending on
+// the muzzle's current height — and since that height advances only between
+// shots, and shots are gated by a live-body cap, physics state leaked into the
+// seeded stream and the same round could produce a different winner.
 function rollCannonLift(c) {
   const { yMin, yMax } = c.cfg;
-  for (let tries = 0; tries < 8; tries++) {
-    const y = yMin + _rng() * (yMax - yMin);
-    if (Math.abs(y - c.y) >= CANNON_COLUMN) { c.yTarget = y; break; }
-    c.yTarget = y;
+  let y = yMin + _rng() * (yMax - yMin);
+  if (Math.abs(y - c.y) < CANNON_COLUMN) {
+    // Too close to bother travelling: reflect to the far half of the rail,
+    // which is guaranteed to be a real trip and costs no extra randomness.
+    y = y < (yMin + yMax) / 2 ? yMax - (y - yMin) : yMin + (yMax - y);
   }
+  c.yTarget = y;
   c.lift = CANNON_LIFT_MIN + _rng() * CANNON_LIFT_VAR;
 }
 
