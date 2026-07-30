@@ -21,14 +21,20 @@ import { drawBody, drawGrid } from "../renderer.js";
 //   wave 1  GEYSERS   — roaming floor vents telegraph, then blast columns
 //                       of impulse (a vent picks a fresh tile every cycle,
 //                       so no patch of floor stays safe for long)
-//   wave 2  CANNONS   — four wall muzzles lob heavy cannonballs across the
-//                       decks on seeded elevations — the only hazard that
-//                       crosses the galleries horizontally
-//   wave 3  HAMMERS   — two wrecking-ball pendulums sweep the mosh pit
-//   wave 4  DROP      — every platform and the podium vanish underfoot
-//   wave 5  ROTORS    — two kinematic X-rotors spin up, re-rolling their
-//                       direction and speed on a seeded timer
-//   wave 6  COLLAPSE  — the floor tiles crumble edge-to-centre into the void
+//   wave 2  CANNONS   — four muzzles ride up and down the side walls and lob
+//                       heavy cannonballs across the decks on seeded
+//                       elevations — the only hazard that crosses the
+//                       galleries horizontally, and the travel is what stops
+//                       a volley from raking the same single row
+//   wave 3  DROP      — every platform and the podium vanish underfoot
+//   wave 4  HAMMERS   — two amplitude-regulated wrecking balls sweep the pit
+//                       (deliberately after the drop: a pendulum whose arc
+//                       crosses a standing deck just jams against it)
+//   wave 5  ROTORS    — two kinematic X-rotors spin up, re-rolling direction
+//                       and speed on a seeded timer while riding their shafts
+//                       up and down so no height stays out of reach
+//   wave 6  COLLAPSE  — the floor tiles crumble in a seeded random order, so
+//                       holes open under the crowd as readily as at the edges
 //
 // Damage is measured, not scripted: hard contacts bruise (per-part contact
 // Δv via totalContactsImpulse), necks/shoulders/hips are breakable
@@ -56,13 +62,23 @@ import { drawBody, drawGrid } from "../renderer.js";
 //     non-dynamic bodies, so every joint in the rig would fail validate().)
 //   * Runtime world mutation — platforms and floor tiles are static bodies
 //     removed mid-simulation while dummies stand on them.
-//   * DistanceJoint pendulums, KINEMATIC rotors driven by per-frame angularVel
-//     writes, and impulse-launched cannonballs as moving hazards, with an
-//     InteractionListener(BEGIN) for fixed-bite blade hits.
-//   * Seeded rounds — vent placement, cannon volleys, rotor direction rolls,
-//     hazard timing and collapse order all come from a per-round mulberry32
-//     stream; the chaos is scheduled, never scripted, and physics does the
-//     storytelling.
+//   * DistanceJoint pendulums with amplitude regulation — a free wrecking ball
+//     hands all its energy to the ragdolls it hits and stops mattering within
+//     seconds, so the peak swing angle is tracked per half-period and topped up
+//     with a tangential impulse near the bottom of the arc. Regulating
+//     amplitude rather than speed is what keeps it stable: a speed cap lets the
+//     pendulum gain energy on every pass and it ends up spinning over the
+//     anchor.
+//   * KINEMATIC hazards moved by velocity, not teleport — rotors write
+//     angularVel for spin and velocity for their vertical travel, so contacts
+//     resolve with the true relative motion instead of tunnelling between
+//     steps; an InteractionListener(BEGIN) takes a fixed bite per blade hit.
+//   * Seeded rounds — vent placement, cannon volleys and heights, rotor
+//     direction and lift rolls, hazard timing and the shuffled collapse order
+//     all come from a per-round mulberry32 stream. Anything that draws from it
+//     must therefore run ONLY while the round is live: rotors used to tick in
+//     the "done" phase too, burning RNG for however long the victory screen
+//     stayed up and desyncing the next round from its seed.
 // ---------------------------------------------------------------------------
 
 // Named SCREEN_W/SCREEN_H — the CodePen runtime declares its own `W`/`H`
@@ -141,14 +157,18 @@ const SPIN_COOLDOWN = 40;            // frames per dummy between blade bites
 
 // ── Hazard schedule (frames since GO) ────────────────────────────────────
 const COUNT_FRAMES = 150;            // betting-closed countdown (2.5 s)
+// The hammers deliberately come AFTER the platforms drop. A pendulum whose arc
+// crosses a still-standing deck simply jams against it — measured: the ball
+// wedged between the left gallery and the wall and sat there dead for eight
+// seconds. Once the decks are gone the swing has clear air all the way down.
 const WAVES = [
   { t: 30, id: "geysers", label: "GEYSERS ARMED" },
   { t: 330, id: "cannons", label: "CANNONS HOT" },
-  { t: 660, id: "hammers", label: "HAMMERS!" },
-  { t: 1020, id: "plat-warn", label: "" },
-  { t: 1110, id: "plat-drop", label: "PLATFORMS DROP" },
-  { t: 1440, id: "rotors", label: "ROTORS ONLINE" },
-  { t: 1800, id: "collapse", label: "FLOOR COLLAPSE" },
+  { t: 780, id: "plat-warn", label: "" },
+  { t: 870, id: "plat-drop", label: "PLATFORMS DROP" },
+  { t: 960, id: "hammers", label: "HAMMERS!" },
+  { t: 1350, id: "rotors", label: "ROTORS ONLINE" },
+  { t: 1740, id: "collapse", label: "FLOOR COLLAPSE" },
 ];
 
 // Roaming geyser vents — each of the N slots picks a fresh (still intact)
@@ -168,52 +188,79 @@ const GEYSER_SIDE_DV = 90;           // seeded lateral kick
 // `a0` radians off vertical — the angle is measured from straight down, so the
 // ball spawns at (ax + sin(a0)·len, CEIL_Y + cos(a0)·len).
 //
-// Two constraints pin these numbers down:
-//   len = 380 puts the low point of the arc at y = CEIL_Y + 380 = 420, i.e.
-//     the ball's underside skims the floor at 446 — it sweeps the mosh pit
-//     instead of swinging harmlessly overhead.
-//   |a0| = 0.5 keeps the release point at x ≈ 68 / 832, well clear of the
-//     side walls. This is the bit that was broken: at |a0| = 1.35 the ball
-//     spawned at x ≈ -4 / 904, *inside* the wall, where the rope constraint
-//     hauled it to the ceiling anchor and held it there — a hammer frozen in
-//     the plafond, never swinging once.
-// The arcs reach x ≈ 432 and 468, so they overlap over the arena centre and
-// the podium is not a hammer dead zone.
+//   len = 300 puts the low point of the arc at y = CEIL_Y + 300 = 340, so the
+//     ball's underside clears the floor (460) by ~94 px. An earlier len of 380
+//     parked the ball ON the floor, where it plowed into the ragdoll heap and
+//     ground to a halt — measured swing collapsed from 189 px to 18 px within
+//     ten seconds. It has to swing THROUGH the pile at chest height, not bury
+//     itself in it.
+//   The regulated amplitude (HAMMER_AMP) rather than a0 sets how far the ball
+//     eventually travels: ax ± sin(0.85)·len. With ax 350/550 that is x 125..775,
+//     a healthy margin from the walls. Getting this wrong jams the hammer for
+//     good — at ax 300 the ball reached x 45 and wedged against the left wall,
+//     and at |a0| = 1.35 it spawned at x ≈ -4, *inside* the wall, where the rope
+//     hauled it to the ceiling anchor and welded it there.
 const HAMMERS = [
-  { ax: 250, len: 380, r: 26, a0: -0.5 },
-  { ax: 650, len: 380, r: 26, a0: 0.5 },
+  { ax: 350, len: 300, r: 26, a0: -0.7 },
+  { ax: 550, len: 300, r: 26, a0: 0.7 },
 ];
 
+// A free pendulum bleeds energy into every ragdoll it hits, so within seconds
+// it is barely rocking. These hammers are amplitude-regulated instead: the peak
+// swing angle is tracked per half-period and a tangential impulse tops the
+// swing up whenever it falls short of HAMMER_AMP, applied only near the bottom
+// of the arc where it is most efficient. Regulating AMPLITUDE rather than speed
+// is what makes it stable — a speed cap lets the pendulum gain energy every
+// pass (it is always under the cap at the top) and it spins over the anchor.
+const HAMMER_AMP = 0.85;             // target swing amplitude (rad off vertical)
+const HAMMER_PUMP = 4;               // Δv per step injected while under target
+const HAMMER_PUMP_ZONE = 0.4;        // pump only within this fraction of AMP
+const HAMMER_STALL_V = 25;           // px/s below which the ball counts as stuck
+const HAMMER_UNSTICK = 9;            // Δv per step shoving a stuck ball downhill
+const HAMMER_LAUNCH = 210;           // Δv given at spawn so it swings at once
+
 // Rotors don't hold a fixed spin — they re-roll direction and rate on a timer
-// so the blade sweep never becomes a memorisable rhythm.
+// so the blade sweep never becomes a memorisable rhythm, and they ride up and
+// down their shaft so no deck height is permanently out of reach.
+// Offset from the hammer anchor columns (300 / 600) so a blade tip and a rope
+// aren't permanently grinding through each other.
 const ROTORS = [
-  { x: 300, y: 395, half: 70 },
-  { x: 600, y: 395, half: 70 },
+  { x: 180, yMin: 250, yMax: 415 },
+  { x: 720, yMin: 250, yMax: 415 },
 ];
+const ROTOR_HALF = 70;               // blade half-span
 const ROTOR_RATE_MIN = 0.7;          // rad/s magnitude floor
 const ROTOR_RATE_VAR = 2.0;          // + seeded 0..VAR
 const ROTOR_HOLD_MIN = 90;           // frames on one setting (min)
 const ROTOR_HOLD_VAR = 150;          // + seeded 0..VAR
 const ROTOR_SPINUP = 0.06;           // rad/s per frame ramp toward the target
+const ROTOR_LIFT_MIN = 26;           // px/s vertical travel speed (min)
+const ROTOR_LIFT_VAR = 34;           // + seeded 0..VAR
+const ROTOR_DWELL_MIN = 40;          // frames paused at a reached target (min)
+const ROTOR_DWELL_VAR = 90;          // + seeded 0..VAR
 
-// Ball cannons — muzzles in the side walls that lob heavy cannonballs across
-// the arena on a seeded schedule. Unlike the geysers these are lateral, so
-// they sweep the galleries the vertical columns can never reach.
+// Ball cannons — muzzles that ride up and down the side walls and fire on a
+// seeded schedule. Unlike the geysers these are lateral, so they sweep the
+// galleries the vertical columns can never reach; the vertical travel is what
+// stops every volley from raking the same one row.
 const CANNONS = [
-  { x: 8, y: 300, dir: 1 },
-  { x: SCREEN_W - 8, y: 300, dir: -1 },
-  { x: 8, y: 190, dir: 1 },
-  { x: SCREEN_W - 8, y: 190, dir: -1 },
+  { x: 8, dir: 1, yMin: 110, yMax: 430 },
+  { x: SCREEN_W - 8, dir: -1, yMin: 110, yMax: 430 },
+  { x: 8, dir: 1, yMin: 110, yMax: 430 },
+  { x: SCREEN_W - 8, dir: -1, yMin: 110, yMax: 430 },
 ];
 const CANNON_R = 13;                 // ball radius
 const CANNON_WARN = 34;              // muzzle-flash telegraph frames
-const CANNON_MIN_GAP = 150;          // frames between shots per muzzle (min)
-const CANNON_VAR = 200;              // + seeded 0..VAR
+const CANNON_MIN_GAP = 90;           // frames between shots per muzzle (min)
+const CANNON_VAR = 210;              // + seeded 0..VAR
 const CANNON_SPEED = 430;            // muzzle speed (px/s)
 const CANNON_SPEED_VAR = 170;        // + seeded 0..VAR
-const CANNON_AIM_VAR = 0.5;          // seeded elevation spread (rad, upward)
+const CANNON_AIM = 0.35;             // seeded elevation spread (rad, ± level)
 const CANNON_LIFE = 300;             // frames before a spent ball despawns
 const CANNON_MAX = 8;                // live balls cap (perf guard)
+const CANNON_LIFT_MIN = 30;          // px/s muzzle travel speed (min)
+const CANNON_LIFT_VAR = 45;          // + seeded 0..VAR
+const CANNON_COLUMN = 90;            // muzzles stay this far apart on a wall
 const COLLAPSE_EVERY = 70;           // frames between floor tiles crumbling
 
 // ---------------------------------------------------------------------------
@@ -248,11 +295,13 @@ let _plats = [];                     // platform static Bodies
 let _platWarnT = 0;
 let _hammers = [];                   // pendulum ball Bodies
 let _hammerJoints = [];
-let _rotors = [];                    // [{ body, cfg, rate, target, holdT }]
-let _cannons = [];                   // [{ cfg, state, t }]
+let _hammerAmp = [];                 // [{ peak, lastDir }] swing regulation
+let _rotors = [];                    // [{ body, cfg, rate, target, holdT,
+                                     //    y, yTarget, lift, dwellT }]
+let _cannons = [];                   // [{ cfg, state, t, y, yTarget, lift }]
 let _balls = [];                     // [{ body, life }] live cannonballs
 let _geysers = [];                   // [{ tile, x, state, t }]
-let _collapseOrder = [];             // tile indices, outside-in
+let _collapseOrder = [];             // tile indices, seeded random order
 let _collapseAt = 0;                 // next tile falls at this _runT
 let _collapseOn = false;
 
@@ -562,6 +611,7 @@ function despawnRound() {
   _hammerJoints = [];
   for (const b of _hammers) if (b.space) b.space = null;
   _hammers = [];
+  _hammerAmp = [];
   for (const r of _rotors) if (r.body.space) r.body.space = null;
   _rotors = [];
   for (const b of _balls) if (b.body.space) b.body.space = null;
@@ -744,11 +794,11 @@ function stepGeysers() {
 }
 
 // The rope hangs from (ax, CEIL_Y) and the ball is released at a0 radians off
-// straight-down. A PivotJoint is a point constraint, not a rod, so the anchor
-// has to be seeded at exactly rope length from the pivot — spawn it anywhere
-// else (in particular inside a wall, as an over-wide release angle does) and
-// the joint hauls the ball to the anchor point and welds it there instead of
-// letting it swing.
+// straight-down. A DistanceJoint is a rigid rod of the spawn radius, so the
+// anchor has to be seeded at exactly rope length from the pivot — spawn it
+// anywhere else (in particular inside a wall, as an over-wide release angle
+// does) and the joint hauls the ball to the anchor and welds it there instead
+// of letting it swing.
 function spawnHammers() {
   for (const cfg of HAMMERS) {
     const bx = cfg.ax + Math.sin(cfg.a0) * cfg.len;
@@ -758,14 +808,65 @@ function spawnHammers() {
       new Material(0.3, 0.3, 0.4, 8, 0.005)));
     try { ball.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
     ball.space = _space;
-    // DistanceJoint, not PivotJoint: a rigid rope of the exact spawn radius.
-    // It keeps the ball on its arc even after a ragdoll pile-up shoves it,
-    // where a point pivot would be fighting to drag the ball to the ceiling.
     const j = new DistanceJoint(_space.world, ball,
       new Vec2(cfg.ax, CEIL_Y), new Vec2(0, 0), cfg.len, cfg.len);
     j.space = _space;
+    // Launch it downhill straight away. Released from rest at a0 the ball sits
+    // outside the pump zone, so it took six seconds of gravity alone to build a
+    // useful arc — an eternity when the wave has only just been announced.
+    // Tangent as in stepHammers; the sign sends it toward the bottom of the arc
+    // (inward, away from the wall it was released next to).
+    const tx = -Math.cos(cfg.a0), ty = Math.sin(cfg.a0);
+    const kick = Math.sign(cfg.a0) * HAMMER_LAUNCH * ball.mass;
+    ball.applyImpulse(new Vec2(tx * kick, ty * kick));
     _hammers.push(ball);
     _hammerJoints.push(j);
+    // peak = amplitude of the half-swing in progress; lastDir detects the
+    // reversals that delimit one half-period.
+    _hammerAmp.push({ peak: Math.abs(cfg.a0), lastDir: 0 });
+  }
+}
+
+// Top the swing back up to HAMMER_AMP. Without this the hammers hand all their
+// energy to the ragdolls they hit and are reduced to a feeble rocking within
+// seconds (measured: 189 px of sweep down to 18 px in ten seconds).
+function stepHammers() {
+  for (let i = 0; i < _hammers.length; i++) {
+    const ball = _hammers[i];
+    if (!ball.space) continue;
+    const cfg = HAMMERS[i];
+    const st = _hammerAmp[i];
+    const dx = ball.position.x - cfg.ax;
+    const dy = ball.position.y - CEIL_Y;
+    const L = Math.hypot(dx, dy) || 1;
+    const ang = Math.atan2(dx, dy);       // 0 = hanging straight down
+    const v = ball.velocity;
+    // Unit tangent to the arc (perpendicular to the rope). It is NOT oriented —
+    // `dir` below carries the sign of travel, so the same vector serves both the
+    // pump (push along travel) and the unstick (push downhill).
+    const tx = -dy / L, ty = dx / L;
+    const dir = Math.sign(tx * v.x + ty * v.y) || 1;
+
+    // A direction reversal ends a half-swing: whatever |ang| is at that moment
+    // IS that half-swing's peak, so the estimate re-seeds rather than drifting.
+    if (st.lastDir && dir !== st.lastDir) st.peak = Math.abs(ang);
+    st.lastDir = dir;
+    st.peak = Math.max(st.peak, Math.abs(ang));
+
+    const speed = Math.hypot(v.x, v.y);
+    if (speed < HAMMER_STALL_V) {
+      // Wedged against something (a deck corner, a wall, a body pile). Shove it
+      // downhill toward the bottom of the arc regardless of the pump zone —
+      // otherwise a ball stuck outside the zone can never recover, which is
+      // exactly how one sat motionless for eight seconds.
+      const down = -Math.sign(ang) || 1;
+      const k = down * HAMMER_UNSTICK * ball.mass;
+      ball.applyImpulse(new Vec2(tx * k, ty * k));
+    } else if (st.peak < HAMMER_AMP
+      && Math.abs(ang) < HAMMER_AMP * HAMMER_PUMP_ZONE) {
+      const k = dir * HAMMER_PUMP * ball.mass;
+      ball.applyImpulse(new Vec2(tx * k, ty * k));
+    }
   }
 }
 
@@ -775,59 +876,145 @@ function rollRotor(r) {
   r.holdT = ROTOR_HOLD_MIN + Math.floor(_rng() * ROTOR_HOLD_VAR);
 }
 
+// Pick the next height for a rotor to travel to, and how fast it gets there.
+// Deliberately does NOT touch dwellT — the caller sets the pause before calling
+// this, and clearing it here would cancel that pause.
+function rollRotorLift(r) {
+  const { yMin, yMax } = r.cfg;
+  r.yTarget = yMin + _rng() * (yMax - yMin);
+  r.lift = ROTOR_LIFT_MIN + _rng() * ROTOR_LIFT_VAR;
+}
+
 function spawnRotors() {
   for (const cfg of ROTORS) {
-    const b = new Body(BodyType.KINEMATIC, new Vec2(cfg.x, cfg.y));
-    const arm = cfg.half * 2;
+    const y0 = (cfg.yMin + cfg.yMax) / 2;
+    const b = new Body(BodyType.KINEMATIC, new Vec2(cfg.x, y0));
+    const arm = ROTOR_HALF * 2;
     b.shapes.add(new Polygon(rotatedBox(arm, 12, Math.PI / 4)));
     b.shapes.add(new Polygon(rotatedBox(arm, 12, -Math.PI / 4)));
     try { b.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
     b.cbTypes.add(_cbSpin);
     b.space = _space;
-    const r = { body: b, cfg, rate: 0, target: 0, holdT: 0 };
+    const r = {
+      body: b, cfg, rate: 0, target: 0, holdT: 0,
+      y: y0, yTarget: y0, lift: 0, dwellT: 0,
+    };
     rollRotor(r);
+    rollRotorLift(r);
     _rotors.push(r);
   }
 }
 
-// Kinematic bodies ignore forces, so the spin is driven by writing angularVel
-// every frame. Each rotor ramps toward a seeded target and re-rolls direction
-// and speed when its hold timer expires — including reversals, which fling a
-// dummy back the way it came mid-slide.
+// Apply a rotor's current spin and lift settings for one frame. Draws no
+// randomness, so it is safe to run outside the seeded round (see coastRotors).
+//
+// Kinematic bodies ignore forces: the spin comes from writing angularVel, and
+// the vertical travel from writing velocity rather than teleporting position —
+// a snapped position would let blades tunnel past a ragdoll between steps and
+// would report zero contact velocity to the impact code.
+function driveRotor(r) {
+  const d = r.target - r.rate;
+  r.rate += Math.abs(d) <= ROTOR_SPINUP ? d : Math.sign(d) * ROTOR_SPINUP;
+  r.body.angularVel = r.rate;
+
+  if (r.dwellT > 0) {
+    r.dwellT--;
+    r.body.velocity = new Vec2(0, 0);
+  } else {
+    const dy = r.yTarget - r.y;
+    const stepY = r.lift / 60;
+    if (Math.abs(dy) <= stepY) {
+      r.y = r.yTarget;
+      r.body.velocity = new Vec2(0, 0);
+      r.arrived = true;              // the caller decides whether to re-roll
+    } else {
+      const vy = Math.sign(dy) * r.lift;
+      r.y += vy / 60;
+      r.body.velocity = new Vec2(0, vy);
+    }
+  }
+  // Keep the hub pinned to its column; the spin must not walk it sideways.
+  r.body.position = new Vec2(r.cfg.x, r.y);
+}
+
+// In-round stepping: re-rolls direction, speed and travel target from the
+// seeded stream as the timers expire, including reversals that fling a dummy
+// back the way it came mid-slide.
 function stepRotors() {
   for (const r of _rotors) {
     if (--r.holdT <= 0) {
       const was = r.target;
       rollRotor(r);
       if (was * r.target < 0) {
-        _fx.push({ x: r.cfg.x, y: r.cfg.y, life: 16, color: "248,81,73" });
+        _fx.push({ x: r.cfg.x, y: r.y, life: 16, color: "248,81,73" });
       }
     }
-    const d = r.target - r.rate;
-    r.rate += Math.abs(d) <= ROTOR_SPINUP ? d : Math.sign(d) * ROTOR_SPINUP;
-    r.body.angularVel = r.rate;
+    r.arrived = false;
+    driveRotor(r);
+    if (r.arrived) {
+      r.dwellT = ROTOR_DWELL_MIN + Math.floor(_rng() * ROTOR_DWELL_VAR);
+      rollRotorLift(r);
+    }
+  }
+}
+
+// Post-round coasting: keep turning and travelling on the settings already
+// rolled, but touch the RNG. On arrival the rotor simply bounces back to the
+// other end of its shaft, which needs no fresh randomness.
+function coastRotors() {
+  for (const r of _rotors) {
+    r.arrived = false;
+    driveRotor(r);
+    if (r.arrived) {
+      const { yMin, yMax } = r.cfg;
+      r.yTarget = Math.abs(r.y - yMin) < Math.abs(r.y - yMax) ? yMax : yMin;
+    }
   }
 }
 
 // ── Ball cannons ─────────────────────────────────────────────────────────
-// Wall muzzles that telegraph, then lob a heavy ball across the arena on a
-// seeded elevation. These are the only hazard that crosses the upper decks
-// horizontally, so the gallery crowd can't just stand still and outlast the
-// vertical geyser columns.
+// Muzzles that ride up and down the side walls, telegraph, then lob a heavy
+// ball across the arena on a seeded elevation. These are the only hazard that
+// crosses the upper decks horizontally, so the gallery crowd can't just stand
+// still and outlast the vertical geyser columns. The vertical travel is what
+// keeps a volley from raking the same single row over and over — a fixed-height
+// muzzle only ever threatened whichever deck it happened to sit level with.
+
+// Seed a fresh height for a muzzle to crawl toward, at least CANNON_COLUMN away
+// from where it is now so it visibly travels instead of jittering in place.
+function rollCannonLift(c) {
+  const { yMin, yMax } = c.cfg;
+  for (let tries = 0; tries < 8; tries++) {
+    const y = yMin + _rng() * (yMax - yMin);
+    if (Math.abs(y - c.y) >= CANNON_COLUMN) { c.yTarget = y; break; }
+    c.yTarget = y;
+  }
+  c.lift = CANNON_LIFT_MIN + _rng() * CANNON_LIFT_VAR;
+}
 
 function armCannons() {
-  _cannons = CANNONS.map((cfg, i) => ({
-    cfg,
-    state: "idle",
-    t: _runT + 20 + i * 40 + Math.floor(_rng() * 70),
-  }));
+  _cannons = CANNONS.map((cfg, i) => {
+    // Two muzzles share each wall — stagger their start heights so they cover
+    // different bands rather than sitting on top of each other.
+    const frac = (i < 2 ? 0.28 : 0.72);
+    const c = {
+      cfg,
+      state: "idle",
+      t: _runT + 20 + i * 30 + Math.floor(_rng() * 60),
+      y: cfg.yMin + (cfg.yMax - cfg.yMin) * frac,
+      yTarget: 0,
+      lift: 0,
+    };
+    rollCannonLift(c);
+    return c;
+  });
 }
 
 function fireCannon(c) {
   if (_balls.length >= CANNON_MAX) return;
   const cfg = c.cfg;
   const ball = new Body(BodyType.DYNAMIC,
-    new Vec2(cfg.x + cfg.dir * (CANNON_R + 4), cfg.y));
+    new Vec2(cfg.x + cfg.dir * (CANNON_R + 4), c.y));
   // No explicit Material on a Circle is fine (the P53 tunneling bug is
   // Polygon-only), and the ball needs the heft to bowl a rig over.
   ball.shapes.add(new Circle(CANNON_R, undefined,
@@ -836,18 +1023,29 @@ function fireCannon(c) {
   ball.isBullet = true;
   ball.space = _space;
   const speed = CANNON_SPEED + _rng() * CANNON_SPEED_VAR;
-  const elev = _rng() * CANNON_AIM_VAR;
+  // Elevation spans both ways around level, so a high muzzle can also shoot
+  // down onto a lower deck instead of only lobbing upward.
+  const elev = (_rng() * 2 - 1) * CANNON_AIM;
   ball.velocity = new Vec2(
     cfg.dir * speed * Math.cos(elev),
     -speed * Math.sin(elev),
   );
   _balls.push({ body: ball, life: CANNON_LIFE });
-  _fx.push({ x: cfg.x, y: cfg.y, life: 20, color: "163,113,247" });
+  _fx.push({ x: cfg.x, y: c.y, life: 20, color: "163,113,247" });
   doShake(4, 0.18);
 }
 
 function stepCannons() {
   for (const c of _cannons) {
+    // Crawl toward the current target height; a muzzle holds still through its
+    // telegraph so the flash marks where the shot will actually come from.
+    if (c.state !== "warn") {
+      const dy = c.yTarget - c.y;
+      const stepY = c.lift / 60;
+      if (Math.abs(dy) <= stepY) rollCannonLift(c);
+      else c.y += Math.sign(dy) * stepY;
+    }
+
     if (c.state === "idle" && _runT >= c.t) {
       c.state = "warn";
       c.t = _runT + CANNON_WARN;
@@ -855,6 +1053,7 @@ function stepCannons() {
       fireCannon(c);
       c.state = "idle";
       c.t = _runT + CANNON_MIN_GAP + Math.floor(_rng() * CANNON_VAR);
+      rollCannonLift(c);
     }
   }
   // Retire spent balls so the cap always has room for the next volley.
@@ -874,33 +1073,19 @@ function dropPlatforms() {
 }
 
 function startCollapse() {
-  // Three seeded crumble patterns, so no starting spot is a safe home
-  // round after round: outside-in (the classic shrinking island), a
-  // one-directional sweep, or inside-out (the centre goes first).
-  const order = [];
-  const pattern = Math.floor(_rng() * 3);
-  if (pattern === 0) {
-    let lo = 0, hi = TILE_N - 1;
-    let left = _rng() < 0.5;
-    while (lo <= hi) {
-      order.push(left ? lo++ : hi--);
-      left = !left;
-    }
-  } else if (pattern === 1) {
-    const fromLeft = _rng() < 0.5;
-    for (let i = 0; i < TILE_N; i++) order.push(fromLeft ? i : TILE_N - 1 - i);
-  } else {
-    const mid = Math.floor(TILE_N / 2);
-    order.push(mid);
-    for (let d = 1; d <= mid; d++) {
-      if (_rng() < 0.5) {
-        if (mid - d >= 0) order.push(mid - d);
-        if (mid + d < TILE_N) order.push(mid + d);
-      } else {
-        if (mid + d < TILE_N) order.push(mid + d);
-        if (mid - d >= 0) order.push(mid - d);
-      }
-    }
+  // Fully random crumble order — a seeded Fisher-Yates shuffle of every tile
+  // index. The floor used to eat itself in one of three geometric patterns
+  // (outside-in, a directional sweep, inside-out); those all telegraphed which
+  // patch was safe next, and the shrinking-island one in particular herded
+  // every survivor into the same predictable huddle. A random order means holes
+  // open under the crowd as readily as at the edges, and no tile can be read as
+  // safe just from where the last one fell.
+  const order = Array.from({ length: TILE_N }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(_rng() * (i + 1));
+    const tmp = order[i];
+    order[i] = order[j];
+    order[j] = tmp;
   }
   _collapseOrder = order;
   _collapseOn = true;
@@ -1031,9 +1216,10 @@ export default {
     "Battle-royale spectator sport with <b>50 numbered ragdolls</b> standing to attention across five " +
     "decks. The world holds its breath until you make your one decision (click a dummy to bet on it, " +
     "<b>Space</b> picks at random) — then a seeded hazard schedule eats the arena: telegraphed <b>geyser</b> " +
-    "blasts, wall-mounted <b>ball cannons</b>, floor-sweeping pendulum <b>hammers</b>, platforms yanked " +
-    "from under everyone, <b>kinematic rotors</b> that randomly reverse, and a floor that <b>collapses " +
-    "tile by tile</b> into the void. Damage is measured, not scripted — hard contacts bruise via " +
+    "blasts, <b>ball cannons</b> that ride up and down the walls, platforms yanked from under everyone, " +
+    "amplitude-regulated <b>wrecking balls</b>, <b>kinematic rotors</b> that randomly reverse while riding " +
+    "their shafts, and a floor that <b>crumbles in random order</b> into the void. Damage is measured, " +
+    "not scripted — hard contacts bruise via " +
     "<code>totalContactsImpulse</code>, necks/shoulders/hips are <b>breakable constraints</b> that tear " +
     "off under violent yanks, and 0% is a KO. Last dummy in play wins; the banner grades your bet by " +
     "placement. Per-rig <code>InteractionGroup</code> keeps 500 ragdoll parts colliding with each other " +
@@ -1054,6 +1240,7 @@ export default {
     _held = false;
     _hammers = [];
     _hammerJoints = [];
+    _hammerAmp = [];
     _rotors = [];
     _cannons = [];
     _balls = [];
@@ -1125,7 +1312,6 @@ export default {
     for (let i = _fx.length - 1; i >= 0; i--) {
       if (--_fx[i].life <= 0) _fx.splice(i, 1);
     }
-    stepRotors();
     for (let i = 0; i < _spinCds.length; i++) {
       if (_spinCds[i] > 0) _spinCds[i]--;
     }
@@ -1143,12 +1329,24 @@ export default {
       stepWaves();
       stepGeysers();
       stepCannons();
+      stepHammers();
+      // Rotors draw from the seeded stream (direction rolls, lift targets), so
+      // they may only be stepped while the round is running. Ticking them in
+      // "done" too would burn RNG for as many frames as the victory screen
+      // happens to stay up, desyncing the next round's schedule from its seed.
+      stepRotors();
       stepCollapse();
       drainBreaks();
       checkImpacts();
       checkEliminations();
       sweepFallen();
     } else if (_phase === "done") {
+      // Keep the hammers swinging and the rotors turning through the victory
+      // lap — frozen hazards read as a broken demo. Both paths here are
+      // RNG-free: coastRotors() holds the last rolled settings instead of
+      // drawing new ones.
+      stepHammers();
+      coastRotors();
       drainBreaks();
       sweepFallen();
     }
@@ -1184,6 +1382,7 @@ export default {
       winner: () => _winner,
       elims: () => _elims,
       floorTiles: () => _floorTiles,
+      collapseOrder: () => _collapseOrder,
       plats: () => _plats,
       hammers: () => _hammers,
       rotors: () => _rotors,
@@ -1249,25 +1448,35 @@ function drawGeyserVents(ctx) {
 }
 
 // Muzzles are always visible once armed (so the threat is legible) and flash
-// during their telegraph window.
+// during their telegraph window. Each rides its own wall rail, drawn faintly so
+// the vertical travel is readable as movement along a track.
 function drawCannons(ctx) {
   for (const c of _cannons) {
     const cfg = c.cfg;
     const warn = c.state === "warn";
     const t = warn ? 1 - (c.t - _runT) / CANNON_WARN : 0;
+
+    // Rail.
+    ctx.strokeStyle = "rgba(163,113,247,0.14)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cfg.x, cfg.yMin);
+    ctx.lineTo(cfg.x, cfg.yMax);
+    ctx.stroke();
+
     ctx.fillStyle = warn
       ? `rgba(163,113,247,${(0.4 + t * 0.6).toFixed(3)})`
       : "rgba(163,113,247,0.35)";
-    ctx.fillRect(cfg.dir > 0 ? cfg.x - 8 : cfg.x - 12, cfg.y - 9, 20, 18);
+    ctx.fillRect(cfg.dir > 0 ? cfg.x - 8 : cfg.x - 12, c.y - 9, 20, 18);
     if (!warn) continue;
     // Charging muzzle flash: a growing wedge pointing down the barrel.
     ctx.strokeStyle = `rgba(163,113,247,${(0.3 + t * 0.7).toFixed(3)})`;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(cfg.x + cfg.dir * 14, cfg.y);
-    ctx.lineTo(cfg.x + cfg.dir * (14 + 26 * t), cfg.y - 12 * t);
-    ctx.moveTo(cfg.x + cfg.dir * 14, cfg.y);
-    ctx.lineTo(cfg.x + cfg.dir * (14 + 26 * t), cfg.y + 12 * t);
+    ctx.moveTo(cfg.x + cfg.dir * 14, c.y);
+    ctx.lineTo(cfg.x + cfg.dir * (14 + 26 * t), c.y - 12 * t);
+    ctx.moveTo(cfg.x + cfg.dir * 14, c.y);
+    ctx.lineTo(cfg.x + cfg.dir * (14 + 26 * t), c.y + 12 * t);
     ctx.stroke();
   }
 }
@@ -1312,14 +1521,29 @@ function drawHammerCables(ctx) {
   }
 }
 
-// Hub dot plus a direction arc, so a reversal is visible the moment the rotor
-// starts ramping the other way rather than only in the blades' motion.
+// Shaft + hub dot + a direction arc, so both the vertical travel and a spin
+// reversal are visible immediately rather than only in the blades' motion.
 function drawRotorHubs(ctx) {
   for (const r of _rotors) {
     if (!r.body.space) continue;
+    const { x, yMin, yMax } = r.cfg;
+
+    // The shaft the hub rides, plus a tick at the height it is heading for.
+    ctx.strokeStyle = "rgba(248,81,73,0.16)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, yMin);
+    ctx.lineTo(x, yMax);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(248,81,73,0.4)";
+    ctx.beginPath();
+    ctx.moveTo(x - 5, r.yTarget);
+    ctx.lineTo(x + 5, r.yTarget);
+    ctx.stroke();
+
     ctx.fillStyle = "#f85149";
     ctx.beginPath();
-    ctx.arc(r.cfg.x, r.cfg.y, 6, 0, Math.PI * 2);
+    ctx.arc(x, r.y, 6, 0, Math.PI * 2);
     ctx.fill();
 
     const cw = r.rate >= 0;
@@ -1327,13 +1551,12 @@ function drawRotorHubs(ctx) {
     ctx.strokeStyle = "rgba(248,81,73,0.85)";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(r.cfg.x, r.cfg.y, 15, cw ? -0.5 : -0.5 - span,
-      cw ? -0.5 + span : -0.5);
+    ctx.arc(x, r.y, 15, cw ? -0.5 : -0.5 - span, cw ? -0.5 + span : -0.5);
     ctx.stroke();
     // Arrowhead at the leading end of the arc.
     const tip = cw ? -0.5 + span : -0.5 - span;
-    const tx = r.cfg.x + Math.cos(tip) * 15;
-    const ty = r.cfg.y + Math.sin(tip) * 15;
+    const tx = x + Math.cos(tip) * 15;
+    const ty = r.y + Math.sin(tip) * 15;
     const tang = tip + (cw ? Math.PI / 2 : -Math.PI / 2);
     ctx.fillStyle = "rgba(248,81,73,0.85)";
     ctx.beginPath();
