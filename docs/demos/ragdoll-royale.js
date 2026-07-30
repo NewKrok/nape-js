@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
-  PivotJoint, AngleJoint, InteractionGroup, InteractionType,
+  PivotJoint, AngleJoint, DistanceJoint, InteractionGroup, InteractionType,
   CbEvent, CbType, ConstraintListener, InteractionListener,
 } from "../nape-js.esm.js";
 import { drawBody, drawGrid } from "../renderer.js";
@@ -8,20 +8,27 @@ import { drawBody, drawGrid } from "../renderer.js";
 // ---------------------------------------------------------------------------
 // Ragdoll Royale — bet on a dummy, press nothing, watch the chaos.
 //
-// EIGHTEEN numbered ragdolls slump around a single-screen arena — eight on
-// the floor, four on each side platform, two on the podium of honour. The
-// player makes exactly ONE decision: click a dummy to bet on it (Space picks
-// at random). Betting closes, a short countdown runs, and from then on the
-// round is entirely hands-off — a seeded hazard schedule escalates wave by
-// wave and the arena eats the contestants:
+// FIFTY numbered ragdolls stand to attention across a single-screen arena —
+// twenty in the ground-level mosh pit, nine on each long gallery, five on
+// each mezzanine, two on the podium of honour. Until the player bets, the
+// whole tableau is frozen: physics is paused and every rig is pinned in its
+// standing pose, so nobody has toppled off a deck before the field has even
+// been seen. The player then makes exactly ONE decision: click a dummy to bet
+// on it (Space picks at random). Betting closes, a short countdown runs, the
+// pins come off, and from then on the round is entirely hands-off — a seeded
+// hazard schedule escalates wave by wave and the arena eats the contestants:
 //
 //   wave 1  GEYSERS   — roaming floor vents telegraph, then blast columns
 //                       of impulse (a vent picks a fresh tile every cycle,
 //                       so no patch of floor stays safe for long)
-//   wave 2  HAMMERS   — two wrecking-ball pendulums drop from the ceiling
-//   wave 3  DROP      — both side platforms and the podium vanish underfoot
-//   wave 4  ROTORS    — two kinematic X-rotors spin up at head height
-//   wave 5  COLLAPSE  — the floor tiles crumble edge-to-centre into the void
+//   wave 2  CANNONS   — four wall muzzles lob heavy cannonballs across the
+//                       decks on seeded elevations — the only hazard that
+//                       crosses the galleries horizontally
+//   wave 3  HAMMERS   — two wrecking-ball pendulums sweep the mosh pit
+//   wave 4  DROP      — every platform and the podium vanish underfoot
+//   wave 5  ROTORS    — two kinematic X-rotors spin up, re-rolling their
+//                       direction and speed on a seeded timer
+//   wave 6  COLLAPSE  — the floor tiles crumble edge-to-centre into the void
 //
 // Damage is measured, not scripted: hard contacts bruise (per-part contact
 // Δv via totalContactsImpulse), necks/shoulders/hips are breakable
@@ -33,23 +40,29 @@ import { drawBody, drawGrid } from "../renderer.js";
 // Every round reseeds — click or press R for the next one.
 //
 // Engine features showcased:
-//   * Mass ragdolls — 18 rigs × 10 parts = 180 dynamic bodies with soft
+//   * Mass ragdolls — 50 rigs × 10 parts = 500 dynamic bodies with soft
 //     AngleJoint muscles, colliding with each other in one arena; per-rig
 //     InteractionGroup(ignore) kills self-collision without eating filter
-//     bits (the sky-hook/floppy-fists bitmask trick can't scale to 18 rigs).
+//     bits (the sky-hook/floppy-fists bitmask trick can't scale to 50 rigs).
 //   * Constraint breaking — neck/shoulders/hips are PivotJoints with
 //     maxForce + breakUnderForce + removeOnBreak, observed via a
 //     ConstraintListener(CbEvent.BREAK); thresholds are derived from the
 //     rig's own measured masses so posing never tears, violence does.
 //   * body.totalContactsImpulse() — per-step contact Δv drives bruises,
-//     eliminations and camera shake for every one of the 180 parts.
+//     eliminations and camera shake for every one of the 500 parts.
+//   * Pose pinning — rigid world PivotJoint + AngleJoint pairs freeze each rig
+//     at attention while bets are open, then detach in one shot at GO. (The
+//     rigs can't just be spawned STATIC: nape rejects a constraint with two
+//     non-dynamic bodies, so every joint in the rig would fail validate().)
 //   * Runtime world mutation — platforms and floor tiles are static bodies
 //     removed mid-simulation while dummies stand on them.
-//   * KINEMATIC rotors + free pendulum hammers as moving hazards, with an
+//   * DistanceJoint pendulums, KINEMATIC rotors driven by per-frame angularVel
+//     writes, and impulse-launched cannonballs as moving hazards, with an
 //     InteractionListener(BEGIN) for fixed-bite blade hits.
-//   * Seeded rounds — vent placement, hazard timing and collapse order come
-//     from a per-round mulberry32 stream; the chaos is scheduled, never
-//     scripted, and physics does the storytelling.
+//   * Seeded rounds — vent placement, cannon volleys, rotor direction rolls,
+//     hazard timing and collapse order all come from a per-round mulberry32
+//     stream; the chaos is scheduled, never scripted, and physics does the
+//     storytelling.
 // ---------------------------------------------------------------------------
 
 // Named SCREEN_W/SCREEN_H — the CodePen runtime declares its own `W`/`H`
@@ -67,25 +80,42 @@ const TILE_W = SCREEN_W / TILE_N;    // 60
 const VOID_Y = 620;                  // below this = ring out
 const DESPAWN_Y = 1500;              // corpses vanish here
 
+// Four decks plus the floor. The two long galleries sit at 350, the two
+// shorter mezzanines at 250, and the podium of honour crowns the middle at
+// 170 — a 50-body crowd needs vertical stacking, one row of fifty would be
+// shoulder-to-shoulder mush.
 const PLATFORMS = [
-  { x0: 80, x1: 320, y: 320, h: 14 },
-  { x0: 580, x1: 820, y: 320, h: 14 },
-  { x0: 400, x1: 500, y: 240, h: 14 },   // the podium
+  { x0: 40, x1: 380, y: 350, h: 12 },
+  { x0: 520, x1: 860, y: 350, h: 12 },
+  { x0: 90, x1: 330, y: 250, h: 12 },
+  { x0: 570, x1: 810, y: 250, h: 12 },
+  { x0: 370, x1: 530, y: 170, h: 12 },   // the podium
 ];
 
-// 18 starting spots: 8 floor, 4 + 4 platforms, 2 podium.
+// 50 starting spots, laid out deck by deck. RIG_PITCH is the shoulder-to-
+// shoulder spacing that keeps neighbours touching but not interpenetrating
+// at spawn (a rig is ~26 px across the arms); a deck wider than n·PITCH just
+// spreads its row out to fill the span.
+const RIG_PITCH = 30;
+
+function deckSpots(x0, x1, standY, n) {
+  const span = x1 - x0;
+  // Spread to fill the deck, but never closer than shoulder pitch.
+  const step = Math.max(RIG_PITCH, span / n);
+  const used = (n - 1) * step;
+  const start = x0 + (span - used) / 2;
+  return Array.from({ length: n }, (_, i) => ({ x: start + i * step, standY }));
+}
+
 const SPOTS = [
-  { x: 50, standY: FLOOR_Y }, { x: 155, standY: FLOOR_Y },
-  { x: 260, standY: FLOOR_Y }, { x: 365, standY: FLOOR_Y },
-  { x: 535, standY: FLOOR_Y }, { x: 640, standY: FLOOR_Y },
-  { x: 745, standY: FLOOR_Y }, { x: 850, standY: FLOOR_Y },
-  { x: 110, standY: 320 }, { x: 170, standY: 320 },
-  { x: 230, standY: 320 }, { x: 290, standY: 320 },
-  { x: 610, standY: 320 }, { x: 670, standY: 320 },
-  { x: 730, standY: 320 }, { x: 790, standY: 320 },
-  { x: 425, standY: 240 }, { x: 475, standY: 240 },
+  ...deckSpots(30, 870, FLOOR_Y, 20),    // ground level — the mosh pit
+  ...deckSpots(40, 380, 350, 9),         // left gallery
+  ...deckSpots(520, 860, 350, 9),        // right gallery
+  ...deckSpots(90, 330, 250, 5),         // left mezzanine
+  ...deckSpots(570, 810, 250, 5),        // right mezzanine
+  ...deckSpots(370, 530, 170, 2),        // the podium
 ];
-const N_DUMMIES = SPOTS.length;
+const N_DUMMIES = SPOTS.length;          // 50
 
 // ── Dummy rig (sky-hook/ragdoll proportions at ~0.55 scale) ─────────────
 const TORSO_W = 13, TORSO_H = 26;
@@ -113,11 +143,12 @@ const SPIN_COOLDOWN = 40;            // frames per dummy between blade bites
 const COUNT_FRAMES = 150;            // betting-closed countdown (2.5 s)
 const WAVES = [
   { t: 30, id: "geysers", label: "GEYSERS ARMED" },
-  { t: 360, id: "hammers", label: "HAMMERS!" },
-  { t: 720, id: "plat-warn", label: "" },
-  { t: 810, id: "plat-drop", label: "PLATFORMS DROP" },
-  { t: 1140, id: "rotors", label: "ROTORS ONLINE" },
-  { t: 1500, id: "collapse", label: "FLOOR COLLAPSE" },
+  { t: 330, id: "cannons", label: "CANNONS HOT" },
+  { t: 660, id: "hammers", label: "HAMMERS!" },
+  { t: 1020, id: "plat-warn", label: "" },
+  { t: 1110, id: "plat-drop", label: "PLATFORMS DROP" },
+  { t: 1440, id: "rotors", label: "ROTORS ONLINE" },
+  { t: 1800, id: "collapse", label: "FLOOR COLLAPSE" },
 ];
 
 // Roaming geyser vents — each of the N slots picks a fresh (still intact)
@@ -133,16 +164,56 @@ const GEYSER_DV = 330;               // Δv at the vent mouth (px/s)
 const GEYSER_DV_VAR = 90;            // + seeded 0..VAR
 const GEYSER_SIDE_DV = 90;           // seeded lateral kick
 
-// a0 = ±1.35 rad: the sweep reaches x ≈ 436..464 past centre, so the two
-// arcs overlap across the podium — no dummy stands in a hammer dead zone.
+// Wrecking balls hang from ceiling anchors on a rope of `len`, released from
+// `a0` radians off vertical — the angle is measured from straight down, so the
+// ball spawns at (ax + sin(a0)·len, CEIL_Y + cos(a0)·len).
+//
+// Two constraints pin these numbers down:
+//   len = 380 puts the low point of the arc at y = CEIL_Y + 380 = 420, i.e.
+//     the ball's underside skims the floor at 446 — it sweeps the mosh pit
+//     instead of swinging harmlessly overhead.
+//   |a0| = 0.5 keeps the release point at x ≈ 68 / 832, well clear of the
+//     side walls. This is the bit that was broken: at |a0| = 1.35 the ball
+//     spawned at x ≈ -4 / 904, *inside* the wall, where the rope constraint
+//     hauled it to the ceiling anchor and held it there — a hammer frozen in
+//     the plafond, never swinging once.
+// The arcs reach x ≈ 432 and 468, so they overlap over the arena centre and
+// the podium is not a hammer dead zone.
 const HAMMERS = [
-  { ax: 230, len: 240, r: 26, a0: -1.35 },
-  { ax: 670, len: 240, r: 26, a0: 1.35 },
+  { ax: 250, len: 380, r: 26, a0: -0.5 },
+  { ax: 650, len: 380, r: 26, a0: 0.5 },
 ];
+
+// Rotors don't hold a fixed spin — they re-roll direction and rate on a timer
+// so the blade sweep never becomes a memorisable rhythm.
 const ROTORS = [
-  { x: 300, y: 380, half: 70, rate: 0.9 },
-  { x: 600, y: 380, half: 70, rate: -0.9 },
+  { x: 300, y: 395, half: 70 },
+  { x: 600, y: 395, half: 70 },
 ];
+const ROTOR_RATE_MIN = 0.7;          // rad/s magnitude floor
+const ROTOR_RATE_VAR = 2.0;          // + seeded 0..VAR
+const ROTOR_HOLD_MIN = 90;           // frames on one setting (min)
+const ROTOR_HOLD_VAR = 150;          // + seeded 0..VAR
+const ROTOR_SPINUP = 0.06;           // rad/s per frame ramp toward the target
+
+// Ball cannons — muzzles in the side walls that lob heavy cannonballs across
+// the arena on a seeded schedule. Unlike the geysers these are lateral, so
+// they sweep the galleries the vertical columns can never reach.
+const CANNONS = [
+  { x: 8, y: 300, dir: 1 },
+  { x: SCREEN_W - 8, y: 300, dir: -1 },
+  { x: 8, y: 190, dir: 1 },
+  { x: SCREEN_W - 8, y: 190, dir: -1 },
+];
+const CANNON_R = 13;                 // ball radius
+const CANNON_WARN = 34;              // muzzle-flash telegraph frames
+const CANNON_MIN_GAP = 150;          // frames between shots per muzzle (min)
+const CANNON_VAR = 200;              // + seeded 0..VAR
+const CANNON_SPEED = 430;            // muzzle speed (px/s)
+const CANNON_SPEED_VAR = 170;        // + seeded 0..VAR
+const CANNON_AIM_VAR = 0.5;          // seeded elevation spread (rad, upward)
+const CANNON_LIFE = 300;             // frames before a spent ball despawns
+const CANNON_MAX = 8;                // live balls cap (perf guard)
 const COLLAPSE_EVERY = 70;           // frames between floor tiles crumbling
 
 // ---------------------------------------------------------------------------
@@ -165,18 +236,21 @@ let _waveIdx = 0;
 let _waveLabel = "";
 
 let _dummies = [];                   // [{ idx, torso, head, parts, joints,
-                                     //    group, integrity, out, place }]
+                                     //    holds, group, integrity, out, place }]
 let _spinCds = [];                   // per-dummy rotor-bite cooldowns
 let _champion = null;                // dummy idx the player bet on
 let _winner = null;                  // dummy idx once decided
 let _elims = [];                     // dummy idxs in elimination order
+let _held = false;                   // rigs pinned in their standing pose?
 
 let _floorTiles = [];                // [{ body, x0, x1, gone }] per tile
 let _plats = [];                     // platform static Bodies
 let _platWarnT = 0;
 let _hammers = [];                   // pendulum ball Bodies
 let _hammerJoints = [];
-let _rotors = [];                    // [{ body, cfg }]
+let _rotors = [];                    // [{ body, cfg, rate, target, holdT }]
+let _cannons = [];                   // [{ cfg, state, t }]
+let _balls = [];                     // [{ body, life }] live cannonballs
 let _geysers = [];                   // [{ tile, x, state, t }]
 let _collapseOrder = [];             // tile indices, outside-in
 let _collapseAt = 0;                 // next tile falls at this _runT
@@ -343,11 +417,13 @@ function registerBreakable(pivot, angle, label, dmg, carriedMass, gMult, dIdx) {
 function spawnDummy(idx, spot) {
   const joints = [];
   // Per-rig ignore group: limbs never self-collide but every dummy still
-  // collides with every OTHER dummy — 18 rigs would exhaust filter bits.
+  // collides with every OTHER dummy — 50 rigs would exhaust filter bits.
   const group = new InteractionGroup(true);
   const x = spot.x;
-  // Feet on the ground; the rig slumps into a sitting heap while bets are
-  // placed, which is half the charm.
+  // Feet on the ground, standing to attention. The rig is pinned in this pose
+  // (see holdPose) until the bet is placed, so the crowd on the upper decks
+  // is still standing there when the player picks — letting them slump during
+  // betting meant half the field had already tumbled off the platforms.
   const torsoY = spot.standY - LEG_LEN * 2 - TORSO_H / 2 + 4;
 
   const torso = dummyPart(x, torsoY,
@@ -385,6 +461,7 @@ function spawnDummy(idx, spot) {
     limbs.push(upper, lower);
   }
 
+  const shins = [];
   for (const side of [-1, 1]) {
     const upper = dummyPart(x + side * 3, torsoY + TORSO_H / 2 + LEG_LEN / 2 - 1,
       new Polygon(Polygon.box(LEG_W, LEG_LEN)), 5, idx, group);
@@ -401,16 +478,53 @@ function spawnDummy(idx, spot) {
       new Vec2(0, LEG_LEN / 2 - 1), new Vec2(0, -LEG_LEN / 2 + 1), joints);
     addAngle(upper.body, lower.body, -0.1, 2.0, joints);
     limbs.push(upper, lower);
+    shins.push(lower);
   }
 
   const parts = [torso, head, ...limbs];
-  return {
+  const d = {
     idx, torso, head, parts, joints, group,
+    holds: [],
     integrity: 100,
     out: false,
     how: "",
     place: 0,
   };
+  holdPose(d, [torso, head, ...shins]);
+  return d;
+}
+
+// Pin a rig in the pose it was built in. A rigid world PivotJoint locks the
+// position and a rigid world AngleJoint the orientation; anchoring the torso,
+// head and both shins is enough to keep the whole rig at attention (the free
+// arms sway a couple of pixels, which reads as idle fidget). These are NOT
+// pushed onto d.joints — the BREAK drain and despawn walk that list, and the
+// holds must be releasable independently.
+//
+// Note the rigs cannot simply be spawned BodyType.STATIC instead: nape rejects
+// a constraint whose both bodies are non-dynamic, so every joint in the rig
+// would throw on validate().
+function holdPose(d, anchors) {
+  for (const p of anchors) {
+    const pos = p.body.position;
+    const pv = new PivotJoint(_space.world, p.body,
+      new Vec2(pos.x, pos.y), new Vec2(0, 0));
+    pv.space = _space;
+    const an = new AngleJoint(_space.world, p.body,
+      p.body.rotation, p.body.rotation);
+    an.space = _space;
+    d.holds.push(pv, an);
+  }
+}
+
+// Betting is over — cut every rig loose at the same instant.
+function releasePose() {
+  if (!_held) return;
+  _held = false;
+  for (const d of _dummies) {
+    for (const j of d.holds) if (j.space) j.space = null;
+    d.holds.length = 0;
+  }
 }
 
 function setDummyColor(d, custom, idxTorso, idxLimb) {
@@ -438,16 +552,21 @@ function despawnRound() {
   // Joints detach before bodies — nape requires a constraint and both of
   // its bodies to still be in the space when it is removed.
   for (const d of _dummies) {
+    for (const j of d.holds) if (j.space) j.space = null;
     for (const j of d.joints) if (j.space) j.space = null;
     for (const p of d.parts) if (p.body.space) p.body.space = null;
   }
   _dummies = [];
+  _held = false;
   for (const j of _hammerJoints) if (j.space) j.space = null;
   _hammerJoints = [];
   for (const b of _hammers) if (b.space) b.space = null;
   _hammers = [];
   for (const r of _rotors) if (r.body.space) r.body.space = null;
   _rotors = [];
+  for (const b of _balls) if (b.body.space) b.body.space = null;
+  _balls = [];
+  _cannons = [];
   for (const t of _floorTiles) if (t.body.space) t.body.space = null;
   _floorTiles = [];
   for (const b of _plats) if (b.space) b.space = null;
@@ -478,7 +597,13 @@ function enterRound(round) {
   _fx.length = 0;
 
   spawnArena();
+  _held = true;
   _dummies = SPOTS.map((spot, i) => spawnDummy(i, spot));
+  // Physics idles while bets are open — the arena is a frozen tableau and
+  // nothing can topple off a deck before the player has even chosen. The
+  // holdPose pins are the headless-safe half of the same promise (a smoke
+  // test drives space.step() directly, with no runner to pause).
+  if (_runnerRef) _runnerRef.physicsPaused = true;
 }
 
 function pickChampion(idx) {
@@ -492,6 +617,9 @@ function pickChampion(idx) {
   if (_phase === "pick") {
     _phase = "count";
     _countT = COUNT_FRAMES;
+    // The bet locks in the world: physics starts ticking again, but the rigs
+    // stay pinned through the countdown so the field is still standing at GO.
+    if (_runnerRef) _runnerRef.physicsPaused = false;
   }
 }
 
@@ -615,6 +743,12 @@ function stepGeysers() {
   }
 }
 
+// The rope hangs from (ax, CEIL_Y) and the ball is released at a0 radians off
+// straight-down. A PivotJoint is a point constraint, not a rod, so the anchor
+// has to be seeded at exactly rope length from the pivot — spawn it anywhere
+// else (in particular inside a wall, as an over-wide release angle does) and
+// the joint hauls the ball to the anchor point and welds it there instead of
+// letting it swing.
 function spawnHammers() {
   for (const cfg of HAMMERS) {
     const bx = cfg.ax + Math.sin(cfg.a0) * cfg.len;
@@ -624,12 +758,21 @@ function spawnHammers() {
       new Material(0.3, 0.3, 0.4, 8, 0.005)));
     try { ball.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
     ball.space = _space;
-    const j = new PivotJoint(_space.world, ball,
-      new Vec2(cfg.ax, CEIL_Y), new Vec2(0, 0));
+    // DistanceJoint, not PivotJoint: a rigid rope of the exact spawn radius.
+    // It keeps the ball on its arc even after a ragdoll pile-up shoves it,
+    // where a point pivot would be fighting to drag the ball to the ceiling.
+    const j = new DistanceJoint(_space.world, ball,
+      new Vec2(cfg.ax, CEIL_Y), new Vec2(0, 0), cfg.len, cfg.len);
     j.space = _space;
     _hammers.push(ball);
     _hammerJoints.push(j);
   }
+}
+
+function rollRotor(r) {
+  const mag = ROTOR_RATE_MIN + _rng() * ROTOR_RATE_VAR;
+  r.target = _rng() < 0.5 ? -mag : mag;
+  r.holdT = ROTOR_HOLD_MIN + Math.floor(_rng() * ROTOR_HOLD_VAR);
 }
 
 function spawnRotors() {
@@ -641,8 +784,86 @@ function spawnRotors() {
     try { b.userData._colorIdx = 3; } catch (_) { /* worker proxy */ }
     b.cbTypes.add(_cbSpin);
     b.space = _space;
-    b.angularVel = cfg.rate;
-    _rotors.push({ body: b, cfg });
+    const r = { body: b, cfg, rate: 0, target: 0, holdT: 0 };
+    rollRotor(r);
+    _rotors.push(r);
+  }
+}
+
+// Kinematic bodies ignore forces, so the spin is driven by writing angularVel
+// every frame. Each rotor ramps toward a seeded target and re-rolls direction
+// and speed when its hold timer expires — including reversals, which fling a
+// dummy back the way it came mid-slide.
+function stepRotors() {
+  for (const r of _rotors) {
+    if (--r.holdT <= 0) {
+      const was = r.target;
+      rollRotor(r);
+      if (was * r.target < 0) {
+        _fx.push({ x: r.cfg.x, y: r.cfg.y, life: 16, color: "248,81,73" });
+      }
+    }
+    const d = r.target - r.rate;
+    r.rate += Math.abs(d) <= ROTOR_SPINUP ? d : Math.sign(d) * ROTOR_SPINUP;
+    r.body.angularVel = r.rate;
+  }
+}
+
+// ── Ball cannons ─────────────────────────────────────────────────────────
+// Wall muzzles that telegraph, then lob a heavy ball across the arena on a
+// seeded elevation. These are the only hazard that crosses the upper decks
+// horizontally, so the gallery crowd can't just stand still and outlast the
+// vertical geyser columns.
+
+function armCannons() {
+  _cannons = CANNONS.map((cfg, i) => ({
+    cfg,
+    state: "idle",
+    t: _runT + 20 + i * 40 + Math.floor(_rng() * 70),
+  }));
+}
+
+function fireCannon(c) {
+  if (_balls.length >= CANNON_MAX) return;
+  const cfg = c.cfg;
+  const ball = new Body(BodyType.DYNAMIC,
+    new Vec2(cfg.x + cfg.dir * (CANNON_R + 4), cfg.y));
+  // No explicit Material on a Circle is fine (the P53 tunneling bug is
+  // Polygon-only), and the ball needs the heft to bowl a rig over.
+  ball.shapes.add(new Circle(CANNON_R, undefined,
+    new Material(0.4, 0.35, 0.45, 6, 0.01)));
+  try { ball.userData._colorIdx = 4; } catch (_) { /* worker proxy */ }
+  ball.isBullet = true;
+  ball.space = _space;
+  const speed = CANNON_SPEED + _rng() * CANNON_SPEED_VAR;
+  const elev = _rng() * CANNON_AIM_VAR;
+  ball.velocity = new Vec2(
+    cfg.dir * speed * Math.cos(elev),
+    -speed * Math.sin(elev),
+  );
+  _balls.push({ body: ball, life: CANNON_LIFE });
+  _fx.push({ x: cfg.x, y: cfg.y, life: 20, color: "163,113,247" });
+  doShake(4, 0.18);
+}
+
+function stepCannons() {
+  for (const c of _cannons) {
+    if (c.state === "idle" && _runT >= c.t) {
+      c.state = "warn";
+      c.t = _runT + CANNON_WARN;
+    } else if (c.state === "warn" && _runT >= c.t) {
+      fireCannon(c);
+      c.state = "idle";
+      c.t = _runT + CANNON_MIN_GAP + Math.floor(_rng() * CANNON_VAR);
+    }
+  }
+  // Retire spent balls so the cap always has room for the next volley.
+  for (let i = _balls.length - 1; i >= 0; i--) {
+    const b = _balls[i];
+    if (--b.life <= 0 || !b.body.space || b.body.position.y > DESPAWN_Y) {
+      if (b.body.space) b.body.space = null;
+      _balls.splice(i, 1);
+    }
   }
 }
 
@@ -709,6 +930,7 @@ function stepWaves() {
       _waveLabel = w.label;
     }
     if (w.id === "geysers") armGeysers();
+    else if (w.id === "cannons") armCannons();
     else if (w.id === "hammers") spawnHammers();
     else if (w.id === "plat-warn") _platWarnT = WAVES[_waveIdx].t - _runT;
     else if (w.id === "plat-drop") { _platWarnT = 0; dropPlatforms(); }
@@ -806,15 +1028,16 @@ export default {
   label: "Ragdoll Royale",
   tags: ["Gameplay", "Ragdoll", "Breakable", "Chaos", "Destruction"],
   desc:
-    "Battle-royale spectator sport with <b>18 numbered ragdolls</b> — make exactly one decision (click a " +
-    "dummy to bet on it, <b>Space</b> picks at random), then sit back and watch a seeded hazard schedule " +
-    "eat the arena: telegraphed <b>geyser</b> blasts, pendulum <b>hammers</b>, platforms yanked from under " +
-    "everyone, spinning <b>kinematic rotors</b>, and a floor that <b>collapses tile by tile</b> into the " +
-    "void. Damage is measured, not scripted — hard contacts bruise via <code>totalContactsImpulse</code>, " +
-    "necks/shoulders/hips are <b>breakable constraints</b> that tear off under geyser yanks, and 0% is a " +
-    "KO. Last dummy in play wins; the banner grades your bet by placement. Per-rig " +
-    "<code>InteractionGroup</code> keeps 180 ragdoll parts colliding with each other but never with " +
-    "themselves. Every round reseeds — <b>R</b> restarts.",
+    "Battle-royale spectator sport with <b>50 numbered ragdolls</b> standing to attention across five " +
+    "decks. The world holds its breath until you make your one decision (click a dummy to bet on it, " +
+    "<b>Space</b> picks at random) — then a seeded hazard schedule eats the arena: telegraphed <b>geyser</b> " +
+    "blasts, wall-mounted <b>ball cannons</b>, floor-sweeping pendulum <b>hammers</b>, platforms yanked " +
+    "from under everyone, <b>kinematic rotors</b> that randomly reverse, and a floor that <b>collapses " +
+    "tile by tile</b> into the void. Damage is measured, not scripted — hard contacts bruise via " +
+    "<code>totalContactsImpulse</code>, necks/shoulders/hips are <b>breakable constraints</b> that tear " +
+    "off under violent yanks, and 0% is a KO. Last dummy in play wins; the banner grades your bet by " +
+    "placement. Per-rig <code>InteractionGroup</code> keeps 500 ragdoll parts colliding with each other " +
+    "but never with themselves. Every round reseeds — <b>R</b> restarts.",
   walls: false,
   workerCompatible: false,
 
@@ -828,9 +1051,12 @@ export default {
 
     // Hard-reset module state — the previous load's bodies died with its space.
     _dummies = [];
+    _held = false;
     _hammers = [];
     _hammerJoints = [];
     _rotors = [];
+    _cannons = [];
+    _balls = [];
     _floorTiles = [];
     _plats = [];
     _breakables = new Map();
@@ -899,7 +1125,7 @@ export default {
     for (let i = _fx.length - 1; i >= 0; i--) {
       if (--_fx[i].life <= 0) _fx.splice(i, 1);
     }
-    for (const r of _rotors) r.body.angularVel = r.cfg.rate;
+    stepRotors();
     for (let i = 0; i < _spinCds.length; i++) {
       if (_spinCds[i] > 0) _spinCds[i]--;
     }
@@ -908,12 +1134,15 @@ export default {
       if (--_countT <= 0) {
         _phase = "run";
         _runT = 0;
+        // GO — the pins come off and 50 rigs lose their footing at once.
+        releasePose();
         addFloater(SCREEN_W / 2, 170, "GO!", "#7ee787", true);
       }
     } else if (_phase === "run") {
       _runT++;
       stepWaves();
       stepGeysers();
+      stepCannons();
       stepCollapse();
       drainBreaks();
       checkImpacts();
@@ -929,7 +1158,9 @@ export default {
     _runnerRef = this._runner ?? _runnerRef;
     if (_phase === "done") { enterRound(_round + 1); return; }
     if (_phase !== "pick" && _phase !== "count") return;
-    let best = null, bestD = 70;
+    // Tight radius — at RIG_PITCH spacing a generous grab would keep snapping
+    // to a neighbour instead of the dummy under the cursor.
+    let best = null, bestD = 26;
     for (const d of _dummies) {
       if (d.out || !d.torso.body.space) continue;
       const p = d.torso.body.position;
@@ -956,6 +1187,9 @@ export default {
       plats: () => _plats,
       hammers: () => _hammers,
       rotors: () => _rotors,
+      cannons: () => _cannons,
+      balls: () => _balls,
+      held: () => _held,
       geysers: () => _geysers,
       breakables: () => _breakables,
       shakes: () => _shakeCount,
@@ -986,6 +1220,7 @@ export default {
 
 function drawWorldOverlay(ctx) {
   drawGeyserVents(ctx);
+  drawCannons(ctx);
   drawPlatWarn(ctx);
   drawCollapseWarn(ctx);
   drawHammerCables(ctx);
@@ -1010,6 +1245,30 @@ function drawGeyserVents(ctx) {
     ctx.strokeRect(g.x - GEYSER_HALF_W, FLOOR_Y - colH,
       GEYSER_HALF_W * 2, colH);
     ctx.setLineDash([]);
+  }
+}
+
+// Muzzles are always visible once armed (so the threat is legible) and flash
+// during their telegraph window.
+function drawCannons(ctx) {
+  for (const c of _cannons) {
+    const cfg = c.cfg;
+    const warn = c.state === "warn";
+    const t = warn ? 1 - (c.t - _runT) / CANNON_WARN : 0;
+    ctx.fillStyle = warn
+      ? `rgba(163,113,247,${(0.4 + t * 0.6).toFixed(3)})`
+      : "rgba(163,113,247,0.35)";
+    ctx.fillRect(cfg.dir > 0 ? cfg.x - 8 : cfg.x - 12, cfg.y - 9, 20, 18);
+    if (!warn) continue;
+    // Charging muzzle flash: a growing wedge pointing down the barrel.
+    ctx.strokeStyle = `rgba(163,113,247,${(0.3 + t * 0.7).toFixed(3)})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cfg.x + cfg.dir * 14, cfg.y);
+    ctx.lineTo(cfg.x + cfg.dir * (14 + 26 * t), cfg.y - 12 * t);
+    ctx.moveTo(cfg.x + cfg.dir * 14, cfg.y);
+    ctx.lineTo(cfg.x + cfg.dir * (14 + 26 * t), cfg.y + 12 * t);
+    ctx.stroke();
   }
 }
 
@@ -1053,24 +1312,53 @@ function drawHammerCables(ctx) {
   }
 }
 
+// Hub dot plus a direction arc, so a reversal is visible the moment the rotor
+// starts ramping the other way rather than only in the blades' motion.
 function drawRotorHubs(ctx) {
-  ctx.fillStyle = "#f85149";
   for (const r of _rotors) {
     if (!r.body.space) continue;
+    ctx.fillStyle = "#f85149";
     ctx.beginPath();
     ctx.arc(r.cfg.x, r.cfg.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    const cw = r.rate >= 0;
+    const span = Math.min(2.2, 0.5 + Math.abs(r.rate) * 0.7);
+    ctx.strokeStyle = "rgba(248,81,73,0.85)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(r.cfg.x, r.cfg.y, 15, cw ? -0.5 : -0.5 - span,
+      cw ? -0.5 + span : -0.5);
+    ctx.stroke();
+    // Arrowhead at the leading end of the arc.
+    const tip = cw ? -0.5 + span : -0.5 - span;
+    const tx = r.cfg.x + Math.cos(tip) * 15;
+    const ty = r.cfg.y + Math.sin(tip) * 15;
+    const tang = tip + (cw ? Math.PI / 2 : -Math.PI / 2);
+    ctx.fillStyle = "rgba(248,81,73,0.85)";
+    ctx.beginPath();
+    ctx.moveTo(tx + Math.cos(tang) * 6, ty + Math.sin(tang) * 6);
+    ctx.lineTo(tx + Math.cos(tang + 2.5) * 5, ty + Math.sin(tang + 2.5) * 5);
+    ctx.lineTo(tx + Math.cos(tang - 2.5) * 5, ty + Math.sin(tang - 2.5) * 5);
+    ctx.closePath();
     ctx.fill();
   }
 }
 
-// Number badge over every dummy still in play; the champion wears a crown.
+// The champion always wears its number and crown. Fifty numbers over a packed
+// arena is illegible mush, so the rest of the field only gets badges once the
+// crowd has thinned to BADGE_ALL_AT — before that the pick is what matters.
+const BADGE_ALL_AT = 12;
+
 function drawBadges(ctx) {
   ctx.font = "bold 11px system-ui, sans-serif";
   ctx.textAlign = "center";
+  const showAll = _phase === "pick" || aliveCount() <= BADGE_ALL_AT;
   for (const d of _dummies) {
     if (d.out || !d.torso.body.space) continue;
-    const p = d.torso.body.position;
     const isPick = d.idx === _champion;
+    if (!isPick && !showAll) continue;
+    const p = d.torso.body.position;
     ctx.fillStyle = isPick ? "#e3b341" : "rgba(230,237,243,0.55)";
     ctx.fillText(`${d.idx + 1}`, p.x, p.y - TORSO_H / 2 - HEAD_R * 2 - 8);
     if (isPick) {

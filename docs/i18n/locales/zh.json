@@ -243,7 +243,7 @@
   "demo.ragdoll.label": "布娃娃",
   "demo.ragdoll.desc": "由 <code>PivotJoint</code> 和 <code>AngleJoint</code> 约束构建的布娃娃人偶。<b>点击</b>可在光标处生成一个新布娃娃。",
   "demo.ragdoll-royale.label": "布娃娃大乱斗",
-  "demo.ragdoll-royale.desc": "观赏型大逃杀：<b>18 个编号布娃娃</b> — 你只需做一个决定（点击一个布娃娃下注，<b>空格</b>随机选择），然后坐下来看一份带种子的灾害时间表吞噬竞技场：有预警的<b>间歇泉</b>喷发、摆动的<b>拆迁锤</b>、从所有人脚下抽走的平台、旋转的<b>运动学转子</b>，以及<b>一块块塌入虚空</b>的地板。伤害是实测的而非脚本化的 — 硬碰撞通过 <code>totalContactsImpulse</code> 造成擦伤，脖子/肩膀/髋部是真实的<b>可断裂约束</b>，会在间歇泉的猛拉下扯断，0% 即 KO。场上最后一个布娃娃获胜；结算横幅按名次给你的下注评分。每个布娃娃独立的 <code>InteractionGroup</code> 让 180 个布娃娃部件互相碰撞但绝不与自身碰撞。每一轮都重新播种 — <b>R</b> 重新开始。",
+  "demo.ragdoll-royale.desc": "观赏型大逃杀：<b>50 个编号布娃娃</b>在五层平台上列队站立。世界会屏住呼吸，直到你做出唯一的那个决定（点击一个布娃娃下注，<b>空格</b>随机选择）—— 随后一份带种子的灾害时间表吞噬竞技场：有预警的<b>间歇泉</b>喷发、嵌在墙上的<b>弹球炮</b>、扫过地板的摆动<b>拆迁锤</b>、从所有人脚下抽走的平台、随机反向的<b>运动学转子</b>，以及<b>一块块塌入虚空</b>的地板。伤害是实测的而非脚本化的 —— 硬碰撞通过 <code>totalContactsImpulse</code> 造成擦伤，脖子/肩膀/髋部是真实的<b>可断裂约束</b>，会在剧烈拉扯下扯断，0% 即 KO。场上最后一个布娃娃获胜；结算横幅按名次给你的下注评分。每个布娃娃独立的 <code>InteractionGroup</code> 让 500 个布娃娃部件互相碰撞但绝不与自身碰撞。每一轮都重新播种 —— <b>R</b> 重新开始。",
   "demo.replay-recorder.label": "确定性回放",
   "demo.replay-recorder.desc": "演示来自 <code>@newkrok/nape-js/replay</code> 的 <code>Recorder</code> + <code>Player</code>。<b>按下 Record</b>，<b>点击抛球</b>，<b>Stop</b>，然后 <b>Replay</b>——录制的点击会重现完全相同的物理效果。",
   "demo.rollercoaster.label": "过山车",
