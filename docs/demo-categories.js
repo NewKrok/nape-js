@@ -38,6 +38,7 @@ export const GAME_DEMO_IDS = new Set([
   "raft-rapids",
   "sky-hook",
   "ragdoll-royale",
+  "cargo-crane",
 ]);
 
 export const CATEGORIES = [
