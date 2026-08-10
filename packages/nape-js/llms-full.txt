@@ -958,6 +958,36 @@ Enforces: `jointMin <= dist(body1.anchor1, body2.anchor2) + ratio * dist(body3.a
 
 ---
 
+### SpringJoint
+
+Always-soft spring/damper between two anchors, pulling or pushing toward a
+single `restLength`. Unlike DistanceJoint there is no rigid mode and no
+[min, max] range, and it never goes slack — force is applied in both
+compression and extension. Behaviour is shaped by `frequency` (Hz) and
+`damping` (ratio) inherited from Constraint.
+
+```typescript
+new SpringJoint(
+  body1?: Body, body2?: Body,
+  anchor1?: Vec2, anchor2?: Vec2,
+  restLength?: number,
+  frequency?: number, damping?: number
+)
+```
+
+Use for: vehicle suspension, soft-body links, ragdoll hair/cloth, trampolines,
+bridge and rope segments.
+
+---
+
+### UserConstraint
+
+Base class for implementing a custom constraint that participates in the
+solver directly. Subclass it when the built-in joints cannot express the
+relationship you need.
+
+---
+
 ## Callbacks & Events
 
 ### CbType
@@ -1938,7 +1968,7 @@ import {
   // Constraints
   Constraint, PivotJoint, DistanceJoint,
   AngleJoint, WeldJoint, MotorJoint,
-  LineJoint, PulleyJoint,
+  LineJoint, PulleyJoint, SpringJoint, UserConstraint,
 
   // Destruction / Fracture
   fractureBody, computeVoronoi, generateFractureSites,

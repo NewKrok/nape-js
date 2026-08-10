@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# Machine-readable documentation for LLMs and coding agents (llms.txt
+# convention). Crawlers are welcome to these instead of the rendered HTML:
+#   https://napejs.org/llms.txt       — API overview + quick start
+#   https://napejs.org/llms-full.txt  — complete API reference, single file
+
 Sitemap: https://napejs.org/sitemap.xml

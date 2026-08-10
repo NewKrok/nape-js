@@ -260,10 +260,12 @@ for (const page of PAGES) {
 // --- sitemap ----------------------------------------------------------------
 
 function buildSitemap() {
+  // templates.html is intentionally absent: the project-templates effort is
+  // parked, so the page is no longer linked from the site or advertised to
+  // crawlers. The file stays in place so existing inbound links don't 404.
   const staticUrls = [
     { loc: "/benchmark.html", freq: "monthly", pri: "0.7" },
     { loc: "/multiplayer.html", freq: "monthly", pri: "0.7" },
-    { loc: "/templates.html", freq: "monthly", pri: "0.85" },
     { loc: "/api/index.html", freq: "weekly", pri: "0.8" },
   ];
   const today = new Date().toISOString().slice(0, 10);

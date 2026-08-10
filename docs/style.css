@@ -709,6 +709,43 @@ a.hero-badge:hover {
   .showcase-card:hover { transform: none; }
 }
 
+/* ---------- AI-assisted development ---------- */
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.ai-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+/* The llms.txt card is the headline claim, so it spans and is tinted. */
+.ai-card-lead {
+  grid-column: 1 / -1;
+  border-color: rgba(88, 166, 255, 0.35);
+  background: linear-gradient(180deg, rgba(88, 166, 255, 0.07), var(--surface));
+}
+.ai-card h3 {
+  font-size: 1rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.ai-card p {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.ai-card code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--green);
+}
+.ai-cta {
+  margin-top: 20px;
+}
+
 /* ---------- API Grid ---------- */
 .api-grid {
   display: grid;

@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>nape-js — 面向 TypeScript 和 JavaScript 的 2D 物理引擎</title>
   <meta name="description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
-  <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, tree-shakeable, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys" />
+  <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, tree-shakeable, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys, llms.txt, AI friendly library, LLM friendly docs, AI coding agent, vibe coding physics" />
+  <!-- llms.txt — machine-readable docs for LLMs and coding agents. -->
+  <link rel="alternate" type="text/plain" href="https://napejs.org/llms.txt" title="llms.txt" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="author" content="Istvan Krisztian Somoracz" />
@@ -51,7 +53,11 @@
       "url": "https://github.com/NewKrok",
       "sameAs": ["https://github.com/NewKrok", "https://x.com/KSomoracz"]
     },
-    "keywords": ["2D physics engine", "JavaScript physics engine", "TypeScript physics engine", "rigid body dynamics", "collision detection", "raycasting", "constraints", "fluid simulation", "buoyancy", "fracture", "soft body", "deterministic physics", "multiplayer physics", "game physics", "Box2D alternative", "Matter.js alternative"],
+    "keywords": ["2D physics engine", "JavaScript physics engine", "TypeScript physics engine", "rigid body dynamics", "collision detection", "raycasting", "constraints", "fluid simulation", "buoyancy", "fracture", "soft body", "deterministic physics", "multiplayer physics", "game physics", "Box2D alternative", "Matter.js alternative", "llms.txt", "AI coding agent", "LLM friendly documentation"],
+    "softwareHelp": [
+      { "@type": "CreativeWork", "name": "llms.txt — machine-readable API overview", "url": "https://napejs.org/llms.txt", "encodingFormat": "text/plain" },
+      { "@type": "CreativeWork", "name": "llms-full.txt — complete API reference", "url": "https://napejs.org/llms-full.txt", "encodingFormat": "text/plain" }
+    ],
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -112,6 +118,14 @@
       },
       {
         "@type": "Question",
+        "name": "Is nape-js suitable for AI-assisted development and coding agents?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. nape-js publishes machine-readable documentation at https://napejs.org/llms.txt and a complete reference at https://napejs.org/llms-full.txt, following the llms.txt convention, so a coding agent can read the whole API without scraping HTML. The package ships generated TypeScript declarations from strict hand-written source, has zero DOM dependencies so an agent can import it and step a simulation headlessly in Node, and supports deterministic stepping so agent-written regression tests reproduce exactly. Anti-patterns, troubleshooting and a task-oriented cookbook are published as guides."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Does nape-js support deterministic multiplayer?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -163,8 +177,8 @@
         <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">演示</a>
         <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">作品展示</a>
         <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">性能测试</a>
+        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
         <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">示例</a>
-        <a class="site-nav-link" href="../templates.html" data-i18n="nav.templates" onclick="gtag('event','navigation',{event_category:'header',event_label:'templates'})">模板</a>
         <a class="site-nav-link" href="../api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">API 文档</a>
       </nav>
 
@@ -187,7 +201,7 @@
     <div class="container">
       <h1><svg class="hero-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#3fb950"/></linearGradient></defs><g transform="translate(0,287) scale(0.1,-0.1)" fill="url(#logoGrad)" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>nape-js</h1>
       <p class="subtitle" data-i18n="home.hero.subtitle">面向 TypeScript 和 JavaScript 的完全类型化 2D 物理引擎——Nape 的现代化重写</p>
-      <p class="tagline" data-i18n="home.hero.tagline">刚体 • 圆形、多边形和胶囊体 • 约束 • 流体模拟 • 碰撞回调 • 射线检测与空间查询 • 断裂 • 软体 • 确定性多人联机 • 序列化 • Web Worker 支持——支持 tree-shaking、零依赖，gzip 后约 27 KB。</p>
+      <p class="tagline" data-i18n="home.hero.tagline">刚体 • 圆形、多边形与胶囊体 • 约束 • 流体模拟 • 碰撞回调 • 射线检测与空间查询 • 断裂 • 基于约束的软体 • 确定性多人同步 • 序列化 • Web Worker 支持 —— 可 tree-shaking、零依赖、约 27 KB gzip。</p>
       <!-- Version is filled in by app.js; the npm / star badges are filled in
            by site-header.js and stay hidden if their API call fails. -->
       <div class="hero-meta">
@@ -364,8 +378,53 @@
   <section class="section">
     <div class="container">
       <h2 data-i18n="features.heading">为什么选择 nape-js？</h2>
-      <p class="section-desc" data-i18n-html="features.p1">nape-js 是少数几个提供刚体动力学、关节（PivotJoint、DistanceJoint、WeldJoint、AngleJoint、MotorJoint、LineJoint、PulleyJoint、SpringJoint）、<strong>流体浮力</strong>、<strong>断裂</strong>、<strong>软体</strong>、射线检测与凸形扫掠、内置角色控制器、面向<strong>多人联机回滚</strong>的确定性步进、二进制序列化、回放录制以及独立线程 <strong>Web Worker</strong> 桥接的 <strong>JavaScript 和 TypeScript 2D 物理引擎</strong>之一——所有这些都集成在一个支持 tree-shaking 的 ESM 包中（gzip 后约 27 KB），带有完整的 TypeScript 类型且零 DOM 依赖。</p>
+      <p class="section-desc" data-i18n-html="features.p1">nape-js 是少数几个同时提供刚体动力学、关节约束（PivotJoint、DistanceJoint、WeldJoint、AngleJoint、MotorJoint、LineJoint、PulleyJoint、SpringJoint）、<strong>流体浮力</strong>、<strong>断裂</strong>、基于约束网络构建的软体与布料、射线检测与凸形扫掠、内置角色控制器、用于<strong>多人回滚</strong>的确定性步进、二进制序列化、回放录制以及独立线程 <strong>Web Worker</strong> 桥接的 <strong>JavaScript / TypeScript 2D 物理引擎</strong>——全部封装在一个可 tree-shaking 的 ESM 包中（约 27 KB gzip），带有完整的 TypeScript 类型且零 DOM 依赖。</p>
       <p class="section-desc" data-i18n-html="features.p2">在寻找 <em>Box2D</em>、<em>Matter.js</em>、<em>Planck.js</em> 或 <em>Rapier</em> 的替代方案？运行<a href="../benchmark.html">浏览器内性能测试</a>进行正面对比，或直接进入<a href="examples/">交互式示例</a>——物理演示和可玩的小游戏（平台跳跃、MOBA、塔防、弹弓、弹珠台、俯视射击）。</p>
+    </div>
+  </section>
+
+  <!-- ===== AI-ASSISTED DEVELOPMENT =====
+       Every claim here is a property of the shipped package, not a slogan:
+       /llms.txt and /llms-full.txt are copied into docs/ by build:docs, the
+       types are generated from strict TypeScript source, the engine imports
+       and steps in plain Node (no DOM), and space.deterministic is a real
+       flag. Keep it that way — if one of these stops being true, the
+       corresponding card comes out. -->
+  <section id="ai" class="section">
+    <div class="container">
+      <h2 data-i18n="ai.heading">为 AI 辅助开发而生</h2>
+      <p class="section-desc" data-i18n="ai.desc">编程智能体最擅长处理那些可读取、可类型检查、并且能真正运行的库。nape-js 三者兼备。</p>
+
+      <div class="ai-grid">
+        <div class="ai-card ai-card-lead">
+          <h3 data-i18n="ai.llms.title">已提供 llms.txt</h3>
+          <p data-i18n-html="ai.llms.body">完整 API 汇总为一个纯文本文件，位于 <a href="../llms.txt">/llms.txt</a>，另有完整参考文档 <a href="../llms-full.txt">/llms-full.txt</a> —— 这是把文档喂给模型的新兴标准。把 URL 交给你的智能体，无需抓取 HTML。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.types.title">模型可信赖的类型</h3>
+          <p data-i18n-html="ai.types.body">全程手写 TypeScript 并启用 <code>strict: true</code>，以生成的声明文件发布。智能体能拿到真实签名和悬停 TSDoc，从而更少臆造不存在的方法。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.headless.title">可在 Node 中无头运行</h3>
+          <p data-i18n-html="ai.headless.body">零 DOM 依赖：智能体可以导入引擎、推进模拟，并直接在终端断言结果 —— 无需浏览器、画布或任何 mock。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.deterministic.title">确定性，测试才站得住</h3>
+          <p data-i18n-html="ai.deterministic.body">设置 <code>space.deterministic = true</code> 后，同一平台上相同输入必得相同输出。智能体编写的回归测试会因为正确的原因保持绿色。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.pitfalls.title">已记录的陷阱</h3>
+          <p data-i18n-html="ai.pitfalls.body"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md">反模式指南</a>与<a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md">排错指南</a>明确列出了模型在物理 API 上最常犯的错误。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.recipes.title">按任务组织的范例</h3>
+          <p data-i18n-html="ai.recipes.body"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md">实用手册</a>按目标划分 —— 平台跳跃、布娃娃、流体、回放 —— 这正是提示词通常出现的形式。</p>
+        </div>
+      </div>
+
+      <div class="ai-cta">
+        <a class="btn btn-secondary" href="../llms.txt" data-i18n="ai.cta" onclick="gtag('event','navigation',{event_category:'ai',event_label:'llms_txt'})">把你的智能体指向 /llms.txt</a>
+      </div>
     </div>
   </section>
 

@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>nape-js — 2D Physics Engine for TypeScript &amp; JavaScript</title>
   <meta name="description" content="nape-js is a fully typed 2D physics engine for TypeScript &amp; JavaScript — rigid body dynamics, constraints, fluid buoyancy, raycasting, fracture, deterministic multiplayer, web worker. Tree-shakeable, zero dependencies, ~27 KB gzip. Free &amp; open source (MIT)." />
-  <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, tree-shakeable, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys" />
+  <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, tree-shakeable, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys, llms.txt, AI friendly library, LLM friendly docs, AI coding agent, vibe coding physics" />
+  <!-- llms.txt — machine-readable docs for LLMs and coding agents. -->
+  <link rel="alternate" type="text/plain" href="https://napejs.org/llms.txt" title="llms.txt" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="author" content="Istvan Krisztian Somoracz" />
@@ -50,7 +52,11 @@
       "url": "https://github.com/NewKrok",
       "sameAs": ["https://github.com/NewKrok", "https://x.com/KSomoracz"]
     },
-    "keywords": ["2D physics engine", "JavaScript physics engine", "TypeScript physics engine", "rigid body dynamics", "collision detection", "raycasting", "constraints", "fluid simulation", "buoyancy", "fracture", "soft body", "deterministic physics", "multiplayer physics", "game physics", "Box2D alternative", "Matter.js alternative"],
+    "keywords": ["2D physics engine", "JavaScript physics engine", "TypeScript physics engine", "rigid body dynamics", "collision detection", "raycasting", "constraints", "fluid simulation", "buoyancy", "fracture", "soft body", "deterministic physics", "multiplayer physics", "game physics", "Box2D alternative", "Matter.js alternative", "llms.txt", "AI coding agent", "LLM friendly documentation"],
+    "softwareHelp": [
+      { "@type": "CreativeWork", "name": "llms.txt — machine-readable API overview", "url": "https://napejs.org/llms.txt", "encodingFormat": "text/plain" },
+      { "@type": "CreativeWork", "name": "llms-full.txt — complete API reference", "url": "https://napejs.org/llms-full.txt", "encodingFormat": "text/plain" }
+    ],
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -111,6 +117,14 @@
       },
       {
         "@type": "Question",
+        "name": "Is nape-js suitable for AI-assisted development and coding agents?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. nape-js publishes machine-readable documentation at https://napejs.org/llms.txt and a complete reference at https://napejs.org/llms-full.txt, following the llms.txt convention, so a coding agent can read the whole API without scraping HTML. The package ships generated TypeScript declarations from strict hand-written source, has zero DOM dependencies so an agent can import it and step a simulation headlessly in Node, and supports deterministic stepping so agent-written regression tests reproduce exactly. Anti-patterns, troubleshooting and a task-oriented cookbook are published as guides."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Does nape-js support deterministic multiplayer?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -162,8 +176,8 @@
         <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">Demos</a>
         <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">Showcase</a>
         <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
         <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">Examples</a>
-        <a class="site-nav-link" href="templates.html" data-i18n="nav.templates" onclick="gtag('event','navigation',{event_category:'header',event_label:'templates'})">Templates</a>
         <a class="site-nav-link" href="api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">API Docs</a>
       </nav>
 
@@ -384,6 +398,51 @@
         Run the <a href="benchmark.html">in-browser benchmark</a> to compare them head-to-head, or jump into the
         <a href="examples/">interactive examples</a> — physics demos and playable mini-games (platformer, MOBA, tower defense, slingshot, pinball, top-down shooter).
       </p>
+    </div>
+  </section>
+
+  <!-- ===== AI-ASSISTED DEVELOPMENT =====
+       Every claim here is a property of the shipped package, not a slogan:
+       /llms.txt and /llms-full.txt are copied into docs/ by build:docs, the
+       types are generated from strict TypeScript source, the engine imports
+       and steps in plain Node (no DOM), and space.deterministic is a real
+       flag. Keep it that way — if one of these stops being true, the
+       corresponding card comes out. -->
+  <section id="ai" class="section">
+    <div class="container">
+      <h2 data-i18n="ai.heading">Built for AI-assisted development</h2>
+      <p class="section-desc" data-i18n="ai.desc">Coding agents work best against a library they can read, type-check and actually run. nape-js ships all three.</p>
+
+      <div class="ai-grid">
+        <div class="ai-card ai-card-lead">
+          <h3 data-i18n="ai.llms.title">llms.txt, served</h3>
+          <p data-i18n-html="ai.llms.body">The whole API in one plain-text file at <a href="llms.txt">/llms.txt</a>, plus a complete reference at <a href="llms-full.txt">/llms-full.txt</a> &mdash; the emerging standard for feeding docs to a model. Paste the URL into your agent instead of scraping HTML.</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.types.title">Types the model can trust</h3>
+          <p data-i18n-html="ai.types.body">Hand-written TypeScript throughout with <code>strict: true</code>, shipped as generated declarations. Your agent gets real signatures and TSDoc on hover, so it invents fewer methods that don&rsquo;t exist.</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.headless.title">Runs headless in Node</h3>
+          <p data-i18n-html="ai.headless.body">Zero DOM dependencies: an agent can import the engine, step a simulation and assert on the result in a terminal &mdash; no browser, no canvas, no mocking.</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.deterministic.title">Deterministic, so tests hold</h3>
+          <p data-i18n-html="ai.deterministic.body">With <code>space.deterministic = true</code> the same inputs give the same output on the same platform. An agent-written regression test stays green for the right reason.</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.pitfalls.title">Documented pitfalls</h3>
+          <p data-i18n-html="ai.pitfalls.body">An <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md">anti-patterns guide</a> and a <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md">troubleshooting guide</a> spell out the mistakes models most often make with physics APIs.</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.recipes.title">Task-shaped recipes</h3>
+          <p data-i18n-html="ai.recipes.body">The <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md">cookbook</a> is organised by goal &mdash; platformer, ragdoll, fluid, replay &mdash; which is the shape a prompt usually arrives in.</p>
+        </div>
+      </div>
+
+      <div class="ai-cta">
+        <a class="btn btn-secondary" href="llms.txt" data-i18n="ai.cta" onclick="gtag('event','navigation',{event_category:'ai',event_label:'llms_txt'})">Point your agent at /llms.txt</a>
+      </div>
     </div>
   </section>
 
