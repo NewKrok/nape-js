@@ -176,9 +176,9 @@
       <nav class="site-nav" id="siteNav">
         <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">Démos</a>
         <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">Vitrine</a>
-        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
-        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">IA</a>
         <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">Exemples</a>
+        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">IA</a>
+        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
         <a class="site-nav-link" href="../api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">Documentation API</a>
       </nav>
 
@@ -362,18 +362,6 @@
     </div>
   </section>
 
-  <!-- ===== BENCHMARKS ===== -->
-  <section id="benchmarks" class="section">
-    <div class="container">
-      <h2 data-i18n="bench.heading">Benchmarks</h2>
-      <p class="section-desc" data-i18n-html="bench.desc">Mesuré dans votre navigateur, en direct. Chaque test exécute le <code>step()</code> de la physique dans une boucle serrée et rapporte le temps médian par step.</p>
-      <button class="btn btn-primary" id="runBenchmark" data-i18n="bench.run">Lancer les benchmarks</button>
-      <div class="bench-results" id="benchResults">
-        <p class="bench-hint" data-i18n="bench.hint">Appuyez sur le bouton pour démarrer.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ===== FEATURES (SEO-friendly summary) ===== -->
   <section class="section">
     <div class="container">
@@ -390,7 +378,7 @@
        and steps in plain Node (no DOM), and space.deterministic is a real
        flag. Keep it that way — if one of these stops being true, the
        corresponding card comes out. -->
-  <section id="ai" class="section">
+  <section id="ai" class="section section-alt">
     <div class="container">
       <h2 data-i18n="ai.heading">Conçu pour le développement assisté par IA</h2>
       <p class="section-desc" data-i18n="ai.desc">Les agents de code travaillent mieux avec une bibliothèque qu'ils peuvent lire, typer et réellement exécuter. nape-js fournit les trois.</p>
@@ -424,6 +412,18 @@
 
       <div class="ai-cta">
         <a class="btn btn-secondary" href="../llms.txt" data-i18n="ai.cta" onclick="gtag('event','navigation',{event_category:'ai',event_label:'llms_txt'})">Pointez votre agent vers /llms.txt</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BENCHMARKS ===== -->
+  <section id="benchmarks" class="section">
+    <div class="container">
+      <h2 data-i18n="bench.heading">Benchmarks</h2>
+      <p class="section-desc" data-i18n-html="bench.desc">Mesuré dans votre navigateur, en direct. Chaque test exécute le <code>step()</code> de la physique dans une boucle serrée et rapporte le temps médian par step.</p>
+      <button class="btn btn-primary" id="runBenchmark" data-i18n="bench.run">Lancer les benchmarks</button>
+      <div class="bench-results" id="benchResults">
+        <p class="bench-hint" data-i18n="bench.hint">Appuyez sur le bouton pour démarrer.</p>
       </div>
     </div>
   </section>

@@ -176,9 +176,9 @@
       <nav class="site-nav" id="siteNav">
         <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">Demók</a>
         <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">Játékok</a>
-        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Teljesítménytesztek</a>
-        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
         <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">Példák</a>
+        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
+        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Teljesítménytesztek</a>
         <a class="site-nav-link" href="../api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">API-dokumentáció</a>
       </nav>
 
@@ -362,18 +362,6 @@
     </div>
   </section>
 
-  <!-- ===== BENCHMARKS ===== -->
-  <section id="benchmarks" class="section">
-    <div class="container">
-      <h2 data-i18n="bench.heading">Teljesítménytesztek</h2>
-      <p class="section-desc" data-i18n-html="bench.desc">Épp most, a te böngésződben mérve. Minden teszt egy szoros ciklusban futtatja a fizikai <code>step()</code> hívást, és a lépésenkénti medián időt jelenti.</p>
-      <button class="btn btn-primary" id="runBenchmark" data-i18n="bench.run">Tesztek futtatása</button>
-      <div class="bench-results" id="benchResults">
-        <p class="bench-hint" data-i18n="bench.hint">Nyomd meg a gombot az indításhoz.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ===== FEATURES (SEO-friendly summary) ===== -->
   <section class="section">
     <div class="container">
@@ -390,7 +378,7 @@
        and steps in plain Node (no DOM), and space.deterministic is a real
        flag. Keep it that way — if one of these stops being true, the
        corresponding card comes out. -->
-  <section id="ai" class="section">
+  <section id="ai" class="section section-alt">
     <div class="container">
       <h2 data-i18n="ai.heading">AI-támogatott fejlesztésre építve</h2>
       <p class="section-desc" data-i18n="ai.desc">A kódoló ügynökök olyan könyvtárral dolgoznak jól, amit el tudnak olvasni, típusellenőrizni és ténylegesen futtatni. A nape-js mindhármat hozza.</p>
@@ -424,6 +412,18 @@
 
       <div class="ai-cta">
         <a class="btn btn-secondary" href="../llms.txt" data-i18n="ai.cta" onclick="gtag('event','navigation',{event_category:'ai',event_label:'llms_txt'})">Irányítsd az ügynököt a /llms.txt címre</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BENCHMARKS ===== -->
+  <section id="benchmarks" class="section">
+    <div class="container">
+      <h2 data-i18n="bench.heading">Teljesítménytesztek</h2>
+      <p class="section-desc" data-i18n-html="bench.desc">Épp most, a te böngésződben mérve. Minden teszt egy szoros ciklusban futtatja a fizikai <code>step()</code> hívást, és a lépésenkénti medián időt jelenti.</p>
+      <button class="btn btn-primary" id="runBenchmark" data-i18n="bench.run">Tesztek futtatása</button>
+      <div class="bench-results" id="benchResults">
+        <p class="bench-hint" data-i18n="bench.hint">Nyomd meg a gombot az indításhoz.</p>
       </div>
     </div>
   </section>
