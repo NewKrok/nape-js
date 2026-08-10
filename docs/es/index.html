@@ -147,22 +147,60 @@
   <!-- i18n:hreflang:end -->
 </head>
 <body>
+  <!-- ===== SITE HEADER =====
+       Sticky nav for the home page. `position: sticky` is pure CSS, so the
+       bar works with JS off; site-header.js only adds the scrolled shadow
+       and the scroll-spy highlight. Section links point at the in-page
+       anchors, the rest are separate pages. -->
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="#top" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+
+      <nav class="site-nav" id="siteNav">
+        <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">Demos</a>
+        <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">Galería</a>
+        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+        <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">Ejemplos</a>
+        <a class="site-nav-link" href="../templates.html" data-i18n="nav.templates" onclick="gtag('event','navigation',{event_category:'header',event_label:'templates'})">Plantillas</a>
+        <a class="site-nav-link" href="../api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">Documentación de la API</a>
+      </nav>
+
+      <div class="site-header-actions">
+        <span class="lang-switcher" id="langSwitcher"></span>
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== HERO ===== -->
-  <header class="hero">
+  <header class="hero" id="top">
     <div class="container">
-      <span class="lang-switcher hero-lang-switcher" id="langSwitcher"></span>
       <h1><svg class="hero-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#3fb950"/></linearGradient></defs><g transform="translate(0,287) scale(0.1,-0.1)" fill="url(#logoGrad)" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>nape-js</h1>
       <p class="subtitle" data-i18n="home.hero.subtitle">Motor de física 2D totalmente tipado para TypeScript y JavaScript — reescritura moderna de Nape</p>
       <p class="tagline" data-i18n="home.hero.tagline">Cuerpos rígidos • Círculos, polígonos y cápsulas • Restricciones • Simulación de fluidos • Callbacks de colisión • Raycasting y consultas espaciales • Fractura • Cuerpo blando • Multijugador determinista • Serialización • Compatible con Web Worker — apto para tree-shaking, cero dependencias, ~27 KB gzip.</p>
+      <!-- Version is filled in by app.js; the npm / star badges are filled in
+           by site-header.js and stay hidden if their API call fails. -->
       <div class="hero-meta">
         <span class="version-badge" id="versionBadge"></span>
+        <a class="hero-badge" id="starBadge" href="https://github.com/NewKrok/nape-js/stargazers" target="_blank" rel="noopener" hidden onclick="gtag('event','navigation',{event_category:'hero',event_label:'stars'})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.2l2 4.2 4.6.6-3.4 3.2.9 4.6L8 11.6 3.9 13.8l.9-4.6L1.4 6l4.6-.6z"/></svg>
+          <span data-badge-value>—</span>
+        </a>
+        <a class="hero-badge" id="npmBadge" href="https://www.npmjs.com/package/@newkrok/nape-js" target="_blank" rel="noopener" hidden onclick="gtag('event','navigation',{event_category:'hero',event_label:'npm'})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8"/><polyline points="4.5,7 8,10.5 11.5,7"/><line x1="3" y1="13.5" x2="13" y2="13.5"/></svg>
+          <span data-badge-value>—</span>
+        </a>
+        <span class="hero-badge" data-i18n="badge.size">~27 KB gzip</span>
       </div>
       <div class="hero-actions">
         <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" target="_blank" rel="noopener" data-i18n="nav.github" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
         <a href="#demos" class="btn btn-secondary" data-i18n="nav.tryDemos" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Probar las demos</a>
-        <a href="#showcase" class="btn btn-secondary" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'hero',event_label:'showcase'})">Galería</a>
-        <a href="#benchmarks" class="btn btn-secondary" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">Benchmarks</a>
-        <a href="../api/index.html" class="btn btn-secondary" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">Documentación de la API</a>
       </div>
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
@@ -404,6 +442,7 @@
     await initI18n();
     mountLangSwitcher();
   </script>
+  <script type="module" src="../site-header.js?v=3.39.1"></script>
   <script type="module" src="../app.js?v=3.39.1"></script>
 </body>
 </html>
