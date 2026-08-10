@@ -12,7 +12,7 @@
 [![license](https://img.shields.io/npm/l/@newkrok/nape-js.svg)](https://github.com/NewKrok/nape-js/blob/master/LICENSE)
 [![docs](https://img.shields.io/badge/docs-online-blue.svg)](https://napejs.org/)
 
-Fully typed, tree-shakeable 2D physics engine — a modern TypeScript rewrite of the
+Fully typed 2D physics engine — a modern TypeScript rewrite of the
 [Nape](https://github.com/deltaluca/nape) Haxe physics engine.
 
 **[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
@@ -172,8 +172,9 @@ const restored = spaceFromJSON(JSON.parse(json));
 restored.step(1 / 60);
 ```
 
-The `/serialization` entry point is tree-shakeable — it does not pull in the engine
-bootstrap when unused. The snapshot captures bodies, shapes, materials, interaction
+The `/serialization` entry point is a separate export, but it still loads the engine
+(measured ~178 KB gzip bundled on its own) — the snapshot format is defined in terms
+of engine types. The snapshot captures bodies, shapes, materials, interaction
 filters, fluid properties, all constraint types (except `UserConstraint`), and compounds.
 Arbiters and broadphase tree state are reconstructed automatically on the first step.
 
@@ -207,7 +208,8 @@ while (!player.finished) player.step();
 // player.stepTo(150) — random-access scrub via keyframes
 ```
 
-The `/replay` entry point is tree-shakeable. The library is intentionally a thin
+The `/replay` entry point is a separate export but still loads the engine
+(measured ~178 KB gzip bundled on its own). The library is intentionally a thin
 layer: it owns the snapshot + input-log plumbing, and the user owns the
 `applyInput` callback. This keeps the replay deterministic as long as the
 callback is a pure function of `(input, space, frame)`.

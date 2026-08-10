@@ -1,6 +1,6 @@
 # @newkrok/nape-js
 
-> Modern TypeScript 2D physics engine for the web. Fully typed, tree-shakeable, with object pooling and dual ESM/CJS exports. Originally ported from the Haxe Nape engine by Luca Deltodesco.
+> Modern TypeScript 2D physics engine for the web. Fully typed, with object pooling and dual ESM/CJS exports (~195 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
 
 Install: `npm install @newkrok/nape-js`
 
