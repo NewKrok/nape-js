@@ -37,16 +37,182 @@ a:hover { text-decoration: underline; }
   padding: 0 24px;
 }
 
+/* ---------- Site Header ----------
+   Sticky top bar on the home page. Kept above page content but below the
+   copy toast (1000) and the fullscreen canvas (10000). */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13, 17, 23, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+/* Added by site-header.js once the page scrolls, so the bar only separates
+   itself from the hero when it is actually overlapping content. */
+.site-header.scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+}
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.site-brand:hover { text-decoration: none; color: var(--accent); }
+.site-brand-logo {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+}
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.site-nav::-webkit-scrollbar { display: none; }
+.site-nav-link {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+.site-nav-link:hover {
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+}
+.site-nav-link.active { color: var(--accent); }
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.site-header-actions .lang-switcher { margin-left: 0; }
+.site-header-gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+.site-header-gh:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  text-decoration: none;
+}
+/* Below ~900px the nav needs the full width, so it drops to its own row and
+   scrolls sideways; the GitHub label collapses to just the mark. */
+@media (max-width: 900px) {
+  .site-header-inner {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .site-nav {
+    order: 3;
+    width: 100%;
+    margin-right: 0;
+    padding-bottom: 2px;
+  }
+  .site-header-actions { margin-left: auto; }
+  .site-header-gh-label { display: none; }
+  .site-header-gh { padding: 5px 9px; }
+}
+/* Anchor targets must clear the sticky bar when jumped to. Scoped to pages
+   that actually have the header (the examples page shares this stylesheet
+   but has its own hero); browsers without :has() simply skip the offset. */
+html:has(.site-header) {
+  scroll-padding-top: 72px;
+}
+@media (max-width: 900px) {
+  html:has(.site-header) { scroll-padding-top: 116px; }
+}
+
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
   text-align: center;
   padding: 80px 24px 60px;
-  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  /* Two soft brand-coloured glows over the base gradient. Static CSS, so it
+     costs nothing at runtime and still gives the physics canvas above it
+     something to sit in other than flat charcoal. */
+  background:
+    radial-gradient(ellipse 70% 60% at 18% 12%, rgba(88, 166, 255, 0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 55% at 85% 75%, rgba(63, 185, 80, 0.08) 0%, transparent 62%),
+    linear-gradient(180deg, #0d1117 0%, #161b22 100%);
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+/* Live physics canvas (hero-bg.js). Sits under the hero content and is
+   masked away from the centre column so the headline, badges and buttons
+   keep full contrast — the shapes read as texture around the edges. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  mask-image: radial-gradient(
+    ellipse 58% 62% at 50% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    #000 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 58% 62% at 50% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    #000 100%
+  );
+}
+/* Narrow viewports: the text column takes nearly the whole hero width, so
+   the clear centre has to grow with it or shapes crowd the headline. */
+@media (max-width: 720px) {
+  .hero-bg {
+    mask-image: radial-gradient(
+      ellipse 78% 52% at 50% 50%,
+      transparent 0%,
+      rgba(0, 0, 0, 0.30) 62%,
+      #000 100%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 78% 52% at 50% 50%,
+      transparent 0%,
+      rgba(0, 0, 0, 0.30) 62%,
+      #000 100%
+    );
+  }
 }
 .hero .container {
   position: relative;
+  z-index: 1;
 }
 .hero-logo {
   display: inline-block;
@@ -80,9 +246,17 @@ a:hover { text-decoration: underline; }
 }
 .hero-meta {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.version-badge {
-  display: inline-block;
+.version-badge,
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   padding: 4px 12px;
@@ -92,6 +266,15 @@ a:hover { text-decoration: underline; }
   color: var(--text-dim);
   letter-spacing: 0.02em;
 }
+/* The npm / star badges are links; they are `hidden` in the markup and only
+   revealed by site-header.js once a real number has arrived. */
+a.hero-badge:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  text-decoration: none;
+}
+.hero-badge[hidden] { display: none; }
+.hero-badge svg { opacity: 0.75; flex-shrink: 0; }
 
 /* Language switcher */
 .lang-switcher {
@@ -439,6 +622,128 @@ a:hover { text-decoration: underline; }
 .bench-running {
   color: var(--orange);
   font-weight: 600;
+}
+
+/* ---------- Showcase ---------- */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.showcase-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.showcase-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+}
+.showcase-shot {
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-alt);
+  overflow: hidden;
+}
+.showcase-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.showcase-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+.showcase-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.showcase-text {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+/* Pushed to the bottom of the card so tag rows and links line up across a
+   row of cards whose descriptions differ in length. */
+.showcase-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.showcase-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+}
+.showcase-link {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+.showcase-card:hover .showcase-link { text-decoration: underline; }
+.showcase-foot {
+  margin-top: 22px;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  .showcase-card { transition: none; }
+  .showcase-card:hover { transform: none; }
+}
+
+/* ---------- AI-assisted development ---------- */
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.ai-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+/* The llms.txt card is the headline claim, so it spans and is tinted. */
+.ai-card-lead {
+  grid-column: 1 / -1;
+  border-color: rgba(88, 166, 255, 0.35);
+  background: linear-gradient(180deg, rgba(88, 166, 255, 0.07), var(--surface));
+}
+.ai-card h3 {
+  font-size: 1rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.ai-card p {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.ai-card code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--green);
+}
+.ai-cta {
+  margin-top: 20px;
 }
 
 /* ---------- API Grid ---------- */

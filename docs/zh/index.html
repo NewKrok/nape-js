@@ -5,8 +5,10 @@
   <meta name="nape-prerendered" content="zh" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>nape-js — 面向 TypeScript 和 JavaScript 的 2D 物理引擎</title>
-  <meta name="description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
-  <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, tree-shakeable, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys" />
+  <meta name="description" content="nape-js 是面向 TypeScript 与 JavaScript 的全类型 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人同步、Web Worker。零依赖，约 195 KB gzip。免费开源（MIT）。" />
+  <meta name="keywords" content="2D physics engine, JavaScript physics engine, TypeScript physics engine, JS physics, TS physics, rigid body dynamics, collision detection, raycasting, constraints, joints, fluid simulation, buoyancy, fracture, soft body, deterministic physics, multiplayer physics, game physics, web worker, Box2D alternative, Matter.js alternative, Planck.js alternative, Rapier alternative, nape, napephys, llms.txt, AI friendly library, LLM friendly docs, AI coding agent, vibe coding physics" />
+  <!-- llms.txt — machine-readable docs for LLMs and coding agents. -->
+  <link rel="alternate" type="text/plain" href="https://napejs.org/llms.txt" title="llms.txt" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="author" content="Istvan Krisztian Somoracz" />
@@ -15,7 +17,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="nape-js — 2D Physics Engine for TypeScript &amp; JavaScript" />
-  <meta property="og:description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
+  <meta property="og:description" content="nape-js 是面向 TypeScript 与 JavaScript 的全类型 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人同步、Web Worker。零依赖，约 195 KB gzip。免费开源（MIT）。" />
   <meta property="og:url" content="https://napejs.org/zh/" />
   <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
   <meta property="og:image:width" content="1200" />
@@ -27,7 +29,7 @@
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:site" content="@KSomoracz" />
   <meta name="twitter:title" content="nape-js — 2D Physics Engine for TypeScript &amp; JavaScript" />
-  <meta name="twitter:description" content="nape-js 是一个完全类型化、面向 TypeScript 和 JavaScript 的 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人联机、Web Worker。支持 tree-shaking、零依赖，gzip 后约 27 KB。免费开源（MIT）。" />
+  <meta name="twitter:description" content="nape-js 是面向 TypeScript 与 JavaScript 的全类型 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人同步、Web Worker。零依赖，约 195 KB gzip。免费开源（MIT）。" />
   <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
   <!-- JSON-LD: SoftwareSourceCode -->
   <script type="application/ld+json">
@@ -37,7 +39,7 @@
     "name": "nape-js",
     "alternateName": ["@newkrok/nape-js", "napejs"],
     "headline": "2D Physics Engine for TypeScript & JavaScript",
-    "description": "High-performance, fully typed 2D physics engine for TypeScript and JavaScript — rigid bodies, constraints, fluid simulation, raycasting, fracture, soft body, and deterministic multiplayer. Tree-shakeable, zero dependencies.",
+    "description": "High-performance, fully typed 2D physics engine for TypeScript and JavaScript — rigid bodies, constraints, fluid simulation, raycasting, fracture, soft body, and deterministic multiplayer. Zero dependencies.",
     "url": "https://napejs.org/",
     "codeRepository": "https://github.com/NewKrok/nape-js",
     "programmingLanguage": ["TypeScript", "JavaScript"],
@@ -51,7 +53,11 @@
       "url": "https://github.com/NewKrok",
       "sameAs": ["https://github.com/NewKrok", "https://x.com/KSomoracz"]
     },
-    "keywords": ["2D physics engine", "JavaScript physics engine", "TypeScript physics engine", "rigid body dynamics", "collision detection", "raycasting", "constraints", "fluid simulation", "buoyancy", "fracture", "soft body", "deterministic physics", "multiplayer physics", "game physics", "Box2D alternative", "Matter.js alternative"],
+    "keywords": ["2D physics engine", "JavaScript physics engine", "TypeScript physics engine", "rigid body dynamics", "collision detection", "raycasting", "constraints", "fluid simulation", "buoyancy", "fracture", "soft body", "deterministic physics", "multiplayer physics", "game physics", "Box2D alternative", "Matter.js alternative", "llms.txt", "AI coding agent", "LLM friendly documentation"],
+    "softwareHelp": [
+      { "@type": "CreativeWork", "name": "llms.txt — machine-readable API overview", "url": "https://napejs.org/llms.txt", "encodingFormat": "text/plain" },
+      { "@type": "CreativeWork", "name": "llms-full.txt — complete API reference", "url": "https://napejs.org/llms-full.txt", "encodingFormat": "text/plain" }
+    ],
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -112,6 +118,14 @@
       },
       {
         "@type": "Question",
+        "name": "Is nape-js suitable for AI-assisted development and coding agents?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. nape-js publishes machine-readable documentation at https://napejs.org/llms.txt and a complete reference at https://napejs.org/llms-full.txt, following the llms.txt convention, so a coding agent can read the whole API without scraping HTML. The package ships generated TypeScript declarations from strict hand-written source, has zero DOM dependencies so an agent can import it and step a simulation headlessly in Node, and supports deterministic stepping so agent-written regression tests reproduce exactly. Anti-patterns, troubleshooting and a task-oriented cookbook are published as guides."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Does nape-js support deterministic multiplayer?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -147,21 +161,64 @@
   <!-- i18n:hreflang:end -->
 </head>
 <body>
+  <!-- ===== SITE HEADER =====
+       Sticky nav for the home page. `position: sticky` is pure CSS, so the
+       bar works with JS off; site-header.js only adds the scrolled shadow
+       and the scroll-spy highlight. Section links point at the in-page
+       anchors, the rest are separate pages. -->
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="#top" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+
+      <nav class="site-nav" id="siteNav">
+        <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">演示</a>
+        <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">作品展示</a>
+        <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">示例</a>
+        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
+        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">性能测试</a>
+        <a class="site-nav-link" href="../api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">API 文档</a>
+      </nav>
+
+      <div class="site-header-actions">
+        <span class="lang-switcher" id="langSwitcher"></span>
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== HERO ===== -->
-  <header class="hero">
+  <header class="hero" id="top">
+    <!-- Live nape-js simulation behind the headline (hero-bg.js). Decorative
+         only: it carries no information, so it is hidden from assistive tech
+         and degrades to a plain gradient if the script or engine fails. -->
+    <canvas class="hero-bg" id="heroBg" aria-hidden="true"></canvas>
     <div class="container">
-      <span class="lang-switcher hero-lang-switcher" id="langSwitcher"></span>
       <h1><svg class="hero-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#3fb950"/></linearGradient></defs><g transform="translate(0,287) scale(0.1,-0.1)" fill="url(#logoGrad)" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>nape-js</h1>
       <p class="subtitle" data-i18n="home.hero.subtitle">面向 TypeScript 和 JavaScript 的完全类型化 2D 物理引擎——Nape 的现代化重写</p>
-      <p class="tagline" data-i18n="home.hero.tagline">刚体 • 圆形、多边形和胶囊体 • 约束 • 流体模拟 • 碰撞回调 • 射线检测与空间查询 • 断裂 • 软体 • 确定性多人联机 • 序列化 • Web Worker 支持——支持 tree-shaking、零依赖，gzip 后约 27 KB。</p>
+      <p class="tagline" data-i18n="home.hero.tagline">刚体 • 圆形、多边形与胶囊体 • 约束 • 流体模拟 • 碰撞回调 • 射线检测与空间查询 • 断裂 • 基于约束的软体 • 确定性多人同步 • 序列化 • Web Worker 支持 —— 零依赖、约 195 KB gzip。</p>
+      <!-- Version is filled in by app.js; the npm / star badges are filled in
+           by site-header.js and stay hidden if their API call fails. -->
       <div class="hero-meta">
         <span class="version-badge" id="versionBadge"></span>
+        <a class="hero-badge" id="starBadge" href="https://github.com/NewKrok/nape-js/stargazers" target="_blank" rel="noopener" hidden onclick="gtag('event','navigation',{event_category:'hero',event_label:'stars'})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.2l2 4.2 4.6.6-3.4 3.2.9 4.6L8 11.6 3.9 13.8l.9-4.6L1.4 6l4.6-.6z"/></svg>
+          <span data-badge-value>—</span>
+        </a>
+        <a class="hero-badge" id="npmBadge" href="https://www.npmjs.com/package/@newkrok/nape-js" target="_blank" rel="noopener" hidden onclick="gtag('event','navigation',{event_category:'hero',event_label:'npm'})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8"/><polyline points="4.5,7 8,10.5 11.5,7"/><line x1="3" y1="13.5" x2="13" y2="13.5"/></svg>
+          <span data-badge-value>—</span>
+        </a>
+        <span class="hero-badge" data-i18n="badge.size">约 195 KB gzip</span>
       </div>
       <div class="hero-actions">
         <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" target="_blank" rel="noopener" data-i18n="nav.github" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
         <a href="#demos" class="btn btn-secondary" data-i18n="nav.tryDemos" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">试用演示</a>
-        <a href="#benchmarks" class="btn btn-secondary" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">性能测试</a>
-        <a href="../api/index.html" class="btn btn-secondary" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">API 文档</a>
       </div>
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
@@ -243,6 +300,122 @@
     </div>
   </section>
 
+  <!-- ===== SHOWCASE ===== -->
+  <!-- Shipped games built on nape-js. Thumbnails are 960x540 WebP crops of
+       each game's own key art / in-game shot (docs/assets/showcase/). -->
+  <section id="showcase" class="section section-alt">
+    <div class="container">
+      <h2 data-i18n="showcase.heading">使用 nape-js 打造</h2>
+      <p class="section-desc" data-i18n="showcase.desc">已上线的游戏，物理均由 nape-js 驱动 —— 可在浏览器中试玩，也可下载原生版本。</p>
+
+      <div class="showcase-grid">
+        <a class="showcase-card" href="https://loaf.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'life_of_a_fish'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/loaf.webp" width="960" height="540" loading="lazy" decoding="async" alt="Life of a Fish —— 珊瑚礁上方的体素小鱼" data-i18n-attr="alt:showcase.loaf.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Life of a Fish</span>
+            <span class="showcase-text" data-i18n="showcase.loaf.desc">像素风水下冒险：在洞穴中游动、冲刺与闪避，包含多阶段 Boss 战和每日下潜挑战。</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">网页试玩</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">loaf.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://mxdash.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'mx_dash'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/mx-dash.webp" width="960" height="540" loading="lazy" decoding="async" alt="MX Dash —— 体素越野摩托车手跃过起伏地形" data-i18n-attr="alt:showcase.mxdash.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">MX Dash</span>
+            <span class="showcase-text" data-i18n="showcase.mxdash.desc">侧视越野摩托街机：带真实悬挂的关节骑手、大跳、空翻与慢动作摔车回放。</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">网页试玩</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">mxdash.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://dustkings.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'dust_kings'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/dust-kings.webp" width="960" height="540" loading="lazy" decoding="async" alt="Dust Kings —— 体素怪物卡车在泥土赛道上揚起尘土" data-i18n-attr="alt:showcase.dustkings.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Dust Kings</span>
+            <span class="showcase-text" data-i18n="showcase.dustkings.desc">体素怪物卡车竞速：手工搭建的泥土赛道、快速比赛与每日挑战。目前处于封闭测试。</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag" data-i18n="showcase.tag.beta">测试版</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">网页试玩</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">dustkings.newkrok.com &rarr;</span>
+          </span>
+        </a>
+      </div>
+
+      <p class="showcase-foot" data-i18n-html="showcase.foot">用 nape-js 做了作品？<a href="https://github.com/NewKrok/nape-js/issues/new">提交一个 issue</a>，就有机会出现在这里。</p>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES (SEO-friendly summary) ===== -->
+  <section class="section">
+    <div class="container">
+      <h2 data-i18n="features.heading">为什么选择 nape-js？</h2>
+      <p class="section-desc" data-i18n-html="features.p1">nape-js 是少数几个同时提供刚体动力学、关节约束（PivotJoint、DistanceJoint、WeldJoint、AngleJoint、MotorJoint、LineJoint、PulleyJoint、SpringJoint）、<strong>流体浮力</strong>、<strong>断裂</strong>、基于约束网络构建的软体与布料、射线检测与凸形扫掠、内置角色控制器、用于<strong>多人回滚</strong>的确定性步进、二进制序列化、回放录制以及独立线程 <strong>Web Worker</strong> 桥接的 <strong>JavaScript / TypeScript 2D 物理引擎</strong>——作为单一 ESM 包发布（约 195 KB gzip），带有完整的 TypeScript 类型且零 DOM 依赖。</p>
+      <p class="section-desc" data-i18n-html="features.p2">在寻找 <em>Box2D</em>、<em>Matter.js</em>、<em>Planck.js</em> 或 <em>Rapier</em> 的替代方案？运行<a href="../benchmark.html">浏览器内性能测试</a>进行正面对比，或直接进入<a href="examples/">交互式示例</a>——物理演示和可玩的小游戏（平台跳跃、MOBA、塔防、弹弓、弹珠台、俯视射击）。</p>
+    </div>
+  </section>
+
+  <!-- ===== AI-ASSISTED DEVELOPMENT =====
+       Every claim here is a property of the shipped package, not a slogan:
+       /llms.txt and /llms-full.txt are copied into docs/ by build:docs, the
+       types are generated from strict TypeScript source, the engine imports
+       and steps in plain Node (no DOM), and space.deterministic is a real
+       flag. Keep it that way — if one of these stops being true, the
+       corresponding card comes out. -->
+  <section id="ai" class="section section-alt">
+    <div class="container">
+      <h2 data-i18n="ai.heading">为 AI 辅助开发而生</h2>
+      <p class="section-desc" data-i18n="ai.desc">编程智能体最擅长处理那些可读取、可类型检查、并且能真正运行的库。nape-js 三者兼备。</p>
+
+      <div class="ai-grid">
+        <div class="ai-card ai-card-lead">
+          <h3 data-i18n="ai.llms.title">已提供 llms.txt</h3>
+          <p data-i18n-html="ai.llms.body">完整 API 汇总为一个纯文本文件，位于 <a href="../llms.txt">/llms.txt</a>，另有完整参考文档 <a href="../llms-full.txt">/llms-full.txt</a> —— 这是把文档喂给模型的新兴标准。把 URL 交给你的智能体，无需抓取 HTML。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.types.title">模型可信赖的类型</h3>
+          <p data-i18n-html="ai.types.body">全程手写 TypeScript 并启用 <code>strict: true</code>，以生成的声明文件发布。智能体能拿到真实签名和悬停 TSDoc，从而更少臆造不存在的方法。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.headless.title">可在 Node 中无头运行</h3>
+          <p data-i18n-html="ai.headless.body">零 DOM 依赖：智能体可以导入引擎、推进模拟，并直接在终端断言结果 —— 无需浏览器、画布或任何 mock。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.deterministic.title">确定性，测试才站得住</h3>
+          <p data-i18n-html="ai.deterministic.body">设置 <code>space.deterministic = true</code> 后，同一平台上相同输入必得相同输出。智能体编写的回归测试会因为正确的原因保持绿色。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.pitfalls.title">已记录的陷阱</h3>
+          <p data-i18n-html="ai.pitfalls.body"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md">反模式指南</a>与<a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md">排错指南</a>明确列出了模型在物理 API 上最常犯的错误。</p>
+        </div>
+        <div class="ai-card">
+          <h3 data-i18n="ai.recipes.title">按任务组织的范例</h3>
+          <p data-i18n-html="ai.recipes.body"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md">实用手册</a>按目标划分 —— 平台跳跃、布娃娃、流体、回放 —— 这正是提示词通常出现的形式。</p>
+        </div>
+      </div>
+
+      <div class="ai-cta">
+        <a class="btn btn-secondary" href="../llms.txt" data-i18n="ai.cta" onclick="gtag('event','navigation',{event_category:'ai',event_label:'llms_txt'})">把你的智能体指向 /llms.txt</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== BENCHMARKS ===== -->
   <section id="benchmarks" class="section">
     <div class="container">
@@ -252,15 +425,6 @@
       <div class="bench-results" id="benchResults">
         <p class="bench-hint" data-i18n="bench.hint">按下按钮开始。</p>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== FEATURES (SEO-friendly summary) ===== -->
-  <section class="section">
-    <div class="container">
-      <h2 data-i18n="features.heading">为什么选择 nape-js？</h2>
-      <p class="section-desc" data-i18n-html="features.p1">nape-js 是少数几个提供刚体动力学、关节（PivotJoint、DistanceJoint、WeldJoint、AngleJoint、MotorJoint、LineJoint、PulleyJoint、SpringJoint）、<strong>流体浮力</strong>、<strong>断裂</strong>、<strong>软体</strong>、射线检测与凸形扫掠、内置角色控制器、面向<strong>多人联机回滚</strong>的确定性步进、二进制序列化、回放录制以及独立线程 <strong>Web Worker</strong> 桥接的 <strong>JavaScript 和 TypeScript 2D 物理引擎</strong>之一——所有这些都集成在一个支持 tree-shaking 的 ESM 包中（gzip 后约 27 KB），带有完整的 TypeScript 类型且零 DOM 依赖。</p>
-      <p class="section-desc" data-i18n-html="features.p2">在寻找 <em>Box2D</em>、<em>Matter.js</em>、<em>Planck.js</em> 或 <em>Rapier</em> 的替代方案？运行<a href="../benchmark.html">浏览器内性能测试</a>进行正面对比，或直接进入<a href="examples/">交互式示例</a>——物理演示和可玩的小游戏（平台跳跃、MOBA、塔防、弹弓、弹珠台、俯视射击）。</p>
     </div>
   </section>
 
@@ -341,6 +505,8 @@
     await initI18n();
     mountLangSwitcher();
   </script>
+  <script type="module" src="../site-header.js?v=3.39.1"></script>
+  <script type="module" src="../hero-bg.js?v=3.39.1"></script>
   <script type="module" src="../app.js?v=3.39.1"></script>
 </body>
 </html>

@@ -122,8 +122,7 @@
     "fluid-simulation",
     "buoyancy",
     "deterministic-physics",
-    "multiplayer",
-    "tree-shakeable"
+    "multiplayer"
   ],
   "author": "Istvan Krisztian Somoracz",
   "license": "MIT",

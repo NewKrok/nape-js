@@ -1,6 +1,6 @@
 # @newkrok/nape-js
 
-> Modern TypeScript 2D physics engine for the web. Fully typed, tree-shakeable, with object pooling and dual ESM/CJS exports. Originally ported from the Haxe Nape engine by Luca Deltodesco.
+> Modern TypeScript 2D physics engine for the web. Fully typed, with object pooling and dual ESM/CJS exports (~195 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
 
 Install: `npm install @newkrok/nape-js`
 
@@ -65,6 +65,8 @@ function update() {
 - [MotorJoint](https://napejs.org/api/classes/MotorJoint.html): Drive relative angular velocity to a target rate
 - [LineJoint](https://napejs.org/api/classes/LineJoint.html): Constrain anchor to slide along a line direction
 - [PulleyJoint](https://napejs.org/api/classes/PulleyJoint.html): Constrain weighted sum of two distances (pulley/rope)
+- [SpringJoint](https://napejs.org/api/classes/SpringJoint.html): Always-soft spring/damper toward a `restLength` — pushes and pulls, never goes slack (suspension, soft-body links, trampolines)
+- [UserConstraint](https://napejs.org/api/classes/UserConstraint.html): Base class for writing a custom constraint against the solver
 - [Constraint](https://napejs.org/api/classes/Constraint.html): Base class — stiff/soft, frequency, damping, breaking, maxForce
 
 ## Callbacks & Events
