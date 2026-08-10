@@ -159,11 +159,60 @@ html:has(.site-header) {
   position: relative;
   text-align: center;
   padding: 80px 24px 60px;
-  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  /* Two soft brand-coloured glows over the base gradient. Static CSS, so it
+     costs nothing at runtime and still gives the physics canvas above it
+     something to sit in other than flat charcoal. */
+  background:
+    radial-gradient(ellipse 70% 60% at 18% 12%, rgba(88, 166, 255, 0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 55% at 85% 75%, rgba(63, 185, 80, 0.08) 0%, transparent 62%),
+    linear-gradient(180deg, #0d1117 0%, #161b22 100%);
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+/* Live physics canvas (hero-bg.js). Sits under the hero content and is
+   masked away from the centre column so the headline, badges and buttons
+   keep full contrast — the shapes read as texture around the edges. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  mask-image: radial-gradient(
+    ellipse 58% 62% at 50% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    #000 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 58% 62% at 50% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    #000 100%
+  );
+}
+/* Narrow viewports: the text column takes nearly the whole hero width, so
+   the clear centre has to grow with it or shapes crowd the headline. */
+@media (max-width: 720px) {
+  .hero-bg {
+    mask-image: radial-gradient(
+      ellipse 78% 52% at 50% 50%,
+      transparent 0%,
+      rgba(0, 0, 0, 0.30) 62%,
+      #000 100%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 78% 52% at 50% 50%,
+      transparent 0%,
+      rgba(0, 0, 0, 0.30) 62%,
+      #000 100%
+    );
+  }
 }
 .hero .container {
   position: relative;
+  z-index: 1;
 }
 .hero-logo {
   display: inline-block;
