@@ -160,6 +160,7 @@
       <div class="hero-actions">
         <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" target="_blank" rel="noopener" data-i18n="nav.github" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
         <a href="#demos" class="btn btn-secondary" data-i18n="nav.tryDemos" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Próbáld ki a demókat</a>
+        <a href="#showcase" class="btn btn-secondary" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'hero',event_label:'showcase'})">Játékok</a>
         <a href="#benchmarks" class="btn btn-secondary" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">Teljesítménytesztek</a>
         <a href="../api/index.html" class="btn btn-secondary" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">API-dokumentáció</a>
       </div>
@@ -240,6 +241,68 @@
         </div>
         <pre class="code-panel-body"><code id="codePreview"></code></pre>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== SHOWCASE ===== -->
+  <!-- Shipped games built on nape-js. Thumbnails are 960x540 WebP crops of
+       each game's own key art / in-game shot (docs/assets/showcase/). -->
+  <section id="showcase" class="section section-alt">
+    <div class="container">
+      <h2 data-i18n="showcase.heading">nape-js-szel készült</h2>
+      <p class="section-desc" data-i18n="showcase.desc">Kiadott játékok, amelyek nape-js fizikán futnak — próbáld ki őket böngészőben, vagy töltsd le a natív változatot.</p>
+
+      <div class="showcase-grid">
+        <a class="showcase-card" href="https://loaf.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'life_of_a_fish'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/loaf.webp" width="960" height="540" loading="lazy" decoding="async" alt="Life of a Fish — voxel hal a korallzátony fölött" data-i18n-attr="alt:showcase.loaf.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Life of a Fish</span>
+            <span class="showcase-text" data-i18n="showcase.loaf.desc">Pixeles víz alatti kaland — úszás, cikázás és kitérés a barlangokban, több fázisú bossharcokkal és napi merüléssel.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Böngészős demó</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">loaf.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://mxdash.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'mx_dash'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/mx-dash.webp" width="960" height="540" loading="lazy" decoding="async" alt="MX Dash — voxel motocross-versenyző ugrás közben a domborzat fölött" data-i18n-attr="alt:showcase.mxdash.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">MX Dash</span>
+            <span class="showcase-text" data-i18n="showcase.mxdash.desc">Oldalnézetes motocross-arcade — tagolt vezető élő rugózáson, nagy ugrások, szaltók és lassított bukás-visszajátszások.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Böngészős demó</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">mxdash.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://dustkings.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'dust_kings'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/dust-kings.webp" width="960" height="540" loading="lazy" decoding="async" alt="Dust Kings — voxel monstertruck porzik a földúton" data-i18n-attr="alt:showcase.dustkings.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Dust Kings</span>
+            <span class="showcase-text" data-i18n="showcase.dustkings.desc">Voxel monstertruck-versenyzés — kézzel épített földutak, gyors versenyek és napi kihívás. Jelenleg zárt bétában.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag" data-i18n="showcase.tag.beta">Béta</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Böngészős demó</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">dustkings.newkrok.com &rarr;</span>
+          </span>
+        </a>
+      </div>
+
+      <p class="showcase-foot" data-i18n-html="showcase.foot">Készítettél valamit nape-js-szel? <a href="https://github.com/NewKrok/nape-js/issues/new">Nyiss egy issue-t</a>, és bekerülhet ide.</p>
     </div>
   </section>
 

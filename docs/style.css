@@ -441,6 +441,91 @@ a:hover { text-decoration: underline; }
   font-weight: 600;
 }
 
+/* ---------- Showcase ---------- */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.showcase-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.showcase-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+}
+.showcase-shot {
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-alt);
+  overflow: hidden;
+}
+.showcase-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.showcase-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+.showcase-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.showcase-text {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+/* Pushed to the bottom of the card so tag rows and links line up across a
+   row of cards whose descriptions differ in length. */
+.showcase-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.showcase-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+}
+.showcase-link {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+.showcase-card:hover .showcase-link { text-decoration: underline; }
+.showcase-foot {
+  margin-top: 22px;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  .showcase-card { transition: none; }
+  .showcase-card:hover { transform: none; }
+}
+
 /* ---------- API Grid ---------- */
 .api-grid {
   display: grid;

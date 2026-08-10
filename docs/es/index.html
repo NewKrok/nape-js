@@ -160,6 +160,7 @@
       <div class="hero-actions">
         <a href="https://github.com/NewKrok/nape-js" class="btn btn-primary" target="_blank" rel="noopener" data-i18n="nav.github" onclick="gtag('event','navigation',{event_category:'hero',event_label:'github'})">GitHub</a>
         <a href="#demos" class="btn btn-secondary" data-i18n="nav.tryDemos" onclick="gtag('event','navigation',{event_category:'hero',event_label:'demos'})">Probar las demos</a>
+        <a href="#showcase" class="btn btn-secondary" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'hero',event_label:'showcase'})">Galería</a>
         <a href="#benchmarks" class="btn btn-secondary" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'hero',event_label:'benchmarks'})">Benchmarks</a>
         <a href="../api/index.html" class="btn btn-secondary" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'hero',event_label:'api_docs'})">Documentación de la API</a>
       </div>
@@ -240,6 +241,68 @@
         </div>
         <pre class="code-panel-body"><code id="codePreview"></code></pre>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== SHOWCASE ===== -->
+  <!-- Shipped games built on nape-js. Thumbnails are 960x540 WebP crops of
+       each game's own key art / in-game shot (docs/assets/showcase/). -->
+  <section id="showcase" class="section section-alt">
+    <div class="container">
+      <h2 data-i18n="showcase.heading">Hecho con nape-js</h2>
+      <p class="section-desc" data-i18n="showcase.desc">Juegos publicados que funcionan con la física de nape-js: pruébalos en el navegador o consigue la versión nativa.</p>
+
+      <div class="showcase-grid">
+        <a class="showcase-card" href="https://loaf.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'life_of_a_fish'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/loaf.webp" width="960" height="540" loading="lazy" decoding="async" alt="Life of a Fish — un pez vóxel sobre un arrecife de coral" data-i18n-attr="alt:showcase.loaf.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Life of a Fish</span>
+            <span class="showcase-text" data-i18n="showcase.loaf.desc">Una inmersión submarina pixelada: nada, esquiva y avanza por cuevas, con jefes de varias fases y un descenso diario.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Demo web</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">loaf.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://mxdash.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'mx_dash'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/mx-dash.webp" width="960" height="540" loading="lazy" decoding="async" alt="MX Dash — un piloto de motocross vóxel en pleno salto sobre terreno ondulado" data-i18n-attr="alt:showcase.mxdash.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">MX Dash</span>
+            <span class="showcase-text" data-i18n="showcase.mxdash.desc">Arcade de motocross en vista lateral: un piloto articulado sobre suspensión real, saltos enormes, mortales y repeticiones de caídas a cámara lenta.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Demo web</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">mxdash.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://dustkings.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'dust_kings'})">
+          <span class="showcase-shot">
+            <img src="../assets/showcase/dust-kings.webp" width="960" height="540" loading="lazy" decoding="async" alt="Dust Kings — un monster truck vóxel levantando polvo en un circuito de tierra" data-i18n-attr="alt:showcase.dustkings.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Dust Kings</span>
+            <span class="showcase-text" data-i18n="showcase.dustkings.desc">Carreras de monster trucks vóxel: circuitos de tierra hechos a mano, carreras rápidas y un desafío diario. Actualmente en beta cerrada.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag" data-i18n="showcase.tag.beta">Beta</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Demo web</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">dustkings.newkrok.com &rarr;</span>
+          </span>
+        </a>
+      </div>
+
+      <p class="showcase-foot" data-i18n-html="showcase.foot">¿Has publicado algo con nape-js? <a href="https://github.com/NewKrok/nape-js/issues/new">Abre un issue</a> y podrá aparecer aquí.</p>
     </div>
   </section>
 
