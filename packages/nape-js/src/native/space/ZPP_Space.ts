@@ -533,6 +533,7 @@ export class ZPP_Space {
       o4.userdef_restitution = false;
       o4.userdef_rfric = false;
       o4.__ref_edge1 = o4.__ref_edge2 = null;
+      o4.__sep_edge = o4.__sep_owner = null;
       o4.next = ZPP_ColArbiter.zpp_pool;
       ZPP_ColArbiter.zpp_pool = o4;
       arb.pre_dt = -1.0;
@@ -644,6 +645,7 @@ export class ZPP_Space {
       o8.userdef_restitution = false;
       o8.userdef_rfric = false;
       o8.__ref_edge1 = o8.__ref_edge2 = null;
+      o8.__sep_edge = o8.__sep_owner = null;
       o8.next = ZPP_ColArbiter.zpp_pool;
       ZPP_ColArbiter.zpp_pool = o8;
       arb1.pre_dt = -1.0;
@@ -3302,14 +3304,6 @@ export class ZPP_Space {
     for (let i = 0; i < n; i++) _sortNodes[i] = null;
     list.modified = true;
     list.pushmod = true;
-  }
-
-  /**
-   * Sort key for arbiter ordering: canonical pair of shape interactor IDs.
-   * Uses the smaller ID as the high bits to ensure (s1,s2) == (s2,s1).
-   */
-  private _arbiterSortKey(arb: any): number {
-    return _KEY_ARBITER(arb);
   }
 
   /**
@@ -8372,6 +8366,7 @@ export class ZPP_Space {
         o15.userdef_restitution = false;
         o15.userdef_rfric = false;
         o15.__ref_edge1 = o15.__ref_edge2 = null;
+        o15.__sep_edge = o15.__sep_owner = null;
         o15.next = ZPP_ColArbiter.zpp_pool;
         ZPP_ColArbiter.zpp_pool = o15;
         _this22.pre_dt = -1.0;
@@ -11713,6 +11708,7 @@ export class ZPP_Space {
             o27.userdef_restitution = false;
             o27.userdef_rfric = false;
             o27.__ref_edge1 = o27.__ref_edge2 = null;
+            o27.__sep_edge = o27.__sep_owner = null;
             o27.next = ZPP_ColArbiter.zpp_pool;
             ZPP_ColArbiter.zpp_pool = o27;
             ret = null;
