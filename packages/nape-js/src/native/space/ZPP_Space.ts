@@ -31,6 +31,44 @@ import { ZPP_CallbackSet } from "./ZPP_CallbackSet";
 import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 import { PhysicsMetrics } from "../../profiler/PhysicsMetrics";
 
+// ---------------------------------------------------------------------------
+// Sort keys and scratch buffers for the deterministic-order / contact sorts.
+//
+// Hoisted to module scope: allocating the key closures per step kept the
+// _sortLinkedList call site megamorphic and was the engine's dominant
+// steady-state GC source. The scratch buffers are engine-owned, grown to the
+// next power of two and never released; node references are cleared after
+// each sort so they cannot leak entities.
+// ---------------------------------------------------------------------------
+
+const _KEY_BODY_ID = (b: any): number => b.id;
+const _KEY_CONSTRAINT_ID = (c: any): number => c.id;
+const _KEY_ARBITER = (a: any): number => {
+  const id1 = a.s1 != null ? a.s1.id : 0;
+  const id2 = a.s2 != null ? a.s2.id : 0;
+  const lo = id1 < id2 ? id1 : id2;
+  const hi = id1 < id2 ? id2 : id1;
+  return lo * 1000000 + hi;
+};
+const _KEY_COMPONENT = (c: any): number => (c.isBody ? c.body.id : c.constraint.id + 1000000000);
+
+let _sortNodes: any[] = [];
+let _sortKeys = new Float64Array(64);
+let _sortDist = new Float64Array(64);
+let _sortAct = new Uint8Array(64);
+let _sortIdxA = new Int32Array(64);
+let _sortIdxB = new Int32Array(64);
+
+function _growSortBuffers(n: number): void {
+  let cap = _sortKeys.length;
+  while (cap < n) cap <<= 1;
+  _sortKeys = new Float64Array(cap);
+  _sortDist = new Float64Array(cap);
+  _sortAct = new Uint8Array(cap);
+  _sortIdxA = new Int32Array(cap);
+  _sortIdxB = new Int32Array(cap);
+}
+
 export class ZPP_Space {
   // --- Static: Haxe metadata ---
 
@@ -3136,64 +3174,132 @@ export class ZPP_Space {
   }
 
   /**
-   * In-place merge sort of a singly-linked list by a numeric key.
+   * Stable merge sort of a singly-linked list by a numeric key.
    * Used in deterministic mode to ensure stable iteration order.
-   * Returns the new head node (the list object's head is also updated).
+   *
+   * The key is evaluated once per node (the previous list-splice merge
+   * re-evaluated it per comparison) and the bottom-up merge runs on reusable
+   * index arrays; the resulting permutation is identical — both are stable
+   * merges with the same `<=` keep-left comparator.
    */
   private _sortLinkedList<N extends { elt: any; next: N | null }>(
     list: { head: N | null; modified: boolean; pushmod: boolean },
     keyFn: (elt: any) => number,
   ): void {
     if (list.head == null || list.head.next == null) return;
-    let head = list.head;
-    let listSize = 1;
-    while (true) {
-      let numMerges = 0;
-      let left: N | null = head;
-      head = null!;
-      let tail: N | null = null;
-      while (left != null) {
-        numMerges++;
-        let right: N | null = left;
-        let leftSize = 0;
-        let rightSize = listSize;
-        while (right != null && leftSize < listSize) {
-          leftSize++;
-          right = right.next;
-        }
-        while (leftSize > 0 || (rightSize > 0 && right != null)) {
-          let nxt: N;
-          if (leftSize == 0) {
-            nxt = right!;
-            right = right!.next;
-            rightSize--;
-          } else if (rightSize == 0 || right == null) {
-            nxt = left!;
-            left = left!.next;
-            leftSize--;
-          } else if (keyFn(left!.elt) <= keyFn(right.elt)) {
-            nxt = left!;
-            left = left!.next;
-            leftSize--;
-          } else {
-            nxt = right;
-            right = right.next;
-            rightSize--;
-          }
-          if (tail != null) {
-            tail.next = nxt;
-          } else {
-            head = nxt;
-          }
-          tail = nxt;
-        }
-        left = right;
-      }
-      tail!.next = null;
-      listSize <<= 1;
-      if (numMerges <= 1) break;
+    let n = 0;
+    let cur: N | null = list.head;
+    while (cur != null) {
+      _sortNodes[n++] = cur;
+      cur = cur.next;
     }
-    list.head = head;
+    if (_sortKeys.length < n) _growSortBuffers(n);
+    const keys = _sortKeys;
+    let src = _sortIdxA;
+    let dst = _sortIdxB;
+    for (let i = 0; i < n; i++) {
+      keys[i] = keyFn(_sortNodes[i].elt);
+      src[i] = i;
+    }
+    for (let width = 1; width < n; width <<= 1) {
+      for (let lo = 0; lo < n; lo += width << 1) {
+        const mid = lo + width < n ? lo + width : n;
+        const hi = lo + (width << 1) < n ? lo + (width << 1) : n;
+        let i = lo;
+        let j = mid;
+        let k = lo;
+        while (i < mid && j < hi) {
+          dst[k++] = keys[src[i]] <= keys[src[j]] ? src[i++] : src[j++];
+        }
+        while (i < mid) dst[k++] = src[i++];
+        while (j < hi) dst[k++] = src[j++];
+      }
+      const t = src;
+      src = dst;
+      dst = t;
+    }
+    let prev: N = _sortNodes[src[0]];
+    list.head = prev;
+    for (let i = 1; i < n; i++) {
+      const node: N = _sortNodes[src[i]];
+      prev.next = node;
+      prev = node;
+    }
+    prev.next = null;
+    for (let i = 0; i < n; i++) _sortNodes[i] = null;
+    list.modified = true;
+    list.pushmod = true;
+  }
+
+  /**
+   * Contact-arbiter sort run each step when sortcontacts is enabled: active
+   * pairs order by penetration distance, others fall back to the canonical
+   * id key in deterministic mode. Exact comparator and merge structure of
+   * the previous inline list merge, evaluated over pre-gathered arrays.
+   */
+  private _sortContactArbiters(list: any): void {
+    if (list.head == null || list.head.next == null) return;
+    let n = 0;
+    let cur = list.head;
+    while (cur != null) {
+      _sortNodes[n++] = cur;
+      cur = cur.next;
+    }
+    if (_sortKeys.length < n) _growSortBuffers(n);
+    const deterministic = this.deterministic;
+    const keys = _sortKeys;
+    const dist = _sortDist;
+    const act = _sortAct;
+    let src = _sortIdxA;
+    let dst = _sortIdxB;
+    for (let i = 0; i < n; i++) {
+      const a = _sortNodes[i].elt;
+      const active = a.active;
+      act[i] = active ? 1 : 0;
+      dist[i] = active ? a.oc1.dist : 0;
+      if (deterministic) keys[i] = _KEY_ARBITER(a);
+      src[i] = i;
+    }
+    for (let width = 1; width < n; width <<= 1) {
+      for (let lo = 0; lo < n; lo += width << 1) {
+        const mid = lo + width < n ? lo + width : n;
+        const hi = lo + (width << 1) < n ? lo + (width << 1) : n;
+        let i = lo;
+        let j = mid;
+        let k = lo;
+        while (i < mid && j < hi) {
+          const l = src[i];
+          const r = src[j];
+          const takeLeft =
+            act[l] != 0 && act[r] != 0
+              ? dist[l] < dist[r]
+              : deterministic
+                ? keys[l] <= keys[r]
+                : true;
+          if (takeLeft) {
+            dst[k++] = l;
+            i++;
+          } else {
+            dst[k++] = r;
+            j++;
+          }
+        }
+        while (i < mid) dst[k++] = src[i++];
+        while (j < hi) dst[k++] = src[j++];
+      }
+      const t = src;
+      src = dst;
+      dst = t;
+    }
+    let prev = _sortNodes[src[0]];
+    list.head = prev;
+    for (let i = 1; i < n; i++) {
+      const node = _sortNodes[src[i]];
+      prev.next = node;
+      prev = node;
+    }
+    prev.next = null;
+    for (let i = 0; i < n; i++) _sortNodes[i] = null;
     list.modified = true;
     list.pushmod = true;
   }
@@ -3203,11 +3309,7 @@ export class ZPP_Space {
    * Uses the smaller ID as the high bits to ensure (s1,s2) == (s2,s1).
    */
   private _arbiterSortKey(arb: any): number {
-    const id1 = arb.s1 != null ? arb.s1.id : 0;
-    const id2 = arb.s2 != null ? arb.s2.id : 0;
-    const lo = id1 < id2 ? id1 : id2;
-    const hi = id1 < id2 ? id2 : id1;
-    return lo * 1000000 + hi;
+    return _KEY_ARBITER(arb);
   }
 
   /**
@@ -3219,19 +3321,19 @@ export class ZPP_Space {
 
     // Only sort lists that have been modified since last sort.
     if (this.live.modified) {
-      this._sortLinkedList(this.live, (b: any) => b.id);
+      this._sortLinkedList(this.live, _KEY_BODY_ID);
     }
     if (this.live_constraints.modified) {
-      this._sortLinkedList(this.live_constraints, (c: any) => c.id);
+      this._sortLinkedList(this.live_constraints, _KEY_CONSTRAINT_ID);
     }
     if (this.c_arbiters_false.modified) {
-      this._sortLinkedList(this.c_arbiters_false, (a: any) => this._arbiterSortKey(a));
+      this._sortLinkedList(this.c_arbiters_false, _KEY_ARBITER);
     }
     if (this.c_arbiters_true.modified) {
-      this._sortLinkedList(this.c_arbiters_true, (a: any) => this._arbiterSortKey(a));
+      this._sortLinkedList(this.c_arbiters_true, _KEY_ARBITER);
     }
     if (this.f_arbiters.modified) {
-      this._sortLinkedList(this.f_arbiters, (a: any) => this._arbiterSortKey(a));
+      this._sortLinkedList(this.f_arbiters, _KEY_ARBITER);
     }
   }
 
@@ -3265,74 +3367,7 @@ export class ZPP_Space {
         this.prestep(subDt);
         if (profiling) this._metrics.narrowphaseTime += performance.now() - t1;
         if (this.sortcontacts) {
-          const xxlist = this.c_arbiters_false;
-          if (xxlist.head != null && xxlist.head.next != null) {
-            let head = xxlist.head;
-            let tail = null;
-            let left = null;
-            let right = null;
-            let nxt = null;
-            let listSize = 1;
-            let numMerges;
-            let leftSize;
-            let rightSize;
-            while (true) {
-              numMerges = 0;
-              left = head;
-              head = null;
-              tail = head;
-              while (left != null) {
-                ++numMerges;
-                right = left;
-                leftSize = 0;
-                rightSize = listSize;
-                while (right != null && leftSize < listSize) {
-                  ++leftSize;
-                  right = right.next;
-                }
-                while (leftSize > 0 || (rightSize > 0 && right != null)) {
-                  if (leftSize == 0) {
-                    nxt = right;
-                    right = right.next;
-                    --rightSize;
-                  } else if (rightSize == 0 || right == null) {
-                    nxt = left;
-                    left = left.next;
-                    --leftSize;
-                  } else if (
-                    left.elt.active && right.elt.active
-                      ? left.elt.oc1.dist < right.elt.oc1.dist
-                      : this.deterministic
-                        ? this._arbiterSortKey(left.elt) <= this._arbiterSortKey(right.elt)
-                        : true
-                  ) {
-                    nxt = left;
-                    left = left.next;
-                    --leftSize;
-                  } else {
-                    nxt = right;
-                    right = right.next;
-                    --rightSize;
-                  }
-                  if (tail != null) {
-                    tail.next = nxt;
-                  } else {
-                    head = nxt;
-                  }
-                  tail = nxt;
-                }
-                left = right;
-              }
-              tail.next = null;
-              listSize <<= 1;
-              if (!(numMerges > 1)) {
-                break;
-              }
-            }
-            xxlist.head = head;
-            xxlist.modified = true;
-            xxlist.pushmod = true;
-          }
+          this._sortContactArbiters(this.c_arbiters_false);
         }
         if (profiling) t1 = performance.now();
         this.updateVel(subDt);
@@ -5854,9 +5889,7 @@ export class ZPP_Space {
       _this5.pop();
       const i = ret4;
       if (this.deterministic) {
-        this._sortLinkedList(i.comps, (c: any) =>
-          c.isBody ? c.body.id : c.constraint.id + 1000000000,
-        );
+        this._sortLinkedList(i.comps, _KEY_COMPONENT);
       }
       if (i.sleep) {
         let cx_ite3 = i.comps.head;
