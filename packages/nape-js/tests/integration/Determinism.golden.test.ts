@@ -224,7 +224,10 @@ const scenarios: Record<string, () => ScenarioResult> = {
     floor.shapes.add(new Polygon(Polygon.box(800, 20)));
     floor.space = space;
     for (let i = 0; i < 25; i++) {
-      const body = new Body(BodyType.DYNAMIC, new Vec2(-120 + (i % 5) * 60, -20 - Math.floor(i / 5) * 40));
+      const body = new Body(
+        BodyType.DYNAMIC,
+        new Vec2(-120 + (i % 5) * 60, -20 - Math.floor(i / 5) * 40),
+      );
       body.shapes.add(new Polygon(Polygon.box(30, 30)));
       void rng();
       body.space = space;
@@ -258,10 +261,9 @@ describe("Determinism golden snapshots", () => {
       for (let i = 0; i < result.bodies.length; i++) {
         for (let j = 0; j < 7; j++) {
           // Exact float64 equality: JSON round-trips doubles losslessly.
-          expect(
-            result.bodies[i][j],
-            `${name}: body ${i} component ${j} diverged`,
-          ).toBe(golden.bodies[i][j]);
+          expect(result.bodies[i][j], `${name}: body ${i} component ${j} diverged`).toBe(
+            golden.bodies[i][j],
+          );
         }
       }
     });
