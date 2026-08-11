@@ -77,7 +77,7 @@ workspace owns its own `tsup.config.ts` under `packages/<name>/`.
 - **Target:** ES2020
 - **Splitting + treeshake** enabled on nape-js (P47 — CJS dedup); off on nape-pixi (single-entry)
 - **`__PACKAGE_VERSION__`** injected at build time in nape-js
-- **Sizes:** nape-js ~87 KB ESM (~16 KB gzip), nape-pixi ~10 KB ESM (17 KB d.ts)
+- **Sizes:** nape-js ~194 KB gzip bundled (121 KB `index.js` re-export shim + ~873 KB shared engine chunk), nape-pixi ~10 KB ESM (17 KB d.ts)
 
 Root `npm run build` fans out to every workspace (`--workspaces --if-present`).
 
