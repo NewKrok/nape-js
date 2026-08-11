@@ -102,6 +102,10 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   __ref_edge2: any = null;
   __ref_vertex = 0;
 
+  // --- Instance: separating-axis cache (last separating edge + owning shape) ---
+  __sep_edge: any = null;
+  __sep_owner: any = null;
+
   // --- Instance: contact point cache ---
   c1: ZPP_IContact = null as unknown as ZPP_IContact;
   oc1: ZPP_Contact = null as unknown as ZPP_Contact;
@@ -135,6 +139,8 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     this.__ref_vertex = 0;
     this.__ref_edge2 = null;
     this.__ref_edge1 = null;
+    this.__sep_edge = null;
+    this.__sep_owner = null;
     this.biasCoef = 0.0;
     this.rev = false;
     this.radius = 0.0;
@@ -197,6 +203,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     this.userdef_restitution = false;
     this.userdef_rfric = false;
     this.__ref_edge1 = this.__ref_edge2 = null;
+    this.__sep_edge = this.__sep_owner = null;
   }
 
   // ========== Normal handling ==========

@@ -203,6 +203,34 @@ export class ZPP_Collide {
     const napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
+        // Separating-axis cache: if this pair was separated last time, re-test
+        // that single axis exactly. The separating early-outs below mutate
+        // nothing on arb before returning false, so an early return here is
+        // observably identical to running the full SAT to the same conclusion.
+        const sepEdge = arb.__sep_edge;
+        if (sepEdge != null) {
+          let sepVerts = null;
+          if (arb.__sep_owner == s1) {
+            sepVerts = s2.polygon.gverts.next;
+          } else if (arb.__sep_owner == s2) {
+            sepVerts = s1.polygon.gverts.next;
+          }
+          if (sepVerts != null) {
+            let sepMin = 1e100;
+            while (sepVerts != null) {
+              const k = sepEdge.gnormx * sepVerts.x + sepEdge.gnormy * sepVerts.y;
+              if (k < sepMin) {
+                sepMin = k;
+              }
+              sepVerts = sepVerts.next;
+            }
+            if (sepMin - sepEdge.gprojection >= 0) {
+              return false;
+            }
+          }
+          arb.__sep_edge = null;
+          arb.__sep_owner = null;
+        }
         let cont = true;
         let max = -1e100;
         const _maxmin = -1e100;
@@ -227,6 +255,8 @@ export class ZPP_Collide {
           }
           min -= ax.gprojection;
           if (min >= 0) {
+            arb.__sep_edge = ax;
+            arb.__sep_owner = s1;
             cont = false;
             break;
           }
@@ -256,6 +286,8 @@ export class ZPP_Collide {
             }
             min1 -= ax1.gprojection;
             if (min1 >= 0) {
+              arb.__sep_edge = ax1;
+              arb.__sep_owner = s2;
               cont = false;
               break;
             }
@@ -391,6 +423,24 @@ export class ZPP_Collide {
           return false;
         }
       } else {
+        // Separating-axis cache (circle vs polygon): re-test the cached edge
+        // with a single dot product before the full edge scan. The separating
+        // early-out below mutates nothing on arb before returning false.
+        const sepEdge1 = arb.__sep_edge;
+        if (sepEdge1 != null) {
+          if (
+            arb.__sep_owner == s2 &&
+            sepEdge1.gnormx * s1.circle.worldCOMx +
+              sepEdge1.gnormy * s1.circle.worldCOMy -
+              sepEdge1.gprojection -
+              s1.circle.radius >
+              0
+          ) {
+            return false;
+          }
+          arb.__sep_edge = null;
+          arb.__sep_owner = null;
+        }
         let max1 = -1e100;
         const _minmax = -1e100;
         let cont1 = true;
@@ -406,6 +456,8 @@ export class ZPP_Collide {
             a.gprojection -
             s1.circle.radius;
           if (dist > 0) {
+            arb.__sep_edge = a;
+            arb.__sep_owner = s2;
             cont1 = false;
             break;
           }
