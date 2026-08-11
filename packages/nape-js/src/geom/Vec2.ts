@@ -86,13 +86,6 @@ export class Vec2 {
     this.zpp_inner.invalidate();
   }
 
-  /** @internal Dispose a weak Vec2 argument after use. */
-  private static _disposeWeak(v: Vec2): void {
-    if (v.zpp_inner.weak) {
-      v.dispose();
-    }
-  }
-
   /**
    * @internal Set x and y on zpp_inner with validation/invalidation.
    * Only invalidates if values actually changed.
@@ -285,8 +278,8 @@ export class Vec2 {
     const x = a.zpp_inner.x + t * (b.zpp_inner.x - a.zpp_inner.x);
     const y = a.zpp_inner.y + t * (b.zpp_inner.y - a.zpp_inner.y);
     const ret = Vec2._poolGet(x, y, weak);
-    Vec2._disposeWeak(a);
-    Vec2._disposeWeak(b);
+    disposeWeakVec2(a);
+    disposeWeakVec2(b);
     return ret;
   }
 
@@ -308,8 +301,8 @@ export class Vec2 {
     }
     if (a == null || b == null) {
       const ret = a == null && b == null;
-      if (a != null) Vec2._disposeWeak(a);
-      if (b != null) Vec2._disposeWeak(b);
+      if (a != null) disposeWeakVec2(a);
+      if (b != null) disposeWeakVec2(b);
       return ret;
     }
     a.zpp_inner.validate();
@@ -317,8 +310,8 @@ export class Vec2 {
     const dx = a.zpp_inner.x - b.zpp_inner.x;
     const dy = a.zpp_inner.y - b.zpp_inner.y;
     const ret = (dx < 0 ? -dx : dx) <= epsilon && (dy < 0 ? -dy : dy) <= epsilon;
-    Vec2._disposeWeak(a);
-    Vec2._disposeWeak(b);
+    disposeWeakVec2(a);
+    disposeWeakVec2(b);
     return ret;
   }
 
@@ -349,8 +342,8 @@ export class Vec2 {
     const dx = ax - bx;
     const dy = ay - by;
     const ret = dx * dx + dy * dy;
-    Vec2._disposeWeak(a);
-    Vec2._disposeWeak(b);
+    disposeWeakVec2(a);
+    disposeWeakVec2(b);
     return ret;
   }
 
@@ -380,8 +373,8 @@ export class Vec2 {
     const dx = ax - bx;
     const dy = ay - by;
     const ret = Math.sqrt(dx * dx + dy * dy);
-    Vec2._disposeWeak(a);
-    Vec2._disposeWeak(b);
+    disposeWeakVec2(a);
+    disposeWeakVec2(b);
     return ret;
   }
 
@@ -537,7 +530,7 @@ export class Vec2 {
     const x = vector.zpp_inner.x;
     const y = vector.zpp_inner.y;
     this._setXY(x, y);
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return this;
   }
 
@@ -645,7 +638,7 @@ export class Vec2 {
     const normal = Vec2._poolGet(x, y, true);
     normal.normalise();
     const ret = vec.sub(normal.muleq(2 * normal.dot(vec)), weak);
-    Vec2._disposeWeak(vec);
+    disposeWeakVec2(vec);
     return ret;
   }
 
@@ -711,7 +704,7 @@ export class Vec2 {
     const x = this.zpp_inner.x + vector.zpp_inner.x;
     const y = this.zpp_inner.y + vector.zpp_inner.y;
     const ret = Vec2._poolGet(x, y, weak);
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return ret;
   }
 
@@ -736,7 +729,7 @@ export class Vec2 {
     const x = this.zpp_inner.x + vector.zpp_inner.x * scalar;
     const y = this.zpp_inner.y + vector.zpp_inner.y * scalar;
     const ret = Vec2._poolGet(x, y, weak);
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return ret;
   }
 
@@ -760,7 +753,7 @@ export class Vec2 {
     const x = this.zpp_inner.x - vector.zpp_inner.x;
     const y = this.zpp_inner.y - vector.zpp_inner.y;
     const ret = Vec2._poolGet(x, y, weak);
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return ret;
   }
 
@@ -802,7 +795,7 @@ export class Vec2 {
     const x = this.zpp_inner.x + vector.zpp_inner.x;
     const y = this.zpp_inner.y + vector.zpp_inner.y;
     this._setXY(x, y);
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return this;
   }
 
@@ -826,7 +819,7 @@ export class Vec2 {
     const x = this.zpp_inner.x - vector.zpp_inner.x;
     const y = this.zpp_inner.y - vector.zpp_inner.y;
     this._setXY(x, y);
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return this;
   }
 
@@ -866,7 +859,7 @@ export class Vec2 {
     this._validate();
     vector.zpp_inner.validate();
     const ret = this.zpp_inner.x * vector.zpp_inner.x + this.zpp_inner.y * vector.zpp_inner.y;
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return ret;
   }
 
@@ -888,7 +881,7 @@ export class Vec2 {
     this._validate();
     vector.zpp_inner.validate();
     const ret = this.zpp_inner.x * vector.zpp_inner.y - this.zpp_inner.y * vector.zpp_inner.x;
-    Vec2._disposeWeak(vector);
+    disposeWeakVec2(vector);
     return ret;
   }
 
@@ -981,3 +974,17 @@ ZPP_Vec2._wrapFn = (zpp: ZPP_Vec2): Vec2 => {
 // ---------------------------------------------------------------------------
 const _napeVec2 = getNape();
 _napeVec2.geom.Vec2 = Vec2;
+
+/** @internal Dispose a weak Vec2 argument after use. */
+export function disposeWeakVec2(v: Vec2): void {
+  if (v.zpp_inner.weak) {
+    v.dispose();
+  }
+}
+
+/** @internal Throw if a Vec2 has already been disposed. */
+export function checkVec2Disposed(v: Vec2): void {
+  if (v != null && v.zpp_disp) {
+    throw new Error("Vec2 has been disposed and cannot be used!");
+  }
+}

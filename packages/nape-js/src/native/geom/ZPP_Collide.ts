@@ -17,6 +17,48 @@ import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 import { getNape } from "../../core/engine";
 
 export class ZPP_Collide {
+  /**
+   * Get or create the contact with the given hash on arb, resetting impulse
+   * accumulators and prepending to arb.contacts when freshly created.
+   */
+  static _getContact(arb: any, hash: number): any {
+    let c = null;
+    let cx_ite = arb.contacts.next;
+    while (cx_ite != null) {
+      const cur = cx_ite;
+      if (hash == cur.hash) {
+        c = cur;
+        break;
+      }
+      cx_ite = cx_ite.next;
+    }
+    if (c == null) {
+      if (ZPP_Contact.zpp_pool == null) {
+        c = new ZPP_Contact();
+      } else {
+        c = ZPP_Contact.zpp_pool;
+        ZPP_Contact.zpp_pool = c.next;
+        c.next = null;
+      }
+      const ci = c.inner;
+      ci.jnAcc = ci.jtAcc = 0;
+      c.hash = hash;
+      c.fresh = true;
+      c.arbiter = arb;
+      arb.jrAcc = 0;
+      const contacts = arb.contacts;
+      c._inuse = true;
+      c.next = contacts.next;
+      contacts.next = c;
+      contacts.modified = true;
+      contacts.length++;
+      arb.innards.add(ci);
+    } else {
+      c.fresh = false;
+    }
+    return c;
+  }
+
   /** Internal list for flow collision polygon vertices (ZNPList_ZPP_Vec2). */
   static flowpoly: any = null;
 
@@ -300,41 +342,7 @@ export class ZPP_Collide {
               if (posOnly == null) {
                 posOnly = false;
               }
-              let c = null;
-              let cx_ite5 = arb.contacts.next;
-              while (cx_ite5 != null) {
-                const cur = cx_ite5;
-                if (hash == cur.hash) {
-                  c = cur;
-                  break;
-                }
-                cx_ite5 = cx_ite5.next;
-              }
-              if (c == null) {
-                if (ZPP_Contact.zpp_pool == null) {
-                  c = new ZPP_Contact();
-                } else {
-                  c = ZPP_Contact.zpp_pool;
-                  ZPP_Contact.zpp_pool = c.next;
-                  c.next = null;
-                }
-                const ci = c.inner;
-                ci.jnAcc = ci.jtAcc = 0;
-                c.hash = hash;
-                c.fresh = true;
-                c.arbiter = arb;
-                arb.jrAcc = 0;
-                const _this = arb.contacts;
-                c._inuse = true;
-                const temp = c;
-                temp.next = _this.next;
-                _this.next = temp;
-                _this.modified = true;
-                _this.length++;
-                arb.innards.add(ci);
-              } else {
-                c.fresh = false;
-              }
+              const c = ZPP_Collide._getContact(arb, hash);
               c.px = px;
               c.py = py;
               arb.nx = nx;
@@ -355,41 +363,7 @@ export class ZPP_Collide {
               if (posOnly1 == null) {
                 posOnly1 = false;
               }
-              let c1 = null;
-              let cx_ite6 = arb.contacts.next;
-              while (cx_ite6 != null) {
-                const cur1 = cx_ite6;
-                if (hash1 == cur1.hash) {
-                  c1 = cur1;
-                  break;
-                }
-                cx_ite6 = cx_ite6.next;
-              }
-              if (c1 == null) {
-                if (ZPP_Contact.zpp_pool == null) {
-                  c1 = new ZPP_Contact();
-                } else {
-                  c1 = ZPP_Contact.zpp_pool;
-                  ZPP_Contact.zpp_pool = c1.next;
-                  c1.next = null;
-                }
-                const ci1 = c1.inner;
-                ci1.jnAcc = ci1.jtAcc = 0;
-                c1.hash = hash1;
-                c1.fresh = true;
-                c1.arbiter = arb;
-                arb.jrAcc = 0;
-                const _this1 = arb.contacts;
-                c1._inuse = true;
-                const temp1 = c1;
-                temp1.next = _this1.next;
-                _this1.next = temp1;
-                _this1.modified = true;
-                _this1.length++;
-                arb.innards.add(ci1);
-              } else {
-                c1.fresh = false;
-              }
+              const c1 = ZPP_Collide._getContact(arb, hash1);
               c1.px = px1;
               c1.py = py1;
               arb.nx = nx;
@@ -458,41 +432,7 @@ export class ZPP_Collide {
             } else if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
               const px3 = s1.circle.worldCOMx;
               const py3 = s1.circle.worldCOMy;
-              let c2 = null;
-              let cx_ite8 = arb.contacts.next;
-              while (cx_ite8 != null) {
-                const cur2 = cx_ite8;
-                if (0 == cur2.hash) {
-                  c2 = cur2;
-                  break;
-                }
-                cx_ite8 = cx_ite8.next;
-              }
-              if (c2 == null) {
-                if (ZPP_Contact.zpp_pool == null) {
-                  c2 = new ZPP_Contact();
-                } else {
-                  c2 = ZPP_Contact.zpp_pool;
-                  ZPP_Contact.zpp_pool = c2.next;
-                  c2.next = null;
-                }
-                const ci2 = c2.inner;
-                ci2.jnAcc = ci2.jtAcc = 0;
-                c2.hash = 0;
-                c2.fresh = true;
-                c2.arbiter = arb;
-                arb.jrAcc = 0;
-                const _this2 = arb.contacts;
-                c2._inuse = true;
-                const temp2 = c2;
-                temp2.next = _this2.next;
-                _this2.next = temp2;
-                _this2.modified = true;
-                _this2.length++;
-                arb.innards.add(ci2);
-              } else {
-                c2.fresh = false;
-              }
+              const c2 = ZPP_Collide._getContact(arb, 0);
               c2.px = px3;
               c2.py = py3;
               arb.nx = 1;
@@ -508,41 +448,7 @@ export class ZPP_Collide {
               if (rev) {
                 const px4 = s1.circle.worldCOMx + px2 * df;
                 const py4 = s1.circle.worldCOMy + py2 * df;
-                let c3 = null;
-                let cx_ite9 = arb.contacts.next;
-                while (cx_ite9 != null) {
-                  const cur3 = cx_ite9;
-                  if (0 == cur3.hash) {
-                    c3 = cur3;
-                    break;
-                  }
-                  cx_ite9 = cx_ite9.next;
-                }
-                if (c3 == null) {
-                  if (ZPP_Contact.zpp_pool == null) {
-                    c3 = new ZPP_Contact();
-                  } else {
-                    c3 = ZPP_Contact.zpp_pool;
-                    ZPP_Contact.zpp_pool = c3.next;
-                    c3.next = null;
-                  }
-                  const ci3 = c3.inner;
-                  ci3.jnAcc = ci3.jtAcc = 0;
-                  c3.hash = 0;
-                  c3.fresh = true;
-                  c3.arbiter = arb;
-                  arb.jrAcc = 0;
-                  const _this3 = arb.contacts;
-                  c3._inuse = true;
-                  const temp3 = c3;
-                  temp3.next = _this3.next;
-                  _this3.next = temp3;
-                  _this3.modified = true;
-                  _this3.length++;
-                  arb.innards.add(ci3);
-                } else {
-                  c3.fresh = false;
-                }
+                const c3 = ZPP_Collide._getContact(arb, 0);
                 c3.px = px4;
                 c3.py = py4;
                 arb.nx = -px2 * invDist;
@@ -554,41 +460,7 @@ export class ZPP_Collide {
               } else {
                 const px5 = s1.circle.worldCOMx + px2 * df;
                 const py5 = s1.circle.worldCOMy + py2 * df;
-                let c4 = null;
-                let cx_ite10 = arb.contacts.next;
-                while (cx_ite10 != null) {
-                  const cur4 = cx_ite10;
-                  if (0 == cur4.hash) {
-                    c4 = cur4;
-                    break;
-                  }
-                  cx_ite10 = cx_ite10.next;
-                }
-                if (c4 == null) {
-                  if (ZPP_Contact.zpp_pool == null) {
-                    c4 = new ZPP_Contact();
-                  } else {
-                    c4 = ZPP_Contact.zpp_pool;
-                    ZPP_Contact.zpp_pool = c4.next;
-                    c4.next = null;
-                  }
-                  const ci4 = c4.inner;
-                  ci4.jnAcc = ci4.jtAcc = 0;
-                  c4.hash = 0;
-                  c4.fresh = true;
-                  c4.arbiter = arb;
-                  arb.jrAcc = 0;
-                  const _this4 = arb.contacts;
-                  c4._inuse = true;
-                  const temp4 = c4;
-                  temp4.next = _this4.next;
-                  _this4.next = temp4;
-                  _this4.modified = true;
-                  _this4.length++;
-                  arb.innards.add(ci4);
-                } else {
-                  c4.fresh = false;
-                }
+                const c4 = ZPP_Collide._getContact(arb, 0);
                 c4.px = px5;
                 c4.py = py5;
                 arb.nx = px2 * invDist;
@@ -631,41 +503,7 @@ export class ZPP_Collide {
             } else if (distSqr1 < napeNs.Config.epsilon * napeNs.Config.epsilon) {
               const px7 = s1.circle.worldCOMx;
               const py7 = s1.circle.worldCOMy;
-              let c5 = null;
-              let cx_ite11 = arb.contacts.next;
-              while (cx_ite11 != null) {
-                const cur5 = cx_ite11;
-                if (0 == cur5.hash) {
-                  c5 = cur5;
-                  break;
-                }
-                cx_ite11 = cx_ite11.next;
-              }
-              if (c5 == null) {
-                if (ZPP_Contact.zpp_pool == null) {
-                  c5 = new ZPP_Contact();
-                } else {
-                  c5 = ZPP_Contact.zpp_pool;
-                  ZPP_Contact.zpp_pool = c5.next;
-                  c5.next = null;
-                }
-                const ci5 = c5.inner;
-                ci5.jnAcc = ci5.jtAcc = 0;
-                c5.hash = 0;
-                c5.fresh = true;
-                c5.arbiter = arb;
-                arb.jrAcc = 0;
-                const _this5 = arb.contacts;
-                c5._inuse = true;
-                const temp5 = c5;
-                temp5.next = _this5.next;
-                _this5.next = temp5;
-                _this5.modified = true;
-                _this5.length++;
-                arb.innards.add(ci5);
-              } else {
-                c5.fresh = false;
-              }
+              const c5 = ZPP_Collide._getContact(arb, 0);
               c5.px = px7;
               c5.py = py7;
               arb.nx = 1;
@@ -681,41 +519,7 @@ export class ZPP_Collide {
               if (rev) {
                 const px8 = s1.circle.worldCOMx + px6 * df1;
                 const py8 = s1.circle.worldCOMy + py6 * df1;
-                let c6 = null;
-                let cx_ite12 = arb.contacts.next;
-                while (cx_ite12 != null) {
-                  const cur6 = cx_ite12;
-                  if (0 == cur6.hash) {
-                    c6 = cur6;
-                    break;
-                  }
-                  cx_ite12 = cx_ite12.next;
-                }
-                if (c6 == null) {
-                  if (ZPP_Contact.zpp_pool == null) {
-                    c6 = new ZPP_Contact();
-                  } else {
-                    c6 = ZPP_Contact.zpp_pool;
-                    ZPP_Contact.zpp_pool = c6.next;
-                    c6.next = null;
-                  }
-                  const ci6 = c6.inner;
-                  ci6.jnAcc = ci6.jtAcc = 0;
-                  c6.hash = 0;
-                  c6.fresh = true;
-                  c6.arbiter = arb;
-                  arb.jrAcc = 0;
-                  const _this6 = arb.contacts;
-                  c6._inuse = true;
-                  const temp6 = c6;
-                  temp6.next = _this6.next;
-                  _this6.next = temp6;
-                  _this6.modified = true;
-                  _this6.length++;
-                  arb.innards.add(ci6);
-                } else {
-                  c6.fresh = false;
-                }
+                const c6 = ZPP_Collide._getContact(arb, 0);
                 c6.px = px8;
                 c6.py = py8;
                 arb.nx = -px6 * invDist1;
@@ -727,41 +531,7 @@ export class ZPP_Collide {
               } else {
                 const px9 = s1.circle.worldCOMx + px6 * df1;
                 const py9 = s1.circle.worldCOMy + py6 * df1;
-                let c7 = null;
-                let cx_ite13 = arb.contacts.next;
-                while (cx_ite13 != null) {
-                  const cur7 = cx_ite13;
-                  if (0 == cur7.hash) {
-                    c7 = cur7;
-                    break;
-                  }
-                  cx_ite13 = cx_ite13.next;
-                }
-                if (c7 == null) {
-                  if (ZPP_Contact.zpp_pool == null) {
-                    c7 = new ZPP_Contact();
-                  } else {
-                    c7 = ZPP_Contact.zpp_pool;
-                    ZPP_Contact.zpp_pool = c7.next;
-                    c7.next = null;
-                  }
-                  const ci7 = c7.inner;
-                  ci7.jnAcc = ci7.jtAcc = 0;
-                  c7.hash = 0;
-                  c7.fresh = true;
-                  c7.arbiter = arb;
-                  arb.jrAcc = 0;
-                  const _this7 = arb.contacts;
-                  c7._inuse = true;
-                  const temp7 = c7;
-                  temp7.next = _this7.next;
-                  _this7.next = temp7;
-                  _this7.modified = true;
-                  _this7.length++;
-                  arb.innards.add(ci7);
-                } else {
-                  c7.fresh = false;
-                }
+                const c7 = ZPP_Collide._getContact(arb, 0);
                 c7.px = px9;
                 c7.py = py9;
                 arb.nx = px6 * invDist1;
@@ -803,41 +573,7 @@ export class ZPP_Collide {
             if (rev) {
               const nx2 = a0.gnormx;
               const ny2 = a0.gnormy;
-              let c8 = null;
-              let cx_ite14 = arb.contacts.next;
-              while (cx_ite14 != null) {
-                const cur8 = cx_ite14;
-                if (0 == cur8.hash) {
-                  c8 = cur8;
-                  break;
-                }
-                cx_ite14 = cx_ite14.next;
-              }
-              if (c8 == null) {
-                if (ZPP_Contact.zpp_pool == null) {
-                  c8 = new ZPP_Contact();
-                } else {
-                  c8 = ZPP_Contact.zpp_pool;
-                  ZPP_Contact.zpp_pool = c8.next;
-                  c8.next = null;
-                }
-                const ci8 = c8.inner;
-                ci8.jnAcc = ci8.jtAcc = 0;
-                c8.hash = 0;
-                c8.fresh = true;
-                c8.arbiter = arb;
-                arb.jrAcc = 0;
-                const _this8 = arb.contacts;
-                c8._inuse = true;
-                const temp8 = c8;
-                temp8.next = _this8.next;
-                _this8.next = temp8;
-                _this8.modified = true;
-                _this8.length++;
-                arb.innards.add(ci8);
-              } else {
-                c8.fresh = false;
-              }
+              const c8 = ZPP_Collide._getContact(arb, 0);
               c8.px = px10;
               c8.py = py10;
               arb.nx = nx2;
@@ -849,41 +585,7 @@ export class ZPP_Collide {
             } else {
               const nx3 = -a0.gnormx;
               const ny3 = -a0.gnormy;
-              let c9 = null;
-              let cx_ite15 = arb.contacts.next;
-              while (cx_ite15 != null) {
-                const cur9 = cx_ite15;
-                if (0 == cur9.hash) {
-                  c9 = cur9;
-                  break;
-                }
-                cx_ite15 = cx_ite15.next;
-              }
-              if (c9 == null) {
-                if (ZPP_Contact.zpp_pool == null) {
-                  c9 = new ZPP_Contact();
-                } else {
-                  c9 = ZPP_Contact.zpp_pool;
-                  ZPP_Contact.zpp_pool = c9.next;
-                  c9.next = null;
-                }
-                const ci9 = c9.inner;
-                ci9.jnAcc = ci9.jtAcc = 0;
-                c9.hash = 0;
-                c9.fresh = true;
-                c9.arbiter = arb;
-                arb.jrAcc = 0;
-                const _this9 = arb.contacts;
-                c9._inuse = true;
-                const temp9 = c9;
-                temp9.next = _this9.next;
-                _this9.next = temp9;
-                _this9.modified = true;
-                _this9.length++;
-                arb.innards.add(ci9);
-              } else {
-                c9.fresh = false;
-              }
+              const c9 = ZPP_Collide._getContact(arb, 0);
               c9.px = px10;
               c9.py = py10;
               arb.nx = nx3;
@@ -920,41 +622,7 @@ export class ZPP_Collide {
       } else if (distSqr2 < napeNs.Config.epsilon * napeNs.Config.epsilon) {
         const px12 = s1.circle.worldCOMx;
         const py12 = s1.circle.worldCOMy;
-        let c10 = null;
-        let cx_ite16 = arb.contacts.next;
-        while (cx_ite16 != null) {
-          const cur10 = cx_ite16;
-          if (0 == cur10.hash) {
-            c10 = cur10;
-            break;
-          }
-          cx_ite16 = cx_ite16.next;
-        }
-        if (c10 == null) {
-          if (ZPP_Contact.zpp_pool == null) {
-            c10 = new ZPP_Contact();
-          } else {
-            c10 = ZPP_Contact.zpp_pool;
-            ZPP_Contact.zpp_pool = c10.next;
-            c10.next = null;
-          }
-          const ci10 = c10.inner;
-          ci10.jnAcc = ci10.jtAcc = 0;
-          c10.hash = 0;
-          c10.fresh = true;
-          c10.arbiter = arb;
-          arb.jrAcc = 0;
-          const _this10 = arb.contacts;
-          c10._inuse = true;
-          const temp10 = c10;
-          temp10.next = _this10.next;
-          _this10.next = temp10;
-          _this10.modified = true;
-          _this10.length++;
-          arb.innards.add(ci10);
-        } else {
-          c10.fresh = false;
-        }
+        const c10 = ZPP_Collide._getContact(arb, 0);
         c10.px = px12;
         c10.py = py12;
         arb.nx = 1;
@@ -970,41 +638,7 @@ export class ZPP_Collide {
         if (rev) {
           const px13 = s1.circle.worldCOMx + px11 * df2;
           const py13 = s1.circle.worldCOMy + py11 * df2;
-          let c11 = null;
-          let cx_ite17 = arb.contacts.next;
-          while (cx_ite17 != null) {
-            const cur11 = cx_ite17;
-            if (0 == cur11.hash) {
-              c11 = cur11;
-              break;
-            }
-            cx_ite17 = cx_ite17.next;
-          }
-          if (c11 == null) {
-            if (ZPP_Contact.zpp_pool == null) {
-              c11 = new ZPP_Contact();
-            } else {
-              c11 = ZPP_Contact.zpp_pool;
-              ZPP_Contact.zpp_pool = c11.next;
-              c11.next = null;
-            }
-            const ci11 = c11.inner;
-            ci11.jnAcc = ci11.jtAcc = 0;
-            c11.hash = 0;
-            c11.fresh = true;
-            c11.arbiter = arb;
-            arb.jrAcc = 0;
-            const _this11 = arb.contacts;
-            c11._inuse = true;
-            const temp11 = c11;
-            temp11.next = _this11.next;
-            _this11.next = temp11;
-            _this11.modified = true;
-            _this11.length++;
-            arb.innards.add(ci11);
-          } else {
-            c11.fresh = false;
-          }
+          const c11 = ZPP_Collide._getContact(arb, 0);
           c11.px = px13;
           c11.py = py13;
           arb.nx = -px11 * invDist2;
@@ -1016,41 +650,7 @@ export class ZPP_Collide {
         } else {
           const px14 = s1.circle.worldCOMx + px11 * df2;
           const py14 = s1.circle.worldCOMy + py11 * df2;
-          let c12 = null;
-          let cx_ite18 = arb.contacts.next;
-          while (cx_ite18 != null) {
-            const cur12 = cx_ite18;
-            if (0 == cur12.hash) {
-              c12 = cur12;
-              break;
-            }
-            cx_ite18 = cx_ite18.next;
-          }
-          if (c12 == null) {
-            if (ZPP_Contact.zpp_pool == null) {
-              c12 = new ZPP_Contact();
-            } else {
-              c12 = ZPP_Contact.zpp_pool;
-              ZPP_Contact.zpp_pool = c12.next;
-              c12.next = null;
-            }
-            const ci12 = c12.inner;
-            ci12.jnAcc = ci12.jtAcc = 0;
-            c12.hash = 0;
-            c12.fresh = true;
-            c12.arbiter = arb;
-            arb.jrAcc = 0;
-            const _this12 = arb.contacts;
-            c12._inuse = true;
-            const temp12 = c12;
-            temp12.next = _this12.next;
-            _this12.next = temp12;
-            _this12.modified = true;
-            _this12.length++;
-            arb.innards.add(ci12);
-          } else {
-            c12.fresh = false;
-          }
+          const c12 = ZPP_Collide._getContact(arb, 0);
           c12.px = px14;
           c12.py = py14;
           arb.nx = px11 * invDist2;
