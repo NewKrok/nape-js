@@ -12,15 +12,6 @@ name: Regenerate determinism goldens
 
 on:
   workflow_dispatch:
-  # TEMPORARY push trigger: workflow_dispatch only works once this file is on
-  # the default branch. The commit-step's "goldens unchanged" guard prevents a
-  # trigger loop (the bot's own commit re-records an identical file and stops).
-  # Remove this block after the branch merges to master.
-  push:
-    branches: [claude/code-optimization-3kp5iz]
-    paths:
-      - ".github/workflows/regen-goldens.yml"
-      - "packages/nape-js/tests/integration/__goldens__/determinism.golden.json"
 
 jobs:
   regen:
