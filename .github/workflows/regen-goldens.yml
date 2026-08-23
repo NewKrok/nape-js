@@ -1,0 +1,49 @@
+name: Regenerate determinism goldens
+
+# Records the bit-exact golden snapshots for
+# packages/nape-js/tests/integration/Determinism.golden.test.ts on the same
+# environment CI runs on (ubuntu / linux-x64 / node 22) and commits the result
+# back to the dispatched branch. Math.sin/cos differ in the last ULP across
+# platforms and V8 builds, so goldens recorded anywhere else would make CI's
+# exact comparison fail — regeneration must happen here.
+#
+# Run it whenever an INTENDED, reviewed behavior change invalidates the
+# goldens:  gh workflow run regen-goldens.yml --ref <branch>
+
+on:
+  workflow_dispatch:
+
+jobs:
+  regen:
+    name: Record golden snapshots (linux-x64 reference)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Record goldens
+        run: UPDATE_GOLDENS=1 npx vitest run tests/integration/Determinism.golden.test.ts
+        working-directory: packages/nape-js
+
+      - name: Format golden file
+        run: npx prettier --write packages/nape-js/tests/integration/__goldens__/determinism.golden.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/nape-js/tests/integration/__goldens__/determinism.golden.json
+          if git diff --cached --quiet; then
+            echo "goldens unchanged"
+            exit 0
+          fi
+          git commit -m "test: record determinism goldens on linux-x64 (CI reference)"
+          git push

@@ -18,7 +18,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
 - **~194 KB gzip** bundled (`dist/index.js` is a 27 KB re-export shim over the
   ~873 KB engine chunk — measure the bundled cost, not `index.js`). Note the eager
   `import "./core/bootstrap"` registers all 85 ZPP classes, so tree-shaking cannot
-  drop unused engine code. TSDoc documented, 6191 engine tests + 73 pixi-adapter tests
+  drop unused engine code. TSDoc documented, 6197 engine tests + 73 pixi-adapter tests
 
 ## Repo Layout (npm workspaces)
 
@@ -62,7 +62,7 @@ npm run format:check # prettier across both workspaces
 
 1. `npm run format:check` — must pass (Prettier code style, both packages)
 2. `npm run lint` — must pass (ESLint, both packages)
-3. `npm test` — all tests must pass (6191 + 73)
+3. `npm test` — all tests must pass (6197 + 73)
 4. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
 
 ## Release (per-package, auto)

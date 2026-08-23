@@ -10,8 +10,19 @@
  * CCD, solver ordering): any change that alters observable simulation behavior
  * — even by one ULP or by shifting a callback one step — fails these tests.
  *
- * Regenerate (only when a behavior change is INTENDED and reviewed):
- *   UPDATE_GOLDENS=1 npx vitest run tests/integration/Determinism.golden.test.ts
+ * PLATFORM PINNING: Math.sin/cos are not IEEE-exact and differ in the last bit
+ * across platforms/V8 builds, so bit-exact goldens only reproduce on the
+ * platform+arch that recorded them (see `__meta` in the golden file — CI's
+ * linux-x64 is the reference). On other platforms the golden comparison is
+ * skipped and the run-to-run determinism suite below still applies — that is
+ * the portable guarantee the engine actually makes (same-platform rollback).
+ *
+ * Regenerate (only when a behavior change is INTENDED and reviewed) with the
+ * regen-goldens workflow, which records on CI's own environment and commits
+ * the result back to the branch:
+ *   gh workflow run regen-goldens.yml --ref <branch>
+ * (Local recording — UPDATE_GOLDENS=1 vitest run <this file> — only produces
+ * CI-valid goldens on a linux-x64 machine with CI's node major.)
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync, writeFileSync, existsSync } from "fs";
@@ -45,6 +56,12 @@ function makeRng(seed: number): () => number {
 interface ScenarioResult {
   bodies: number[][]; // [posx, posy, rot, velx, vely, angvel, sleeping?1:0] per body
   events: string[]; // ordered "step:EVENT:idA:idB" collision begin/end log
+  baseId: number; // smallest body id in the scenario (for id normalization)
+}
+
+interface GoldenFile {
+  __meta?: { platform: string; arch: string; node: string };
+  [scenario: string]: any;
 }
 
 /** Step a space while recording body state and the collision event log. */
@@ -59,7 +76,9 @@ function runScenario(
     space.step(1 / 60, velIter, posIter);
   }
   const bodies: number[][] = [];
+  let baseId = Infinity;
   for (const body of space.bodies) {
+    if (body.id < baseId) baseId = body.id;
     bodies.push([
       body.position.x,
       body.position.y,
@@ -70,7 +89,7 @@ function runScenario(
       body.isSleeping ? 1 : 0,
     ]);
   }
-  return { bodies, events };
+  return { bodies, events, baseId };
 }
 
 function attachEventLog(space: Space, events: string[], stepRef: { n: number }): void {
@@ -98,6 +117,15 @@ function stepTracked(space: Space, steps: number, stepRef: { n: number }): void 
     stepRef.n = i;
     space.step(1 / 60, 8, 3);
   }
+}
+
+/** Rebase event body ids onto the scenario's smallest id, so two runs of the
+ *  same scenario (with different global id counters) become comparable. */
+function normalizeEvents(result: ScenarioResult): string[] {
+  return result.events.map((e) => {
+    const [step, label, a, b] = e.split(":");
+    return `${step}:${label}:${Number(a) - result.baseId}:${Number(b) - result.baseId}`;
+  });
 }
 
 // ── Scenarios ────────────────────────────────────────────────────────────────
@@ -238,41 +266,79 @@ const scenarios: Record<string, () => ScenarioResult> = {
 
 // ── Golden compare / record ──────────────────────────────────────────────────
 
-function loadGoldens(): Record<string, ScenarioResult> {
+function loadGoldens(): GoldenFile {
   if (!existsSync(GOLDEN_PATH)) return {};
   return JSON.parse(readFileSync(GOLDEN_PATH, "utf8"));
 }
 
+const goldens = loadGoldens();
+const meta = goldens.__meta;
+// Bit-exact goldens only reproduce on the recording platform (Math.sin/cos
+// differ in the last ULP across platforms/V8 builds).
+const exactEnv = meta != null && meta.platform === process.platform && meta.arch === process.arch;
+
 describe("Determinism golden snapshots", () => {
-  const goldens = loadGoldens();
-  const updated: Record<string, ScenarioResult> = {};
+  const updated: GoldenFile = {};
 
   for (const [name, build] of Object.entries(scenarios)) {
-    it(`${name} matches golden state exactly`, () => {
-      const result = build();
-      if (UPDATE) {
-        updated[name] = result;
-        return;
-      }
-      const golden = goldens[name];
-      expect(golden, `missing golden for "${name}" — run with UPDATE_GOLDENS=1`).toBeDefined();
-      expect(result.events).toEqual(golden.events);
-      expect(result.bodies.length).toBe(golden.bodies.length);
-      for (let i = 0; i < result.bodies.length; i++) {
-        for (let j = 0; j < 7; j++) {
-          // Exact float64 equality: JSON round-trips doubles losslessly.
-          expect(result.bodies[i][j], `${name}: body ${i} component ${j} diverged`).toBe(
-            golden.bodies[i][j],
-          );
+    it.skipIf(!UPDATE && !exactEnv)(
+      `${name} matches golden state exactly (${meta ? `${meta.platform}-${meta.arch}` : "unrecorded"})`,
+      () => {
+        const result = build();
+        if (UPDATE) {
+          updated[name] = { bodies: result.bodies, events: result.events };
+          return;
         }
-      }
-    });
+        const golden = goldens[name];
+        expect(golden, `missing golden for "${name}" — run with UPDATE_GOLDENS=1`).toBeDefined();
+        expect(result.events).toEqual(golden.events);
+        expect(result.bodies.length).toBe(golden.bodies.length);
+        for (let i = 0; i < result.bodies.length; i++) {
+          for (let j = 0; j < 7; j++) {
+            // Exact float64 equality: JSON round-trips doubles losslessly.
+            expect(result.bodies[i][j], `${name}: body ${i} component ${j} diverged`).toBe(
+              golden.bodies[i][j],
+            );
+          }
+        }
+      },
+    );
   }
 
   if (UPDATE) {
     it("writes updated goldens", () => {
+      updated.__meta = {
+        platform: process.platform,
+        arch: process.arch,
+        node: process.versions.node,
+      };
       writeFileSync(GOLDEN_PATH, JSON.stringify(updated, null, 1) + "\n");
-      expect(Object.keys(updated).length).toBe(Object.keys(scenarios).length);
+      expect(Object.keys(updated).length).toBe(Object.keys(scenarios).length + 1);
+    });
+  }
+});
+
+// ── Portable determinism: two runs in the same process must be bit-identical ─
+// This is the guarantee the engine makes on every platform (same-platform
+// rollback/replay); it runs everywhere, including platforms where the
+// golden snapshots above are skipped. Placed AFTER the golden suite so the
+// extra body allocations here cannot shift the global ids the recorded
+// golden event logs depend on.
+
+describe("Determinism run-to-run (platform independent)", () => {
+  for (const [name, build] of Object.entries(scenarios)) {
+    it(`${name} is bit-identical across two runs`, () => {
+      const run1 = build();
+      const run2 = build();
+      expect(normalizeEvents(run2)).toEqual(normalizeEvents(run1));
+      expect(run2.bodies.length).toBe(run1.bodies.length);
+      for (let i = 0; i < run1.bodies.length; i++) {
+        for (let j = 0; j < 7; j++) {
+          expect(run2.bodies[i][j], `${name}: body ${i} component ${j} diverged`).toBe(
+            run1.bodies[i][j],
+          );
+        }
+      }
     });
   }
 });

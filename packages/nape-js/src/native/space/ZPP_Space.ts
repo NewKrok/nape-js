@@ -1758,6 +1758,7 @@ export class ZPP_Space {
       toi.next = null;
     }
     toi.failed = false;
+    toi.slipped = false;
     toi.s1 = toi.s2 = null;
     toi.arbiter = null;
     if (shape.type == 0) {
@@ -2522,6 +2523,7 @@ export class ZPP_Space {
       toi.next = null;
     }
     toi.failed = false;
+    toi.slipped = false;
     toi.s1 = toi.s2 = null;
     toi.arbiter = null;
     if (shape.type == 0) {
@@ -4713,6 +4715,7 @@ export class ZPP_Space {
         toi.next = null;
       }
       toi.failed = false;
+      toi.slipped = false;
       toi.s1 = toi.s2 = null;
       toi.arbiter = null;
       const kin = b11.type == 3 || b21.type == 3;
