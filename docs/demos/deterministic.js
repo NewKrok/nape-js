@@ -19,6 +19,8 @@ let _spaceB = null;
 let _frame = 0;
 let _matched = 0;   // count of frames that matched perfectly
 let _mismatched = 0;
+let _lastComparedStamp = -1;
+let _pendingSpawns = [];
 let _W = 0;
 let _H = 0;
 let _THREE = null;
@@ -242,6 +244,8 @@ const demoDef = {
     _frame = 0;
     _matched = 0;
     _mismatched = 0;
+    _lastComparedStamp = -1;
+    _pendingSpawns = [];
 
     const rngA = mulberry32(42);
     buildScene(space, W / 2, H, rngA);
@@ -252,19 +256,37 @@ const demoDef = {
   },
 
   step(space, W, H) {
-    _frame++;
-    if (spacesMatch(space, _spaceB)) {
-      _matched++;
-    } else {
-      _mismatched++;
+    // demo.step() runs once per DISPLAY frame, while the runner steps Space A
+    // on a fixed 60 Hz accumulator (0, 1 or 2 steps per frame on 60/120 Hz
+    // monitors). Stepping B blindly here would run it at the display rate —
+    // 2× speed on a 120 Hz screen — so instead keep B in lockstep by catching
+    // it up to A's timeStamp, and compare only once per physics step.
+    while (_spaceB.timeStamp < space.timeStamp) {
+      _spaceB.step(1 / 60, 8, 3);
     }
-    _spaceB.step(1 / 60, 8, 3);
+    // Apply queued click-spawns only while the stamps are equal, so both
+    // spaces receive the new bodies at the exact same simulation time.
+    if (_pendingSpawns.length > 0) {
+      for (const s of _pendingSpawns) spawnInBoth(s.x, s.y, space, _spaceB, s.halfW);
+      _pendingSpawns = [];
+    }
+    if (space.timeStamp !== _lastComparedStamp) {
+      _lastComparedStamp = space.timeStamp;
+      _frame++;
+      if (spacesMatch(space, _spaceB)) {
+        _matched++;
+      } else {
+        _mismatched++;
+      }
+    }
   },
 
   click(x, y, space, W, H) {
+    // Queue instead of spawning immediately: a click lands between display
+    // frames, when Space A may be 1-2 physics steps ahead of Space B.
     const halfW = W / 2;
     const localX = x < halfW ? x : x - halfW;
-    spawnInBoth(localX, y, space, _spaceB, halfW);
+    _pendingSpawns.push({ x: localX, y, halfW });
   },
 
   render(ctx, space, W, H, showOutlines) {

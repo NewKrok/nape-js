@@ -1,5 +1,5 @@
 import { getOrCreate } from "../core/cache";
-import { Vec2 } from "../geom/Vec2";
+import { Vec2, disposeWeakVec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { MatMN } from "../geom/MatMN";
 import { Body } from "../phys/Body";
@@ -25,13 +25,6 @@ function _readVec2Y(v: Vec2): number {
   const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.y;
-}
-
-/** Dispose a Vec2 if it is weak. */
-function _disposeWeakVec2(v: Vec2): void {
-  if (v.zpp_inner.weak) {
-    v.dispose();
-  }
 }
 
 /**
@@ -164,7 +157,7 @@ export class PulleyJoint extends Constraint {
       throw new Error("Constraint::" + name + " cannot be null");
     }
     set(_readVec2X(anchor), _readVec2Y(anchor));
-    _disposeWeakVec2(anchor);
+    disposeWeakVec2(anchor);
   }
 
   /** @internal */
@@ -393,7 +386,7 @@ export class PulleyJoint extends Constraint {
     _readVec2X(value);
     _readVec2Y(value);
     this.zpp_inner.wrap_a1.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Anchor on `body2` in local coordinates. */
@@ -412,7 +405,7 @@ export class PulleyJoint extends Constraint {
     _readVec2X(value);
     _readVec2Y(value);
     this.zpp_inner.wrap_a2.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Anchor on `body3` in local coordinates. */
@@ -431,7 +424,7 @@ export class PulleyJoint extends Constraint {
     _readVec2X(value);
     _readVec2Y(value);
     this.zpp_inner.wrap_a3.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Anchor on `body4` in local coordinates. */
@@ -450,7 +443,7 @@ export class PulleyJoint extends Constraint {
     _readVec2X(value);
     _readVec2Y(value);
     this.zpp_inner.wrap_a4.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   // ---------------------------------------------------------------------------

@@ -65,7 +65,7 @@ describe("ZPP_ToiEvent", () => {
       expect(e.arbiter).toBe(null);
     });
 
-    it("does not touch unrelated fields (toi, frozen flags, c1, c2, axis)", () => {
+    it("resets slipped but not fields the consumers always rewrite", () => {
       const e = new ZPP_ToiEvent();
       const c1Ref = e.c1;
       const c2Ref = e.c2;
@@ -76,11 +76,14 @@ describe("ZPP_ToiEvent", () => {
       e.slipped = true;
       e.kinematic = true;
       e.alloc();
-      // alloc() resets only failed/s1/s2/arbiter — the rest persists.
+      // slipped MUST reset: the sweeps only ever set it to true, so a pooled
+      // event would otherwise leak a stale slip into its next life (this made
+      // same-process simulations diverge run-to-run). toi/frozen*/kinematic
+      // are unconditionally rewritten by every consumer before being read.
+      expect(e.slipped).toBe(false);
       expect(e.toi).toBe(0.42);
       expect(e.frozen1).toBe(true);
       expect(e.frozen2).toBe(true);
-      expect(e.slipped).toBe(true);
       expect(e.kinematic).toBe(true);
       // Vec2 references are preserved across alloc.
       expect(e.c1).toBe(c1Ref);

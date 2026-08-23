@@ -1,5 +1,5 @@
 import { getOrCreate } from "../core/cache";
-import { Vec2 } from "./Vec2";
+import { Vec2, disposeWeakVec2 } from "./Vec2";
 import { AABB } from "./AABB";
 import { ZPP_Ray } from "../native/geom/ZPP_Ray";
 
@@ -21,13 +21,6 @@ function _readVec2Y(v: Vec2): number {
   const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.y;
-}
-
-/** Dispose a Vec2 if it is weak. */
-function _disposeWeakVec2(v: Vec2): void {
-  if (v.zpp_inner.weak) {
-    v.dispose();
-  }
 }
 
 /**
@@ -79,7 +72,7 @@ export class Ray {
     if (zpp.origin.zpp_inner._invalidate != null) {
       zpp.origin.zpp_inner._invalidate(zpp.origin.zpp_inner);
     }
-    _disposeWeakVec2(origin);
+    disposeWeakVec2(origin);
 
     // Copy direction x/y into the owned Vec2
     const dx = _readVec2X(direction);
@@ -89,7 +82,7 @@ export class Ray {
     if (zpp.direction.zpp_inner._invalidate != null) {
       zpp.direction.zpp_inner._invalidate(zpp.direction.zpp_inner);
     }
-    _disposeWeakVec2(direction);
+    disposeWeakVec2(direction);
 
     zpp.zip_dir = true;
     zpp.maxdist = Infinity;
@@ -149,8 +142,8 @@ export class Ray {
     }
     ray.zpp_inner.maxdist = maxDist;
 
-    _disposeWeakVec2(start);
-    _disposeWeakVec2(end);
+    disposeWeakVec2(start);
+    disposeWeakVec2(end);
 
     return ray;
   }
@@ -173,7 +166,7 @@ export class Ray {
       throw new Error("Ray::origin cannot be null");
     }
     this.zpp_inner.origin.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** The ray's direction vector (need not be unit length; the engine normalises internally). */
@@ -191,7 +184,7 @@ export class Ray {
     }
     this.zpp_inner.direction.set(value);
     this.zpp_inner.zip_dir = true;
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Maximum travel distance for raycasting queries. Defaults to `Infinity`. */

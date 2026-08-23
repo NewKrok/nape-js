@@ -1,6 +1,12 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import {
+  Vec2,
+  type NapeInner,
+  type Writable,
+  disposeWeakVec2,
+  checkVec2Disposed,
+} from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { AABB } from "../geom/AABB";
 import { NapeList } from "../util/NapeList";
@@ -49,20 +55,6 @@ function _readVec2Y(v: Vec2): number {
   return inner.y;
 }
 
-/** Check a Vec2 is not disposed. */
-function _checkVec2Disposed(v: Vec2): void {
-  if (v != null && v.zpp_disp) {
-    throw new Error("Vec2 has been disposed and cannot be used!");
-  }
-}
-
-/** Dispose a Vec2 if it is weak. */
-function _disposeWeakVec2(v: Vec2): void {
-  if (v.zpp_inner.weak) {
-    v.dispose();
-  }
-}
-
 /**
  * Set a Vec2 wrapper property from a Vec2 source.
  * This handles the common pattern: validate source, set on wrapper, dispose weak source.
@@ -74,7 +66,7 @@ function _setVec2Prop(
   setupFn: (() => void) | null,
   getWrapper: () => Vec2,
 ): Vec2 {
-  _checkVec2Disposed(source);
+  checkVec2Disposed(source);
   if (source == null) {
     throw new Error("Body::" + propName + " cannot be null");
   }
@@ -131,7 +123,7 @@ export class Body extends Interactor {
 
     // Set position
     if (position != null) {
-      _checkVec2Disposed(position);
+      checkVec2Disposed(position);
       zpp.posx = _readVec2X(position);
       zpp.posy = _readVec2Y(position);
     } else {
@@ -172,7 +164,7 @@ export class Body extends Interactor {
 
     // Dispose weak position Vec2
     if (position != null) {
-      _disposeWeakVec2(position);
+      disposeWeakVec2(position);
     }
 
     // Register ANY_BODY callback type
@@ -938,7 +930,7 @@ export class Body extends Interactor {
    * @returns The transformed point in world space.
    */
   localPointToWorld(point: Vec2, weak: boolean = false): Vec2 {
-    _checkVec2Disposed(point);
+    checkVec2Disposed(point);
     if (point == null) {
       throw new Error("Cannot transform null Vec2");
     }
@@ -947,7 +939,7 @@ export class Body extends Interactor {
     const py = _readVec2Y(point);
     const tempx = this.zpp_inner.axisy * px - this.zpp_inner.axisx * py;
     const tempy = px * this.zpp_inner.axisx + py * this.zpp_inner.axisy;
-    _disposeWeakVec2(point);
+    disposeWeakVec2(point);
     return _newVec2(tempx + this.zpp_inner.posx, tempy + this.zpp_inner.posy, weak);
   }
 
@@ -958,7 +950,7 @@ export class Body extends Interactor {
    * @returns The transformed point in local space.
    */
   worldPointToLocal(point: Vec2, weak: boolean = false): Vec2 {
-    _checkVec2Disposed(point);
+    checkVec2Disposed(point);
     if (point == null) {
       throw new Error("Cannot transform null Vec2");
     }
@@ -967,7 +959,7 @@ export class Body extends Interactor {
     const py = _readVec2Y(point) - this.zpp_inner.posy;
     const tempx = px * this.zpp_inner.axisy + py * this.zpp_inner.axisx;
     const tempy = py * this.zpp_inner.axisy - px * this.zpp_inner.axisx;
-    _disposeWeakVec2(point);
+    disposeWeakVec2(point);
     return _newVec2(tempx, tempy, weak);
   }
 
@@ -978,7 +970,7 @@ export class Body extends Interactor {
    * @returns The rotated vector in world space.
    */
   localVectorToWorld(vector: Vec2, weak: boolean = false): Vec2 {
-    _checkVec2Disposed(vector);
+    checkVec2Disposed(vector);
     if (vector == null) {
       throw new Error("Cannot transform null Vec2");
     }
@@ -987,7 +979,7 @@ export class Body extends Interactor {
     const vy = _readVec2Y(vector);
     const tempx = this.zpp_inner.axisy * vx - this.zpp_inner.axisx * vy;
     const tempy = vx * this.zpp_inner.axisx + vy * this.zpp_inner.axisy;
-    _disposeWeakVec2(vector);
+    disposeWeakVec2(vector);
     return _newVec2(tempx, tempy, weak);
   }
 
@@ -998,7 +990,7 @@ export class Body extends Interactor {
    * @returns The rotated vector in local space.
    */
   worldVectorToLocal(vector: Vec2, weak: boolean = false): Vec2 {
-    _checkVec2Disposed(vector);
+    checkVec2Disposed(vector);
     if (vector == null) {
       throw new Error("Cannot transform null Vec2");
     }
@@ -1007,7 +999,7 @@ export class Body extends Interactor {
     const vy = _readVec2Y(vector);
     const tempx = vx * this.zpp_inner.axisy + vy * this.zpp_inner.axisx;
     const tempy = vy * this.zpp_inner.axisy - vx * this.zpp_inner.axisx;
-    _disposeWeakVec2(vector);
+    disposeWeakVec2(vector);
     return _newVec2(tempx, tempy, weak);
   }
 
@@ -1025,8 +1017,8 @@ export class Body extends Interactor {
    * @returns `this` for chaining.
    */
   applyImpulse(impulse: Vec2, pos?: Vec2, sleepable: boolean = false): Body {
-    _checkVec2Disposed(impulse);
-    if (pos != null) _checkVec2Disposed(pos);
+    checkVec2Disposed(impulse);
+    if (pos != null) checkVec2Disposed(pos);
     if (this.zpp_inner.world) {
       throw new Error("Space::world is immutable");
     }
@@ -1035,8 +1027,8 @@ export class Body extends Interactor {
     }
     // If sleepable and body is sleeping, dispose weak Vec2s and return
     if (sleepable && this.isSleeping) {
-      _disposeWeakVec2(impulse);
-      if (pos != null) _disposeWeakVec2(pos);
+      disposeWeakVec2(impulse);
+      if (pos != null) disposeWeakVec2(pos);
       return this;
     }
     this.zpp_inner.validate_mass();
@@ -1050,14 +1042,14 @@ export class Body extends Interactor {
       const ry = _readVec2Y(pos) - this.zpp_inner.posy;
       this.zpp_inner.validate_inertia();
       this.zpp_inner.angvel += (iy * rx - ix * ry) * this.zpp_inner.iinertia;
-      _disposeWeakVec2(pos);
+      disposeWeakVec2(pos);
     }
     if (!sleepable) {
       if (this.zpp_inner.type === 2) {
         this.zpp_inner.wake();
       }
     }
-    _disposeWeakVec2(impulse);
+    disposeWeakVec2(impulse);
     return this;
   }
 
@@ -1094,7 +1086,7 @@ export class Body extends Interactor {
    * @throws If `targetPosition` is null or `deltaTime` is zero.
    */
   setVelocityFromTarget(targetPosition: Vec2, targetRotation: number, deltaTime: number): Body {
-    _checkVec2Disposed(targetPosition);
+    checkVec2Disposed(targetPosition);
     if (targetPosition == null) {
       throw new Error("Cannot set velocity for null target position");
     }
@@ -1126,7 +1118,7 @@ export class Body extends Interactor {
       this.zpp_inner.angvel = angularVel;
       this.zpp_inner.wake();
     }
-    _disposeWeakVec2(targetPosition);
+    disposeWeakVec2(targetPosition);
     return this;
   }
 
@@ -1141,7 +1133,7 @@ export class Body extends Interactor {
    */
   translateShapes(translation: Vec2): Body {
     this.zpp_inner.immutable_midstep("Body::translateShapes()");
-    _checkVec2Disposed(translation);
+    checkVec2Disposed(translation);
     if (this.zpp_inner.world) {
       throw new Error("Space::world is immutable");
     }
@@ -1156,7 +1148,7 @@ export class Body extends Interactor {
       cx_ite = cx_ite.next;
     }
     translation.zpp_inner.weak = weak;
-    _disposeWeakVec2(translation);
+    disposeWeakVec2(translation);
     return this;
   }
 
@@ -1254,7 +1246,7 @@ export class Body extends Interactor {
    * @throws If `centre` is null or `angle` is NaN.
    */
   rotate(centre: Vec2, angle: number): Body {
-    _checkVec2Disposed(centre);
+    checkVec2Disposed(centre);
     if (centre == null) {
       throw new Error("Cannot rotate about a null Vec2");
     }
@@ -1302,7 +1294,7 @@ export class Body extends Interactor {
       }
     }
     centre.zpp_inner.weak = weak;
-    _disposeWeakVec2(centre);
+    disposeWeakVec2(centre);
     return this;
   }
 
@@ -1394,7 +1386,7 @@ export class Body extends Interactor {
    * @returns True if the point is inside at least one shape.
    */
   contains(point: Vec2): boolean {
-    _checkVec2Disposed(point);
+    checkVec2Disposed(point);
     if (point == null) {
       throw new Error("Cannot check containment of null point");
     }
@@ -1410,7 +1402,7 @@ export class Body extends Interactor {
       cx_ite = cx_ite.next;
     }
     point.zpp_inner.weak = wasWeak;
-    _disposeWeakVec2(point);
+    disposeWeakVec2(point);
     return result;
   }
 

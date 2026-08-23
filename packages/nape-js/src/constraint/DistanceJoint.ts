@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2 } from "../geom/Vec2";
+import { Vec2, disposeWeakVec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { MatMN } from "../geom/MatMN";
 import { Vec3 } from "../geom/Vec3";
@@ -26,13 +26,6 @@ function _readVec2Y(v: Vec2): number {
   const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.y;
-}
-
-/** Dispose a Vec2 if it is weak. */
-function _disposeWeakVec2(v: Vec2): void {
-  if (v.zpp_inner.weak) {
-    v.dispose();
-  }
 }
 
 /**
@@ -101,7 +94,7 @@ export class DistanceJoint extends Constraint {
     const a1y = _readVec2Y(anchor1);
     zpp.a1localx = a1x;
     zpp.a1localy = a1y;
-    _disposeWeakVec2(anchor1);
+    disposeWeakVec2(anchor1);
 
     // Set anchor2
     if ((anchor2 as any)?.zpp_disp) {
@@ -114,7 +107,7 @@ export class DistanceJoint extends Constraint {
     const a2y = _readVec2Y(anchor2);
     zpp.a2localx = a2x;
     zpp.a2localy = a2y;
-    _disposeWeakVec2(anchor2);
+    disposeWeakVec2(anchor2);
 
     // Set jointMin with validation
     this.zpp_inner.immutable_midstep("DistanceJoint::jointMin");
@@ -265,7 +258,7 @@ export class DistanceJoint extends Constraint {
       this.zpp_inner.setup_a1();
     }
     this.zpp_inner.wrap_a1.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Anchor point on `body2` in local coordinates. Modifying this wakes the constraint. */
@@ -286,7 +279,7 @@ export class DistanceJoint extends Constraint {
       this.zpp_inner.setup_a2();
     }
     this.zpp_inner.wrap_a2.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   // ---------------------------------------------------------------------------

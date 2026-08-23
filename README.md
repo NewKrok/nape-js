@@ -8,7 +8,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@newkrok/nape-js.svg)](https://www.npmjs.com/package/@newkrok/nape-js)
 [![CI](https://github.com/NewKrok/nape-js/actions/workflows/ci.yml/badge.svg)](https://github.com/NewKrok/nape-js/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/NewKrok/nape-js/graph/badge.svg?flag=nape-js)](https://codecov.io/gh/NewKrok/nape-js)
-[![bundle size](https://img.shields.io/badge/gzip-27%20KB-blue.svg)](https://github.com/NewKrok/nape-js)
+[![bundle size](https://img.shields.io/badge/gzip-~194%20KB-blue.svg)](https://github.com/NewKrok/nape-js)
 [![license](https://img.shields.io/npm/l/@newkrok/nape-js.svg)](https://github.com/NewKrok/nape-js/blob/master/LICENSE)
 [![docs](https://img.shields.io/badge/docs-online-blue.svg)](https://napejs.org/)
 
@@ -173,7 +173,7 @@ restored.step(1 / 60);
 ```
 
 The `/serialization` entry point is a separate export, but it still loads the engine
-(measured ~178 KB gzip bundled on its own) — the snapshot format is defined in terms
+(measured ~170 KB gzip bundled on its own) — the snapshot format is defined in terms
 of engine types. The snapshot captures bodies, shapes, materials, interaction
 filters, fluid properties, all constraint types (except `UserConstraint`), and compounds.
 Arbiters and broadphase tree state are reconstructed automatically on the first step.
@@ -209,7 +209,7 @@ while (!player.finished) player.step();
 ```
 
 The `/replay` entry point is a separate export but still loads the engine
-(measured ~178 KB gzip bundled on its own). The library is intentionally a thin
+(measured ~170 KB gzip bundled on its own). The library is intentionally a thin
 layer: it owns the snapshot + input-log plumbing, and the user owns the
 `applyInput` callback. This keeps the replay deterministic as long as the
 callback is a pure function of `(input, space, frame)`.
@@ -245,7 +245,7 @@ present, with automatic `postMessage` fallback otherwise.
 ```bash
 npm install
 npm run build      # tsup → packages/*/dist/ (ESM + CJS + DTS)
-npm test           # vitest — 6169 engine tests + 73 pixi-adapter tests
+npm test           # vitest — 6197 engine tests + 73 pixi-adapter tests
 npm run benchmark  # Performance benchmarks
 ```
 

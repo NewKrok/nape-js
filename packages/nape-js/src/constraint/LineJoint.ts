@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2 } from "../geom/Vec2";
+import { Vec2, disposeWeakVec2 } from "../geom/Vec2";
 import { Body } from "../phys/Body";
 import { MatMN } from "../geom/MatMN";
 import { Vec3 } from "../geom/Vec3";
@@ -26,13 +26,6 @@ function _readVec2Y(v: Vec2): number {
   const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.y;
-}
-
-/** Dispose a Vec2 if it is weak. */
-function _disposeWeakVec2(v: Vec2): void {
-  if (v.zpp_inner.weak) {
-    v.dispose();
-  }
 }
 
 /**
@@ -99,7 +92,7 @@ export class LineJoint extends Constraint {
     }
     zpp.a1localx = _readVec2X(anchor1);
     zpp.a1localy = _readVec2Y(anchor1);
-    _disposeWeakVec2(anchor1);
+    disposeWeakVec2(anchor1);
 
     // Set anchor2
     if ((anchor2 as any)?.zpp_disp) {
@@ -110,7 +103,7 @@ export class LineJoint extends Constraint {
     }
     zpp.a2localx = _readVec2X(anchor2);
     zpp.a2localy = _readVec2Y(anchor2);
-    _disposeWeakVec2(anchor2);
+    disposeWeakVec2(anchor2);
 
     // Set direction
     if ((direction as any)?.zpp_disp) {
@@ -122,7 +115,7 @@ export class LineJoint extends Constraint {
     zpp.nlocalx = _readVec2X(direction);
     zpp.nlocaly = _readVec2Y(direction);
     zpp.zip_n = true;
-    _disposeWeakVec2(direction);
+    disposeWeakVec2(direction);
 
     // Set jointMin with validation
     this.zpp_inner.immutable_midstep("LineJoint::jointMin");
@@ -267,7 +260,7 @@ export class LineJoint extends Constraint {
       this.zpp_inner.setup_a1();
     }
     this.zpp_inner.wrap_a1.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Anchor point on `body2` in local coordinates. */
@@ -288,7 +281,7 @@ export class LineJoint extends Constraint {
       this.zpp_inner.setup_a2();
     }
     this.zpp_inner.wrap_a2.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   /** Direction of the line in `body1`'s local space. Does not need to be normalised. */
@@ -309,7 +302,7 @@ export class LineJoint extends Constraint {
       this.zpp_inner.setup_n();
     }
     this.zpp_inner.wrap_n.set(value);
-    _disposeWeakVec2(value);
+    disposeWeakVec2(value);
   }
 
   // ---------------------------------------------------------------------------

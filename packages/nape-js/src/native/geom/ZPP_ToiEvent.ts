@@ -42,6 +42,7 @@ export class ZPP_ToiEvent {
 
   alloc(): void {
     this.failed = false;
+    this.slipped = false;
     this.s1 = this.s2 = null;
     this.arbiter = null;
   }
