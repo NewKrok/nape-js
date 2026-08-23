@@ -311,6 +311,12 @@ export class ParticleEmitter {
 
   // ----- internal -----
   private _alive: Body[] = [];
+  /**
+   * Body -> its index in `_alive`, kept in sync by `_spawnOne` / `_killAt`.
+   * Turns the per-collision membership tests and `_flushKillSet` lookups from
+   * O(alive) scans into O(1) hits.
+   */
+  private _aliveIndex: Map<Body, number> = new Map();
   private _ages: number[] = [];
   private _lifetimes: number[] = [];
   private _pool: Body[] = [];
@@ -607,6 +613,7 @@ export class ParticleEmitter {
     const body = this._acquire();
     this._reviveBody(body, wx, wy, vx, vy, 0, 0);
 
+    this._aliveIndex.set(body, this._alive.length);
     this._alive.push(body);
     this._ages.push(0);
     this._lifetimes.push(lifetime);
@@ -635,10 +642,13 @@ export class ParticleEmitter {
     const body = this._alive[index];
     const last = this._alive.length - 1;
     if (index !== last) {
-      this._alive[index] = this._alive[last];
+      const moved = this._alive[last];
+      this._alive[index] = moved;
       this._ages[index] = this._ages[last];
       this._lifetimes[index] = this._lifetimes[last];
+      this._aliveIndex.set(moved, index);
     }
+    this._aliveIndex.delete(body);
     this._alive.pop();
     this._ages.pop();
     this._lifetimes.pop();
@@ -666,8 +676,8 @@ export class ParticleEmitter {
     if (!set || set.size === 0) return;
     // Iterate a snapshot — _killAt mutates `_alive`.
     for (const body of set) {
-      const idx = this._alive.indexOf(body);
-      if (idx >= 0) this._killAt(idx, "manual");
+      const idx = this._aliveIndex.get(body);
+      if (idx !== undefined) this._killAt(idx, "manual");
     }
     set.clear();
   }
@@ -795,8 +805,8 @@ export class ParticleEmitter {
         // shapes' parent bodies (or bodies, depending on internal mapping).
         const a = cb.int1 as unknown as Body;
         const b = cb.int2 as unknown as Body;
-        const aIsParticle = this._alive.indexOf(a) >= 0;
-        const bIsParticle = this._alive.indexOf(b) >= 0;
+        const aIsParticle = this._aliveIndex.has(a);
+        const bIsParticle = this._aliveIndex.has(b);
         if (aIsParticle) this.onCollide(a, b);
         else if (bIsParticle) this.onCollide(b, a);
       },
