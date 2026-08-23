@@ -3631,8 +3631,48 @@ export class ZPP_Space {
     m.broadphasePairCount = m.contactCount;
   }
 
+  /**
+   * True when no body could produce a time-of-impact event this step, making the
+   * whole continuous pass a no-op that can be skipped.
+   *
+   * `continuousEvent` bails immediately on `s1.body.sweepFrozen &&
+   * s2.body.sweepFrozen`, returning its `in_arb` untouched. `updatePos` clears
+   * `sweepFrozen` only for bodies that actually moved, so once every live and
+   * kinematic body is frozen every pair in the broadphase hits that guard and
+   * the pass cannot create a TOI event, alter an arbiter, or move a body.
+   *
+   * Skipping it then also skips that pass's share of the shared pair
+   * bookkeeping, which is why this must stay an all-or-nothing test: a single
+   * unfrozen body means a sweep might be needed and the pass runs in full.
+   * Verified equivalent (callback order and bit-exact positions) in
+   * tests/integration/CCD.gating.test.ts.
+   *
+   * Note that `updatePos` unfreezes every kinematic body unconditionally (its
+   * bullet-threshold check is gated on `type == 2`), so a scene holding any
+   * kinematic body never skips, even with the body parked at zero velocity.
+   * That is deliberately conservative rather than tuned: recognising stationary
+   * kinematics would need its own equivalence proof, since their velocity can
+   * be reassigned between steps.
+   */
+  private _ccdCanSkip(): boolean {
+    let node = this.live.head;
+    while (node != null) {
+      if (!node.elt.sweepFrozen) return false;
+      node = node.next;
+    }
+    node = this.kinematics.head;
+    while (node != null) {
+      if (!node.elt.sweepFrozen) return false;
+      node = node.next;
+    }
+    return true;
+  }
+
   continuousCollisions(deltaTime: number) {
     const MAX_VEL = (2 * Math.PI) / deltaTime;
+    if (this._ccdCanSkip()) {
+      return;
+    }
     this.bphase.broadphase(this, false);
     let curTimeAlpha = 0.0;
     while (curTimeAlpha < 1 && this.toiEvents.head != null) {
