@@ -35,8 +35,11 @@ jobs:
           restore-keys: |
             benchmark-master-
 
+      # --expose-gc lets the harness collect between trials instead of eating a
+      # major GC mid-measurement; it cut worst-case run-to-run spread from ~80%
+      # to under 7%.
       - name: Run benchmarks
-        run: node benchmarks/run.mjs --json > benchmarks/current.json
+        run: node --expose-gc benchmarks/run.mjs --json > benchmarks/current.json
 
       # On PRs with a cached baseline: compare and fail if >10% regression
       - name: Compare against master baseline

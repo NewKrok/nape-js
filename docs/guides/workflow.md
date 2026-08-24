@@ -152,6 +152,27 @@ Triggered once at the end of each release run.
 On PRs: compares against master baseline, fails if >10% regression.
 On master: saves new baseline for future PRs.
 
+**Measuring locally.** Use `npm run benchmark` — it passes `--expose-gc`, which
+the harness needs to collect between trials rather than eating a major GC inside
+a measurement window. Each scenario builds a **seeded** scene per trial, warms
+up, then times the whole window and reports the **fastest** trial: GC and
+scheduling noise only ever adds time, so the minimum is the robust estimate.
+
+Reported run-to-run repeatability is ~3% typical and ~6% worst case (the older
+protocol, which used `Math.random()` scenes and per-step medians, swung 15–67%
+and could not resolve anything below ~10%). Two practical consequences:
+
+- The `q1-spread` column is the health signal — how far the *fastest quartile* of
+  trials spreads. Above ~5% the machine was too busy and that row is soft;
+  `compare.mjs` marks such rows `~` and downgrades an over-threshold verdict to
+  INCONCLUSIVE rather than failing on noise.
+- `compare.mjs` skips calibration normalization when both runs report the same
+  Node version, since within one machine the calibration factor is itself ~10%
+  noise that would land on every comparison. Pass `--normalize` to force it.
+
+Changes below ~5% need a dedicated measurement (many trials, idle machine), not
+a single suite run.
+
 ---
 
 ## Commit Conventions
