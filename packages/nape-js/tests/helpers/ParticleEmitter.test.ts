@@ -679,6 +679,57 @@ describe("ParticleEmitter — hooks", () => {
     expect(e.active.length).toBe(0);
     expect(reasons).toEqual(["manual"]);
   });
+
+  // The alive list is maintained by swap-pop alongside a Body -> index map.
+  // A stale map entry (e.g. a missed update for the swapped-in body) would let
+  // requestKill kill the wrong particle or silently no-op, so exercise kills
+  // from the middle of the list and in bulk.
+  it("requestKill targets the right particle after swap-pop reordering", () => {
+    const space = makeSpace();
+    const e = new ParticleEmitter({
+      space,
+      origin: new Vec2(0, 0),
+      maxParticles: 10,
+      lifetimeMin: 100,
+      lifetimeMax: 100,
+    });
+    const bodies = e.emit(5);
+    expect(bodies.length).toBe(5);
+
+    // Kill from the middle: forces the last element to be swapped into its slot.
+    e.requestKill(bodies[1]);
+    e.update(0.01);
+    expect(e.active.length).toBe(4);
+    expect(e.active).not.toContain(bodies[1]);
+
+    // The body that got swapped into index 1 must still be killable.
+    e.requestKill(bodies[4]);
+    e.update(0.01);
+    expect(e.active.length).toBe(3);
+    expect(e.active).not.toContain(bodies[4]);
+
+    // Killing an already-dead body is a no-op, not a mis-targeted kill.
+    e.requestKill(bodies[1]);
+    e.update(0.01);
+    expect(e.active.length).toBe(3);
+
+    // Remaining bodies are exactly the ones never killed.
+    expect(new Set(e.active)).toEqual(new Set([bodies[0], bodies[2], bodies[3]]));
+
+    // Bulk-kill the rest, then confirm the emitter can spawn cleanly again
+    // (a leaked map entry would make a recycled pool body look still-alive).
+    for (const b of [bodies[0], bodies[2], bodies[3]]) e.requestKill(b);
+    e.update(0.01);
+    expect(e.active.length).toBe(0);
+
+    const respawned = e.emit(3);
+    expect(respawned.length).toBe(3);
+    expect(e.active.length).toBe(3);
+    e.requestKill(respawned[1]);
+    e.update(0.01);
+    expect(e.active.length).toBe(2);
+    expect(e.active).not.toContain(respawned[1]);
+  });
 });
 
 // ---------------------------------------------------------------------------
