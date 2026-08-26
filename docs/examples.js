@@ -95,6 +95,7 @@ import raftRapids            from "./demos/raft-rapids.js?v=3.39.2";
 import skyHook               from "./demos/sky-hook.js?v=3.39.2";
 import ragdollRoyale         from "./demos/ragdoll-royale.js?v=3.39.2";
 import cargoCrane            from "./demos/cargo-crane.js?v=3.39.2";
+import pulse                 from "./demos/pulse.js?v=3.39.2";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -150,6 +151,7 @@ const ALL_DEMOS = [
   skyHook,
   ragdollRoyale,
   cargoCrane,
+  pulse,
 ];
 
 const gtag = window.gtag || function() {};
