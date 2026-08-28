@@ -8,6 +8,7 @@
  */
 
 import { ZPP_Edge } from "./ZPP_Edge";
+import { Config } from "../../Config";
 
 export class ZPP_Polygon {
   // --- Static: Haxe metadata ---
@@ -533,7 +534,6 @@ export class ZPP_Polygon {
   }
 
   splice_collinear_real(): void {
-    const nape = ZPP_Polygon._nape;
     if (this.lverts.next == null) return;
     if (this.lverts.next.next == null) return;
     if (this.lverts.next.next.next == null) return;
@@ -545,7 +545,7 @@ export class ZPP_Polygon {
       const nxt = cur.next == null ? this.lverts.next : cur.next;
       const dx = cur.x - nxt.x;
       const dy = cur.y - nxt.y;
-      if (dx * dx + dy * dy < nape.Config.epsilon * nape.Config.epsilon) {
+      if (dx * dx + dy * dy < Config.epsilon * Config.epsilon) {
         this.cleanup_lvert(cur);
         cur = this.lverts.erase(pre);
       } else {
@@ -568,7 +568,7 @@ export class ZPP_Polygon {
         const bx = nxt1.x - cur1.x;
         const by = nxt1.y - cur1.y;
         const crs = by * ax - bx * ay;
-        if (crs * crs >= nape.Config.epsilon * nape.Config.epsilon) {
+        if (crs * crs >= Config.epsilon * Config.epsilon) {
           pre1 = pre1.next;
         } else {
           this.cleanup_lvert(cur1);
@@ -620,7 +620,7 @@ export class ZPP_Polygon {
       } else {
         this.validate_lverts();
         this.validate_area_inertia();
-        if (this.area < nape.Config.epsilon) {
+        if (this.area < Config.epsilon) {
           if (zpp.util.ZPP_Flags.ValidationResult_DEGENERATE == null) {
             zpp.util.ZPP_Flags.internal = true;
             zpp.util.ZPP_Flags.ValidationResult_DEGENERATE = new nape.shape.ValidationResult();
@@ -644,9 +644,9 @@ export class ZPP_Polygon {
             const bx = v.x - u.x;
             const by = v.y - u.y;
             const dot = by * ax - bx * ay;
-            if (dot > nape.Config.epsilon) {
+            if (dot > Config.epsilon) {
               pos = true;
-            } else if (dot < -nape.Config.epsilon) {
+            } else if (dot < -Config.epsilon) {
               neg = true;
             }
             if (pos && neg) {
@@ -666,9 +666,9 @@ export class ZPP_Polygon {
             const bx1 = v.x - u.x;
             const by1 = v.y - u.y;
             const dot1 = by1 * ax1 - bx1 * ay1;
-            if (dot1 > nape.Config.epsilon) {
+            if (dot1 > Config.epsilon) {
               pos = true;
-            } else if (dot1 < -nape.Config.epsilon) {
+            } else if (dot1 < -Config.epsilon) {
               neg = true;
             }
             if (!(pos && neg)) {
@@ -681,9 +681,9 @@ export class ZPP_Polygon {
               const bx2 = v.x - u.x;
               const by2 = v.y - u.y;
               const dot2 = by2 * ax2 - bx2 * ay2;
-              if (dot2 > nape.Config.epsilon) {
+              if (dot2 > Config.epsilon) {
                 pos = true;
-              } else if (dot2 < -nape.Config.epsilon) {
+              } else if (dot2 < -Config.epsilon) {
                 neg = true;
               }
             }
@@ -708,7 +708,7 @@ export class ZPP_Polygon {
               while (cx_ite2_next != null && cont) {
                 const b = cx_ite2_next;
                 if (u1 !== a && u1 !== b && v1 !== a && v1 !== b) {
-                  cont = this._checkNoIntersection(u1, v1, a, b, nape);
+                  cont = this._checkNoIntersection(u1, v1, a, b);
                 }
                 a = b;
                 cx_ite2_next = cx_ite2_next.next;
@@ -717,7 +717,7 @@ export class ZPP_Polygon {
               if (cont) {
                 const b = this.lverts.next;
                 if (u1 !== a && u1 !== b && v1 !== a && v1 !== b) {
-                  cont = this._checkNoIntersection(u1, v1, a, b, nape);
+                  cont = this._checkNoIntersection(u1, v1, a, b);
                 }
               }
               u1 = v1;
@@ -731,7 +731,7 @@ export class ZPP_Polygon {
               while (cx_ite3_next != null && cont) {
                 const b1 = cx_ite3_next;
                 if (u1 !== a1 && u1 !== b1 && v2 !== a1 && v2 !== b1) {
-                  cont = this._checkNoIntersection(u1, v2, a1, b1, nape);
+                  cont = this._checkNoIntersection(u1, v2, a1, b1);
                 }
                 a1 = b1;
                 cx_ite3_next = cx_ite3_next.next;
@@ -739,7 +739,7 @@ export class ZPP_Polygon {
               if (cont) {
                 const b2 = this.lverts.next;
                 if (u1 !== a1 && u1 !== b2 && v2 !== a1 && v2 !== b2) {
-                  cont = this._checkNoIntersection(u1, v2, a1, b2, nape);
+                  cont = this._checkNoIntersection(u1, v2, a1, b2);
                 }
               }
             }
@@ -768,7 +768,7 @@ export class ZPP_Polygon {
   }
 
   /** Helper: check if two edges (u1→v1) and (a→b) do NOT intersect */
-  private _checkNoIntersection(u1: any, v1: any, a: any, b: any, nape: any): boolean {
+  private _checkNoIntersection(u1: any, v1: any, a: any, b: any): boolean {
     const sx = u1.x - a.x;
     const sy = u1.y - a.y;
     const vx = v1.x - u1.x;
@@ -776,12 +776,12 @@ export class ZPP_Polygon {
     const qx = b.x - a.x;
     const qy = b.y - a.y;
     let den = vy * qx - vx * qy;
-    if (den * den > nape.Config.epsilon) {
+    if (den * den > Config.epsilon) {
       den = 1 / den;
       const t = (qy * sx - qx * sy) * den;
-      if (t > nape.Config.epsilon && t < 1 - nape.Config.epsilon) {
+      if (t > Config.epsilon && t < 1 - Config.epsilon) {
         const s = (vy * sx - vx * sy) * den;
-        if (s > nape.Config.epsilon && s < 1 - nape.Config.epsilon) {
+        if (s > Config.epsilon && s < 1 - Config.epsilon) {
           return false; // intersection found
         }
       }
@@ -919,7 +919,6 @@ export class ZPP_Polygon {
   }
 
   __validate_angDrag(): void {
-    const nape = ZPP_Polygon._nape;
     if (this.lverts.length < 3) {
       throw new Error("Polygon's with less than 3 vertices have no meaningful angDrag");
     }
@@ -940,7 +939,7 @@ export class ZPP_Polygon {
       const dy = v.y - u.y;
       accum +=
         edge.length *
-        nape.Config.fluidAngularDragFriction *
+        Config.fluidAngularDragFriction *
         this.material.dynamicFriction *
         edge.lprojection *
         edge.lprojection;
@@ -954,7 +953,7 @@ export class ZPP_Polygon {
         const dota = edge.lnormy * u.x - edge.lnormx * u.y;
         const dotb = edge.lnormy * cx - edge.lnormx * cy;
         const dots = (dotb * dotb * dotb - dota * dota * dota) / (3 * (dotb - dota));
-        accum += dots * ta * edge.length * nape.Config.fluidAngularDrag;
+        accum += dots * ta * edge.length * Config.fluidAngularDrag;
       }
       if (t < 1) {
         const tb = t < 0 ? 0 : t;
@@ -965,12 +964,7 @@ export class ZPP_Polygon {
         const dota1 = edge.lnormy * cx1 - edge.lnormx * cy1;
         const dotb1 = edge.lnormy * v.x - edge.lnormx * v.y;
         const dots1 = (dotb1 * dotb1 * dotb1 - dota1 * dota1 * dota1) / (3 * (dotb1 - dota1));
-        accum +=
-          dots1 *
-          nape.Config.fluidVacuumDrag *
-          (1 - tb) *
-          edge.length *
-          nape.Config.fluidAngularDrag;
+        accum += dots1 * Config.fluidVacuumDrag * (1 - tb) * edge.length * Config.fluidAngularDrag;
       }
       u = v;
       cx_itej = cx_itej.next;
@@ -984,7 +978,7 @@ export class ZPP_Polygon {
       const dy1 = v1.y - u.y;
       accum +=
         edge1.length *
-        nape.Config.fluidAngularDragFriction *
+        Config.fluidAngularDragFriction *
         this.material.dynamicFriction *
         edge1.lprojection *
         edge1.lprojection;
@@ -999,7 +993,7 @@ export class ZPP_Polygon {
         const dota2 = edge1.lnormy * u.x - edge1.lnormx * u.y;
         const dotb2 = edge1.lnormy * cx2 - edge1.lnormx * cy2;
         const dots2 = (dotb2 * dotb2 * dotb2 - dota2 * dota2 * dota2) / (3 * (dotb2 - dota2));
-        accum += dots2 * ta1 * edge1.length * nape.Config.fluidAngularDrag;
+        accum += dots2 * ta1 * edge1.length * Config.fluidAngularDrag;
       }
       if (t3 < 1) {
         const tb1 = t3 < 0 ? 0 : t3;
@@ -1011,11 +1005,7 @@ export class ZPP_Polygon {
         const dotb3 = edge1.lnormy * v1.x - edge1.lnormx * v1.y;
         const dots3 = (dotb3 * dotb3 * dotb3 - dota3 * dota3 * dota3) / (3 * (dotb3 - dota3));
         accum +=
-          dots3 *
-          nape.Config.fluidVacuumDrag *
-          (1 - tb1) *
-          edge1.length *
-          nape.Config.fluidAngularDrag;
+          dots3 * Config.fluidVacuumDrag * (1 - tb1) * edge1.length * Config.fluidAngularDrag;
       }
     }
     this.angDrag = accum / (this.inertia * perim);

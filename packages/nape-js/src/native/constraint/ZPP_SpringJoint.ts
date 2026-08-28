@@ -13,6 +13,7 @@ import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { Config } from "../../Config";
 
 export class ZPP_SpringJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_SpringJoint) => any) | null = null;
@@ -237,7 +238,7 @@ export class ZPP_SpringJoint extends ZPP_Constraint {
     this.ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
 
     let dist = this.nx * this.nx + this.ny * this.ny;
-    if (dist < ZPP_Constraint._nape.Config.epsilon) {
+    if (dist < Config.epsilon) {
       // Nearly coincident — pick arbitrary direction
       this.nx = 1;
       this.ny = 0;

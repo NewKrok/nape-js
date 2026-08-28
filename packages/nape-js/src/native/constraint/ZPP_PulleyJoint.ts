@@ -10,6 +10,7 @@
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
+import { Config } from "../../Config";
 
 export class ZPP_PulleyJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_PulleyJoint) => any) | null = null;
@@ -943,7 +944,6 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   }
 
   override applyImpulsePos(): boolean {
-    const napeNs = ZPP_Constraint._nape;
     let j: number;
     const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
     const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
@@ -1008,13 +1008,13 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
       if (this.breakUnderError && E * E > this.maxError * this.maxError) {
         return true;
       }
-      if (E * E < napeNs.Config.constraintLinearSlop * napeNs.Config.constraintLinearSlop) {
+      if (E * E < Config.constraintLinearSlop * Config.constraintLinearSlop) {
         return false;
       }
       E *= 0.5;
       if (E * E > 6) {
         const k = this.b1.smass + this.b2.smass;
-        if (k > napeNs.Config.epsilon) {
+        if (k > Config.epsilon) {
           const kInv = 0.75 / k;
           j = -E * kInv;
           if (this.equal || j < 0) {

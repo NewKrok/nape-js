@@ -12,6 +12,7 @@ import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Interactor } from "./ZPP_Interactor";
+import { Config } from "../../Config";
 
 export class ZPP_Body {
   // --- Static: Haxe metadata ---
@@ -430,13 +431,11 @@ export class ZPP_Body {
   }
 
   atRest(dt: number): boolean {
-    const nape = ZPP_Body._nape;
-
     if (this.type !== 2) {
       return this.component.sleeping;
     }
 
-    const linSq = nape.Config.linearSleepThreshold * nape.Config.linearSleepThreshold;
+    const linSq = Config.linearSleepThreshold * Config.linearSleepThreshold;
     let cansleep: boolean;
 
     if (this.velx * this.velx + this.vely * this.vely > linSq) {
@@ -450,7 +449,7 @@ export class ZPP_Body {
         const dx1 = this.aabb.maxx - this.aabb.minx;
         const dy1 = this.aabb.maxy - this.aabb.miny;
         const idl = dx1 * dx1 + dy1 * dy1;
-        const angSq = nape.Config.angularSleepThreshold * nape.Config.angularSleepThreshold;
+        const angSq = Config.angularSleepThreshold * Config.angularSleepThreshold;
         if (4 * this.angvel * this.angvel * idl > angSq) {
           cansleep = false;
         } else {
@@ -462,7 +461,7 @@ export class ZPP_Body {
     if (!cansleep) {
       this.component.waket = this.space.stamp;
     }
-    return this.component.waket + nape.Config.sleepDelay < this.space.stamp;
+    return this.component.waket + Config.sleepDelay < this.space.stamp;
   }
 
   refreshArbiters(): void {

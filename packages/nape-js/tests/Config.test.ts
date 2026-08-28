@@ -41,4 +41,15 @@ describe("Config (P13 modernized)", () => {
     expect(napeConfig.collisionSlop).toBeCloseTo(Config.collisionSlop);
     expect(napeConfig.illConditionedThreshold).toBeCloseTo(Config.illConditionedThreshold);
   });
+
+  it("nape.Config is the same object as Config, so runtime mutations reach the engine", () => {
+    expect(getNape().Config).toBe(Config);
+    const original = Config.sleepDelay;
+    try {
+      Config.sleepDelay = 123;
+      expect(getNape().Config.sleepDelay).toBe(123);
+    } finally {
+      Config.sleepDelay = original;
+    }
+  });
 });

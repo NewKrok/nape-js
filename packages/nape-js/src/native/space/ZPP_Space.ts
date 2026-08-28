@@ -30,6 +30,7 @@ import { ZPP_Component } from "./ZPP_Component";
 import { ZPP_CallbackSet } from "./ZPP_CallbackSet";
 import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 import { PhysicsMetrics } from "../../profiler/PhysicsMetrics";
+import { Config } from "../../Config";
 
 // ---------------------------------------------------------------------------
 // Sort keys and scratch buffers for the deterministic-order / contact sorts.
@@ -3708,12 +3709,7 @@ export class ZPP_Space {
               toi.frozen1 = false;
               toi.frozen2 = true;
             }
-            ZPP_SweepDistance.staticSweep(
-              toi,
-              deltaTime,
-              0,
-              ZPP_Space._nape.Config.collisionSlopCCD,
-            );
+            ZPP_SweepDistance.staticSweep(toi, deltaTime, 0, Config.collisionSlopCCD);
             if (toi.toi < 0) {
               cx_ite = this.toiEvents.erase(pre);
               const o1 = toi;
@@ -4638,7 +4634,7 @@ export class ZPP_Space {
             b11.angvel = b11.sweep_angvel = 0;
           } else if (minTOI.slipped) {
             const b12 = b11;
-            b12.sweep_angvel *= ZPP_Space._nape.Config.angularCCDSlipScale;
+            b12.sweep_angvel *= Config.angularCCDSlipScale;
             b11.angvel = b12.sweep_angvel;
           } else {
             b11.angvel = b11.sweep_angvel;
@@ -4650,7 +4646,7 @@ export class ZPP_Space {
             b21.angvel = b21.sweep_angvel = 0;
           } else if (minTOI.slipped) {
             const b22 = b21;
-            b22.sweep_angvel *= ZPP_Space._nape.Config.angularCCDSlipScale;
+            b22.sweep_angvel *= Config.angularCCDSlipScale;
             b21.angvel = b22.sweep_angvel;
           } else {
             b21.angvel = b21.sweep_angvel;
@@ -4768,7 +4764,7 @@ export class ZPP_Space {
           toi.s2 = s2;
         }
         toi.kinematic = false;
-        ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, ZPP_Space._nape.Config.collisionSlopCCD);
+        ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, Config.collisionSlopCCD);
       } else {
         toi.s1 = s1;
         toi.s2 = s2;
@@ -4781,20 +4777,9 @@ export class ZPP_Space {
             toi.frozen1 = false;
             toi.frozen2 = true;
           }
-          ZPP_SweepDistance.staticSweep(
-            toi,
-            this.pre_dt,
-            0,
-            ZPP_Space._nape.Config.collisionSlopCCD,
-          );
+          ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, Config.collisionSlopCCD);
         } else {
-          ZPP_SweepDistance.dynamicSweep(
-            toi,
-            this.pre_dt,
-            0,
-            ZPP_Space._nape.Config.collisionSlopCCD,
-            false,
-          );
+          ZPP_SweepDistance.dynamicSweep(toi, this.pre_dt, 0, Config.collisionSlopCCD, false);
         }
       }
       if ((stat && toi.toi < 0) || toi.failed) {
@@ -7204,8 +7189,8 @@ export class ZPP_Space {
         }
       }
       if (!cur.disableCCD) {
-        const linThreshold = ZPP_Space._nape.Config.staticCCDLinearThreshold * cur.sweepRadius;
-        const angThreshold = ZPP_Space._nape.Config.staticCCDAngularThreshold;
+        const linThreshold = Config.staticCCDLinearThreshold * cur.sweepRadius;
+        const angThreshold = Config.staticCCDAngularThreshold;
         if (
           (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt > linThreshold * linThreshold ||
           cur.angvel * cur.angvel * dt * dt > angThreshold * angThreshold ||
@@ -7416,8 +7401,8 @@ export class ZPP_Space {
           }
           cur.sweepFrozen = false;
           if (cur.type == 2 && cur.bulletEnabled) {
-            const linThreshold2 = ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur.sweepRadius;
-            const angThreshold2 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
+            const linThreshold2 = Config.bulletCCDLinearThreshold * cur.sweepRadius;
+            const angThreshold2 = Config.bulletCCDAngularThreshold;
             if (
               (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt >
                 linThreshold2 * linThreshold2 ||
@@ -7467,8 +7452,8 @@ export class ZPP_Space {
         }
       }
       if (!cur1.disableCCD) {
-        const linThreshold1 = ZPP_Space._nape.Config.staticCCDLinearThreshold * cur1.sweepRadius;
-        const angThreshold1 = ZPP_Space._nape.Config.staticCCDAngularThreshold;
+        const linThreshold1 = Config.staticCCDLinearThreshold * cur1.sweepRadius;
+        const angThreshold1 = Config.staticCCDAngularThreshold;
         if (
           (cur1.velx * cur1.velx + cur1.vely * cur1.vely) * dt * dt >
             linThreshold1 * linThreshold1 ||
@@ -7680,9 +7665,8 @@ export class ZPP_Space {
           }
           cur1.sweepFrozen = false;
           if (cur1.type == 2 && cur1.bulletEnabled) {
-            const linThreshold21 =
-              ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur1.sweepRadius;
-            const angThreshold21 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
+            const linThreshold21 = Config.bulletCCDLinearThreshold * cur1.sweepRadius;
+            const angThreshold21 = Config.bulletCCDAngularThreshold;
             if (
               (cur1.velx * cur1.velx + cur1.vely * cur1.vely) * dt * dt >
                 linThreshold21 * linThreshold21 ||
@@ -8125,9 +8109,7 @@ export class ZPP_Space {
     }
     if (
       arb.cleared ||
-      arb.up_stamp +
-        (arb.type == ZPP_Arbiter.COL ? ZPP_Space._nape.Config.arbiterExpirationDelay : 0) <
-        this.stamp
+      arb.up_stamp + (arb.type == ZPP_Arbiter.COL ? Config.arbiterExpirationDelay : 0) < this.stamp
     ) {
       if (arb.type == ZPP_Arbiter.SENSOR) {
         const _this16 = arb.sensorarb;
@@ -8473,11 +8455,11 @@ export class ZPP_Space {
           const statType = _this27.b1.type != 2 || _this27.b2.type != 2;
           const bias = statType
             ? _this27.continuous
-              ? ZPP_Space._nape.Config.contactContinuousStaticBiasCoef
-              : ZPP_Space._nape.Config.contactStaticBiasCoef
+              ? Config.contactContinuousStaticBiasCoef
+              : Config.contactStaticBiasCoef
             : _this27.continuous
-              ? ZPP_Space._nape.Config.contactContinuousBiasCoef
-              : ZPP_Space._nape.Config.contactBiasCoef;
+              ? Config.contactContinuousBiasCoef
+              : Config.contactBiasCoef;
           _this27.biasCoef = bias;
           _this27.continuous = false;
           let pre6 = null;
@@ -8486,7 +8468,7 @@ export class ZPP_Space {
           let cx_ite8 = _this27.contacts.next;
           while (cx_ite8 != null) {
             const c = cx_ite8;
-            if (c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < _this27.stamp) {
+            if (c.stamp + Config.arbiterExpirationDelay < _this27.stamp) {
               const _this28 = _this27.contacts;
               let old6;
               let ret30;
@@ -8560,14 +8542,12 @@ export class ZPP_Space {
               let kt = mass_sum + _this27.b2.sinertia * (x2 * x2);
               const x3 = ci.r1x * _this27.nx + ci.r1y * _this27.ny;
               kt += _this27.b1.sinertia * (x3 * x3);
-              ci.tMass =
-                kt < ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon ? 0 : 1.0 / kt;
+              ci.tMass = kt < Config.epsilon * Config.epsilon ? 0 : 1.0 / kt;
               const x4 = _this27.ny * ci.r2x - _this27.nx * ci.r2y;
               let nt = mass_sum + _this27.b2.sinertia * (x4 * x4);
               const x5 = _this27.ny * ci.r1x - _this27.nx * ci.r1y;
               nt += _this27.b1.sinertia * (x5 * x5);
-              ci.nMass =
-                nt < ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon ? 0 : 1.0 / nt;
+              ci.nMass = nt < Config.epsilon * Config.epsilon ? 0 : 1.0 / nt;
               let vrx = 0.0;
               let vry = 0.0;
               let ang = _this27.b2.angvel + _this27.b2.kinangvel;
@@ -8579,11 +8559,11 @@ export class ZPP_Space {
               let vdot = _this27.nx * vrx + _this27.ny * vry;
               c.elasticity = _this27.restitution;
               ci.bounce = vdot * c.elasticity;
-              if (ci.bounce > -ZPP_Space._nape.Config.elasticThreshold) {
+              if (ci.bounce > -Config.elasticThreshold) {
                 ci.bounce = 0;
               }
               vdot = vry * _this27.nx - vrx * _this27.ny;
-              const thr = ZPP_Space._nape.Config.staticFrictionThreshold;
+              const thr = Config.staticFrictionThreshold;
               if (vdot * vdot > thr * thr) {
                 ci.friction = _this27.dyn_fric;
               } else {
@@ -8665,7 +8645,7 @@ export class ZPP_Space {
               _this27.kMassc * _this27.kMassc;
             if (
               norm <
-              ZPP_Space._nape.Config.illConditionedThreshold *
+              Config.illConditionedThreshold *
                 (_this27.kMassa * _this27.kMassc - _this27.kMassb * _this27.kMassb)
             ) {
               _this27.Ka = _this27.kMassa;
@@ -8867,12 +8847,7 @@ export class ZPP_Space {
               (_this30.b1.vely +
                 _this30.b1.kinvely +
                 _this30.r1x * (_this30.b1.angvel + _this30.b1.kinangvel));
-            if (
-              !(
-                vrnx * vrnx + vrny * vrny <
-                ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon
-              )
-            ) {
+            if (!(vrnx * vrnx + vrny * vrny < Config.epsilon * Config.epsilon)) {
               const d = vrnx * vrnx + vrny * vrny;
               const imag = 1.0 / Math.sqrt(d);
               const t13 = imag;
@@ -8887,7 +8862,7 @@ export class ZPP_Space {
                 (-_this30.ws1.fluidProperties.viscosity * _this30.overlap) / _this30.ws2.area;
               if (_this30.ws2.type == 0) {
                 tViscosity1 -=
-                  (f * _this30.ws2.circle.radius * ZPP_Space._nape.Config.fluidLinearDrag) /
+                  (f * _this30.ws2.circle.radius * Config.fluidLinearDrag) /
                   (2 * _this30.ws2.circle.radius * Math.PI);
               } else {
                 const poly = _this30.ws2.polygon;
@@ -8899,10 +8874,10 @@ export class ZPP_Space {
                   bord += ex.length;
                   let fact = f * ex.length * (ex.gnormx * _this30.nx + ex.gnormy * _this30.ny);
                   if (fact > 0) {
-                    fact *= -ZPP_Space._nape.Config.fluidVacuumDrag;
+                    fact *= -Config.fluidVacuumDrag;
                     fact = fact;
                   }
-                  acc -= fact * 0.5 * ZPP_Space._nape.Config.fluidLinearDrag;
+                  acc -= fact * 0.5 * Config.fluidLinearDrag;
                   cx_ite9 = cx_ite9.next;
                 }
                 tViscosity1 += acc / bord;
@@ -8913,7 +8888,7 @@ export class ZPP_Space {
                 (-_this30.ws2.fluidProperties.viscosity * _this30.overlap) / _this30.ws1.area;
               if (_this30.ws1.type == 0) {
                 tViscosity1 -=
-                  (f1 * _this30.ws1.circle.radius * ZPP_Space._nape.Config.fluidLinearDrag) /
+                  (f1 * _this30.ws1.circle.radius * Config.fluidLinearDrag) /
                   (2 * _this30.ws1.circle.radius * Math.PI);
               } else {
                 const poly1 = _this30.ws1.polygon;
@@ -8925,10 +8900,10 @@ export class ZPP_Space {
                   bord1 += ex1.length;
                   let fact1 = f1 * ex1.length * (ex1.gnormx * _this30.nx + ex1.gnormy * _this30.ny);
                   if (fact1 > 0) {
-                    fact1 *= -ZPP_Space._nape.Config.fluidVacuumDrag;
+                    fact1 *= -Config.fluidVacuumDrag;
                     fact1 = fact1;
                   }
-                  acc1 -= fact1 * 0.5 * ZPP_Space._nape.Config.fluidLinearDrag;
+                  acc1 -= fact1 * 0.5 * Config.fluidLinearDrag;
                   cx_ite10 = cx_ite10.next;
                 }
                 tViscosity1 += acc1 / bord1;
@@ -9019,7 +8994,7 @@ export class ZPP_Space {
       let cx_ite11 = _this31.contacts.next;
       while (cx_ite11 != null) {
         const c3 = cx_ite11;
-        if (c3.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < _this31.stamp) {
+        if (c3.stamp + Config.arbiterExpirationDelay < _this31.stamp) {
           const _this32 = _this31.contacts;
           let old8;
           let ret32;
@@ -9647,7 +9622,7 @@ export class ZPP_Space {
             dx = r2x - r1x;
             dy = r2y - r1y;
             const dl = Math.sqrt(dx * dx + dy * dy);
-            const r = arb.radius - ZPP_Space._nape.Config.collisionSlop;
+            const r = arb.radius - Config.collisionSlop;
             let err = dl - r;
             if (dx * arb.nx + dy * arb.ny < 0) {
               dx = -dx;
@@ -9655,11 +9630,11 @@ export class ZPP_Space {
               err -= arb.radius;
             }
             if (err < 0) {
-              if (dl < ZPP_Space._nape.Config.epsilon) {
+              if (dl < Config.epsilon) {
                 if (arb.b1.smass != 0.0) {
-                  arb.b1.posx += ZPP_Space._nape.Config.epsilon * 10;
+                  arb.b1.posx += Config.epsilon * 10;
                 } else {
-                  arb.b2.posx += ZPP_Space._nape.Config.epsilon * 10;
+                  arb.b2.posx += Config.epsilon * 10;
                 }
               } else {
                 const t2 = 1.0 / dl;
@@ -9765,11 +9740,11 @@ export class ZPP_Space {
               }
             }
             let err1 = clip1x * gnormx + clip1y * gnormy - gproj - arb.radius;
-            err1 += ZPP_Space._nape.Config.collisionSlop;
+            err1 += Config.collisionSlop;
             let err2 = 0.0;
             if (arb.hpc2) {
               err2 = clip2x * gnormx + clip2y * gnormy - gproj - arb.radius;
-              err2 += ZPP_Space._nape.Config.collisionSlop;
+              err2 += Config.collisionSlop;
             }
             if (err1 < 0 || err2 < 0) {
               if (arb.rev) {
@@ -11483,7 +11458,7 @@ export class ZPP_Space {
                     let cx_ite17 = arb3.contacts.next;
                     while (cx_ite17 != null) {
                       const c = cx_ite17;
-                      if (c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < arb3.stamp) {
+                      if (c.stamp + Config.arbiterExpirationDelay < arb3.stamp) {
                         const _this39 = arb3.contacts;
                         let old4;
                         let ret50;

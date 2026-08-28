@@ -18,6 +18,7 @@ import {
   ZNPArray2_ZPP_MarchPair,
 } from "../util/ZNPArray2";
 import { ZNPList } from "../util/ZNPList";
+import { Config } from "../../Config";
 
 export class ZPP_MarchingSquares {
   // --- Static fields ---
@@ -597,7 +598,7 @@ export class ZPP_MarchingSquares {
         }
       }
       const a = area * 0.5;
-      tmp = a * a < nape.Config.epsilon * nape.Config.epsilon;
+      tmp = a * a < Config.epsilon * Config.epsilon;
     }
     if (tmp) {
       while (poly != null) {
@@ -1479,14 +1480,13 @@ export class ZPP_MarchingSquares {
   // Instance method: lerp — basic linear interpolation
   // ---------------------------------------------------------------------------
   lerp(x0: number, x1: number, v0: number, v1: number): number {
-    const nape = ZPP_MarchingSquares._nape;
     if (v0 == 0) {
       return x0;
     } else if (v1 == 0) {
       return x1;
     } else {
       const dv = v0 - v1;
-      let t = dv * dv < nape.Config.epsilon * nape.Config.epsilon ? 0.5 : v0 / dv;
+      let t = dv * dv < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv;
       if (t < 0) {
         t = 0;
       } else if (t > 1) {
@@ -1508,7 +1508,6 @@ export class ZPP_MarchingSquares {
     iso: (x: number, y: number) => number,
     quality: number,
   ): number {
-    const nape = ZPP_MarchingSquares._nape;
     let xm: number;
     if (v0 == 0) {
       xm = x0;
@@ -1516,7 +1515,7 @@ export class ZPP_MarchingSquares {
       xm = x1;
     } else {
       const dv = v0 - v1;
-      let t = dv * dv < nape.Config.epsilon * nape.Config.epsilon ? 0.5 : v0 / dv;
+      let t = dv * dv < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv;
       if (t < 0) {
         t = 0;
       } else if (t > 1) {
@@ -1542,7 +1541,7 @@ export class ZPP_MarchingSquares {
         xm = x1;
       } else {
         const dv1 = v0 - v1;
-        let t1 = dv1 * dv1 < nape.Config.epsilon * nape.Config.epsilon ? 0.5 : v0 / dv1;
+        let t1 = dv1 * dv1 < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv1;
         if (t1 < 0) {
           t1 = 0;
         } else if (t1 > 1) {
@@ -1566,7 +1565,6 @@ export class ZPP_MarchingSquares {
     iso: (x: number, y: number) => number,
     quality: number,
   ): number {
-    const nape = ZPP_MarchingSquares._nape;
     let ym: number;
     if (v0 == 0) {
       ym = y0;
@@ -1574,7 +1572,7 @@ export class ZPP_MarchingSquares {
       ym = y1;
     } else {
       const dv = v0 - v1;
-      let t = dv * dv < nape.Config.epsilon * nape.Config.epsilon ? 0.5 : v0 / dv;
+      let t = dv * dv < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv;
       if (t < 0) {
         t = 0;
       } else if (t > 1) {
@@ -1600,7 +1598,7 @@ export class ZPP_MarchingSquares {
         ym = y1;
       } else {
         const dv1 = v0 - v1;
-        let t1 = dv1 * dv1 < nape.Config.epsilon * nape.Config.epsilon ? 0.5 : v0 / dv1;
+        let t1 = dv1 * dv1 < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv1;
         if (t1 < 0) {
           t1 = 0;
         } else if (t1 > 1) {

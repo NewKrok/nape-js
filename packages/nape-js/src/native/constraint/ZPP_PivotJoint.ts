@@ -10,6 +10,7 @@
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
+import { Config } from "../../Config";
 
 export class ZPP_PivotJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_PivotJoint) => any) | null = null;
@@ -557,7 +558,6 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
   }
 
   override applyImpulsePos(): boolean {
-    const napeNs = ZPP_Constraint._nape;
     const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
     const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
     const r2x = this.b2.axisy * this.a2localx - this.b2.axisx * this.a2localy;
@@ -567,10 +567,7 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
     if (this.breakUnderError && Ex * Ex + Ey * Ey > this.maxError * this.maxError) {
       return true;
     }
-    if (
-      Ex * Ex + Ey * Ey <
-      napeNs.Config.constraintLinearSlop * napeNs.Config.constraintLinearSlop
-    ) {
+    if (Ex * Ex + Ey * Ey < Config.constraintLinearSlop * Config.constraintLinearSlop) {
       return false;
     }
     const t = 0.5;
@@ -580,7 +577,7 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
     let Jy: number;
     if (Ex * Ex + Ey * Ey > 6) {
       const k = this.b1.smass + this.b2.smass;
-      if (k > napeNs.Config.epsilon) {
+      if (k > Config.epsilon) {
         const kInv = 0.75 / k;
         Jx = -Ex * kInv;
         Jy = -Ey * kInv;

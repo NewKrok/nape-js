@@ -1,3 +1,4 @@
+import { Config } from "../../Config";
 /**
  * ZPP_Circle — Internal circle shape for the nape physics engine.
  *
@@ -222,13 +223,11 @@ export class ZPP_Circle {
   }
 
   __validate_angDrag(): void {
-    const nape = ZPP_Circle._nape;
     const lc = this.localCOMx * this.localCOMx + this.localCOMy * this.localCOMy;
     const r2 = this.radius * this.radius;
-    const skin = this.material.dynamicFriction * nape.Config.fluidAngularDragFriction;
+    const skin = this.material.dynamicFriction * Config.fluidAngularDragFriction;
     this.angDrag =
-      (lc + 2 * r2) * skin +
-      0.5 * nape.Config.fluidAngularDrag * (1 + nape.Config.fluidVacuumDrag) * lc;
+      (lc + 2 * r2) * skin + 0.5 * Config.fluidAngularDrag * (1 + Config.fluidVacuumDrag) * lc;
     this.angDrag /= 2 * (lc + 0.5 * r2);
   }
 

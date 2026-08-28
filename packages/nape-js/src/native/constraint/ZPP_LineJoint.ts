@@ -10,6 +10,7 @@
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
+import { Config } from "../../Config";
 
 export class ZPP_LineJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_LineJoint) => any) | null = null;
@@ -335,7 +336,6 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   }
 
   override validate(): void {
-    const napeNs = ZPP_Constraint._nape;
     if (this.b1 == null || this.b2 == null) {
       throw new Error("AngleJoint cannot be simulated null bodies");
     }
@@ -350,7 +350,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     if (this.jointMin > this.jointMax) {
       throw new Error("DistanceJoint must have jointMin <= jointMax");
     }
-    if (this.nlocalx * this.nlocalx + this.nlocaly * this.nlocaly < napeNs.Config.epsilon) {
+    if (this.nlocalx * this.nlocalx + this.nlocaly * this.nlocaly < Config.epsilon) {
       throw new Error("DistanceJoint direction must be non-degenerate");
     }
     if (this.b1.type != 2 && this.b2.type != 2) {
@@ -611,8 +611,6 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   }
 
   override applyImpulsePos(): boolean {
-    const napeNs = ZPP_Constraint._nape;
-
     const nx = this.b1.axisy * this.nlocalx - this.b1.axisx * this.nlocaly;
     const ny = this.nlocalx * this.b1.axisx + this.nlocaly * this.b1.axisy;
 
@@ -646,10 +644,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
       return true;
     }
 
-    if (
-      Ex * Ex + Ey * Ey <
-      napeNs.Config.constraintLinearSlop * napeNs.Config.constraintLinearSlop
-    ) {
+    if (Ex * Ex + Ey * Ey < Config.constraintLinearSlop * Config.constraintLinearSlop) {
       return false;
     }
 
@@ -661,7 +656,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
 
     if (Ex * Ex + Ey * Ey > 6) {
       const k = this.b1.smass + this.b2.smass;
-      if (k > napeNs.Config.epsilon) {
+      if (k > Config.epsilon) {
         const kInv = 0.8 / k;
         const Jx1 = kInv * (ny * Ex - scale * nx * Ey);
         const Jy1 = kInv * (nx * Ex * scale - ny * Ex);

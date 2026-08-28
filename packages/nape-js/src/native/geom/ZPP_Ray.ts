@@ -13,6 +13,7 @@ import { ZPP_AABB } from "./ZPP_AABB";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_ConvexRayResult } from "./ZPP_ConvexRayResult";
 import { ZNPNode_RayResult } from "../util/ZNPRegistry";
+import { Config } from "../../Config";
 
 export class ZPP_Ray {
   // --- Static: Haxe metadata ---
@@ -219,8 +220,7 @@ export class ZPP_Ray {
   validate_dir(): void {
     if (this.zip_dir) {
       this.zip_dir = false;
-      const nape = getNape();
-      if (this.dirx * this.dirx + this.diry * this.diry < nape.Config.epsilon) {
+      if (this.dirx * this.dirx + this.diry * this.diry < Config.epsilon) {
         throw new Error("Ray::direction is degenerate");
       }
       const d = this.dirx * this.dirx + this.diry * this.diry;
@@ -689,7 +689,6 @@ export class ZPP_Ray {
   // ---------------------------------------------------------------------------
 
   polysect(p: any, inner: boolean, mint: number): any {
-    const nape = getNape();
     let min = mint;
     let edge: any = null;
     let ei = p.edges.head;
@@ -709,12 +708,12 @@ export class ZPP_Ray {
         const _sx = u.x - this.originx;
         const _sy = u.y - this.originy;
         let den = _vy * this.dirx - _vx * this.diry;
-        if (den * den > nape.Config.epsilon) {
+        if (den * den > Config.epsilon) {
           den = 1 / den;
           const sxx = (_vy * _sx - _vx * _sy) * den;
           if (sxx > 0 && sxx < min && sxx <= this.maxdist) {
             const txx = (this.diry * _sx - this.dirx * _sy) * den;
-            if (txx > -nape.Config.epsilon && txx < 1 + nape.Config.epsilon) {
+            if (txx > -Config.epsilon && txx < 1 + Config.epsilon) {
               min = sxx;
               edge = ei.elt;
             }
@@ -737,12 +736,12 @@ export class ZPP_Ray {
         const _sx1 = u.x - this.originx;
         const _sy1 = u.y - this.originy;
         let den1 = _vy1 * this.dirx - _vx1 * this.diry;
-        if (den1 * den1 > nape.Config.epsilon) {
+        if (den1 * den1 > Config.epsilon) {
           den1 = 1 / den1;
           const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
           if (sxx1 > 0 && sxx1 < min && sxx1 <= this.maxdist) {
             const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
-            if (txx1 > -nape.Config.epsilon && txx1 < 1 + nape.Config.epsilon) {
+            if (txx1 > -Config.epsilon && txx1 < 1 + Config.epsilon) {
               min = sxx1;
               edge = ei.elt;
             }
@@ -771,7 +770,6 @@ export class ZPP_Ray {
   // ---------------------------------------------------------------------------
 
   polysect2(p: any, inner: boolean, list: any): void {
-    const nape = getNape();
     let min = Infinity;
     let max = -1.0;
     let edge: any = null;
@@ -793,12 +791,12 @@ export class ZPP_Ray {
         const _sx = u.x - this.originx;
         const _sy = u.y - this.originy;
         let den = _vy * this.dirx - _vx * this.diry;
-        if (den * den > nape.Config.epsilon) {
+        if (den * den > Config.epsilon) {
           den = 1 / den;
           const sxx = (_vy * _sx - _vx * _sy) * den;
           if (sxx > 0 && sxx <= this.maxdist && (sxx < min || sxx > max)) {
             const txx = (this.diry * _sx - this.dirx * _sy) * den;
-            if (txx > -nape.Config.epsilon && txx < 1 + nape.Config.epsilon) {
+            if (txx > -Config.epsilon && txx < 1 + Config.epsilon) {
               if (sxx < min) {
                 min = sxx;
                 edge = ei.elt;
@@ -827,12 +825,12 @@ export class ZPP_Ray {
         const _sx1 = u.x - this.originx;
         const _sy1 = u.y - this.originy;
         let den1 = _vy1 * this.dirx - _vx1 * this.diry;
-        if (den1 * den1 > nape.Config.epsilon) {
+        if (den1 * den1 > Config.epsilon) {
           den1 = 1 / den1;
           const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
           if (sxx1 > 0 && sxx1 <= this.maxdist && (sxx1 < min || sxx1 > max)) {
             const txx1 = (this.diry * _sx1 - this.dirx * _sy1) * den1;
-            if (txx1 > -nape.Config.epsilon && txx1 < 1 + nape.Config.epsilon) {
+            if (txx1 > -Config.epsilon && txx1 < 1 + Config.epsilon) {
               if (sxx1 < min) {
                 min = sxx1;
                 edge = ei.elt;

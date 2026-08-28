@@ -9,6 +9,7 @@ import { ZPP_Polygon } from "../native/shape/ZPP_Polygon";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
+import { Config } from "../Config";
 
 /**
  * Number of segments per semicircular end-cap.
@@ -246,7 +247,6 @@ export class Capsule extends Shape {
   }
   set radius(value: number) {
     const zpp = this.zpp_inner_zn;
-    const nape = getNape();
     (this as any).zpp_inner.immutable_midstep("Capsule::radius");
     if (zpp.body != null && zpp.body.type === 1 && zpp.body.space != null) {
       throw new Error(
@@ -257,7 +257,7 @@ export class Capsule extends Shape {
       if (value !== value) {
         throw new Error("Capsule::radius cannot be NaN");
       }
-      if (value < nape.Config.epsilon) {
+      if (value < Config.epsilon) {
         throw new Error("Capsule::radius (" + value + ") must be > Config.epsilon");
       }
       this._radius = value;

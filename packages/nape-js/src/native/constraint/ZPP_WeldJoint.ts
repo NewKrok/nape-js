@@ -10,6 +10,7 @@
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
+import { Config } from "../../Config";
 
 export class ZPP_WeldJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_WeldJoint) => any) | null = null;
@@ -630,8 +631,6 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
   }
 
   override applyImpulsePos(): boolean {
-    const napeNs = ZPP_Constraint._nape;
-
     // Re-compute world-space anchors from current rotations
     const r1x = this.b1.axisy * this.a1localx - this.b1.axisx * this.a1localy;
     const r1y = this.a1localx * this.b1.axisx + this.a1localy * this.b1.axisy;
@@ -653,15 +652,12 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
 
     // Skip correction if error is within slop thresholds
     let cont = true;
-    if (
-      Ex * Ex + Ey * Ey <
-      napeNs.Config.constraintLinearSlop * napeNs.Config.constraintLinearSlop
-    ) {
+    if (Ex * Ex + Ey * Ey < Config.constraintLinearSlop * Config.constraintLinearSlop) {
       cont = false;
       Ex = 0;
       Ey = 0;
     }
-    const x = napeNs.Config.constraintAngularSlop;
+    const x = Config.constraintAngularSlop;
     if (Ez * Ez < x * x) {
       if (!cont) {
         return false;
@@ -678,7 +674,7 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
     // Pre-correction for large positional errors
     if (Ex * Ex + Ey * Ey > 6) {
       const k = this.b1.smass + this.b2.smass;
-      if (k > napeNs.Config.epsilon) {
+      if (k > Config.epsilon) {
         const ki = 0.75 / k;
         Jx = -Ex * ki;
         Jy = -Ey * ki;

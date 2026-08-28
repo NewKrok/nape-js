@@ -129,8 +129,9 @@ import "../native/util/ZPP_PublicList";
 
 const nape = getNape();
 
-// Config — merge constants into nape.Config (special: Object.assign pattern)
-nape.Config = Object.assign(nape.Config || {}, Config);
+// Config — alias the exported Config object (single source of truth; runtime
+// mutations of Config are visible to the engine)
+nape.Config = Config;
 
 // Debug
 nape.util.Debug = Debug;

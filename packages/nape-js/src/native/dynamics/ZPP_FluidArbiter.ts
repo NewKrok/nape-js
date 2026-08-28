@@ -8,6 +8,7 @@
  */
 
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
+import { Config } from "../../Config";
 
 export class ZPP_FluidArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
@@ -256,8 +257,6 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
   // ========== Pre-step (physics solver) ==========
 
   preStep(s: any, dt: number): void {
-    const napeNs = ZPP_Arbiter._nape;
-
     if (this.pre_dt == -1.0) {
       this.pre_dt = dt;
     }
@@ -405,7 +404,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         this.r2x * (this.b2.angvel + this.b2.kinangvel) -
         (this.b1.vely + this.b1.kinvely + this.r1x * (this.b1.angvel + this.b1.kinangvel));
 
-      if (!(vrnx * vrnx + vrny * vrny < napeNs.Config.epsilon * napeNs.Config.epsilon)) {
+      if (!(vrnx * vrnx + vrny * vrny < Config.epsilon * Config.epsilon)) {
         const d = vrnx * vrnx + vrny * vrny;
         const imag = 1.0 / Math.sqrt(d);
         this.nx = vrnx * imag;
@@ -418,7 +417,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         const f = (-this.ws1.fluidProperties.viscosity * this.overlap) / this.ws2.area;
         if (this.ws2.type == 0) {
           tViscosity1 -=
-            (f * this.ws2.circle.radius * napeNs.Config.fluidLinearDrag) /
+            (f * this.ws2.circle.radius * Config.fluidLinearDrag) /
             (2 * this.ws2.circle.radius * Math.PI);
         } else {
           const poly = this.ws2.polygon;
@@ -430,9 +429,9 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
             bord += ex.length;
             let fact = f * ex.length * (ex.gnormx * this.nx + ex.gnormy * this.ny);
             if (fact > 0) {
-              fact *= -napeNs.Config.fluidVacuumDrag;
+              fact *= -Config.fluidVacuumDrag;
             }
-            acc -= fact * 0.5 * napeNs.Config.fluidLinearDrag;
+            acc -= fact * 0.5 * Config.fluidLinearDrag;
             cx_ite = cx_ite.next;
           }
           tViscosity1 += acc / bord;
@@ -442,7 +441,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         const f = (-this.ws2.fluidProperties.viscosity * this.overlap) / this.ws1.area;
         if (this.ws1.type == 0) {
           tViscosity1 -=
-            (f * this.ws1.circle.radius * napeNs.Config.fluidLinearDrag) /
+            (f * this.ws1.circle.radius * Config.fluidLinearDrag) /
             (2 * this.ws1.circle.radius * Math.PI);
         } else {
           const poly = this.ws1.polygon;
@@ -454,9 +453,9 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
             bord += ex.length;
             let fact = f * ex.length * (ex.gnormx * this.nx + ex.gnormy * this.ny);
             if (fact > 0) {
-              fact *= -napeNs.Config.fluidVacuumDrag;
+              fact *= -Config.fluidVacuumDrag;
             }
-            acc -= fact * 0.5 * napeNs.Config.fluidLinearDrag;
+            acc -= fact * 0.5 * Config.fluidLinearDrag;
             cx_ite = cx_ite.next;
           }
           tViscosity1 += acc / bord;

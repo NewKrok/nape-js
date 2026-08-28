@@ -1,8 +1,8 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_Mat23 } from "../native/geom/ZPP_Mat23";
 import { Vec2 } from "./Vec2";
 import type { NapeInner } from "./Vec2";
+import { Config } from "../Config";
 
 /**
  * 2x3 affine transformation matrix [a b tx; c d ty].
@@ -284,8 +284,7 @@ export class Mat23 {
     const norm = a * a + b * b + c * c + d * d;
     let limit = a * d - b * c;
     if (limit < 0) limit = -limit;
-    const nape = getNape();
-    return norm > nape.Config.illConditionedThreshold * limit;
+    return norm > Config.illConditionedThreshold * limit;
   }
 
   /**
@@ -425,11 +424,10 @@ export class Mat23 {
   equiorthogonal(): boolean {
     if (this.singular()) return false;
     const { a, b, c, d } = this.zpp_inner;
-    const nape = getNape();
     const dot = a * b + c * d;
-    if (dot * dot >= nape.Config.epsilon) return false;
+    if (dot * dot >= Config.epsilon) return false;
     const diff = a * a + b * b - c * c - d * d;
-    return diff * diff < nape.Config.epsilon;
+    return diff * diff < Config.epsilon;
   }
 
   /**
@@ -438,21 +436,19 @@ export class Mat23 {
    */
   orthogonal(): boolean {
     const { a, b, c, d } = this.zpp_inner;
-    const nape = getNape();
     const dot = a * b + c * d;
-    if (dot * dot >= nape.Config.epsilon) return false;
+    if (dot * dot >= Config.epsilon) return false;
     const r1 = a * a + b * b - 1;
     const r2 = c * c + d * d - 1;
-    return r1 * r1 < nape.Config.epsilon && r2 * r2 < nape.Config.epsilon;
+    return r1 * r1 < Config.epsilon && r2 * r2 < Config.epsilon;
   }
 
   private _orthogonaliseImpl(equi: boolean): this {
     const { a, b, c, d } = this.zpp_inner;
-    const nape = getNape();
 
     let k1 = Math.sqrt(a * a + c * c);
     let k2 = Math.sqrt(b * b + d * d);
-    if (k1 * k1 < nape.Config.epsilon || k2 * k2 < nape.Config.epsilon) {
+    if (k1 * k1 < Config.epsilon || k2 * k2 < Config.epsilon) {
       throw new Error(
         "Error: Matrix is singular and cannot be " +
           (equi ? "equiorthogonal" : "orthogonal") +

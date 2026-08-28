@@ -18,6 +18,7 @@ import { ZPP_Geom } from "../native/geom/ZPP_Geom";
 import { ZPP_Collide } from "../native/geom/ZPP_Collide";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
+import { Config } from "../Config";
 
 // ---------------------------------------------------------------------------
 // Subclass wrap bindings — Circle and Polygon register their _wrap functions
@@ -406,7 +407,6 @@ export class Shape extends Interactor {
    */
   scale(scaleX: number, scaleY: number): Shape {
     const zpp = (this as any).zpp_inner;
-    const nape = getNape();
     zpp.immutable_midstep("Shape::scale()");
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
       throw new Error(
@@ -421,7 +421,7 @@ export class Shape extends Interactor {
     }
     if (zpp.type === 0) {
       const d = scaleX * scaleX - scaleY * scaleY;
-      if (d * d < nape.Config.epsilon * nape.Config.epsilon) {
+      if (d * d < Config.epsilon * Config.epsilon) {
         zpp.circle.__scale(scaleX, scaleY);
       } else {
         throw new Error("Cannot perform a non equal scaling on a Circle");

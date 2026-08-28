@@ -1,5 +1,3 @@
-import { getNape } from "./core/engine";
-
 /**
  * Physics engine configuration constants.
  *
@@ -36,6 +34,3 @@ export const Config = {
   constraintAngularSlop: 1e-3,
   illConditionedThreshold: 2e8,
 };
-
-const _napeConfig = getNape();
-_napeConfig.Config = Object.assign(_napeConfig.Config || {}, Config);

@@ -11,6 +11,7 @@
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
 import { ZPP_Contact } from "./ZPP_Contact";
 import { ZPP_IContact } from "./ZPP_IContact";
+import { Config } from "../../Config";
 
 export class ZPP_ColArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
@@ -507,7 +508,6 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   // ========== Cleanup expired contacts ==========
 
   cleanupContacts(): boolean {
-    const napeNs = ZPP_Arbiter._nape;
     let fst = true;
     let pre: ZPP_Contact | null = null;
     let prei: ZPP_IContact | null = null;
@@ -517,7 +517,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
     while (cx_ite != null) {
       const c = cx_ite;
-      if (c.stamp + napeNs.Config.arbiterExpirationDelay < this.stamp) {
+      if (c.stamp + Config.arbiterExpirationDelay < this.stamp) {
         // Expire contact
         const ret = ZPP_ColArbiter._eraseFromList(this.contacts, pre);
         cx_ite = ret;
@@ -577,8 +577,6 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   // ========== Pre-step (physics solver) ==========
 
   preStep(dt: number): boolean {
-    const napeNs = ZPP_Arbiter._nape;
-
     this.validate_props();
 
     if (this.pre_dt == -1.0) {
@@ -592,11 +590,11 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     const statType = this.b1.type != 2 || this.b2.type != 2;
     const bias = statType
       ? this.continuous
-        ? napeNs.Config.contactContinuousStaticBiasCoef
-        : napeNs.Config.contactStaticBiasCoef
+        ? Config.contactContinuousStaticBiasCoef
+        : Config.contactStaticBiasCoef
       : this.continuous
-        ? napeNs.Config.contactContinuousBiasCoef
-        : napeNs.Config.contactBiasCoef;
+        ? Config.contactContinuousBiasCoef
+        : Config.contactBiasCoef;
     this.biasCoef = bias;
     this.continuous = false;
 
@@ -608,7 +606,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
     while (cx_ite != null) {
       const c = cx_ite;
-      if (c.stamp + napeNs.Config.arbiterExpirationDelay < this.stamp) {
+      if (c.stamp + Config.arbiterExpirationDelay < this.stamp) {
         const ret = ZPP_ColArbiter._eraseFromList(this.contacts, pre);
         cx_ite = ret;
         const ret1 = ZPP_ColArbiter._eraseFromList(this.innards, prei) as any;
@@ -644,14 +642,14 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
         let kt = mass_sum + this.b2.sinertia * (x * x);
         x = ci.r1x * this.nx + ci.r1y * this.ny;
         kt += this.b1.sinertia * (x * x);
-        ci.tMass = kt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / kt;
+        ci.tMass = kt < Config.epsilon * Config.epsilon ? 0 : 1.0 / kt;
 
         // Normal effective mass
         x = this.ny * ci.r2x - this.nx * ci.r2y;
         let nt = mass_sum + this.b2.sinertia * (x * x);
         x = this.ny * ci.r1x - this.nx * ci.r1y;
         nt += this.b1.sinertia * (x * x);
-        ci.nMass = nt < napeNs.Config.epsilon * napeNs.Config.epsilon ? 0 : 1.0 / nt;
+        ci.nMass = nt < Config.epsilon * Config.epsilon ? 0 : 1.0 / nt;
 
         // Bounce velocity
         let ang = this.b2.angvel + this.b2.kinangvel;
@@ -664,13 +662,13 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
         const vdot = this.nx * vrx + this.ny * vry;
         c.elasticity = this.restitution;
         ci.bounce = vdot * c.elasticity;
-        if (ci.bounce > -napeNs.Config.elasticThreshold) {
+        if (ci.bounce > -Config.elasticThreshold) {
           ci.bounce = 0;
         }
 
         // Friction selection
         const vdotT = vry * this.nx - vrx * this.ny;
-        const thr = napeNs.Config.staticFrictionThreshold;
+        const thr = Config.staticFrictionThreshold;
         if (vdotT * vdotT > thr * thr) {
           ci.friction = this.dyn_fric;
         } else {
@@ -761,8 +759,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
       if (
         norm <
-        napeNs.Config.illConditionedThreshold *
-          (this.kMassa * this.kMassc - this.kMassb * this.kMassb)
+        Config.illConditionedThreshold * (this.kMassa * this.kMassc - this.kMassb * this.kMassb)
       ) {
         this.Ka = this.kMassa;
         this.Kb = this.kMassb;
@@ -1041,18 +1038,16 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   // ========== Position impulse solver ==========
 
   applyImpulsePos(): void {
-    const napeNs = ZPP_Arbiter._nape;
-
     if (this.ptype == 2) {
       // Circle-circle
-      this._applyImpulsePosCircle(napeNs);
+      this._applyImpulsePosCircle();
     } else {
       // Edge-based
-      this._applyImpulsePosEdge(napeNs);
+      this._applyImpulsePosEdge();
     }
   }
 
-  private _applyImpulsePosCircle(napeNs: any): void {
+  private _applyImpulsePosCircle(): void {
     const c = this.c1;
     let r2x = this.b2.axisy * c.lr2x - this.b2.axisx * c.lr2y;
     let r2y = c.lr2x * this.b2.axisx + c.lr2y * this.b2.axisy;
@@ -1066,7 +1061,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     let dx1 = r2x - r1x;
     let dy1 = r2y - r1y;
     const dl = Math.sqrt(dx1 * dx1 + dy1 * dy1);
-    const r = this.radius - napeNs.Config.collisionSlop;
+    const r = this.radius - Config.collisionSlop;
     let err = dl - r;
 
     if (dx1 * this.nx + dy1 * this.ny < 0) {
@@ -1076,11 +1071,11 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
 
     if (err < 0) {
-      if (dl < napeNs.Config.epsilon) {
+      if (dl < Config.epsilon) {
         if (this.b1.smass != 0.0) {
-          this.b1.posx += napeNs.Config.epsilon * 10;
+          this.b1.posx += Config.epsilon * 10;
         } else {
-          this.b2.posx += napeNs.Config.epsilon * 10;
+          this.b2.posx += Config.epsilon * 10;
         }
       } else {
         const invDl = 1.0 / dl;
@@ -1115,7 +1110,7 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
   }
 
-  private _applyImpulsePosEdge(napeNs: any): void {
+  private _applyImpulsePosEdge(): void {
     let gnormx: number;
     let gnormy: number;
     let gproj: number;
@@ -1155,11 +1150,11 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
 
     let err1 = clip1x * gnormx + clip1y * gnormy - gproj - this.radius;
-    err1 += napeNs.Config.collisionSlop;
+    err1 += Config.collisionSlop;
     let err2 = 0.0;
     if (this.hpc2) {
       err2 = clip2x * gnormx + clip2y * gnormy - gproj - this.radius;
-      err2 += napeNs.Config.collisionSlop;
+      err2 += Config.collisionSlop;
     }
 
     if (err1 < 0 || err2 < 0) {

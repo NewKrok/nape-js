@@ -15,6 +15,7 @@ import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
 import { ZPP_FluidArbiter } from "../dynamics/ZPP_FluidArbiter";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 import { getNape } from "../../core/engine";
+import { Config } from "../../Config";
 
 export class ZPP_Collide {
   /**
@@ -200,7 +201,6 @@ export class ZPP_Collide {
     }
   }
   static contactCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_ColArbiter, rev: boolean) {
-    const napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
         // Separating-axis cache: if this pair was separated last time, re-test
@@ -338,13 +338,13 @@ export class ZPP_Collide {
             const d1 = ax2.gnormy * c1x - ax2.gnormx * c1y;
             const den = 1 / (d1 - d0);
             const t = (-ax2.tp1 - d0) * den;
-            if (t > napeNs.Config.epsilon) {
+            if (t > Config.epsilon) {
               const t1 = t;
               c0x += dvx * t1;
               c0y += dvy * t1;
             }
             const t2 = (-ax2.tp0 - d1) * den;
-            if (t2 < -napeNs.Config.epsilon) {
+            if (t2 < -Config.epsilon) {
               const t3 = t2;
               c1x += dvx * t3;
               c1y += dvy * t3;
@@ -481,7 +481,7 @@ export class ZPP_Collide {
             let co;
             if (distSqr > minDist * minDist) {
               co = null;
-            } else if (distSqr < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+            } else if (distSqr < Config.epsilon * Config.epsilon) {
               const px3 = s1.circle.worldCOMx;
               const py3 = s1.circle.worldCOMy;
               const c2 = ZPP_Collide._getContact(arb, 0);
@@ -495,7 +495,7 @@ export class ZPP_Collide {
               co = c2;
             } else {
               const invDist = 1.0 / Math.sqrt(distSqr);
-              const dist1 = invDist < napeNs.Config.epsilon ? 1e100 : 1.0 / invDist;
+              const dist1 = invDist < Config.epsilon ? 1e100 : 1.0 / invDist;
               const df = 0.5 + (s1.circle.radius - 0.5 * minDist) * invDist;
               if (rev) {
                 const px4 = s1.circle.worldCOMx + px2 * df;
@@ -552,7 +552,7 @@ export class ZPP_Collide {
             let co1;
             if (distSqr1 > minDist1 * minDist1) {
               co1 = null;
-            } else if (distSqr1 < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+            } else if (distSqr1 < Config.epsilon * Config.epsilon) {
               const px7 = s1.circle.worldCOMx;
               const py7 = s1.circle.worldCOMy;
               const c5 = ZPP_Collide._getContact(arb, 0);
@@ -566,7 +566,7 @@ export class ZPP_Collide {
               co1 = c5;
             } else {
               const invDist1 = 1.0 / Math.sqrt(distSqr1);
-              const dist2 = invDist1 < napeNs.Config.epsilon ? 1e100 : 1.0 / invDist1;
+              const dist2 = invDist1 < Config.epsilon ? 1e100 : 1.0 / invDist1;
               const df1 = 0.5 + (s1.circle.radius - 0.5 * minDist1) * invDist1;
               if (rev) {
                 const px8 = s1.circle.worldCOMx + px6 * df1;
@@ -671,7 +671,7 @@ export class ZPP_Collide {
       let co2;
       if (distSqr2 > minDist2 * minDist2) {
         co2 = null;
-      } else if (distSqr2 < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+      } else if (distSqr2 < Config.epsilon * Config.epsilon) {
         const px12 = s1.circle.worldCOMx;
         const py12 = s1.circle.worldCOMy;
         const c10 = ZPP_Collide._getContact(arb, 0);
@@ -685,7 +685,7 @@ export class ZPP_Collide {
         co2 = c10;
       } else {
         const invDist2 = 1.0 / Math.sqrt(distSqr2);
-        const dist3 = invDist2 < napeNs.Config.epsilon ? 1e100 : 1.0 / invDist2;
+        const dist3 = invDist2 < Config.epsilon ? 1e100 : 1.0 / invDist2;
         const df2 = 0.5 + (s1.circle.radius - 0.5 * minDist2) * invDist2;
         if (rev) {
           const px13 = s1.circle.worldCOMx + px11 * df2;
@@ -852,7 +852,6 @@ export class ZPP_Collide {
     }
   }
   static flowCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_FluidArbiter) {
-    const napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
         const out1 = [];
@@ -871,7 +870,7 @@ export class ZPP_Collide {
             if (k < min) {
               min = k;
             }
-            if (k >= ax.gprojection + napeNs.Config.epsilon) {
+            if (k >= ax.gprojection + Config.epsilon) {
               out2[ind] = true;
               total = false;
             }
@@ -985,7 +984,7 @@ export class ZPP_Collide {
               if (k1 < min1) {
                 min1 = k1;
               }
-              if (k1 >= ax1.gprojection + napeNs.Config.epsilon) {
+              if (k1 >= ax1.gprojection + Config.epsilon) {
                 out1[ind1] = true;
                 total = false;
               }
@@ -1166,12 +1165,12 @@ export class ZPP_Collide {
                   const _qy = b.y - a.y;
                   let den = _vy * _qx - _vx * _qy;
                   let tmp;
-                  if (den * den > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                  if (den * den > Config.epsilon * Config.epsilon) {
                     den = 1 / den;
                     const txx = (_qy * _sx - _qx * _sy) * den;
-                    if (txx > napeNs.Config.epsilon && txx < 1 - napeNs.Config.epsilon) {
+                    if (txx > Config.epsilon && txx < 1 - Config.epsilon) {
                       const sxx = (_vy * _sx - _vx * _sy) * den;
-                      if (sxx > napeNs.Config.epsilon && sxx < 1 - napeNs.Config.epsilon) {
+                      if (sxx > Config.epsilon && sxx < 1 - Config.epsilon) {
                         t6 = txx;
                         tmp = true;
                       } else {
@@ -1206,12 +1205,12 @@ export class ZPP_Collide {
                     const _qy1 = b1.y - a.y;
                     let den1 = _vy1 * _qx1 - _vx1 * _qy1;
                     let tmp1;
-                    if (den1 * den1 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                    if (den1 * den1 > Config.epsilon * Config.epsilon) {
                       den1 = 1 / den1;
                       const txx1 = (_qy1 * _sx1 - _qx1 * _sy1) * den1;
-                      if (txx1 > napeNs.Config.epsilon && txx1 < 1 - napeNs.Config.epsilon) {
+                      if (txx1 > Config.epsilon && txx1 < 1 - Config.epsilon) {
                         const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
-                        if (sxx1 > napeNs.Config.epsilon && sxx1 < 1 - napeNs.Config.epsilon) {
+                        if (sxx1 > Config.epsilon && sxx1 < 1 - Config.epsilon) {
                           t7 = txx1;
                           tmp1 = true;
                         } else {
@@ -1268,12 +1267,12 @@ export class ZPP_Collide {
                     const _qy2 = b2.y - a1.y;
                     let den2 = _vy2 * _qx2 - _vx2 * _qy2;
                     let tmp2;
-                    if (den2 * den2 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                    if (den2 * den2 > Config.epsilon * Config.epsilon) {
                       den2 = 1 / den2;
                       const txx2 = (_qy2 * _sx2 - _qx2 * _sy2) * den2;
-                      if (txx2 > napeNs.Config.epsilon && txx2 < 1 - napeNs.Config.epsilon) {
+                      if (txx2 > Config.epsilon && txx2 < 1 - Config.epsilon) {
                         const sxx2 = (_vy2 * _sx2 - _vx2 * _sy2) * den2;
-                        if (sxx2 > napeNs.Config.epsilon && sxx2 < 1 - napeNs.Config.epsilon) {
+                        if (sxx2 > Config.epsilon && sxx2 < 1 - Config.epsilon) {
                           t8 = txx2;
                           tmp2 = true;
                         } else {
@@ -1308,12 +1307,12 @@ export class ZPP_Collide {
                       const _qy3 = b3.y - a1.y;
                       let den3 = _vy3 * _qx3 - _vx3 * _qy3;
                       let tmp3;
-                      if (den3 * den3 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                      if (den3 * den3 > Config.epsilon * Config.epsilon) {
                         den3 = 1 / den3;
                         const txx3 = (_qy3 * _sx3 - _qx3 * _sy3) * den3;
-                        if (txx3 > napeNs.Config.epsilon && txx3 < 1 - napeNs.Config.epsilon) {
+                        if (txx3 > Config.epsilon && txx3 < 1 - Config.epsilon) {
                           const sxx3 = (_vy3 * _sx3 - _vx3 * _sy3) * den3;
-                          if (sxx3 > napeNs.Config.epsilon && sxx3 < 1 - napeNs.Config.epsilon) {
+                          if (sxx3 > Config.epsilon && sxx3 < 1 - Config.epsilon) {
                             t9 = txx3;
                             tmp3 = true;
                           } else {
@@ -1364,7 +1363,7 @@ export class ZPP_Collide {
                   if (fst_vert != null) {
                     const dx = ex.x - fst_vert.x;
                     const dy = ex.y - fst_vert.y;
-                    tmp4 = dx * dx + dy * dy < napeNs.Config.epsilon;
+                    tmp4 = dx * dx + dy * dy < Config.epsilon;
                   } else {
                     tmp4 = false;
                   }
@@ -1401,12 +1400,12 @@ export class ZPP_Collide {
                     const _qy4 = b4.y - a2.y;
                     let den4 = _vy4 * _qx4 - _vx4 * _qy4;
                     let tmp5;
-                    if (den4 * den4 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                    if (den4 * den4 > Config.epsilon * Config.epsilon) {
                       den4 = 1 / den4;
                       const txx4 = (_qy4 * _sx4 - _qx4 * _sy4) * den4;
-                      if (txx4 > napeNs.Config.epsilon && txx4 < 1 - napeNs.Config.epsilon) {
+                      if (txx4 > Config.epsilon && txx4 < 1 - Config.epsilon) {
                         const sxx4 = (_vy4 * _sx4 - _vx4 * _sy4) * den4;
-                        if (sxx4 > napeNs.Config.epsilon && sxx4 < 1 - napeNs.Config.epsilon) {
+                        if (sxx4 > Config.epsilon && sxx4 < 1 - Config.epsilon) {
                           t10 = txx4;
                           tmp5 = true;
                         } else {
@@ -1454,12 +1453,12 @@ export class ZPP_Collide {
                     const _qy5 = b4.y - a2.y;
                     let den5 = _vy5 * _qx5 - _vx5 * _qy5;
                     let tmp6;
-                    if (den5 * den5 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                    if (den5 * den5 > Config.epsilon * Config.epsilon) {
                       den5 = 1 / den5;
                       const txx5 = (_qy5 * _sx5 - _qx5 * _sy5) * den5;
-                      if (txx5 > napeNs.Config.epsilon && txx5 < 1 - napeNs.Config.epsilon) {
+                      if (txx5 > Config.epsilon && txx5 < 1 - Config.epsilon) {
                         const sxx5 = (_vy5 * _sx5 - _vx5 * _sy5) * den5;
-                        if (sxx5 > napeNs.Config.epsilon && sxx5 < 1 - napeNs.Config.epsilon) {
+                        if (sxx5 > Config.epsilon && sxx5 < 1 - Config.epsilon) {
                           t11 = txx5;
                           tmp6 = true;
                         } else {
@@ -1510,7 +1509,7 @@ export class ZPP_Collide {
                   if (fst_vert != null) {
                     const dx1 = cx2 - fst_vert.x;
                     const dy1 = cy2 - fst_vert.y;
-                    tmp7 = dx1 * dx1 + dy1 * dy1 < napeNs.Config.epsilon;
+                    tmp7 = dx1 * dx1 + dy1 * dy1 < Config.epsilon;
                   } else {
                     tmp7 = false;
                   }
@@ -1541,7 +1540,7 @@ export class ZPP_Collide {
                   if (fst_vert != null) {
                     const dx2 = ex1.x - fst_vert.x;
                     const dy2 = ex1.y - fst_vert.y;
-                    tmp9 = dx2 * dx2 + dy2 * dy2 < napeNs.Config.epsilon;
+                    tmp9 = dx2 * dx2 + dy2 * dy2 < Config.epsilon;
                   } else {
                     tmp9 = false;
                   }
@@ -1578,12 +1577,12 @@ export class ZPP_Collide {
                     const _qy6 = b5.y - a3.y;
                     let den6 = _vy6 * _qx6 - _vx6 * _qy6;
                     let tmp10;
-                    if (den6 * den6 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                    if (den6 * den6 > Config.epsilon * Config.epsilon) {
                       den6 = 1 / den6;
                       const txx6 = (_qy6 * _sx6 - _qx6 * _sy6) * den6;
-                      if (txx6 > napeNs.Config.epsilon && txx6 < 1 - napeNs.Config.epsilon) {
+                      if (txx6 > Config.epsilon && txx6 < 1 - Config.epsilon) {
                         const sxx6 = (_vy6 * _sx6 - _vx6 * _sy6) * den6;
-                        if (sxx6 > napeNs.Config.epsilon && sxx6 < 1 - napeNs.Config.epsilon) {
+                        if (sxx6 > Config.epsilon && sxx6 < 1 - Config.epsilon) {
                           t12 = txx6;
                           tmp10 = true;
                         } else {
@@ -1631,12 +1630,12 @@ export class ZPP_Collide {
                     const _qy7 = b5.y - a3.y;
                     let den7 = _vy7 * _qx7 - _vx7 * _qy7;
                     let tmp11;
-                    if (den7 * den7 > napeNs.Config.epsilon * napeNs.Config.epsilon) {
+                    if (den7 * den7 > Config.epsilon * Config.epsilon) {
                       den7 = 1 / den7;
                       const txx7 = (_qy7 * _sx7 - _qx7 * _sy7) * den7;
-                      if (txx7 > napeNs.Config.epsilon && txx7 < 1 - napeNs.Config.epsilon) {
+                      if (txx7 > Config.epsilon && txx7 < 1 - Config.epsilon) {
                         const sxx7 = (_vy7 * _sx7 - _vx7 * _sy7) * den7;
-                        if (sxx7 > napeNs.Config.epsilon && sxx7 < 1 - napeNs.Config.epsilon) {
+                        if (sxx7 > Config.epsilon && sxx7 < 1 - Config.epsilon) {
                           t13 = txx7;
                           tmp11 = true;
                         } else {
@@ -1687,7 +1686,7 @@ export class ZPP_Collide {
                   if (fst_vert != null) {
                     const dx3 = cx3 - fst_vert.x;
                     const dy3 = cy3 - fst_vert.y;
-                    tmp12 = dx3 * dx3 + dy3 * dy3 < napeNs.Config.epsilon;
+                    tmp12 = dx3 * dx3 + dy3 * dy3 < Config.epsilon;
                   } else {
                     tmp12 = false;
                   }
@@ -1777,7 +1776,7 @@ export class ZPP_Collide {
           if (dist > a4.gprojection + s1.circle.radius) {
             cont1 = false;
             break;
-          } else if (dist + s1.circle.radius > a4.gprojection + napeNs.Config.epsilon) {
+          } else if (dist + s1.circle.radius > a4.gprojection + Config.epsilon) {
             total1 = false;
             inte[ind3] = true;
           }
@@ -1963,7 +1962,7 @@ export class ZPP_Collide {
                     if (ins[vind]) {
                       const dx5 = fst_vert1.x - vi1.x;
                       const dy5 = fst_vert1.y - vi1.y;
-                      if (dx5 * dx5 + dy5 * dy5 < napeNs.Config.epsilon) {
+                      if (dx5 * dx5 + dy5 * dy5 < Config.epsilon) {
                         break;
                       }
                       ZPP_Collide.flowpoly.add(vi1);
@@ -1980,7 +1979,7 @@ export class ZPP_Collide {
                       const D = Math.sqrt(B * B - 4 * A * C);
                       A = 1 / (2 * A);
                       const t18 = (-B - D) * A;
-                      const tval = t18 < napeNs.Config.epsilon ? (-B + D) * A : t18;
+                      const tval = t18 < Config.epsilon ? (-B + D) * A : t18;
                       let cx4 = 0.0;
                       let cy4 = 0.0;
                       const T4 = tval;
@@ -1988,7 +1987,7 @@ export class ZPP_Collide {
                       cy4 = u9.y + (v16.y - u9.y) * T4;
                       const dx6 = fst_vert1.x - cx4;
                       const dy6 = fst_vert1.y - cy4;
-                      if (dx6 * dx6 + dy6 * dy6 < napeNs.Config.epsilon) {
+                      if (dx6 * dx6 + dy6 * dy6 < Config.epsilon) {
                         break;
                       }
                       const tmp15 = ZPP_Collide.flowpoly;
@@ -2023,7 +2022,7 @@ export class ZPP_Collide {
                           const D1 = Math.sqrt(B1 * B1 - 4 * A1 * C1);
                           A1 = 1 / (2 * A1);
                           const t19 = (-B1 - D1) * A1;
-                          const tval1 = t19 < napeNs.Config.epsilon ? (-B1 + D1) * A1 : t19;
+                          const tval1 = t19 < Config.epsilon ? (-B1 + D1) * A1 : t19;
                           let cx5 = 0.0;
                           let cy5 = 0.0;
                           const T5 = tval1;
@@ -2031,7 +2030,7 @@ export class ZPP_Collide {
                           cy5 = u10.y + (v17.y - u10.y) * T5;
                           const dx7 = fst_vert1.x - cx5;
                           const dy7 = fst_vert1.y - cy5;
-                          if (dx7 * dx7 + dy7 * dy7 < napeNs.Config.epsilon) {
+                          if (dx7 * dx7 + dy7 * dy7 < Config.epsilon) {
                             state = 0;
                             cx_ite12 = beg_ite2;
                             break;
@@ -2056,7 +2055,7 @@ export class ZPP_Collide {
                           const C2 = qx2 * qx2 + qy2 * qy2 - s1.circle.radius * s1.circle.radius;
                           let D2 = B2 * B2 - 4 * A2 * C2;
                           let two;
-                          if (D2 * D2 < napeNs.Config.epsilon) {
+                          if (D2 * D2 < Config.epsilon) {
                             if (D2 < 0) {
                               t0 = 10.0;
                             } else {
@@ -2071,7 +2070,7 @@ export class ZPP_Collide {
                             t110 = (-B2 + D2) * A2;
                             two = true;
                           }
-                          if (t0 < 1 - napeNs.Config.epsilon && t110 > napeNs.Config.epsilon) {
+                          if (t0 < 1 - Config.epsilon && t110 > Config.epsilon) {
                             let cx6 = 0.0;
                             let cy6 = 0.0;
                             const T6 = t0;
@@ -2081,7 +2080,7 @@ export class ZPP_Collide {
                             if (fst_vert1 != null) {
                               const dx8 = fst_vert1.x - cx6;
                               const dy8 = fst_vert1.y - cy6;
-                              tmp16 = dx8 * dx8 + dy8 * dy8 < napeNs.Config.epsilon;
+                              tmp16 = dx8 * dx8 + dy8 * dy8 < Config.epsilon;
                             } else {
                               tmp16 = false;
                             }
@@ -2140,7 +2139,7 @@ export class ZPP_Collide {
                           const D3 = Math.sqrt(B3 * B3 - 4 * A3 * C3);
                           A3 = 1 / (2 * A3);
                           const t20 = (-B3 - D3) * A3;
-                          const tval2 = t20 < napeNs.Config.epsilon ? (-B3 + D3) * A3 : t20;
+                          const tval2 = t20 < Config.epsilon ? (-B3 + D3) * A3 : t20;
                           let cx8 = 0.0;
                           let cy8 = 0.0;
                           const T8 = tval2;
@@ -2148,7 +2147,7 @@ export class ZPP_Collide {
                           cy8 = u10.y + (v18.y - u10.y) * T8;
                           const dx9 = fst_vert1.x - cx8;
                           const dy9 = fst_vert1.y - cy8;
-                          if (dx9 * dx9 + dy9 * dy9 < napeNs.Config.epsilon) {
+                          if (dx9 * dx9 + dy9 * dy9 < Config.epsilon) {
                             state = 0;
                             cx_ite12 = beg_ite2;
                             break;
@@ -2173,7 +2172,7 @@ export class ZPP_Collide {
                           const C4 = qx4 * qx4 + qy4 * qy4 - s1.circle.radius * s1.circle.radius;
                           let D4 = B4 * B4 - 4 * A4 * C4;
                           let two1;
-                          if (D4 * D4 < napeNs.Config.epsilon) {
+                          if (D4 * D4 < Config.epsilon) {
                             if (D4 < 0) {
                               t01 = 10.0;
                             } else {
@@ -2188,7 +2187,7 @@ export class ZPP_Collide {
                             t111 = (-B4 + D4) * A4;
                             two1 = true;
                           }
-                          if (t01 < 1 - napeNs.Config.epsilon && t111 > napeNs.Config.epsilon) {
+                          if (t01 < 1 - Config.epsilon && t111 > Config.epsilon) {
                             let cx9 = 0.0;
                             let cy9 = 0.0;
                             const T9 = t01;
@@ -2198,7 +2197,7 @@ export class ZPP_Collide {
                             if (fst_vert1 != null) {
                               const dx10 = fst_vert1.x - cx9;
                               const dy10 = fst_vert1.y - cy9;
-                              tmp18 = dx10 * dx10 + dy10 * dy10 < napeNs.Config.epsilon;
+                              tmp18 = dx10 * dx10 + dy10 * dy10 < Config.epsilon;
                             } else {
                               tmp18 = false;
                             }
@@ -2382,7 +2381,7 @@ export class ZPP_Collide {
       const ds = deltax * deltax + deltay * deltay;
       if (ds > cr * cr) {
         return false;
-      } else if (ds < napeNs.Config.epsilon * napeNs.Config.epsilon) {
+      } else if (ds < Config.epsilon * Config.epsilon) {
         if (c1.radius < c2.radius) {
           arb.overlap = c1.area;
           arb.centroidx = c1.worldCOMx;
