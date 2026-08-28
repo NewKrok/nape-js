@@ -26,8 +26,13 @@ export class ZNPList<T> {
   modified: boolean = false;
   pushmod: boolean = false;
 
+  // Node class cached per instance so the pool fast path is a monomorphic
+  // field load instead of a megamorphic this.constructor lookup.
+  private readonly _N: ZNPNodeClass<T> = (this.constructor as unknown as ZNPListConstructor<T>)
+    ._NodeClass;
+
   private _allocNode(): ZNPNode<T> {
-    const N = (this.constructor as unknown as ZNPListConstructor<T>)._NodeClass;
+    const N = this._N;
     let ret: ZNPNode<T>;
     if (N.zpp_pool == null) {
       ret = new N();
@@ -40,7 +45,7 @@ export class ZNPList<T> {
   }
 
   private _freeNode(node: ZNPNode<T>): void {
-    const N = (this.constructor as unknown as ZNPListConstructor<T>)._NodeClass;
+    const N = this._N;
     node.elt = null;
     node.next = N.zpp_pool;
     N.zpp_pool = node;
