@@ -1,4 +1,4 @@
-import { getNape, ensureEnumsReady } from "../core/engine";
+import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_InteractorList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
@@ -53,6 +53,7 @@ export class CbType {
    * Use in listeners to respond to all bodies without a custom `CbType`.
    */
   static get ANY_BODY(): CbType {
+    if (ZPP_CbType.ANY_BODY == null) ZPP_CbType.ANY_BODY = new CbType() as any;
     return ZPP_CbType.ANY_BODY as any;
   }
 
@@ -64,6 +65,7 @@ export class CbType {
    * constraint events.
    */
   static get ANY_CONSTRAINT(): CbType {
+    if (ZPP_CbType.ANY_CONSTRAINT == null) ZPP_CbType.ANY_CONSTRAINT = new CbType() as any;
     return ZPP_CbType.ANY_CONSTRAINT as any;
   }
 
@@ -72,6 +74,7 @@ export class CbType {
    * Use in listeners to respond to all shapes without a custom `CbType`.
    */
   static get ANY_SHAPE(): CbType {
+    if (ZPP_CbType.ANY_SHAPE == null) ZPP_CbType.ANY_SHAPE = new CbType() as any;
     return ZPP_CbType.ANY_SHAPE as any;
   }
 
@@ -80,6 +83,7 @@ export class CbType {
    * Use in listeners to respond to all compounds without a custom `CbType`.
    */
   static get ANY_COMPOUND(): CbType {
+    if (ZPP_CbType.ANY_COMPOUND == null) ZPP_CbType.ANY_COMPOUND = new CbType() as any;
     return ZPP_CbType.ANY_COMPOUND as any;
   }
 
@@ -192,4 +196,3 @@ export class CbType {
 // Self-register in the compiled namespace
 const _napeForCbType = getNape();
 _napeForCbType.callbacks.CbType = CbType;
-ensureEnumsReady();

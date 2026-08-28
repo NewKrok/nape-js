@@ -10,6 +10,11 @@
 
 import { ZPP_ID } from "../util/ZPP_ID";
 import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
+import {
+  ZNPList_ZPP_CallbackSet,
+  ZNPList_ZPP_CbType,
+  ZNPNode_ZPP_CbType,
+} from "../util/ZNPRegistry";
 
 export class ZPP_Interactor {
   // --- Static: Haxe metadata ---
@@ -45,7 +50,6 @@ export class ZPP_Interactor {
    * instead of ZPP_Interactor.call(this).
    */
   static initFields(inst: any): void {
-    const zpp = ZPP_Interactor._zpp;
     inst.wrap_cbTypes = null;
     inst.cbSet = null;
     inst.cbTypes = null;
@@ -58,8 +62,8 @@ export class ZPP_Interactor {
     inst.id = 0;
     inst.outer_i = null;
     inst.id = ZPP_ID.Interactor();
-    inst.cbsets = new zpp.util.ZNPList_ZPP_CallbackSet();
-    inst.cbTypes = new zpp.util.ZNPList_ZPP_CbType();
+    inst.cbsets = new ZNPList_ZPP_CallbackSet();
+    inst.cbTypes = new ZNPList_ZPP_CbType();
   }
 
   // --- Static methods ---
@@ -212,7 +216,6 @@ export class ZPP_Interactor {
   }
 
   insert_cbtype(cb: any): void {
-    const zpp = ZPP_Interactor._zpp;
     if (!this.cbTypes.has(cb)) {
       const space = this._getSpace();
       if (space != null) {
@@ -231,11 +234,11 @@ export class ZPP_Interactor {
       }
       const _this = this.cbTypes;
       let ret: any;
-      if (zpp.util.ZNPNode_ZPP_CbType.zpp_pool == null) {
-        ret = new zpp.util.ZNPNode_ZPP_CbType();
+      if (ZNPNode_ZPP_CbType.zpp_pool == null) {
+        ret = new ZNPNode_ZPP_CbType();
       } else {
-        ret = zpp.util.ZNPNode_ZPP_CbType.zpp_pool;
-        zpp.util.ZNPNode_ZPP_CbType.zpp_pool = ret.next;
+        ret = ZNPNode_ZPP_CbType.zpp_pool;
+        ZNPNode_ZPP_CbType.zpp_pool = ret.next;
         ret.next = null;
       }
       ret.elt = cb;

@@ -110,17 +110,17 @@ export class Vec2 {
 
   /** @internal Get a Vec2 from the public pool or create a new one. */
   private static _poolGet(x: number, y: number, weak: boolean): Vec2 {
-    let ret: Vec2;
     if (ZPP_PubPool.poolVec2 == null) {
-      ret = new Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret === ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
+      const fresh = new Vec2(x, y);
+      fresh.zpp_inner.weak = weak;
+      return fresh;
+    }
+    const ret: Vec2 = ZPP_PubPool.poolVec2;
+    ZPP_PubPool.poolVec2 = ret.zpp_pool;
+    ret.zpp_pool = null;
+    ret.zpp_disp = false;
+    if (ret === ZPP_PubPool.nextVec2) {
+      ZPP_PubPool.nextVec2 = null;
     }
 
     if (ret.zpp_inner == null) {
@@ -172,11 +172,6 @@ export class Vec2 {
         zpp.outer = v;
         return v;
       });
-    }
-
-    // Legacy fallback: compiled Vec2 with zpp_inner
-    if (inner.zpp_inner) {
-      return Vec2._wrap(inner.zpp_inner);
     }
 
     return null as unknown as Vec2;

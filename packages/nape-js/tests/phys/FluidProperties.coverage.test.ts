@@ -63,14 +63,6 @@ describe("FluidProperties — coverage", () => {
   });
 
   describe("_wrap edge cases", () => {
-    it("should wrap legacy object with zpp_inner", () => {
-      const fp = new FluidProperties(2.0, 0.5);
-      const legacy = { zpp_inner: fp.zpp_inner };
-      const wrapped = FluidProperties._wrap(legacy);
-      expect(wrapped).toBeInstanceOf(FluidProperties);
-      expect(wrapped.density).toBeCloseTo(2.0);
-    });
-
     it("should return null for unknown object", () => {
       const result = FluidProperties._wrap({ foo: "bar" });
       expect(result).toBeNull();

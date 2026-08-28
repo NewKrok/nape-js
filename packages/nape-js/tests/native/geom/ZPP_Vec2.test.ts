@@ -235,14 +235,6 @@ describe("ZPP_Vec2", () => {
   });
 
   // ========== Linked List Operations ==========
-
-  describe("elem", () => {
-    it("should return self", () => {
-      const v = new ZPP_Vec2();
-      expect(v.elem()).toBe(v);
-    });
-  });
-
   describe("begin", () => {
     it("should return next (head)", () => {
       const list = new ZPP_Vec2();
@@ -256,18 +248,6 @@ describe("ZPP_Vec2", () => {
       expect(list.begin()).toBeNull();
     });
   });
-
-  describe("setbegin", () => {
-    it("should set next and mark modified", () => {
-      const list = new ZPP_Vec2();
-      const item = new ZPP_Vec2();
-      list.setbegin(item);
-      expect(list.next).toBe(item);
-      expect(list.modified).toBe(true);
-      expect(list.pushmod).toBe(true);
-    });
-  });
-
   describe("add", () => {
     it("should add to front of list", () => {
       const list = new ZPP_Vec2();
@@ -292,33 +272,17 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_add", () => {
+  describe("add", () => {
     it("should behave same as add", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
-      const result = list.inlined_add(a);
+      const result = list.add(a);
       expect(result).toBe(a);
       expect(list.next).toBe(a);
       expect(list.length).toBe(1);
       expect(a._inuse).toBe(true);
     });
   });
-
-  describe("addAll", () => {
-    it("should add items from another list (first item)", () => {
-      const list = new ZPP_Vec2();
-      const src = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      src.next = a;
-
-      list.addAll(src);
-      // addAll adds the first item it encounters (a)
-      // then a.next gets modified by add(), so iteration stops
-      expect(list.length).toBe(1);
-      expect(list.next).toBe(a);
-    });
-  });
-
   describe("insert", () => {
     it("should insert at head when cur is null", () => {
       const list = new ZPP_Vec2();
@@ -352,11 +316,11 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_insert", () => {
+  describe("insert", () => {
     it("should insert at head when cur is null", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
-      list.inlined_insert(null, a);
+      list.insert(null, a);
       expect(list.next).toBe(a);
       expect(list.length).toBe(1);
     });
@@ -367,7 +331,7 @@ describe("ZPP_Vec2", () => {
       const b = new ZPP_Vec2();
       list.next = a;
       list.length = 1;
-      list.inlined_insert(a, b);
+      list.insert(a, b);
       expect(a.next).toBe(b);
       expect(list.length).toBe(2);
     });
@@ -403,14 +367,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_pop", () => {
+  describe("pop", () => {
     it("should behave same as pop", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      list.inlined_pop();
+      list.pop();
       expect(list.next).toBeNull();
       expect(a._inuse).toBe(false);
       expect(list.pushmod).toBe(true);
@@ -431,14 +395,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_pop_unsafe", () => {
+  describe("pop_unsafe", () => {
     it("should remove and return front item", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      const ret = list.inlined_pop_unsafe();
+      const ret = list.pop_unsafe();
       expect(ret).toBe(a);
     });
   });
@@ -499,14 +463,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_remove", () => {
+  describe("remove", () => {
     it("should remove head element", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      list.inlined_remove(a);
+      list.remove(a);
       expect(list.next).toBeNull();
       expect(list.length).toBe(0);
     });
@@ -519,7 +483,7 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       list.length = 2;
-      list.inlined_remove(b);
+      list.remove(b);
       expect(a.next).toBeNull();
       expect(list.length).toBe(1);
     });
@@ -527,59 +491,10 @@ describe("ZPP_Vec2", () => {
     it("should do nothing when item not found", () => {
       const list = new ZPP_Vec2();
       const notInList = new ZPP_Vec2();
-      list.inlined_remove(notInList);
+      list.remove(notInList);
       expect(list.length).toBe(0);
     });
   });
-
-  describe("try_remove", () => {
-    it("should return true when item found and removed", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      a._inuse = true;
-      list.next = a;
-      list.length = 1;
-      expect(list.try_remove(a)).toBe(true);
-      expect(list.length).toBe(0);
-    });
-
-    it("should return false when item not found", () => {
-      const list = new ZPP_Vec2();
-      const notInList = new ZPP_Vec2();
-      expect(list.try_remove(notInList)).toBe(false);
-    });
-  });
-
-  describe("inlined_try_remove", () => {
-    it("should return true when head item found", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      a._inuse = true;
-      list.next = a;
-      list.length = 1;
-      expect(list.inlined_try_remove(a)).toBe(true);
-      expect(list.next).toBeNull();
-    });
-
-    it("should return true when non-head item found", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      const b = new ZPP_Vec2();
-      a._inuse = b._inuse = true;
-      list.next = a;
-      a.next = b;
-      list.length = 2;
-      expect(list.inlined_try_remove(b)).toBe(true);
-      expect(list.length).toBe(1);
-    });
-
-    it("should return false when not found", () => {
-      const list = new ZPP_Vec2();
-      const notInList = new ZPP_Vec2();
-      expect(list.inlined_try_remove(notInList)).toBe(false);
-    });
-  });
-
   describe("erase", () => {
     it("should erase head when pre is null", () => {
       const list = new ZPP_Vec2();
@@ -640,14 +555,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_erase", () => {
+  describe("erase", () => {
     it("should erase head when pre is null", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      const ret = list.inlined_erase(null);
+      const ret = list.erase(null);
       expect(ret).toBeNull();
       expect(list.next).toBeNull();
     });
@@ -660,49 +575,16 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       list.length = 2;
-      const ret = list.inlined_erase(a);
+      const ret = list.erase(a);
       expect(ret).toBeNull();
       expect(a.next).toBeNull();
     });
   });
-
-  describe("splice", () => {
-    it("should erase n elements after pre", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      const b = new ZPP_Vec2();
-      const c = new ZPP_Vec2();
-      a._inuse = b._inuse = c._inuse = true;
-      list.next = a;
-      a.next = b;
-      b.next = c;
-      list.length = 3;
-
-      const ret = list.splice(a, 2);
-      expect(ret).toBeNull();
-      expect(a.next).toBeNull();
-      expect(list.length).toBe(1);
-    });
-
-    it("should stop early when list ends", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      const b = new ZPP_Vec2();
-      a._inuse = b._inuse = true;
-      list.next = a;
-      a.next = b;
-      list.length = 2;
-
-      list.splice(a, 10);
-      expect(a.next).toBeNull();
-    });
-  });
-
   describe("clear / inlined_clear", () => {
     it("should be callable (no-op)", () => {
       const list = new ZPP_Vec2();
       expect(() => list.clear()).not.toThrow();
-      expect(() => list.inlined_clear()).not.toThrow();
+      expect(() => list.clear()).not.toThrow();
     });
   });
 
@@ -746,29 +628,20 @@ describe("ZPP_Vec2", () => {
       expect(list.empty()).toBe(false);
     });
   });
-
-  describe("size", () => {
-    it("should return length", () => {
-      const list = new ZPP_Vec2();
-      list.length = 5;
-      expect(list.size()).toBe(5);
-    });
-  });
-
   describe("has / inlined_has", () => {
     it("should return true when item exists", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       list.next = a;
       expect(list.has(a)).toBe(true);
-      expect(list.inlined_has(a)).toBe(true);
+      expect(list.has(a)).toBe(true);
     });
 
     it("should return false when item does not exist", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       expect(list.has(a)).toBe(false);
-      expect(list.inlined_has(a)).toBe(false);
+      expect(list.has(a)).toBe(false);
     });
 
     it("should find items deeper in list", () => {
@@ -778,41 +651,9 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       expect(list.has(b)).toBe(true);
-      expect(list.inlined_has(b)).toBe(true);
+      expect(list.has(b)).toBe(true);
     });
   });
-
-  describe("front", () => {
-    it("should return next (head)", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      list.next = a;
-      expect(list.front()).toBe(a);
-    });
-
-    it("should return null for empty list", () => {
-      const list = new ZPP_Vec2();
-      expect(list.front()).toBeNull();
-    });
-  });
-
-  describe("back", () => {
-    it("should return last item", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      const b = new ZPP_Vec2();
-      list.next = a;
-      a.next = b;
-      b.next = null;
-      expect(list.back()).toBe(b);
-    });
-
-    it("should return null for empty list", () => {
-      const list = new ZPP_Vec2();
-      expect(list.back()).toBeNull();
-    });
-  });
-
   describe("iterator_at", () => {
     it("should return item at index", () => {
       const list = new ZPP_Vec2();
@@ -843,44 +684,6 @@ describe("ZPP_Vec2", () => {
     it("should return null for out of range", () => {
       const list = new ZPP_Vec2();
       expect(list.at(0)).toBeNull();
-    });
-  });
-
-  describe("try_remove (non-head erase path)", () => {
-    it("should remove a non-head item via erase with pre != null", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      const b = new ZPP_Vec2();
-      const c = new ZPP_Vec2();
-      a._inuse = b._inuse = c._inuse = true;
-      list.next = a;
-      a.next = b;
-      b.next = c;
-      list.length = 3;
-
-      // b is at index 1, so pre will be a (non-null) when erase is called
-      const result = list.try_remove(b);
-      expect(result).toBe(true);
-      expect(a.next).toBe(c);
-      expect(list.length).toBe(2);
-      expect(b._inuse).toBe(false);
-    });
-
-    it("should remove the last item via erase with pre != null", () => {
-      const list = new ZPP_Vec2();
-      const a = new ZPP_Vec2();
-      const b = new ZPP_Vec2();
-      a._inuse = b._inuse = true;
-      list.next = a;
-      a.next = b;
-      list.length = 2;
-
-      // b is the last item, pre will be a
-      const result = list.try_remove(b);
-      expect(result).toBe(true);
-      expect(a.next).toBeNull();
-      expect(list.length).toBe(1);
-      expect(b._inuse).toBe(false);
     });
   });
 });

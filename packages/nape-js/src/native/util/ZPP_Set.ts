@@ -54,46 +54,6 @@ export class ZPP_Set<T> {
 
   alloc(): void {}
 
-  verify(): boolean {
-    if (!this.empty()) {
-      let set_ite: ZPP_Set<T> | null = this.parent;
-      while (set_ite!.prev != null) set_ite = set_ite!.prev;
-      while (set_ite != null) {
-        const i = set_ite.data!;
-        let prei = true;
-        if (!this.empty()) {
-          let set_ite1: ZPP_Set<T> | null = this.parent;
-          while (set_ite1!.prev != null) set_ite1 = set_ite1!.prev;
-          while (set_ite1 != null) {
-            const j = set_ite1.data!;
-            if (!prei) {
-              if (!this.lt!(i, j) && this.lt!(j, i)) return false;
-            } else if (i == j) {
-              prei = false;
-            } else if (!this.lt!(j, i) && this.lt!(i, j)) return false;
-            if (set_ite1.next != null) {
-              set_ite1 = set_ite1.next;
-              while (set_ite1!.prev != null) set_ite1 = set_ite1!.prev;
-            } else {
-              while (set_ite1!.parent != null && set_ite1 == set_ite1!.parent!.next)
-                set_ite1 = set_ite1!.parent;
-              set_ite1 = set_ite1!.parent;
-            }
-          }
-        }
-        if (set_ite.next != null) {
-          set_ite = set_ite.next;
-          while (set_ite!.prev != null) set_ite = set_ite!.prev;
-        } else {
-          while (set_ite!.parent != null && set_ite == set_ite!.parent!.next)
-            set_ite = set_ite!.parent;
-          set_ite = set_ite!.parent;
-        }
-      }
-    }
-    return true;
-  }
-
   empty(): boolean {
     return this.parent == null;
   }
@@ -136,10 +96,6 @@ export class ZPP_Set<T> {
     return cur;
   }
 
-  has_weak(obj: T): boolean {
-    return this.find_weak(obj) != null;
-  }
-
   find_weak(obj: T): ZPP_Set<T> | null {
     let cur = this.parent;
     while (cur != null) {
@@ -148,29 +104,6 @@ export class ZPP_Set<T> {
       else break;
     }
     return cur;
-  }
-
-  lower_bound(obj: T): T | null {
-    let ret: T | null = null;
-    if (!this.empty()) {
-      let set_ite: ZPP_Set<T> | null = this.parent;
-      while (set_ite!.prev != null) set_ite = set_ite!.prev;
-      while (set_ite != null) {
-        if (!this.lt!(set_ite.data!, obj)) {
-          ret = set_ite.data;
-          break;
-        }
-        if (set_ite.next != null) {
-          set_ite = set_ite.next;
-          while (set_ite!.prev != null) set_ite = set_ite!.prev;
-        } else {
-          while (set_ite!.parent != null && set_ite == set_ite!.parent!.next)
-            set_ite = set_ite!.parent;
-          set_ite = set_ite!.parent;
-        }
-      }
-    }
-    return ret;
   }
 
   first(): T {
@@ -219,16 +152,6 @@ export class ZPP_Set<T> {
       }
     }
     return cur;
-  }
-
-  successor(obj: T): T | null {
-    const node = this.successor_node(this.find(obj)!);
-    return node == null ? null : node.data;
-  }
-
-  predecessor(obj: T): T | null {
-    const node = this.predecessor_node(this.find(obj)!);
-    return node == null ? null : node.data;
   }
 
   remove_node(cur: ZPP_Set<T>): void {
@@ -319,39 +242,6 @@ export class ZPP_Set<T> {
       }
       this.parent = null;
     }
-  }
-
-  clear_with(lambda: (data: T) => void): void {
-    if (this.parent == null) return;
-    let cur: ZPP_Set<T> | null = this.parent;
-    while (cur != null) {
-      if (cur.prev != null) cur = cur.prev;
-      else if (cur.next != null) cur = cur.next;
-      else {
-        lambda(cur.data!);
-        const ret: ZPP_Set<T> | null = cur.parent;
-        if (ret != null) {
-          if (cur == ret.prev) ret.prev = null;
-          else ret.next = null;
-          cur.parent = null;
-        }
-        this._freeNode(cur);
-        cur = ret;
-      }
-    }
-    this.parent = null;
-  }
-
-  clear_node(node: ZPP_Set<T>, lambda: (data: T) => void): ZPP_Set<T> | null {
-    lambda(node.data!);
-    const ret = node.parent;
-    if (ret != null) {
-      if (node == ret.prev) ret.prev = null;
-      else ret.next = null;
-      node.parent = null;
-    }
-    this._freeNode(node);
-    return ret;
   }
 
   __fix_neg_red(negred: ZPP_Set<T>): void {

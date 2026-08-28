@@ -329,12 +329,8 @@ Object.defineProperty((ZPP_MixVec2ListCtor as any).prototype, "length", {
   }
 };
 
-// ---------------------------------------------------------------------------
-// Register in compiled namespace
-// ---------------------------------------------------------------------------
-
-const nape = getNape();
-const zpp = nape.__zpp;
-zpp.util.ZPP_MixVec2List = ZPP_MixVec2ListCtor;
+// Namespace registration happens in core/bootstrap.ts — a module-scope
+// getNape() here would run mid-cycle now that engine files import this
+// module directly.
 
 export { ZPP_MixVec2ListCtor as ZPP_MixVec2List };

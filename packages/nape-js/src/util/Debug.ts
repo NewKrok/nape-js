@@ -14,9 +14,11 @@ function clearPool(holder: any, poolProp: string, nextProp: string): void {
  *
  * Extracted from nape-compiled.js Priority 14.
  */
+declare const __PACKAGE_VERSION__: string;
+
 export class Debug {
   static version(): string {
-    return "Nape 2.0.19";
+    return typeof __PACKAGE_VERSION__ === "string" ? `nape-js ${__PACKAGE_VERSION__}` : "nape-js";
   }
 
   /**

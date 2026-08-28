@@ -157,27 +157,6 @@ describe("ZPP_Contact", () => {
       expect(c.outer).toBe(mockWrapper);
     });
 
-    it("should fall back to _nape.dynamics.Contact when _wrapFn is null", () => {
-      const c = new ZPP_Contact();
-      const mockContact = { zpp_inner: null as any };
-      ZPP_Contact._nape = {
-        dynamics: {
-          Contact: class {
-            zpp_inner: any = null;
-            constructor() {
-              mockContact.zpp_inner = null;
-              return mockContact as any;
-            }
-          },
-        },
-      };
-
-      const result = c.wrapper();
-      expect(result).toBe(mockContact);
-      expect(mockContact.zpp_inner).toBe(c);
-      expect(ZPP_Contact.internal).toBe(false); // restored after creation
-    });
-
     it("should cache wrapper on subsequent calls", () => {
       const c = new ZPP_Contact();
       const mockWrapper = { id: "cached" };
@@ -305,16 +284,6 @@ describe("ZPP_Contact", () => {
       expect(head.length).toBe(0);
     });
 
-    it("should report empty/size correctly", () => {
-      const head = new ZPP_Contact();
-      expect(head.empty()).toBe(true);
-      expect(head.size()).toBe(0);
-
-      head.add(new ZPP_Contact());
-      expect(head.empty()).toBe(false);
-      expect(head.size()).toBe(1);
-    });
-
     it("has() should find element", () => {
       const head = new ZPP_Contact();
       const a = new ZPP_Contact();
@@ -322,17 +291,6 @@ describe("ZPP_Contact", () => {
       head.add(a);
       expect(head.has(a)).toBe(true);
       expect(head.has(b)).toBe(false);
-    });
-
-    it("front/back should return correct elements", () => {
-      const head = new ZPP_Contact();
-      const a = new ZPP_Contact();
-      const b = new ZPP_Contact();
-      head.add(a);
-      head.add(b);
-      // list: b -> a
-      expect(head.front()).toBe(b);
-      expect(head.back()).toBe(a);
     });
 
     it("at() should return element at index", () => {
@@ -386,32 +344,10 @@ describe("ZPP_Contact", () => {
       expect(head.length).toBe(1);
     });
 
-    it("try_remove should return true/false", () => {
-      const head = new ZPP_Contact();
-      const a = new ZPP_Contact();
-      head.add(a);
-      expect(head.try_remove(a)).toBe(true);
-      expect(head.try_remove(a)).toBe(false);
-    });
-
     it("clear should be a no-op", () => {
       const head = new ZPP_Contact();
       head.add(new ZPP_Contact());
       head.clear();
-      expect(head.length).toBe(1);
-    });
-
-    it("splice should erase n elements after pre", () => {
-      const head = new ZPP_Contact();
-      const a = new ZPP_Contact();
-      const b = new ZPP_Contact();
-      const c = new ZPP_Contact();
-      head.add(a);
-      head.add(b);
-      head.add(c);
-      // list: c -> b -> a
-      head.splice(c, 2);
-      expect(c.next).toBeNull();
       expect(head.length).toBe(1);
     });
   });

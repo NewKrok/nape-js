@@ -13,6 +13,7 @@ import { ZPP_ToiEvent } from "./ZPP_ToiEvent";
 import { ZPP_Body } from "../phys/ZPP_Body";
 import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { getNape } from "../../core/engine";
+import { Config } from "../../Config";
 
 /** Check if shape is circle for CCD. */
 function _isCircleLike(s: any): boolean {
@@ -32,7 +33,6 @@ export class ZPP_SweepDistance {
     negRadius: number,
     userAPI: boolean,
   ) {
-    const napeNs = getNape();
     if (userAPI == null) {
       userAPI = false;
     }
@@ -57,8 +57,8 @@ export class ZPP_SweepDistance {
       !userAPI &&
       !toi.kinematic &&
       deltax * deltax + deltay * deltay <
-        napeNs.Config.dynamicSweepLinearThreshold * napeNs.Config.dynamicSweepLinearThreshold &&
-      angBias < napeNs.Config.dynamicSweepAngularThreshold
+        Config.dynamicSweepLinearThreshold * Config.dynamicSweepLinearThreshold &&
+      angBias < Config.dynamicSweepAngularThreshold
     ) {
       toi.toi = -1;
       toi.failed = true;
@@ -199,7 +199,7 @@ export class ZPP_SweepDistance {
       const sep = ZPP_SweepDistance.distance(s1, s2, c1, c2, axis, null);
       const sep1 = sep + negRadius;
       const dot = deltax * axis.x + deltay * axis.y;
-      if (sep1 < napeNs.Config.distanceThresholdCCD) {
+      if (sep1 < Config.distanceThresholdCCD) {
         if (userAPI) {
           break;
         }
@@ -218,7 +218,7 @@ export class ZPP_SweepDistance {
         if (proj > 0) {
           toi.slipped = true;
         }
-        if (proj <= 0 || sep1 < napeNs.Config.distanceThresholdCCD * 0.5) {
+        if (proj <= 0 || sep1 < Config.distanceThresholdCCD * 0.5) {
           break;
         }
       }
@@ -363,7 +363,7 @@ export class ZPP_SweepDistance {
         const sep2 = ZPP_SweepDistance.distance(s1, s2, c1, c2, axis, null);
         const sep3 = sep2 + negRadius;
         const dot1 = deltax * axis.x + deltay * axis.y;
-        if (sep3 < napeNs.Config.distanceThresholdCCD) {
+        if (sep3 < Config.distanceThresholdCCD) {
           if (userAPI) {
             break;
           }
@@ -382,7 +382,7 @@ export class ZPP_SweepDistance {
           if (proj1 > 0) {
             toi.slipped = true;
           }
-          if (proj1 <= 0 || sep3 < napeNs.Config.distanceThresholdCCD * 0.5) {
+          if (proj1 <= 0 || sep3 < Config.distanceThresholdCCD * 0.5) {
             break;
           }
         }
@@ -399,7 +399,6 @@ export class ZPP_SweepDistance {
     toi.toi = curTOI;
   }
   static staticSweep(toi: ZPP_ToiEvent, timeStep: number, lowerBound: number, negRadius: number) {
-    const napeNs = getNape();
     const s1 = toi.s1!;
     const s2 = toi.s2!;
     const b1 = s1.body;
@@ -485,7 +484,7 @@ export class ZPP_SweepDistance {
       const sep = ZPP_SweepDistance.distance(s1, s2, c1, c2, axis, null);
       const sep1 = sep + negRadius;
       const dot = deltax * axis.x + deltay * axis.y;
-      if (sep1 < napeNs.Config.distanceThresholdCCD) {
+      if (sep1 < Config.distanceThresholdCCD) {
         let d1x = 0.0;
         let d1y = 0.0;
         d1x = c1.x - b1.posx;
@@ -494,7 +493,7 @@ export class ZPP_SweepDistance {
         if (proj > 0) {
           toi.slipped = true;
         }
-        if (proj <= 0 || sep1 < napeNs.Config.distanceThresholdCCD * 0.5) {
+        if (proj <= 0 || sep1 < Config.distanceThresholdCCD * 0.5) {
           break;
         }
       }
@@ -576,7 +575,7 @@ export class ZPP_SweepDistance {
         const sep2 = ZPP_SweepDistance.distance(s1, s2, c1, c2, axis, null);
         const sep3 = sep2 + negRadius;
         const dot1 = deltax * axis.x + deltay * axis.y;
-        if (sep3 < napeNs.Config.distanceThresholdCCD) {
+        if (sep3 < Config.distanceThresholdCCD) {
           let d1x1 = 0.0;
           let d1y1 = 0.0;
           d1x1 = c1.x - b1.posx;
@@ -585,7 +584,7 @@ export class ZPP_SweepDistance {
           if (proj1 > 0) {
             toi.slipped = true;
           }
-          if (proj1 <= 0 || sep3 < napeNs.Config.distanceThresholdCCD * 0.5) {
+          if (proj1 <= 0 || sep3 < Config.distanceThresholdCCD * 0.5) {
             break;
           }
         }
@@ -602,7 +601,6 @@ export class ZPP_SweepDistance {
     toi.toi = curTOI;
   }
   static distanceBody(b1: ZPP_Body, b2: ZPP_Body, w1: ZPP_Vec2, w2: ZPP_Vec2) {
-    const napeNs = getNape();
     const t1 = ZPP_Vec2.get(0, 0);
     const t2 = ZPP_Vec2.get(0, 0);
     const ax = ZPP_Vec2.get(0, 0);
@@ -665,7 +663,6 @@ export class ZPP_SweepDistance {
     axis: ZPP_Vec2,
     upperBound: number | null,
   ) {
-    const napeNs = getNape();
     if (upperBound == null) {
       upperBound = 1e100;
     }
@@ -1060,13 +1057,13 @@ export class ZPP_SweepDistance {
               const d11 = ax.gnormy * c1x - ax.gnormx * c1y;
               const den = 1 / (d11 - d0);
               const t17 = (-ax.tp1 - d0) * den;
-              if (t17 > napeNs.Config.epsilon) {
+              if (t17 > Config.epsilon) {
                 const t18 = t17;
                 c0x += dvx * t18;
                 c0y += dvy * t18;
               }
               const t19 = (-ax.tp0 - d11) * den;
-              if (t19 < -napeNs.Config.epsilon) {
+              if (t19 < -Config.epsilon) {
                 const t20 = t19;
                 c1x += dvx * t20;
                 c1y += dvy * t20;

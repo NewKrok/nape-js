@@ -98,11 +98,6 @@ export class InteractionFilter {
       });
     }
 
-    // Legacy fallback: compiled InteractionFilter with zpp_inner
-    if (inner.zpp_inner) {
-      return InteractionFilter._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as InteractionFilter;
   }
 

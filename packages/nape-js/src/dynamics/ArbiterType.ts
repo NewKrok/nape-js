@@ -1,4 +1,4 @@
-import { getNape, ensureEnumsReady } from "../core/engine";
+import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -57,4 +57,3 @@ export class ArbiterType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.dynamics.ArbiterType = ArbiterType;
-ensureEnumsReady();

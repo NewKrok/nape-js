@@ -8,6 +8,9 @@
  */
 
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
+import { Config } from "../../Config";
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_FluidArbiter extends ZPP_Arbiter {
   // --- Static: Haxe metadata ---
@@ -129,29 +132,28 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
   }
 
   getposition(): void {
-    const zpp = ZPP_Arbiter._zpp;
     const napeNs = ZPP_Arbiter._nape;
 
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
 
     if (ret.zpp_inner == null) {
       let ret1: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;
@@ -256,8 +258,6 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
   // ========== Pre-step (physics solver) ==========
 
   preStep(s: any, dt: number): void {
-    const napeNs = ZPP_Arbiter._nape;
-
     if (this.pre_dt == -1.0) {
       this.pre_dt = dt;
     }
@@ -405,7 +405,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         this.r2x * (this.b2.angvel + this.b2.kinangvel) -
         (this.b1.vely + this.b1.kinvely + this.r1x * (this.b1.angvel + this.b1.kinangvel));
 
-      if (!(vrnx * vrnx + vrny * vrny < napeNs.Config.epsilon * napeNs.Config.epsilon)) {
+      if (!(vrnx * vrnx + vrny * vrny < Config.epsilon * Config.epsilon)) {
         const d = vrnx * vrnx + vrny * vrny;
         const imag = 1.0 / Math.sqrt(d);
         this.nx = vrnx * imag;
@@ -418,7 +418,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         const f = (-this.ws1.fluidProperties.viscosity * this.overlap) / this.ws2.area;
         if (this.ws2.type == 0) {
           tViscosity1 -=
-            (f * this.ws2.circle.radius * napeNs.Config.fluidLinearDrag) /
+            (f * this.ws2.circle.radius * Config.fluidLinearDrag) /
             (2 * this.ws2.circle.radius * Math.PI);
         } else {
           const poly = this.ws2.polygon;
@@ -430,9 +430,9 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
             bord += ex.length;
             let fact = f * ex.length * (ex.gnormx * this.nx + ex.gnormy * this.ny);
             if (fact > 0) {
-              fact *= -napeNs.Config.fluidVacuumDrag;
+              fact *= -Config.fluidVacuumDrag;
             }
-            acc -= fact * 0.5 * napeNs.Config.fluidLinearDrag;
+            acc -= fact * 0.5 * Config.fluidLinearDrag;
             cx_ite = cx_ite.next;
           }
           tViscosity1 += acc / bord;
@@ -442,7 +442,7 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
         const f = (-this.ws2.fluidProperties.viscosity * this.overlap) / this.ws1.area;
         if (this.ws1.type == 0) {
           tViscosity1 -=
-            (f * this.ws1.circle.radius * napeNs.Config.fluidLinearDrag) /
+            (f * this.ws1.circle.radius * Config.fluidLinearDrag) /
             (2 * this.ws1.circle.radius * Math.PI);
         } else {
           const poly = this.ws1.polygon;
@@ -454,9 +454,9 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
             bord += ex.length;
             let fact = f * ex.length * (ex.gnormx * this.nx + ex.gnormy * this.ny);
             if (fact > 0) {
-              fact *= -napeNs.Config.fluidVacuumDrag;
+              fact *= -Config.fluidVacuumDrag;
             }
-            acc -= fact * 0.5 * napeNs.Config.fluidLinearDrag;
+            acc -= fact * 0.5 * Config.fluidLinearDrag;
             cx_ite = cx_ite.next;
           }
           tViscosity1 += acc / bord;

@@ -1,3 +1,7 @@
+import { Config } from "../../Config";
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZPP_Shape } from "./ZPP_Shape";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_Circle — Internal circle shape for the nape physics engine.
  *
@@ -66,9 +70,7 @@ export class ZPP_Circle {
     if (ZPP_Circle._initialized) return;
     ZPP_Circle._initialized = true;
 
-    const zpp = ZPP_Circle._zpp;
-
-    const srcProto = zpp.shape.ZPP_Shape.prototype;
+    const srcProto = ZPP_Shape.prototype as any;
     const dstProto = ZPP_Circle.prototype as any;
 
     // Copy enumerable inherited properties (e.g., ZPP_Interactor methods)
@@ -122,7 +124,6 @@ export class ZPP_Circle {
   }
 
   setupLocalCOM(): void {
-    const zpp = ZPP_Circle._zpp;
     const nape = ZPP_Circle._nape;
     const x = this.localCOMx;
     const y = this.localCOMy;
@@ -130,24 +131,24 @@ export class ZPP_Circle {
       throw new Error("Vec2 components cannot be NaN");
     }
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
     if (ret.zpp_inner == null) {
       let ret1: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;
@@ -222,13 +223,11 @@ export class ZPP_Circle {
   }
 
   __validate_angDrag(): void {
-    const nape = ZPP_Circle._nape;
     const lc = this.localCOMx * this.localCOMx + this.localCOMy * this.localCOMy;
     const r2 = this.radius * this.radius;
-    const skin = this.material.dynamicFriction * nape.Config.fluidAngularDragFriction;
+    const skin = this.material.dynamicFriction * Config.fluidAngularDragFriction;
     this.angDrag =
-      (lc + 2 * r2) * skin +
-      0.5 * nape.Config.fluidAngularDrag * (1 + nape.Config.fluidVacuumDrag) * lc;
+      (lc + 2 * r2) * skin + 0.5 * Config.fluidAngularDrag * (1 + Config.fluidVacuumDrag) * lc;
     this.angDrag /= 2 * (lc + 0.5 * r2);
   }
 

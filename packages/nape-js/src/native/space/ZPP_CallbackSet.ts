@@ -1,3 +1,4 @@
+import { ZNPList_ZPP_Arbiter, ZNPNode_ZPP_Arbiter } from "../util/ZNPRegistry";
 /**
  * ZPP_CallbackSet — Internal callback set for tracking interactor pair state.
  *
@@ -46,7 +47,7 @@ export class ZPP_CallbackSet {
   lazydel = false;
 
   constructor() {
-    this.arbiters = new ZPP_CallbackSet._zpp.util.ZNPList_ZPP_Arbiter();
+    this.arbiters = new ZNPList_ZPP_Arbiter();
   }
 
   // ========== Static factory ==========
@@ -82,18 +83,8 @@ export class ZPP_CallbackSet {
 
   // ========== Linked list methods (ZNPList pattern) ==========
 
-  elem(): this {
-    return this;
-  }
-
   begin(): ZPP_CallbackSet | null {
     return this.next;
-  }
-
-  setbegin(i: ZPP_CallbackSet | null): void {
-    this.next = i;
-    this.modified = true;
-    this.pushmod = true;
   }
 
   add(o: ZPP_CallbackSet): ZPP_CallbackSet {
@@ -106,41 +97,7 @@ export class ZPP_CallbackSet {
     return o;
   }
 
-  inlined_add(o: ZPP_CallbackSet): ZPP_CallbackSet {
-    o._inuse = true;
-    const temp = o;
-    temp.next = this.next;
-    this.next = temp;
-    this.modified = true;
-    this.length++;
-    return o;
-  }
-
-  addAll(x: ZPP_CallbackSet): void {
-    let cx_ite: ZPP_CallbackSet | null = x.next;
-    while (cx_ite != null) {
-      const i = cx_ite;
-      this.add(i);
-      cx_ite = cx_ite.next;
-    }
-  }
-
   insert(cur: ZPP_CallbackSet | null, o: ZPP_CallbackSet): ZPP_CallbackSet {
-    o._inuse = true;
-    const temp = o;
-    if (cur == null) {
-      temp.next = this.next;
-      this.next = temp;
-    } else {
-      temp.next = cur.next;
-      cur.next = temp;
-    }
-    this.pushmod = this.modified = true;
-    this.length++;
-    return temp;
-  }
-
-  inlined_insert(cur: ZPP_CallbackSet | null, o: ZPP_CallbackSet): ZPP_CallbackSet {
     o._inuse = true;
     const temp = o;
     if (cur == null) {
@@ -166,24 +123,7 @@ export class ZPP_CallbackSet {
     this.length--;
   }
 
-  inlined_pop(): void {
-    const ret = this.next!;
-    this.next = ret.next;
-    ret._inuse = false;
-    if (this.next == null) {
-      this.pushmod = true;
-    }
-    this.modified = true;
-    this.length--;
-  }
-
   pop_unsafe(): ZPP_CallbackSet {
-    const ret = this.next!;
-    this.pop();
-    return ret;
-  }
-
-  inlined_pop_unsafe(): ZPP_CallbackSet {
     const ret = this.next!;
     this.pop();
     return ret;
@@ -222,91 +162,6 @@ export class ZPP_CallbackSet {
     }
   }
 
-  try_remove(obj: ZPP_CallbackSet): boolean {
-    let pre: ZPP_CallbackSet | null = null;
-    let cur: ZPP_CallbackSet | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        this.erase(pre);
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
-  inlined_remove(obj: ZPP_CallbackSet): void {
-    let pre: ZPP_CallbackSet | null = null;
-    let cur: ZPP_CallbackSet | null = this.next;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_CallbackSet;
-        let ret: ZPP_CallbackSet | null;
-        if (pre == null) {
-          old = this.next!;
-          ret = old.next;
-          this.next = ret;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret = old.next;
-          pre.next = ret;
-          if (ret == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-  }
-
-  inlined_try_remove(obj: ZPP_CallbackSet): boolean {
-    let pre: ZPP_CallbackSet | null = null;
-    let cur: ZPP_CallbackSet | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_CallbackSet;
-        let ret1: ZPP_CallbackSet | null;
-        if (pre == null) {
-          old = this.next!;
-          ret1 = old.next;
-          this.next = ret1;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret1 = old.next;
-          pre.next = ret1;
-          if (ret1 == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
   erase(pre: ZPP_CallbackSet | null): ZPP_CallbackSet | null {
     let old: ZPP_CallbackSet;
     let ret: ZPP_CallbackSet | null;
@@ -332,38 +187,7 @@ export class ZPP_CallbackSet {
     return ret;
   }
 
-  inlined_erase(pre: ZPP_CallbackSet | null): ZPP_CallbackSet | null {
-    let old: ZPP_CallbackSet;
-    let ret: ZPP_CallbackSet | null;
-    if (pre == null) {
-      old = this.next!;
-      ret = old.next;
-      this.next = ret;
-      if (this.next == null) {
-        this.pushmod = true;
-      }
-    } else {
-      old = pre.next!;
-      ret = old.next;
-      pre.next = ret;
-      if (ret == null) {
-        this.pushmod = true;
-      }
-    }
-    old._inuse = false;
-    this.modified = true;
-    this.length--;
-    this.pushmod = true;
-    return ret;
-  }
-
-  splice(pre: ZPP_CallbackSet, n: number): ZPP_CallbackSet | null {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
-  }
-
   clear(): void {}
-  inlined_clear(): void {}
 
   reverse(): void {
     let cur: ZPP_CallbackSet | null = this.next;
@@ -383,10 +207,6 @@ export class ZPP_CallbackSet {
     return this.next == null;
   }
 
-  size(): number {
-    return this.length;
-  }
-
   has(obj: ZPP_CallbackSet): boolean {
     let ret = false;
     let cx_ite: ZPP_CallbackSet | null = this.next;
@@ -397,34 +217,6 @@ export class ZPP_CallbackSet {
         break;
       }
       cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  inlined_has(obj: ZPP_CallbackSet): boolean {
-    let ret = false;
-    let cx_ite: ZPP_CallbackSet | null = this.next;
-    while (cx_ite != null) {
-      const npite = cx_ite;
-      if (npite == obj) {
-        ret = true;
-        break;
-      }
-      cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  front(): ZPP_CallbackSet | null {
-    return this.next;
-  }
-
-  back(): ZPP_CallbackSet | null {
-    let ret: ZPP_CallbackSet | null = this.next;
-    let cur = ret;
-    while (cur != null) {
-      ret = cur;
-      cur = cur.next;
     }
     return ret;
   }
@@ -479,7 +271,7 @@ export class ZPP_CallbackSet {
     if (!ret) {
       const _this = this.arbiters;
       let ret1: any;
-      const ZNPNode = ZPP_CallbackSet._zpp.util.ZNPNode_ZPP_Arbiter;
+      const ZNPNode = ZNPNode_ZPP_Arbiter;
       if (ZNPNode.zpp_pool == null) {
         ret1 = new ZNPNode();
       } else {
@@ -497,47 +289,6 @@ export class ZPP_CallbackSet {
     } else {
       return false;
     }
-  }
-
-  try_remove_arb(x: any): boolean {
-    const _this = this.arbiters;
-    let pre: any = null;
-    let cur = _this.head;
-    let ret = false;
-    while (cur != null) {
-      if (cur.elt == x) {
-        let old: any;
-        let ret1: any;
-        if (pre == null) {
-          old = _this.head;
-          ret1 = old.next;
-          _this.head = ret1;
-          if (_this.head == null) {
-            _this.pushmod = true;
-          }
-        } else {
-          old = pre.next;
-          ret1 = old.next;
-          pre.next = ret1;
-          if (ret1 == null) {
-            _this.pushmod = true;
-          }
-        }
-        const o = old;
-        o.elt = null;
-        const ZNPNode = ZPP_CallbackSet._zpp.util.ZNPNode_ZPP_Arbiter;
-        o.next = ZNPNode.zpp_pool;
-        ZNPNode.zpp_pool = o;
-        _this.modified = true;
-        _this.length--;
-        _this.pushmod = true;
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
   }
 
   remove_arb(x: any): void {
@@ -565,7 +316,7 @@ export class ZPP_CallbackSet {
         }
         const o = old;
         o.elt = null;
-        const ZNPNode = ZPP_CallbackSet._zpp.util.ZNPNode_ZPP_Arbiter;
+        const ZNPNode = ZNPNode_ZPP_Arbiter;
         o.next = ZNPNode.zpp_pool;
         ZNPNode.zpp_pool = o;
         _this.modified = true;

@@ -26,8 +26,13 @@ export class ZNPList<T> {
   modified: boolean = false;
   pushmod: boolean = false;
 
+  // Node class cached per instance so the pool fast path is a monomorphic
+  // field load instead of a megamorphic this.constructor lookup.
+  private readonly _N: ZNPNodeClass<T> = (this.constructor as unknown as ZNPListConstructor<T>)
+    ._NodeClass;
+
   private _allocNode(): ZNPNode<T> {
-    const N = (this.constructor as unknown as ZNPListConstructor<T>)._NodeClass;
+    const N = this._N;
     let ret: ZNPNode<T>;
     if (N.zpp_pool == null) {
       ret = new N();
@@ -40,7 +45,7 @@ export class ZNPList<T> {
   }
 
   private _freeNode(node: ZNPNode<T>): void {
-    const N = (this.constructor as unknown as ZNPListConstructor<T>)._NodeClass;
+    const N = this._N;
     node.elt = null;
     node.next = N.zpp_pool;
     N.zpp_pool = node;
@@ -48,12 +53,6 @@ export class ZNPList<T> {
 
   begin(): ZNPNode<T> | null {
     return this.head;
-  }
-
-  setbegin(i: ZNPNode<T> | null): void {
-    this.head = i;
-    this.modified = true;
-    this.pushmod = true;
   }
 
   add(o: T): T {
@@ -64,14 +63,6 @@ export class ZNPList<T> {
     this.modified = true;
     this.length++;
     return o;
-  }
-
-  addAll(x: ZNPList<T>): void {
-    let cx_ite = x.head;
-    while (cx_ite != null) {
-      this.add(cx_ite.elt!);
-      cx_ite = cx_ite.next;
-    }
   }
 
   insert(cur: ZNPNode<T> | null, o: T): ZNPNode<T> {
@@ -144,27 +135,6 @@ export class ZNPList<T> {
     }
   }
 
-  try_remove(obj: T): boolean {
-    let pre: ZNPNode<T> | null = null;
-    let cur = this.head;
-    let ret = false;
-    while (cur != null) {
-      if (cur.elt == obj) {
-        this.erase(pre);
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
-  splice(pre: ZNPNode<T>, n: number): ZNPNode<T> | null {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
-  }
-
   clear(): void {
     while (this.head != null) {
       const ret = this.head;
@@ -197,10 +167,6 @@ export class ZNPList<T> {
     return this.head == null;
   }
 
-  size(): number {
-    return this.length;
-  }
-
   has(obj: T): boolean {
     let cx_ite = this.head;
     while (cx_ite != null) {
@@ -208,20 +174,6 @@ export class ZNPList<T> {
       cx_ite = cx_ite.next;
     }
     return false;
-  }
-
-  front(): T {
-    return this.head!.elt!;
-  }
-
-  back(): T {
-    let ret = this.head!;
-    let cur: ZNPNode<T> | null = ret;
-    while (cur != null) {
-      ret = cur;
-      cur = cur.next;
-    }
-    return ret.elt!;
   }
 
   iterator_at(ind: number): ZNPNode<T> | null {
@@ -233,31 +185,5 @@ export class ZNPList<T> {
   at(ind: number): T | null {
     const it = this.iterator_at(ind);
     return it != null ? it.elt : null;
-  }
-}
-
-// Set inlined method aliases on prototype
-ZNPList.prototype.inlined_add = ZNPList.prototype.add;
-ZNPList.prototype.inlined_insert = ZNPList.prototype.insert;
-ZNPList.prototype.inlined_pop = ZNPList.prototype.pop;
-ZNPList.prototype.inlined_pop_unsafe = ZNPList.prototype.pop_unsafe;
-ZNPList.prototype.inlined_erase = ZNPList.prototype.erase;
-ZNPList.prototype.inlined_remove = ZNPList.prototype.remove;
-ZNPList.prototype.inlined_try_remove = ZNPList.prototype.try_remove;
-ZNPList.prototype.inlined_clear = ZNPList.prototype.clear;
-ZNPList.prototype.inlined_has = ZNPList.prototype.has;
-
-// Augment prototype type to include inlined aliases
-declare module "./ZNPList" {
-  interface ZNPList<T> {
-    inlined_add: ZNPList<T>["add"];
-    inlined_insert: ZNPList<T>["insert"];
-    inlined_pop: ZNPList<T>["pop"];
-    inlined_pop_unsafe: ZNPList<T>["pop_unsafe"];
-    inlined_erase: ZNPList<T>["erase"];
-    inlined_remove: ZNPList<T>["remove"];
-    inlined_try_remove: ZNPList<T>["try_remove"];
-    inlined_clear: ZNPList<T>["clear"];
-    inlined_has: ZNPList<T>["has"];
   }
 }

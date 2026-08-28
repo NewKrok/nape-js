@@ -1,3 +1,5 @@
+import { ZPP_Vec2 } from "./ZPP_Vec2";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_AABB — Internal axis-aligned bounding box for the nape physics engine.
  *
@@ -128,7 +130,6 @@ export class ZPP_AABB {
 
   /** Helper: create a Vec2 wrapper from the compiled namespace pools. */
   private static _makeVec2Wrapper(x: number, y: number): object {
-    const zpp = ZPP_AABB._zpp;
     const napeNs = ZPP_AABB._nape;
 
     if (x !== x || y !== y) {
@@ -136,25 +137,25 @@ export class ZPP_AABB {
     }
 
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
 
     if (ret.zpp_inner == null) {
       let inner: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        inner = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        inner = new ZPP_Vec2();
       } else {
-        inner = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = inner.next;
+        inner = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = inner.next;
         inner.next = null;
       }
       inner.weak = false;

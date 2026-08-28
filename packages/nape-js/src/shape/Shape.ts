@@ -10,14 +10,12 @@ import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Interactor } from "../phys/Interactor";
-// Side-effect import: ShapeType.ts must execute to fix singleton prototypes
-import "./ShapeType";
-import type { ShapeType } from "./ShapeType";
-import { ZPP_Shape } from "../native/shape/ZPP_Shape";
+import { ShapeType } from "./ShapeType";
 import { ZPP_Geom } from "../native/geom/ZPP_Geom";
 import { ZPP_Collide } from "../native/geom/ZPP_Collide";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
+import { Config } from "../Config";
 
 // ---------------------------------------------------------------------------
 // Subclass wrap bindings — Circle and Polygon register their _wrap functions
@@ -55,6 +53,7 @@ export class Shape extends Interactor {
   /** @internal */
   static _wrap(inner: NapeInner): Shape {
     if (!inner) return null as unknown as Shape;
+    if (inner instanceof Shape) return inner;
 
     // Dispatch to concrete subclass wrapper based on runtime type.
     // Check _isCapsule flag first (capsule is polygon-backed, type=1).
@@ -92,7 +91,8 @@ export class Shape extends Interactor {
 
   /** The shape type: CIRCLE or POLYGON. */
   get type(): ShapeType {
-    return ZPP_Shape.types[(this as any).zpp_inner.type];
+    const t = (this as any).zpp_inner.type;
+    return t === 0 ? ShapeType.CIRCLE : t === 1 ? ShapeType.POLYGON : ShapeType.CAPSULE;
   }
 
   /** Returns true if this is a Circle shape. */
@@ -406,7 +406,6 @@ export class Shape extends Interactor {
    */
   scale(scaleX: number, scaleY: number): Shape {
     const zpp = (this as any).zpp_inner;
-    const nape = getNape();
     zpp.immutable_midstep("Shape::scale()");
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
       throw new Error(
@@ -421,7 +420,7 @@ export class Shape extends Interactor {
     }
     if (zpp.type === 0) {
       const d = scaleX * scaleX - scaleY * scaleY;
-      if (d * d < nape.Config.epsilon * nape.Config.epsilon) {
+      if (d * d < Config.epsilon * Config.epsilon) {
         zpp.circle.__scale(scaleX, scaleY);
       } else {
         throw new Error("Cannot perform a non equal scaling on a Circle");

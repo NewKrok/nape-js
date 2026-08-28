@@ -14,6 +14,7 @@ import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { Vec2 } from "./Vec2";
 import { AABB } from "./AABB";
+import { Config } from "../Config";
 import "./Winding"; // Side-effect: register Winding in namespace before GeomPoly methods use it
 
 /**
@@ -609,7 +610,7 @@ export class GeomPoly {
   isDegenerate(): boolean {
     this._checkDisposed();
     if (this._isDegenRing()) return true;
-    return this.area() < getNape().Config.epsilon;
+    return this.area() < Config.epsilon;
   }
 
   // ---------------------------------------------------------------------------

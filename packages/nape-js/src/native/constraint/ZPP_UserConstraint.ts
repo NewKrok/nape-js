@@ -12,6 +12,7 @@
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_UserBody } from "./ZPP_UserBody";
+import { Config } from "../../Config";
 
 export class ZPP_UserConstraint extends ZPP_Constraint {
   // Outer public-API wrapper (UserConstraint)
@@ -572,11 +573,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
     const lj = this.lsq(this.J);
     if (this.breakUnderError && lj > this.maxError * this.maxError) {
       return true;
-    } else if (
-      lj <
-      ZPP_Constraint._nape.Config.constraintLinearSlop *
-        ZPP_Constraint._nape.Config.constraintLinearSlop
-    ) {
+    } else if (lj < Config.constraintLinearSlop * Config.constraintLinearSlop) {
       return false;
     }
     for (let i = 0; i < this.dim; i++) {

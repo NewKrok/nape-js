@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ZPP_Interactor } from "../../../src/native/phys/ZPP_Interactor";
 import { ZPP_OptionType } from "../../../src/native/callbacks/ZPP_OptionType";
 import { ZPP_CbSet } from "../../../src/native/callbacks/ZPP_CbSet";
+import { ZNPList_ZPP_CallbackSet, ZNPList_ZPP_CbType } from "../../../src/native/util/ZNPRegistry";
 import { createMockNape, createMockZpp, MockZNPList } from "../_mocks";
 
 /**
@@ -13,8 +14,6 @@ import { createMockNape, createMockZpp, MockZNPList } from "../_mocks";
 
 function setupInteractorStatics() {
   const zpp = createMockZpp();
-  zpp.util.ZNPList_ZPP_CallbackSet = MockZNPList;
-  zpp.util.ZNPList_ZPP_CbType = MockZNPList;
   ZPP_Interactor._zpp = zpp;
   ZPP_Interactor._nape = createMockNape();
   ZPP_OptionType._zpp = zpp;
@@ -31,8 +30,8 @@ describe("ZPP_Interactor", () => {
     it("seeds an id and empty cbType/cbset lists", () => {
       const i = new ZPP_Interactor();
       expect(typeof i.id).toBe("number");
-      expect(i.cbTypes).toBeInstanceOf(MockZNPList);
-      expect(i.cbsets).toBeInstanceOf(MockZNPList);
+      expect(i.cbTypes).toBeInstanceOf(ZNPList_ZPP_CbType);
+      expect(i.cbsets).toBeInstanceOf(ZNPList_ZPP_CallbackSet);
       expect(i.userData).toBeNull();
       expect(i.group).toBeNull();
     });

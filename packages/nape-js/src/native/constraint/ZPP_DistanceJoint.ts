@@ -12,6 +12,7 @@ import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { Config } from "../../Config";
 
 export class ZPP_DistanceJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_DistanceJoint) => any) | null = null;
@@ -70,7 +71,7 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
     const nx = this.b2.posx + this.a2relx - (this.b1.posx + this.a1relx);
     const ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
     let C = nx * nx + ny * ny;
-    if (C < ZPP_Constraint._nape.Config.epsilon) {
+    if (C < Config.epsilon) {
       slack = true;
     } else {
       C = Math.sqrt(C);
@@ -262,7 +263,7 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
     this.nx = this.b2.posx + this.a2relx - (this.b1.posx + this.a1relx);
     this.ny = this.b2.posy + this.a2rely - (this.b1.posy + this.a1rely);
     let C = this.nx * this.nx + this.ny * this.ny;
-    if (C < ZPP_Constraint._nape.Config.epsilon) {
+    if (C < Config.epsilon) {
       this.nx = 0;
       this.ny = 0;
       C = 0;
@@ -388,7 +389,7 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
     let nx = this.b2.posx + r2x - (this.b1.posx + r1x);
     let ny = this.b2.posy + r2y - (this.b1.posy + r1y);
     let C = nx * nx + ny * ny;
-    if (C < ZPP_Constraint._nape.Config.epsilon) {
+    if (C < Config.epsilon) {
       nx = 0;
       ny = 0;
       C = 0;
@@ -421,17 +422,13 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
       if (this.breakUnderError && E * E > this.maxError * this.maxError) {
         return true;
       }
-      if (
-        E * E <
-        ZPP_Constraint._nape.Config.constraintLinearSlop *
-          ZPP_Constraint._nape.Config.constraintLinearSlop
-      ) {
+      if (E * E < Config.constraintLinearSlop * Config.constraintLinearSlop) {
         return false;
       }
       E *= 0.5;
       if (E * E > 6) {
         const k = this.b1.smass + this.b2.smass;
-        if (k > ZPP_Constraint._nape.Config.epsilon) {
+        if (k > Config.epsilon) {
           const kInv = 0.75 / k;
           j = -E * kInv;
           if (this.equal || j < 0) {
@@ -444,7 +441,7 @@ export class ZPP_DistanceJoint extends ZPP_Constraint {
             nx = this.b2.posx + r2x - (this.b1.posx + r1x);
             ny = this.b2.posy + r2y - (this.b1.posy + r1y);
             let C1 = nx * nx + ny * ny;
-            if (C1 < ZPP_Constraint._nape.Config.epsilon) {
+            if (C1 < Config.epsilon) {
               nx = 0;
               ny = 0;
               C1 = 0;

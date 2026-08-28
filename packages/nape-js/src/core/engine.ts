@@ -1,53 +1,49 @@
 /**
- * Core engine module — manages access to the nape namespace.
+ * Core engine module — owns the mutable nape namespace object.
  *
- * Priority 20: nape-compiled.js has been fully eliminated. The nape namespace
- * is now built entirely in TypeScript via registerZPPClasses() in ZPPRegistry.ts.
+ * getNape() returns a bare namespace skeleton; classes register themselves
+ * into it (module bottoms + core/bootstrap.ts, which also invokes
+ * registerZPPClasses). engine.ts deliberately imports nothing, so importing
+ * any single engine module no longer drags the whole ZPP class graph in.
  */
 
-import { registerZPPClasses } from "../native/util/ZPPRegistry";
-
 // var (not let/const) avoids temporal dead zone when getNape() is called during
-// ESM circular-import resolution (e.g. Config.ts calls getNape() at module load).
+// ESM circular-import resolution (e.g. enum classes call getNape() at module load).
 // eslint-disable-next-line no-var
 var napeNamespace: any;
 
 /**
  * Returns the internal nape namespace object.
  *
- * Lazily initializes on first call so that side-effect imports (Config, Listener,
- * etc.) that call getNape() during ESM module evaluation always succeed, even
- * before the engine.ts module body has fully executed.
+ * Lazily creates the empty skeleton on first call so that side-effect imports
+ * that call getNape() during ESM module evaluation always succeed. The ZPP
+ * class graph is registered into it by core/bootstrap.ts.
  *
  * @internal
  */
 export function getNape(): any {
-  if (!napeNamespace) napeNamespace = registerZPPClasses();
-  return napeNamespace;
-}
-
-// Deferred singleton enum initialization — called by each enum class after
-// self-registering.  Runs _initEnums only when all 6 constructors exist.
-// eslint-disable-next-line no-var
-var _enumsReady = false;
-export function ensureEnumsReady(): void {
-  if (_enumsReady) return;
-  const n = napeNamespace;
-  if (
-    !n?.callbacks?.CbEvent ||
-    !n?.callbacks?.CbType ||
-    !n?.callbacks?.ListenerType ||
-    !n?.dynamics?.ArbiterType ||
-    !n?.phys?.BodyType ||
-    !n?.shape?.ShapeType
-  ) {
-    return; // Not all enum classes registered yet — will retry when the last one loads.
+  if (!napeNamespace) {
+    const zpp: any = {
+      callbacks: {},
+      constraint: {},
+      dynamics: {},
+      geom: {},
+      phys: {},
+      shape: {},
+      space: {},
+      util: {},
+    };
+    napeNamespace = {
+      callbacks: {},
+      constraint: {},
+      dynamics: {},
+      geom: {},
+      phys: {},
+      shape: {},
+      space: {},
+      util: {},
+      __zpp: zpp,
+    };
   }
-  _enumsReady = true;
-  const _z = n.__zpp;
-  _z.callbacks.ZPP_CbType._initEnums(n);
-  _z.callbacks.ZPP_Listener._initEnums(n, _z.util.ZPP_Flags);
-  _z.dynamics.ZPP_Arbiter._initEnums(n, _z.util.ZPP_Flags);
-  _z.phys.ZPP_Body._initEnums(n, _z.util.ZPP_Flags);
-  _z.shape.ZPP_Shape._initEnums(n, _z.util.ZPP_Flags);
+  return napeNamespace;
 }

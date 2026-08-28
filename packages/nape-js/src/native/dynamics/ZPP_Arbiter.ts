@@ -1,3 +1,4 @@
+import { ZNPNode_ZPP_Arbiter } from "../util/ZNPRegistry";
 /**
  * ZPP_Arbiter — Internal arbiter base class for the nape physics engine.
  *
@@ -26,31 +27,6 @@ export class ZPP_Arbiter {
   static COL = 1;
   static FLUID = 4;
   static SENSOR = 2;
-
-  // --- Static: arbiter type enum lookup (populated by _initEnums) ---
-  static types: any[] = [];
-
-  /**
-   * Initialize ArbiterType singleton enums. Called once from compiled factory.
-   */
-  static _initEnums(nape: any, ZPP_Flags: any): void {
-    const mk = () => {
-      ZPP_Flags.internal = true;
-      const o = new nape.dynamics.ArbiterType();
-      ZPP_Flags.internal = false;
-      return o;
-    };
-    if (ZPP_Flags.ArbiterType_COLLISION == null) ZPP_Flags.ArbiterType_COLLISION = mk();
-    if (ZPP_Flags.ArbiterType_SENSOR == null) ZPP_Flags.ArbiterType_SENSOR = mk();
-    if (ZPP_Flags.ArbiterType_FLUID == null) ZPP_Flags.ArbiterType_FLUID = mk();
-    ZPP_Arbiter.types = [
-      null,
-      ZPP_Flags.ArbiterType_COLLISION,
-      ZPP_Flags.ArbiterType_SENSOR,
-      null,
-      ZPP_Flags.ArbiterType_FLUID,
-    ];
-  }
 
   // --- Instance: public wrapper ---
   outer: any = null;
@@ -179,14 +155,13 @@ export class ZPP_Arbiter {
   // ========== Lazy retire ==========
 
   lazyRetire(s: any, b: any): void {
-    const zpp = ZPP_Arbiter._zpp;
     this.cleared = true;
 
     if (b == null || this.b2 == b) {
-      ZPP_Arbiter._removeFromArbiterList(this.b1.arbiters, this, zpp);
+      ZPP_Arbiter._removeFromArbiterList(this.b1.arbiters, this);
     }
     if (b == null || this.b1 == b) {
-      ZPP_Arbiter._removeFromArbiterList(this.b2.arbiters, this, zpp);
+      ZPP_Arbiter._removeFromArbiterList(this.b2.arbiters, this);
     }
 
     if (this.pair != null) {
@@ -200,7 +175,6 @@ export class ZPP_Arbiter {
   // ========== Base assign (shared by subclasses) ==========
 
   sup_assign(s1: any, s2: any, id: number, di: number): void {
-    const zpp = ZPP_Arbiter._zpp;
     this.b1 = s1.body;
     this.ws1 = s1;
     this.b2 = s2.body;
@@ -208,8 +182,8 @@ export class ZPP_Arbiter {
     this.id = id;
     this.di = di;
 
-    ZPP_Arbiter._addToArbiterList(this.b1.arbiters, this, zpp);
-    ZPP_Arbiter._addToArbiterList(this.b2.arbiters, this, zpp);
+    ZPP_Arbiter._addToArbiterList(this.b1.arbiters, this);
+    ZPP_Arbiter._addToArbiterList(this.b2.arbiters, this);
 
     this.active = true;
     this.present = 0;
@@ -222,10 +196,9 @@ export class ZPP_Arbiter {
   // ========== Base retire (shared by subclasses) ==========
 
   sup_retire(): void {
-    const zpp = ZPP_Arbiter._zpp;
     if (!this.cleared) {
-      ZPP_Arbiter._removeFromArbiterList(this.b1.arbiters, this, zpp);
-      ZPP_Arbiter._removeFromArbiterList(this.b2.arbiters, this, zpp);
+      ZPP_Arbiter._removeFromArbiterList(this.b1.arbiters, this);
+      ZPP_Arbiter._removeFromArbiterList(this.b2.arbiters, this);
 
       if (this.pair != null) {
         this.pair.arb = null;
@@ -240,7 +213,7 @@ export class ZPP_Arbiter {
   // ========== Internal list helpers ==========
 
   /** Remove this arbiter from a ZNPList_ZPP_Arbiter */
-  static _removeFromArbiterList(list: any, arb: ZPP_Arbiter, zpp: any): void {
+  static _removeFromArbiterList(list: any, arb: ZPP_Arbiter): void {
     let pre: any = null;
     let cur: any = list.head;
     while (cur != null) {
@@ -264,8 +237,8 @@ export class ZPP_Arbiter {
         }
         const o = old;
         o.elt = null;
-        o.next = zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-        zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o;
+        o.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+        ZNPNode_ZPP_Arbiter.zpp_pool = o;
         list.modified = true;
         list.length--;
         list.pushmod = true;
@@ -277,13 +250,13 @@ export class ZPP_Arbiter {
   }
 
   /** Add this arbiter to a ZNPList_ZPP_Arbiter */
-  static _addToArbiterList(list: any, arb: ZPP_Arbiter, zpp: any): void {
+  static _addToArbiterList(list: any, arb: ZPP_Arbiter): void {
     let ret: any;
-    if (zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-      ret = new zpp.util.ZNPNode_ZPP_Arbiter();
+    if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+      ret = new ZNPNode_ZPP_Arbiter();
     } else {
-      ret = zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-      zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret.next;
+      ret = ZNPNode_ZPP_Arbiter.zpp_pool;
+      ZNPNode_ZPP_Arbiter.zpp_pool = ret.next;
       ret.next = null;
     }
     ret.elt = arb;

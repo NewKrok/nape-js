@@ -36,16 +36,16 @@ describe("NapeList", () => {
     expect(arr).toHaveLength(2);
   });
 
-  it("should iterate with forEach", () => {
+  it("should iterate with foreach", () => {
     const body = new Body(BodyType.DYNAMIC);
     body.shapes.add(new Circle(10) as any);
     body.shapes.add(new Circle(20) as any);
 
-    const indices: number[] = [];
-    body.shapes.forEach((_shape, index) => {
-      indices.push(index);
+    let count = 0;
+    body.shapes.foreach(() => {
+      count++;
     });
-    expect(indices).toEqual([0, 1]);
+    expect(count).toBe(2);
   });
 
   it("should work with Space.bodies list", () => {

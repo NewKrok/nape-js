@@ -1,3 +1,6 @@
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZPP_Flags } from "../util/ZPP_Flags";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_Broadphase — Internal base broadphase container.
  *
@@ -404,12 +407,12 @@ export class ZPP_Broadphase {
     const nape = ZPP_Broadphase._nape;
 
     if (this.aabbShape == null) {
-      if (zpp.util.ZPP_Flags.BodyType_STATIC == null) {
-        zpp.util.ZPP_Flags.internal = true;
-        zpp.util.ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
-        zpp.util.ZPP_Flags.internal = false;
+      if (ZPP_Flags.BodyType_STATIC == null) {
+        ZPP_Flags.internal = true;
+        ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
+        ZPP_Flags.internal = false;
       }
-      const body = new nape.phys.Body(zpp.util.ZPP_Flags.BodyType_STATIC);
+      const body = new nape.phys.Body(ZPP_Flags.BodyType_STATIC);
       const _this = body.zpp_inner.wrap_shapes;
       const obj = (this.aabbShape = new nape.shape.Polygon(
         nape.shape.Polygon.rect(aabb.minx, aabb.miny, aabb.maxx - aabb.minx, aabb.maxy - aabb.miny),
@@ -730,12 +733,12 @@ export class ZPP_Broadphase {
     const nape = ZPP_Broadphase._nape;
 
     if (this.circShape == null) {
-      if (zpp.util.ZPP_Flags.BodyType_STATIC == null) {
-        zpp.util.ZPP_Flags.internal = true;
-        zpp.util.ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
-        zpp.util.ZPP_Flags.internal = false;
+      if (ZPP_Flags.BodyType_STATIC == null) {
+        ZPP_Flags.internal = true;
+        ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
+        ZPP_Flags.internal = false;
       }
-      const body = new nape.phys.Body(zpp.util.ZPP_Flags.BodyType_STATIC);
+      const body = new nape.phys.Body(ZPP_Flags.BodyType_STATIC);
       const _this = body.zpp_inner.wrap_shapes;
       let x1: number = x;
       let y1: number = y;
@@ -749,24 +752,24 @@ export class ZPP_Broadphase {
         throw new Error("Vec2 components cannot be NaN");
       }
       let ret: any;
-      if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+      if (ZPP_PubPool.poolVec2 == null) {
         ret = new nape.geom.Vec2();
       } else {
-        ret = zpp.util.ZPP_PubPool.poolVec2;
-        zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+        ret = ZPP_PubPool.poolVec2;
+        ZPP_PubPool.poolVec2 = ret.zpp_pool;
         ret.zpp_pool = null;
         ret.zpp_disp = false;
-        if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-          zpp.util.ZPP_PubPool.nextVec2 = null;
+        if (ret == ZPP_PubPool.nextVec2) {
+          ZPP_PubPool.nextVec2 = null;
         }
       }
       if (ret.zpp_inner == null) {
         let ret1: any;
-        if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-          ret1 = new zpp.geom.ZPP_Vec2();
+        if (ZPP_Vec2.zpp_pool == null) {
+          ret1 = new ZPP_Vec2();
         } else {
-          ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-          zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+          ret1 = ZPP_Vec2.zpp_pool;
+          ZPP_Vec2.zpp_pool = ret1.next;
           ret1.next = null;
         }
         ret1.weak = false;

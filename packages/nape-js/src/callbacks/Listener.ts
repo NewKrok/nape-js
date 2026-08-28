@@ -13,6 +13,35 @@ import { CbEvent } from "./CbEvent";
 import { ListenerType } from "./ListenerType";
 import { Space } from "../space/Space";
 
+// Maps ZPP_Listener type/event ints to their public singletons.
+function listenerTypeOf(t: number): ListenerType {
+  return t === 0
+    ? ListenerType.BODY
+    : t === 1
+      ? ListenerType.CONSTRAINT
+      : t === 2
+        ? ListenerType.INTERACTION
+        : ListenerType.PRE;
+}
+export function cbEventOf(e: number): CbEvent {
+  switch (e) {
+    case 0:
+      return CbEvent.BEGIN;
+    case 1:
+      return CbEvent.END;
+    case 2:
+      return CbEvent.WAKE;
+    case 3:
+      return CbEvent.SLEEP;
+    case 4:
+      return CbEvent.BREAK;
+    case 5:
+      return CbEvent.PRE;
+    default:
+      return CbEvent.ONGOING;
+  }
+}
+
 /**
  * Convert a CbEvent singleton to the internal numeric event code.
  */
@@ -73,7 +102,7 @@ export class Listener {
 
   /** The type of this listener (BODY, CONSTRAINT, INTERACTION, or PRE). */
   get type(): ListenerType {
-    return ZPP_Listener.types[this.zpp_inner.type];
+    return listenerTypeOf(this.zpp_inner.type);
   }
 
   /**
@@ -83,14 +112,14 @@ export class Listener {
    * Changing this while the listener is assigned to a space re-registers it.
    */
   get event(): CbEvent {
-    return ZPP_Listener.events[this.zpp_inner.event];
+    return cbEventOf(this.zpp_inner.event);
   }
 
   set event(event: CbEvent) {
     if (event == null) {
       throw new Error("Cannot set listener event type to null");
     }
-    if (ZPP_Listener.events[this.zpp_inner.event] != event) {
+    if (cbEventOf(this.zpp_inner.event) != event) {
       const xevent = cbEventToNumber(event);
       this.zpp_inner.swapEvent(xevent);
     }

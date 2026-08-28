@@ -15,6 +15,7 @@
  */
 
 import { getNape } from "./engine";
+import { registerZPPClasses } from "../native/util/ZPPRegistry";
 
 // --- Config / Debug ---
 import { Config } from "../Config";
@@ -37,6 +38,7 @@ import { Vec2List, Vec2Iterator } from "../geom/Vec2List";
 import { GeomVertexIterator } from "../geom/GeomVertexIterator";
 import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_ContactList } from "../native/util/ZPP_ContactList";
+import { ZPP_MixVec2List } from "../native/util/ZPP_MixVec2List";
 
 // --- Physics ---
 import {
@@ -129,8 +131,12 @@ import "../native/util/ZPP_PublicList";
 
 const nape = getNape();
 
-// Config — merge constants into nape.Config (special: Object.assign pattern)
-nape.Config = Object.assign(nape.Config || {}, Config);
+// Populate the internal ZPP class graph before any wiring below touches it.
+registerZPPClasses(nape);
+
+// Config — alias the exported Config object (single source of truth; runtime
+// mutations of Config are visible to the engine)
+nape.Config = Config;
 
 // Debug
 nape.util.Debug = Debug;
@@ -153,6 +159,7 @@ nape.geom.Vec2List = Vec2List;
 nape.geom.GeomVertexIterator = GeomVertexIterator;
 nape.__zpp.geom.ZPP_GeomVertexIterator = ZPP_GeomVertexIterator;
 nape.__zpp.util.ZPP_ContactList = ZPP_ContactList;
+nape.__zpp.util.ZPP_MixVec2List = ZPP_MixVec2List;
 
 // Physics
 nape.phys.Interactor = Interactor;

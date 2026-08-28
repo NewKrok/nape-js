@@ -4,6 +4,10 @@ import type { NapeInner } from "../geom/Vec2";
  * Generic typed wrapper around Haxe list objects (BodyList, ShapeList, etc.).
  *
  * Provides a modern iterable interface with `for...of`, `length`, `at()`, etc.
+ *
+ * @deprecated The engine's list getters (e.g. `body.shapes`) now return the
+ * cached typed list directly; this wrapper is kept for backwards
+ * compatibility only and allocates on every construction.
  */
 export class NapeList<T> implements Iterable<T> {
   /** @internal */

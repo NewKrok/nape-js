@@ -7,16 +7,4 @@ describe("ZPP_Const", () => {
       expect(ZPP_Const.FMAX).toBe(1e100);
     });
   });
-
-  describe("POSINF", () => {
-    it("should return positive Infinity", () => {
-      expect(ZPP_Const.POSINF()).toBe(Infinity);
-    });
-  });
-
-  describe("NEGINF", () => {
-    it("should return negative Infinity", () => {
-      expect(ZPP_Const.NEGINF()).toBe(-Infinity);
-    });
-  });
 });

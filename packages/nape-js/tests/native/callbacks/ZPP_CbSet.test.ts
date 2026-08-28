@@ -1,32 +1,43 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_CbSet } from "../../../src/native/callbacks/ZPP_CbSet";
-import { createMockZpp, MockZNPList, MockZNPNode } from "../_mocks";
+import { ZPP_CbSetPair } from "../../../src/native/callbacks/ZPP_CbSetPair";
+import {
+  ZNPList_ZPP_CbType,
+  ZNPList_ZPP_CbSetPair,
+  ZNPList_ZPP_Constraint,
+  ZNPList_ZPP_Interactor,
+  ZNPList_ZPP_BodyListener,
+  ZNPList_ZPP_ConstraintListener,
+  ZNPList_ZPP_InteractionListener,
+  ZNPNode_ZPP_BodyListener,
+  ZNPNode_ZPP_ConstraintListener,
+  ZNPNode_ZPP_InteractionListener,
+} from "../../../src/native/util/ZNPRegistry";
+import { createMockZpp, MockZNPList } from "../_mocks";
 
 describe("ZPP_CbSet", () => {
-  let zpp: any;
-
   beforeEach(() => {
-    zpp = createMockZpp();
-    ZPP_CbSet._zpp = zpp;
+    // The constructor still reads _zpp.ZPP_ID.CbSet(); the list/node/pair
+    // classes are imported directly, so their real static pools are reset
+    // here for isolation.
+    ZPP_CbSet._zpp = createMockZpp();
     ZPP_CbSet.zpp_pool = null;
-    // Wire up the cross reference needed by findOrCreatePair
-    zpp.callbacks.ZPP_CbSet = ZPP_CbSet;
-    zpp.callbacks.ZPP_CbSetPair = {
-      zpp_pool: null,
-      // A minimal constructor mock
-    };
+    ZPP_CbSetPair.zpp_pool = null;
+    ZNPNode_ZPP_InteractionListener.zpp_pool = null;
+    ZNPNode_ZPP_BodyListener.zpp_pool = null;
+    ZNPNode_ZPP_ConstraintListener.zpp_pool = null;
   });
 
   describe("constructor", () => {
     it("should initialize all lists", () => {
       const s = new ZPP_CbSet();
-      expect(s.cbTypes).toBeInstanceOf(MockZNPList);
-      expect(s.listeners).toBeInstanceOf(MockZNPList);
-      expect(s.bodylisteners).toBeInstanceOf(MockZNPList);
-      expect(s.conlisteners).toBeInstanceOf(MockZNPList);
-      expect(s.constraints).toBeInstanceOf(MockZNPList);
-      expect(s.interactors).toBeInstanceOf(MockZNPList);
-      expect(s.cbpairs).toBeInstanceOf(MockZNPList);
+      expect(s.cbTypes).toBeInstanceOf(ZNPList_ZPP_CbType);
+      expect(s.listeners).toBeInstanceOf(ZNPList_ZPP_InteractionListener);
+      expect(s.bodylisteners).toBeInstanceOf(ZNPList_ZPP_BodyListener);
+      expect(s.conlisteners).toBeInstanceOf(ZNPList_ZPP_ConstraintListener);
+      expect(s.constraints).toBeInstanceOf(ZNPList_ZPP_Constraint);
+      expect(s.interactors).toBeInstanceOf(ZNPList_ZPP_Interactor);
+      expect(s.cbpairs).toBeInstanceOf(ZNPList_ZPP_CbSetPair);
     });
 
     it("should initialize validation flags to true", () => {
@@ -289,7 +300,6 @@ describe("ZPP_CbSet", () => {
     it("should merge listeners from cbTypes into set listeners", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = { precedence: 1, id: 1, space: "testSpace" };
       const cbType: any = {
@@ -306,7 +316,6 @@ describe("ZPP_CbSet", () => {
     it("should skip listeners from different space", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = { precedence: 1, id: 1, space: "otherSpace" };
       const cbType: any = {
@@ -323,7 +332,6 @@ describe("ZPP_CbSet", () => {
     it("should skip duplicate listeners already in list", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = { precedence: 1, id: 1, space: "testSpace" };
 
@@ -346,7 +354,6 @@ describe("ZPP_CbSet", () => {
     it("should merge body listeners from cbTypes", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -371,7 +378,6 @@ describe("ZPP_CbSet", () => {
     it("should skip excluded body listeners", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -397,7 +403,6 @@ describe("ZPP_CbSet", () => {
     it("should skip body listeners from different space", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -424,7 +429,6 @@ describe("ZPP_CbSet", () => {
     it("should merge constraint listeners from cbTypes", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -449,7 +453,6 @@ describe("ZPP_CbSet", () => {
     it("should skip excluded constraint listeners", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -580,10 +583,9 @@ describe("ZPP_CbSet", () => {
   });
 
   describe("findOrCreatePair and static methods", () => {
-    // Helper to set up proper ZPP_CbSetPair mock constructor
+    // Helper producing plain pair objects used as pre-existing data in cbpairs
+    // (findOrCreatePair itself now constructs real ZPP_CbSetPair instances).
     function setupCbSetPairMock() {
-      const zpp = ZPP_CbSet._zpp;
-      // Create a proper class for ZPP_CbSetPair that findOrCreatePair can construct
       class MockCbSetPair {
         static zpp_pool: any = null;
         a: any = null;
@@ -597,7 +599,6 @@ describe("ZPP_CbSet", () => {
           this.__validate = () => {};
         }
       }
-      zpp.callbacks.ZPP_CbSetPair = MockCbSetPair;
       return MockCbSetPair;
     }
 
@@ -657,21 +658,22 @@ describe("ZPP_CbSet", () => {
     });
 
     it("findOrCreatePair should reuse pool when available", () => {
-      const MockPair = setupCbSetPairMock();
       const a = new ZPP_CbSet();
       const b = new ZPP_CbSet();
       a.cbpairs = new MockZNPList();
       b.cbpairs = new MockZNPList();
 
-      // Put an item in the pool
-      const pooledPair = new MockPair() as any;
-      const pooledPair2 = new MockPair() as any;
+      // Put real pairs in the real ZPP_CbSetPair pool
+      const pooledPair = new ZPP_CbSetPair();
+      const pooledPair2 = new ZPP_CbSetPair();
       pooledPair.next = pooledPair2;
-      MockPair.zpp_pool = pooledPair;
+      ZPP_CbSetPair.zpp_pool = pooledPair;
 
       ZPP_CbSet.empty_intersection(a, b);
-      // Pool should have been consumed
-      expect(MockPair.zpp_pool).toBe(pooledPair2);
+      // Pool should have been consumed and advanced to the next entry
+      expect(ZPP_CbSetPair.zpp_pool).toBe(pooledPair2);
+      expect(a.cbpairs.head!.elt).toBe(pooledPair);
+      expect(pooledPair.next).toBeNull();
     });
 
     it("findOrCreatePair should add pair to both a and b cbpairs", () => {
@@ -846,10 +848,9 @@ describe("ZPP_CbSet", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
 
-      // Put a node in the pool
-      const poolNode = new MockZNPNode();
-      const zpp = ZPP_CbSet._zpp;
-      zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
+      // Put a real node in the real pool
+      const poolNode = new ZNPNode_ZPP_BodyListener();
+      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
 
       const listener = {
         precedence: 1,
@@ -869,12 +870,13 @@ describe("ZPP_CbSet", () => {
       s.zip_bodylisteners = true;
       s.validate_bodylisteners();
       expect(s.bodylisteners.length).toBe(1);
+      expect(s.bodylisteners.head).toBe(poolNode);
+      expect(ZNPNode_ZPP_BodyListener.zpp_pool).toBeNull();
     });
 
     it("should skip duplicate body listeners already in the merged list", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -902,7 +904,6 @@ describe("ZPP_CbSet", () => {
     it("should merge body listeners in priority order from multiple cbTypes", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const high = {
         precedence: 10,
@@ -934,7 +935,6 @@ describe("ZPP_CbSet", () => {
     it("should handle nite advancing past lower-priority existing entries", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listenerA = {
         precedence: 10,
@@ -976,9 +976,8 @@ describe("ZPP_CbSet", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
 
-      const poolNode = new MockZNPNode();
-      const zpp = ZPP_CbSet._zpp;
-      zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
+      const poolNode = new ZNPNode_ZPP_ConstraintListener();
+      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
 
       const listener = {
         precedence: 1,
@@ -998,12 +997,13 @@ describe("ZPP_CbSet", () => {
       s.zip_conlisteners = true;
       s.validate_conlisteners();
       expect(s.conlisteners.length).toBe(1);
+      expect(s.conlisteners.head).toBe(poolNode);
+      expect(ZNPNode_ZPP_ConstraintListener.zpp_pool).toBeNull();
     });
 
     it("should skip duplicate constraint listeners already in the merged list", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -1030,7 +1030,6 @@ describe("ZPP_CbSet", () => {
     it("should merge constraint listeners in priority order from multiple cbTypes", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const high = {
         precedence: 10,
@@ -1061,7 +1060,6 @@ describe("ZPP_CbSet", () => {
     it("should skip constraint listeners from different space", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listener = {
         precedence: 1,
@@ -1089,9 +1087,8 @@ describe("ZPP_CbSet", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
 
-      const poolNode = new MockZNPNode();
-      const zpp = ZPP_CbSet._zpp;
-      zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
+      const poolNode = new ZNPNode_ZPP_InteractionListener();
+      ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
 
       const listener = { precedence: 1, id: 1, space: "testSpace" };
       const cbType: any = { listeners: new MockZNPList() };
@@ -1101,12 +1098,13 @@ describe("ZPP_CbSet", () => {
       s.zip_listeners = true;
       s.validate_listeners();
       expect(s.listeners.length).toBe(1);
+      expect(s.listeners.head).toBe(poolNode);
+      expect(ZNPNode_ZPP_InteractionListener.zpp_pool).toBeNull();
     });
 
     it("should handle nite advancing past lower-priority entries during merge", () => {
       const s = new ZPP_CbSet();
       s.manager = { space: "testSpace" };
-      MockZNPNode.zpp_pool = null;
 
       const listenerA = { precedence: 10, id: 1, space: "testSpace" };
       const listenerB = { precedence: 5, id: 2, space: "testSpace" };
@@ -1128,7 +1126,6 @@ describe("ZPP_CbSet", () => {
 
   describe("findOrCreatePair (non-matching pair iteration and setlt ordering)", () => {
     function setupCbSetPairMock2() {
-      const zpp = ZPP_CbSet._zpp;
       class MockCbSetPair {
         static zpp_pool: any = null;
         a: any = null;
@@ -1142,7 +1139,6 @@ describe("ZPP_CbSet", () => {
           this.__validate = () => {};
         }
       }
-      zpp.callbacks.ZPP_CbSetPair = MockCbSetPair;
       return MockCbSetPair;
     }
 

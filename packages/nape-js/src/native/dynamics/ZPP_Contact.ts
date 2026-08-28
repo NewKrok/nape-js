@@ -10,6 +10,8 @@
  */
 
 import { ZPP_IContact } from "./ZPP_IContact";
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_Contact {
   // --- Static: Haxe metadata ---
@@ -85,15 +87,7 @@ export class ZPP_Contact {
 
   wrapper(): any {
     if (this.outer == null) {
-      if (ZPP_Contact._wrapFn) {
-        this.outer = ZPP_Contact._wrapFn(this);
-      } else {
-        // Legacy fallback: create wrapper via compiled namespace
-        ZPP_Contact.internal = true;
-        this.outer = new ZPP_Contact._nape.dynamics.Contact();
-        ZPP_Contact.internal = false;
-        this.outer.zpp_inner = this;
-      }
+      this.outer = ZPP_Contact._wrapFn!(this);
     }
     return this.outer;
   }
@@ -109,29 +103,28 @@ export class ZPP_Contact {
   }
 
   getposition(): void {
-    const zpp = ZPP_Contact._zpp;
     const napeNs = ZPP_Contact._nape;
 
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
 
     if (ret.zpp_inner == null) {
       let ret1: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;
@@ -203,18 +196,8 @@ export class ZPP_Contact {
 
   // ========== Linked list methods (ZNPList pattern) ==========
 
-  elem(): this {
-    return this;
-  }
-
   begin(): ZPP_Contact | null {
     return this.next;
-  }
-
-  setbegin(i: ZPP_Contact | null): void {
-    this.next = i;
-    this.modified = true;
-    this.pushmod = true;
   }
 
   add(o: ZPP_Contact): ZPP_Contact {
@@ -227,41 +210,7 @@ export class ZPP_Contact {
     return o;
   }
 
-  inlined_add(o: ZPP_Contact): ZPP_Contact {
-    o._inuse = true;
-    const temp = o;
-    temp.next = this.next;
-    this.next = temp;
-    this.modified = true;
-    this.length++;
-    return o;
-  }
-
-  addAll(x: ZPP_Contact): void {
-    let cx_ite = x.next;
-    while (cx_ite != null) {
-      const i = cx_ite;
-      this.add(i);
-      cx_ite = cx_ite.next;
-    }
-  }
-
   insert(cur: ZPP_Contact | null, o: ZPP_Contact): ZPP_Contact {
-    o._inuse = true;
-    const temp = o;
-    if (cur == null) {
-      temp.next = this.next;
-      this.next = temp;
-    } else {
-      temp.next = cur.next;
-      cur.next = temp;
-    }
-    this.pushmod = this.modified = true;
-    this.length++;
-    return temp;
-  }
-
-  inlined_insert(cur: ZPP_Contact | null, o: ZPP_Contact): ZPP_Contact {
     o._inuse = true;
     const temp = o;
     if (cur == null) {
@@ -287,24 +236,7 @@ export class ZPP_Contact {
     this.length--;
   }
 
-  inlined_pop(): void {
-    const ret = this.next!;
-    this.next = ret.next;
-    ret._inuse = false;
-    if (this.next == null) {
-      this.pushmod = true;
-    }
-    this.modified = true;
-    this.length--;
-  }
-
   pop_unsafe(): ZPP_Contact {
-    const ret = this.next!;
-    this.pop();
-    return ret;
-  }
-
-  inlined_pop_unsafe(): ZPP_Contact {
     const ret = this.next!;
     this.pop();
     return ret;
@@ -343,91 +275,6 @@ export class ZPP_Contact {
     }
   }
 
-  try_remove(obj: ZPP_Contact): boolean {
-    let pre: ZPP_Contact | null = null;
-    let cur: ZPP_Contact | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        this.erase(pre);
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
-  inlined_remove(obj: ZPP_Contact): void {
-    let pre: ZPP_Contact | null = null;
-    let cur: ZPP_Contact | null = this.next;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_Contact;
-        let ret: ZPP_Contact | null;
-        if (pre == null) {
-          old = this.next!;
-          ret = old.next;
-          this.next = ret;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret = old.next;
-          pre.next = ret;
-          if (ret == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-  }
-
-  inlined_try_remove(obj: ZPP_Contact): boolean {
-    let pre: ZPP_Contact | null = null;
-    let cur: ZPP_Contact | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_Contact;
-        let ret1: ZPP_Contact | null;
-        if (pre == null) {
-          old = this.next!;
-          ret1 = old.next;
-          this.next = ret1;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret1 = old.next;
-          pre.next = ret1;
-          if (ret1 == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
   erase(pre: ZPP_Contact | null): ZPP_Contact | null {
     let old: ZPP_Contact;
     let ret: ZPP_Contact | null;
@@ -453,38 +300,7 @@ export class ZPP_Contact {
     return ret;
   }
 
-  inlined_erase(pre: ZPP_Contact | null): ZPP_Contact | null {
-    let old: ZPP_Contact;
-    let ret: ZPP_Contact | null;
-    if (pre == null) {
-      old = this.next!;
-      ret = old.next;
-      this.next = ret;
-      if (this.next == null) {
-        this.pushmod = true;
-      }
-    } else {
-      old = pre.next!;
-      ret = old.next;
-      pre.next = ret;
-      if (ret == null) {
-        this.pushmod = true;
-      }
-    }
-    old._inuse = false;
-    this.modified = true;
-    this.length--;
-    this.pushmod = true;
-    return ret;
-  }
-
-  splice(pre: ZPP_Contact, n: number): ZPP_Contact | null {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
-  }
-
   clear(): void {}
-  inlined_clear(): void {}
 
   reverse(): void {
     let cur: ZPP_Contact | null = this.next;
@@ -504,10 +320,6 @@ export class ZPP_Contact {
     return this.next == null;
   }
 
-  size(): number {
-    return this.length;
-  }
-
   has(obj: ZPP_Contact): boolean {
     let ret = false;
     let cx_ite: ZPP_Contact | null = this.next;
@@ -518,34 +330,6 @@ export class ZPP_Contact {
         break;
       }
       cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  inlined_has(obj: ZPP_Contact): boolean {
-    let ret = false;
-    let cx_ite: ZPP_Contact | null = this.next;
-    while (cx_ite != null) {
-      const npite = cx_ite;
-      if (npite == obj) {
-        ret = true;
-        break;
-      }
-      cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  front(): ZPP_Contact | null {
-    return this.next;
-  }
-
-  back(): ZPP_Contact | null {
-    let ret: ZPP_Contact | null = this.next;
-    let cur = ret;
-    while (cur != null) {
-      ret = cur;
-      cur = cur.next;
     }
     return ret;
   }

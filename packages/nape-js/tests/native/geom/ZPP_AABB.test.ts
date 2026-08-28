@@ -1,11 +1,19 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_AABB } from "../../../src/native/geom/ZPP_AABB";
+import { ZPP_Vec2 } from "../../../src/native/geom/ZPP_Vec2";
+import { ZPP_PubPool } from "../../../src/native/util/ZPP_PubPool";
 
 describe("ZPP_AABB", () => {
   beforeEach(() => {
     ZPP_AABB.zpp_pool = null;
     ZPP_AABB._nape = null;
     ZPP_AABB._zpp = null;
+    // _makeVec2Wrapper now reads the real ZPP_PubPool / ZPP_Vec2 statics
+    // directly (only _nape.geom.Vec2 construction still goes through the
+    // namespace static) — reset them so tests stay isolated.
+    ZPP_PubPool.poolVec2 = null;
+    ZPP_PubPool.nextVec2 = null;
+    ZPP_Vec2.zpp_pool = null;
   });
 
   describe("instance defaults", () => {
@@ -726,26 +734,7 @@ describe("ZPP_AABB", () => {
         zpp_pool: null,
         zpp_disp: false,
       };
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: pooledVec2, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
+      ZPP_PubPool.poolVec2 = pooledVec2;
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -761,6 +750,7 @@ describe("ZPP_AABB", () => {
       expect(a.wrap_min).toBe(pooledVec2);
       expect(a.wrap_min.zpp_inner.x).toBe(3);
       expect(a.wrap_min.zpp_inner.y).toBe(4);
+      expect(ZPP_PubPool.poolVec2).toBeNull();
     });
 
     it("should clear nextVec2 when pooled item matches nextVec2", () => {
@@ -769,26 +759,8 @@ describe("ZPP_AABB", () => {
         zpp_pool: null,
         zpp_disp: false,
       };
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: pooledVec2, nextVec2: pooledVec2 },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
+      ZPP_PubPool.poolVec2 = pooledVec2;
+      ZPP_PubPool.nextVec2 = pooledVec2;
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -801,30 +773,13 @@ describe("ZPP_AABB", () => {
 
       const a = ZPP_AABB.get(1, 2, 5, 6);
       a.getmin();
-      expect(ZPP_AABB._zpp.util.ZPP_PubPool.nextVec2).toBeNull();
+      expect(ZPP_PubPool.nextVec2).toBeNull();
     });
 
     it("should reuse inner Vec2 from pool chain", () => {
-      const innerPooled: any = {
-        x: 0,
-        y: 0,
-        weak: false,
-        _immutable: false,
-        _isimmutable: null,
-        _validate: null,
-        _invalidate: null,
-        _inuse: false,
-        outer: null,
-        next: null,
-      };
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: { zpp_pool: innerPooled },
-        },
-      };
+      // Seed the real inner Vec2 pool with a real ZPP_Vec2 instance.
+      const innerPooled = new ZPP_Vec2();
+      ZPP_Vec2.zpp_pool = innerPooled;
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -840,7 +795,7 @@ describe("ZPP_AABB", () => {
       expect(a.wrap_min.zpp_inner).toBe(innerPooled);
       expect(innerPooled.x).toBe(7);
       expect(innerPooled.y).toBe(8);
-      expect(ZPP_AABB._zpp.geom.ZPP_Vec2.zpp_pool).toBeNull();
+      expect(ZPP_Vec2.zpp_pool).toBeNull();
     });
 
     it("should reuse existing zpp_inner with _isimmutable and _validate callbacks", () => {
@@ -870,23 +825,7 @@ describe("ZPP_AABB", () => {
         zpp_disp: false,
       };
       existingInner.outer = pooledVec2;
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: pooledVec2, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: { zpp_pool: null },
-        },
-      };
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_PubPool.poolVec2 = pooledVec2;
 
       const a = ZPP_AABB.get(5, 6, 10, 10);
       a.getmin();
@@ -918,23 +857,7 @@ describe("ZPP_AABB", () => {
         zpp_disp: false,
       };
       existingInner.outer = pooledVec2;
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: pooledVec2, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: { zpp_pool: null },
-        },
-      };
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_PubPool.poolVec2 = pooledVec2;
 
       const a = ZPP_AABB.get(5, 6, 10, 10);
       a.getmin();

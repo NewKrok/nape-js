@@ -13,6 +13,13 @@ import { ZNPList } from "../util/ZNPList";
 import { ZPP_CbSet } from "./ZPP_CbSet";
 import { ZPP_CbType } from "./ZPP_CbType";
 import { ZPP_OptionType } from "./ZPP_OptionType";
+import { ZPP_CbSetPair } from "./ZPP_CbSetPair";
+import {
+  ZNPNode_ZPP_CbSet,
+  ZNPNode_ZPP_CbType,
+  ZNPNode_ZPP_InteractionListener,
+  ZPP_Set_ZPP_CbSetPair,
+} from "../util/ZNPRegistry";
 
 export class ZPP_InteractionListener extends ZPP_Listener {
   // --- Static: working lists for set operations (initialized at engine init time) ---
@@ -102,7 +109,6 @@ export class ZPP_InteractionListener extends ZPP_Listener {
   }
 
   CbSetset(A: any, B: any, lambda: (a: ZPP_CbSet, b: ZPP_CbSet) => void): void {
-    const zpp = ZPP_Listener._zpp;
     const U = ZPP_InteractionListener.UCbSet!;
     const V = ZPP_InteractionListener.VCbSet!;
     const W = ZPP_InteractionListener.WCbSet!;
@@ -112,7 +118,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       const a = aite.elt;
       const b = bite.elt;
       if (a == b) {
-        const ret = this._allocCbSetNode(zpp);
+        const ret = this._allocCbSetNode();
         ret.elt = a;
         ret.next = W.head;
         W.head = ret;
@@ -120,8 +126,8 @@ export class ZPP_InteractionListener extends ZPP_Listener {
         W.length++;
         aite = aite.next;
         bite = bite.next;
-      } else if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
-        const ret1 = this._allocCbSetNode(zpp);
+      } else if (ZPP_CbSet.setlt(a, b)) {
+        const ret1 = this._allocCbSetNode();
         ret1.elt = a;
         ret1.next = U.head;
         U.head = ret1;
@@ -129,7 +135,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
         U.length++;
         aite = aite.next;
       } else {
-        const ret2 = this._allocCbSetNode(zpp);
+        const ret2 = this._allocCbSetNode();
         ret2.elt = b;
         ret2.next = V.head;
         V.head = ret2;
@@ -139,7 +145,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       }
     }
     while (aite != null) {
-      const ret3 = this._allocCbSetNode(zpp);
+      const ret3 = this._allocCbSetNode();
       ret3.elt = aite.elt;
       ret3.next = U.head;
       U.head = ret3;
@@ -148,7 +154,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       aite = aite.next;
     }
     while (bite != null) {
-      const ret4 = this._allocCbSetNode(zpp);
+      const ret4 = this._allocCbSetNode();
       ret4.elt = bite.elt;
       ret4.next = V.head;
       V.head = ret4;
@@ -184,7 +190,6 @@ export class ZPP_InteractionListener extends ZPP_Listener {
   }
 
   CbTypeset(A: any, B: any, lambda: (a: ZPP_CbType, b: ZPP_CbType) => void): void {
-    const zpp = ZPP_Listener._zpp;
     const U = ZPP_InteractionListener.UCbType!;
     const V = ZPP_InteractionListener.VCbType!;
     const W = ZPP_InteractionListener.WCbType!;
@@ -194,7 +199,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       const a = aite.elt;
       const b = bite.elt;
       if (a == b) {
-        const ret = this._allocCbTypeNode(zpp);
+        const ret = this._allocCbTypeNode();
         ret.elt = a;
         ret.next = W.head;
         W.head = ret;
@@ -203,7 +208,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
         aite = aite.next;
         bite = bite.next;
       } else if (a.id < b.id) {
-        const ret1 = this._allocCbTypeNode(zpp);
+        const ret1 = this._allocCbTypeNode();
         ret1.elt = a;
         ret1.next = U.head;
         U.head = ret1;
@@ -211,7 +216,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
         U.length++;
         aite = aite.next;
       } else {
-        const ret2 = this._allocCbTypeNode(zpp);
+        const ret2 = this._allocCbTypeNode();
         ret2.elt = b;
         ret2.next = V.head;
         V.head = ret2;
@@ -221,7 +226,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       }
     }
     while (aite != null) {
-      const ret3 = this._allocCbTypeNode(zpp);
+      const ret3 = this._allocCbTypeNode();
       ret3.elt = aite.elt;
       ret3.next = U.head;
       U.head = ret3;
@@ -230,7 +235,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       aite = aite.next;
     }
     while (bite != null) {
-      const ret4 = this._allocCbTypeNode(zpp);
+      const ret4 = this._allocCbTypeNode();
       ret4.elt = bite.elt;
       ret4.next = V.head;
       V.head = ret4;
@@ -266,16 +271,15 @@ export class ZPP_InteractionListener extends ZPP_Listener {
   }
 
   with_uniquesets(fresh: boolean): void {
-    const zpp = ZPP_Listener._zpp;
     let set: any;
-    if (zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool == null) {
-      set = new zpp.util.ZPP_Set_ZPP_CbSetPair();
+    if (ZPP_Set_ZPP_CbSetPair.zpp_pool == null) {
+      set = new ZPP_Set_ZPP_CbSetPair();
     } else {
-      set = zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool;
-      zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool = set.next;
+      set = ZPP_Set_ZPP_CbSetPair.zpp_pool;
+      ZPP_Set_ZPP_CbSetPair.zpp_pool = set.next;
       set.next = null;
     }
-    set.lt = zpp.callbacks.ZPP_CbSetPair.setlt;
+    set.lt = ZPP_CbSetPair.setlt;
 
     // Use CbTypeset on options1/options2 includes, generating CbSetset pairs
     this.CbTypeset(
@@ -285,17 +289,17 @@ export class ZPP_InteractionListener extends ZPP_Listener {
         this.CbSetset(x.cbsets, y.cbsets, (a: ZPP_CbSet, b: ZPP_CbSet) => {
           a.validate();
           b.validate();
-          if (zpp.callbacks.ZPP_CbSet.single_intersection(a, b, this)) {
+          if (ZPP_CbSet.single_intersection(a, b, this)) {
             let pair: any;
-            if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
-              pair = new zpp.callbacks.ZPP_CbSetPair();
+            if (ZPP_CbSetPair.zpp_pool == null) {
+              pair = new ZPP_CbSetPair();
             } else {
-              pair = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
-              zpp.callbacks.ZPP_CbSetPair.zpp_pool = pair.next;
+              pair = ZPP_CbSetPair.zpp_pool;
+              ZPP_CbSetPair.zpp_pool = pair.next;
               pair.next = null;
             }
             pair.zip_listeners = true;
-            if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
+            if (ZPP_CbSet.setlt(a, b)) {
               pair.a = a;
               pair.b = b;
             } else {
@@ -326,8 +330,8 @@ export class ZPP_InteractionListener extends ZPP_Listener {
           const o10 = pair;
           o10.a = o10.b = null;
           o10.listeners.clear();
-          o10.next = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
-          zpp.callbacks.ZPP_CbSetPair.zpp_pool = o10;
+          o10.next = ZPP_CbSetPair.zpp_pool;
+          ZPP_CbSetPair.zpp_pool = o10;
           const ret41 = cur.parent;
           if (ret41 != null) {
             if (cur == ret41.prev) {
@@ -341,8 +345,8 @@ export class ZPP_InteractionListener extends ZPP_Listener {
           o11.data = null;
           o11.lt = null;
           o11.swapped = null;
-          o11.next = zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool;
-          zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool = o11;
+          o11.next = ZPP_Set_ZPP_CbSetPair.zpp_pool;
+          ZPP_Set_ZPP_CbSetPair.zpp_pool = o11;
           cur = ret41;
         }
       }
@@ -352,8 +356,8 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     o12.data = null;
     o12.lt = null;
     o12.swapped = null;
-    o12.next = zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool;
-    zpp.util.ZPP_Set_ZPP_CbSetPair.zpp_pool = o12;
+    o12.next = ZPP_Set_ZPP_CbSetPair.zpp_pool;
+    ZPP_Set_ZPP_CbSetPair.zpp_pool = o12;
   }
 
   with_union(lambda: (cb: ZPP_CbType) => void): void {
@@ -385,7 +389,6 @@ export class ZPP_InteractionListener extends ZPP_Listener {
   }
 
   addedToSpace(): void {
-    const zpp = ZPP_Listener._zpp;
     const pre = this.type == 3;
 
     this.with_union((cb: ZPP_CbType) => {
@@ -402,11 +405,11 @@ export class ZPP_InteractionListener extends ZPP_Listener {
       }
       const _this = cb.listeners;
       let ret: any;
-      if (zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-        ret = new zpp.util.ZNPNode_ZPP_InteractionListener();
+      if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+        ret = new ZNPNode_ZPP_InteractionListener();
       } else {
-        ret = zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-        zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
+        ret = ZNPNode_ZPP_InteractionListener.zpp_pool;
+        ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
         ret.next = null;
       }
       ret.elt = this;
@@ -516,25 +519,25 @@ export class ZPP_InteractionListener extends ZPP_Listener {
   }
 
   // --- Pool allocation helpers ---
-  private _allocCbSetNode(zpp: any): any {
+  private _allocCbSetNode(): any {
     let ret: any;
-    if (zpp.util.ZNPNode_ZPP_CbSet.zpp_pool == null) {
-      ret = new zpp.util.ZNPNode_ZPP_CbSet();
+    if (ZNPNode_ZPP_CbSet.zpp_pool == null) {
+      ret = new ZNPNode_ZPP_CbSet();
     } else {
-      ret = zpp.util.ZNPNode_ZPP_CbSet.zpp_pool;
-      zpp.util.ZNPNode_ZPP_CbSet.zpp_pool = ret.next;
+      ret = ZNPNode_ZPP_CbSet.zpp_pool;
+      ZNPNode_ZPP_CbSet.zpp_pool = ret.next;
       ret.next = null;
     }
     return ret;
   }
 
-  private _allocCbTypeNode(zpp: any): any {
+  private _allocCbTypeNode(): any {
     let ret: any;
-    if (zpp.util.ZNPNode_ZPP_CbType.zpp_pool == null) {
-      ret = new zpp.util.ZNPNode_ZPP_CbType();
+    if (ZNPNode_ZPP_CbType.zpp_pool == null) {
+      ret = new ZNPNode_ZPP_CbType();
     } else {
-      ret = zpp.util.ZNPNode_ZPP_CbType.zpp_pool;
-      zpp.util.ZNPNode_ZPP_CbType.zpp_pool = ret.next;
+      ret = ZNPNode_ZPP_CbType.zpp_pool;
+      ZNPNode_ZPP_CbType.zpp_pool = ret.next;
       ret.next = null;
     }
     return ret;

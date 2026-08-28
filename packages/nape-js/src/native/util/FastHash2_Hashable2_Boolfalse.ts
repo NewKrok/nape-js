@@ -1,107 +1,66 @@
 import { Hashable2_Boolfalse } from "./Hashable2_Boolfalse";
 
-const TABLE_SIZE = 1048576; // 2^20
-const TABLE_MASK = 1048575; // TABLE_SIZE - 1
-const HASH_MULT = 106039;
+// Key packing: (id, di) int pairs come from ZPP_ID counters. Pairs that
+// exceed the exact-packing range fall into the same Map bucket and are
+// disambiguated by the per-bucket hnext chain, so lookups stay correct.
+const KEY_SHIFT = 0x100000000; // 2^32
 
+/**
+ * FastHash2_Hashable2_Boolfalse — (id, di) → Hashable2_Boolfalse map.
+ *
+ * Originally a Haxe open-addressing table preallocating 2^20 slots (~8 MB
+ * on a 64-bit heap) with an O(table) clear. Now backed by a native Map:
+ * zero preallocation, O(entries) clear. Duplicate (id, di) entries chain
+ * via hnext, matching the original bucket semantics.
+ */
 export class FastHash2_Hashable2_Boolfalse {
-  table: (Hashable2_Boolfalse | null)[];
+  map: Map<number, Hashable2_Boolfalse> = new Map();
   cnt: number = 0;
 
-  constructor() {
-    this.cnt = 0;
-    this.table = new Array(TABLE_SIZE).fill(null);
+  private key(id: number, di: number): number {
+    return id * KEY_SHIFT + di;
   }
 
   empty(): boolean {
     return this.cnt == 0;
   }
 
-  clear(): void {
-    for (let i = 0; i < this.table.length; i++) {
-      let n = this.table[i];
-      if (n == null) continue;
+  /**
+   * Remove all entries, invoking `free` (if given) on each so callers can
+   * return entries to their object pool.
+   */
+  clear(free?: (n: Hashable2_Boolfalse) => void): void {
+    for (const head of this.map.values()) {
+      let n: Hashable2_Boolfalse | null = head;
       while (n != null) {
         const t: Hashable2_Boolfalse | null = n.hnext;
         n.hnext = null;
+        if (free) free(n);
         n = t;
       }
-      this.table[i] = null;
     }
+    this.map.clear();
+    this.cnt = 0;
   }
 
   get(id: number, di: number): Hashable2_Boolfalse | null {
-    let n = this.table[(id * HASH_MULT + di) & TABLE_MASK];
-    if (n == null) {
-      return null;
-    } else if (n.id == id && n.di == di) {
-      return n;
-    } else {
-      while (true) {
-        n = n!.hnext;
-        if (!(n != null && (n.id != id || n.di != di))) break;
-      }
-      return n;
+    let n = this.map.get(this.key(id, di)) ?? null;
+    while (n != null && (n.id != id || n.di != di)) {
+      n = n.hnext;
     }
-  }
-
-  ordered_get(id: number, di: number): Hashable2_Boolfalse | null {
-    if (id > di) {
-      const t = id;
-      id = di;
-      di = t;
-    }
-    let n = this.table[(id * HASH_MULT + di) & TABLE_MASK];
-    if (n == null) {
-      return null;
-    } else if (n.id == id && n.di == di) {
-      return n;
-    } else {
-      while (true) {
-        n = n!.hnext;
-        if (!(n != null && (n.id != id || n.di != di))) break;
-      }
-      return n;
-    }
+    return n;
   }
 
   has(id: number, di: number): boolean {
-    let n = this.table[(id * HASH_MULT + di) & TABLE_MASK];
-    if (n == null) {
-      return false;
-    } else if (n.id == id && n.di == di) {
-      return true;
-    } else {
-      while (true) {
-        n = n!.hnext;
-        if (!(n != null && (n.id != id || n.di != di))) break;
-      }
-      return n != null;
-    }
-  }
-
-  maybeAdd(arb: Hashable2_Boolfalse): void {
-    const h = (arb.id * HASH_MULT + arb.di) & TABLE_MASK;
-    const n = this.table[h];
-    const cont = true;
-    if (n == null) {
-      this.table[h] = arb;
-      arb.hnext = null;
-    } else if (cont) {
-      arb.hnext = n.hnext;
-      n.hnext = arb;
-    }
-    if (cont) {
-      this.cnt++;
-    }
+    return this.get(id, di) != null;
   }
 
   add(arb: Hashable2_Boolfalse): void {
-    const h = (arb.id * HASH_MULT + arb.di) & TABLE_MASK;
-    const n = this.table[h];
+    const k = this.key(arb.id, arb.di);
+    const n = this.map.get(k);
     if (n == null) {
-      this.table[h] = arb;
       arb.hnext = null;
+      this.map.set(k, arb);
     } else {
       arb.hnext = n.hnext;
       n.hnext = arb;
@@ -110,10 +69,14 @@ export class FastHash2_Hashable2_Boolfalse {
   }
 
   remove(arb: Hashable2_Boolfalse): void {
-    const h = (arb.id * HASH_MULT + arb.di) & TABLE_MASK;
-    let n = this.table[h];
+    const k = this.key(arb.id, arb.di);
+    let n = this.map.get(k) ?? null;
     if (n == arb) {
-      this.table[h] = n.hnext;
+      if (n.hnext == null) {
+        this.map.delete(k);
+      } else {
+        this.map.set(k, n.hnext);
+      }
     } else if (n != null) {
       let pre: Hashable2_Boolfalse;
       while (true) {
@@ -121,13 +84,9 @@ export class FastHash2_Hashable2_Boolfalse {
         n = n!.hnext;
         if (!(n != null && n != arb)) break;
       }
-      pre!.hnext = n!.hnext;
+      if (n != null) pre.hnext = n.hnext;
     }
     arb.hnext = null;
     this.cnt--;
-  }
-
-  hash(id: number, di: number): number {
-    return (id * HASH_MULT + di) & TABLE_MASK;
   }
 }

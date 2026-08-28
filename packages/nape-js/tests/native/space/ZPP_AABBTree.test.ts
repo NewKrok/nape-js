@@ -186,24 +186,24 @@ describe("ZPP_AABBTree", () => {
     expect(tree.root).not.toBeNull();
   });
 
-  it("inlined_insertLeaf works like insertLeaf", () => {
+  it("insertLeaf works like insertLeaf", () => {
     const a = createLeaf(0, 0, 10, 10);
-    tree.inlined_insertLeaf(a);
+    tree.insertLeaf(a);
     expect(tree.root).toBe(a);
 
     const b = createLeaf(20, 0, 30, 10);
-    tree.inlined_insertLeaf(b);
+    tree.insertLeaf(b);
     const children = [tree.root!.child1, tree.root!.child2];
     expect(children).toContain(a);
     expect(children).toContain(b);
   });
 
-  it("inlined_removeLeaf works like removeLeaf", () => {
+  it("removeLeaf works like removeLeaf", () => {
     const a = createLeaf(0, 0, 10, 10);
     const b = createLeaf(20, 0, 30, 10);
-    tree.inlined_insertLeaf(a);
-    tree.inlined_insertLeaf(b);
-    tree.inlined_removeLeaf(a);
+    tree.insertLeaf(a);
+    tree.insertLeaf(b);
+    tree.removeLeaf(a);
     expect(tree.root).toBe(b);
   });
 

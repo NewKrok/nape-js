@@ -13,11 +13,11 @@ describe("Debug (P14 modernized)", () => {
   });
 
   it("version() returns the engine version string", () => {
-    expect(Debug.version()).toBe("Nape 2.0.19");
+    expect(Debug.version()).toMatch(/^nape-js \d+\.\d+\.\d+/);
   });
 
   it("version() is also accessible via nape.util.Debug.version()", () => {
-    expect(getNape().util.Debug.version()).toBe("Nape 2.0.19");
+    expect(getNape().util.Debug.version()).toMatch(/^nape-js \d+\.\d+\.\d+/);
   });
 
   it("clearObjectPools() runs without error on empty pools", () => {

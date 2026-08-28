@@ -1,12 +1,21 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_FluidProperties } from "../../../src/native/phys/ZPP_FluidProperties";
-import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
+import { ZPP_Vec2 } from "../../../src/native/geom/ZPP_Vec2";
+import { ZPP_PubPool } from "../../../src/native/util/ZPP_PubPool";
+import { ZNPList_ZPP_Shape } from "../../../src/native/util/ZNPRegistry";
+import { createMockNape } from "../_mocks";
 
 describe("ZPP_FluidProperties", () => {
   beforeEach(() => {
     ZPP_FluidProperties.zpp_pool = null;
-    ZPP_FluidProperties._zpp = createMockZpp();
+    // ZPP_FluidProperties now imports ZNPList_ZPP_Shape, ZPP_PubPool and
+    // ZPP_Vec2 directly; only _nape (public Vec2/FluidProperties construction)
+    // is still read from the namespace statics.
     ZPP_FluidProperties._nape = createMockNape();
+    // Reset the real pool statics the engine reads/writes so tests stay isolated.
+    ZPP_PubPool.poolVec2 = null;
+    ZPP_PubPool.nextVec2 = null;
+    ZPP_Vec2.zpp_pool = null;
   });
 
   describe("constructor", () => {
@@ -21,7 +30,7 @@ describe("ZPP_FluidProperties", () => {
 
     it("should create shapes list", () => {
       const fp = new ZPP_FluidProperties();
-      expect(fp.shapes).toBeInstanceOf(MockZNPList);
+      expect(fp.shapes).toBeInstanceOf(ZNPList_ZPP_Shape);
     });
 
     it("should initialize other fields", () => {
@@ -159,34 +168,32 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should use pool when available", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.getgravity();
       expect(fp.wrap_gravity).toBe(mockVec2);
+      expect(ZPP_PubPool.poolVec2).toBeNull();
     });
 
     it("should clear nextVec2 when pooled item matches", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
-      zpp.util.ZPP_PubPool.nextVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.nextVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.getgravity();
-      expect(zpp.util.ZPP_PubPool.nextVec2).toBeNull();
+      expect(ZPP_PubPool.nextVec2).toBeNull();
     });
 
     it("should reuse existing zpp_inner when available on pooled Vec2", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       const mockVec2: any = new nape.geom.Vec2();
       mockVec2.zpp_pool = null;
@@ -203,7 +210,7 @@ describe("ZPP_FluidProperties", () => {
         outer: mockVec2,
       };
       mockVec2.zpp_inner = existingInner;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.gravityx = 7;
@@ -239,23 +246,10 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should create new inner Vec2 when both pool and inner pool are empty", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       // Both pools empty, Vec2 constructor yields zpp_inner = null
-      zpp.geom.ZPP_Vec2.zpp_pool = null;
-      zpp.geom.ZPP_Vec2 = class {
-        static zpp_pool: any = null;
-        x = 0;
-        y = 0;
-        weak = false;
-        _immutable = false;
-        _isimmutable: any = null;
-        _validate: any = null;
-        _invalidate: any = null;
-        _inuse = false;
-        outer: any = null;
-        next: any = null;
-      } as any;
+      ZPP_PubPool.poolVec2 = null;
+      ZPP_Vec2.zpp_pool = null;
 
       nape.geom.Vec2 = class {
         zpp_inner: any = null;
@@ -273,21 +267,10 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should reuse inner Vec2 from pool chain", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
-      const innerPooled: any = {
-        x: 0,
-        y: 0,
-        weak: false,
-        _immutable: false,
-        _isimmutable: null,
-        _validate: null,
-        _invalidate: null,
-        _inuse: false,
-        outer: null,
-        next: null,
-      };
-      zpp.geom.ZPP_Vec2.zpp_pool = innerPooled;
+      // Seed the real inner Vec2 pool with a real ZPP_Vec2 instance.
+      const innerPooled = new ZPP_Vec2();
+      ZPP_Vec2.zpp_pool = innerPooled;
 
       // Override Vec2 constructor to produce zpp_inner = null so the inner pool path is taken
       nape.geom.Vec2 = class {
@@ -303,11 +286,10 @@ describe("ZPP_FluidProperties", () => {
       expect(fp.wrap_gravity.zpp_inner).toBe(innerPooled);
       expect(innerPooled.x).toBe(3);
       expect(innerPooled.y).toBe(4);
-      expect(zpp.geom.ZPP_Vec2.zpp_pool).toBeNull();
+      expect(ZPP_Vec2.zpp_pool).toBeNull();
     });
 
     it("should call _isimmutable on existing inner when set", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       let isimmutableCalled = false;
       const existingInner: any = {
@@ -328,7 +310,7 @@ describe("ZPP_FluidProperties", () => {
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
       existingInner.outer = mockVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.gravityx = 5;
@@ -338,7 +320,6 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should call _validate on existing inner when set", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       let validateCalled = false;
       const existingInner: any = {
@@ -359,7 +340,7 @@ describe("ZPP_FluidProperties", () => {
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
       existingInner.outer = mockVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.gravityx = 5;
@@ -369,7 +350,6 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should call _invalidate on existing inner when values change", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       let invalidateCalled = false;
       const existingInner: any = {
@@ -390,7 +370,7 @@ describe("ZPP_FluidProperties", () => {
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
       existingInner.outer = mockVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.gravityx = 7;
@@ -402,7 +382,6 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should not call _invalidate when values are unchanged on existing inner", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       let invalidateCalled = false;
       const existingInner: any = {
@@ -423,7 +402,7 @@ describe("ZPP_FluidProperties", () => {
       mockVec2.zpp_pool = null;
       mockVec2.zpp_disp = false;
       existingInner.outer = mockVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = mockVec2;
+      ZPP_PubPool.poolVec2 = mockVec2;
 
       const fp = new ZPP_FluidProperties();
       fp.gravityx = 5;
@@ -433,10 +412,9 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should throw when existing inner is disposed (via new Vec2 path)", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       // Use non-pool path: poolVec2 = null, Vec2 constructor creates disposed vec with existing inner
-      zpp.util.ZPP_PubPool.poolVec2 = null;
+      ZPP_PubPool.poolVec2 = null;
       const existingInner: any = {
         x: 0,
         y: 0,
@@ -459,10 +437,9 @@ describe("ZPP_FluidProperties", () => {
     });
 
     it("should throw when existing inner is immutable (via new Vec2 path)", () => {
-      const zpp = ZPP_FluidProperties._zpp;
       const nape = ZPP_FluidProperties._nape;
       // Use non-pool path with immutable inner
-      zpp.util.ZPP_PubPool.poolVec2 = null;
+      ZPP_PubPool.poolVec2 = null;
       const existingInner: any = {
         x: 0,
         y: 0,

@@ -8,12 +8,12 @@
  * Converted from nape-compiled.js lines 30688–31238.
  */
 
-import { getNape } from "../../core/engine";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { ZNPList_ZPP_PartitionedPoly, ZNPList_ZPP_GeomVert } from "../util/ZNPRegistry";
 import { ZNPList } from "../util/ZNPList";
 import { ZNPNode } from "../util/ZNPNode";
+import { Config } from "../../Config";
 
 export class ZPP_PartitionedPoly {
   // --- Static: Haxe metadata ---
@@ -55,7 +55,7 @@ export class ZPP_PartitionedPoly {
   eq(a: ZPP_PartitionVertex, b: ZPP_PartitionVertex): boolean {
     const dx = a.x - b.x;
     const dy = a.y - b.y;
-    return dx * dx + dy * dy < getNape().Config.epsilon * getNape().Config.epsilon;
+    return dx * dx + dy * dy < Config.epsilon * Config.epsilon;
   }
 
   alloc(): void {}
@@ -194,7 +194,7 @@ export class ZPP_PartitionedPoly {
         const vx = p!.next!.x - p!.x;
         const vy = p!.next!.y - p!.y;
         const crs = vy * ux - vx * uy;
-        if (crs * crs >= getNape().Config.epsilon * getNape().Config.epsilon) {
+        if (crs * crs >= Config.epsilon * Config.epsilon) {
           p = p!.next;
         } else {
           if (p == this.vertices) {
@@ -478,14 +478,14 @@ export class ZPP_PartitionedPoly {
       }
     }
     const area1 = area * 0.5;
-    if (area1 * area1 >= getNape().Config.epsilon * getNape().Config.epsilon) {
+    if (area1 * area1 >= Config.epsilon * Config.epsilon) {
       let p: ZPP_GeomVert | null = poly;
       let skip = true;
       while (skip || p != poly) {
         skip = false;
         const dx = p!.x - p!.next!.x;
         const dy = p!.y - p!.next!.y;
-        if (dx * dx + dy * dy < getNape().Config.epsilon * getNape().Config.epsilon) {
+        if (dx * dx + dy * dy < Config.epsilon * Config.epsilon) {
           if (p == poly) {
             poly = p!.next;
             skip = true;
@@ -525,7 +525,7 @@ export class ZPP_PartitionedPoly {
             const vx = p!.next!.x - p!.x;
             const vy = p!.next!.y - p!.y;
             const crs = vy * ux - vx * uy;
-            if (crs * crs >= getNape().Config.epsilon * getNape().Config.epsilon) {
+            if (crs * crs >= Config.epsilon * Config.epsilon) {
               p = p!.next;
             } else {
               if (p == poly) {

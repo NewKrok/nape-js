@@ -1,4 +1,4 @@
-import { getNape, ensureEnumsReady } from "../core/engine";
+import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -68,4 +68,3 @@ export class ListenerType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.ListenerType = ListenerType;
-ensureEnumsReady();

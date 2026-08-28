@@ -77,11 +77,6 @@ export class FluidProperties {
       });
     }
 
-    // Legacy fallback: compiled FluidProperties with zpp_inner
-    if (inner.zpp_inner) {
-      return FluidProperties._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as FluidProperties;
   }
 

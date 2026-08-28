@@ -30,6 +30,34 @@ import { ZPP_Component } from "./ZPP_Component";
 import { ZPP_CallbackSet } from "./ZPP_CallbackSet";
 import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 import { PhysicsMetrics } from "../../profiler/PhysicsMetrics";
+import { Config } from "../../Config";
+import { ZPP_ConvexRayResult } from "../geom/ZPP_ConvexRayResult";
+import { ZPP_ToiEvent } from "../geom/ZPP_ToiEvent";
+import { ZPP_Interactor } from "../phys/ZPP_Interactor";
+import {
+  ZNPList_ZPP_Body,
+  ZNPList_ZPP_ColArbiter,
+  ZNPList_ZPP_Compound,
+  ZNPList_ZPP_Constraint,
+  ZNPList_ZPP_FluidArbiter,
+  ZNPList_ZPP_InteractionListener,
+  ZNPList_ZPP_Interactor,
+  ZNPList_ZPP_Listener,
+  ZNPList_ZPP_SensorArbiter,
+  ZNPList_ZPP_ToiEvent,
+  ZNPNode_ConvexResult,
+  ZNPNode_ZPP_Arbiter,
+  ZNPNode_ZPP_Body,
+  ZNPNode_ZPP_CallbackSet,
+  ZNPNode_ZPP_ColArbiter,
+  ZNPNode_ZPP_Component,
+  ZNPNode_ZPP_Constraint,
+  ZNPNode_ZPP_FluidArbiter,
+  ZNPNode_ZPP_InteractionListener,
+  ZNPNode_ZPP_Interactor,
+  ZNPNode_ZPP_SensorArbiter,
+} from "../util/ZNPRegistry";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 // ---------------------------------------------------------------------------
 // Sort keys and scratch buffers for the deterministic-order / contact sorts.
@@ -170,7 +198,7 @@ export class ZPP_Space {
     this.gravityx = 0.0;
     this.userData = null;
     this.outer = null;
-    this.toiEvents = new ZPP_Space._zpp.util.ZNPList_ZPP_ToiEvent();
+    this.toiEvents = new ZNPList_ZPP_ToiEvent();
     this.global_lin_drag = 0.015;
     this.global_ang_drag = 0.015;
     ZPP_Callback.internal = true;
@@ -221,45 +249,45 @@ export class ZPP_Space {
       this.gravityx = 0;
       this.gravityy = 0;
     }
-    this.bodies = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
+    this.bodies = new ZNPList_ZPP_Body();
     this.wrap_bodies = ZPP_Space._zpp.util.ZPP_BodyList.get(this.bodies);
     this.wrap_bodies.zpp_inner.adder = (x?: any) => this.bodies_adder(x);
     this.wrap_bodies.zpp_inner.subber = (x?: any) => this.bodies_subber(x);
     this.wrap_bodies.zpp_inner._modifiable = () => this.bodies_modifiable();
-    this.compounds = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
+    this.compounds = new ZNPList_ZPP_Compound();
     this.wrap_compounds = ZPP_Space._zpp.util.ZPP_CompoundList.get(this.compounds);
     this.wrap_compounds.zpp_inner.adder = (x?: any) => this.compounds_adder(x);
     this.wrap_compounds.zpp_inner.subber = (x?: any) => this.compounds_subber(x);
     this.wrap_compounds.zpp_inner._modifiable = () => this.compounds_modifiable();
-    this.kinematics = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
-    this.c_arbiters_true = new ZPP_Space._zpp.util.ZNPList_ZPP_ColArbiter();
-    this.c_arbiters_false = new ZPP_Space._zpp.util.ZNPList_ZPP_ColArbiter();
-    this.f_arbiters = new ZPP_Space._zpp.util.ZNPList_ZPP_FluidArbiter();
-    this.s_arbiters = new ZPP_Space._zpp.util.ZNPList_ZPP_SensorArbiter();
+    this.kinematics = new ZNPList_ZPP_Body();
+    this.c_arbiters_true = new ZNPList_ZPP_ColArbiter();
+    this.c_arbiters_false = new ZNPList_ZPP_ColArbiter();
+    this.f_arbiters = new ZNPList_ZPP_FluidArbiter();
+    this.s_arbiters = new ZNPList_ZPP_SensorArbiter();
     this.islands = new ZPP_Island();
-    this.live = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
+    this.live = new ZNPList_ZPP_Body();
     this.wrap_live = ZPP_Space._zpp.util.ZPP_BodyList.get(this.live, true);
-    this.staticsleep = new ZPP_Space._zpp.util.ZNPList_ZPP_Body();
-    this.constraints = new ZPP_Space._zpp.util.ZNPList_ZPP_Constraint();
+    this.staticsleep = new ZNPList_ZPP_Body();
+    this.constraints = new ZNPList_ZPP_Constraint();
     this.wrap_constraints = ZPP_Space._zpp.util.ZPP_ConstraintList.get(this.constraints);
     this.wrap_constraints.zpp_inner.adder = (x?: any) => this.constraints_adder(x);
     this.wrap_constraints.zpp_inner.subber = (x?: any) => this.constraints_subber(x);
     this.wrap_constraints.zpp_inner._modifiable = () => this.constraints_modifiable();
-    this.live_constraints = new ZPP_Space._zpp.util.ZNPList_ZPP_Constraint();
+    this.live_constraints = new ZNPList_ZPP_Constraint();
     this.wrap_livecon = ZPP_Space._zpp.util.ZPP_ConstraintList.get(this.live_constraints, true);
     this.__static = ZPP_Body.__static();
     this.__static.zpp_inner.space = this;
     this.callbacks = new ZPP_Callback();
     this.midstep = false;
-    this.listeners = new ZPP_Space._zpp.util.ZNPList_ZPP_Listener();
+    this.listeners = new ZNPList_ZPP_Listener();
     this.wrap_listeners = ZPP_Space._zpp.util.ZPP_ListenerList.get(this.listeners);
     this.wrap_listeners.zpp_inner.adder = (x?: any) => this.listeners_adder(x);
     this.wrap_listeners.zpp_inner.subber = (x?: any) => this.listeners_subber(x);
     this.wrap_listeners.zpp_inner._modifiable = () => this.listeners_modifiable();
     this.callbackset_list = new ZPP_CallbackSet();
-    this.mrca1 = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
-    this.mrca2 = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
-    this.prelisteners = new ZPP_Space._zpp.util.ZNPList_ZPP_InteractionListener();
+    this.mrca1 = new ZNPList_ZPP_Interactor();
+    this.mrca2 = new ZNPList_ZPP_Interactor();
+    this.prelisteners = new ZNPList_ZPP_InteractionListener();
     this.cbsets = new ZPP_CbSetManager(this);
   }
 
@@ -276,15 +304,15 @@ export class ZPP_Space {
       throw new Error("Vec2 components cannot be NaN");
     }
     let ret;
-    if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new ZPP_Space._nape.geom.Vec2();
     } else {
-      ret = ZPP_Space._zpp.util.ZPP_PubPool.poolVec2;
-      ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == ZPP_Space._zpp.util.ZPP_PubPool.nextVec2) {
-        ZPP_Space._zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
     if (ret.zpp_inner == null) {
@@ -358,7 +386,7 @@ export class ZPP_Space {
     }
     this.gravityx = x.x;
     this.gravityy = x.y;
-    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
+    const stack = new ZNPList_ZPP_Compound();
     let cx_ite = this.bodies.head;
     while (cx_ite != null) {
       const x1 = cx_ite.elt;
@@ -454,8 +482,8 @@ export class ZPP_Space {
             }
             const o1 = old;
             o1.elt = null;
-            o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o1;
+            o1.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o1;
             _this.modified = true;
             _this.length--;
             _this.pushmod = true;
@@ -490,8 +518,8 @@ export class ZPP_Space {
             }
             const o2 = old1;
             o2.elt = null;
-            o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o2;
+            o2.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o2;
             _this1.modified = true;
             _this1.length--;
             _this1.pushmod = true;
@@ -566,8 +594,8 @@ export class ZPP_Space {
             }
             const o5 = old2;
             o5.elt = null;
-            o5.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o5;
+            o5.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o5;
             _this4.modified = true;
             _this4.length--;
             _this4.pushmod = true;
@@ -602,8 +630,8 @@ export class ZPP_Space {
             }
             const o6 = old3;
             o6.elt = null;
-            o6.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o6;
+            o6.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o6;
             _this5.modified = true;
             _this5.length--;
             _this5.pushmod = true;
@@ -678,8 +706,8 @@ export class ZPP_Space {
             }
             const o9 = old4;
             o9.elt = null;
-            o9.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o9;
+            o9.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o9;
             _this8.modified = true;
             _this8.length--;
             _this8.pushmod = true;
@@ -714,8 +742,8 @@ export class ZPP_Space {
             }
             const o10 = old5;
             o10.elt = null;
-            o10.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o10;
+            o10.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o10;
             _this9.modified = true;
             _this9.length--;
             _this9.pushmod = true;
@@ -765,8 +793,8 @@ export class ZPP_Space {
             }
             const o12 = old6;
             o12.elt = null;
-            o12.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o12;
+            o12.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o12;
             _this10.modified = true;
             _this10.length--;
             _this10.pushmod = true;
@@ -801,8 +829,8 @@ export class ZPP_Space {
             }
             const o13 = old7;
             o13.elt = null;
-            o13.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o13;
+            o13.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+            ZNPNode_ZPP_Arbiter.zpp_pool = o13;
             _this11.modified = true;
             _this11.length--;
             _this11.pushmod = true;
@@ -867,7 +895,7 @@ export class ZPP_Space {
       c3.space = null;
     }
     this.kinematics.clear();
-    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Compound();
+    const stack = new ZNPList_ZPP_Compound();
     while (this.compounds.head != null) {
       const c5 = this.compounds.pop_unsafe();
       stack.add(c5);
@@ -1060,11 +1088,11 @@ export class ZPP_Space {
   add_callbackset(cb: any) {
     const _this = cb.int1.cbsets;
     let ret;
-    if (ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
-      ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet();
+    if (ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
+      ret = new ZNPNode_ZPP_CallbackSet();
     } else {
-      ret = ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool;
-      ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool = ret.next;
+      ret = ZNPNode_ZPP_CallbackSet.zpp_pool;
+      ZNPNode_ZPP_CallbackSet.zpp_pool = ret.next;
       ret.next = null;
     }
     ret.elt = cb;
@@ -1075,11 +1103,11 @@ export class ZPP_Space {
     _this.length++;
     const _this1 = cb.int2.cbsets;
     let ret1;
-    if (ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
-      ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet();
+    if (ZNPNode_ZPP_CallbackSet.zpp_pool == null) {
+      ret1 = new ZNPNode_ZPP_CallbackSet();
     } else {
-      ret1 = ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool;
-      ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool = ret1.next;
+      ret1 = ZNPNode_ZPP_CallbackSet.zpp_pool;
+      ZNPNode_ZPP_CallbackSet.zpp_pool = ret1.next;
       ret1.next = null;
     }
     ret1.elt = cb;
@@ -1124,8 +1152,8 @@ export class ZPP_Space {
         }
         const o = old;
         o.elt = null;
-        o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool = o;
+        o.next = ZNPNode_ZPP_CallbackSet.zpp_pool;
+        ZNPNode_ZPP_CallbackSet.zpp_pool = o;
         _this.modified = true;
         _this.length--;
         _this.pushmod = true;
@@ -1160,8 +1188,8 @@ export class ZPP_Space {
         }
         const o1 = old1;
         o1.elt = null;
-        o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_CallbackSet.zpp_pool = o1;
+        o1.next = ZNPNode_ZPP_CallbackSet.zpp_pool;
+        ZNPNode_ZPP_CallbackSet.zpp_pool = o1;
         _this1.modified = true;
         _this1.length--;
         _this1.pushmod = true;
@@ -1301,7 +1329,7 @@ export class ZPP_Space {
                 cx_ite2 = cx_ite2.next;
                 continue;
               }
-              const callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+              const callbackset = ZPP_Interactor.get(i1, i2);
               callbackset.remove_arb(xarb);
               xarb.present--;
               const _this1 = cb1.manager;
@@ -1438,8 +1466,8 @@ export class ZPP_Space {
               }
               const o4 = old;
               o4.elt = null;
-              o4.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o4;
+              o4.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o4;
               _this4.modified = true;
               _this4.length--;
               _this4.pushmod = true;
@@ -1476,8 +1504,8 @@ export class ZPP_Space {
               }
               const o5 = old1;
               o5.elt = null;
-              o5.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o5;
+              o5.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o5;
               _this5.modified = true;
               _this5.length--;
               _this5.pushmod = true;
@@ -1750,11 +1778,11 @@ export class ZPP_Space {
 
   convexCast(shape: any, deltaTime: any, filter: any, dynamics: any) {
     let toi;
-    if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
-      toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
+    if (ZPP_ToiEvent.zpp_pool == null) {
+      toi = new ZPP_ToiEvent();
     } else {
-      toi = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-      ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = toi.next;
+      toi = ZPP_ToiEvent.zpp_pool;
+      ZPP_ToiEvent.zpp_pool = toi.next;
       toi.next = null;
     }
     toi.failed = false;
@@ -2118,8 +2146,8 @@ export class ZPP_Space {
     }
     list.clear();
     const o1 = toi;
-    o1.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-    ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o1;
+    o1.next = ZPP_ToiEvent.zpp_pool;
+    ZPP_ToiEvent.zpp_pool = o1;
     const delta2 = 0 - body.sweepTime;
     if (delta2 != 0) {
       body.sweepTime = 0;
@@ -2195,15 +2223,15 @@ export class ZPP_Space {
         throw new Error("Vec2 components cannot be NaN");
       }
       let ret;
-      if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
+      if (ZPP_PubPool.poolVec2 == null) {
         ret = new ZPP_Space._nape.geom.Vec2();
       } else {
-        ret = ZPP_Space._zpp.util.ZPP_PubPool.poolVec2;
-        ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+        ret = ZPP_PubPool.poolVec2;
+        ZPP_PubPool.poolVec2 = ret.zpp_pool;
         ret.zpp_pool = null;
         ret.zpp_disp = false;
-        if (ret == ZPP_Space._zpp.util.ZPP_PubPool.nextVec2) {
-          ZPP_Space._zpp.util.ZPP_PubPool.nextVec2 = null;
+        if (ret == ZPP_PubPool.nextVec2) {
+          ZPP_PubPool.nextVec2 = null;
         }
       }
       if (ret.zpp_inner == null) {
@@ -2277,15 +2305,15 @@ export class ZPP_Space {
         throw new Error("Vec2 components cannot be NaN");
       }
       let ret2;
-      if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
+      if (ZPP_PubPool.poolVec2 == null) {
         ret2 = new ZPP_Space._nape.geom.Vec2();
       } else {
-        ret2 = ZPP_Space._zpp.util.ZPP_PubPool.poolVec2;
-        ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 = ret2.zpp_pool;
+        ret2 = ZPP_PubPool.poolVec2;
+        ZPP_PubPool.poolVec2 = ret2.zpp_pool;
         ret2.zpp_pool = null;
         ret2.zpp_disp = false;
-        if (ret2 == ZPP_Space._zpp.util.ZPP_PubPool.nextVec2) {
-          ZPP_Space._zpp.util.ZPP_PubPool.nextVec2 = null;
+        if (ret2 == ZPP_PubPool.nextVec2) {
+          ZPP_PubPool.nextVec2 = null;
         }
       }
       if (ret2.zpp_inner == null) {
@@ -2347,7 +2375,7 @@ export class ZPP_Space {
         }
       }
       ret2.zpp_inner.weak = false;
-      return ZPP_Space._zpp.geom.ZPP_ConvexRayResult.getConvex(ret, ret2, mint, mins);
+      return ZPP_ConvexRayResult.getConvex(ret, ret2, mint, mins);
     } else {
       return null;
     }
@@ -2515,11 +2543,11 @@ export class ZPP_Space {
 
   convexMultiCast(shape: any, deltaTime: any, filter: any, dynamics: any, output: any) {
     let toi;
-    if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
-      toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
+    if (ZPP_ToiEvent.zpp_pool == null) {
+      toi = new ZPP_ToiEvent();
     } else {
-      toi = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-      ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = toi.next;
+      toi = ZPP_ToiEvent.zpp_pool;
+      ZPP_ToiEvent.zpp_pool = toi.next;
       toi.next = null;
     }
     toi.failed = false;
@@ -2875,15 +2903,15 @@ export class ZPP_Space {
             throw new Error("Vec2 components cannot be NaN");
           }
           let ret1;
-          if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
+          if (ZPP_PubPool.poolVec2 == null) {
             ret1 = new ZPP_Space._nape.geom.Vec2();
           } else {
-            ret1 = ZPP_Space._zpp.util.ZPP_PubPool.poolVec2;
-            ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 = ret1.zpp_pool;
+            ret1 = ZPP_PubPool.poolVec2;
+            ZPP_PubPool.poolVec2 = ret1.zpp_pool;
             ret1.zpp_pool = null;
             ret1.zpp_disp = false;
-            if (ret1 == ZPP_Space._zpp.util.ZPP_PubPool.nextVec2) {
-              ZPP_Space._zpp.util.ZPP_PubPool.nextVec2 = null;
+            if (ret1 == ZPP_PubPool.nextVec2) {
+              ZPP_PubPool.nextVec2 = null;
             }
           }
           if (ret1.zpp_inner == null) {
@@ -2957,15 +2985,15 @@ export class ZPP_Space {
             throw new Error("Vec2 components cannot be NaN");
           }
           let ret3;
-          if (ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 == null) {
+          if (ZPP_PubPool.poolVec2 == null) {
             ret3 = new ZPP_Space._nape.geom.Vec2();
           } else {
-            ret3 = ZPP_Space._zpp.util.ZPP_PubPool.poolVec2;
-            ZPP_Space._zpp.util.ZPP_PubPool.poolVec2 = ret3.zpp_pool;
+            ret3 = ZPP_PubPool.poolVec2;
+            ZPP_PubPool.poolVec2 = ret3.zpp_pool;
             ret3.zpp_pool = null;
             ret3.zpp_disp = false;
-            if (ret3 == ZPP_Space._zpp.util.ZPP_PubPool.nextVec2) {
-              ZPP_Space._zpp.util.ZPP_PubPool.nextVec2 = null;
+            if (ret3 == ZPP_PubPool.nextVec2) {
+              ZPP_PubPool.nextVec2 = null;
             }
           }
           if (ret3.zpp_inner == null) {
@@ -3027,7 +3055,7 @@ export class ZPP_Space {
             }
           }
           ret3.zpp_inner.weak = false;
-          const res2 = ZPP_Space._zpp.geom.ZPP_ConvexRayResult.getConvex(ret1, ret3, toi.toi, s);
+          const res2 = ZPP_ConvexRayResult.getConvex(ret1, ret3, toi.toi, s);
           let pre = null;
           let cx_ite5 = ret.zpp_inner.inner.head;
           while (cx_ite5 != null) {
@@ -3046,11 +3074,11 @@ export class ZPP_Space {
           }
           const _this17 = ret.zpp_inner.inner;
           let ret5;
-          if (ZPP_Space._zpp.util.ZNPNode_ConvexResult.zpp_pool == null) {
-            ret5 = new ZPP_Space._zpp.util.ZNPNode_ConvexResult();
+          if (ZNPNode_ConvexResult.zpp_pool == null) {
+            ret5 = new ZNPNode_ConvexResult();
           } else {
-            ret5 = ZPP_Space._zpp.util.ZNPNode_ConvexResult.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ConvexResult.zpp_pool = ret5.next;
+            ret5 = ZNPNode_ConvexResult.zpp_pool;
+            ZNPNode_ConvexResult.zpp_pool = ret5.next;
             ret5.next = null;
           }
           ret5.elt = res2;
@@ -3069,8 +3097,8 @@ export class ZPP_Space {
     }
     list.clear();
     const o1 = toi;
-    o1.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-    ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o1;
+    o1.next = ZPP_ToiEvent.zpp_pool;
+    ZPP_ToiEvent.zpp_pool = o1;
     const delta2 = 0 - body.sweepTime;
     if (delta2 != 0) {
       body.sweepTime = 0;
@@ -3423,8 +3451,8 @@ export class ZPP_Space {
             }
             const o = old;
             o.elt = null;
-            o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = o;
+            o.next = ZNPNode_ZPP_Body.zpp_pool;
+            ZNPNode_ZPP_Body.zpp_pool = o;
             _this.modified = true;
             _this.length--;
             _this.pushmod = true;
@@ -3692,8 +3720,8 @@ export class ZPP_Space {
           } else {
             cx_ite = this.toiEvents.erase(pre);
             const o = toi;
-            o.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-            ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o;
+            o.next = ZPP_ToiEvent.zpp_pool;
+            ZPP_ToiEvent.zpp_pool = o;
             continue;
           }
         }
@@ -3708,24 +3736,19 @@ export class ZPP_Space {
               toi.frozen1 = false;
               toi.frozen2 = true;
             }
-            ZPP_SweepDistance.staticSweep(
-              toi,
-              deltaTime,
-              0,
-              ZPP_Space._nape.Config.collisionSlopCCD,
-            );
+            ZPP_SweepDistance.staticSweep(toi, deltaTime, 0, Config.collisionSlopCCD);
             if (toi.toi < 0) {
               cx_ite = this.toiEvents.erase(pre);
               const o1 = toi;
-              o1.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-              ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o1;
+              o1.next = ZPP_ToiEvent.zpp_pool;
+              ZPP_ToiEvent.zpp_pool = o1;
               continue;
             }
           } else {
             cx_ite = this.toiEvents.erase(pre);
             const o2 = toi;
-            o2.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-            ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o2;
+            o2.next = ZPP_ToiEvent.zpp_pool;
+            ZPP_ToiEvent.zpp_pool = o2;
             continue;
           }
         }
@@ -4638,7 +4661,7 @@ export class ZPP_Space {
             b11.angvel = b11.sweep_angvel = 0;
           } else if (minTOI.slipped) {
             const b12 = b11;
-            b12.sweep_angvel *= ZPP_Space._nape.Config.angularCCDSlipScale;
+            b12.sweep_angvel *= Config.angularCCDSlipScale;
             b11.angvel = b12.sweep_angvel;
           } else {
             b11.angvel = b11.sweep_angvel;
@@ -4650,7 +4673,7 @@ export class ZPP_Space {
             b21.angvel = b21.sweep_angvel = 0;
           } else if (minTOI.slipped) {
             const b22 = b21;
-            b22.sweep_angvel *= ZPP_Space._nape.Config.angularCCDSlipScale;
+            b22.sweep_angvel *= Config.angularCCDSlipScale;
             b21.angvel = b22.sweep_angvel;
           } else {
             b21.angvel = b21.sweep_angvel;
@@ -4658,14 +4681,14 @@ export class ZPP_Space {
         }
       }
       const o3 = minTOI;
-      o3.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-      ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o3;
+      o3.next = ZPP_ToiEvent.zpp_pool;
+      ZPP_ToiEvent.zpp_pool = o3;
     }
     while (this.toiEvents.head != null) {
       const toi1 = this.toiEvents.pop_unsafe();
       const o4 = toi1;
-      o4.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-      ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o4;
+      o4.next = ZPP_ToiEvent.zpp_pool;
+      ZPP_ToiEvent.zpp_pool = o4;
     }
     let cx_ite5 = this.kinematics.head;
     while (cx_ite5 != null) {
@@ -4747,11 +4770,11 @@ export class ZPP_Space {
     const b21 = s2.body;
     if (stat || b11.bullet || b21.bullet) {
       let toi;
-      if (ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool == null) {
-        toi = new ZPP_Space._zpp.geom.ZPP_ToiEvent();
+      if (ZPP_ToiEvent.zpp_pool == null) {
+        toi = new ZPP_ToiEvent();
       } else {
-        toi = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-        ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = toi.next;
+        toi = ZPP_ToiEvent.zpp_pool;
+        ZPP_ToiEvent.zpp_pool = toi.next;
         toi.next = null;
       }
       toi.failed = false;
@@ -4768,43 +4791,32 @@ export class ZPP_Space {
           toi.s2 = s2;
         }
         toi.kinematic = false;
-        ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, ZPP_Space._nape.Config.collisionSlopCCD);
+        ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, Config.collisionSlopCCD);
       } else {
         toi.s1 = s1;
         toi.s2 = s2;
         toi.kinematic = kin;
-        if (toi.s1.body.sweepFrozen || toi.s2.body.sweepFrozen) {
-          if (toi.s1.body.sweepFrozen) {
+        if (toi.s1!.body.sweepFrozen || toi.s2!.body.sweepFrozen) {
+          if (toi.s1!.body.sweepFrozen) {
             const tmp6 = toi.s1;
             toi.s1 = toi.s2;
             toi.s2 = tmp6;
             toi.frozen1 = false;
             toi.frozen2 = true;
           }
-          ZPP_SweepDistance.staticSweep(
-            toi,
-            this.pre_dt,
-            0,
-            ZPP_Space._nape.Config.collisionSlopCCD,
-          );
+          ZPP_SweepDistance.staticSweep(toi, this.pre_dt, 0, Config.collisionSlopCCD);
         } else {
-          ZPP_SweepDistance.dynamicSweep(
-            toi,
-            this.pre_dt,
-            0,
-            ZPP_Space._nape.Config.collisionSlopCCD,
-            false,
-          );
+          ZPP_SweepDistance.dynamicSweep(toi, this.pre_dt, 0, Config.collisionSlopCCD, false);
         }
       }
       if ((stat && toi.toi < 0) || toi.failed) {
         const o = toi;
-        o.next = ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool;
-        ZPP_Space._zpp.geom.ZPP_ToiEvent.zpp_pool = o;
+        o.next = ZPP_ToiEvent.zpp_pool;
+        ZPP_ToiEvent.zpp_pool = o;
       } else {
         this.toiEvents.add(toi);
-        toi.frozen1 = toi.s1.body.sweepFrozen;
-        toi.frozen2 = toi.s2.body.sweepFrozen;
+        toi.frozen1 = toi.s1!.body.sweepFrozen;
+        toi.frozen2 = toi.s2!.body.sweepFrozen;
         toi.arbiter = in_arb != null ? in_arb.colarb : null;
       }
     }
@@ -4905,7 +4917,7 @@ export class ZPP_Space {
   }
 
   nullListenerType(cb1: any, cb2: any) {
-    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
+    const stack = new ZNPList_ZPP_Interactor();
     let cx_ite = cb1.interactors.head;
     while (cx_ite != null) {
       const i = cx_ite.elt;
@@ -4968,7 +4980,7 @@ export class ZPP_Space {
                 cx_ite6 = cx_ite6.next;
                 continue;
               }
-              const callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i11, i21);
+              const callbackset = ZPP_Interactor.get(i11, i21);
               if (callbackset != null) {
                 while (callbackset.arbiters.head != null) {
                   const arb = callbackset.arbiters.pop_unsafe();
@@ -5029,7 +5041,7 @@ export class ZPP_Space {
               cx_ite4 = cx_ite4.next;
               continue;
             }
-            const callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+            const callbackset = ZPP_Interactor.get(i1, i2);
             if (callbackset != null) {
               xarb.present--;
               callbackset.remove_arb(xarb);
@@ -5047,7 +5059,7 @@ export class ZPP_Space {
   }
 
   freshListenerType(cb1: any, cb2: any) {
-    const stack = new ZPP_Space._zpp.util.ZNPList_ZPP_Interactor();
+    const stack = new ZNPList_ZPP_Interactor();
     let cx_ite = cb1.interactors.head;
     while (cx_ite != null) {
       const i = cx_ite.elt;
@@ -5110,7 +5122,7 @@ export class ZPP_Space {
                 cx_ite6 = cx_ite6.next;
                 continue;
               }
-              let callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i11, i21);
+              let callbackset = ZPP_Interactor.get(i11, i21);
               if (callbackset == null) {
                 callbackset = ZPP_CallbackSet.get(i11, i21);
                 this.add_callbackset(callbackset);
@@ -5130,11 +5142,11 @@ export class ZPP_Space {
               if (!ret) {
                 const _this = callbackset.arbiters;
                 let ret1;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                  ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+                if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                  ret1 = new ZNPNode_ZPP_Arbiter();
                 } else {
-                  ret1 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret1.next;
+                  ret1 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                  ZNPNode_ZPP_Arbiter.zpp_pool = ret1.next;
                   ret1.next = null;
                 }
                 ret1.elt = xarb;
@@ -5247,7 +5259,7 @@ export class ZPP_Space {
               ret.__validate();
             }
             if (ret.listeners.head != null) {
-              let callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+              let callbackset = ZPP_Interactor.get(i1, i2);
               if (callbackset == null) {
                 callbackset = ZPP_CallbackSet.get(i1, i2);
                 this.add_callbackset(callbackset);
@@ -5267,11 +5279,11 @@ export class ZPP_Space {
               if (!ret2) {
                 const _this1 = callbackset.arbiters;
                 let ret3;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                  ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+                if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                  ret3 = new ZNPNode_ZPP_Arbiter();
                 } else {
-                  ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret3.next;
+                  ret3 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                  ZNPNode_ZPP_Arbiter.zpp_pool = ret3.next;
                   ret3.next = null;
                 }
                 ret3.elt = xarb;
@@ -5345,11 +5357,11 @@ export class ZPP_Space {
               if (carb.stat) {
                 const _this = this.c_arbiters_true;
                 let ret;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
-                  ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
+                if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
+                  ret = new ZNPNode_ZPP_ColArbiter();
                 } else {
-                  ret = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = ret.next;
+                  ret = ZNPNode_ZPP_ColArbiter.zpp_pool;
+                  ZNPNode_ZPP_ColArbiter.zpp_pool = ret.next;
                   ret.next = null;
                 }
                 ret.elt = carb;
@@ -5361,11 +5373,11 @@ export class ZPP_Space {
               } else {
                 const _this1 = this.c_arbiters_false;
                 let ret1;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
-                  ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
+                if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
+                  ret1 = new ZNPNode_ZPP_ColArbiter();
                 } else {
-                  ret1 = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = ret1.next;
+                  ret1 = ZNPNode_ZPP_ColArbiter.zpp_pool;
+                  ZNPNode_ZPP_ColArbiter.zpp_pool = ret1.next;
                   ret1.next = null;
                 }
                 ret1.elt = carb;
@@ -5379,11 +5391,11 @@ export class ZPP_Space {
               const _this2 = this.f_arbiters;
               const o = arb.fluidarb;
               let ret2;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
-                ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
+              if (ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
+                ret2 = new ZNPNode_ZPP_FluidArbiter();
               } else {
-                ret2 = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = ret2.next;
+                ret2 = ZNPNode_ZPP_FluidArbiter.zpp_pool;
+                ZNPNode_ZPP_FluidArbiter.zpp_pool = ret2.next;
                 ret2.next = null;
               }
               ret2.elt = o;
@@ -5396,11 +5408,11 @@ export class ZPP_Space {
               const _this3 = this.s_arbiters;
               const o1 = arb.sensorarb;
               let ret3;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
-                ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
+              if (ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
+                ret3 = new ZNPNode_ZPP_SensorArbiter();
               } else {
-                ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = ret3.next;
+                ret3 = ZNPNode_ZPP_SensorArbiter.zpp_pool;
+                ZNPNode_ZPP_SensorArbiter.zpp_pool = ret3.next;
                 ret3.next = null;
               }
               ret3.elt = o1;
@@ -5432,11 +5444,11 @@ export class ZPP_Space {
         const con = c.constraint;
         const _this4 = this.live_constraints;
         let ret4;
-        if (ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool == null) {
-          ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint();
+        if (ZNPNode_ZPP_Constraint.zpp_pool == null) {
+          ret4 = new ZNPNode_ZPP_Constraint();
         } else {
-          ret4 = ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool;
-          ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool = ret4.next;
+          ret4 = ZNPNode_ZPP_Constraint.zpp_pool;
+          ZNPNode_ZPP_Constraint.zpp_pool = ret4.next;
           ret4.next = null;
         }
         ret4.elt = con;
@@ -5482,11 +5494,11 @@ export class ZPP_Space {
       if (o.type == 3 || o.type == 1) {
         const _this = this.staticsleep;
         let ret;
-        if (ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool == null) {
-          ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_Body();
+        if (ZNPNode_ZPP_Body.zpp_pool == null) {
+          ret = new ZNPNode_ZPP_Body();
         } else {
-          ret = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
-          ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = ret.next;
+          ret = ZNPNode_ZPP_Body.zpp_pool;
+          ZNPNode_ZPP_Body.zpp_pool = ret.next;
           ret.next = null;
         }
         ret.elt = o;
@@ -5498,11 +5510,11 @@ export class ZPP_Space {
       } else {
         const _this1 = this.live;
         let ret1;
-        if (ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool == null) {
-          ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Body();
+        if (ZNPNode_ZPP_Body.zpp_pool == null) {
+          ret1 = new ZNPNode_ZPP_Body();
         } else {
-          ret1 = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
-          ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = ret1.next;
+          ret1 = ZNPNode_ZPP_Body.zpp_pool;
+          ZNPNode_ZPP_Body.zpp_pool = ret1.next;
           ret1.next = null;
         }
         ret1.elt = o;
@@ -5531,11 +5543,11 @@ export class ZPP_Space {
             if (carb.stat) {
               const _this2 = this.c_arbiters_true;
               let ret2;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
-                ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
+              if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
+                ret2 = new ZNPNode_ZPP_ColArbiter();
               } else {
-                ret2 = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = ret2.next;
+                ret2 = ZNPNode_ZPP_ColArbiter.zpp_pool;
+                ZNPNode_ZPP_ColArbiter.zpp_pool = ret2.next;
                 ret2.next = null;
               }
               ret2.elt = carb;
@@ -5547,11 +5559,11 @@ export class ZPP_Space {
             } else {
               const _this3 = this.c_arbiters_false;
               let ret3;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
-                ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
+              if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
+                ret3 = new ZNPNode_ZPP_ColArbiter();
               } else {
-                ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = ret3.next;
+                ret3 = ZNPNode_ZPP_ColArbiter.zpp_pool;
+                ZNPNode_ZPP_ColArbiter.zpp_pool = ret3.next;
                 ret3.next = null;
               }
               ret3.elt = carb;
@@ -5565,11 +5577,11 @@ export class ZPP_Space {
             const _this4 = this.f_arbiters;
             const o1 = arb.fluidarb;
             let ret4;
-            if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
-              ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
+            if (ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
+              ret4 = new ZNPNode_ZPP_FluidArbiter();
             } else {
-              ret4 = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = ret4.next;
+              ret4 = ZNPNode_ZPP_FluidArbiter.zpp_pool;
+              ZNPNode_ZPP_FluidArbiter.zpp_pool = ret4.next;
               ret4.next = null;
             }
             ret4.elt = o1;
@@ -5582,11 +5594,11 @@ export class ZPP_Space {
             const _this5 = this.s_arbiters;
             const o2 = arb.sensorarb;
             let ret5;
-            if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
-              ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
+            if (ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
+              ret5 = new ZNPNode_ZPP_SensorArbiter();
             } else {
-              ret5 = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = ret5.next;
+              ret5 = ZNPNode_ZPP_SensorArbiter.zpp_pool;
+              ZNPNode_ZPP_SensorArbiter.zpp_pool = ret5.next;
               ret5.next = null;
             }
             ret5.elt = o2;
@@ -5659,11 +5671,11 @@ export class ZPP_Space {
           con.component.sleeping = false;
           const _this = this.live_constraints;
           let ret;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool == null) {
-            ret = new ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint();
+          if (ZNPNode_ZPP_Constraint.zpp_pool == null) {
+            ret = new ZNPNode_ZPP_Constraint();
           } else {
-            ret = ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool = ret.next;
+            ret = ZNPNode_ZPP_Constraint.zpp_pool;
+            ZNPNode_ZPP_Constraint.zpp_pool = ret.next;
             ret.next = null;
           }
           ret.elt = con;
@@ -5856,11 +5868,11 @@ export class ZPP_Space {
       oc.island = root.island;
       const _this2 = oc.island.comps;
       let ret1;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool == null) {
-        ret1 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Component();
+      if (ZNPNode_ZPP_Component.zpp_pool == null) {
+        ret1 = new ZNPNode_ZPP_Component();
       } else {
-        ret1 = ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool = ret1.next;
+        ret1 = ZNPNode_ZPP_Component.zpp_pool;
+        ZNPNode_ZPP_Component.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.elt = oc;
@@ -5903,11 +5915,11 @@ export class ZPP_Space {
       oc1.island = root1.island;
       const _this4 = oc1.island.comps;
       let ret3;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool == null) {
-        ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Component();
+      if (ZNPNode_ZPP_Component.zpp_pool == null) {
+        ret3 = new ZNPNode_ZPP_Component();
       } else {
-        ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Component.zpp_pool = ret3.next;
+        ret3 = ZNPNode_ZPP_Component.zpp_pool;
+        ZNPNode_ZPP_Component.zpp_pool = ret3.next;
         ret3.next = null;
       }
       ret3.elt = oc1;
@@ -5963,11 +5975,11 @@ export class ZPP_Space {
             const _this7 = this.live;
             const o3 = c1.body;
             let ret6;
-            if (ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool == null) {
-              ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Body();
+            if (ZNPNode_ZPP_Body.zpp_pool == null) {
+              ret6 = new ZNPNode_ZPP_Body();
             } else {
-              ret6 = ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Body.zpp_pool = ret6.next;
+              ret6 = ZNPNode_ZPP_Body.zpp_pool;
+              ZNPNode_ZPP_Body.zpp_pool = ret6.next;
               ret6.next = null;
             }
             ret6.elt = o3;
@@ -5980,11 +5992,11 @@ export class ZPP_Space {
             const _this8 = this.live_constraints;
             const o4 = c1.constraint;
             let ret7;
-            if (ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool == null) {
-              ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint();
+            if (ZNPNode_ZPP_Constraint.zpp_pool == null) {
+              ret7 = new ZNPNode_ZPP_Constraint();
             } else {
-              ret7 = ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Constraint.zpp_pool = ret7.next;
+              ret7 = ZNPNode_ZPP_Constraint.zpp_pool;
+              ZNPNode_ZPP_Constraint.zpp_pool = ret7.next;
               ret7.next = null;
             }
             ret7.elt = o4;
@@ -6041,8 +6053,8 @@ export class ZPP_Space {
         }
         const o = old;
         o.elt = null;
-        o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = o;
+        o.next = ZNPNode_ZPP_ColArbiter.zpp_pool;
+        ZNPNode_ZPP_ColArbiter.zpp_pool = o;
         arbs.modified = true;
         arbs.length--;
         arbs.pushmod = true;
@@ -6097,8 +6109,8 @@ export class ZPP_Space {
         }
         const o1 = old1;
         o1.elt = null;
-        o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = o1;
+        o1.next = ZNPNode_ZPP_FluidArbiter.zpp_pool;
+        ZNPNode_ZPP_FluidArbiter.zpp_pool = o1;
         arbs1.modified = true;
         arbs1.length--;
         arbs1.pushmod = true;
@@ -6151,8 +6163,8 @@ export class ZPP_Space {
         }
         const o2 = old2;
         o2.elt = null;
-        o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = o2;
+        o2.next = ZNPNode_ZPP_SensorArbiter.zpp_pool;
+        ZNPNode_ZPP_SensorArbiter.zpp_pool = o2;
         arbs2.modified = true;
         arbs2.length--;
         arbs2.pushmod = true;
@@ -7204,8 +7216,8 @@ export class ZPP_Space {
         }
       }
       if (!cur.disableCCD) {
-        const linThreshold = ZPP_Space._nape.Config.staticCCDLinearThreshold * cur.sweepRadius;
-        const angThreshold = ZPP_Space._nape.Config.staticCCDAngularThreshold;
+        const linThreshold = Config.staticCCDLinearThreshold * cur.sweepRadius;
+        const angThreshold = Config.staticCCDAngularThreshold;
         if (
           (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt > linThreshold * linThreshold ||
           cur.angvel * cur.angvel * dt * dt > angThreshold * angThreshold ||
@@ -7416,8 +7428,8 @@ export class ZPP_Space {
           }
           cur.sweepFrozen = false;
           if (cur.type == 2 && cur.bulletEnabled) {
-            const linThreshold2 = ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur.sweepRadius;
-            const angThreshold2 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
+            const linThreshold2 = Config.bulletCCDLinearThreshold * cur.sweepRadius;
+            const angThreshold2 = Config.bulletCCDAngularThreshold;
             if (
               (cur.velx * cur.velx + cur.vely * cur.vely) * dt * dt >
                 linThreshold2 * linThreshold2 ||
@@ -7467,8 +7479,8 @@ export class ZPP_Space {
         }
       }
       if (!cur1.disableCCD) {
-        const linThreshold1 = ZPP_Space._nape.Config.staticCCDLinearThreshold * cur1.sweepRadius;
-        const angThreshold1 = ZPP_Space._nape.Config.staticCCDAngularThreshold;
+        const linThreshold1 = Config.staticCCDLinearThreshold * cur1.sweepRadius;
+        const angThreshold1 = Config.staticCCDAngularThreshold;
         if (
           (cur1.velx * cur1.velx + cur1.vely * cur1.vely) * dt * dt >
             linThreshold1 * linThreshold1 ||
@@ -7680,9 +7692,8 @@ export class ZPP_Space {
           }
           cur1.sweepFrozen = false;
           if (cur1.type == 2 && cur1.bulletEnabled) {
-            const linThreshold21 =
-              ZPP_Space._nape.Config.bulletCCDLinearThreshold * cur1.sweepRadius;
-            const angThreshold21 = ZPP_Space._nape.Config.bulletCCDAngularThreshold;
+            const linThreshold21 = Config.bulletCCDLinearThreshold * cur1.sweepRadius;
+            const angThreshold21 = Config.bulletCCDAngularThreshold;
             if (
               (cur1.velx * cur1.velx + cur1.vely * cur1.vely) * dt * dt >
                 linThreshold21 * linThreshold21 ||
@@ -7727,8 +7738,8 @@ export class ZPP_Space {
           _this.head = ret.next;
           const o = ret;
           o.elt = null;
-          o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-          ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o;
+          o.next = ZNPNode_ZPP_Interactor.zpp_pool;
+          ZNPNode_ZPP_Interactor.zpp_pool = o;
           if (_this.head == null) {
             _this.pushmod = true;
           }
@@ -7742,8 +7753,8 @@ export class ZPP_Space {
           _this1.head = ret1.next;
           const o1 = ret1;
           o1.elt = null;
-          o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-          ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o1;
+          o1.next = ZNPNode_ZPP_Interactor.zpp_pool;
+          ZNPNode_ZPP_Interactor.zpp_pool = o1;
           if (_this1.head == null) {
             _this1.pushmod = true;
           }
@@ -7754,11 +7765,11 @@ export class ZPP_Space {
         if (s1.cbSet != null) {
           const _this2 = this.mrca1;
           let ret2;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+          if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+            ret2 = new ZNPNode_ZPP_Interactor();
           } else {
-            ret2 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret2.next;
+            ret2 = ZNPNode_ZPP_Interactor.zpp_pool;
+            ZNPNode_ZPP_Interactor.zpp_pool = ret2.next;
             ret2.next = null;
           }
           ret2.elt = s1;
@@ -7772,11 +7783,11 @@ export class ZPP_Space {
           const _this3 = this.mrca1;
           const o2 = s1.body;
           let ret3;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+          if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+            ret3 = new ZNPNode_ZPP_Interactor();
           } else {
-            ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret3.next;
+            ret3 = ZNPNode_ZPP_Interactor.zpp_pool;
+            ZNPNode_ZPP_Interactor.zpp_pool = ret3.next;
             ret3.next = null;
           }
           ret3.elt = o2;
@@ -7789,11 +7800,11 @@ export class ZPP_Space {
         if (s2.cbSet != null) {
           const _this4 = this.mrca2;
           let ret4;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+          if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+            ret4 = new ZNPNode_ZPP_Interactor();
           } else {
-            ret4 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret4.next;
+            ret4 = ZNPNode_ZPP_Interactor.zpp_pool;
+            ZNPNode_ZPP_Interactor.zpp_pool = ret4.next;
             ret4.next = null;
           }
           ret4.elt = s2;
@@ -7807,11 +7818,11 @@ export class ZPP_Space {
           const _this5 = this.mrca2;
           const o3 = s2.body;
           let ret5;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+          if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+            ret5 = new ZNPNode_ZPP_Interactor();
           } else {
-            ret5 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret5.next;
+            ret5 = ZNPNode_ZPP_Interactor.zpp_pool;
+            ZNPNode_ZPP_Interactor.zpp_pool = ret5.next;
             ret5.next = null;
           }
           ret5.elt = o3;
@@ -7830,11 +7841,11 @@ export class ZPP_Space {
             if (c2.cbSet != null) {
               const _this6 = this.mrca2;
               let ret6;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+              if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                ret6 = new ZNPNode_ZPP_Interactor();
               } else {
-                ret6 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret6.next;
+                ret6 = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = ret6.next;
                 ret6.next = null;
               }
               ret6.elt = c2;
@@ -7849,11 +7860,11 @@ export class ZPP_Space {
             if (c1.cbSet != null) {
               const _this7 = this.mrca1;
               let ret7;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+              if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                ret7 = new ZNPNode_ZPP_Interactor();
               } else {
-                ret7 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret7.next;
+                ret7 = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = ret7.next;
                 ret7.next = null;
               }
               ret7.elt = c1;
@@ -7917,7 +7928,7 @@ export class ZPP_Space {
               cx_ite1 = cx_ite1.next;
               continue;
             }
-            let callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+            let callbackset = ZPP_Interactor.get(i1, i2);
             if (begcb || arb.intchange) {
               if (callbackset == null) {
                 callbackset = ZPP_CallbackSet.get(i1, i2);
@@ -8013,11 +8024,11 @@ export class ZPP_Space {
               if (!ret12) {
                 const _this12 = callbackset.arbiters;
                 let ret13;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                  ret13 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+                if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                  ret13 = new ZNPNode_ZPP_Arbiter();
                 } else {
-                  ret13 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret13.next;
+                  ret13 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                  ZNPNode_ZPP_Arbiter.zpp_pool = ret13.next;
                   ret13.next = null;
                 }
                 ret13.elt = arb;
@@ -8125,9 +8136,7 @@ export class ZPP_Space {
     }
     if (
       arb.cleared ||
-      arb.up_stamp +
-        (arb.type == ZPP_Arbiter.COL ? ZPP_Space._nape.Config.arbiterExpirationDelay : 0) <
-        this.stamp
+      arb.up_stamp + (arb.type == ZPP_Arbiter.COL ? Config.arbiterExpirationDelay : 0) < this.stamp
     ) {
       if (arb.type == ZPP_Arbiter.SENSOR) {
         const _this16 = arb.sensorarb;
@@ -8157,8 +8166,8 @@ export class ZPP_Space {
               }
               const o4 = old;
               o4.elt = null;
-              o4.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o4;
+              o4.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o4;
               _this17.modified = true;
               _this17.length--;
               _this17.pushmod = true;
@@ -8193,8 +8202,8 @@ export class ZPP_Space {
               }
               const o5 = old1;
               o5.elt = null;
-              o5.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o5;
+              o5.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o5;
               _this18.modified = true;
               _this18.length--;
               _this18.pushmod = true;
@@ -8243,8 +8252,8 @@ export class ZPP_Space {
               }
               const o7 = old2;
               o7.elt = null;
-              o7.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o7;
+              o7.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o7;
               _this20.modified = true;
               _this20.length--;
               _this20.pushmod = true;
@@ -8279,8 +8288,8 @@ export class ZPP_Space {
               }
               const o8 = old3;
               o8.elt = null;
-              o8.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o8;
+              o8.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o8;
               _this21.modified = true;
               _this21.length--;
               _this21.pushmod = true;
@@ -8330,8 +8339,8 @@ export class ZPP_Space {
               }
               const o10 = old4;
               o10.elt = null;
-              o10.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o10;
+              o10.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o10;
               _this23.modified = true;
               _this23.length--;
               _this23.pushmod = true;
@@ -8366,8 +8375,8 @@ export class ZPP_Space {
               }
               const o13 = old5;
               o13.elt = null;
-              o13.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-              ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o13;
+              o13.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+              ZNPNode_ZPP_Arbiter.zpp_pool = o13;
               _this24.modified = true;
               _this24.length--;
               _this24.pushmod = true;
@@ -8473,11 +8482,11 @@ export class ZPP_Space {
           const statType = _this27.b1.type != 2 || _this27.b2.type != 2;
           const bias = statType
             ? _this27.continuous
-              ? ZPP_Space._nape.Config.contactContinuousStaticBiasCoef
-              : ZPP_Space._nape.Config.contactStaticBiasCoef
+              ? Config.contactContinuousStaticBiasCoef
+              : Config.contactStaticBiasCoef
             : _this27.continuous
-              ? ZPP_Space._nape.Config.contactContinuousBiasCoef
-              : ZPP_Space._nape.Config.contactBiasCoef;
+              ? Config.contactContinuousBiasCoef
+              : Config.contactBiasCoef;
           _this27.biasCoef = bias;
           _this27.continuous = false;
           let pre6 = null;
@@ -8486,7 +8495,7 @@ export class ZPP_Space {
           let cx_ite8 = _this27.contacts.next;
           while (cx_ite8 != null) {
             const c = cx_ite8;
-            if (c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < _this27.stamp) {
+            if (c.stamp + Config.arbiterExpirationDelay < _this27.stamp) {
               const _this28 = _this27.contacts;
               let old6;
               let ret30;
@@ -8560,14 +8569,12 @@ export class ZPP_Space {
               let kt = mass_sum + _this27.b2.sinertia * (x2 * x2);
               const x3 = ci.r1x * _this27.nx + ci.r1y * _this27.ny;
               kt += _this27.b1.sinertia * (x3 * x3);
-              ci.tMass =
-                kt < ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon ? 0 : 1.0 / kt;
+              ci.tMass = kt < Config.epsilon * Config.epsilon ? 0 : 1.0 / kt;
               const x4 = _this27.ny * ci.r2x - _this27.nx * ci.r2y;
               let nt = mass_sum + _this27.b2.sinertia * (x4 * x4);
               const x5 = _this27.ny * ci.r1x - _this27.nx * ci.r1y;
               nt += _this27.b1.sinertia * (x5 * x5);
-              ci.nMass =
-                nt < ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon ? 0 : 1.0 / nt;
+              ci.nMass = nt < Config.epsilon * Config.epsilon ? 0 : 1.0 / nt;
               let vrx = 0.0;
               let vry = 0.0;
               let ang = _this27.b2.angvel + _this27.b2.kinangvel;
@@ -8579,11 +8586,11 @@ export class ZPP_Space {
               let vdot = _this27.nx * vrx + _this27.ny * vry;
               c.elasticity = _this27.restitution;
               ci.bounce = vdot * c.elasticity;
-              if (ci.bounce > -ZPP_Space._nape.Config.elasticThreshold) {
+              if (ci.bounce > -Config.elasticThreshold) {
                 ci.bounce = 0;
               }
               vdot = vry * _this27.nx - vrx * _this27.ny;
-              const thr = ZPP_Space._nape.Config.staticFrictionThreshold;
+              const thr = Config.staticFrictionThreshold;
               if (vdot * vdot > thr * thr) {
                 ci.friction = _this27.dyn_fric;
               } else {
@@ -8665,7 +8672,7 @@ export class ZPP_Space {
               _this27.kMassc * _this27.kMassc;
             if (
               norm <
-              ZPP_Space._nape.Config.illConditionedThreshold *
+              Config.illConditionedThreshold *
                 (_this27.kMassa * _this27.kMassc - _this27.kMassb * _this27.kMassb)
             ) {
               _this27.Ka = _this27.kMassa;
@@ -8867,12 +8874,7 @@ export class ZPP_Space {
               (_this30.b1.vely +
                 _this30.b1.kinvely +
                 _this30.r1x * (_this30.b1.angvel + _this30.b1.kinangvel));
-            if (
-              !(
-                vrnx * vrnx + vrny * vrny <
-                ZPP_Space._nape.Config.epsilon * ZPP_Space._nape.Config.epsilon
-              )
-            ) {
+            if (!(vrnx * vrnx + vrny * vrny < Config.epsilon * Config.epsilon)) {
               const d = vrnx * vrnx + vrny * vrny;
               const imag = 1.0 / Math.sqrt(d);
               const t13 = imag;
@@ -8887,7 +8889,7 @@ export class ZPP_Space {
                 (-_this30.ws1.fluidProperties.viscosity * _this30.overlap) / _this30.ws2.area;
               if (_this30.ws2.type == 0) {
                 tViscosity1 -=
-                  (f * _this30.ws2.circle.radius * ZPP_Space._nape.Config.fluidLinearDrag) /
+                  (f * _this30.ws2.circle.radius * Config.fluidLinearDrag) /
                   (2 * _this30.ws2.circle.radius * Math.PI);
               } else {
                 const poly = _this30.ws2.polygon;
@@ -8899,10 +8901,10 @@ export class ZPP_Space {
                   bord += ex.length;
                   let fact = f * ex.length * (ex.gnormx * _this30.nx + ex.gnormy * _this30.ny);
                   if (fact > 0) {
-                    fact *= -ZPP_Space._nape.Config.fluidVacuumDrag;
+                    fact *= -Config.fluidVacuumDrag;
                     fact = fact;
                   }
-                  acc -= fact * 0.5 * ZPP_Space._nape.Config.fluidLinearDrag;
+                  acc -= fact * 0.5 * Config.fluidLinearDrag;
                   cx_ite9 = cx_ite9.next;
                 }
                 tViscosity1 += acc / bord;
@@ -8913,7 +8915,7 @@ export class ZPP_Space {
                 (-_this30.ws2.fluidProperties.viscosity * _this30.overlap) / _this30.ws1.area;
               if (_this30.ws1.type == 0) {
                 tViscosity1 -=
-                  (f1 * _this30.ws1.circle.radius * ZPP_Space._nape.Config.fluidLinearDrag) /
+                  (f1 * _this30.ws1.circle.radius * Config.fluidLinearDrag) /
                   (2 * _this30.ws1.circle.radius * Math.PI);
               } else {
                 const poly1 = _this30.ws1.polygon;
@@ -8925,10 +8927,10 @@ export class ZPP_Space {
                   bord1 += ex1.length;
                   let fact1 = f1 * ex1.length * (ex1.gnormx * _this30.nx + ex1.gnormy * _this30.ny);
                   if (fact1 > 0) {
-                    fact1 *= -ZPP_Space._nape.Config.fluidVacuumDrag;
+                    fact1 *= -Config.fluidVacuumDrag;
                     fact1 = fact1;
                   }
-                  acc1 -= fact1 * 0.5 * ZPP_Space._nape.Config.fluidLinearDrag;
+                  acc1 -= fact1 * 0.5 * Config.fluidLinearDrag;
                   cx_ite10 = cx_ite10.next;
                 }
                 tViscosity1 += acc1 / bord1;
@@ -9019,7 +9021,7 @@ export class ZPP_Space {
       let cx_ite11 = _this31.contacts.next;
       while (cx_ite11 != null) {
         const c3 = cx_ite11;
-        if (c3.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < _this31.stamp) {
+        if (c3.stamp + Config.arbiterExpirationDelay < _this31.stamp) {
           const _this32 = _this31.contacts;
           let old8;
           let ret32;
@@ -9223,8 +9225,8 @@ export class ZPP_Space {
         }
         const o = old;
         o.elt = null;
-        o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = o;
+        o.next = ZNPNode_ZPP_ColArbiter.zpp_pool;
+        ZNPNode_ZPP_ColArbiter.zpp_pool = o;
         arbs.modified = true;
         arbs.length--;
         arbs.pushmod = true;
@@ -9246,8 +9248,8 @@ export class ZPP_Space {
         pre1 = null;
       }
     }
-    this._prestepArbiterList(this.f_arbiters, ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter, dt);
-    this._prestepArbiterList(this.s_arbiters, ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter, dt);
+    this._prestepArbiterList(this.f_arbiters, ZNPNode_ZPP_FluidArbiter, dt);
+    this._prestepArbiterList(this.s_arbiters, ZNPNode_ZPP_SensorArbiter, dt);
   }
 
   warmStart() {
@@ -9647,7 +9649,7 @@ export class ZPP_Space {
             dx = r2x - r1x;
             dy = r2y - r1y;
             const dl = Math.sqrt(dx * dx + dy * dy);
-            const r = arb.radius - ZPP_Space._nape.Config.collisionSlop;
+            const r = arb.radius - Config.collisionSlop;
             let err = dl - r;
             if (dx * arb.nx + dy * arb.ny < 0) {
               dx = -dx;
@@ -9655,11 +9657,11 @@ export class ZPP_Space {
               err -= arb.radius;
             }
             if (err < 0) {
-              if (dl < ZPP_Space._nape.Config.epsilon) {
+              if (dl < Config.epsilon) {
                 if (arb.b1.smass != 0.0) {
-                  arb.b1.posx += ZPP_Space._nape.Config.epsilon * 10;
+                  arb.b1.posx += Config.epsilon * 10;
                 } else {
-                  arb.b2.posx += ZPP_Space._nape.Config.epsilon * 10;
+                  arb.b2.posx += Config.epsilon * 10;
                 }
               } else {
                 const t2 = 1.0 / dl;
@@ -9765,11 +9767,11 @@ export class ZPP_Space {
               }
             }
             let err1 = clip1x * gnormx + clip1y * gnormy - gproj - arb.radius;
-            err1 += ZPP_Space._nape.Config.collisionSlop;
+            err1 += Config.collisionSlop;
             let err2 = 0.0;
             if (arb.hpc2) {
               err2 = clip2x * gnormx + clip2y * gnormy - gproj - arb.radius;
-              err2 += ZPP_Space._nape.Config.collisionSlop;
+              err2 += Config.collisionSlop;
             }
             if (err1 < 0 || err2 < 0) {
               if (arb.rev) {
@@ -10251,8 +10253,8 @@ export class ZPP_Space {
                 }
                 const o = old;
                 o.elt = null;
-                o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o;
+                o.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = o;
                 _this3.modified = true;
                 _this3.length--;
                 _this3.pushmod = true;
@@ -10289,8 +10291,8 @@ export class ZPP_Space {
                 }
                 const o1 = old1;
                 o1.elt = null;
-                o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o1;
+                o1.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = o1;
                 _this4.modified = true;
                 _this4.length--;
                 _this4.pushmod = true;
@@ -10334,11 +10336,11 @@ export class ZPP_Space {
               arb1.di = di;
               const _this5 = arb1.b1.arbiters;
               let ret7;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+              if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                ret7 = new ZNPNode_ZPP_Arbiter();
               } else {
-                ret7 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret7.next;
+                ret7 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = ret7.next;
                 ret7.next = null;
               }
               ret7.elt = arb1;
@@ -10349,11 +10351,11 @@ export class ZPP_Space {
               _this5.length++;
               const _this6 = arb1.b2.arbiters;
               let ret8;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                ret8 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+              if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                ret8 = new ZNPNode_ZPP_Arbiter();
               } else {
-                ret8 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret8.next;
+                ret8 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = ret8.next;
                 ret8.next = null;
               }
               ret8.elt = arb1;
@@ -10375,11 +10377,11 @@ export class ZPP_Space {
               arb1.adamp = 0.0;
               const _this7 = this.f_arbiters;
               let ret9;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
-                ret9 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
+              if (ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
+                ret9 = new ZNPNode_ZPP_FluidArbiter();
               } else {
-                ret9 = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = ret9.next;
+                ret9 = ZNPNode_ZPP_FluidArbiter.zpp_pool;
+                ZNPNode_ZPP_FluidArbiter.zpp_pool = ret9.next;
                 ret9.next = null;
               }
               ret9.elt = arb1;
@@ -10405,8 +10407,8 @@ export class ZPP_Space {
                 _this8.head = ret10.next;
                 const o2 = ret10;
                 o2.elt = null;
-                o2.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o2;
+                o2.next = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = o2;
                 if (_this8.head == null) {
                   _this8.pushmod = true;
                 }
@@ -10420,8 +10422,8 @@ export class ZPP_Space {
                 _this9.head = ret11.next;
                 const o3 = ret11;
                 o3.elt = null;
-                o3.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o3;
+                o3.next = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = o3;
                 if (_this9.head == null) {
                   _this9.pushmod = true;
                 }
@@ -10432,11 +10434,11 @@ export class ZPP_Space {
               if (arbs1.cbSet != null) {
                 const _this10 = this.mrca1;
                 let ret12;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret12 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret12 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret12 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret12.next;
+                  ret12 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret12.next;
                   ret12.next = null;
                 }
                 ret12.elt = arbs1;
@@ -10450,11 +10452,11 @@ export class ZPP_Space {
                 const _this11 = this.mrca1;
                 const o4 = arbs1.body;
                 let ret13;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret13 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret13 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret13 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret13.next;
+                  ret13 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret13.next;
                   ret13.next = null;
                 }
                 ret13.elt = o4;
@@ -10467,11 +10469,11 @@ export class ZPP_Space {
               if (arbs2.cbSet != null) {
                 const _this12 = this.mrca2;
                 let ret14;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret14 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret14 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret14 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret14.next;
+                  ret14 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret14.next;
                   ret14.next = null;
                 }
                 ret14.elt = arbs2;
@@ -10485,11 +10487,11 @@ export class ZPP_Space {
                 const _this13 = this.mrca2;
                 const o5 = arbs2.body;
                 let ret15;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret15 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret15 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret15 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret15.next;
+                  ret15 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret15.next;
                   ret15.next = null;
                 }
                 ret15.elt = o5;
@@ -10508,11 +10510,11 @@ export class ZPP_Space {
                   if (c2.cbSet != null) {
                     const _this14 = this.mrca2;
                     let ret16;
-                    if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                      ret16 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                    if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                      ret16 = new ZNPNode_ZPP_Interactor();
                     } else {
-                      ret16 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret16.next;
+                      ret16 = ZNPNode_ZPP_Interactor.zpp_pool;
+                      ZNPNode_ZPP_Interactor.zpp_pool = ret16.next;
                       ret16.next = null;
                     }
                     ret16.elt = c2;
@@ -10527,11 +10529,11 @@ export class ZPP_Space {
                   if (c1.cbSet != null) {
                     const _this15 = this.mrca1;
                     let ret17;
-                    if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                      ret17 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                    if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                      ret17 = new ZNPNode_ZPP_Interactor();
                     } else {
-                      ret17 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret17.next;
+                      ret17 = ZNPNode_ZPP_Interactor.zpp_pool;
+                      ZNPNode_ZPP_Interactor.zpp_pool = ret17.next;
                       ret17.next = null;
                     }
                     ret17.elt = c1;
@@ -10603,8 +10605,8 @@ export class ZPP_Space {
                     _this17.head = ret20.next;
                     const o6 = ret20;
                     o6.elt = null;
-                    o6.next = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = o6;
+                    o6.next = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                    ZNPNode_ZPP_InteractionListener.zpp_pool = o6;
                     if (_this17.head == null) {
                       _this17.pushmod = true;
                     }
@@ -10660,11 +10662,11 @@ export class ZPP_Space {
                       if ((x3.itype & inttype) != 0) {
                         const _this19 = this.prelisteners;
                         let ret23;
-                        if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-                          ret23 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
+                        if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                          ret23 = new ZNPNode_ZPP_InteractionListener();
                         } else {
-                          ret23 = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret23.next;
+                          ret23 = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                          ZNPNode_ZPP_InteractionListener.zpp_pool = ret23.next;
                           ret23.next = null;
                         }
                         ret23.elt = x3;
@@ -10688,7 +10690,7 @@ export class ZPP_Space {
                     cx_ite3 = cx_ite3.next;
                     continue;
                   }
-                  callbackset = ZPP_Space._zpp.phys.ZPP_Interactor.get(i1, i2);
+                  callbackset = ZPP_Interactor.get(i1, i2);
                   if (callbackset == null) {
                     ncallbackset = ZPP_CallbackSet.get(i1, i2);
                     this.add_callbackset(ncallbackset);
@@ -10872,11 +10874,11 @@ export class ZPP_Space {
               arb1.sleeping = false;
               const _this22 = this.f_arbiters;
               let ret27;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
-                ret27 = new ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter();
+              if (ZNPNode_ZPP_FluidArbiter.zpp_pool == null) {
+                ret27 = new ZNPNode_ZPP_FluidArbiter();
               } else {
-                ret27 = ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_FluidArbiter.zpp_pool = ret27.next;
+                ret27 = ZNPNode_ZPP_FluidArbiter.zpp_pool;
+                ZNPNode_ZPP_FluidArbiter.zpp_pool = ret27.next;
                 ret27.next = null;
               }
               ret27.elt = arb1;
@@ -10958,8 +10960,8 @@ export class ZPP_Space {
                 }
                 const o13 = old2;
                 o13.elt = null;
-                o13.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o13;
+                o13.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = o13;
                 _this23.modified = true;
                 _this23.length--;
                 _this23.pushmod = true;
@@ -10996,8 +10998,8 @@ export class ZPP_Space {
                 }
                 const o14 = old3;
                 o14.elt = null;
-                o14.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o14;
+                o14.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = o14;
                 _this24.modified = true;
                 _this24.length--;
                 _this24.pushmod = true;
@@ -11050,11 +11052,11 @@ export class ZPP_Space {
               arb3.di = di1;
               const _this25 = arb3.b1.arbiters;
               let ret33;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                ret33 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+              if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                ret33 = new ZNPNode_ZPP_Arbiter();
               } else {
-                ret33 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret33.next;
+                ret33 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = ret33.next;
                 ret33.next = null;
               }
               ret33.elt = arb3;
@@ -11065,11 +11067,11 @@ export class ZPP_Space {
               _this25.length++;
               const _this26 = arb3.b2.arbiters;
               let ret34;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                ret34 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+              if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                ret34 = new ZNPNode_ZPP_Arbiter();
               } else {
-                ret34 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret34.next;
+                ret34 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = ret34.next;
                 ret34.next = null;
               }
               ret34.elt = arb3;
@@ -11124,11 +11126,11 @@ export class ZPP_Space {
                 );
               }
               let ret35;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
-                ret35 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
+              if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
+                ret35 = new ZNPNode_ZPP_ColArbiter();
               } else {
-                ret35 = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = ret35.next;
+                ret35 = ZNPNode_ZPP_ColArbiter.zpp_pool;
+                ZNPNode_ZPP_ColArbiter.zpp_pool = ret35.next;
                 ret35.next = null;
               }
               ret35.elt = arb3;
@@ -11154,8 +11156,8 @@ export class ZPP_Space {
                 _this27.head = ret36.next;
                 const o15 = ret36;
                 o15.elt = null;
-                o15.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o15;
+                o15.next = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = o15;
                 if (_this27.head == null) {
                   _this27.pushmod = true;
                 }
@@ -11169,8 +11171,8 @@ export class ZPP_Space {
                 _this28.head = ret37.next;
                 const o16 = ret37;
                 o16.elt = null;
-                o16.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o16;
+                o16.next = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = o16;
                 if (_this28.head == null) {
                   _this28.pushmod = true;
                 }
@@ -11181,11 +11183,11 @@ export class ZPP_Space {
               if (arbs11.cbSet != null) {
                 const _this29 = this.mrca1;
                 let ret38;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret38 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret38 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret38 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret38.next;
+                  ret38 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret38.next;
                   ret38.next = null;
                 }
                 ret38.elt = arbs11;
@@ -11199,11 +11201,11 @@ export class ZPP_Space {
                 const _this30 = this.mrca1;
                 const o17 = arbs11.body;
                 let ret39;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret39 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret39 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret39 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret39.next;
+                  ret39 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret39.next;
                   ret39.next = null;
                 }
                 ret39.elt = o17;
@@ -11216,11 +11218,11 @@ export class ZPP_Space {
               if (arbs21.cbSet != null) {
                 const _this31 = this.mrca2;
                 let ret40;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret40 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret40 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret40 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret40.next;
+                  ret40 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret40.next;
                   ret40.next = null;
                 }
                 ret40.elt = arbs21;
@@ -11234,11 +11236,11 @@ export class ZPP_Space {
                 const _this32 = this.mrca2;
                 const o18 = arbs21.body;
                 let ret41;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret41 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret41 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret41 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret41.next;
+                  ret41 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret41.next;
                   ret41.next = null;
                 }
                 ret41.elt = o18;
@@ -11257,11 +11259,11 @@ export class ZPP_Space {
                   if (c21.cbSet != null) {
                     const _this33 = this.mrca2;
                     let ret42;
-                    if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                      ret42 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                    if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                      ret42 = new ZNPNode_ZPP_Interactor();
                     } else {
-                      ret42 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret42.next;
+                      ret42 = ZNPNode_ZPP_Interactor.zpp_pool;
+                      ZNPNode_ZPP_Interactor.zpp_pool = ret42.next;
                       ret42.next = null;
                     }
                     ret42.elt = c21;
@@ -11276,11 +11278,11 @@ export class ZPP_Space {
                   if (c11.cbSet != null) {
                     const _this34 = this.mrca1;
                     let ret43;
-                    if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                      ret43 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                    if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                      ret43 = new ZNPNode_ZPP_Interactor();
                     } else {
-                      ret43 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret43.next;
+                      ret43 = ZNPNode_ZPP_Interactor.zpp_pool;
+                      ZNPNode_ZPP_Interactor.zpp_pool = ret43.next;
                       ret43.next = null;
                     }
                     ret43.elt = c11;
@@ -11353,8 +11355,8 @@ export class ZPP_Space {
                     _this36.head = ret46.next;
                     const o19 = ret46;
                     o19.elt = null;
-                    o19.next = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = o19;
+                    o19.next = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                    ZNPNode_ZPP_InteractionListener.zpp_pool = o19;
                     if (_this36.head == null) {
                       _this36.pushmod = true;
                     }
@@ -11410,11 +11412,11 @@ export class ZPP_Space {
                       if ((x4.itype & inttype1) != 0) {
                         const _this38 = this.prelisteners;
                         let ret49;
-                        if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-                          ret49 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
+                        if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                          ret49 = new ZNPNode_ZPP_InteractionListener();
                         } else {
-                          ret49 = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret49.next;
+                          ret49 = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                          ZNPNode_ZPP_InteractionListener.zpp_pool = ret49.next;
                           ret49.next = null;
                         }
                         ret49.elt = x4;
@@ -11438,7 +11440,7 @@ export class ZPP_Space {
                     cx_ite12 = cx_ite12.next;
                     continue;
                   }
-                  callbackset1 = ZPP_Space._zpp.phys.ZPP_Interactor.get(i11, i21);
+                  callbackset1 = ZPP_Interactor.get(i11, i21);
                   if (callbackset1 == null) {
                     ncallbackset1 = ZPP_CallbackSet.get(i11, i21);
                     this.add_callbackset(ncallbackset1);
@@ -11483,7 +11485,7 @@ export class ZPP_Space {
                     let cx_ite17 = arb3.contacts.next;
                     while (cx_ite17 != null) {
                       const c = cx_ite17;
-                      if (c.stamp + ZPP_Space._nape.Config.arbiterExpirationDelay < arb3.stamp) {
+                      if (c.stamp + Config.arbiterExpirationDelay < arb3.stamp) {
                         const _this39 = arb3.contacts;
                         let old4;
                         let ret50;
@@ -11729,11 +11731,11 @@ export class ZPP_Space {
             if (arb3.sleeping) {
               arb3.sleeping = false;
               let ret55;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
-                ret55 = new ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter();
+              if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
+                ret55 = new ZNPNode_ZPP_ColArbiter();
               } else {
-                ret55 = ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_ColArbiter.zpp_pool = ret55.next;
+                ret55 = ZNPNode_ZPP_ColArbiter.zpp_pool;
+                ZNPNode_ZPP_ColArbiter.zpp_pool = ret55.next;
                 ret55.next = null;
               }
               ret55.elt = arb3;
@@ -11819,8 +11821,8 @@ export class ZPP_Space {
                 }
                 const o28 = old6;
                 o28.elt = null;
-                o28.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o28;
+                o28.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = o28;
                 _this43.modified = true;
                 _this43.length--;
                 _this43.pushmod = true;
@@ -11857,8 +11859,8 @@ export class ZPP_Space {
                 }
                 const o29 = old7;
                 o29.elt = null;
-                o29.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o29;
+                o29.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = o29;
                 _this44.modified = true;
                 _this44.length--;
                 _this44.pushmod = true;
@@ -11902,11 +11904,11 @@ export class ZPP_Space {
               arb5.di = di2;
               const _this45 = arb5.b1.arbiters;
               let ret61;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                ret61 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+              if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                ret61 = new ZNPNode_ZPP_Arbiter();
               } else {
-                ret61 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret61.next;
+                ret61 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = ret61.next;
                 ret61.next = null;
               }
               ret61.elt = arb5;
@@ -11917,11 +11919,11 @@ export class ZPP_Space {
               _this45.length++;
               const _this46 = arb5.b2.arbiters;
               let ret62;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool == null) {
-                ret62 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter();
+              if (ZNPNode_ZPP_Arbiter.zpp_pool == null) {
+                ret62 = new ZNPNode_ZPP_Arbiter();
               } else {
-                ret62 = ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = ret62.next;
+                ret62 = ZNPNode_ZPP_Arbiter.zpp_pool;
+                ZNPNode_ZPP_Arbiter.zpp_pool = ret62.next;
                 ret62.next = null;
               }
               ret62.elt = arb5;
@@ -11938,11 +11940,11 @@ export class ZPP_Space {
               arb5.presentable = false;
               const _this47 = this.s_arbiters;
               let ret63;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
-                ret63 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
+              if (ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
+                ret63 = new ZNPNode_ZPP_SensorArbiter();
               } else {
-                ret63 = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = ret63.next;
+                ret63 = ZNPNode_ZPP_SensorArbiter.zpp_pool;
+                ZNPNode_ZPP_SensorArbiter.zpp_pool = ret63.next;
                 ret63.next = null;
               }
               ret63.elt = arb5;
@@ -11968,8 +11970,8 @@ export class ZPP_Space {
                 _this48.head = ret64.next;
                 const o30 = ret64;
                 o30.elt = null;
-                o30.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o30;
+                o30.next = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = o30;
                 if (_this48.head == null) {
                   _this48.pushmod = true;
                 }
@@ -11983,8 +11985,8 @@ export class ZPP_Space {
                 _this49.head = ret65.next;
                 const o31 = ret65;
                 o31.elt = null;
-                o31.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o31;
+                o31.next = ZNPNode_ZPP_Interactor.zpp_pool;
+                ZNPNode_ZPP_Interactor.zpp_pool = o31;
                 if (_this49.head == null) {
                   _this49.pushmod = true;
                 }
@@ -11995,11 +11997,11 @@ export class ZPP_Space {
               if (arbs12.cbSet != null) {
                 const _this50 = this.mrca1;
                 let ret66;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret66 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret66 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret66 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret66.next;
+                  ret66 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret66.next;
                   ret66.next = null;
                 }
                 ret66.elt = arbs12;
@@ -12013,11 +12015,11 @@ export class ZPP_Space {
                 const _this51 = this.mrca1;
                 const o32 = arbs12.body;
                 let ret67;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret67 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret67 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret67 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret67.next;
+                  ret67 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret67.next;
                   ret67.next = null;
                 }
                 ret67.elt = o32;
@@ -12030,11 +12032,11 @@ export class ZPP_Space {
               if (arbs22.cbSet != null) {
                 const _this52 = this.mrca2;
                 let ret68;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret68 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret68 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret68 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret68.next;
+                  ret68 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret68.next;
                   ret68.next = null;
                 }
                 ret68.elt = arbs22;
@@ -12048,11 +12050,11 @@ export class ZPP_Space {
                 const _this53 = this.mrca2;
                 const o33 = arbs22.body;
                 let ret69;
-                if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                  ret69 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                  ret69 = new ZNPNode_ZPP_Interactor();
                 } else {
-                  ret69 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                  ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret69.next;
+                  ret69 = ZNPNode_ZPP_Interactor.zpp_pool;
+                  ZNPNode_ZPP_Interactor.zpp_pool = ret69.next;
                   ret69.next = null;
                 }
                 ret69.elt = o33;
@@ -12071,11 +12073,11 @@ export class ZPP_Space {
                   if (c22.cbSet != null) {
                     const _this54 = this.mrca2;
                     let ret70;
-                    if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                      ret70 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                    if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                      ret70 = new ZNPNode_ZPP_Interactor();
                     } else {
-                      ret70 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret70.next;
+                      ret70 = ZNPNode_ZPP_Interactor.zpp_pool;
+                      ZNPNode_ZPP_Interactor.zpp_pool = ret70.next;
                       ret70.next = null;
                     }
                     ret70.elt = c22;
@@ -12090,11 +12092,11 @@ export class ZPP_Space {
                   if (c12.cbSet != null) {
                     const _this55 = this.mrca1;
                     let ret71;
-                    if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-                      ret71 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+                    if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+                      ret71 = new ZNPNode_ZPP_Interactor();
                     } else {
-                      ret71 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-                      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret71.next;
+                      ret71 = ZNPNode_ZPP_Interactor.zpp_pool;
+                      ZNPNode_ZPP_Interactor.zpp_pool = ret71.next;
                       ret71.next = null;
                     }
                     ret71.elt = c12;
@@ -12167,8 +12169,8 @@ export class ZPP_Space {
                     _this57.head = ret74.next;
                     const o34 = ret74;
                     o34.elt = null;
-                    o34.next = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                    ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = o34;
+                    o34.next = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                    ZNPNode_ZPP_InteractionListener.zpp_pool = o34;
                     if (_this57.head == null) {
                       _this57.pushmod = true;
                     }
@@ -12224,11 +12226,11 @@ export class ZPP_Space {
                       if ((x5.itype & inttype2) != 0) {
                         const _this59 = this.prelisteners;
                         let ret77;
-                        if (ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-                          ret77 = new ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener();
+                        if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                          ret77 = new ZNPNode_ZPP_InteractionListener();
                         } else {
-                          ret77 = ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                          ZPP_Space._zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret77.next;
+                          ret77 = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                          ZNPNode_ZPP_InteractionListener.zpp_pool = ret77.next;
                           ret77.next = null;
                         }
                         ret77.elt = x5;
@@ -12252,7 +12254,7 @@ export class ZPP_Space {
                     cx_ite22 = cx_ite22.next;
                     continue;
                   }
-                  callbackset2 = ZPP_Space._zpp.phys.ZPP_Interactor.get(i12, i22);
+                  callbackset2 = ZPP_Interactor.get(i12, i22);
                   if (callbackset2 == null) {
                     ncallbackset2 = ZPP_CallbackSet.get(i12, i22);
                     this.add_callbackset(ncallbackset2);
@@ -12402,11 +12404,11 @@ export class ZPP_Space {
               arb5.sleeping = false;
               const _this62 = this.s_arbiters;
               let ret81;
-              if (ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
-                ret81 = new ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter();
+              if (ZNPNode_ZPP_SensorArbiter.zpp_pool == null) {
+                ret81 = new ZNPNode_ZPP_SensorArbiter();
               } else {
-                ret81 = ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool;
-                ZPP_Space._zpp.util.ZNPNode_ZPP_SensorArbiter.zpp_pool = ret81.next;
+                ret81 = ZNPNode_ZPP_SensorArbiter.zpp_pool;
+                ZNPNode_ZPP_SensorArbiter.zpp_pool = ret81.next;
                 ret81.next = null;
               }
               ret81.elt = arb5;
@@ -12440,8 +12442,8 @@ export class ZPP_Space {
       _this.head = ret.next;
       const o = ret;
       o.elt = null;
-      o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o;
+      o.next = ZNPNode_ZPP_Interactor.zpp_pool;
+      ZNPNode_ZPP_Interactor.zpp_pool = o;
       if (_this.head == null) {
         _this.pushmod = true;
       }
@@ -12455,8 +12457,8 @@ export class ZPP_Space {
       _this1.head = ret1.next;
       const o1 = ret1;
       o1.elt = null;
-      o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o1;
+      o1.next = ZNPNode_ZPP_Interactor.zpp_pool;
+      ZNPNode_ZPP_Interactor.zpp_pool = o1;
       if (_this1.head == null) {
         _this1.pushmod = true;
       }
@@ -12467,11 +12469,11 @@ export class ZPP_Space {
     if (s1.cbSet != null) {
       const _this2 = this.mrca1;
       let ret2;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+      if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+        ret2 = new ZNPNode_ZPP_Interactor();
       } else {
-        ret2 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret2.next;
+        ret2 = ZNPNode_ZPP_Interactor.zpp_pool;
+        ZNPNode_ZPP_Interactor.zpp_pool = ret2.next;
         ret2.next = null;
       }
       ret2.elt = s1;
@@ -12485,11 +12487,11 @@ export class ZPP_Space {
       const _this3 = this.mrca1;
       const o2 = s1.body;
       let ret3;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+      if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+        ret3 = new ZNPNode_ZPP_Interactor();
       } else {
-        ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret3.next;
+        ret3 = ZNPNode_ZPP_Interactor.zpp_pool;
+        ZNPNode_ZPP_Interactor.zpp_pool = ret3.next;
         ret3.next = null;
       }
       ret3.elt = o2;
@@ -12502,11 +12504,11 @@ export class ZPP_Space {
     if (s2.cbSet != null) {
       const _this4 = this.mrca2;
       let ret4;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+      if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+        ret4 = new ZNPNode_ZPP_Interactor();
       } else {
-        ret4 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret4.next;
+        ret4 = ZNPNode_ZPP_Interactor.zpp_pool;
+        ZNPNode_ZPP_Interactor.zpp_pool = ret4.next;
         ret4.next = null;
       }
       ret4.elt = s2;
@@ -12520,11 +12522,11 @@ export class ZPP_Space {
       const _this5 = this.mrca2;
       const o3 = s2.body;
       let ret5;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+      if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+        ret5 = new ZNPNode_ZPP_Interactor();
       } else {
-        ret5 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret5.next;
+        ret5 = ZNPNode_ZPP_Interactor.zpp_pool;
+        ZNPNode_ZPP_Interactor.zpp_pool = ret5.next;
         ret5.next = null;
       }
       ret5.elt = o3;
@@ -12543,11 +12545,11 @@ export class ZPP_Space {
         if (c2.cbSet != null) {
           const _this6 = this.mrca2;
           let ret6;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+          if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+            ret6 = new ZNPNode_ZPP_Interactor();
           } else {
-            ret6 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret6.next;
+            ret6 = ZNPNode_ZPP_Interactor.zpp_pool;
+            ZNPNode_ZPP_Interactor.zpp_pool = ret6.next;
             ret6.next = null;
           }
           ret6.elt = c2;
@@ -12562,159 +12564,11 @@ export class ZPP_Space {
         if (c1.cbSet != null) {
           const _this7 = this.mrca1;
           let ret7;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
+          if (ZNPNode_ZPP_Interactor.zpp_pool == null) {
+            ret7 = new ZNPNode_ZPP_Interactor();
           } else {
-            ret7 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret7.next;
-            ret7.next = null;
-          }
-          ret7.elt = c1;
-          const temp5 = ret7;
-          temp5.next = _this7.head;
-          _this7.head = temp5;
-          _this7.modified = true;
-          _this7.length++;
-        }
-        c1 = c1.compound;
-      }
-    }
-  }
-
-  inlined_MRCA_chains(s1: any, s2: any) {
-    const _this = this.mrca1;
-    while (_this.head != null) {
-      const ret = _this.head;
-      _this.head = ret.next;
-      const o = ret;
-      o.elt = null;
-      o.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o;
-      if (_this.head == null) {
-        _this.pushmod = true;
-      }
-      _this.modified = true;
-      _this.length--;
-    }
-    _this.pushmod = true;
-    const _this1 = this.mrca2;
-    while (_this1.head != null) {
-      const ret1 = _this1.head;
-      _this1.head = ret1.next;
-      const o1 = ret1;
-      o1.elt = null;
-      o1.next = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-      ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = o1;
-      if (_this1.head == null) {
-        _this1.pushmod = true;
-      }
-      _this1.modified = true;
-      _this1.length--;
-    }
-    _this1.pushmod = true;
-    if (s1.cbSet != null) {
-      const _this2 = this.mrca1;
-      let ret2;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret2 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
-      } else {
-        ret2 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret2.next;
-        ret2.next = null;
-      }
-      ret2.elt = s1;
-      const temp = ret2;
-      temp.next = _this2.head;
-      _this2.head = temp;
-      _this2.modified = true;
-      _this2.length++;
-    }
-    if (s1.body.cbSet != null) {
-      const _this3 = this.mrca1;
-      const o2 = s1.body;
-      let ret3;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret3 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
-      } else {
-        ret3 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret3.next;
-        ret3.next = null;
-      }
-      ret3.elt = o2;
-      const temp1 = ret3;
-      temp1.next = _this3.head;
-      _this3.head = temp1;
-      _this3.modified = true;
-      _this3.length++;
-    }
-    if (s2.cbSet != null) {
-      const _this4 = this.mrca2;
-      let ret4;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret4 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
-      } else {
-        ret4 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret4.next;
-        ret4.next = null;
-      }
-      ret4.elt = s2;
-      const temp2 = ret4;
-      temp2.next = _this4.head;
-      _this4.head = temp2;
-      _this4.modified = true;
-      _this4.length++;
-    }
-    if (s2.body.cbSet != null) {
-      const _this5 = this.mrca2;
-      const o3 = s2.body;
-      let ret5;
-      if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-        ret5 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
-      } else {
-        ret5 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-        ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret5.next;
-        ret5.next = null;
-      }
-      ret5.elt = o3;
-      const temp3 = ret5;
-      temp3.next = _this5.head;
-      _this5.head = temp3;
-      _this5.modified = true;
-      _this5.length++;
-    }
-    let c1 = s1.body.compound;
-    let c2 = s2.body.compound;
-    while (c1 != c2) {
-      const d1 = c1 == null ? 0 : c1.depth;
-      const d2 = c2 == null ? 0 : c2.depth;
-      if (d1 < d2) {
-        if (c2.cbSet != null) {
-          const _this6 = this.mrca2;
-          let ret6;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret6 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
-          } else {
-            ret6 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret6.next;
-            ret6.next = null;
-          }
-          ret6.elt = c2;
-          const temp4 = ret6;
-          temp4.next = _this6.head;
-          _this6.head = temp4;
-          _this6.modified = true;
-          _this6.length++;
-        }
-        c2 = c2.compound;
-      } else {
-        if (c1.cbSet != null) {
-          const _this7 = this.mrca1;
-          let ret7;
-          if (ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool == null) {
-            ret7 = new ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor();
-          } else {
-            ret7 = ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool;
-            ZPP_Space._zpp.util.ZNPNode_ZPP_Interactor.zpp_pool = ret7.next;
+            ret7 = ZNPNode_ZPP_Interactor.zpp_pool;
+            ZNPNode_ZPP_Interactor.zpp_pool = ret7.next;
             ret7.next = null;
           }
           ret7.elt = c1;

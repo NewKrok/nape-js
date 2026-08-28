@@ -10,6 +10,9 @@
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
+import { Config } from "../../Config";
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_LineJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_LineJoint) => any) | null = null;
@@ -93,7 +96,6 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     invalidateFn: (v: any) => void,
   ): any {
     const napeNs = ZPP_Constraint._nape;
-    const zpp = ZPP_Constraint._zpp;
 
     if (y == null) {
       y = 0;
@@ -106,25 +108,25 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     }
 
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
 
     if (ret.zpp_inner == null) {
       let ret1: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;
@@ -335,7 +337,6 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   }
 
   override validate(): void {
-    const napeNs = ZPP_Constraint._nape;
     if (this.b1 == null || this.b2 == null) {
       throw new Error("AngleJoint cannot be simulated null bodies");
     }
@@ -350,7 +351,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
     if (this.jointMin > this.jointMax) {
       throw new Error("DistanceJoint must have jointMin <= jointMax");
     }
-    if (this.nlocalx * this.nlocalx + this.nlocaly * this.nlocaly < napeNs.Config.epsilon) {
+    if (this.nlocalx * this.nlocalx + this.nlocaly * this.nlocaly < Config.epsilon) {
       throw new Error("DistanceJoint direction must be non-degenerate");
     }
     if (this.b1.type != 2 && this.b2.type != 2) {
@@ -611,8 +612,6 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   }
 
   override applyImpulsePos(): boolean {
-    const napeNs = ZPP_Constraint._nape;
-
     const nx = this.b1.axisy * this.nlocalx - this.b1.axisx * this.nlocaly;
     const ny = this.nlocalx * this.b1.axisx + this.nlocaly * this.b1.axisy;
 
@@ -646,10 +645,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
       return true;
     }
 
-    if (
-      Ex * Ex + Ey * Ey <
-      napeNs.Config.constraintLinearSlop * napeNs.Config.constraintLinearSlop
-    ) {
+    if (Ex * Ex + Ey * Ey < Config.constraintLinearSlop * Config.constraintLinearSlop) {
       return false;
     }
 
@@ -661,7 +657,7 @@ export class ZPP_LineJoint extends ZPP_Constraint {
 
     if (Ex * Ex + Ey * Ey > 6) {
       const k = this.b1.smass + this.b2.smass;
-      if (k > napeNs.Config.epsilon) {
+      if (k > Config.epsilon) {
         const kInv = 0.8 / k;
         const Jx1 = kInv * (ny * Ex - scale * nx * Ey);
         const Jy1 = kInv * (nx * Ex * scale - ny * Ex);

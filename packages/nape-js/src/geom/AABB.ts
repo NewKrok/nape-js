@@ -119,11 +119,6 @@ export class AABB {
       });
     }
 
-    // Legacy fallback: compiled AABB with zpp_inner
-    if (inner.zpp_inner) {
-      return AABB._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as AABB;
   }
 
