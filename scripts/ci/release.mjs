@@ -205,18 +205,20 @@ function releasePackage(pkg, isFirstRelease, bump) {
   run(`npm publish -w ${pkg.fullName} --access public`);
 
   // GitHub Release (optional — tolerant of missing gh/token).
-  // Pass `--target HEAD` so we don't depend on the tag being visible on the
-  // remote yet (gh's tag-existence check has historically been racy right
-  // after a follow-tags push, and previously caused release-create to fail
-  // for nape-js-v3.38.0). `--generate-notes` auto-fills notes from commit log.
+  // Pass the resolved SHA as --target: the API rejects the literal string
+  // "HEAD" ("Release.target_commitish is invalid", HTTP 422 — this silently
+  // broke every GitHub Release from nape-js-v3.31.0 through v3.40.0), and a
+  // SHA also avoids the tag-visibility race that --target was added for.
+  // `--generate-notes` auto-fills notes from the commit log.
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
     const title = `${pkg.fullName} v${newVersion}`;
-    const cmd =
-      `gh release create ${newTag} --target HEAD --generate-notes --title "${title}"`;
+    const sha = shq(`git rev-parse HEAD`);
+    const cmd = `gh release create ${newTag} --target ${sha} --generate-notes --title "${title}"`;
     try {
       run(cmd);
     } catch (err) {
-      console.error(`! gh release create failed (non-fatal): ${err.message}`);
+      const detail = [err.stderr, err.stdout, err.message].filter(Boolean).join("\n").trim();
+      console.error(`! gh release create failed (non-fatal):\n${detail}`);
     }
   }
 
