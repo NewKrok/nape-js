@@ -37,6 +37,7 @@ import { Vec2List, Vec2Iterator } from "../geom/Vec2List";
 import { GeomVertexIterator } from "../geom/GeomVertexIterator";
 import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_ContactList } from "../native/util/ZPP_ContactList";
+import { ZPP_MixVec2List } from "../native/util/ZPP_MixVec2List";
 
 // --- Physics ---
 import {
@@ -154,6 +155,7 @@ nape.geom.Vec2List = Vec2List;
 nape.geom.GeomVertexIterator = GeomVertexIterator;
 nape.__zpp.geom.ZPP_GeomVertexIterator = ZPP_GeomVertexIterator;
 nape.__zpp.util.ZPP_ContactList = ZPP_ContactList;
+nape.__zpp.util.ZPP_MixVec2List = ZPP_MixVec2List;
 
 // Physics
 nape.phys.Interactor = Interactor;

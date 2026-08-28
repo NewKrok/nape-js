@@ -9,6 +9,12 @@
 
 import { ZPP_Edge } from "./ZPP_Edge";
 import { Config } from "../../Config";
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZPP_Shape } from "./ZPP_Shape";
+import { ZNPList_ZPP_Edge } from "../util/ZNPRegistry";
+import { ZPP_Flags } from "../util/ZPP_Flags";
+import { ZPP_MixVec2List } from "../util/ZPP_MixVec2List";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_Polygon {
   // --- Static: Haxe metadata ---
@@ -95,13 +101,12 @@ export class ZPP_Polygon {
     this.lverts = null;
     this.outer_zn = null;
 
-    const zpp = ZPP_Polygon._zpp;
     // Call ZPP_Shape initializer (type=1 for polygon)
     (this as any)._initShape(1);
     this.polygon = this;
-    this.lverts = new zpp.geom.ZPP_Vec2();
-    this.gverts = new zpp.geom.ZPP_Vec2();
-    this.edges = new zpp.util.ZNPList_ZPP_Edge();
+    this.lverts = new ZPP_Vec2();
+    this.gverts = new ZPP_Vec2();
+    this.edges = new ZNPList_ZPP_Edge();
     this.edgeCnt = 0;
   }
 
@@ -109,9 +114,7 @@ export class ZPP_Polygon {
     if (ZPP_Polygon._initialized) return;
     ZPP_Polygon._initialized = true;
 
-    const zpp = ZPP_Polygon._zpp;
-
-    const srcProto = zpp.shape.ZPP_Shape.prototype;
+    const srcProto = ZPP_Shape.prototype as any;
     const dstProto = ZPP_Polygon.prototype as any;
 
     // Copy enumerable inherited properties (e.g., ZPP_Interactor methods)
@@ -155,7 +158,6 @@ export class ZPP_Polygon {
   }
 
   lverts_post_adder(x: any): void {
-    const zpp = ZPP_Polygon._zpp;
     x.zpp_inner._invalidate = this.lverts_pa_invalidate.bind(this);
     x.zpp_inner._isimmutable = this.lverts_pa_immutable.bind(this);
 
@@ -174,11 +176,11 @@ export class ZPP_Polygon {
 
     // Allocate a gvert
     let vec: any;
-    if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-      vec = new zpp.geom.ZPP_Vec2();
+    if (ZPP_Vec2.zpp_pool == null) {
+      vec = new ZPP_Vec2();
     } else {
-      vec = zpp.geom.ZPP_Vec2.zpp_pool;
-      zpp.geom.ZPP_Vec2.zpp_pool = vec.next;
+      vec = ZPP_Vec2.zpp_pool;
+      ZPP_Vec2.zpp_pool = vec.next;
       vec.next = null;
     }
     vec.weak = false;
@@ -259,8 +261,7 @@ export class ZPP_Polygon {
   // --- List wrapper setup ---
 
   getlverts(): void {
-    const zpp = ZPP_Polygon._zpp;
-    this.wrap_lverts = zpp.util.ZPP_MixVec2List.get(this.lverts);
+    this.wrap_lverts = (ZPP_MixVec2List as any).get(this.lverts);
     this.wrap_lverts.zpp_inner.post_adder = this.lverts_post_adder.bind(this);
     this.wrap_lverts.zpp_inner.subber = this.lverts_subber.bind(this);
     this.wrap_lverts.zpp_inner._invalidate = this.lverts_invalidate.bind(this);
@@ -270,8 +271,7 @@ export class ZPP_Polygon {
   }
 
   getgverts(): void {
-    const zpp = ZPP_Polygon._zpp;
-    this.wrap_gverts = zpp.util.ZPP_MixVec2List.get(this.gverts, true);
+    this.wrap_gverts = (ZPP_MixVec2List as any).get(this.gverts, true);
     this.wrap_gverts.zpp_inner.reverse_flag = this.reverse_flag;
     this.wrap_gverts.zpp_inner._validate = this.gverts_validate.bind(this);
   }
@@ -477,7 +477,6 @@ export class ZPP_Polygon {
 
   // --- Vertex cleanup ---
   cleanup_lvert(x: any): void {
-    const zpp = ZPP_Polygon._zpp;
     let ite: any = null;
     let ite2: any = null;
     let cx_ite = this.lverts.next;
@@ -501,8 +500,8 @@ export class ZPP_Polygon {
     o._isimmutable = null;
     o._validate = null;
     o._invalidate = null;
-    o.next = zpp.geom.ZPP_Vec2.zpp_pool;
-    zpp.geom.ZPP_Vec2.zpp_pool = o;
+    o.next = ZPP_Vec2.zpp_pool;
+    ZPP_Vec2.zpp_pool = o;
 
     if (this.edgeCnt === 2) {
       // Remove both edges when going below 2 verts
@@ -603,7 +602,6 @@ export class ZPP_Polygon {
   // --- Validity check ---
   valid(): any {
     const nape = ZPP_Polygon._nape;
-    const zpp = ZPP_Polygon._zpp;
     if (this.zip_valid) {
       this.zip_valid = false;
       if (this.zip_sanitation) {
@@ -611,22 +609,22 @@ export class ZPP_Polygon {
         this.splice_collinear_real();
       }
       if (this.lverts.length < 3) {
-        if (zpp.util.ZPP_Flags.ValidationResult_DEGENERATE == null) {
-          zpp.util.ZPP_Flags.internal = true;
-          zpp.util.ZPP_Flags.ValidationResult_DEGENERATE = new nape.shape.ValidationResult();
-          zpp.util.ZPP_Flags.internal = false;
+        if (ZPP_Flags.ValidationResult_DEGENERATE == null) {
+          ZPP_Flags.internal = true;
+          ZPP_Flags.ValidationResult_DEGENERATE = new nape.shape.ValidationResult();
+          ZPP_Flags.internal = false;
         }
-        return (this.validation = zpp.util.ZPP_Flags.ValidationResult_DEGENERATE);
+        return (this.validation = ZPP_Flags.ValidationResult_DEGENERATE);
       } else {
         this.validate_lverts();
         this.validate_area_inertia();
         if (this.area < Config.epsilon) {
-          if (zpp.util.ZPP_Flags.ValidationResult_DEGENERATE == null) {
-            zpp.util.ZPP_Flags.internal = true;
-            zpp.util.ZPP_Flags.ValidationResult_DEGENERATE = new nape.shape.ValidationResult();
-            zpp.util.ZPP_Flags.internal = false;
+          if (ZPP_Flags.ValidationResult_DEGENERATE == null) {
+            ZPP_Flags.internal = true;
+            ZPP_Flags.ValidationResult_DEGENERATE = new nape.shape.ValidationResult();
+            ZPP_Flags.internal = false;
           }
-          return (this.validation = zpp.util.ZPP_Flags.ValidationResult_DEGENERATE);
+          return (this.validation = ZPP_Flags.ValidationResult_DEGENERATE);
         } else {
           // Check convexity
           let neg = false;
@@ -689,12 +687,12 @@ export class ZPP_Polygon {
             }
           }
           if (pos && neg) {
-            if (zpp.util.ZPP_Flags.ValidationResult_CONCAVE == null) {
-              zpp.util.ZPP_Flags.internal = true;
-              zpp.util.ZPP_Flags.ValidationResult_CONCAVE = new nape.shape.ValidationResult();
-              zpp.util.ZPP_Flags.internal = false;
+            if (ZPP_Flags.ValidationResult_CONCAVE == null) {
+              ZPP_Flags.internal = true;
+              ZPP_Flags.ValidationResult_CONCAVE = new nape.shape.ValidationResult();
+              ZPP_Flags.internal = false;
             }
-            return (this.validation = zpp.util.ZPP_Flags.ValidationResult_CONCAVE);
+            return (this.validation = ZPP_Flags.ValidationResult_CONCAVE);
           } else {
             // Check self-intersection
             let cont = true;
@@ -744,20 +742,19 @@ export class ZPP_Polygon {
               }
             }
             if (!cont) {
-              if (zpp.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING == null) {
-                zpp.util.ZPP_Flags.internal = true;
-                zpp.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING =
-                  new nape.shape.ValidationResult();
-                zpp.util.ZPP_Flags.internal = false;
+              if (ZPP_Flags.ValidationResult_SELF_INTERSECTING == null) {
+                ZPP_Flags.internal = true;
+                ZPP_Flags.ValidationResult_SELF_INTERSECTING = new nape.shape.ValidationResult();
+                ZPP_Flags.internal = false;
               }
-              return (this.validation = zpp.util.ZPP_Flags.ValidationResult_SELF_INTERSECTING);
+              return (this.validation = ZPP_Flags.ValidationResult_SELF_INTERSECTING);
             } else {
-              if (zpp.util.ZPP_Flags.ValidationResult_VALID == null) {
-                zpp.util.ZPP_Flags.internal = true;
-                zpp.util.ZPP_Flags.ValidationResult_VALID = new nape.shape.ValidationResult();
-                zpp.util.ZPP_Flags.internal = false;
+              if (ZPP_Flags.ValidationResult_VALID == null) {
+                ZPP_Flags.internal = true;
+                ZPP_Flags.ValidationResult_VALID = new nape.shape.ValidationResult();
+                ZPP_Flags.internal = false;
               }
-              return (this.validation = zpp.util.ZPP_Flags.ValidationResult_VALID);
+              return (this.validation = ZPP_Flags.ValidationResult_VALID);
             }
           }
         }
@@ -1086,7 +1083,6 @@ export class ZPP_Polygon {
   }
 
   setupLocalCOM(): void {
-    const zpp = ZPP_Polygon._zpp;
     const nape = ZPP_Polygon._nape;
     const x = this.localCOMx;
     const y = this.localCOMy;
@@ -1094,24 +1090,24 @@ export class ZPP_Polygon {
       throw new Error("Vec2 components cannot be NaN");
     }
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new nape.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
     if (ret.zpp_inner == null) {
       let ret1: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;

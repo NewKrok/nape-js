@@ -1,3 +1,4 @@
+import { ZNPList_ZPP_Shape } from "../util/ZNPRegistry";
 /**
  * ZPP_Material — Internal material representation for the nape physics engine.
  *
@@ -54,7 +55,7 @@ export class ZPP_Material {
   next: ZPP_Material | null = null;
 
   constructor() {
-    this.shapes = new ZPP_Material._zpp.util.ZNPList_ZPP_Shape();
+    this.shapes = new ZNPList_ZPP_Shape();
   }
 
   /** Create/return the public nape.phys.Material wrapper for this internal object. */
@@ -84,7 +85,7 @@ export class ZPP_Material {
 
   /** Initialize the shapes list (called during feature construction). */
   feature_cons(): void {
-    this.shapes = new ZPP_Material._zpp.util.ZNPList_ZPP_Shape();
+    this.shapes = new ZNPList_ZPP_Shape();
   }
 
   /** Register a shape that uses this material. */

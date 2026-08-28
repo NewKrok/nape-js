@@ -8,6 +8,7 @@
  */
 
 import { ZPP_Listener } from "./ZPP_Listener";
+import { ZNPNode_ZPP_ConstraintListener } from "../util/ZNPRegistry";
 
 export class ZPP_ConstraintListener extends ZPP_Listener {
   handler: any = null;
@@ -30,7 +31,6 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
   }
 
   addedToSpace(): void {
-    const zpp = ZPP_Listener._zpp;
     this.options.handler = (cb: any, included: boolean, added: boolean) =>
       this.cbtype_change(cb, included, added);
     let cx_ite = this.options.includes.head;
@@ -48,11 +48,11 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
       }
       const _this = cb.conlisteners;
       let ret: any;
-      if (zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
-        ret = new zpp.util.ZNPNode_ZPP_ConstraintListener();
+      if (ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
+        ret = new ZNPNode_ZPP_ConstraintListener();
       } else {
-        ret = zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool;
-        zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
+        ret = ZNPNode_ZPP_ConstraintListener.zpp_pool;
+        ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
         ret.next = null;
       }
       ret.elt = this;

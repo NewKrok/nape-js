@@ -13,6 +13,19 @@ import { ZPP_CbType } from "./ZPP_CbType";
 import { ZPP_InteractionListener } from "./ZPP_InteractionListener";
 import { ZPP_BodyListener } from "./ZPP_BodyListener";
 import { ZPP_ConstraintListener } from "./ZPP_ConstraintListener";
+import { ZPP_CbSetPair } from "./ZPP_CbSetPair";
+import {
+  ZNPList_ZPP_BodyListener,
+  ZNPList_ZPP_CbSetPair,
+  ZNPList_ZPP_CbType,
+  ZNPList_ZPP_Constraint,
+  ZNPList_ZPP_ConstraintListener,
+  ZNPList_ZPP_InteractionListener,
+  ZNPList_ZPP_Interactor,
+  ZNPNode_ZPP_BodyListener,
+  ZNPNode_ZPP_ConstraintListener,
+  ZNPNode_ZPP_InteractionListener,
+} from "../util/ZNPRegistry";
 
 export class ZPP_CbSet {
   // --- Static: Haxe metadata ---
@@ -48,17 +61,17 @@ export class ZPP_CbSet {
 
   constructor() {
     const zpp = ZPP_CbSet._zpp;
-    this.cbTypes = new zpp.util.ZNPList_ZPP_CbType();
-    this.listeners = new zpp.util.ZNPList_ZPP_InteractionListener();
+    this.cbTypes = new ZNPList_ZPP_CbType();
+    this.listeners = new ZNPList_ZPP_InteractionListener();
     this.zip_listeners = true;
-    this.bodylisteners = new zpp.util.ZNPList_ZPP_BodyListener();
+    this.bodylisteners = new ZNPList_ZPP_BodyListener();
     this.zip_bodylisteners = true;
-    this.conlisteners = new zpp.util.ZNPList_ZPP_ConstraintListener();
+    this.conlisteners = new ZNPList_ZPP_ConstraintListener();
     this.zip_conlisteners = true;
-    this.constraints = new zpp.util.ZNPList_ZPP_Constraint();
-    this.interactors = new zpp.util.ZNPList_ZPP_Interactor();
+    this.constraints = new ZNPList_ZPP_Constraint();
+    this.interactors = new ZNPList_ZPP_Interactor();
     this.id = zpp.ZPP_ID.CbSet();
-    this.cbpairs = new zpp.util.ZNPList_ZPP_CbSetPair();
+    this.cbpairs = new ZNPList_ZPP_CbSetPair();
   }
 
   // ========== Static methods ==========
@@ -144,7 +157,6 @@ export class ZPP_CbSet {
 
   /** Helper: find or create a CbSetPair for sets a and b. */
   private static findOrCreatePair(a: ZPP_CbSet, b: ZPP_CbSet): any {
-    const zpp = ZPP_CbSet._zpp;
     let ret: any = null;
     const pairs = a.cbpairs.length < b.cbpairs.length ? a.cbpairs : b.cbpairs;
     let cx_ite = pairs.head;
@@ -158,11 +170,11 @@ export class ZPP_CbSet {
     }
     if (ret == null) {
       let ret1: any;
-      if (zpp.callbacks.ZPP_CbSetPair.zpp_pool == null) {
-        ret1 = new zpp.callbacks.ZPP_CbSetPair();
+      if (ZPP_CbSetPair.zpp_pool == null) {
+        ret1 = new ZPP_CbSetPair();
       } else {
-        ret1 = zpp.callbacks.ZPP_CbSetPair.zpp_pool;
-        zpp.callbacks.ZPP_CbSetPair.zpp_pool = ret1.next;
+        ret1 = ZPP_CbSetPair.zpp_pool;
+        ZPP_CbSetPair.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.zip_listeners = true;
@@ -250,7 +262,6 @@ export class ZPP_CbSet {
   }
 
   realvalidate_listeners(): void {
-    const zpp = ZPP_CbSet._zpp;
     this.listeners.clear();
     let cx_ite = this.cbTypes.head;
     while (cx_ite != null) {
@@ -276,11 +287,11 @@ export class ZPP_CbSet {
             if (cx.space == this.manager.space) {
               const _this = this.listeners;
               let ret: any;
-              if (zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-                ret = new zpp.util.ZNPNode_ZPP_InteractionListener();
+              if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
+                ret = new ZNPNode_ZPP_InteractionListener();
               } else {
-                ret = zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool;
-                zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
+                ret = ZNPNode_ZPP_InteractionListener.zpp_pool;
+                ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
                 ret.next = null;
               }
               ret.elt = cx;
@@ -319,7 +330,6 @@ export class ZPP_CbSet {
   }
 
   realvalidate_bodylisteners(): void {
-    const zpp = ZPP_CbSet._zpp;
     this.bodylisteners.clear();
     let cx_ite = this.cbTypes.head;
     while (cx_ite != null) {
@@ -349,11 +359,11 @@ export class ZPP_CbSet {
             ) {
               const _this1 = this.bodylisteners;
               let ret: any;
-              if (zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool == null) {
-                ret = new zpp.util.ZNPNode_ZPP_BodyListener();
+              if (ZNPNode_ZPP_BodyListener.zpp_pool == null) {
+                ret = new ZNPNode_ZPP_BodyListener();
               } else {
-                ret = zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool;
-                zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool = ret.next;
+                ret = ZNPNode_ZPP_BodyListener.zpp_pool;
+                ZNPNode_ZPP_BodyListener.zpp_pool = ret.next;
                 ret.next = null;
               }
               ret.elt = cx;
@@ -392,7 +402,6 @@ export class ZPP_CbSet {
   }
 
   realvalidate_conlisteners(): void {
-    const zpp = ZPP_CbSet._zpp;
     this.conlisteners.clear();
     let cx_ite = this.cbTypes.head;
     while (cx_ite != null) {
@@ -422,11 +431,11 @@ export class ZPP_CbSet {
             ) {
               const _this1 = this.conlisteners;
               let ret: any;
-              if (zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
-                ret = new zpp.util.ZNPNode_ZPP_ConstraintListener();
+              if (ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
+                ret = new ZNPNode_ZPP_ConstraintListener();
               } else {
-                ret = zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool;
-                zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
+                ret = ZNPNode_ZPP_ConstraintListener.zpp_pool;
+                ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
                 ret.next = null;
               }
               ret.elt = cx;

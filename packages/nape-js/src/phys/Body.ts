@@ -29,6 +29,16 @@ import type { MassMode } from "./MassMode";
 import type { InertiaMode } from "./InertiaMode";
 import type { GravMassMode } from "./GravMassMode";
 
+// Lazily cached iterator classes (created by the list factory at boot).
+let _ArbiterIterator: any = null;
+function arbiterIterator(): any {
+  return (_ArbiterIterator ??= getNape().dynamics.ArbiterIterator);
+}
+let _ConstraintIterator: any = null;
+function constraintIterator(): any {
+  return (_ConstraintIterator ??= getNape().constraint.ConstraintIterator);
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -1478,8 +1488,8 @@ export class Body extends Interactor {
       const length = iter.zpp_inner.zpp_gl();
       iter.zpp_critical = true;
       if (iter.zpp_i >= length) {
-        iter.zpp_next = getNape().dynamics.ArbiterIterator.zpp_pool;
-        getNape().dynamics.ArbiterIterator.zpp_pool = iter;
+        iter.zpp_next = arbiterIterator().zpp_pool;
+        arbiterIterator().zpp_pool = iter;
         iter.zpp_inner = null;
         break;
       }
@@ -1575,8 +1585,8 @@ export class Body extends Interactor {
       const length = iter.zpp_inner.zpp_gl();
       iter.zpp_critical = true;
       if (iter.zpp_i >= length) {
-        iter.zpp_next = getNape().dynamics.ArbiterIterator.zpp_pool;
-        getNape().dynamics.ArbiterIterator.zpp_pool = iter;
+        iter.zpp_next = arbiterIterator().zpp_pool;
+        arbiterIterator().zpp_pool = iter;
         iter.zpp_inner = null;
         break;
       }
@@ -1637,8 +1647,8 @@ export class Body extends Interactor {
       const length = iter.zpp_inner.zpp_gl();
       iter.zpp_critical = true;
       if (iter.zpp_i >= length) {
-        iter.zpp_next = getNape().dynamics.ArbiterIterator.zpp_pool;
-        getNape().dynamics.ArbiterIterator.zpp_pool = iter;
+        iter.zpp_next = arbiterIterator().zpp_pool;
+        arbiterIterator().zpp_pool = iter;
         iter.zpp_inner = null;
         break;
       }
@@ -1657,7 +1667,7 @@ export class Body extends Interactor {
     const consList = this._getConstraints();
     const _this9 = consList;
     _this9.zpp_inner.valmod();
-    const _g1 = getNape().constraint.ConstraintIterator.get(_this9);
+    const _g1 = constraintIterator().get(_this9);
     while (true) {
       _g1.zpp_inner.zpp_inner.valmod();
       const _this10 = _g1.zpp_inner;
@@ -1669,8 +1679,8 @@ export class Body extends Interactor {
       const length1 = _this10.zpp_inner.user_length;
       _g1.zpp_critical = true;
       if (_g1.zpp_i >= length1) {
-        _g1.zpp_next = getNape().constraint.ConstraintIterator.zpp_pool;
-        getNape().constraint.ConstraintIterator.zpp_pool = _g1;
+        _g1.zpp_next = constraintIterator().zpp_pool;
+        constraintIterator().zpp_pool = _g1;
         _g1.zpp_inner = null;
         break;
       }
@@ -1728,8 +1738,8 @@ export class Body extends Interactor {
       const length = iter.zpp_inner.zpp_gl();
       iter.zpp_critical = true;
       if (iter.zpp_i >= length) {
-        iter.zpp_next = getNape().dynamics.ArbiterIterator.zpp_pool;
-        getNape().dynamics.ArbiterIterator.zpp_pool = iter;
+        iter.zpp_next = arbiterIterator().zpp_pool;
+        arbiterIterator().zpp_pool = iter;
         iter.zpp_inner = null;
         break;
       }

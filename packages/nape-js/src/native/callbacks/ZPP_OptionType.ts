@@ -8,6 +8,7 @@
  */
 
 import { ZPP_CbType } from "./ZPP_CbType";
+import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_OptionType {
   // --- Static: Haxe metadata ---
@@ -29,9 +30,8 @@ export class ZPP_OptionType {
   wrap_excludes: any = null;
 
   constructor() {
-    const zpp = ZPP_OptionType._zpp;
-    this.includes = new zpp.util.ZNPList_ZPP_CbType();
-    this.excludes = new zpp.util.ZNPList_ZPP_CbType();
+    this.includes = new ZNPList_ZPP_CbType();
+    this.excludes = new ZNPList_ZPP_CbType();
   }
 
   /** Coerce a value to OptionType (null → new, OptionType → pass-through, CbType → including). */
@@ -100,7 +100,6 @@ export class ZPP_OptionType {
 
   /** Insert a ZPP_CbType into a sorted ZNPList_ZPP_CbType (ordered by id ascending). */
   private insertOrdered(list: any, val: ZPP_CbType): void {
-    const zpp = ZPP_OptionType._zpp;
     let pre: any = null;
     let cx_ite = list.head;
     while (cx_ite != null) {
@@ -110,11 +109,11 @@ export class ZPP_OptionType {
       cx_ite = cx_ite.next;
     }
     let ret: any;
-    if (zpp.util.ZNPNode_ZPP_CbType.zpp_pool == null) {
-      ret = new zpp.util.ZNPNode_ZPP_CbType();
+    if (ZNPNode_ZPP_CbType.zpp_pool == null) {
+      ret = new ZNPNode_ZPP_CbType();
     } else {
-      ret = zpp.util.ZNPNode_ZPP_CbType.zpp_pool;
-      zpp.util.ZNPNode_ZPP_CbType.zpp_pool = ret.next;
+      ret = ZNPNode_ZPP_CbType.zpp_pool;
+      ZNPNode_ZPP_CbType.zpp_pool = ret.next;
       ret.next = null;
     }
     ret.elt = val;

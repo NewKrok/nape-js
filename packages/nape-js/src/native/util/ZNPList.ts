@@ -50,12 +50,6 @@ export class ZNPList<T> {
     return this.head;
   }
 
-  setbegin(i: ZNPNode<T> | null): void {
-    this.head = i;
-    this.modified = true;
-    this.pushmod = true;
-  }
-
   add(o: T): T {
     const node = this._allocNode();
     node.elt = o;
@@ -64,14 +58,6 @@ export class ZNPList<T> {
     this.modified = true;
     this.length++;
     return o;
-  }
-
-  addAll(x: ZNPList<T>): void {
-    let cx_ite = x.head;
-    while (cx_ite != null) {
-      this.add(cx_ite.elt!);
-      cx_ite = cx_ite.next;
-    }
   }
 
   insert(cur: ZNPNode<T> | null, o: T): ZNPNode<T> {
@@ -144,27 +130,6 @@ export class ZNPList<T> {
     }
   }
 
-  try_remove(obj: T): boolean {
-    let pre: ZNPNode<T> | null = null;
-    let cur = this.head;
-    let ret = false;
-    while (cur != null) {
-      if (cur.elt == obj) {
-        this.erase(pre);
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
-  splice(pre: ZNPNode<T>, n: number): ZNPNode<T> | null {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
-  }
-
   clear(): void {
     while (this.head != null) {
       const ret = this.head;
@@ -197,10 +162,6 @@ export class ZNPList<T> {
     return this.head == null;
   }
 
-  size(): number {
-    return this.length;
-  }
-
   has(obj: T): boolean {
     let cx_ite = this.head;
     while (cx_ite != null) {
@@ -208,20 +169,6 @@ export class ZNPList<T> {
       cx_ite = cx_ite.next;
     }
     return false;
-  }
-
-  front(): T {
-    return this.head!.elt!;
-  }
-
-  back(): T {
-    let ret = this.head!;
-    let cur: ZNPNode<T> | null = ret;
-    while (cur != null) {
-      ret = cur;
-      cur = cur.next;
-    }
-    return ret.elt!;
   }
 
   iterator_at(ind: number): ZNPNode<T> | null {

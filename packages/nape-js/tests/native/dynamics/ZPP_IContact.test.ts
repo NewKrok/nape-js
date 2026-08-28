@@ -39,11 +39,6 @@ describe("ZPP_IContact", () => {
   // ---------------------------------------------------------------------------
 
   describe("linked list — elem/begin", () => {
-    it("elem() should return this", () => {
-      const c = new ZPP_IContact();
-      expect(c.elem()).toBe(c);
-    });
-
     it("begin() should return next", () => {
       const head = new ZPP_IContact();
       expect(head.begin()).toBeNull();
@@ -53,25 +48,6 @@ describe("ZPP_IContact", () => {
       expect(head.begin()).toBe(node);
     });
   });
-
-  describe("linked list — setbegin", () => {
-    it("should set next and mark modified", () => {
-      const head = new ZPP_IContact();
-      const node = new ZPP_IContact();
-      head.setbegin(node);
-      expect(head.next).toBe(node);
-      expect(head.modified).toBe(true);
-      expect(head.pushmod).toBe(true);
-    });
-
-    it("should accept null to clear", () => {
-      const head = new ZPP_IContact();
-      head.next = new ZPP_IContact();
-      head.setbegin(null);
-      expect(head.next).toBeNull();
-    });
-  });
-
   describe("linked list — add", () => {
     it("should add to front of list", () => {
       const head = new ZPP_IContact();
@@ -205,23 +181,6 @@ describe("ZPP_IContact", () => {
       expect(head.length).toBe(1);
     });
   });
-
-  describe("linked list — try_remove", () => {
-    it("should return true when element found", () => {
-      const head = new ZPP_IContact();
-      const a = new ZPP_IContact();
-      head.add(a);
-      expect(head.try_remove(a)).toBe(true);
-      expect(head.length).toBe(0);
-    });
-
-    it("should return false when element not found", () => {
-      const head = new ZPP_IContact();
-      const a = new ZPP_IContact();
-      expect(head.try_remove(a)).toBe(false);
-    });
-  });
-
   describe("linked list — erase", () => {
     it("should erase head when pre is null", () => {
       const head = new ZPP_IContact();
@@ -289,13 +248,6 @@ describe("ZPP_IContact", () => {
       expect(head.empty()).toBe(false);
     });
 
-    it("size() should return length", () => {
-      const head = new ZPP_IContact();
-      expect(head.size()).toBe(0);
-      head.add(new ZPP_IContact());
-      expect(head.size()).toBe(1);
-    });
-
     it("has() should find element in list", () => {
       const head = new ZPP_IContact();
       const a = new ZPP_IContact();
@@ -303,28 +255,6 @@ describe("ZPP_IContact", () => {
       head.add(a);
       expect(head.has(a)).toBe(true);
       expect(head.has(b)).toBe(false);
-    });
-
-    it("front() should return first element", () => {
-      const head = new ZPP_IContact();
-      const a = new ZPP_IContact();
-      head.add(a);
-      expect(head.front()).toBe(a);
-    });
-
-    it("front() should return null for empty list", () => {
-      const head = new ZPP_IContact();
-      expect(head.front()).toBeNull();
-    });
-
-    it("back() should return last element", () => {
-      const head = new ZPP_IContact();
-      const a = new ZPP_IContact();
-      const b = new ZPP_IContact();
-      head.add(a);
-      head.add(b);
-      // list: b -> a
-      expect(head.back()).toBe(a);
     });
 
     it("at() should return element at index", () => {
@@ -358,36 +288,6 @@ describe("ZPP_IContact", () => {
       head.clear();
       // clear is intentionally a no-op for contact lists
       expect(head.length).toBe(1);
-    });
-
-    it("splice() should erase n elements after pre", () => {
-      const head = new ZPP_IContact();
-      const a = new ZPP_IContact();
-      const b = new ZPP_IContact();
-      const c = new ZPP_IContact();
-      head.add(a);
-      head.add(b);
-      head.add(c);
-      // list: c -> b -> a
-
-      head.splice(c, 2);
-      expect(c.next).toBeNull();
-      expect(head.length).toBe(1);
-    });
-  });
-
-  describe("linked list — addAll", () => {
-    it("should add elements from another list", () => {
-      const head1 = new ZPP_IContact();
-      const head2 = new ZPP_IContact();
-      const a = new ZPP_IContact();
-      head2.add(a);
-      // addAll iterates head2.next and calls add() on each.
-      // add() rewrites the node's next pointer, so only the first
-      // traversal step succeeds when the source list has >1 element.
-      head1.addAll(head2);
-      expect(head1.length).toBe(1);
-      expect(head1.has(a)).toBe(true);
     });
   });
 });

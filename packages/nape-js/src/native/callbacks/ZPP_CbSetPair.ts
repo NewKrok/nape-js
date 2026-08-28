@@ -1,3 +1,5 @@
+import { ZPP_CbSet } from "./ZPP_CbSet";
+import { ZNPList_ZPP_InteractionListener } from "../util/ZNPRegistry";
 /**
  * ZPP_CbSetPair — Internal callback set pair for the nape physics engine.
  *
@@ -24,13 +26,11 @@ export class ZPP_CbSetPair {
   listeners: any = null;
 
   constructor() {
-    const zpp = ZPP_CbSetPair._zpp;
-    this.listeners = new zpp.util.ZNPList_ZPP_InteractionListener();
+    this.listeners = new ZNPList_ZPP_InteractionListener();
   }
 
   /** Factory with pooling. Orders a/b by CbSet.setlt. */
   static get(a: any, b: any): ZPP_CbSetPair {
-    const zpp = ZPP_CbSetPair._zpp;
     let ret: ZPP_CbSetPair;
     if (ZPP_CbSetPair.zpp_pool == null) {
       ret = new ZPP_CbSetPair();
@@ -40,7 +40,7 @@ export class ZPP_CbSetPair {
       ret.next = null;
     }
     ret.zip_listeners = true;
-    if (zpp.callbacks.ZPP_CbSet.setlt(a, b)) {
+    if (ZPP_CbSet.setlt(a, b)) {
       ret.a = a;
       ret.b = b;
     } else {
@@ -52,10 +52,9 @@ export class ZPP_CbSetPair {
 
   /** Compare two pairs by their (a, b) ordering. */
   static setlt(x: ZPP_CbSetPair, y: ZPP_CbSetPair): boolean {
-    const zpp = ZPP_CbSetPair._zpp;
-    if (!zpp.callbacks.ZPP_CbSet.setlt(x.a, y.a)) {
+    if (!ZPP_CbSet.setlt(x.a, y.a)) {
       if (x.a == y.a) {
-        return zpp.callbacks.ZPP_CbSet.setlt(x.b, y.b);
+        return ZPP_CbSet.setlt(x.b, y.b);
       } else {
         return false;
       }

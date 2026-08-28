@@ -1,205 +1,343 @@
 /**
- * ZNPRegistry — creates and registers the 78 named ZNP subclasses.
+ * ZNPRegistry — the 78 named ZNP list/node and ZPP_Set subclasses.
  *
- * Replaces the createZNPNode / createZNPList / createZPPSet factory functions
- * and their 78 instantiation lines previously in nape-compiled.js (lines 611–734).
+ * Originally these were manufactured at runtime (a Haxe leftover: the classes
+ * were only reachable through the zpp_nape namespace object). They are now
+ * plain exported classes so engine code imports them directly and the pool
+ * statics live on named, monomorphic classes. registerZNPClasses() only
+ * assigns them into the compiled-style namespace for compatibility.
  *
- * Exported as a plain function called directly from the compiled factory so
- * the classes are created synchronously during factory execution — before
- * the _initEnums / _initStatics calls that depend on them.
+ * Each subclass declares its own static pool slot — pools must not be
+ * shared through the base class.
  */
 
 import { ZNPNode } from "./ZNPNode";
 import { ZNPList } from "./ZNPList";
 import { ZPP_Set } from "./ZPP_Set";
 
-// ---------------------------------------------------------------------------
-// Exported direct references — set inside registerZNPClasses()
-// ---------------------------------------------------------------------------
-
-export let ZNPList_ZPP_PartitionVertex: typeof ZNPList = null as any;
-export let ZNPList_ZPP_PartitionedPoly: typeof ZNPList = null as any;
-export let ZNPList_ZPP_GeomVert: typeof ZNPList = null as any;
-export let ZNPList_ZPP_SimplifyP: typeof ZNPList = null as any;
-export let ZNPList_ZPP_Vec2: typeof ZNPList = null as any;
-export let ZNPList_ZPP_SimpleVert: typeof ZNPList = null as any;
-export let ZNPNode_RayResult: typeof ZNPNode = null as any;
-export let ZPP_Set_ZPP_SimpleVert: typeof ZPP_Set = null as any;
-export let ZPP_Set_ZPP_SimpleSeg: typeof ZPP_Set = null as any;
-export let ZPP_Set_ZPP_SimpleEvent: typeof ZPP_Set = null as any;
-export let ZPP_Set_ZPP_PartitionVertex: typeof ZPP_Set = null as any;
-export let ZPP_Set_ZPP_PartitionPair: typeof ZPP_Set = null as any;
-export let ZNPList_ZPP_SimpleEvent: typeof ZNPList = null as any;
-export let ZNPList_ZPP_CbType: typeof ZNPList = null as any;
-export let ZNPList_ZPP_InteractionListener: typeof ZNPList = null as any;
-export let ZNPList_ZPP_BodyListener: typeof ZNPList = null as any;
-export let ZNPList_ZPP_ConstraintListener: typeof ZNPList = null as any;
-export let ZNPList_ZPP_Constraint: typeof ZNPList = null as any;
-export let ZNPList_ZPP_Interactor: typeof ZNPList = null as any;
-export let ZNPList_ZPP_CbSet: typeof ZNPList = null as any;
-export let ZNPList_ZPP_CbSetPair: typeof ZNPList = null as any;
-
-// ---------------------------------------------------------------------------
-// Factory helpers
-// ---------------------------------------------------------------------------
-
-function createZNPNode(_typeName: string): any {
-  const cls = class extends ZNPNode<any> {};
-  (cls as any).zpp_pool = null;
-  return cls;
+// --- ZNPNode classes ---
+export class ZNPNode_ZPP_CbType extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_CbType | null = null;
+}
+export class ZNPNode_ZPP_CallbackSet extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_CallbackSet | null = null;
+}
+export class ZNPNode_ZPP_Shape extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Shape | null = null;
+}
+export class ZNPNode_ZPP_Body extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Body | null = null;
+}
+export class ZNPNode_ZPP_Constraint extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Constraint | null = null;
+}
+export class ZNPNode_ZPP_Compound extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Compound | null = null;
+}
+export class ZNPNode_ZPP_Arbiter extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Arbiter | null = null;
+}
+export class ZNPNode_ZPP_InteractionListener extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_InteractionListener | null = null;
+}
+export class ZNPNode_ZPP_CbSet extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_CbSet | null = null;
+}
+export class ZNPNode_ZPP_Interactor extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Interactor | null = null;
+}
+export class ZNPNode_ZPP_BodyListener extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_BodyListener | null = null;
+}
+export class ZNPNode_ZPP_CbSetPair extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_CbSetPair | null = null;
+}
+export class ZNPNode_ZPP_ConstraintListener extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_ConstraintListener | null = null;
+}
+export class ZNPNode_ZPP_CutInt extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_CutInt | null = null;
+}
+export class ZNPNode_ZPP_CutVert extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_CutVert | null = null;
+}
+export class ZNPNode_ZPP_PartitionVertex extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_PartitionVertex | null = null;
+}
+export class ZNPNode_ZPP_SimplifyP extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_SimplifyP | null = null;
+}
+export class ZNPNode_ZPP_PartitionedPoly extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_PartitionedPoly | null = null;
+}
+export class ZNPNode_ZPP_GeomVert extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_GeomVert | null = null;
+}
+export class ZNPNode_ZPP_SimpleVert extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_SimpleVert | null = null;
+}
+export class ZNPNode_ZPP_SimpleEvent extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_SimpleEvent | null = null;
+}
+export class ZNPNode_ZPP_Vec2 extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Vec2 | null = null;
+}
+export class ZNPNode_ZPP_AABBPair extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_AABBPair | null = null;
+}
+export class ZNPNode_ZPP_Edge extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Edge | null = null;
+}
+export class ZNPNode_ZPP_AABBNode extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_AABBNode | null = null;
+}
+export class ZNPNode_ZPP_Component extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Component | null = null;
+}
+export class ZNPNode_ZPP_FluidArbiter extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_FluidArbiter | null = null;
+}
+export class ZNPNode_ZPP_SensorArbiter extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_SensorArbiter | null = null;
+}
+export class ZNPNode_ZPP_Listener extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_Listener | null = null;
+}
+export class ZNPNode_ZPP_ColArbiter extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_ColArbiter | null = null;
+}
+export class ZNPNode_ZPP_InteractionGroup extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_InteractionGroup | null = null;
+}
+export class ZNPNode_ZPP_ToiEvent extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_ToiEvent | null = null;
+}
+export class ZNPNode_ConvexResult extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ConvexResult | null = null;
+}
+export class ZNPNode_ZPP_GeomPoly extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_ZPP_GeomPoly | null = null;
+}
+export class ZNPNode_RayResult extends ZNPNode<any> {
+  static zpp_pool: ZNPNode_RayResult | null = null;
 }
 
-function createZNPList(typeName: string, N: any): any {
-  const cls = class extends ZNPList<any> {};
-  (cls as any)._NodeClass = N;
-  return cls;
+// --- ZNPList classes ---
+export class ZNPList_ZPP_CbType extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_CbType;
+}
+export class ZNPList_ZPP_CallbackSet extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_CallbackSet;
+}
+export class ZNPList_ZPP_Shape extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Shape;
+}
+export class ZNPList_ZPP_Body extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Body;
+}
+export class ZNPList_ZPP_Constraint extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Constraint;
+}
+export class ZNPList_ZPP_Compound extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Compound;
+}
+export class ZNPList_ZPP_Arbiter extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Arbiter;
+}
+export class ZNPList_ZPP_InteractionListener extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_InteractionListener;
+}
+export class ZNPList_ZPP_CbSet extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_CbSet;
+}
+export class ZNPList_ZPP_Interactor extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Interactor;
+}
+export class ZNPList_ZPP_BodyListener extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_BodyListener;
+}
+export class ZNPList_ZPP_CbSetPair extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_CbSetPair;
+}
+export class ZNPList_ZPP_ConstraintListener extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_ConstraintListener;
+}
+export class ZNPList_ZPP_CutInt extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_CutInt;
+}
+export class ZNPList_ZPP_CutVert extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_CutVert;
+}
+export class ZNPList_ZPP_PartitionVertex extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_PartitionVertex;
+}
+export class ZNPList_ZPP_SimplifyP extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_SimplifyP;
+}
+export class ZNPList_ZPP_PartitionedPoly extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_PartitionedPoly;
+}
+export class ZNPList_ZPP_GeomVert extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_GeomVert;
+}
+export class ZNPList_ZPP_SimpleVert extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_SimpleVert;
+}
+export class ZNPList_ZPP_SimpleEvent extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_SimpleEvent;
+}
+export class ZNPList_ZPP_Vec2 extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Vec2;
+}
+export class ZNPList_ZPP_AABBPair extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_AABBPair;
+}
+export class ZNPList_ZPP_Edge extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Edge;
+}
+export class ZNPList_ZPP_AABBNode extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_AABBNode;
+}
+export class ZNPList_ZPP_Component extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Component;
+}
+export class ZNPList_ZPP_FluidArbiter extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_FluidArbiter;
+}
+export class ZNPList_ZPP_SensorArbiter extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_SensorArbiter;
+}
+export class ZNPList_ZPP_Listener extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_Listener;
+}
+export class ZNPList_ZPP_ColArbiter extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_ColArbiter;
+}
+export class ZNPList_ZPP_InteractionGroup extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_InteractionGroup;
+}
+export class ZNPList_ZPP_ToiEvent extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_ToiEvent;
+}
+export class ZNPList_ConvexResult extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ConvexResult;
+}
+export class ZNPList_ZPP_GeomPoly extends ZNPList<any> {
+  static _NodeClass = ZNPNode_ZPP_GeomPoly;
+}
+export class ZNPList_RayResult extends ZNPList<any> {
+  static _NodeClass = ZNPNode_RayResult;
 }
 
-function createZPPSet(_typeName: string): any {
-  const cls = class extends ZPP_Set<any> {};
-  (cls as any).zpp_pool = null;
-  return cls;
+// --- ZPP_Set classes ---
+export class ZPP_Set_ZPP_Body extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_Body | null = null;
+}
+export class ZPP_Set_ZPP_CbSetPair extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_CbSetPair | null = null;
+}
+export class ZPP_Set_ZPP_PartitionVertex extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_PartitionVertex | null = null;
+}
+export class ZPP_Set_ZPP_PartitionPair extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_PartitionPair | null = null;
+}
+export class ZPP_Set_ZPP_SimpleVert extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_SimpleVert | null = null;
+}
+export class ZPP_Set_ZPP_SimpleSeg extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_SimpleSeg | null = null;
+}
+export class ZPP_Set_ZPP_SimpleEvent extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_SimpleEvent | null = null;
+}
+export class ZPP_Set_ZPP_CbSet extends ZPP_Set<any> {
+  static zpp_pool: ZPP_Set_ZPP_CbSet | null = null;
 }
 
 // ---------------------------------------------------------------------------
-// Main registration function — called from the compiled factory
+// Namespace registration — compatibility with the compiled-style namespace
 // ---------------------------------------------------------------------------
 
 export function registerZNPClasses(zpp: any): void {
   if (!zpp.util) zpp.util = {};
-
-  // --- ZNPNode classes ---
-  zpp.util.ZNPNode_ZPP_CbType = createZNPNode("ZPP_CbType");
-  zpp.util.ZNPNode_ZPP_CallbackSet = createZNPNode("ZPP_CallbackSet");
-  zpp.util.ZNPNode_ZPP_Shape = createZNPNode("ZPP_Shape");
-  zpp.util.ZNPNode_ZPP_Body = createZNPNode("ZPP_Body");
-  zpp.util.ZNPNode_ZPP_Constraint = createZNPNode("ZPP_Constraint");
-  zpp.util.ZNPNode_ZPP_Compound = createZNPNode("ZPP_Compound");
-  zpp.util.ZNPNode_ZPP_Arbiter = createZNPNode("ZPP_Arbiter");
-  zpp.util.ZNPNode_ZPP_InteractionListener = createZNPNode("ZPP_InteractionListener");
-  zpp.util.ZNPNode_ZPP_CbSet = createZNPNode("ZPP_CbSet");
-  zpp.util.ZNPNode_ZPP_Interactor = createZNPNode("ZPP_Interactor");
-  zpp.util.ZNPNode_ZPP_BodyListener = createZNPNode("ZPP_BodyListener");
-  zpp.util.ZNPNode_ZPP_CbSetPair = createZNPNode("ZPP_CbSetPair");
-  zpp.util.ZNPNode_ZPP_ConstraintListener = createZNPNode("ZPP_ConstraintListener");
-  zpp.util.ZNPNode_ZPP_CutInt = createZNPNode("ZPP_CutInt");
-  zpp.util.ZNPNode_ZPP_CutVert = createZNPNode("ZPP_CutVert");
-  zpp.util.ZNPNode_ZPP_PartitionVertex = createZNPNode("ZPP_PartitionVertex");
-  zpp.util.ZNPNode_ZPP_SimplifyP = createZNPNode("ZPP_SimplifyP");
-  zpp.util.ZNPNode_ZPP_PartitionedPoly = createZNPNode("ZPP_PartitionedPoly");
-  zpp.util.ZNPNode_ZPP_GeomVert = createZNPNode("ZPP_GeomVert");
-  zpp.util.ZNPNode_ZPP_SimpleVert = createZNPNode("ZPP_SimpleVert");
-  zpp.util.ZNPNode_ZPP_SimpleEvent = createZNPNode("ZPP_SimpleEvent");
-  zpp.util.ZNPNode_ZPP_Vec2 = createZNPNode("ZPP_Vec2");
-  zpp.util.ZNPNode_ZPP_AABBPair = createZNPNode("ZPP_AABBPair");
-  zpp.util.ZNPNode_ZPP_Edge = createZNPNode("ZPP_Edge");
-  zpp.util.ZNPNode_ZPP_AABBNode = createZNPNode("ZPP_AABBNode");
-  zpp.util.ZNPNode_ZPP_Component = createZNPNode("ZPP_Component");
-  zpp.util.ZNPNode_ZPP_FluidArbiter = createZNPNode("ZPP_FluidArbiter");
-  zpp.util.ZNPNode_ZPP_SensorArbiter = createZNPNode("ZPP_SensorArbiter");
-  zpp.util.ZNPNode_ZPP_Listener = createZNPNode("ZPP_Listener");
-  zpp.util.ZNPNode_ZPP_ColArbiter = createZNPNode("ZPP_ColArbiter");
-  zpp.util.ZNPNode_ZPP_InteractionGroup = createZNPNode("ZPP_InteractionGroup");
-  zpp.util.ZNPNode_ZPP_ToiEvent = createZNPNode("ZPP_ToiEvent");
-  zpp.util.ZNPNode_ConvexResult = createZNPNode("ConvexResult");
-  zpp.util.ZNPNode_ZPP_GeomPoly = createZNPNode("ZPP_GeomPoly");
-  zpp.util.ZNPNode_RayResult = createZNPNode("RayResult");
-
-  // --- ZNPList classes ---
   const u = zpp.util;
-  ZNPList_ZPP_InteractionListener = zpp.util.ZNPList_ZPP_InteractionListener = createZNPList(
-    "ZPP_InteractionListener",
-    u.ZNPNode_ZPP_InteractionListener,
-  );
-  ZNPList_ZPP_BodyListener = zpp.util.ZNPList_ZPP_BodyListener = createZNPList(
-    "ZPP_BodyListener",
-    u.ZNPNode_ZPP_BodyListener,
-  );
-  ZNPList_ZPP_ConstraintListener = zpp.util.ZNPList_ZPP_ConstraintListener = createZNPList(
-    "ZPP_ConstraintListener",
-    u.ZNPNode_ZPP_ConstraintListener,
-  );
-  ZNPList_ZPP_Constraint = zpp.util.ZNPList_ZPP_Constraint = createZNPList(
-    "ZPP_Constraint",
-    u.ZNPNode_ZPP_Constraint,
-  );
-  ZNPList_ZPP_Interactor = zpp.util.ZNPList_ZPP_Interactor = createZNPList(
-    "ZPP_Interactor",
-    u.ZNPNode_ZPP_Interactor,
-  );
-  ZNPList_ZPP_CbSet = zpp.util.ZNPList_ZPP_CbSet = createZNPList("ZPP_CbSet", u.ZNPNode_ZPP_CbSet);
-  ZNPList_ZPP_CbType = zpp.util.ZNPList_ZPP_CbType = createZNPList(
-    "ZPP_CbType",
-    u.ZNPNode_ZPP_CbType,
-  );
-  zpp.util.ZNPList_ZPP_Vec2 = createZNPList("ZPP_Vec2", u.ZNPNode_ZPP_Vec2);
-  ZNPList_ZPP_Vec2 = zpp.util.ZNPList_ZPP_Vec2;
-  zpp.util.ZNPList_ZPP_CallbackSet = createZNPList("ZPP_CallbackSet", u.ZNPNode_ZPP_CallbackSet);
-  zpp.util.ZNPList_ZPP_Shape = createZNPList("ZPP_Shape", u.ZNPNode_ZPP_Shape);
-  zpp.util.ZNPList_ZPP_Body = createZNPList("ZPP_Body", u.ZNPNode_ZPP_Body);
-  zpp.util.ZNPList_ZPP_Compound = createZNPList("ZPP_Compound", u.ZNPNode_ZPP_Compound);
-  zpp.util.ZNPList_ZPP_Arbiter = createZNPList("ZPP_Arbiter", u.ZNPNode_ZPP_Arbiter);
-  ZNPList_ZPP_CbSetPair = zpp.util.ZNPList_ZPP_CbSetPair = createZNPList(
-    "ZPP_CbSetPair",
-    u.ZNPNode_ZPP_CbSetPair,
-  );
-  zpp.util.ZNPList_ZPP_CutInt = createZNPList("ZPP_CutInt", u.ZNPNode_ZPP_CutInt);
-  zpp.util.ZNPList_ZPP_CutVert = createZNPList("ZPP_CutVert", u.ZNPNode_ZPP_CutVert);
-  zpp.util.ZNPList_ZPP_PartitionVertex = createZNPList(
-    "ZPP_PartitionVertex",
-    u.ZNPNode_ZPP_PartitionVertex,
-  );
-  ZNPList_ZPP_PartitionVertex = zpp.util.ZNPList_ZPP_PartitionVertex;
-  zpp.util.ZNPList_ZPP_SimplifyP = createZNPList("ZPP_SimplifyP", u.ZNPNode_ZPP_SimplifyP);
-  ZNPList_ZPP_SimplifyP = zpp.util.ZNPList_ZPP_SimplifyP;
-  zpp.util.ZNPList_ZPP_PartitionedPoly = createZNPList(
-    "ZPP_PartitionedPoly",
-    u.ZNPNode_ZPP_PartitionedPoly,
-  );
-  ZNPList_ZPP_PartitionedPoly = zpp.util.ZNPList_ZPP_PartitionedPoly;
-  zpp.util.ZNPList_ZPP_GeomVert = createZNPList("ZPP_GeomVert", u.ZNPNode_ZPP_GeomVert);
-  ZNPList_ZPP_GeomVert = zpp.util.ZNPList_ZPP_GeomVert;
-  zpp.util.ZNPList_ZPP_SimpleVert = createZNPList("ZPP_SimpleVert", u.ZNPNode_ZPP_SimpleVert);
-  ZNPList_ZPP_SimpleEvent = zpp.util.ZNPList_ZPP_SimpleEvent = createZNPList(
-    "ZPP_SimpleEvent",
-    u.ZNPNode_ZPP_SimpleEvent,
-  );
-  zpp.util.ZNPList_ZPP_AABBPair = createZNPList("ZPP_AABBPair", u.ZNPNode_ZPP_AABBPair);
-  zpp.util.ZNPList_ZPP_Edge = createZNPList("ZPP_Edge", u.ZNPNode_ZPP_Edge);
-  zpp.util.ZNPList_ZPP_AABBNode = createZNPList("ZPP_AABBNode", u.ZNPNode_ZPP_AABBNode);
-  zpp.util.ZNPList_ZPP_Component = createZNPList("ZPP_Component", u.ZNPNode_ZPP_Component);
-  zpp.util.ZNPList_ZPP_FluidArbiter = createZNPList("ZPP_FluidArbiter", u.ZNPNode_ZPP_FluidArbiter);
-  zpp.util.ZNPList_ZPP_SensorArbiter = createZNPList(
-    "ZPP_SensorArbiter",
-    u.ZNPNode_ZPP_SensorArbiter,
-  );
-  zpp.util.ZNPList_ZPP_Listener = createZNPList("ZPP_Listener", u.ZNPNode_ZPP_Listener);
-  zpp.util.ZNPList_ZPP_ColArbiter = createZNPList("ZPP_ColArbiter", u.ZNPNode_ZPP_ColArbiter);
-  zpp.util.ZNPList_ZPP_InteractionGroup = createZNPList(
-    "ZPP_InteractionGroup",
-    u.ZNPNode_ZPP_InteractionGroup,
-  );
-  zpp.util.ZNPList_ZPP_ToiEvent = createZNPList("ZPP_ToiEvent", u.ZNPNode_ZPP_ToiEvent);
-  zpp.util.ZNPList_ConvexResult = createZNPList("ConvexResult", u.ZNPNode_ConvexResult);
-  zpp.util.ZNPList_ZPP_GeomPoly = createZNPList("ZPP_GeomPoly", u.ZNPNode_ZPP_GeomPoly);
-  zpp.util.ZNPList_RayResult = createZNPList("RayResult", u.ZNPNode_RayResult);
-  ZNPNode_RayResult = zpp.util.ZNPNode_RayResult;
-
-  // --- also assign SimpleVert ---
-  ZNPList_ZPP_SimpleVert = zpp.util.ZNPList_ZPP_SimpleVert;
-
-  // --- ZPP_Set classes ---
-  zpp.util.ZPP_Set_ZPP_Body = createZPPSet("ZPP_Body");
-  zpp.util.ZPP_Set_ZPP_CbSetPair = createZPPSet("ZPP_CbSetPair");
-  zpp.util.ZPP_Set_ZPP_PartitionVertex = createZPPSet("ZPP_PartitionVertex");
-  ZPP_Set_ZPP_PartitionVertex = zpp.util.ZPP_Set_ZPP_PartitionVertex;
-  zpp.util.ZPP_Set_ZPP_PartitionPair = createZPPSet("ZPP_PartitionPair");
-  ZPP_Set_ZPP_PartitionPair = zpp.util.ZPP_Set_ZPP_PartitionPair;
-  zpp.util.ZPP_Set_ZPP_SimpleVert = createZPPSet("ZPP_SimpleVert");
-  ZPP_Set_ZPP_SimpleVert = zpp.util.ZPP_Set_ZPP_SimpleVert;
-  zpp.util.ZPP_Set_ZPP_SimpleSeg = createZPPSet("ZPP_SimpleSeg");
-  ZPP_Set_ZPP_SimpleSeg = zpp.util.ZPP_Set_ZPP_SimpleSeg;
-  zpp.util.ZPP_Set_ZPP_SimpleEvent = createZPPSet("ZPP_SimpleEvent");
-  ZPP_Set_ZPP_SimpleEvent = zpp.util.ZPP_Set_ZPP_SimpleEvent;
-  zpp.util.ZPP_Set_ZPP_CbSet = createZPPSet("ZPP_CbSet");
+  u.ZNPNode_ZPP_CbType = ZNPNode_ZPP_CbType;
+  u.ZNPNode_ZPP_CallbackSet = ZNPNode_ZPP_CallbackSet;
+  u.ZNPNode_ZPP_Shape = ZNPNode_ZPP_Shape;
+  u.ZNPNode_ZPP_Body = ZNPNode_ZPP_Body;
+  u.ZNPNode_ZPP_Constraint = ZNPNode_ZPP_Constraint;
+  u.ZNPNode_ZPP_Compound = ZNPNode_ZPP_Compound;
+  u.ZNPNode_ZPP_Arbiter = ZNPNode_ZPP_Arbiter;
+  u.ZNPNode_ZPP_InteractionListener = ZNPNode_ZPP_InteractionListener;
+  u.ZNPNode_ZPP_CbSet = ZNPNode_ZPP_CbSet;
+  u.ZNPNode_ZPP_Interactor = ZNPNode_ZPP_Interactor;
+  u.ZNPNode_ZPP_BodyListener = ZNPNode_ZPP_BodyListener;
+  u.ZNPNode_ZPP_CbSetPair = ZNPNode_ZPP_CbSetPair;
+  u.ZNPNode_ZPP_ConstraintListener = ZNPNode_ZPP_ConstraintListener;
+  u.ZNPNode_ZPP_CutInt = ZNPNode_ZPP_CutInt;
+  u.ZNPNode_ZPP_CutVert = ZNPNode_ZPP_CutVert;
+  u.ZNPNode_ZPP_PartitionVertex = ZNPNode_ZPP_PartitionVertex;
+  u.ZNPNode_ZPP_SimplifyP = ZNPNode_ZPP_SimplifyP;
+  u.ZNPNode_ZPP_PartitionedPoly = ZNPNode_ZPP_PartitionedPoly;
+  u.ZNPNode_ZPP_GeomVert = ZNPNode_ZPP_GeomVert;
+  u.ZNPNode_ZPP_SimpleVert = ZNPNode_ZPP_SimpleVert;
+  u.ZNPNode_ZPP_SimpleEvent = ZNPNode_ZPP_SimpleEvent;
+  u.ZNPNode_ZPP_Vec2 = ZNPNode_ZPP_Vec2;
+  u.ZNPNode_ZPP_AABBPair = ZNPNode_ZPP_AABBPair;
+  u.ZNPNode_ZPP_Edge = ZNPNode_ZPP_Edge;
+  u.ZNPNode_ZPP_AABBNode = ZNPNode_ZPP_AABBNode;
+  u.ZNPNode_ZPP_Component = ZNPNode_ZPP_Component;
+  u.ZNPNode_ZPP_FluidArbiter = ZNPNode_ZPP_FluidArbiter;
+  u.ZNPNode_ZPP_SensorArbiter = ZNPNode_ZPP_SensorArbiter;
+  u.ZNPNode_ZPP_Listener = ZNPNode_ZPP_Listener;
+  u.ZNPNode_ZPP_ColArbiter = ZNPNode_ZPP_ColArbiter;
+  u.ZNPNode_ZPP_InteractionGroup = ZNPNode_ZPP_InteractionGroup;
+  u.ZNPNode_ZPP_ToiEvent = ZNPNode_ZPP_ToiEvent;
+  u.ZNPNode_ConvexResult = ZNPNode_ConvexResult;
+  u.ZNPNode_ZPP_GeomPoly = ZNPNode_ZPP_GeomPoly;
+  u.ZNPNode_RayResult = ZNPNode_RayResult;
+  u.ZNPList_ZPP_CbType = ZNPList_ZPP_CbType;
+  u.ZNPList_ZPP_CallbackSet = ZNPList_ZPP_CallbackSet;
+  u.ZNPList_ZPP_Shape = ZNPList_ZPP_Shape;
+  u.ZNPList_ZPP_Body = ZNPList_ZPP_Body;
+  u.ZNPList_ZPP_Constraint = ZNPList_ZPP_Constraint;
+  u.ZNPList_ZPP_Compound = ZNPList_ZPP_Compound;
+  u.ZNPList_ZPP_Arbiter = ZNPList_ZPP_Arbiter;
+  u.ZNPList_ZPP_InteractionListener = ZNPList_ZPP_InteractionListener;
+  u.ZNPList_ZPP_CbSet = ZNPList_ZPP_CbSet;
+  u.ZNPList_ZPP_Interactor = ZNPList_ZPP_Interactor;
+  u.ZNPList_ZPP_BodyListener = ZNPList_ZPP_BodyListener;
+  u.ZNPList_ZPP_CbSetPair = ZNPList_ZPP_CbSetPair;
+  u.ZNPList_ZPP_ConstraintListener = ZNPList_ZPP_ConstraintListener;
+  u.ZNPList_ZPP_CutInt = ZNPList_ZPP_CutInt;
+  u.ZNPList_ZPP_CutVert = ZNPList_ZPP_CutVert;
+  u.ZNPList_ZPP_PartitionVertex = ZNPList_ZPP_PartitionVertex;
+  u.ZNPList_ZPP_SimplifyP = ZNPList_ZPP_SimplifyP;
+  u.ZNPList_ZPP_PartitionedPoly = ZNPList_ZPP_PartitionedPoly;
+  u.ZNPList_ZPP_GeomVert = ZNPList_ZPP_GeomVert;
+  u.ZNPList_ZPP_SimpleVert = ZNPList_ZPP_SimpleVert;
+  u.ZNPList_ZPP_SimpleEvent = ZNPList_ZPP_SimpleEvent;
+  u.ZNPList_ZPP_Vec2 = ZNPList_ZPP_Vec2;
+  u.ZNPList_ZPP_AABBPair = ZNPList_ZPP_AABBPair;
+  u.ZNPList_ZPP_Edge = ZNPList_ZPP_Edge;
+  u.ZNPList_ZPP_AABBNode = ZNPList_ZPP_AABBNode;
+  u.ZNPList_ZPP_Component = ZNPList_ZPP_Component;
+  u.ZNPList_ZPP_FluidArbiter = ZNPList_ZPP_FluidArbiter;
+  u.ZNPList_ZPP_SensorArbiter = ZNPList_ZPP_SensorArbiter;
+  u.ZNPList_ZPP_Listener = ZNPList_ZPP_Listener;
+  u.ZNPList_ZPP_ColArbiter = ZNPList_ZPP_ColArbiter;
+  u.ZNPList_ZPP_InteractionGroup = ZNPList_ZPP_InteractionGroup;
+  u.ZNPList_ZPP_ToiEvent = ZNPList_ZPP_ToiEvent;
+  u.ZNPList_ConvexResult = ZNPList_ConvexResult;
+  u.ZNPList_ZPP_GeomPoly = ZNPList_ZPP_GeomPoly;
+  u.ZNPList_RayResult = ZNPList_RayResult;
+  u.ZPP_Set_ZPP_Body = ZPP_Set_ZPP_Body;
+  u.ZPP_Set_ZPP_CbSetPair = ZPP_Set_ZPP_CbSetPair;
+  u.ZPP_Set_ZPP_PartitionVertex = ZPP_Set_ZPP_PartitionVertex;
+  u.ZPP_Set_ZPP_PartitionPair = ZPP_Set_ZPP_PartitionPair;
+  u.ZPP_Set_ZPP_SimpleVert = ZPP_Set_ZPP_SimpleVert;
+  u.ZPP_Set_ZPP_SimpleSeg = ZPP_Set_ZPP_SimpleSeg;
+  u.ZPP_Set_ZPP_SimpleEvent = ZPP_Set_ZPP_SimpleEvent;
+  u.ZPP_Set_ZPP_CbSet = ZPP_Set_ZPP_CbSet;
 }

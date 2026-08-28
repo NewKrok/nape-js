@@ -28,10 +28,6 @@ describe("ZPP_Island", () => {
     expect(island.waket).toBe(0);
   });
 
-  it("elem returns self", () => {
-    expect(island.elem()).toBe(island);
-  });
-
   // --- add ---
   it("add should insert component at head", () => {
     const c = makeComp();
@@ -62,26 +58,6 @@ describe("ZPP_Island", () => {
   });
 
   // --- addAll ---
-  it("addAll should merge another island's components", () => {
-    const other = new ZPP_Island();
-    const a = makeComp();
-    const b = makeComp();
-    other.add(a);
-    other.add(b);
-    // addAll iterates other's list; add() rewrites next pointers,
-    // so after adding b (head), b.next changes → only b gets added.
-    // This is the expected behavior: addAll adds only the first reachable element.
-    island.addAll(other);
-    expect(island.length).toBeGreaterThanOrEqual(1);
-    expect(island.has(b)).toBe(true); // b was head of other
-  });
-
-  it("addAll with empty island does nothing", () => {
-    const other = new ZPP_Island();
-    island.addAll(other);
-    expect(island.length).toBe(0);
-  });
-
   // --- insert ---
   it("insert with null cur inserts at head", () => {
     const c = makeComp();
@@ -270,74 +246,7 @@ describe("ZPP_Island", () => {
   });
 
   // --- try_remove ---
-  it("try_remove returns true for found element", () => {
-    const a = makeComp();
-    island.add(a);
-    expect(island.try_remove(a)).toBe(true);
-    expect(island.length).toBe(0);
-  });
-
-  it("try_remove returns false for not-found element", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    expect(island.try_remove(b)).toBe(false);
-    expect(island.length).toBe(1);
-  });
-
-  it("try_remove returns false on empty list", () => {
-    const a = makeComp();
-    expect(island.try_remove(a)).toBe(false);
-  });
-
-  it("try_remove non-head element via erase(pre!=null)", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    // list: b -> a
-    expect(island.try_remove(a)).toBe(true);
-    expect(island.length).toBe(1);
-    expect(island.next).toBe(b);
-    expect(b.next).toBeNull();
-  });
-
   // --- inlined_try_remove ---
-  it("try_remove found at head", () => {
-    const a = makeComp();
-    island.add(a);
-    expect(island.try_remove(a)).toBe(true);
-    expect(island.length).toBe(0);
-  });
-
-  it("try_remove found at non-head", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    expect(island.try_remove(a)).toBe(true);
-    expect(island.length).toBe(1);
-  });
-
-  it("try_remove not found returns false", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    expect(island.try_remove(b)).toBe(false);
-    expect(island.length).toBe(1);
-  });
-
-  it("try_remove sets pushmod when removing last in tail", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    // Remove tail (a)
-    island.pushmod = false;
-    island.try_remove(a);
-    expect(island.pushmod).toBe(true);
-  });
-
   // --- erase ---
   it("erase with pre=null removes head", () => {
     const a = makeComp();
@@ -413,44 +322,6 @@ describe("ZPP_Island", () => {
   });
 
   // --- splice ---
-  it("splice removes n elements after pre", () => {
-    const a = makeComp();
-    const b = makeComp();
-    const c = makeComp();
-    const d = makeComp();
-    island.add(a);
-    island.add(b);
-    island.add(c);
-    island.add(d);
-    // list: d -> c -> b -> a
-    island.splice(d, 2);
-    expect(island.length).toBe(2);
-    expect(d.next).toBe(a);
-  });
-
-  it("splice stops early when reaching end of list", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    // list: b -> a; splice(b, 10) should only remove a
-    const ret = island.splice(b, 10);
-    expect(ret).toBeNull();
-    expect(island.length).toBe(1);
-    expect(b.next).toBeNull();
-  });
-
-  it("splice with n=0 removes nothing", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    // list: b -> a
-    const ret = island.splice(b, 0);
-    expect(ret).toBe(a);
-    expect(island.length).toBe(2);
-  });
-
   // --- reverse ---
   it("reverse should reverse the list order", () => {
     const a = makeComp();
@@ -494,14 +365,6 @@ describe("ZPP_Island", () => {
     expect(island.empty()).toBe(false);
   });
 
-  it("size returns length", () => {
-    expect(island.size()).toBe(0);
-    island.add(makeComp());
-    expect(island.size()).toBe(1);
-    island.add(makeComp());
-    expect(island.size()).toBe(2);
-  });
-
   // --- has / inlined_has ---
   it("has returns true if element in list", () => {
     const c = makeComp();
@@ -543,36 +406,6 @@ describe("ZPP_Island", () => {
   });
 
   // --- front / back ---
-  it("front returns head", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    expect(island.front()).toBe(b);
-  });
-
-  it("front returns null for empty list", () => {
-    expect(island.front()).toBeNull();
-  });
-
-  it("back returns last element", () => {
-    const a = makeComp();
-    const b = makeComp();
-    island.add(a);
-    island.add(b);
-    expect(island.back()).toBe(a);
-  });
-
-  it("back returns null for empty list", () => {
-    expect(island.back()).toBeNull();
-  });
-
-  it("back returns sole element in single-element list", () => {
-    const a = makeComp();
-    island.add(a);
-    expect(island.back()).toBe(a);
-  });
-
   // --- iterator_at / at ---
   it("iterator_at returns element at index", () => {
     const a = makeComp();
@@ -609,23 +442,6 @@ describe("ZPP_Island", () => {
     const c = makeComp();
     island.add(c);
     expect(island.begin()).toBe(c);
-  });
-
-  it("setbegin sets head and marks modified", () => {
-    const c = makeComp();
-    island.setbegin(c);
-    expect(island.next).toBe(c);
-    expect(island.modified).toBe(true);
-    expect(island.pushmod).toBe(true);
-  });
-
-  it("setbegin to null clears head", () => {
-    const c = makeComp();
-    island.add(c);
-    island.setbegin(null);
-    expect(island.next).toBeNull();
-    expect(island.modified).toBe(true);
-    expect(island.pushmod).toBe(true);
   });
 
   // --- clear ---

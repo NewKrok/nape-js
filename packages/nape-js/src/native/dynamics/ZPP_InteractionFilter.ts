@@ -1,3 +1,4 @@
+import { ZNPList_ZPP_Shape } from "../util/ZNPRegistry";
 /**
  * ZPP_InteractionFilter — Internal interaction filter for the nape physics engine.
  *
@@ -48,7 +49,7 @@ export class ZPP_InteractionFilter {
   // --- Instance: Haxe class reference ---
 
   constructor() {
-    this.shapes = new ZPP_InteractionFilter._zpp.util.ZNPList_ZPP_Shape();
+    this.shapes = new ZNPList_ZPP_Shape();
   }
 
   /** Create/return the public nape.dynamics.InteractionFilter wrapper. */
@@ -75,7 +76,7 @@ export class ZPP_InteractionFilter {
   alloc(): void {}
 
   feature_cons(): void {
-    this.shapes = new ZPP_InteractionFilter._zpp.util.ZNPList_ZPP_Shape();
+    this.shapes = new ZNPList_ZPP_Shape();
   }
 
   addShape(shape: any): void {

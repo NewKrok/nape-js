@@ -8,6 +8,11 @@
  */
 
 import { ZPP_Interactor } from "./ZPP_Interactor";
+import {
+  ZNPList_ZPP_Body,
+  ZNPList_ZPP_Compound,
+  ZNPList_ZPP_Constraint,
+} from "../util/ZNPRegistry";
 
 export class ZPP_Compound {
   // --- Static: Haxe metadata ---
@@ -61,19 +66,19 @@ export class ZPP_Compound {
     this.icompound = this;
     this.depth = 1;
 
-    this.bodies = new zpp.util.ZNPList_ZPP_Body();
+    this.bodies = new ZNPList_ZPP_Body();
     this.wrap_bodies = zpp.util.ZPP_BodyList.get(this.bodies);
     this.wrap_bodies.zpp_inner.adder = this.bodies_adder.bind(this);
     this.wrap_bodies.zpp_inner.subber = this.bodies_subber.bind(this);
     this.wrap_bodies.zpp_inner._modifiable = this.bodies_modifiable.bind(this);
 
-    this.constraints = new zpp.util.ZNPList_ZPP_Constraint();
+    this.constraints = new ZNPList_ZPP_Constraint();
     this.wrap_constraints = zpp.util.ZPP_ConstraintList.get(this.constraints);
     this.wrap_constraints.zpp_inner.adder = this.constraints_adder.bind(this);
     this.wrap_constraints.zpp_inner.subber = this.constraints_subber.bind(this);
     this.wrap_constraints.zpp_inner._modifiable = this.constraints_modifiable.bind(this);
 
-    this.compounds = new zpp.util.ZNPList_ZPP_Compound();
+    this.compounds = new ZNPList_ZPP_Compound();
     this.wrap_compounds = zpp.util.ZPP_CompoundList.get(this.compounds);
     this.wrap_compounds.zpp_inner.adder = this.compounds_adder.bind(this);
     this.wrap_compounds.zpp_inner.subber = this.compounds_subber.bind(this);

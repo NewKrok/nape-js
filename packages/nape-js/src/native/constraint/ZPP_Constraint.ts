@@ -8,6 +8,8 @@
  */
 
 import { ZPP_ID } from "../util/ZPP_ID";
+import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
+import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_Constraint {
   // --- Static: Haxe metadata ---
@@ -54,8 +56,6 @@ export class ZPP_Constraint {
    * way, so the compiled wrapper delegates to this method instead.
    */
   _initBase(): void {
-    const zpp = ZPP_Constraint._zpp;
-
     this.id = ZPP_ID.Constraint();
     this.stiff = true;
     this.active = true;
@@ -67,7 +67,7 @@ export class ZPP_Constraint {
     this.breakUnderForce = false;
     this.removeOnBreak = true;
     this.pre_dt = -1.0;
-    this.cbTypes = new zpp.util.ZNPList_ZPP_CbType();
+    this.cbTypes = new ZNPList_ZPP_CbType();
   }
 
   // --- Stub methods (overridden by subclasses) ---
@@ -144,7 +144,6 @@ export class ZPP_Constraint {
   }
 
   insert_cbtype(cb: any): void {
-    const zpp = ZPP_Constraint._zpp;
     if (!this.cbTypes.has(cb)) {
       if (this.space != null) {
         this.dealloc_cbSet();
@@ -162,11 +161,11 @@ export class ZPP_Constraint {
       }
       const _this = this.cbTypes;
       let ret;
-      if (zpp.util.ZNPNode_ZPP_CbType.zpp_pool == null) {
-        ret = new zpp.util.ZNPNode_ZPP_CbType();
+      if (ZNPNode_ZPP_CbType.zpp_pool == null) {
+        ret = new ZNPNode_ZPP_CbType();
       } else {
-        ret = zpp.util.ZNPNode_ZPP_CbType.zpp_pool;
-        zpp.util.ZNPNode_ZPP_CbType.zpp_pool = ret.next;
+        ret = ZNPNode_ZPP_CbType.zpp_pool;
+        ZNPNode_ZPP_CbType.zpp_pool = ret.next;
         ret.next = null;
       }
       ret.elt = cb;
@@ -196,7 +195,6 @@ export class ZPP_Constraint {
   }
 
   dealloc_cbSet(): void {
-    const zpp = ZPP_Constraint._zpp;
     if (this.cbSet != null) {
       this.cbSet.constraints.remove(this);
       if (--this.cbSet.count == 0) {
@@ -212,8 +210,8 @@ export class ZPP_Constraint {
           const cb = o.cbTypes.pop_unsafe();
           cb.cbsets.remove(o);
         }
-        o.next = zpp.callbacks.ZPP_CbSet.zpp_pool;
-        zpp.callbacks.ZPP_CbSet.zpp_pool = o;
+        o.next = ZPP_CbSet.zpp_pool;
+        ZPP_CbSet.zpp_pool = o;
       }
       this.cbSet = null;
     }

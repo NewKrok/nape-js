@@ -13,6 +13,15 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Interactor } from "./ZPP_Interactor";
 import { Config } from "../../Config";
+import {
+  ZNPList_ZPP_Arbiter,
+  ZNPList_ZPP_Body,
+  ZNPList_ZPP_Constraint,
+  ZNPList_ZPP_Shape,
+  ZNPNode_ZPP_Arbiter,
+  ZPP_Set_ZPP_Body,
+} from "../util/ZNPRegistry";
+import { ZPP_Flags } from "../util/ZPP_Flags";
 
 export class ZPP_Body {
   // --- Static: Haxe metadata ---
@@ -37,13 +46,12 @@ export class ZPP_Body {
 
   static __static(): any {
     const nape = ZPP_Body._nape;
-    const zpp = ZPP_Body._zpp;
-    if (zpp.util.ZPP_Flags.BodyType_STATIC == null) {
-      zpp.util.ZPP_Flags.internal = true;
-      zpp.util.ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
-      zpp.util.ZPP_Flags.internal = false;
+    if (ZPP_Flags.BodyType_STATIC == null) {
+      ZPP_Flags.internal = true;
+      ZPP_Flags.BodyType_STATIC = new nape.phys.BodyType();
+      ZPP_Flags.internal = false;
     }
-    const ret = new nape.phys.Body(zpp.util.ZPP_Flags.BodyType_STATIC);
+    const ret = new nape.phys.Body(ZPP_Flags.BodyType_STATIC);
     const si = ret.zpp_inner;
     si.world = true;
     si.wrap_shapes.zpp_inner.immutable = true;
@@ -243,9 +251,9 @@ export class ZPP_Body {
     this.gravMassScale = 1.0;
     this.inertiaMode = 0;
 
-    this.arbiters = new zpp.util.ZNPList_ZPP_Arbiter();
-    this.constraints = new zpp.util.ZNPList_ZPP_Constraint();
-    this.shapes = new zpp.util.ZNPList_ZPP_Shape();
+    this.arbiters = new ZNPList_ZPP_Arbiter();
+    this.constraints = new ZNPList_ZPP_Constraint();
+    this.shapes = new ZNPList_ZPP_Shape();
     this.wrap_shapes = zpp.util.ZPP_ShapeList.get(this.shapes);
     this.wrap_shapes.zpp_inner.adder = this.shapes_adder.bind(this);
     this.wrap_shapes.zpp_inner.subber = this.shapes_subber.bind(this);
@@ -288,10 +296,9 @@ export class ZPP_Body {
 
   init_bodysetlist(): void {
     if (ZPP_Body.bodyset == null) {
-      const zpp = ZPP_Body._zpp;
-      ZPP_Body.bodyset = new zpp.util.ZPP_Set_ZPP_Body();
+      ZPP_Body.bodyset = new ZPP_Set_ZPP_Body();
       ZPP_Body.bodyset.lt = ZPP_Body.bodysetlt;
-      ZPP_Body.bodystack = new zpp.util.ZNPList_ZPP_Body();
+      ZPP_Body.bodystack = new ZNPList_ZPP_Body();
     }
   }
 
@@ -359,8 +366,8 @@ export class ZPP_Body {
           const o = cur;
           o.data = null;
           o.lt = null;
-          o.next = ZPP_Body._zpp.util.ZPP_Set_ZPP_Body.zpp_pool;
-          ZPP_Body._zpp.util.ZPP_Set_ZPP_Body.zpp_pool = o;
+          o.next = ZPP_Set_ZPP_Body.zpp_pool;
+          ZPP_Set_ZPP_Body.zpp_pool = o;
           cur = ret1;
         }
       }
@@ -372,7 +379,6 @@ export class ZPP_Body {
 
   interactingBodies(type: number, output: any): any {
     const nape = ZPP_Body._nape;
-    const zpp = ZPP_Body._zpp;
 
     if (ZPP_Body.bodyset == null) {
       this.init_bodysetlist();
@@ -419,8 +425,8 @@ export class ZPP_Body {
           const o = cur;
           o.data = null;
           o.lt = null;
-          o.next = zpp.util.ZPP_Set_ZPP_Body.zpp_pool;
-          zpp.util.ZPP_Set_ZPP_Body.zpp_pool = o;
+          o.next = ZPP_Set_ZPP_Body.zpp_pool;
+          ZPP_Set_ZPP_Body.zpp_pool = o;
           cur = ret1;
         }
       }
@@ -1363,10 +1369,10 @@ export class ZPP_Body {
       arb.cleared = true;
 
       if (arb.b2 === this) {
-        this._removeArbiterFromList(arb.b1.arbiters, arb, zpp);
+        this._removeArbiterFromList(arb.b1.arbiters, arb);
       }
       if (arb.b1 === this) {
-        this._removeArbiterFromList(arb.b2.arbiters, arb, zpp);
+        this._removeArbiterFromList(arb.b2.arbiters, arb);
       }
 
       if (arb.pair != null) {
@@ -1386,7 +1392,7 @@ export class ZPP_Body {
     this.__iremovedFromSpace();
   }
 
-  private _removeArbiterFromList(list: any, arb: any, zpp: any): void {
+  private _removeArbiterFromList(list: any, arb: any): void {
     let pre: any = null;
     let cur = list.head;
     while (cur != null) {
@@ -1407,8 +1413,8 @@ export class ZPP_Body {
         }
         const o = old;
         o.elt = null;
-        o.next = zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool;
-        zpp.util.ZNPNode_ZPP_Arbiter.zpp_pool = o;
+        o.next = ZNPNode_ZPP_Arbiter.zpp_pool;
+        ZNPNode_ZPP_Arbiter.zpp_pool = o;
         list.modified = true;
         list.length--;
         list.pushmod = true;

@@ -16,6 +16,11 @@ import { ZPP_AABBTree } from "./ZPP_AABBTree";
 import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
+import {
+  ZNPList_ZPP_AABBNode,
+  ZNPNode_ZPP_AABBNode,
+  ZNPNode_ZPP_AABBPair,
+} from "../util/ZNPRegistry";
 
 export class ZPP_DynAABBPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
@@ -479,11 +484,11 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
   /** Prepend pair p onto a shape's ZNPList_ZPP_AABBPair. */
   private _pushPairNode(list: any, p: ZPP_AABBPair): void {
     let n;
-    if (ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBPair.zpp_pool == null) {
-      n = new ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBPair();
+    if (ZNPNode_ZPP_AABBPair.zpp_pool == null) {
+      n = new ZNPNode_ZPP_AABBPair();
     } else {
-      n = ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBPair.zpp_pool;
-      ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBPair.zpp_pool = n.next;
+      n = ZNPNode_ZPP_AABBPair.zpp_pool;
+      ZNPNode_ZPP_AABBPair.zpp_pool = n.next;
       n.next = null;
     }
     n.elt = p;
@@ -720,7 +725,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     const ret1 = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -759,7 +764,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -829,7 +834,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     const ret1 = output == null ? new ZPP_DynAABBPhase._nape.phys.BodyList() : output;
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -871,7 +876,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -933,7 +938,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     const ret = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -955,7 +960,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             }
           } else {
             if (this.treeStack2 == null) {
-              this.treeStack2 = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+              this.treeStack2 = new ZNPList_ZPP_AABBNode();
             }
             this.treeStack2.add(node);
             while (this.treeStack2.head != null) {
@@ -1051,7 +1056,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -1073,7 +1078,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             }
           } else {
             if (this.treeStack2 == null) {
-              this.treeStack2 = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+              this.treeStack2 = new ZNPList_ZPP_AABBNode();
             }
             this.treeStack2.add(node2);
             while (this.treeStack2.head != null) {
@@ -1184,7 +1189,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -1209,7 +1214,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             }
           } else {
             if (this.treeStack2 == null) {
-              this.treeStack2 = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+              this.treeStack2 = new ZNPList_ZPP_AABBNode();
             }
             this.treeStack2.add(node);
             while (this.treeStack2.head != null) {
@@ -1323,7 +1328,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -1348,7 +1353,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             }
           } else {
             if (this.treeStack2 == null) {
-              this.treeStack2 = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+              this.treeStack2 = new ZNPList_ZPP_AABBNode();
             }
             this.treeStack2.add(node2);
             while (this.treeStack2.head != null) {
@@ -1480,7 +1485,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     const ret = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -1524,7 +1529,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -1588,7 +1593,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -1642,7 +1647,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -1707,7 +1712,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     const ret = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -1751,7 +1756,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -1808,7 +1813,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.stree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.stree.root);
       while (this.treeStack.head != null) {
@@ -1859,7 +1864,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     }
     if (this.dtree.root != null) {
       if (this.treeStack == null) {
-        this.treeStack = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+        this.treeStack = new ZNPList_ZPP_AABBNode();
       }
       this.treeStack.add(this.dtree.root);
       while (this.treeStack.head != null) {
@@ -1916,7 +1921,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
 
   rayCast(ray: any, inner: boolean, filter: any): any {
     if (this.openlist == null) {
-      this.openlist = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+      this.openlist = new ZNPList_ZPP_AABBNode();
     }
     this.sync_broadphase();
     ray.validate_dir();
@@ -1939,11 +1944,11 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           const _this = this.openlist;
           const o = this.dtree.root;
           let ret;
-          if (ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-            ret = new ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode();
+          if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
+            ret = new ZNPNode_ZPP_AABBNode();
           } else {
-            ret = ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool;
-            ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool = ret.next;
+            ret = ZNPNode_ZPP_AABBNode.zpp_pool;
+            ZNPNode_ZPP_AABBNode.zpp_pool = ret.next;
             ret.next = null;
           }
           ret.elt = o;
@@ -1978,11 +1983,11 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           const _this1 = this.openlist;
           const o1 = this.stree.root;
           let ret1;
-          if (ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-            ret1 = new ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode();
+          if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
+            ret1 = new ZNPNode_ZPP_AABBNode();
           } else {
-            ret1 = ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool;
-            ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool = ret1.next;
+            ret1 = ZNPNode_ZPP_AABBNode.zpp_pool;
+            ZNPNode_ZPP_AABBNode.zpp_pool = ret1.next;
             ret1.next = null;
           }
           ret1.elt = o1;
@@ -2056,11 +2061,11 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
               const _this3 = this.openlist;
               const o2 = cnode.child1;
               let ret2;
-              if (ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-                ret2 = new ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode();
+              if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
+                ret2 = new ZNPNode_ZPP_AABBNode();
               } else {
-                ret2 = ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool;
-                ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool = ret2.next;
+                ret2 = ZNPNode_ZPP_AABBNode.zpp_pool;
+                ZNPNode_ZPP_AABBNode.zpp_pool = ret2.next;
                 ret2.next = null;
               }
               ret2.elt = o2;
@@ -2095,11 +2100,11 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
               const _this4 = this.openlist;
               const o3 = cnode.child2;
               let ret3;
-              if (ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-                ret3 = new ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode();
+              if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
+                ret3 = new ZNPNode_ZPP_AABBNode();
               } else {
-                ret3 = ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool;
-                ZPP_DynAABBPhase._zpp.util.ZNPNode_ZPP_AABBNode.zpp_pool = ret3.next;
+                ret3 = ZNPNode_ZPP_AABBNode.zpp_pool;
+                ZNPNode_ZPP_AABBNode.zpp_pool = ret3.next;
                 ret3.next = null;
               }
               ret3.elt = o3;
@@ -2126,7 +2131,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
 
   rayMultiCast(ray: any, inner: boolean, filter: any, output: any): any {
     if (this.openlist == null) {
-      this.openlist = new ZPP_DynAABBPhase._zpp.util.ZNPList_ZPP_AABBNode();
+      this.openlist = new ZNPList_ZPP_AABBNode();
     }
     this.sync_broadphase();
     ray.validate_dir();

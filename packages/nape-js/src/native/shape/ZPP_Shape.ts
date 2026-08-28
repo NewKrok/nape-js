@@ -11,6 +11,8 @@
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Material } from "../phys/ZPP_Material";
 import { ZPP_Interactor } from "../phys/ZPP_Interactor";
+import { ZPP_InteractionFilter } from "../dynamics/ZPP_InteractionFilter";
+import { ZNPList_ZPP_AABBPair } from "../util/ZNPRegistry";
 
 export class ZPP_Shape {
   // --- Static: Haxe metadata ---
@@ -125,10 +127,9 @@ export class ZPP_Shape {
    * gets redirected here.
    */
   _initShape(type: number): void {
-    const zpp = ZPP_Shape._zpp;
     // ZPP_Interactor constructor init
     ZPP_Interactor.initFields(this);
-    this.pairs = new zpp.util.ZNPList_ZPP_AABBPair();
+    this.pairs = new ZNPList_ZPP_AABBPair();
     this.ishape = this;
     this.type = type;
 
@@ -476,7 +477,6 @@ export class ZPP_Shape {
 
   // --- Copy ---
   copy(): any {
-    const zpp = ZPP_Shape._zpp;
     const ret: any = this.type === 0 ? this.circle.__copy() : this.polygon.__copy();
     if (!this.zip_area_inertia) {
       ret.area = this.area;
@@ -514,8 +514,8 @@ export class ZPP_Shape {
 
     const o1 = ret.filter;
     o1.outer = null;
-    o1.next = zpp.dynamics.ZPP_InteractionFilter.zpp_pool;
-    zpp.dynamics.ZPP_InteractionFilter.zpp_pool = o1;
+    o1.next = ZPP_InteractionFilter.zpp_pool;
+    ZPP_InteractionFilter.zpp_pool = o1;
 
     ret.material = this.material;
     ret.filter = this.filter;

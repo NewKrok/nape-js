@@ -68,18 +68,8 @@ export class ZPP_PartitionPair {
 
   // --- Instance methods ---
 
-  elem(): ZPP_PartitionPair {
-    return this;
-  }
-
   begin(): ZPP_PartitionPair | null {
     return this.next;
-  }
-
-  setbegin(i: ZPP_PartitionPair | null): void {
-    this.next = i;
-    this.modified = true;
-    this.pushmod = true;
   }
 
   add(o: ZPP_PartitionPair): ZPP_PartitionPair {
@@ -90,15 +80,6 @@ export class ZPP_PartitionPair {
     this.modified = true;
     this.length++;
     return o;
-  }
-
-  addAll(x: ZPP_PartitionPair): void {
-    let cx_ite: ZPP_PartitionPair | null = x.next;
-    while (cx_ite != null) {
-      const i = cx_ite;
-      this.add(i);
-      cx_ite = cx_ite.next;
-    }
   }
 
   insert(cur: ZPP_PartitionPair | null, o: ZPP_PartitionPair): ZPP_PartitionPair {
@@ -166,22 +147,6 @@ export class ZPP_PartitionPair {
     }
   }
 
-  try_remove(obj: ZPP_PartitionPair): boolean {
-    let pre: ZPP_PartitionPair | null = null;
-    let cur: ZPP_PartitionPair | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        this.erase(pre);
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
   erase(pre: ZPP_PartitionPair | null): ZPP_PartitionPair | null {
     let old: ZPP_PartitionPair;
     let ret: ZPP_PartitionPair | null;
@@ -207,11 +172,6 @@ export class ZPP_PartitionPair {
     return ret;
   }
 
-  splice(pre: ZPP_PartitionPair, n: number): ZPP_PartitionPair | null {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
-  }
-
   clear(): void {}
 
   reverse(): void {
@@ -232,10 +192,6 @@ export class ZPP_PartitionPair {
     return this.next == null;
   }
 
-  size(): number {
-    return this.length;
-  }
-
   has(obj: ZPP_PartitionPair): boolean {
     let ret = false;
     let cx_ite: ZPP_PartitionPair | null = this.next;
@@ -246,20 +202,6 @@ export class ZPP_PartitionPair {
         break;
       }
       cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  front(): ZPP_PartitionPair | null {
-    return this.next;
-  }
-
-  back(): ZPP_PartitionPair | null {
-    let ret: ZPP_PartitionPair | null = this.next;
-    let cur: ZPP_PartitionPair | null = ret;
-    while (cur != null) {
-      ret = cur;
-      cur = cur.next;
     }
     return ret;
   }

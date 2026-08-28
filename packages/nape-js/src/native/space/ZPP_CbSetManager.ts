@@ -1,3 +1,6 @@
+import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
+import { ZPP_CbSetPair } from "../callbacks/ZPP_CbSetPair";
+import { ZPP_Set_ZPP_CbSet } from "../util/ZNPRegistry";
 /**
  * ZPP_CbSetManager — Internal callback set manager for the space.
  *
@@ -18,7 +21,7 @@ export class ZPP_CbSetManager {
   space: any = null; // ZPP_Space — circular
 
   constructor(space: any) {
-    const ZPP_Set_CbSet = ZPP_CbSetManager._zpp.util.ZPP_Set_ZPP_CbSet;
+    const ZPP_Set_CbSet = ZPP_Set_ZPP_CbSet;
     if (ZPP_Set_CbSet.zpp_pool == null) {
       this.cbsets = new ZPP_Set_CbSet();
     } else {
@@ -26,7 +29,7 @@ export class ZPP_CbSetManager {
       ZPP_Set_CbSet.zpp_pool = this.cbsets.next;
       this.cbsets.next = null;
     }
-    this.cbsets.lt = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSet.setlt;
+    this.cbsets.lt = ZPP_CbSet.setlt;
     this.space = space;
   }
 
@@ -34,7 +37,6 @@ export class ZPP_CbSetManager {
     if (cbTypes.head == null) {
       return null;
     }
-    const ZPP_CbSet = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSet;
     let fake: any;
     if (ZPP_CbSet.zpp_pool == null) {
       fake = new ZPP_CbSet();
@@ -73,7 +75,6 @@ export class ZPP_CbSetManager {
   }
 
   remove(set: any): void {
-    const ZPP_CbSetPair = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSetPair;
     this.cbsets.remove(set);
     while (set.cbpairs.head != null) {
       const pair = set.cbpairs.pop_unsafe();
@@ -114,8 +115,6 @@ export class ZPP_CbSetManager {
   }
 
   pair(a: any, b: any): any {
-    const ZPP_CbSet = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSet;
-    const ZPP_CbSetPair = ZPP_CbSetManager._zpp.callbacks.ZPP_CbSetPair;
     let ret: any = null;
     const pairs = a.cbpairs.length < b.cbpairs.length ? a.cbpairs : b.cbpairs;
     let cx_ite = pairs.head;

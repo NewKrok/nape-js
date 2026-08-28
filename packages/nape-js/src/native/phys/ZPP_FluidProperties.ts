@@ -1,3 +1,6 @@
+import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
+import { ZNPList_ZPP_Shape } from "../util/ZNPRegistry";
+import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_FluidProperties — Internal fluid properties for the nape physics engine.
  *
@@ -41,7 +44,7 @@ export class ZPP_FluidProperties {
   next: ZPP_FluidProperties | null = null;
 
   constructor() {
-    this.shapes = new ZPP_FluidProperties._zpp.util.ZNPList_ZPP_Shape();
+    this.shapes = new ZNPList_ZPP_Shape();
   }
 
   /** Create/return the public nape.phys.FluidProperties wrapper. */
@@ -68,7 +71,7 @@ export class ZPP_FluidProperties {
   alloc(): void {}
 
   feature_cons(): void {
-    this.shapes = new ZPP_FluidProperties._zpp.util.ZNPList_ZPP_Shape();
+    this.shapes = new ZNPList_ZPP_Shape();
   }
 
   addShape(shape: any): void {
@@ -109,7 +112,6 @@ export class ZPP_FluidProperties {
 
   /** Lazily create and return the gravity Vec2 wrapper. */
   getgravity(): void {
-    const zpp = ZPP_FluidProperties._zpp;
     const napeNs = ZPP_FluidProperties._nape;
 
     const x = this.gravityx ?? 0;
@@ -121,26 +123,26 @@ export class ZPP_FluidProperties {
 
     // Get or create a Vec2 from the public pool
     let ret: any;
-    if (zpp.util.ZPP_PubPool.poolVec2 == null) {
+    if (ZPP_PubPool.poolVec2 == null) {
       ret = new napeNs.geom.Vec2();
     } else {
-      ret = zpp.util.ZPP_PubPool.poolVec2;
-      zpp.util.ZPP_PubPool.poolVec2 = ret.zpp_pool;
+      ret = ZPP_PubPool.poolVec2;
+      ZPP_PubPool.poolVec2 = ret.zpp_pool;
       ret.zpp_pool = null;
       ret.zpp_disp = false;
-      if (ret == zpp.util.ZPP_PubPool.nextVec2) {
-        zpp.util.ZPP_PubPool.nextVec2 = null;
+      if (ret == ZPP_PubPool.nextVec2) {
+        ZPP_PubPool.nextVec2 = null;
       }
     }
 
     if (ret.zpp_inner == null) {
       // Create inner Vec2
       let ret1: any;
-      if (zpp.geom.ZPP_Vec2.zpp_pool == null) {
-        ret1 = new zpp.geom.ZPP_Vec2();
+      if (ZPP_Vec2.zpp_pool == null) {
+        ret1 = new ZPP_Vec2();
       } else {
-        ret1 = zpp.geom.ZPP_Vec2.zpp_pool;
-        zpp.geom.ZPP_Vec2.zpp_pool = ret1.next;
+        ret1 = ZPP_Vec2.zpp_pool;
+        ZPP_Vec2.zpp_pool = ret1.next;
         ret1.next = null;
       }
       ret1.weak = false;

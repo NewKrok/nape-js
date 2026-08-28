@@ -114,18 +114,8 @@ export class ZPP_Vec2 {
   // ZPP_Vec2 doubles as its own intrusive linked list (Haxe ZNPList pattern).
   // `this.next` acts as the head pointer when the instance is used as a list.
 
-  elem(): ZPP_Vec2 {
-    return this;
-  }
-
   begin(): ZPP_Vec2 | null {
     return this.next;
-  }
-
-  setbegin(i: ZPP_Vec2 | null): void {
-    this.next = i;
-    this.modified = true;
-    this.pushmod = true;
   }
 
   add(o: ZPP_Vec2): ZPP_Vec2 {
@@ -135,14 +125,6 @@ export class ZPP_Vec2 {
     this.modified = true;
     this.length++;
     return o;
-  }
-
-  addAll(x: ZPP_Vec2): void {
-    let cx_ite = x.next;
-    while (cx_ite != null) {
-      this.add(cx_ite);
-      cx_ite = cx_ite.next;
-    }
   }
 
   insert(cur: ZPP_Vec2 | null, o: ZPP_Vec2): ZPP_Vec2 {
@@ -200,20 +182,6 @@ export class ZPP_Vec2 {
     }
   }
 
-  try_remove(obj: ZPP_Vec2): boolean {
-    let pre: ZPP_Vec2 | null = null;
-    let cur = this.next;
-    while (cur != null) {
-      if (cur === obj) {
-        this.erase(pre);
-        return true;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return false;
-  }
-
   erase(pre: ZPP_Vec2 | null): ZPP_Vec2 | null {
     let old: ZPP_Vec2;
     let ret: ZPP_Vec2 | null;
@@ -233,11 +201,6 @@ export class ZPP_Vec2 {
     this.length--;
     this.pushmod = true;
     return ret;
-  }
-
-  splice(pre: ZPP_Vec2, n: number): ZPP_Vec2 | null {
-    while (n-- > 0 && pre.next != null) this.erase(pre);
-    return pre.next;
   }
 
   clear(): void {}
@@ -260,10 +223,6 @@ export class ZPP_Vec2 {
     return this.next == null;
   }
 
-  size(): number {
-    return this.length;
-  }
-
   has(obj: ZPP_Vec2): boolean {
     let cx_ite = this.next;
     while (cx_ite != null) {
@@ -271,20 +230,6 @@ export class ZPP_Vec2 {
       cx_ite = cx_ite.next;
     }
     return false;
-  }
-
-  front(): ZPP_Vec2 | null {
-    return this.next;
-  }
-
-  back(): ZPP_Vec2 | null {
-    let ret = this.next;
-    let cur = ret;
-    while (cur != null) {
-      ret = cur;
-      cur = cur.next;
-    }
-    return ret;
   }
 
   iterator_at(ind: number): ZPP_Vec2 | null {

@@ -1,3 +1,4 @@
+import { ZNPList_ZPP_InteractionGroup, ZNPList_ZPP_Interactor } from "../util/ZNPRegistry";
 /**
  * ZPP_InteractionGroup — Internal interaction group for the nape physics engine.
  *
@@ -43,9 +44,8 @@ export class ZPP_InteractionGroup {
   // --- Instance: Haxe class reference ---
 
   constructor() {
-    const zpp = ZPP_InteractionGroup._zpp;
-    this.groups = new zpp.util.ZNPList_ZPP_InteractionGroup();
-    this.interactors = new zpp.util.ZNPList_ZPP_Interactor();
+    this.groups = new ZNPList_ZPP_InteractionGroup();
+    this.interactors = new ZNPList_ZPP_Interactor();
   }
 
   /** Set or change the parent group. */
