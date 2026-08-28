@@ -174,11 +174,6 @@ export class Vec2 {
       });
     }
 
-    // Legacy fallback: compiled Vec2 with zpp_inner
-    if (inner.zpp_inner) {
-      return Vec2._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as Vec2;
   }
 

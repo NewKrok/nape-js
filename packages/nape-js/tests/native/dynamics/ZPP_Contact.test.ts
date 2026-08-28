@@ -157,27 +157,6 @@ describe("ZPP_Contact", () => {
       expect(c.outer).toBe(mockWrapper);
     });
 
-    it("should fall back to _nape.dynamics.Contact when _wrapFn is null", () => {
-      const c = new ZPP_Contact();
-      const mockContact = { zpp_inner: null as any };
-      ZPP_Contact._nape = {
-        dynamics: {
-          Contact: class {
-            zpp_inner: any = null;
-            constructor() {
-              mockContact.zpp_inner = null;
-              return mockContact as any;
-            }
-          },
-        },
-      };
-
-      const result = c.wrapper();
-      expect(result).toBe(mockContact);
-      expect(mockContact.zpp_inner).toBe(c);
-      expect(ZPP_Contact.internal).toBe(false); // restored after creation
-    });
-
     it("should cache wrapper on subsequent calls", () => {
       const c = new ZPP_Contact();
       const mockWrapper = { id: "cached" };

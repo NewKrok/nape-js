@@ -10,7 +10,6 @@
 import { ZPP_Const } from "./ZPP_Const";
 import { ZPP_ID } from "./ZPP_ID";
 import { ZPP_Flags } from "./ZPP_Flags";
-import { ZPP_Math } from "./ZPP_Math";
 import { ZPP_PubPool } from "./ZPP_PubPool";
 import { ZNPArray2_Float, ZNPArray2_ZPP_GeomVert, ZNPArray2_ZPP_MarchPair } from "./ZNPArray2";
 import { Hashable2_Boolfalse } from "./Hashable2_Boolfalse";
@@ -392,7 +391,6 @@ export function registerZPPClasses(): any {
   zpp.util.ZNPArray2_ZPP_MarchPair = ZNPArray2_ZPP_MarchPair;
   zpp.util.Hashable2_Boolfalse = Hashable2_Boolfalse;
   zpp.util.FastHash2_Hashable2_Boolfalse = FastHash2_Hashable2_Boolfalse;
-  zpp.util.ZPP_Math = ZPP_Math;
   zpp.util.ZPP_PubPool = ZPP_PubPool;
 
   // --- init statics (engine.ts calls _initEnums after TS enum classes load) ---

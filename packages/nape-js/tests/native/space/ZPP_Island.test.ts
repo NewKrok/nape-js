@@ -53,9 +53,9 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_add ---
-  it("inlined_add should work identically to add", () => {
+  it("add should work identically to add", () => {
     const c = makeComp();
-    island.inlined_add(c);
+    island.add(c);
     expect(island.length).toBe(1);
     expect(island.next).toBe(c);
     expect(c._inuse).toBe(true);
@@ -106,18 +106,18 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_insert ---
-  it("inlined_insert with null cur inserts at head", () => {
+  it("insert with null cur inserts at head", () => {
     const c = makeComp();
-    island.inlined_insert(null, c);
+    island.insert(null, c);
     expect(island.next).toBe(c);
     expect(island.length).toBe(1);
   });
 
-  it("inlined_insert after specific node", () => {
+  it("insert after specific node", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
-    island.inlined_insert(a, b);
+    island.insert(a, b);
     expect(a.next).toBe(b);
     expect(island.length).toBe(2);
   });
@@ -144,10 +144,10 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_pop ---
-  it("inlined_pop should remove head", () => {
+  it("pop should remove head", () => {
     const a = makeComp();
     island.add(a);
-    island.inlined_pop();
+    island.pop();
     expect(island.length).toBe(0);
     expect(a._inuse).toBe(false);
   });
@@ -164,10 +164,10 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_pop_unsafe ---
-  it("inlined_pop_unsafe should return removed element", () => {
+  it("pop_unsafe should return removed element", () => {
     const a = makeComp();
     island.add(a);
-    const ret = island.inlined_pop_unsafe();
+    const ret = island.pop_unsafe();
     expect(ret).toBe(a);
     expect(island.length).toBe(0);
   });
@@ -228,25 +228,25 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_remove ---
-  it("inlined_remove head element", () => {
+  it("remove head element", () => {
     const a = makeComp();
     island.add(a);
-    island.inlined_remove(a);
+    island.remove(a);
     expect(island.length).toBe(0);
     expect(a._inuse).toBe(false);
   });
 
-  it("inlined_remove non-head element", () => {
+  it("remove non-head element", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
     island.add(b);
-    island.inlined_remove(a);
+    island.remove(a);
     expect(island.length).toBe(1);
     expect(island.next).toBe(b);
   });
 
-  it("inlined_remove tail element sets pushmod", () => {
+  it("remove tail element sets pushmod", () => {
     const a = makeComp();
     const b = makeComp();
     const c = makeComp();
@@ -255,17 +255,17 @@ describe("ZPP_Island", () => {
     island.add(c);
     // list: c -> b -> a
     island.pushmod = false;
-    island.inlined_remove(a); // a is tail, pre.next becomes null
+    island.remove(a); // a is tail, pre.next becomes null
     expect(island.pushmod).toBe(true);
     expect(island.length).toBe(2);
     expect(b.next).toBeNull();
   });
 
-  it("inlined_remove element not found is a no-op", () => {
+  it("remove element not found is a no-op", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
-    island.inlined_remove(b);
+    island.remove(b);
     expect(island.length).toBe(1);
   });
 
@@ -303,38 +303,38 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_try_remove ---
-  it("inlined_try_remove found at head", () => {
+  it("try_remove found at head", () => {
     const a = makeComp();
     island.add(a);
-    expect(island.inlined_try_remove(a)).toBe(true);
+    expect(island.try_remove(a)).toBe(true);
     expect(island.length).toBe(0);
   });
 
-  it("inlined_try_remove found at non-head", () => {
+  it("try_remove found at non-head", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
     island.add(b);
-    expect(island.inlined_try_remove(a)).toBe(true);
+    expect(island.try_remove(a)).toBe(true);
     expect(island.length).toBe(1);
   });
 
-  it("inlined_try_remove not found returns false", () => {
+  it("try_remove not found returns false", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
-    expect(island.inlined_try_remove(b)).toBe(false);
+    expect(island.try_remove(b)).toBe(false);
     expect(island.length).toBe(1);
   });
 
-  it("inlined_try_remove sets pushmod when removing last in tail", () => {
+  it("try_remove sets pushmod when removing last in tail", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
     island.add(b);
     // Remove tail (a)
     island.pushmod = false;
-    island.inlined_try_remove(a);
+    island.try_remove(a);
     expect(island.pushmod).toBe(true);
   });
 
@@ -391,22 +391,22 @@ describe("ZPP_Island", () => {
   });
 
   // --- inlined_erase ---
-  it("inlined_erase with pre=null", () => {
+  it("erase with pre=null", () => {
     const a = makeComp();
     island.add(a);
-    island.inlined_erase(null);
+    island.erase(null);
     expect(island.length).toBe(0);
     expect(island.next).toBeNull();
   });
 
-  it("inlined_erase with pre (tail removal sets pushmod)", () => {
+  it("erase with pre (tail removal sets pushmod)", () => {
     const a = makeComp();
     const b = makeComp();
     island.add(a);
     island.add(b);
     // list: b -> a, erase after b removes a
     island.pushmod = false;
-    island.inlined_erase(b);
+    island.erase(b);
     expect(island.length).toBe(1);
     expect(b.next).toBeNull();
     expect(island.pushmod).toBe(true);
@@ -514,21 +514,21 @@ describe("ZPP_Island", () => {
     expect(island.has(c)).toBe(false);
   });
 
-  it("inlined_has returns true if element in list", () => {
+  it("has returns true if element in list", () => {
     const c = makeComp();
     island.add(c);
-    expect(island.inlined_has(c)).toBe(true);
+    expect(island.has(c)).toBe(true);
   });
 
-  it("inlined_has returns false if element not in list", () => {
+  it("has returns false if element not in list", () => {
     const c = makeComp();
     island.add(makeComp());
-    expect(island.inlined_has(c)).toBe(false);
+    expect(island.has(c)).toBe(false);
   });
 
-  it("inlined_has returns false on empty list", () => {
+  it("has returns false on empty list", () => {
     const c = makeComp();
-    expect(island.inlined_has(c)).toBe(false);
+    expect(island.has(c)).toBe(false);
   });
 
   it("has finds element that is not the head", () => {
@@ -636,9 +636,9 @@ describe("ZPP_Island", () => {
     expect(island.length).toBe(1);
   });
 
-  it("inlined_clear is a no-op", () => {
+  it("clear is a no-op", () => {
     island.add(makeComp());
-    island.inlined_clear();
+    island.clear();
     expect(island.length).toBe(1);
   });
 

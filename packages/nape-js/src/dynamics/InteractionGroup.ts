@@ -53,11 +53,6 @@ export class InteractionGroup {
       });
     }
 
-    // Legacy fallback: compiled InteractionGroup with zpp_inner
-    if (inner.zpp_inner) {
-      return InteractionGroup._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as InteractionGroup;
   }
 

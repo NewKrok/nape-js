@@ -346,11 +346,6 @@ export class ZPP_AABBTree {
 
   // ========== inlined_insertLeaf ==========
 
-  /** Alias of {@link insertLeaf} — kept for API compatibility with the Haxe-inlined variant. */
-  inlined_insertLeaf(leaf: ZPP_AABBNode): void {
-    this.insertLeaf(leaf);
-  }
-
   // ========== removeLeaf ==========
 
   removeLeaf(leaf: ZPP_AABBNode): void {
@@ -568,11 +563,6 @@ export class ZPP_AABBTree {
   }
 
   // ========== inlined_removeLeaf ==========
-
-  /** Alias of {@link removeLeaf} — kept for API compatibility with the Haxe-inlined variant. */
-  inlined_removeLeaf(leaf: ZPP_AABBNode): void {
-    this.removeLeaf(leaf);
-  }
 
   // ========== balance ==========
 

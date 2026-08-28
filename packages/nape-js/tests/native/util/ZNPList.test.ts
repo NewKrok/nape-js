@@ -191,19 +191,4 @@ describe("ZNPList", () => {
       expect(NodeClass.zpp_pool).not.toBeNull();
     });
   });
-
-  describe("inlined aliases", () => {
-    it("should have all inlined method aliases", () => {
-      const list = new ListClass();
-      expect(list.inlined_add).toBe(list.add);
-      expect(list.inlined_insert).toBe(list.insert);
-      expect(list.inlined_pop).toBe(list.pop);
-      expect(list.inlined_pop_unsafe).toBe(list.pop_unsafe);
-      expect(list.inlined_erase).toBe(list.erase);
-      expect(list.inlined_remove).toBe(list.remove);
-      expect(list.inlined_try_remove).toBe(list.try_remove);
-      expect(list.inlined_clear).toBe(list.clear);
-      expect(list.inlined_has).toBe(list.has);
-    });
-  });
 });

@@ -292,11 +292,11 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_add", () => {
+  describe("add", () => {
     it("should behave same as add", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
-      const result = list.inlined_add(a);
+      const result = list.add(a);
       expect(result).toBe(a);
       expect(list.next).toBe(a);
       expect(list.length).toBe(1);
@@ -352,11 +352,11 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_insert", () => {
+  describe("insert", () => {
     it("should insert at head when cur is null", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
-      list.inlined_insert(null, a);
+      list.insert(null, a);
       expect(list.next).toBe(a);
       expect(list.length).toBe(1);
     });
@@ -367,7 +367,7 @@ describe("ZPP_Vec2", () => {
       const b = new ZPP_Vec2();
       list.next = a;
       list.length = 1;
-      list.inlined_insert(a, b);
+      list.insert(a, b);
       expect(a.next).toBe(b);
       expect(list.length).toBe(2);
     });
@@ -403,14 +403,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_pop", () => {
+  describe("pop", () => {
     it("should behave same as pop", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      list.inlined_pop();
+      list.pop();
       expect(list.next).toBeNull();
       expect(a._inuse).toBe(false);
       expect(list.pushmod).toBe(true);
@@ -431,14 +431,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_pop_unsafe", () => {
+  describe("pop_unsafe", () => {
     it("should remove and return front item", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      const ret = list.inlined_pop_unsafe();
+      const ret = list.pop_unsafe();
       expect(ret).toBe(a);
     });
   });
@@ -499,14 +499,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_remove", () => {
+  describe("remove", () => {
     it("should remove head element", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      list.inlined_remove(a);
+      list.remove(a);
       expect(list.next).toBeNull();
       expect(list.length).toBe(0);
     });
@@ -519,7 +519,7 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       list.length = 2;
-      list.inlined_remove(b);
+      list.remove(b);
       expect(a.next).toBeNull();
       expect(list.length).toBe(1);
     });
@@ -527,7 +527,7 @@ describe("ZPP_Vec2", () => {
     it("should do nothing when item not found", () => {
       const list = new ZPP_Vec2();
       const notInList = new ZPP_Vec2();
-      list.inlined_remove(notInList);
+      list.remove(notInList);
       expect(list.length).toBe(0);
     });
   });
@@ -550,14 +550,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_try_remove", () => {
+  describe("try_remove", () => {
     it("should return true when head item found", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      expect(list.inlined_try_remove(a)).toBe(true);
+      expect(list.try_remove(a)).toBe(true);
       expect(list.next).toBeNull();
     });
 
@@ -569,14 +569,14 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       list.length = 2;
-      expect(list.inlined_try_remove(b)).toBe(true);
+      expect(list.try_remove(b)).toBe(true);
       expect(list.length).toBe(1);
     });
 
     it("should return false when not found", () => {
       const list = new ZPP_Vec2();
       const notInList = new ZPP_Vec2();
-      expect(list.inlined_try_remove(notInList)).toBe(false);
+      expect(list.try_remove(notInList)).toBe(false);
     });
   });
 
@@ -640,14 +640,14 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("inlined_erase", () => {
+  describe("erase", () => {
     it("should erase head when pre is null", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       a._inuse = true;
       list.next = a;
       list.length = 1;
-      const ret = list.inlined_erase(null);
+      const ret = list.erase(null);
       expect(ret).toBeNull();
       expect(list.next).toBeNull();
     });
@@ -660,7 +660,7 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       list.length = 2;
-      const ret = list.inlined_erase(a);
+      const ret = list.erase(a);
       expect(ret).toBeNull();
       expect(a.next).toBeNull();
     });
@@ -702,7 +702,7 @@ describe("ZPP_Vec2", () => {
     it("should be callable (no-op)", () => {
       const list = new ZPP_Vec2();
       expect(() => list.clear()).not.toThrow();
-      expect(() => list.inlined_clear()).not.toThrow();
+      expect(() => list.clear()).not.toThrow();
     });
   });
 
@@ -761,14 +761,14 @@ describe("ZPP_Vec2", () => {
       const a = new ZPP_Vec2();
       list.next = a;
       expect(list.has(a)).toBe(true);
-      expect(list.inlined_has(a)).toBe(true);
+      expect(list.has(a)).toBe(true);
     });
 
     it("should return false when item does not exist", () => {
       const list = new ZPP_Vec2();
       const a = new ZPP_Vec2();
       expect(list.has(a)).toBe(false);
-      expect(list.inlined_has(a)).toBe(false);
+      expect(list.has(a)).toBe(false);
     });
 
     it("should find items deeper in list", () => {
@@ -778,7 +778,7 @@ describe("ZPP_Vec2", () => {
       list.next = a;
       a.next = b;
       expect(list.has(b)).toBe(true);
-      expect(list.inlined_has(b)).toBe(true);
+      expect(list.has(b)).toBe(true);
     });
   });
 

@@ -162,11 +162,11 @@ describe("ZPP_PartitionPair", () => {
   // inlined_add
   // ---------------------------------------------------------------------------
 
-  describe("inlined_add", () => {
+  describe("add", () => {
     it("works identically to add()", () => {
       const head = new ZPP_PartitionPair();
       const e1 = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
-      head.inlined_add(e1);
+      head.add(e1);
       expect(head.size()).toBe(1);
       expect(head.front()).toBe(e1);
       expect(e1._inuse).toBe(true);
@@ -204,11 +204,11 @@ describe("ZPP_PartitionPair", () => {
       expect(e3.next).toBe(e1);
     });
 
-    it("inlined_insert works like insert", () => {
+    it("insert works like insert", () => {
       const e1 = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       const e2 = ZPP_PartitionPair.get(mockVertex(3), mockVertex(4));
-      head.inlined_insert(null, e1);
-      head.inlined_insert(e1, e2);
+      head.insert(null, e1);
+      head.insert(e1, e2);
       expect(head.size()).toBe(2);
       expect(e1.next).toBe(e2);
     });
@@ -241,11 +241,11 @@ describe("ZPP_PartitionPair", () => {
       expect(head.empty()).toBe(true);
     });
 
-    it("inlined_pop works like pop", () => {
+    it("pop works like pop", () => {
       const head = new ZPP_PartitionPair();
       const e = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       head.add(e);
-      head.inlined_pop();
+      head.pop();
       expect(head.empty()).toBe(true);
     });
 
@@ -258,11 +258,11 @@ describe("ZPP_PartitionPair", () => {
       expect(head.empty()).toBe(true);
     });
 
-    it("inlined_pop_unsafe removes and returns front element", () => {
+    it("pop_unsafe removes and returns front element", () => {
       const head = new ZPP_PartitionPair();
       const e = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       head.add(e);
-      const popped = head.inlined_pop_unsafe();
+      const popped = head.pop_unsafe();
       expect(popped).toBe(e);
       expect(head.empty()).toBe(true);
     });
@@ -318,11 +318,11 @@ describe("ZPP_PartitionPair", () => {
       expect(head.size()).toBe(1);
     });
 
-    it("inlined_remove works identically to remove", () => {
+    it("remove works identically to remove", () => {
       const head = new ZPP_PartitionPair();
       const e1 = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       head.add(e1);
-      head.inlined_remove(e1);
+      head.remove(e1);
       expect(head.empty()).toBe(true);
     });
   });
@@ -346,12 +346,12 @@ describe("ZPP_PartitionPair", () => {
     });
   });
 
-  describe("inlined_try_remove", () => {
+  describe("try_remove", () => {
     it("returns true and removes when found (first element)", () => {
       const head = new ZPP_PartitionPair();
       const e1 = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       head.add(e1);
-      expect(head.inlined_try_remove(e1)).toBe(true);
+      expect(head.try_remove(e1)).toBe(true);
       expect(head.empty()).toBe(true);
     });
 
@@ -363,14 +363,14 @@ describe("ZPP_PartitionPair", () => {
       head.add(e1);
       head.add(e2);
       head.add(e3); // e3 -> e2 -> e1
-      expect(head.inlined_try_remove(e2)).toBe(true);
+      expect(head.try_remove(e2)).toBe(true);
       expect(head.size()).toBe(2);
     });
 
     it("returns false when not found", () => {
       const head = new ZPP_PartitionPair();
       const notInList = ZPP_PartitionPair.get(mockVertex(9), mockVertex(10));
-      expect(head.inlined_try_remove(notInList)).toBe(false);
+      expect(head.try_remove(notInList)).toBe(false);
     });
   });
 
@@ -417,11 +417,11 @@ describe("ZPP_PartitionPair", () => {
       expect(head.pushmod).toBe(true);
     });
 
-    it("inlined_erase works like erase", () => {
+    it("erase works like erase", () => {
       const head = new ZPP_PartitionPair();
       const e1 = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       head.add(e1);
-      const result = head.inlined_erase(null);
+      const result = head.erase(null);
       expect(result).toBeNull();
       expect(head.empty()).toBe(true);
     });
@@ -515,17 +515,17 @@ describe("ZPP_PartitionPair", () => {
       expect(head.has(e)).toBe(false);
     });
 
-    it("inlined_has returns true for contained element", () => {
+    it("has returns true for contained element", () => {
       const head = new ZPP_PartitionPair();
       const e = ZPP_PartitionPair.get(mockVertex(1), mockVertex(2));
       head.add(e);
-      expect(head.inlined_has(e)).toBe(true);
+      expect(head.has(e)).toBe(true);
     });
 
-    it("inlined_has returns false for missing element", () => {
+    it("has returns false for missing element", () => {
       const head = new ZPP_PartitionPair();
       const e = ZPP_PartitionPair.get(mockVertex(9), mockVertex(10));
-      expect(head.inlined_has(e)).toBe(false);
+      expect(head.has(e)).toBe(false);
     });
   });
 
@@ -629,9 +629,9 @@ describe("ZPP_PartitionPair", () => {
       expect(() => head.clear()).not.toThrow();
     });
 
-    it("inlined_clear() is a no-op (does not crash)", () => {
+    it("clear() is a no-op (does not crash)", () => {
       const head = new ZPP_PartitionPair();
-      expect(() => head.inlined_clear()).not.toThrow();
+      expect(() => head.clear()).not.toThrow();
     });
   });
 

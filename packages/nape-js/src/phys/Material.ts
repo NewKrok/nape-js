@@ -115,11 +115,6 @@ export class Material {
       });
     }
 
-    // Legacy fallback: compiled Material with zpp_inner
-    if (inner.zpp_inner) {
-      return Material._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as Material;
   }
 

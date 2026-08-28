@@ -101,7 +101,7 @@ describe("ZPP_IContact", () => {
     it("should behave identically to add", () => {
       const head = new ZPP_IContact();
       const a = new ZPP_IContact();
-      head.inlined_add(a);
+      head.add(a);
       expect(head.next).toBe(a);
       expect(head.length).toBe(1);
       expect(a._inuse).toBe(true);

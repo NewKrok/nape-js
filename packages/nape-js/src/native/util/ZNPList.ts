@@ -235,29 +235,3 @@ export class ZNPList<T> {
     return it != null ? it.elt : null;
   }
 }
-
-// Set inlined method aliases on prototype
-ZNPList.prototype.inlined_add = ZNPList.prototype.add;
-ZNPList.prototype.inlined_insert = ZNPList.prototype.insert;
-ZNPList.prototype.inlined_pop = ZNPList.prototype.pop;
-ZNPList.prototype.inlined_pop_unsafe = ZNPList.prototype.pop_unsafe;
-ZNPList.prototype.inlined_erase = ZNPList.prototype.erase;
-ZNPList.prototype.inlined_remove = ZNPList.prototype.remove;
-ZNPList.prototype.inlined_try_remove = ZNPList.prototype.try_remove;
-ZNPList.prototype.inlined_clear = ZNPList.prototype.clear;
-ZNPList.prototype.inlined_has = ZNPList.prototype.has;
-
-// Augment prototype type to include inlined aliases
-declare module "./ZNPList" {
-  interface ZNPList<T> {
-    inlined_add: ZNPList<T>["add"];
-    inlined_insert: ZNPList<T>["insert"];
-    inlined_pop: ZNPList<T>["pop"];
-    inlined_pop_unsafe: ZNPList<T>["pop_unsafe"];
-    inlined_erase: ZNPList<T>["erase"];
-    inlined_remove: ZNPList<T>["remove"];
-    inlined_try_remove: ZNPList<T>["try_remove"];
-    inlined_clear: ZNPList<T>["clear"];
-    inlined_has: ZNPList<T>["has"];
-  }
-}

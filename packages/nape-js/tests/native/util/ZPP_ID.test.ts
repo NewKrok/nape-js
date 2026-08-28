@@ -11,8 +11,6 @@ describe("ZPP_ID", () => {
     ZPP_ID._Listener = 0;
     ZPP_ID._ZPP_SimpleVert = 0;
     ZPP_ID._ZPP_SimpleSeg = 0;
-    ZPP_ID._Space = 0;
-    ZPP_ID._InteractionGroup = 0;
   });
 
   describe("Constraint", () => {
@@ -62,20 +60,6 @@ describe("ZPP_ID", () => {
     it("should return monotonically increasing IDs", () => {
       expect(ZPP_ID.ZPP_SimpleSeg()).toBe(0);
       expect(ZPP_ID.ZPP_SimpleSeg()).toBe(1);
-    });
-  });
-
-  describe("Space", () => {
-    it("should return monotonically increasing IDs", () => {
-      expect(ZPP_ID.Space()).toBe(0);
-      expect(ZPP_ID.Space()).toBe(1);
-    });
-  });
-
-  describe("InteractionGroup", () => {
-    it("should return monotonically increasing IDs", () => {
-      expect(ZPP_ID.InteractionGroup()).toBe(0);
-      expect(ZPP_ID.InteractionGroup()).toBe(1);
     });
   });
 

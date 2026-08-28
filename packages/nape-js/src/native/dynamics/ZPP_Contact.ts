@@ -85,15 +85,7 @@ export class ZPP_Contact {
 
   wrapper(): any {
     if (this.outer == null) {
-      if (ZPP_Contact._wrapFn) {
-        this.outer = ZPP_Contact._wrapFn(this);
-      } else {
-        // Legacy fallback: create wrapper via compiled namespace
-        ZPP_Contact.internal = true;
-        this.outer = new ZPP_Contact._nape.dynamics.Contact();
-        ZPP_Contact.internal = false;
-        this.outer.zpp_inner = this;
-      }
+      this.outer = ZPP_Contact._wrapFn!(this);
     }
     return this.outer;
   }
@@ -227,16 +219,6 @@ export class ZPP_Contact {
     return o;
   }
 
-  inlined_add(o: ZPP_Contact): ZPP_Contact {
-    o._inuse = true;
-    const temp = o;
-    temp.next = this.next;
-    this.next = temp;
-    this.modified = true;
-    this.length++;
-    return o;
-  }
-
   addAll(x: ZPP_Contact): void {
     let cx_ite = x.next;
     while (cx_ite != null) {
@@ -247,21 +229,6 @@ export class ZPP_Contact {
   }
 
   insert(cur: ZPP_Contact | null, o: ZPP_Contact): ZPP_Contact {
-    o._inuse = true;
-    const temp = o;
-    if (cur == null) {
-      temp.next = this.next;
-      this.next = temp;
-    } else {
-      temp.next = cur.next;
-      cur.next = temp;
-    }
-    this.pushmod = this.modified = true;
-    this.length++;
-    return temp;
-  }
-
-  inlined_insert(cur: ZPP_Contact | null, o: ZPP_Contact): ZPP_Contact {
     o._inuse = true;
     const temp = o;
     if (cur == null) {
@@ -287,24 +254,7 @@ export class ZPP_Contact {
     this.length--;
   }
 
-  inlined_pop(): void {
-    const ret = this.next!;
-    this.next = ret.next;
-    ret._inuse = false;
-    if (this.next == null) {
-      this.pushmod = true;
-    }
-    this.modified = true;
-    this.length--;
-  }
-
   pop_unsafe(): ZPP_Contact {
-    const ret = this.next!;
-    this.pop();
-    return ret;
-  }
-
-  inlined_pop_unsafe(): ZPP_Contact {
     const ret = this.next!;
     this.pop();
     return ret;
@@ -359,101 +309,7 @@ export class ZPP_Contact {
     return ret;
   }
 
-  inlined_remove(obj: ZPP_Contact): void {
-    let pre: ZPP_Contact | null = null;
-    let cur: ZPP_Contact | null = this.next;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_Contact;
-        let ret: ZPP_Contact | null;
-        if (pre == null) {
-          old = this.next!;
-          ret = old.next;
-          this.next = ret;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret = old.next;
-          pre.next = ret;
-          if (ret == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-  }
-
-  inlined_try_remove(obj: ZPP_Contact): boolean {
-    let pre: ZPP_Contact | null = null;
-    let cur: ZPP_Contact | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_Contact;
-        let ret1: ZPP_Contact | null;
-        if (pre == null) {
-          old = this.next!;
-          ret1 = old.next;
-          this.next = ret1;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret1 = old.next;
-          pre.next = ret1;
-          if (ret1 == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
   erase(pre: ZPP_Contact | null): ZPP_Contact | null {
-    let old: ZPP_Contact;
-    let ret: ZPP_Contact | null;
-    if (pre == null) {
-      old = this.next!;
-      ret = old.next;
-      this.next = ret;
-      if (this.next == null) {
-        this.pushmod = true;
-      }
-    } else {
-      old = pre.next!;
-      ret = old.next;
-      pre.next = ret;
-      if (ret == null) {
-        this.pushmod = true;
-      }
-    }
-    old._inuse = false;
-    this.modified = true;
-    this.length--;
-    this.pushmod = true;
-    return ret;
-  }
-
-  inlined_erase(pre: ZPP_Contact | null): ZPP_Contact | null {
     let old: ZPP_Contact;
     let ret: ZPP_Contact | null;
     if (pre == null) {
@@ -484,7 +340,6 @@ export class ZPP_Contact {
   }
 
   clear(): void {}
-  inlined_clear(): void {}
 
   reverse(): void {
     let cur: ZPP_Contact | null = this.next;
@@ -509,20 +364,6 @@ export class ZPP_Contact {
   }
 
   has(obj: ZPP_Contact): boolean {
-    let ret = false;
-    let cx_ite: ZPP_Contact | null = this.next;
-    while (cx_ite != null) {
-      const npite = cx_ite;
-      if (npite == obj) {
-        ret = true;
-        break;
-      }
-      cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  inlined_has(obj: ZPP_Contact): boolean {
     let ret = false;
     let cx_ite: ZPP_Contact | null = this.next;
     while (cx_ite != null) {

@@ -18,8 +18,6 @@ export class ZPP_ID {
   static _Listener = 0;
   static _ZPP_SimpleVert = 0;
   static _ZPP_SimpleSeg = 0;
-  static _Space = 0;
-  static _InteractionGroup = 0;
 
   // --- Static: ID generators ---
   static Constraint(): number {
@@ -48,13 +46,5 @@ export class ZPP_ID {
 
   static ZPP_SimpleSeg(): number {
     return ZPP_ID._ZPP_SimpleSeg++;
-  }
-
-  static Space(): number {
-    return ZPP_ID._Space++;
-  }
-
-  static InteractionGroup(): number {
-    return ZPP_ID._InteractionGroup++;
   }
 }

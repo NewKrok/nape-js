@@ -92,16 +92,6 @@ export class ZPP_PartitionPair {
     return o;
   }
 
-  inlined_add(o: ZPP_PartitionPair): ZPP_PartitionPair {
-    o._inuse = true;
-    const temp = o;
-    temp.next = this.next;
-    this.next = temp;
-    this.modified = true;
-    this.length++;
-    return o;
-  }
-
   addAll(x: ZPP_PartitionPair): void {
     let cx_ite: ZPP_PartitionPair | null = x.next;
     while (cx_ite != null) {
@@ -112,21 +102,6 @@ export class ZPP_PartitionPair {
   }
 
   insert(cur: ZPP_PartitionPair | null, o: ZPP_PartitionPair): ZPP_PartitionPair {
-    o._inuse = true;
-    const temp = o;
-    if (cur == null) {
-      temp.next = this.next;
-      this.next = temp;
-    } else {
-      temp.next = cur.next;
-      cur.next = temp;
-    }
-    this.pushmod = this.modified = true;
-    this.length++;
-    return temp;
-  }
-
-  inlined_insert(cur: ZPP_PartitionPair | null, o: ZPP_PartitionPair): ZPP_PartitionPair {
     o._inuse = true;
     const temp = o;
     if (cur == null) {
@@ -152,24 +127,7 @@ export class ZPP_PartitionPair {
     this.length--;
   }
 
-  inlined_pop(): void {
-    const ret = this.next!;
-    this.next = ret.next;
-    ret._inuse = false;
-    if (this.next == null) {
-      this.pushmod = true;
-    }
-    this.modified = true;
-    this.length--;
-  }
-
   pop_unsafe(): ZPP_PartitionPair {
-    const ret = this.next!;
-    this.pop();
-    return ret;
-  }
-
-  inlined_pop_unsafe(): ZPP_PartitionPair {
     const ret = this.next!;
     this.pop();
     return ret;
@@ -224,101 +182,7 @@ export class ZPP_PartitionPair {
     return ret;
   }
 
-  inlined_remove(obj: ZPP_PartitionPair): void {
-    let pre: ZPP_PartitionPair | null = null;
-    let cur: ZPP_PartitionPair | null = this.next;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_PartitionPair;
-        let ret1: ZPP_PartitionPair | null;
-        if (pre == null) {
-          old = this.next!;
-          ret1 = old.next;
-          this.next = ret1;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret1 = old.next;
-          pre.next = ret1;
-          if (ret1 == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-  }
-
-  inlined_try_remove(obj: ZPP_PartitionPair): boolean {
-    let pre: ZPP_PartitionPair | null = null;
-    let cur: ZPP_PartitionPair | null = this.next;
-    let ret = false;
-    while (cur != null) {
-      if (cur == obj) {
-        let old: ZPP_PartitionPair;
-        let ret1: ZPP_PartitionPair | null;
-        if (pre == null) {
-          old = this.next!;
-          ret1 = old.next;
-          this.next = ret1;
-          if (this.next == null) {
-            this.pushmod = true;
-          }
-        } else {
-          old = pre.next!;
-          ret1 = old.next;
-          pre.next = ret1;
-          if (ret1 == null) {
-            this.pushmod = true;
-          }
-        }
-        old._inuse = false;
-        this.modified = true;
-        this.length--;
-        this.pushmod = true;
-        ret = true;
-        break;
-      }
-      pre = cur;
-      cur = cur.next;
-    }
-    return ret;
-  }
-
   erase(pre: ZPP_PartitionPair | null): ZPP_PartitionPair | null {
-    let old: ZPP_PartitionPair;
-    let ret: ZPP_PartitionPair | null;
-    if (pre == null) {
-      old = this.next!;
-      ret = old.next;
-      this.next = ret;
-      if (this.next == null) {
-        this.pushmod = true;
-      }
-    } else {
-      old = pre.next!;
-      ret = old.next;
-      pre.next = ret;
-      if (ret == null) {
-        this.pushmod = true;
-      }
-    }
-    old._inuse = false;
-    this.modified = true;
-    this.length--;
-    this.pushmod = true;
-    return ret;
-  }
-
-  inlined_erase(pre: ZPP_PartitionPair | null): ZPP_PartitionPair | null {
     let old: ZPP_PartitionPair;
     let ret: ZPP_PartitionPair | null;
     if (pre == null) {
@@ -350,8 +214,6 @@ export class ZPP_PartitionPair {
 
   clear(): void {}
 
-  inlined_clear(): void {}
-
   reverse(): void {
     let cur: ZPP_PartitionPair | null = this.next;
     let pre: ZPP_PartitionPair | null = null;
@@ -375,20 +237,6 @@ export class ZPP_PartitionPair {
   }
 
   has(obj: ZPP_PartitionPair): boolean {
-    let ret = false;
-    let cx_ite: ZPP_PartitionPair | null = this.next;
-    while (cx_ite != null) {
-      const npite = cx_ite;
-      if (npite == obj) {
-        ret = true;
-        break;
-      }
-      cx_ite = cx_ite.next;
-    }
-    return ret;
-  }
-
-  inlined_has(obj: ZPP_PartitionPair): boolean {
     let ret = false;
     let cx_ite: ZPP_PartitionPair | null = this.next;
     while (cx_ite != null) {

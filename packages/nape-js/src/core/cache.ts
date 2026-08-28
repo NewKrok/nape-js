@@ -27,11 +27,3 @@ export function getOrCreate<T>(inner: any, create: (inner: any) => T): T {
   }
   return wrapper;
 }
-
-/**
- * Invalidate a cached wrapper (e.g. after disposal).
- * @internal
- */
-export function uncache(inner: any): void {
-  if (inner) cache.delete(inner);
-}

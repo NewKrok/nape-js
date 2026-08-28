@@ -86,11 +86,6 @@ export class Vec3 {
       });
     }
 
-    // Legacy fallback: compiled Vec3 with zpp_inner
-    if (inner.zpp_inner) {
-      return Vec3._wrap(inner.zpp_inner);
-    }
-
     return null as unknown as Vec3;
   }
 

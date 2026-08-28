@@ -71,14 +71,6 @@ describe("InteractionGroup — coverage", () => {
   });
 
   describe("_wrap edge cases", () => {
-    it("should wrap legacy object with zpp_inner", () => {
-      const g = new InteractionGroup(true);
-      const legacy = { zpp_inner: g.zpp_inner };
-      const wrapped = InteractionGroup._wrap(legacy);
-      expect(wrapped).toBeInstanceOf(InteractionGroup);
-      expect(wrapped.ignore).toBe(true);
-    });
-
     it("should return null for unknown object", () => {
       const result = InteractionGroup._wrap({ foo: "bar" });
       expect(result).toBeNull();
