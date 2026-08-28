@@ -112,10 +112,18 @@ import { ZPP_SpatialHashPhase } from "../space/ZPP_SpatialHashPhase";
  * Registers all ZPP_* classes into the given nape namespace (from getNape()).
  * Invoked once by core/bootstrap.ts; idempotent.
  */
+// Module-local guard: registration must run once per module INSTANCE, not
+// once per namespace. A page can legitimately load two copies of the bundle
+// (e.g. the docs site importing the entry with differing ?v= query strings);
+// each copy's classes need their _nape/_zpp statics set, so a flag stored on
+// the shared namespace would leave the second copy's classes unregistered
+// (this crashed CharacterController on the docs site in 3.40.0).
+let registered = false;
+
 export function registerZPPClasses(nape: any): any {
   const zpp: any = nape.__zpp;
-  if (zpp.__classesRegistered) return nape;
-  zpp.__classesRegistered = true;
+  if (registered) return nape;
+  registered = true;
 
   // --- top-level ---
   zpp.ZPP_Const = ZPP_Const;
