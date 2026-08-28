@@ -92,6 +92,20 @@ export class ZNPList<T> {
     return ret;
   }
 
+  try_remove(obj: T): boolean {
+    let pre: ZNPNode<T> | null = null;
+    let cur = this.head;
+    while (cur != null) {
+      if (cur.elt == obj) {
+        this.erase(pre);
+        return true;
+      }
+      pre = cur;
+      cur = cur.next;
+    }
+    return false;
+  }
+
   erase(pre: ZNPNode<T> | null): ZNPNode<T> | null {
     let old: ZNPNode<T>;
     let ret: ZNPNode<T> | null;

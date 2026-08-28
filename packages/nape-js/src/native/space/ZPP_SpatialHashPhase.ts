@@ -412,16 +412,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
       const shape = this.shapes[i];
       const aabb = shape.aabb;
       if (aabb.minx <= x && aabb.maxx >= x && aabb.miny <= y && aabb.maxy >= y) {
-        let tmp: boolean;
-        if (filter != null) {
-          const _this = shape.filter;
-          tmp =
-            (_this.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape.filter.shouldCollide(filter)) {
           if (shape.type == 0) {
             if (ZPP_Collide.circleContains(shape.circle, v)) {
               ret1.push(shape.outer);
@@ -461,16 +452,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
       if (aabb.minx <= x && aabb.maxx >= x && aabb.miny <= y && aabb.maxy >= y) {
         const body = shape.body.outer;
         if (!seen.has(body)) {
-          let tmp: boolean;
-          if (filter != null) {
-            const _this = shape.filter;
-            tmp =
-              (_this.collisionMask & filter.collisionGroup) != 0 &&
-              (filter.collisionMask & _this.collisionGroup) != 0;
-          } else {
-            tmp = true;
-          }
-          if (tmp) {
+          if (filter == null || shape.filter.shouldCollide(filter)) {
             if (shape.type == 0) {
               if (ZPP_Collide.circleContains(shape.circle, v)) {
                 seen.add(body);
@@ -509,16 +491,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
 
     for (let i = 0; i < this.shapes.length; i++) {
       const shape = this.shapes[i];
-      let tmp: boolean;
-      if (filter != null) {
-        const _this = shape.filter;
-        tmp =
-          (_this.collisionMask & filter.collisionGroup) != 0 &&
-          (filter.collisionMask & _this.collisionGroup) != 0;
-      } else {
-        tmp = true;
-      }
-      if (tmp) {
+      if (filter == null || shape.filter.shouldCollide(filter)) {
         if (strict) {
           if (containment) {
             if (ZPP_Collide.containTest((this as any).aabbShape.zpp_inner, shape)) {
@@ -584,16 +557,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         ab.minx <= _this.maxx &&
         _this.minx <= ab.maxx
       ) {
-        let tmp: boolean;
-        if (filter != null) {
-          const _this1 = shape.filter;
-          tmp =
-            (_this1.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this1.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape.filter.shouldCollide(filter)) {
           if (strict) {
             if (containment) {
               if (!failed.has(body)) {
@@ -675,16 +639,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         ab.minx <= _this.maxx &&
         _this.minx <= ab.maxx
       ) {
-        let tmp: boolean;
-        if (filter != null) {
-          const _this1 = shape.filter;
-          tmp =
-            (_this1.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this1.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape.filter.shouldCollide(filter)) {
           if (containment) {
             if (ZPP_Collide.containTest((this as any).circShape.zpp_inner, shape)) {
               ret.push(shape.outer);
@@ -724,16 +679,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         _this.minx <= ab.maxx
       ) {
         const body = shape.body.outer;
-        let tmp: boolean;
-        if (filter != null) {
-          const _this1 = shape.filter;
-          tmp =
-            (_this1.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this1.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape.filter.shouldCollide(filter)) {
           if (containment) {
             if (!failed.has(body)) {
               const col = ZPP_Collide.containTest((this as any).circShape.zpp_inner, shape);
@@ -776,16 +722,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         ab.minx <= _this.maxx &&
         _this.minx <= ab.maxx
       ) {
-        let tmp: boolean;
-        if (filter != null) {
-          const _this1 = shape2.filter;
-          tmp =
-            (_this1.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this1.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape2.filter.shouldCollide(filter)) {
           if (containment) {
             if (ZPP_Collide.containTest(shape, shape2)) {
               ret.push(shape2.outer);
@@ -818,16 +755,7 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         _this.minx <= ab.maxx
       ) {
         const body = shape2.body.outer;
-        let tmp: boolean;
-        if (filter != null) {
-          const _this1 = shape2.filter;
-          tmp =
-            (_this1.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this1.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape2.filter.shouldCollide(filter)) {
           if (containment) {
             if (!failed.has(body)) {
               const col = ZPP_Collide.containTest(shape, shape2);

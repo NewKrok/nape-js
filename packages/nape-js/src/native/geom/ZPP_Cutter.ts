@@ -10,9 +10,7 @@
 
 import { ZPP_CutVert } from "./ZPP_CutVert";
 import { ZPP_CutInt } from "./ZPP_CutInt";
-import { ZPP_GeomVert } from "./ZPP_GeomVert";
-import { ZPP_Vec2 } from "./ZPP_Vec2";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
+import { ZPP_GeomVert, disposeGeomVertWrap } from "./ZPP_GeomVert";
 import { getNape } from "../../core/engine";
 
 export class ZPP_Cutter {
@@ -857,46 +855,7 @@ export class ZPP_Cutter {
         if (j1.end != null && j1.end.prev == j1.end) {
           j1.end.next = j1.end.prev = null;
           const o = j1.end;
-          if (o.wrap != null) {
-            o.wrap.zpp_inner._inuse = false;
-            const _this4 = o.wrap;
-            if (_this4 != null && _this4.zpp_disp) {
-              throw new Error("Vec2 has been disposed and cannot be used!");
-            }
-            const _this5 = _this4.zpp_inner;
-            if (_this5._immutable) {
-              throw new Error("Vec2 is immutable");
-            }
-            if (_this5._isimmutable != null) {
-              _this5._isimmutable();
-            }
-            if (_this4.zpp_inner._inuse) {
-              throw new Error("This Vec2 is not disposable");
-            }
-            const inner = _this4.zpp_inner;
-            _this4.zpp_inner.outer = null;
-            _this4.zpp_inner = null;
-            const o1 = _this4;
-            o1.zpp_pool = null;
-            if (ZPP_PubPool.nextVec2 != null) {
-              ZPP_PubPool.nextVec2.zpp_pool = o1;
-            } else {
-              ZPP_PubPool.poolVec2 = o1;
-            }
-            ZPP_PubPool.nextVec2 = o1;
-            o1.zpp_disp = true;
-            const o2 = inner;
-            if (o2.outer != null) {
-              o2.outer.zpp_inner = null;
-              o2.outer = null;
-            }
-            o2._isimmutable = null;
-            o2._validate = null;
-            o2._invalidate = null;
-            o2.next = ZPP_Vec2.zpp_pool;
-            ZPP_Vec2.zpp_pool = o2;
-            o.wrap = null;
-          }
+          disposeGeomVertWrap(o);
           o.prev = o.next = null;
           o.next = ZPP_GeomVert.zpp_pool;
           ZPP_GeomVert.zpp_pool = o;
@@ -907,46 +866,7 @@ export class ZPP_Cutter {
           j1.end.next.prev = j1.end.prev;
           j1.end.next = j1.end.prev = null;
           const o3 = j1.end;
-          if (o3.wrap != null) {
-            o3.wrap.zpp_inner._inuse = false;
-            const _this6 = o3.wrap;
-            if (_this6 != null && _this6.zpp_disp) {
-              throw new Error("Vec2 has been disposed and cannot be used!");
-            }
-            const _this7 = _this6.zpp_inner;
-            if (_this7._immutable) {
-              throw new Error("Vec2 is immutable");
-            }
-            if (_this7._isimmutable != null) {
-              _this7._isimmutable();
-            }
-            if (_this6.zpp_inner._inuse) {
-              throw new Error("This Vec2 is not disposable");
-            }
-            const inner1 = _this6.zpp_inner;
-            _this6.zpp_inner.outer = null;
-            _this6.zpp_inner = null;
-            const o4 = _this6;
-            o4.zpp_pool = null;
-            if (ZPP_PubPool.nextVec2 != null) {
-              ZPP_PubPool.nextVec2.zpp_pool = o4;
-            } else {
-              ZPP_PubPool.poolVec2 = o4;
-            }
-            ZPP_PubPool.nextVec2 = o4;
-            o4.zpp_disp = true;
-            const o5 = inner1;
-            if (o5.outer != null) {
-              o5.outer.zpp_inner = null;
-              o5.outer = null;
-            }
-            o5._isimmutable = null;
-            o5._validate = null;
-            o5._invalidate = null;
-            o5.next = ZPP_Vec2.zpp_pool;
-            ZPP_Vec2.zpp_pool = o5;
-            o3.wrap = null;
-          }
+          disposeGeomVertWrap(o3);
           o3.prev = o3.next = null;
           o3.next = ZPP_GeomVert.zpp_pool;
           ZPP_GeomVert.zpp_pool = o3;
@@ -962,46 +882,7 @@ export class ZPP_Cutter {
             if (j1.end != null && j1.end.prev == j1.end) {
               j1.end.next = j1.end.prev = null;
               const o6 = j1.end;
-              if (o6.wrap != null) {
-                o6.wrap.zpp_inner._inuse = false;
-                const _this8 = o6.wrap;
-                if (_this8 != null && _this8.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this9 = _this8.zpp_inner;
-                if (_this9._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this9._isimmutable != null) {
-                  _this9._isimmutable();
-                }
-                if (_this8.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner2 = _this8.zpp_inner;
-                _this8.zpp_inner.outer = null;
-                _this8.zpp_inner = null;
-                const o7 = _this8;
-                o7.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o7;
-                } else {
-                  ZPP_PubPool.poolVec2 = o7;
-                }
-                ZPP_PubPool.nextVec2 = o7;
-                o7.zpp_disp = true;
-                const o8 = inner2;
-                if (o8.outer != null) {
-                  o8.outer.zpp_inner = null;
-                  o8.outer = null;
-                }
-                o8._isimmutable = null;
-                o8._validate = null;
-                o8._invalidate = null;
-                o8.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o8;
-                o6.wrap = null;
-              }
+              disposeGeomVertWrap(o6);
               o6.prev = o6.next = null;
               o6.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o6;
@@ -1012,46 +893,7 @@ export class ZPP_Cutter {
               j1.end.next.prev = j1.end.prev;
               j1.end.next = j1.end.prev = null;
               const o9 = j1.end;
-              if (o9.wrap != null) {
-                o9.wrap.zpp_inner._inuse = false;
-                const _this10 = o9.wrap;
-                if (_this10 != null && _this10.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this11 = _this10.zpp_inner;
-                if (_this11._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this11._isimmutable != null) {
-                  _this11._isimmutable();
-                }
-                if (_this10.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner3 = _this10.zpp_inner;
-                _this10.zpp_inner.outer = null;
-                _this10.zpp_inner = null;
-                const o10 = _this10;
-                o10.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o10;
-                } else {
-                  ZPP_PubPool.poolVec2 = o10;
-                }
-                ZPP_PubPool.nextVec2 = o10;
-                o10.zpp_disp = true;
-                const o11 = inner3;
-                if (o11.outer != null) {
-                  o11.outer.zpp_inner = null;
-                  o11.outer = null;
-                }
-                o11._isimmutable = null;
-                o11._validate = null;
-                o11._invalidate = null;
-                o11.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o11;
-                o9.wrap = null;
-              }
+              disposeGeomVertWrap(o9);
               o9.prev = o9.next = null;
               o9.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o9;
@@ -1066,46 +908,7 @@ export class ZPP_Cutter {
             if (n != null && n.prev == n) {
               n.next = n.prev = null;
               const o12 = n;
-              if (o12.wrap != null) {
-                o12.wrap.zpp_inner._inuse = false;
-                const _this12 = o12.wrap;
-                if (_this12 != null && _this12.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this13 = _this12.zpp_inner;
-                if (_this13._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this13._isimmutable != null) {
-                  _this13._isimmutable();
-                }
-                if (_this12.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner4 = _this12.zpp_inner;
-                _this12.zpp_inner.outer = null;
-                _this12.zpp_inner = null;
-                const o13 = _this12;
-                o13.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o13;
-                } else {
-                  ZPP_PubPool.poolVec2 = o13;
-                }
-                ZPP_PubPool.nextVec2 = o13;
-                o13.zpp_disp = true;
-                const o14 = inner4;
-                if (o14.outer != null) {
-                  o14.outer.zpp_inner = null;
-                  o14.outer = null;
-                }
-                o14._isimmutable = null;
-                o14._validate = null;
-                o14._invalidate = null;
-                o14.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o14;
-                o12.wrap = null;
-              }
+              disposeGeomVertWrap(o12);
               o12.prev = o12.next = null;
               o12.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o12;
@@ -1114,46 +917,7 @@ export class ZPP_Cutter {
               n.next.prev = n.prev;
               n.next = n.prev = null;
               const o15 = n;
-              if (o15.wrap != null) {
-                o15.wrap.zpp_inner._inuse = false;
-                const _this14 = o15.wrap;
-                if (_this14 != null && _this14.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this15 = _this14.zpp_inner;
-                if (_this15._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this15._isimmutable != null) {
-                  _this15._isimmutable();
-                }
-                if (_this14.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner5 = _this14.zpp_inner;
-                _this14.zpp_inner.outer = null;
-                _this14.zpp_inner = null;
-                const o16 = _this14;
-                o16.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o16;
-                } else {
-                  ZPP_PubPool.poolVec2 = o16;
-                }
-                ZPP_PubPool.nextVec2 = o16;
-                o16.zpp_disp = true;
-                const o17 = inner5;
-                if (o17.outer != null) {
-                  o17.outer.zpp_inner = null;
-                  o17.outer = null;
-                }
-                o17._isimmutable = null;
-                o17._validate = null;
-                o17._invalidate = null;
-                o17.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o17;
-                o15.wrap = null;
-              }
+              disposeGeomVertWrap(o15);
               o15.prev = o15.next = null;
               o15.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o15;
@@ -1217,46 +981,7 @@ export class ZPP_Cutter {
         if (i1.end != null && i1.end.prev == i1.end) {
           i1.end.next = i1.end.prev = null;
           const o18 = i1.end;
-          if (o18.wrap != null) {
-            o18.wrap.zpp_inner._inuse = false;
-            const _this16 = o18.wrap;
-            if (_this16 != null && _this16.zpp_disp) {
-              throw new Error("Vec2 has been disposed and cannot be used!");
-            }
-            const _this17 = _this16.zpp_inner;
-            if (_this17._immutable) {
-              throw new Error("Vec2 is immutable");
-            }
-            if (_this17._isimmutable != null) {
-              _this17._isimmutable();
-            }
-            if (_this16.zpp_inner._inuse) {
-              throw new Error("This Vec2 is not disposable");
-            }
-            const inner6 = _this16.zpp_inner;
-            _this16.zpp_inner.outer = null;
-            _this16.zpp_inner = null;
-            const o19 = _this16;
-            o19.zpp_pool = null;
-            if (ZPP_PubPool.nextVec2 != null) {
-              ZPP_PubPool.nextVec2.zpp_pool = o19;
-            } else {
-              ZPP_PubPool.poolVec2 = o19;
-            }
-            ZPP_PubPool.nextVec2 = o19;
-            o19.zpp_disp = true;
-            const o20 = inner6;
-            if (o20.outer != null) {
-              o20.outer.zpp_inner = null;
-              o20.outer = null;
-            }
-            o20._isimmutable = null;
-            o20._validate = null;
-            o20._invalidate = null;
-            o20.next = ZPP_Vec2.zpp_pool;
-            ZPP_Vec2.zpp_pool = o20;
-            o18.wrap = null;
-          }
+          disposeGeomVertWrap(o18);
           o18.prev = o18.next = null;
           o18.next = ZPP_GeomVert.zpp_pool;
           ZPP_GeomVert.zpp_pool = o18;
@@ -1267,46 +992,7 @@ export class ZPP_Cutter {
           i1.end.next.prev = i1.end.prev;
           i1.end.next = i1.end.prev = null;
           const o21 = i1.end;
-          if (o21.wrap != null) {
-            o21.wrap.zpp_inner._inuse = false;
-            const _this18 = o21.wrap;
-            if (_this18 != null && _this18.zpp_disp) {
-              throw new Error("Vec2 has been disposed and cannot be used!");
-            }
-            const _this19 = _this18.zpp_inner;
-            if (_this19._immutable) {
-              throw new Error("Vec2 is immutable");
-            }
-            if (_this19._isimmutable != null) {
-              _this19._isimmutable();
-            }
-            if (_this18.zpp_inner._inuse) {
-              throw new Error("This Vec2 is not disposable");
-            }
-            const inner7 = _this18.zpp_inner;
-            _this18.zpp_inner.outer = null;
-            _this18.zpp_inner = null;
-            const o22 = _this18;
-            o22.zpp_pool = null;
-            if (ZPP_PubPool.nextVec2 != null) {
-              ZPP_PubPool.nextVec2.zpp_pool = o22;
-            } else {
-              ZPP_PubPool.poolVec2 = o22;
-            }
-            ZPP_PubPool.nextVec2 = o22;
-            o22.zpp_disp = true;
-            const o23 = inner7;
-            if (o23.outer != null) {
-              o23.outer.zpp_inner = null;
-              o23.outer = null;
-            }
-            o23._isimmutable = null;
-            o23._validate = null;
-            o23._invalidate = null;
-            o23.next = ZPP_Vec2.zpp_pool;
-            ZPP_Vec2.zpp_pool = o23;
-            o21.wrap = null;
-          }
+          disposeGeomVertWrap(o21);
           o21.prev = o21.next = null;
           o21.next = ZPP_GeomVert.zpp_pool;
           ZPP_GeomVert.zpp_pool = o21;
@@ -1322,46 +1008,7 @@ export class ZPP_Cutter {
             if (i1.end != null && i1.end.prev == i1.end) {
               i1.end.next = i1.end.prev = null;
               const o24 = i1.end;
-              if (o24.wrap != null) {
-                o24.wrap.zpp_inner._inuse = false;
-                const _this20 = o24.wrap;
-                if (_this20 != null && _this20.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this21 = _this20.zpp_inner;
-                if (_this21._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this21._isimmutable != null) {
-                  _this21._isimmutable();
-                }
-                if (_this20.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner8 = _this20.zpp_inner;
-                _this20.zpp_inner.outer = null;
-                _this20.zpp_inner = null;
-                const o25 = _this20;
-                o25.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o25;
-                } else {
-                  ZPP_PubPool.poolVec2 = o25;
-                }
-                ZPP_PubPool.nextVec2 = o25;
-                o25.zpp_disp = true;
-                const o26 = inner8;
-                if (o26.outer != null) {
-                  o26.outer.zpp_inner = null;
-                  o26.outer = null;
-                }
-                o26._isimmutable = null;
-                o26._validate = null;
-                o26._invalidate = null;
-                o26.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o26;
-                o24.wrap = null;
-              }
+              disposeGeomVertWrap(o24);
               o24.prev = o24.next = null;
               o24.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o24;
@@ -1372,46 +1019,7 @@ export class ZPP_Cutter {
               i1.end.next.prev = i1.end.prev;
               i1.end.next = i1.end.prev = null;
               const o27 = i1.end;
-              if (o27.wrap != null) {
-                o27.wrap.zpp_inner._inuse = false;
-                const _this22 = o27.wrap;
-                if (_this22 != null && _this22.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this23 = _this22.zpp_inner;
-                if (_this23._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this23._isimmutable != null) {
-                  _this23._isimmutable();
-                }
-                if (_this22.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner9 = _this22.zpp_inner;
-                _this22.zpp_inner.outer = null;
-                _this22.zpp_inner = null;
-                const o28 = _this22;
-                o28.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o28;
-                } else {
-                  ZPP_PubPool.poolVec2 = o28;
-                }
-                ZPP_PubPool.nextVec2 = o28;
-                o28.zpp_disp = true;
-                const o29 = inner9;
-                if (o29.outer != null) {
-                  o29.outer.zpp_inner = null;
-                  o29.outer = null;
-                }
-                o29._isimmutable = null;
-                o29._validate = null;
-                o29._invalidate = null;
-                o29.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o29;
-                o27.wrap = null;
-              }
+              disposeGeomVertWrap(o27);
               o27.prev = o27.next = null;
               o27.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o27;
@@ -1426,46 +1034,7 @@ export class ZPP_Cutter {
             if (n1 != null && n1.prev == n1) {
               n1.next = n1.prev = null;
               const o30 = n1;
-              if (o30.wrap != null) {
-                o30.wrap.zpp_inner._inuse = false;
-                const _this24 = o30.wrap;
-                if (_this24 != null && _this24.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this25 = _this24.zpp_inner;
-                if (_this25._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this25._isimmutable != null) {
-                  _this25._isimmutable();
-                }
-                if (_this24.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner10 = _this24.zpp_inner;
-                _this24.zpp_inner.outer = null;
-                _this24.zpp_inner = null;
-                const o31 = _this24;
-                o31.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o31;
-                } else {
-                  ZPP_PubPool.poolVec2 = o31;
-                }
-                ZPP_PubPool.nextVec2 = o31;
-                o31.zpp_disp = true;
-                const o32 = inner10;
-                if (o32.outer != null) {
-                  o32.outer.zpp_inner = null;
-                  o32.outer = null;
-                }
-                o32._isimmutable = null;
-                o32._validate = null;
-                o32._invalidate = null;
-                o32.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o32;
-                o30.wrap = null;
-              }
+              disposeGeomVertWrap(o30);
               o30.prev = o30.next = null;
               o30.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o30;
@@ -1474,46 +1043,7 @@ export class ZPP_Cutter {
               n1.next.prev = n1.prev;
               n1.next = n1.prev = null;
               const o33 = n1;
-              if (o33.wrap != null) {
-                o33.wrap.zpp_inner._inuse = false;
-                const _this26 = o33.wrap;
-                if (_this26 != null && _this26.zpp_disp) {
-                  throw new Error("Vec2 has been disposed and cannot be used!");
-                }
-                const _this27 = _this26.zpp_inner;
-                if (_this27._immutable) {
-                  throw new Error("Vec2 is immutable");
-                }
-                if (_this27._isimmutable != null) {
-                  _this27._isimmutable();
-                }
-                if (_this26.zpp_inner._inuse) {
-                  throw new Error("This Vec2 is not disposable");
-                }
-                const inner11 = _this26.zpp_inner;
-                _this26.zpp_inner.outer = null;
-                _this26.zpp_inner = null;
-                const o34 = _this26;
-                o34.zpp_pool = null;
-                if (ZPP_PubPool.nextVec2 != null) {
-                  ZPP_PubPool.nextVec2.zpp_pool = o34;
-                } else {
-                  ZPP_PubPool.poolVec2 = o34;
-                }
-                ZPP_PubPool.nextVec2 = o34;
-                o34.zpp_disp = true;
-                const o35 = inner11;
-                if (o35.outer != null) {
-                  o35.outer.zpp_inner = null;
-                  o35.outer = null;
-                }
-                o35._isimmutable = null;
-                o35._validate = null;
-                o35._invalidate = null;
-                o35.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o35;
-                o33.wrap = null;
-              }
+              disposeGeomVertWrap(o33);
               o33.prev = o33.next = null;
               o33.next = ZPP_GeomVert.zpp_pool;
               ZPP_GeomVert.zpp_pool = o33;

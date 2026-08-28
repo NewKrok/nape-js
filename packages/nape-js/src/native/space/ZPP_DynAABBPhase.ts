@@ -483,19 +483,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
 
   /** Prepend pair p onto a shape's ZNPList_ZPP_AABBPair. */
   private _pushPairNode(list: any, p: ZPP_AABBPair): void {
-    let n;
-    if (ZNPNode_ZPP_AABBPair.zpp_pool == null) {
-      n = new ZNPNode_ZPP_AABBPair();
-    } else {
-      n = ZNPNode_ZPP_AABBPair.zpp_pool;
-      ZNPNode_ZPP_AABBPair.zpp_pool = n.next;
-      n.next = null;
-    }
-    n.elt = p;
-    n.next = list.head;
-    list.head = n;
-    list.modified = true;
-    list.length++;
+    list.add(p);
   }
 
   /** Stack-walk one tree for overlaps with leaf's fat AABB, creating/waking pairs. */
@@ -733,16 +721,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         const _this = node.aabb;
         if (v.x >= _this.minx && v.x <= _this.maxx && v.y >= _this.miny && v.y <= _this.maxy) {
           if (node.child1 == null) {
-            let tmp;
-            if (filter != null) {
-              const _this1 = node.shape.filter;
-              tmp =
-                (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this1.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               if (node.shape.type == 0) {
                 if (ZPP_Collide.circleContains(node.shape.circle, v)) {
                   ret1.push(node.shape.outer);
@@ -772,16 +751,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         const _this2 = node1.aabb;
         if (v.x >= _this2.minx && v.x <= _this2.maxx && v.y >= _this2.miny && v.y <= _this2.maxy) {
           if (node1.child1 == null) {
-            let tmp1;
-            if (filter != null) {
-              const _this3 = node1.shape.filter;
-              tmp1 =
-                (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this3.collisionGroup) != 0;
-            } else {
-              tmp1 = true;
-            }
-            if (tmp1) {
+            if (filter == null || node1.shape.filter.shouldCollide(filter)) {
               if (node1.shape.type == 0) {
                 if (ZPP_Collide.circleContains(node1.shape.circle, v)) {
                   ret1.push(node1.shape.outer);
@@ -844,16 +814,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           if (node.child1 == null) {
             const body = node.shape.body.outer;
             if (!ret1.has(body)) {
-              let tmp;
-              if (filter != null) {
-                const _this1 = node.shape.filter;
-                tmp =
-                  (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                  (filter.collisionMask & _this1.collisionGroup) != 0;
-              } else {
-                tmp = true;
-              }
-              if (tmp) {
+              if (filter == null || node.shape.filter.shouldCollide(filter)) {
                 if (node.shape.type == 0) {
                   if (ZPP_Collide.circleContains(node.shape.circle, v)) {
                     ret1.push(body);
@@ -886,16 +847,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           if (node1.child1 == null) {
             const body1 = node1.shape.body.outer;
             if (!ret1.has(body1)) {
-              let tmp1;
-              if (filter != null) {
-                const _this3 = node1.shape.filter;
-                tmp1 =
-                  (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                  (filter.collisionMask & _this3.collisionGroup) != 0;
-              } else {
-                tmp1 = true;
-              }
-              if (tmp1) {
+              if (filter == null || node1.shape.filter.shouldCollide(filter)) {
                 if (node1.shape.type == 0) {
                   if (ZPP_Collide.circleContains(node1.shape.circle, v)) {
                     ret1.push(body1);
@@ -946,16 +898,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         const x = node.aabb;
         if (x.minx >= ab.minx && x.miny >= ab.miny && x.maxx <= ab.maxx && x.maxy <= ab.maxy) {
           if (node.child1 == null) {
-            let tmp;
-            if (filter != null) {
-              const _this = node.shape.filter;
-              tmp =
-                (_this.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               ret.push(node.shape.outer);
             }
           } else {
@@ -966,16 +909,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             while (this.treeStack2.head != null) {
               const node1 = this.treeStack2.pop_unsafe();
               if (node1.child1 == null) {
-                let tmp1;
-                if (filter != null) {
-                  const _this1 = node1.shape.filter;
-                  tmp1 =
-                    (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                    (filter.collisionMask & _this1.collisionGroup) != 0;
-                } else {
-                  tmp1 = true;
-                }
-                if (tmp1) {
+                if (filter == null || node1.shape.filter.shouldCollide(filter)) {
                   ret.push(node1.shape.outer);
                 }
               } else {
@@ -997,16 +931,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             _this2.minx <= ab.maxx
           ) {
             if (node.child1 == null) {
-              let tmp2;
-              if (filter != null) {
-                const _this3 = node.shape.filter;
-                tmp2 =
-                  (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                  (filter.collisionMask & _this3.collisionGroup) != 0;
-              } else {
-                tmp2 = true;
-              }
-              if (tmp2) {
+              if (filter == null || node.shape.filter.shouldCollide(filter)) {
                 if (strict) {
                   if (containment) {
                     if (ZPP_Collide.containTest(this.aabbShape.zpp_inner, node.shape)) {
@@ -1064,16 +989,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         const x3 = node2.aabb;
         if (x3.minx >= ab.minx && x3.miny >= ab.miny && x3.maxx <= ab.maxx && x3.maxy <= ab.maxy) {
           if (node2.child1 == null) {
-            let tmp4;
-            if (filter != null) {
-              const _this4 = node2.shape.filter;
-              tmp4 =
-                (_this4.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this4.collisionGroup) != 0;
-            } else {
-              tmp4 = true;
-            }
-            if (tmp4) {
+            if (filter == null || node2.shape.filter.shouldCollide(filter)) {
               ret.push(node2.shape.outer);
             }
           } else {
@@ -1084,16 +1000,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             while (this.treeStack2.head != null) {
               const node3 = this.treeStack2.pop_unsafe();
               if (node3.child1 == null) {
-                let tmp5;
-                if (filter != null) {
-                  const _this5 = node3.shape.filter;
-                  tmp5 =
-                    (_this5.collisionMask & filter.collisionGroup) != 0 &&
-                    (filter.collisionMask & _this5.collisionGroup) != 0;
-                } else {
-                  tmp5 = true;
-                }
-                if (tmp5) {
+                if (filter == null || node3.shape.filter.shouldCollide(filter)) {
                   ret.push(node3.shape.outer);
                 }
               } else {
@@ -1115,16 +1022,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             _this6.minx <= ab.maxx
           ) {
             if (node2.child1 == null) {
-              let tmp6;
-              if (filter != null) {
-                const _this7 = node2.shape.filter;
-                tmp6 =
-                  (_this7.collisionMask & filter.collisionGroup) != 0 &&
-                  (filter.collisionMask & _this7.collisionGroup) != 0;
-              } else {
-                tmp6 = true;
-              }
-              if (tmp6) {
+              if (filter == null || node2.shape.filter.shouldCollide(filter)) {
                 if (strict) {
                   if (containment) {
                     if (ZPP_Collide.containTest(this.aabbShape.zpp_inner, node2.shape)) {
@@ -1197,16 +1095,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         const x = node.aabb;
         if (x.minx >= ab.minx && x.miny >= ab.miny && x.maxx <= ab.maxx && x.maxy <= ab.maxy) {
           if (node.child1 == null) {
-            let tmp;
-            if (filter != null) {
-              const _this = node.shape.filter;
-              tmp =
-                (_this.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               const body = node.shape.body.outer;
               if (!ret.has(body)) {
                 ret.push(body);
@@ -1220,16 +1109,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             while (this.treeStack2.head != null) {
               const node1 = this.treeStack2.pop_unsafe();
               if (node1.child1 == null) {
-                let tmp1;
-                if (filter != null) {
-                  const _this1 = node1.shape.filter;
-                  tmp1 =
-                    (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                    (filter.collisionMask & _this1.collisionGroup) != 0;
-                } else {
-                  tmp1 = true;
-                }
-                if (tmp1) {
+                if (filter == null || node1.shape.filter.shouldCollide(filter)) {
                   const body1 = node1.shape.body.outer;
                   if (!ret.has(body1)) {
                     ret.push(body1);
@@ -1255,16 +1135,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           ) {
             if (node.child1 == null) {
               const body2 = node.shape.body.outer;
-              let tmp2;
-              if (filter != null) {
-                const _this3 = node.shape.filter;
-                tmp2 =
-                  (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                  (filter.collisionMask & _this3.collisionGroup) != 0;
-              } else {
-                tmp2 = true;
-              }
-              if (tmp2) {
+              if (filter == null || node.shape.filter.shouldCollide(filter)) {
                 if (strict) {
                   if (containment) {
                     if (!this.failed.has(body2)) {
@@ -1336,16 +1207,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         const x3 = node2.aabb;
         if (x3.minx >= ab.minx && x3.miny >= ab.miny && x3.maxx <= ab.maxx && x3.maxy <= ab.maxy) {
           if (node2.child1 == null) {
-            let tmp4;
-            if (filter != null) {
-              const _this4 = node2.shape.filter;
-              tmp4 =
-                (_this4.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this4.collisionGroup) != 0;
-            } else {
-              tmp4 = true;
-            }
-            if (tmp4) {
+            if (filter == null || node2.shape.filter.shouldCollide(filter)) {
               const body3 = node2.shape.body.outer;
               if (!ret.has(body3)) {
                 ret.push(body3);
@@ -1359,16 +1221,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             while (this.treeStack2.head != null) {
               const node3 = this.treeStack2.pop_unsafe();
               if (node3.child1 == null) {
-                let tmp5;
-                if (filter != null) {
-                  const _this5 = node3.shape.filter;
-                  tmp5 =
-                    (_this5.collisionMask & filter.collisionGroup) != 0 &&
-                    (filter.collisionMask & _this5.collisionGroup) != 0;
-                } else {
-                  tmp5 = true;
-                }
-                if (tmp5) {
+                if (filter == null || node3.shape.filter.shouldCollide(filter)) {
                   const body4 = node3.shape.body.outer;
                   if (!ret.has(body4)) {
                     ret.push(body4);
@@ -1394,16 +1247,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           ) {
             if (node2.child1 == null) {
               const body5 = node2.shape.body.outer;
-              let tmp6;
-              if (filter != null) {
-                const _this7 = node2.shape.filter;
-                tmp6 =
-                  (_this7.collisionMask & filter.collisionGroup) != 0 &&
-                  (filter.collisionMask & _this7.collisionGroup) != 0;
-              } else {
-                tmp6 = true;
-              }
-              if (tmp6) {
+              if (filter == null || node2.shape.filter.shouldCollide(filter)) {
                 if (strict) {
                   if (containment) {
                     if (!this.failed.has(body5)) {
@@ -1498,16 +1342,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           _this.minx <= ab.maxx
         ) {
           if (node.child1 == null) {
-            let tmp;
-            if (filter != null) {
-              const _this1 = node.shape.filter;
-              tmp =
-                (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this1.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (ZPP_Collide.containTest(this.circShape.zpp_inner, node.shape)) {
                   ret.push(node.shape.outer);
@@ -1542,16 +1377,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           _this2.minx <= ab.maxx
         ) {
           if (node1.child1 == null) {
-            let tmp1;
-            if (filter != null) {
-              const _this3 = node1.shape.filter;
-              tmp1 =
-                (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this3.collisionGroup) != 0;
-            } else {
-              tmp1 = true;
-            }
-            if (tmp1) {
+            if (filter == null || node1.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (ZPP_Collide.containTest(this.circShape.zpp_inner, node1.shape)) {
                   ret.push(node1.shape.outer);
@@ -1607,16 +1433,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         ) {
           if (node.child1 == null) {
             const body = node.shape.body.outer;
-            let tmp;
-            if (filter != null) {
-              const _this1 = node.shape.filter;
-              tmp =
-                (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this1.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (!this.failed.has(body)) {
                   const col = ZPP_Collide.containTest(this.circShape.zpp_inner, node.shape);
@@ -1661,16 +1478,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         ) {
           if (node1.child1 == null) {
             const body1 = node1.shape.body.outer;
-            let tmp1;
-            if (filter != null) {
-              const _this3 = node1.shape.filter;
-              tmp1 =
-                (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this3.collisionGroup) != 0;
-            } else {
-              tmp1 = true;
-            }
-            if (tmp1) {
+            if (filter == null || node1.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (!this.failed.has(body1)) {
                   const col1 = ZPP_Collide.containTest(this.circShape.zpp_inner, node1.shape);
@@ -1725,16 +1533,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           _this.minx <= ab.maxx
         ) {
           if (node.child1 == null) {
-            let tmp;
-            if (filter != null) {
-              const _this1 = node.shape.filter;
-              tmp =
-                (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this1.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (ZPP_Collide.containTest(shp, node.shape)) {
                   ret.push(node.shape.outer);
@@ -1769,16 +1568,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           _this2.minx <= ab.maxx
         ) {
           if (node1.child1 == null) {
-            let tmp1;
-            if (filter != null) {
-              const _this3 = node1.shape.filter;
-              tmp1 =
-                (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this3.collisionGroup) != 0;
-            } else {
-              tmp1 = true;
-            }
-            if (tmp1) {
+            if (filter == null || node1.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (ZPP_Collide.containTest(shp, node1.shape)) {
                   ret.push(node1.shape.outer);
@@ -1827,16 +1617,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         ) {
           if (node.child1 == null) {
             const body = node.shape.body.outer;
-            let tmp;
-            if (filter != null) {
-              const _this1 = node.shape.filter;
-              tmp =
-                (_this1.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this1.collisionGroup) != 0;
-            } else {
-              tmp = true;
-            }
-            if (tmp) {
+            if (filter == null || node.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (!this.failed.has(body)) {
                   const col = ZPP_Collide.containTest(shp, node.shape);
@@ -1878,16 +1659,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         ) {
           if (node1.child1 == null) {
             const body1 = node1.shape.body.outer;
-            let tmp1;
-            if (filter != null) {
-              const _this3 = node1.shape.filter;
-              tmp1 =
-                (_this3.collisionMask & filter.collisionGroup) != 0 &&
-                (filter.collisionMask & _this3.collisionGroup) != 0;
-            } else {
-              tmp1 = true;
-            }
-            if (tmp1) {
+            if (filter == null || node1.shape.filter.shouldCollide(filter)) {
               if (containment) {
                 if (!this.failed.has(body1)) {
                   const col1 = ZPP_Collide.containTest(shp, node1.shape);
@@ -2012,16 +1784,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
       }
       if (cnode.child1 == null) {
         const shape = cnode.shape;
-        let tmp;
-        if (filter != null) {
-          const _this2 = shape.filter;
-          tmp =
-            (_this2.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this2.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape.filter.shouldCollide(filter)) {
           const result =
             shape.type == 0
               ? ray.circlesect(shape.circle, inner, mint)
@@ -2165,16 +1928,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
       const cnode = this.openlist.pop_unsafe();
       if (cnode.child1 == null) {
         const shape = cnode.shape;
-        let tmp;
-        if (filter != null) {
-          const _this = shape.filter;
-          tmp =
-            (_this.collisionMask & filter.collisionGroup) != 0 &&
-            (filter.collisionMask & _this.collisionGroup) != 0;
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (filter == null || shape.filter.shouldCollide(filter)) {
           if (shape.type == 0) {
             ray.circlesect2(shape.circle, inner, ret);
           } else if (ray.aabbtest(shape.aabb)) {

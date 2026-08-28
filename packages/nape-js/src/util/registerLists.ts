@@ -5,6 +5,9 @@
  * factory-driven registration. Special-case lists (Vec2List, ContactList,
  * GeomVertexIterator) are in separate TypeScript files.
  *
+ * Each List/Iterator class pair is also exported by name so engine code can
+ * reference the classes statically instead of through the namespace.
+ *
  * @internal — imported by index.ts to trigger registration at module load.
  */
 import { createListClasses } from "./NapeListFactory";
@@ -19,7 +22,7 @@ const zppUnwrap = (obj: any) =>
   obj.zpp_inner ?? (obj._inner ? (obj._inner.zpp_inner ?? obj._inner) : obj);
 
 // callbacks
-createListClasses({
+export const { List: CbTypeList, Iterator: CbTypeIterator } = createListClasses({
   typeName: "CbType",
   namespaceParts: ["nape", "callbacks"],
   zppListClass: "ZPP_CbTypeList",
@@ -27,7 +30,7 @@ createListClasses({
   unwrapElement: zppUnwrap,
 });
 
-createListClasses({
+export const { List: ListenerList, Iterator: ListenerIterator } = createListClasses({
   typeName: "Listener",
   namespaceParts: ["nape", "callbacks"],
   zppListClass: "ZPP_ListenerList",
@@ -36,7 +39,7 @@ createListClasses({
 });
 
 // constraint
-createListClasses({
+export const { List: ConstraintList, Iterator: ConstraintIterator } = createListClasses({
   typeName: "Constraint",
   namespaceParts: ["nape", "constraint"],
   zppListClass: "ZPP_ConstraintList",
@@ -45,16 +48,18 @@ createListClasses({
 });
 
 // dynamics
-createListClasses({
-  typeName: "InteractionGroup",
-  namespaceParts: ["nape", "dynamics"],
-  zppListClass: "ZPP_InteractionGroupList",
-  wrapElement: outerWrap,
-  unwrapElement: zppUnwrap,
-});
+export const { List: InteractionGroupList, Iterator: InteractionGroupIterator } = createListClasses(
+  {
+    typeName: "InteractionGroup",
+    namespaceParts: ["nape", "dynamics"],
+    zppListClass: "ZPP_InteractionGroupList",
+    wrapElement: outerWrap,
+    unwrapElement: zppUnwrap,
+  },
+);
 
 // geom
-createListClasses({
+export const { List: GeomPolyList, Iterator: GeomPolyIterator } = createListClasses({
   typeName: "GeomPoly",
   namespaceParts: ["nape", "geom"],
   zppListClass: "ZPP_GeomPolyList",
@@ -63,7 +68,7 @@ createListClasses({
 });
 
 // phys
-createListClasses({
+export const { List: BodyList, Iterator: BodyIterator } = createListClasses({
   typeName: "Body",
   namespaceParts: ["nape", "phys"],
   zppListClass: "ZPP_BodyList",
@@ -71,7 +76,7 @@ createListClasses({
   unwrapElement: zppUnwrap,
 });
 
-createListClasses({
+export const { List: CompoundList, Iterator: CompoundIterator } = createListClasses({
   typeName: "Compound",
   namespaceParts: ["nape", "phys"],
   zppListClass: "ZPP_CompoundList",
@@ -80,7 +85,7 @@ createListClasses({
 });
 
 // shape
-createListClasses({
+export const { List: ShapeList, Iterator: ShapeIterator } = createListClasses({
   typeName: "Shape",
   namespaceParts: ["nape", "shape"],
   zppListClass: "ZPP_ShapeList",
@@ -92,7 +97,7 @@ createListClasses({
 // "wrapper()" pattern: stores zpp_inner, returns elt.wrapper()
 // ---------------------------------------------------------------------------
 
-createListClasses({
+export const { List: ArbiterList, Iterator: ArbiterIterator } = createListClasses({
   typeName: "Arbiter",
   namespaceParts: ["nape", "dynamics"],
   zppListClass: "ZPP_ArbiterList",
@@ -100,7 +105,7 @@ createListClasses({
   unwrapElement: zppUnwrap,
 });
 
-createListClasses({
+export const { List: EdgeList, Iterator: EdgeIterator } = createListClasses({
   typeName: "Edge",
   namespaceParts: ["nape", "shape"],
   zppListClass: "ZPP_EdgeList",
@@ -112,7 +117,7 @@ createListClasses({
 // "direct" pattern: stores obj directly, returns elt as-is
 // ---------------------------------------------------------------------------
 
-createListClasses({
+export const { List: ConvexResultList, Iterator: ConvexResultIterator } = createListClasses({
   typeName: "ConvexResult",
   namespaceParts: ["nape", "geom"],
   zppListClass: "ZPP_ConvexResultList",
@@ -120,7 +125,7 @@ createListClasses({
   unwrapElement: (obj: any) => obj,
 });
 
-createListClasses({
+export const { List: RayResultList, Iterator: RayResultIterator } = createListClasses({
   typeName: "RayResult",
   namespaceParts: ["nape", "geom"],
   zppListClass: "ZPP_RayResultList",
@@ -132,7 +137,7 @@ createListClasses({
 // "outer_i" pattern: Interactor uses zpp_inner_i / outer_i
 // ---------------------------------------------------------------------------
 
-createListClasses({
+export const { List: InteractorList, Iterator: InteractorIterator } = createListClasses({
   typeName: "Interactor",
   namespaceParts: ["nape", "phys"],
   zppListClass: "ZPP_InteractorList",

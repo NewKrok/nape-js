@@ -7,11 +7,9 @@
  * Converted from nape-compiled.js lines 20938–24762.
  */
 
-import { ZPP_GeomVert } from "./ZPP_GeomVert";
+import { ZPP_GeomVert, disposeGeomVertWrap } from "./ZPP_GeomVert";
 import { ZPP_MarchPair } from "./ZPP_MarchPair";
 import { ZPP_MarchSpan } from "./ZPP_MarchSpan";
-import { ZPP_Vec2 } from "./ZPP_Vec2";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import {
   ZNPArray2_Float,
   ZNPArray2_ZPP_GeomVert,
@@ -64,46 +62,7 @@ export class ZPP_MarchingSquares {
   // Helper: free a ZPP_GeomVert (dispose wrap, return to pool)
   // ---------------------------------------------------------------------------
   private static _freeVert(o: ZPP_GeomVert): void {
-    if (o.wrap != null) {
-      o.wrap.zpp_inner._inuse = false;
-      const _this = o.wrap;
-      if (_this != null && _this.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this1 = _this.zpp_inner;
-      if (_this1._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (_this1._isimmutable != null) {
-        _this1._isimmutable();
-      }
-      if (_this.zpp_inner._inuse) {
-        throw new Error("This Vec2 is not disposable");
-      }
-      const inner = _this.zpp_inner;
-      _this.zpp_inner.outer = null;
-      _this.zpp_inner = null;
-      const o1 = _this;
-      o1.zpp_pool = null;
-      if (ZPP_PubPool.nextVec2 != null) {
-        ZPP_PubPool.nextVec2.zpp_pool = o1;
-      } else {
-        ZPP_PubPool.poolVec2 = o1;
-      }
-      ZPP_PubPool.nextVec2 = o1;
-      o1.zpp_disp = true;
-      const o2 = inner;
-      if (o2.outer != null) {
-        o2.outer.zpp_inner = null;
-        o2.outer = null;
-      }
-      o2._isimmutable = null;
-      o2._validate = null;
-      o2._invalidate = null;
-      o2.next = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = o2;
-      o.wrap = null;
-    }
+    disposeGeomVertWrap(o);
     o.prev = o.next = null;
     o.next = ZPP_GeomVert.zpp_pool;
     ZPP_GeomVert.zpp_pool = o;

@@ -29,6 +29,14 @@ import type {
 import type { DebugDraw } from "../util/DebugDraw";
 import { DebugDrawFlags } from "../util/DebugDrawFlags";
 import type { PhysicsMetricsData } from "../profiler/PhysicsMetrics";
+import {
+  BodyIterator,
+  BodyList as BodyListClass,
+  CompoundIterator,
+  ConstraintIterator,
+  ShapeIterator as ShapeIteratorClass,
+  ShapeList as ShapeListClass,
+} from "../util/registerLists";
 
 /**
  * The physics world. Add bodies, shapes, and constraints, then call `step()` each frame to advance the simulation.
@@ -368,11 +376,10 @@ export class Space {
     if (lambda == null) {
       throw new Error("lambda cannot be null for Space::visitBodies");
     }
-    const nape = getNape();
     // Iterate bodies
     const bodyList = this.zpp_inner.wrap_bodies;
     bodyList.zpp_inner.valmod();
-    const bIter = nape.phys.BodyIterator.get(bodyList);
+    const bIter = (BodyIterator as any).get(bodyList);
     while (true) {
       bIter.zpp_inner.zpp_inner.valmod();
       const bi = bIter.zpp_inner;
@@ -384,8 +391,8 @@ export class Space {
       const len = bi.zpp_inner.user_length;
       bIter.zpp_critical = true;
       if (bIter.zpp_i >= len) {
-        bIter.zpp_next = nape.phys.BodyIterator.zpp_pool;
-        nape.phys.BodyIterator.zpp_pool = bIter;
+        bIter.zpp_next = (BodyIterator as any).zpp_pool;
+        (BodyIterator as any).zpp_pool = bIter;
         bIter.zpp_inner = null;
         break;
       }
@@ -395,7 +402,7 @@ export class Space {
     // Recurse into compounds
     const compList = this.zpp_inner.wrap_compounds;
     compList.zpp_inner.valmod();
-    const cIter = nape.phys.CompoundIterator.get(compList);
+    const cIter = (CompoundIterator as any).get(compList);
     while (true) {
       cIter.zpp_inner.zpp_inner.valmod();
       const ci = cIter.zpp_inner;
@@ -407,8 +414,8 @@ export class Space {
       const len = ci.zpp_inner.user_length;
       cIter.zpp_critical = true;
       if (cIter.zpp_i >= len) {
-        cIter.zpp_next = nape.phys.CompoundIterator.zpp_pool;
-        nape.phys.CompoundIterator.zpp_pool = cIter;
+        cIter.zpp_next = (CompoundIterator as any).zpp_pool;
+        (CompoundIterator as any).zpp_pool = cIter;
         cIter.zpp_inner = null;
         break;
       }
@@ -427,11 +434,10 @@ export class Space {
     if (lambda == null) {
       throw new Error("lambda cannot be null for Space::visitConstraints");
     }
-    const nape = getNape();
     // Iterate constraints
     const conList = this.zpp_inner.wrap_constraints;
     conList.zpp_inner.valmod();
-    const cIter = nape.constraint.ConstraintIterator.get(conList);
+    const cIter = (ConstraintIterator as any).get(conList);
     while (true) {
       cIter.zpp_inner.zpp_inner.valmod();
       const ci = cIter.zpp_inner;
@@ -443,8 +449,8 @@ export class Space {
       const len = ci.zpp_inner.user_length;
       cIter.zpp_critical = true;
       if (cIter.zpp_i >= len) {
-        cIter.zpp_next = nape.constraint.ConstraintIterator.zpp_pool;
-        nape.constraint.ConstraintIterator.zpp_pool = cIter;
+        cIter.zpp_next = (ConstraintIterator as any).zpp_pool;
+        (ConstraintIterator as any).zpp_pool = cIter;
         cIter.zpp_inner = null;
         break;
       }
@@ -454,7 +460,7 @@ export class Space {
     // Recurse into compounds
     const compList = this.zpp_inner.wrap_compounds;
     compList.zpp_inner.valmod();
-    const coIter = nape.phys.CompoundIterator.get(compList);
+    const coIter = (CompoundIterator as any).get(compList);
     while (true) {
       coIter.zpp_inner.zpp_inner.valmod();
       const ci = coIter.zpp_inner;
@@ -466,8 +472,8 @@ export class Space {
       const len = ci.zpp_inner.user_length;
       coIter.zpp_critical = true;
       if (coIter.zpp_i >= len) {
-        coIter.zpp_next = nape.phys.CompoundIterator.zpp_pool;
-        nape.phys.CompoundIterator.zpp_pool = coIter;
+        coIter.zpp_next = (CompoundIterator as any).zpp_pool;
+        (CompoundIterator as any).zpp_pool = coIter;
         coIter.zpp_inner = null;
         break;
       }
@@ -486,10 +492,9 @@ export class Space {
     if (lambda == null) {
       throw new Error("lambda cannot be null for Space::visitCompounds");
     }
-    const nape = getNape();
     const compList = this.zpp_inner.wrap_compounds;
     compList.zpp_inner.valmod();
-    const cIter = nape.phys.CompoundIterator.get(compList);
+    const cIter = (CompoundIterator as any).get(compList);
     while (true) {
       cIter.zpp_inner.zpp_inner.valmod();
       const ci = cIter.zpp_inner;
@@ -501,8 +506,8 @@ export class Space {
       const len = ci.zpp_inner.user_length;
       cIter.zpp_critical = true;
       if (cIter.zpp_i >= len) {
-        cIter.zpp_next = nape.phys.CompoundIterator.zpp_pool;
-        nape.phys.CompoundIterator.zpp_pool = cIter;
+        cIter.zpp_next = (CompoundIterator as any).zpp_pool;
+        (CompoundIterator as any).zpp_pool = cIter;
         cIter.zpp_inner = null;
         break;
       }
@@ -929,11 +934,10 @@ export class Space {
     if (body == null) {
       throw new Error("Cannot evaluate shapes in null body");
     }
-    const nape = getNape();
-    const ret = output == null ? new nape.shape.ShapeList() : output;
+    const ret = output == null ? new (ShapeListClass as any)() : output;
     const shapes = body.zpp_inner.wrap_shapes;
     shapes.zpp_inner.valmod();
-    const sIter = nape.shape.ShapeIterator.get(shapes);
+    const sIter = (ShapeIteratorClass as any).get(shapes);
     while (true) {
       sIter.zpp_inner.zpp_inner.valmod();
       const si = sIter.zpp_inner;
@@ -945,8 +949,8 @@ export class Space {
       const len = si.zpp_inner.user_length;
       sIter.zpp_critical = true;
       if (sIter.zpp_i >= len) {
-        sIter.zpp_next = nape.shape.ShapeIterator.zpp_pool;
-        nape.shape.ShapeIterator.zpp_pool = sIter;
+        sIter.zpp_next = (ShapeIteratorClass as any).zpp_pool;
+        (ShapeIteratorClass as any).zpp_pool = sIter;
         sIter.zpp_inner = null;
         break;
       }
@@ -970,11 +974,10 @@ export class Space {
     if (body == null) {
       throw new Error("Cannot evaluate shapes in null body");
     }
-    const nape = getNape();
-    const ret = output == null ? new nape.phys.BodyList() : output;
+    const ret = output == null ? new (BodyListClass as any)() : output;
     const shapes = body.zpp_inner.wrap_shapes;
     shapes.zpp_inner.valmod();
-    const sIter = nape.shape.ShapeIterator.get(shapes);
+    const sIter = (ShapeIteratorClass as any).get(shapes);
     while (true) {
       sIter.zpp_inner.zpp_inner.valmod();
       const si = sIter.zpp_inner;
@@ -986,8 +989,8 @@ export class Space {
       const len = si.zpp_inner.user_length;
       sIter.zpp_critical = true;
       if (sIter.zpp_i >= len) {
-        sIter.zpp_next = nape.shape.ShapeIterator.zpp_pool;
-        nape.shape.ShapeIterator.zpp_pool = sIter;
+        sIter.zpp_next = (ShapeIteratorClass as any).zpp_pool;
+        (ShapeIteratorClass as any).zpp_pool = sIter;
         sIter.zpp_inner = null;
         break;
       }
