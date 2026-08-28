@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType, Ray,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // Tinywheels Cup — top-down kart-racer with one player + three waypoint-driven AI
 // opponents racing three laps on a closed Catmull-Rom track. The car controller

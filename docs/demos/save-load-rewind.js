@@ -15,9 +15,9 @@
 
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
-} from "../nape-js.esm.js";
-import { spawnRandomShape } from "../demo-runner.js";
-import { spaceToBinary, spaceFromBinary } from "../serialization/index.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { spawnRandomShape } from "../demo-runner.js?v=3.40.0";
+import { spaceToBinary, spaceFromBinary } from "../serialization/index.js?v=3.40.0";
 
 const RING_FRAMES = 180; // 3 sec @ 60 Hz
 const SLOT_COUNT = 5;

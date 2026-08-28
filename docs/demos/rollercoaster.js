@@ -2,7 +2,7 @@ import {
   Body, BodyType, Vec2, Circle, Capsule, Polygon, Material,
   LineJoint, SpringJoint, PivotJoint, AngleJoint,
   InteractionFilter,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const WORLD_W = 10000;

@@ -1,6 +1,6 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js";
-import { drawBody, drawGrid, drawConstraints } from "../renderer.js";
-import { loadThree } from "../renderers/threejs-adapter.js";
+import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid, drawConstraints } from "../renderer.js?v=3.40.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.40.0";
 
 // Popcorn — side-view bowl full of corn kernels that suddenly grow and
 // pop upward. Each pop is a runtime `circle.radius =` mutation plus an

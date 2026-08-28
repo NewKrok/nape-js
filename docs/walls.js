@@ -7,7 +7,7 @@
  *   - `{ width, height }`: custom-sized 4-wall box (e.g. wider than canvas)
  *   - `{ floor, left, right, ceiling }`: selective walls (booleans)
  */
-import { Body, BodyType, Vec2, Polygon } from "./nape-js.esm.js";
+import { Body, BodyType, Vec2, Polygon } from "./nape-js.esm.js?v=3.40.0";
 
 const WALL_THICKNESS = 20;
 

@@ -1,6 +1,6 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, TriggerZone } from "../nape-js.esm.js";
-import { spawnRandomShape } from "../demo-runner.js";
-import { drawBody, drawGrid } from "../renderer.js";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, TriggerZone } from "../nape-js.esm.js?v=3.40.0";
+import { spawnRandomShape } from "../demo-runner.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
 
 /**
  * Each zone tracks how many bodies are currently inside it,

@@ -1,8 +1,8 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, FluidProperties,
   PulleyJoint, PivotJoint, InteractionFilter,
-} from "../nape-js.esm.js";
-import { drawBody, drawGrid } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
 
 // ---------------------------------------------------------------------------
 // Cargo Crane Captain — a load-the-barge mini-game.

@@ -1,8 +1,8 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   RadialGravityField, ParticleEmitter,
-} from "../nape-js.esm.js";
-import { drawBody } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody } from "../renderer.js?v=3.40.0";
 
 // (Polygon is used for the volcano cone shape on top of the planet.)
 

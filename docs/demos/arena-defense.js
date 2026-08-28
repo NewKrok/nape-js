@@ -2,8 +2,8 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType,
   ParticleEmitter, fractureBody,
-} from "../nape-js.esm.js";
-import { drawBody, drawGrid } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
 
 // Arena Defense — top-down survival mash-up (large camera-followed map):
 //   - Top-down shooter (player WASD + auto-fire + drop-powerups)

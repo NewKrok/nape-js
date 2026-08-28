@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Material, DistanceJoint } from "../nape-js.esm.js";
+import { Body, BodyType, Vec2, Circle, Material, DistanceJoint } from "../nape-js.esm.js?v=3.40.0";
 
 export default {
   id: "newtons-cradle",

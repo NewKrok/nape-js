@@ -2,7 +2,7 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType,
   PreListener, PreFlag,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // Standoff — a top-down "stand-still-to-shoot" roguelite arena.
 //

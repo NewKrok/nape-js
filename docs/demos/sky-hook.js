@@ -2,8 +2,8 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   PivotJoint, AngleJoint, InteractionFilter, InteractionType,
   CbEvent, CbType, ConstraintListener, InteractionListener,
-} from "../nape-js.esm.js";
-import { drawBody, drawGrid } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
 
 // ---------------------------------------------------------------------------
 // Sky Hook — helicopter medevac mini-game.

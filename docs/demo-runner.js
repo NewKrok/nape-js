@@ -9,8 +9,8 @@
  *  - Automatic wall creation from demo config
  *
  * Usage:
- *   import { Canvas2DAdapter } from "./renderers/canvas2d-adapter.js";
- *   import { ThreeJSAdapter } from "./renderers/threejs-adapter.js";
+ *   import { Canvas2DAdapter } from "./renderers/canvas2d-adapter.js?v=3.40.0";
+ *   import { ThreeJSAdapter } from "./renderers/threejs-adapter.js?v=3.40.0";
  *
  *   const runner = new DemoRunner(canvasWrapEl, { W: 900, H: 500 });
  *   runner.registerAdapter(new Canvas2DAdapter());
@@ -23,9 +23,9 @@
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon,
-} from "./nape-js.esm.js";
-import { createWalls } from "./walls.js";
-import { WorkerPhysicsBridge } from "./worker-bridge.js";
+} from "./nape-js.esm.js?v=3.40.0";
+import { createWalls } from "./walls.js?v=3.40.0";
+import { WorkerPhysicsBridge } from "./worker-bridge.js?v=3.40.0";
 
 // =========================================================================
 // Shared helpers — exported so demo files can import them

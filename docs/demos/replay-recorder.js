@@ -16,8 +16,8 @@
 
 import {
   Body, BodyType, Vec2, Circle, Material,
-} from "../nape-js.esm.js";
-import { Recorder, Player, encodeReplay } from "../replay/index.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { Recorder, Player, encodeReplay } from "../replay/index.js?v=3.40.0";
 
 // ── Module state (reset in setup) ───────────────────────────────────────────
 let mode = "idle";        // "idle" | "recording" | "replaying"

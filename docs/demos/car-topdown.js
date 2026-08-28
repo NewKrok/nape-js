@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js";
+import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js?v=3.40.0";
 
 // 1:1 port of a known-good iforce2d-style top-down car model.
 // Uses a PIXEL_RATIO of 10 (same as the reference): all world geometry is

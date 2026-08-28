@@ -7,9 +7,9 @@
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon, PivotJoint, DistanceJoint,
-} from "../nape-js.esm.js";
-import { drawBody, drawGrid } from "../renderer.js";
-import { loadThree } from "../renderers/threejs-adapter.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.40.0";
 
 // ---------------------------------------------------------------------------
 // State

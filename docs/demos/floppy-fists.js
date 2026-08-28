@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, PivotJoint, AngleJoint,
   Material, InteractionFilter, CbType, CbEvent, InteractionListener, InteractionType,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // Arena (matches CW×CH used by examples.js). Named SCREEN_W/SCREEN_H — the
 // CodePen runtime declares its own `W`/`H` and a duplicate top-level would

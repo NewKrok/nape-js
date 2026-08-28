@@ -1,5 +1,5 @@
-import { Body, BodyType, Vec2, Polygon, CbType, InteractionType, PreListener, PreFlag, PivotJoint } from "../nape-js.esm.js";
-import { spawnRandomShape } from "../demo-runner.js";
+import { Body, BodyType, Vec2, Polygon, CbType, InteractionType, PreListener, PreFlag, PivotJoint } from "../nape-js.esm.js?v=3.40.0";
+import { spawnRandomShape } from "../demo-runner.js?v=3.40.0";
 
 // ── Module-level state for drag ──────────────────────────────────────────────
 let _mouseBody = null;

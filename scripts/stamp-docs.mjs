@@ -9,7 +9,7 @@
  * Run via: npm run build:docs (called automatically after build + copy).
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -55,25 +55,45 @@ for (const htmlFile of ["index.html", "examples/index.html"]) {
       },
     ],
     // Inline `<script type="module">` imports: import { x } from "./i18n/i18n.js"
-    [
-      /from\s+"(\.\.?\/[^"]+\.js)(\?v=[^"]*)?"/g,
-      (_m, ref) => `from "${stripV(ref)}?${v}"`,
-    ],
+    [/from\s+"(\.\.?\/[^"]+\.js)(\?v=[^"]*)?"/g, (_m, ref) => `from "${stripV(ref)}?${v}"`],
   ]);
 }
 
 // --- JS files: stamp ES import paths for local modules ---
-for (const jsFile of [
-  "app.js",
-  "examples.js",
-  "stackblitz-templates.js",
-  "renderers/pixijs-adapter.js",
-  "i18n/i18n.js",
-  "i18n/lang-switcher.js",
-]) {
+// Every hand-written module under docs/ must import local files through the
+// SAME stamped URL: a mix of stamped and bare specifiers makes the browser
+// load two instances of the engine bundle (each ?v= variant is a separate
+// module), which crashed the docs site on 3.40.0. Enumerate instead of
+// hand-listing so new demos can never fall out of sync.
+const isCopiedBundle = (name) =>
+  name === "nape-js.esm.js" ||
+  name === "nape-pixi.esm.js" ||
+  name.startsWith("chunk-") ||
+  name === "codepen-templates.js"; // has its own template-safe rules below
+
+const jsFiles = [];
+// NOTE: docs/serialization and docs/replay are verbatim dist copies — never
+// stamp inside them (their relative chunk imports must stay byte-identical
+// to the engine bundle's, or the browser loads a second chunk instance).
+for (const dir of ["", "demos", "renderers", "i18n"]) {
+  const abs = resolve(docs, dir);
+  let entries;
+  try {
+    entries = readdirSync(abs, { withFileTypes: true });
+  } catch {
+    continue;
+  }
+  for (const e of entries) {
+    if (e.isFile() && e.name.endsWith(".js") && !isCopiedBundle(e.name)) {
+      jsFiles.push(dir ? `${dir}/${e.name}` : e.name);
+    }
+  }
+}
+for (const jsFile of jsFiles) {
   stamp(resolve(docs, jsFile), [
-    // from "./nape-js.esm.js" or from "../nape-pixi.esm.js" or from "./renderer.js"
+    // from "./nape-js.esm.js" or from '../nape-pixi.esm.js' — both quote styles
     [/from\s+"(\.\.?\/[^"]+\.js)(\?v=[^"]*)?"/g, (_m, ref) => `from "${stripV(ref)}?${v}"`],
+    [/from\s+'(\.\.?\/[^']+\.js)(\?v=[^']*)?'/g, (_m, ref) => `from '${stripV(ref)}?${v}'`],
   ]);
 }
 

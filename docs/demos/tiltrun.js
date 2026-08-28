@@ -2,8 +2,8 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   CbType, CbEvent, InteractionType, InteractionListener,
   buildTilemapBody,
-} from "../nape-js.esm.js";
-import { drawGrid } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawGrid } from "../renderer.js?v=3.40.0";
 
 // ---------------------------------------------------------------------------
 // Constants

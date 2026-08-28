@@ -1,6 +1,6 @@
-import { Body, BodyType, Vec2, Circle, DistanceJoint, PivotJoint, InteractionFilter } from "../nape-js.esm.js";
-import { drawBody, drawGrid, drawConstraints } from "../renderer.js";
-import { loadThree } from "../renderers/threejs-adapter.js";
+import { Body, BodyType, Vec2, Circle, DistanceJoint, PivotJoint, InteractionFilter } from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid, drawConstraints } from "../renderer.js?v=3.40.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.40.0";
 
 // ── Module-level state for drag + texture ──────────────────────────────────
 let _mouseBody = null;

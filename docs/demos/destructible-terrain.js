@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, AABB, Circle, Polygon, MarchingSquares,
-} from "../nape-js.esm.js";
-import { drawBody, drawGrid } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
 
 // ---------------------------------------------------------------------------
 // Simple value noise (no external deps)

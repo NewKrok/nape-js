@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   CbType, CbEvent, InteractionType, InteractionListener,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // ── Module-level state ───────────────────────────────────────────────────────
 const keys = {};

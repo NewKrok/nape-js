@@ -1,8 +1,8 @@
 import {
   Body, BodyType, Vec2, Polygon, Material,
   CbType, CbEvent, InteractionType, InteractionListener,
-} from "../nape-js.esm.js";
-import { drawBody, drawGrid } from "../renderer.js";
+} from "../nape-js.esm.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
 
 // ---------------------------------------------------------------------------
 // Brickline — stack-as-high-as-you-can arcade demo.

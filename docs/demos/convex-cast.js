@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Capsule,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const BLADE_HALF  = 80;   // half-length of the capsule (center → tip), px

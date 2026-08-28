@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Space,
   fractureBody, computeVoronoi, generateFractureSites,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 // Fracture color palette — warm tones for fragments
 const FRAG_COLORS = [

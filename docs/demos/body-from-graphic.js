@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, AABB, Polygon, MarchingSquares, PivotJoint,
-} from "../nape-js.esm.js";
+} from "../nape-js.esm.js?v=3.40.0";
 
 
 // ---------------------------------------------------------------------------

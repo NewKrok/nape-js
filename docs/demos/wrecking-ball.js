@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, PivotJoint } from "../nape-js.esm.js";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, PivotJoint } from "../nape-js.esm.js?v=3.40.0";
 
 export default {
   id: "wrecking-ball",
