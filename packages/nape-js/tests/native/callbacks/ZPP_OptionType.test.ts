@@ -1,18 +1,23 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_OptionType } from "../../../src/native/callbacks/ZPP_OptionType";
+import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../../../src/native/util/ZNPRegistry";
 import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
 
 describe("ZPP_OptionType", () => {
   beforeEach(() => {
+    // setup_includes/excludes still read _zpp.util.ZPP_CbTypeList and argument/
+    // append still read _nape; list/node classes are imported directly, so the
+    // real node pool static is reset here for isolation.
     ZPP_OptionType._zpp = createMockZpp();
     ZPP_OptionType._nape = createMockNape();
+    ZNPNode_ZPP_CbType.zpp_pool = null;
   });
 
   describe("constructor", () => {
     it("should initialize includes and excludes as empty lists", () => {
       const ot = new ZPP_OptionType();
-      expect(ot.includes).toBeInstanceOf(MockZNPList);
-      expect(ot.excludes).toBeInstanceOf(MockZNPList);
+      expect(ot.includes).toBeInstanceOf(ZNPList_ZPP_CbType);
+      expect(ot.excludes).toBeInstanceOf(ZNPList_ZPP_CbType);
       expect(ot.outer).toBeNull();
       expect(ot.handler).toBeNull();
       expect(ot.wrap_includes).toBeNull();
@@ -387,26 +392,30 @@ describe("ZPP_OptionType", () => {
 
   describe("insertOrdered (pool node reuse path)", () => {
     it("should reuse pool node when ZNPNode_ZPP_CbType.zpp_pool is available", () => {
-      const zpp = ZPP_OptionType._zpp;
-      const poolNode = { elt: null, next: null } as any;
-      zpp.util.ZNPNode_ZPP_CbType.zpp_pool = poolNode;
+      const poolNode = new ZNPNode_ZPP_CbType();
+      ZNPNode_ZPP_CbType.zpp_pool = poolNode;
 
       const ot = new ZPP_OptionType();
       const val = { id: 5 };
       ot.effect_change(val, true, true); // calls insertOrdered on includes
       expect(ot.includes.has(val)).toBe(true);
+      expect(ot.includes.head).toBe(poolNode);
+      expect(poolNode.elt).toBe(val);
+      expect(ZNPNode_ZPP_CbType.zpp_pool).toBeNull();
     });
 
     it("should advance pool chain on reuse", () => {
-      const zpp = ZPP_OptionType._zpp;
-      const poolNode2 = { elt: null, next: null } as any;
-      const poolNode1 = { elt: null, next: poolNode2 } as any;
-      zpp.util.ZNPNode_ZPP_CbType.zpp_pool = poolNode1;
+      const poolNode2 = new ZNPNode_ZPP_CbType();
+      const poolNode1 = new ZNPNode_ZPP_CbType();
+      poolNode1.next = poolNode2;
+      ZNPNode_ZPP_CbType.zpp_pool = poolNode1;
 
       const ot = new ZPP_OptionType();
       const val = { id: 5 };
       ot.effect_change(val, true, true);
-      expect(zpp.util.ZNPNode_ZPP_CbType.zpp_pool).toBe(poolNode2);
+      expect(ZNPNode_ZPP_CbType.zpp_pool).toBe(poolNode2);
+      expect(ot.includes.head).toBe(poolNode1);
+      expect(poolNode1.elt).toBe(val);
     });
 
     it("should insert before existing element when val.id < j.id (break path)", () => {

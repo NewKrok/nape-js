@@ -2,8 +2,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 // Import engine first to break circular dependency
 import "../../../src/core/engine";
 import { ZPP_Constraint } from "../../../src/native/constraint/ZPP_Constraint";
+import { ZPP_CbSet } from "../../../src/native/callbacks/ZPP_CbSet";
 import { ZPP_DistanceJoint } from "../../../src/native/constraint/ZPP_DistanceJoint";
 import { ZPP_UserBody } from "../../../src/native/constraint/ZPP_UserBody";
+import { ZNPList_ZPP_CbType } from "../../../src/native/util/ZNPRegistry";
 import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
 
 // Public API imports for integration tests
@@ -47,11 +49,15 @@ describe("ZPP_Constraint", () => {
     ZPP_Constraint._zpp = mockZpp;
     ZPP_Constraint._nape = createMockNape();
     mockZpp.space.ZPP_Component.zpp_pool = null;
+    // dealloc_cbSet recycles into the real (directly imported) ZPP_CbSet pool
+    ZPP_CbSet.zpp_pool = null;
   });
 
   afterEach(() => {
     ZPP_Constraint._zpp = savedZpp;
     ZPP_Constraint._nape = savedNape;
+    // Don't leak mock cbSet objects into the real pool for later tests
+    ZPP_CbSet.zpp_pool = null;
   });
 
   describe("constructor / _initBase", () => {
@@ -79,7 +85,7 @@ describe("ZPP_Constraint", () => {
 
     it("should create a cbTypes linked list", () => {
       const c = new ZPP_Constraint();
-      expect(c.cbTypes).toBeInstanceOf(MockZNPList);
+      expect(c.cbTypes).toBeInstanceOf(ZNPList_ZPP_CbType);
       expect(c.cbTypes.length).toBe(0);
     });
 
@@ -97,7 +103,7 @@ describe("ZPP_Constraint", () => {
       expect(obj.stiff).toBe(true);
       expect(obj.active).toBe(true);
       expect(obj.frequency).toBe(10);
-      expect(obj.cbTypes).toBeInstanceOf(MockZNPList);
+      expect(obj.cbTypes).toBeInstanceOf(ZNPList_ZPP_CbType);
     });
   });
 
@@ -396,12 +402,12 @@ describe("ZPP_Constraint", () => {
       mockCbSet.constraints.add(c);
       c.space = { cbsets: { remove: vi.fn() } };
       c.cbSet = mockCbSet;
-      mockZpp.callbacks.ZPP_CbSet.zpp_pool = null;
+      ZPP_CbSet.zpp_pool = null;
 
       c.dealloc_cbSet();
       expect(mockCbSet.count).toBe(0);
       expect(c.space.cbsets.remove).toHaveBeenCalledWith(mockCbSet);
-      expect(mockZpp.callbacks.ZPP_CbSet.zpp_pool).toBe(mockCbSet);
+      expect(ZPP_CbSet.zpp_pool).toBe(mockCbSet);
       expect(mockCbSet.zip_listeners).toBe(true);
       expect(mockCbSet.zip_bodylisteners).toBe(true);
       expect(mockCbSet.zip_conlisteners).toBe(true);

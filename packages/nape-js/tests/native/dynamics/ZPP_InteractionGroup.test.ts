@@ -1,12 +1,13 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { ZPP_InteractionGroup } from "../../../src/native/dynamics/ZPP_InteractionGroup";
-import { createMockZpp, MockZNPList } from "../_mocks";
+import {
+  ZNPList_ZPP_InteractionGroup,
+  ZNPList_ZPP_Interactor,
+} from "../../../src/native/util/ZNPRegistry";
 
+// ZPP_InteractionGroup imports its ZNPList classes directly and no longer
+// reads the _zpp namespace static, so no mock namespace setup is needed.
 describe("ZPP_InteractionGroup", () => {
-  beforeEach(() => {
-    ZPP_InteractionGroup._zpp = createMockZpp();
-  });
-
   describe("static type flags", () => {
     it("should define SHAPE and BODY", () => {
       expect(ZPP_InteractionGroup.SHAPE).toBe(1);
@@ -20,8 +21,8 @@ describe("ZPP_InteractionGroup", () => {
       expect(g.outer).toBeNull();
       expect(g.ignore).toBe(false);
       expect(g.group).toBeNull();
-      expect(g.groups).toBeInstanceOf(MockZNPList);
-      expect(g.interactors).toBeInstanceOf(MockZNPList);
+      expect(g.groups).toBeInstanceOf(ZNPList_ZPP_InteractionGroup);
+      expect(g.interactors).toBeInstanceOf(ZNPList_ZPP_Interactor);
       expect(g.depth).toBe(0);
     });
   });

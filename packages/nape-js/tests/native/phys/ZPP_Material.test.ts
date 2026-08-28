@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_Material } from "../../../src/native/phys/ZPP_Material";
-import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
+import { ZNPList_ZPP_Shape } from "../../../src/native/util/ZNPRegistry";
+import { createMockNape } from "../_mocks";
 
 describe("ZPP_Material", () => {
   beforeEach(() => {
     ZPP_Material.zpp_pool = null;
-    ZPP_Material._zpp = createMockZpp();
+    // ZPP_Material now imports its ZNPList class directly; only _nape (wrapper
+    // creation) is still read from the namespace statics.
     ZPP_Material._nape = createMockNape();
   });
 
@@ -30,7 +32,7 @@ describe("ZPP_Material", () => {
 
     it("should create shapes list", () => {
       const m = new ZPP_Material();
-      expect(m.shapes).toBeInstanceOf(MockZNPList);
+      expect(m.shapes).toBeInstanceOf(ZNPList_ZPP_Shape);
     });
 
     it("should initialize other fields to defaults", () => {
@@ -81,7 +83,7 @@ describe("ZPP_Material", () => {
       const originalShapes = m.shapes;
       m.feature_cons();
       expect(m.shapes).not.toBe(originalShapes);
-      expect(m.shapes).toBeInstanceOf(MockZNPList);
+      expect(m.shapes).toBeInstanceOf(ZNPList_ZPP_Shape);
     });
   });
 

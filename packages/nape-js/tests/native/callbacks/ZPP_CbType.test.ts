@@ -1,10 +1,26 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_CbType } from "../../../src/native/callbacks/ZPP_CbType";
-import { createMockZpp, MockZNPList, MockZNPNode } from "../_mocks";
+import {
+  ZNPList_ZPP_CbSet,
+  ZNPList_ZPP_Constraint,
+  ZNPList_ZPP_Interactor,
+  ZNPList_ZPP_BodyListener,
+  ZNPList_ZPP_ConstraintListener,
+  ZNPList_ZPP_InteractionListener,
+  ZNPNode_ZPP_BodyListener,
+  ZNPNode_ZPP_ConstraintListener,
+  ZNPNode_ZPP_InteractionListener,
+} from "../../../src/native/util/ZNPRegistry";
+import { createMockZpp } from "../_mocks";
 
 describe("ZPP_CbType", () => {
   beforeEach(() => {
+    // The constructor still reads _zpp.ZPP_ID.CbType(); list/node classes are
+    // imported directly, so their real static pools must be reset for isolation.
     ZPP_CbType._zpp = createMockZpp();
+    ZNPNode_ZPP_InteractionListener.zpp_pool = null;
+    ZNPNode_ZPP_BodyListener.zpp_pool = null;
+    ZNPNode_ZPP_ConstraintListener.zpp_pool = null;
   });
 
   describe("constructor", () => {
@@ -16,20 +32,20 @@ describe("ZPP_CbType", () => {
 
     it("should create listener lists", () => {
       const ct = new ZPP_CbType();
-      expect(ct.listeners).toBeInstanceOf(MockZNPList);
-      expect(ct.bodylisteners).toBeInstanceOf(MockZNPList);
-      expect(ct.conlisteners).toBeInstanceOf(MockZNPList);
+      expect(ct.listeners).toBeInstanceOf(ZNPList_ZPP_InteractionListener);
+      expect(ct.bodylisteners).toBeInstanceOf(ZNPList_ZPP_BodyListener);
+      expect(ct.conlisteners).toBeInstanceOf(ZNPList_ZPP_ConstraintListener);
     });
 
     it("should create constraint and interactor lists", () => {
       const ct = new ZPP_CbType();
-      expect(ct.constraints).toBeInstanceOf(MockZNPList);
-      expect(ct.interactors).toBeInstanceOf(MockZNPList);
+      expect(ct.constraints).toBeInstanceOf(ZNPList_ZPP_Constraint);
+      expect(ct.interactors).toBeInstanceOf(ZNPList_ZPP_Interactor);
     });
 
     it("should create cbsets list", () => {
       const ct = new ZPP_CbType();
-      expect(ct.cbsets).toBeInstanceOf(MockZNPList);
+      expect(ct.cbsets).toBeInstanceOf(ZNPList_ZPP_CbSet);
     });
 
     it("should initialize other fields", () => {
@@ -79,7 +95,6 @@ describe("ZPP_CbType", () => {
     it("should add interaction listener in priority order", () => {
       const ct = new ZPP_CbType();
       // Reset node pool
-      MockZNPNode.zpp_pool = null;
 
       const listener1 = { precedence: 1, id: 1, space: null };
       const listener2 = { precedence: 2, id: 2, space: null };
@@ -95,7 +110,6 @@ describe("ZPP_CbType", () => {
 
     it("should break tie by id", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
 
       const listener1 = { precedence: 1, id: 1, space: null };
       const listener2 = { precedence: 1, id: 2, space: null };
@@ -107,7 +121,6 @@ describe("ZPP_CbType", () => {
 
     it("should invalidate cbsets listeners", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const cbset = { zip_listeners: false, invalidate_pairs: () => {} };
       ct.cbsets.add(cbset);
 
@@ -117,17 +130,17 @@ describe("ZPP_CbType", () => {
 
     it("should use node pool when available", () => {
       const ct = new ZPP_CbType();
-      const poolNode = new MockZNPNode();
-      const zpp = ZPP_CbType._zpp;
-      zpp.util.ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
+      const poolNode = new ZNPNode_ZPP_InteractionListener();
+      ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
 
       ct.addint({ precedence: 0, id: 0, space: null });
       expect(ct.listeners.length).toBe(1);
+      expect(ct.listeners.head).toBe(poolNode);
+      expect(ZNPNode_ZPP_InteractionListener.zpp_pool).toBeNull();
     });
 
     it("should insert at end for lowest precedence", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
 
       const high = { precedence: 10, id: 1, space: null };
       const low = { precedence: 0, id: 2, space: null };
@@ -142,7 +155,6 @@ describe("ZPP_CbType", () => {
   describe("removeint", () => {
     it("should remove listener and invalidate cbsets", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const listener = { precedence: 0, id: 0, space: null };
       ct.addint(listener);
 
@@ -171,7 +183,6 @@ describe("ZPP_CbType", () => {
   describe("addbody", () => {
     it("should add body listener in priority order", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
 
       const listener = { precedence: 0, id: 0 };
       ct.addbody(listener);
@@ -180,7 +191,6 @@ describe("ZPP_CbType", () => {
 
     it("should invalidate cbsets body listeners", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const cbset = { zip_bodylisteners: false };
       ct.cbsets.add(cbset);
 
@@ -190,17 +200,17 @@ describe("ZPP_CbType", () => {
 
     it("should use node pool when available", () => {
       const ct = new ZPP_CbType();
-      const zpp = ZPP_CbType._zpp;
-      const poolNode = new MockZNPNode();
-      zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
+      const poolNode = new ZNPNode_ZPP_BodyListener();
+      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
 
       ct.addbody({ precedence: 0, id: 0 });
       expect(ct.bodylisteners.length).toBe(1);
+      expect(ct.bodylisteners.head).toBe(poolNode);
+      expect(ZNPNode_ZPP_BodyListener.zpp_pool).toBeNull();
     });
 
     it("should insert based on precedence and id ordering", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const high = { precedence: 10, id: 1 };
       const low = { precedence: 1, id: 2 };
       ct.addbody(low);
@@ -212,7 +222,6 @@ describe("ZPP_CbType", () => {
   describe("removebody", () => {
     it("should remove body listener and invalidate cbsets", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const listener = { precedence: 0, id: 0 };
       ct.addbody(listener);
 
@@ -237,7 +246,6 @@ describe("ZPP_CbType", () => {
   describe("addconstraint", () => {
     it("should add constraint listener in priority order", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
 
       ct.addconstraint({ precedence: 0, id: 0 });
       expect(ct.conlisteners.length).toBe(1);
@@ -245,7 +253,6 @@ describe("ZPP_CbType", () => {
 
     it("should invalidate cbsets constraint listeners", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const cbset = { zip_conlisteners: false };
       ct.cbsets.add(cbset);
 
@@ -255,19 +262,19 @@ describe("ZPP_CbType", () => {
 
     it("should use node pool when available", () => {
       const ct = new ZPP_CbType();
-      const zpp = ZPP_CbType._zpp;
-      const poolNode = new MockZNPNode();
-      zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
+      const poolNode = new ZNPNode_ZPP_ConstraintListener();
+      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
 
       ct.addconstraint({ precedence: 0, id: 0 });
       expect(ct.conlisteners.length).toBe(1);
+      expect(ct.conlisteners.head).toBe(poolNode);
+      expect(ZNPNode_ZPP_ConstraintListener.zpp_pool).toBeNull();
     });
   });
 
   describe("removeconstraint", () => {
     it("should remove constraint listener and invalidate cbsets", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
       const listener = { precedence: 0, id: 0 };
       ct.addconstraint(listener);
 
@@ -292,24 +299,22 @@ describe("ZPP_CbType", () => {
   describe("addbody (pool node reuse and insert-at-end)", () => {
     it("should reuse pool node from ZNPNode_ZPP_BodyListener.zpp_pool chain", () => {
       const ct = new ZPP_CbType();
-      const zpp = ZPP_CbType._zpp;
-      const poolNode2 = new MockZNPNode();
-      const poolNode1 = new MockZNPNode();
+      const poolNode2 = new ZNPNode_ZPP_BodyListener();
+      const poolNode1 = new ZNPNode_ZPP_BodyListener();
       poolNode1.next = poolNode2;
-      zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool = poolNode1;
+      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode1;
 
-      ct.addbody({ precedence: 0, id: 0 });
+      const listener = { precedence: 0, id: 0 };
+      ct.addbody(listener);
       // poolNode1 was consumed, pool should now point to poolNode2
-      expect(zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool).toBe(poolNode2);
+      expect(ZNPNode_ZPP_BodyListener.zpp_pool).toBe(poolNode2);
+      expect(ct.bodylisteners.head).toBe(poolNode1);
+      expect(poolNode1.elt).toBe(listener);
       expect(ct.bodylisteners.length).toBe(1);
     });
 
     it("should insert at end when new listener has lowest precedence", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
-      const zpp = ZPP_CbType._zpp;
-      zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool = null;
-
       const high = { precedence: 10, id: 1 };
       const mid = { precedence: 5, id: 2 };
       const low = { precedence: 1, id: 3 };
@@ -325,10 +330,6 @@ describe("ZPP_CbType", () => {
 
     it("should insert after existing when same precedence but lower id", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
-      const zpp = ZPP_CbType._zpp;
-      zpp.util.ZNPNode_ZPP_BodyListener.zpp_pool = null;
-
       const a = { precedence: 5, id: 10 };
       const b = { precedence: 5, id: 5 };
 
@@ -343,23 +344,21 @@ describe("ZPP_CbType", () => {
   describe("addconstraint (pool node reuse and insert-at-end)", () => {
     it("should reuse pool node from ZNPNode_ZPP_ConstraintListener.zpp_pool chain", () => {
       const ct = new ZPP_CbType();
-      const zpp = ZPP_CbType._zpp;
-      const poolNode2 = new MockZNPNode();
-      const poolNode1 = new MockZNPNode();
+      const poolNode2 = new ZNPNode_ZPP_ConstraintListener();
+      const poolNode1 = new ZNPNode_ZPP_ConstraintListener();
       poolNode1.next = poolNode2;
-      zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode1;
+      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode1;
 
-      ct.addconstraint({ precedence: 0, id: 0 });
-      expect(zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool).toBe(poolNode2);
+      const listener = { precedence: 0, id: 0 };
+      ct.addconstraint(listener);
+      expect(ZNPNode_ZPP_ConstraintListener.zpp_pool).toBe(poolNode2);
+      expect(ct.conlisteners.head).toBe(poolNode1);
+      expect(poolNode1.elt).toBe(listener);
       expect(ct.conlisteners.length).toBe(1);
     });
 
     it("should insert at end when new listener has lowest precedence", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
-      const zpp = ZPP_CbType._zpp;
-      zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = null;
-
       const high = { precedence: 10, id: 1 };
       const low = { precedence: 1, id: 2 };
 
@@ -372,10 +371,6 @@ describe("ZPP_CbType", () => {
 
     it("should insert after existing when same precedence but lower id", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
-      const zpp = ZPP_CbType._zpp;
-      zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = null;
-
       const a = { precedence: 5, id: 10 };
       const b = { precedence: 5, id: 5 };
 
@@ -387,10 +382,6 @@ describe("ZPP_CbType", () => {
 
     it("should insert at head when new listener has higher precedence (break path)", () => {
       const ct = new ZPP_CbType();
-      MockZNPNode.zpp_pool = null;
-      const zpp = ZPP_CbType._zpp;
-      zpp.util.ZNPNode_ZPP_ConstraintListener.zpp_pool = null;
-
       const low = { precedence: 1, id: 1 };
       const high = { precedence: 10, id: 2 };
 

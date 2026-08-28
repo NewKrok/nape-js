@@ -1,24 +1,14 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_CbSetPair } from "../../../src/native/callbacks/ZPP_CbSetPair";
-import { createMockZpp, MockZNPList } from "../_mocks";
+import { ZNPList_ZPP_InteractionListener } from "../../../src/native/util/ZNPRegistry";
+import { MockZNPList } from "../_mocks";
 
 describe("ZPP_CbSetPair", () => {
-  let zpp: any;
-
   beforeEach(() => {
-    zpp = createMockZpp();
-    ZPP_CbSetPair._zpp = zpp;
+    // ZPP_CbSetPair imports ZPP_CbSet (for setlt) and its ZNPList class
+    // directly — no mock namespace is needed. The real ZPP_CbSet.setlt walks
+    // cbTypes.head/.elt.id, so the plain mock lists below work as data.
     ZPP_CbSetPair.zpp_pool = null;
-    // Set up the cross-reference for CbSet.setlt
-    zpp.callbacks.ZPP_CbSet.setlt = (a: any, b: any) => {
-      // Compare by id
-      if (a.cbTypes && b.cbTypes) {
-        const aHead = a.cbTypes.head;
-        const bHead = b.cbTypes.head;
-        if (aHead && bHead) return aHead.elt.id < bHead.elt.id;
-      }
-      return false;
-    };
   });
 
   describe("constructor", () => {
@@ -28,7 +18,7 @@ describe("ZPP_CbSetPair", () => {
       expect(p.b).toBeNull();
       expect(p.next).toBeNull();
       expect(p.zip_listeners).toBe(false);
-      expect(p.listeners).toBeInstanceOf(MockZNPList);
+      expect(p.listeners).toBeInstanceOf(ZNPList_ZPP_InteractionListener);
     });
   });
 

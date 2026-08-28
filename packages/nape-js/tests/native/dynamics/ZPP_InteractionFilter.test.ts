@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_InteractionFilter } from "../../../src/native/dynamics/ZPP_InteractionFilter";
-import { createMockZpp, createMockNape, MockZNPList } from "../_mocks";
+import { ZNPList_ZPP_Shape } from "../../../src/native/util/ZNPRegistry";
+import { createMockNape } from "../_mocks";
 
 describe("ZPP_InteractionFilter", () => {
   beforeEach(() => {
     ZPP_InteractionFilter.zpp_pool = null;
-    ZPP_InteractionFilter._zpp = createMockZpp();
+    // ZPP_InteractionFilter now imports its ZNPList class directly; only
+    // _nape (wrapper creation) is still read from the namespace statics.
     ZPP_InteractionFilter._nape = createMockNape();
   });
 
@@ -22,7 +24,7 @@ describe("ZPP_InteractionFilter", () => {
 
     it("should create shapes list", () => {
       const f = new ZPP_InteractionFilter();
-      expect(f.shapes).toBeInstanceOf(MockZNPList);
+      expect(f.shapes).toBeInstanceOf(ZNPList_ZPP_Shape);
     });
 
     it("should initialize other fields", () => {
