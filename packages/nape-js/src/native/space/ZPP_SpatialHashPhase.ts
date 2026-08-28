@@ -26,7 +26,6 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
   static _nape: any = null;
 
   // --- Instance fields ---
-  failed: any = null;
 
   /** All shapes tracked by this broadphase, as a simple array. */
   shapes: any[] = [];
@@ -453,13 +452,15 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
 
     const v = ZPP_Vec2.get(x, y);
     const ret1 = output == null ? new ZPP_SpatialHashPhase._nape.phys.BodyList() : output;
+    const seen = new Set<any>();
+    for (let j = 0; j < ret1.length; j++) seen.add(ret1.at(j));
 
     for (let i = 0; i < this.shapes.length; i++) {
       const shape = this.shapes[i];
       const aabb = shape.aabb;
       if (aabb.minx <= x && aabb.maxx >= x && aabb.miny <= y && aabb.maxy >= y) {
         const body = shape.body.outer;
-        if (!ret1.has(body)) {
+        if (!seen.has(body)) {
           let tmp: boolean;
           if (filter != null) {
             const _this = shape.filter;
@@ -472,9 +473,11 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
           if (tmp) {
             if (shape.type == 0) {
               if (ZPP_Collide.circleContains(shape.circle, v)) {
+                seen.add(body);
                 ret1.push(body);
               }
             } else if (ZPP_Collide.polyContains(shape.polygon, v)) {
+              seen.add(body);
               ret1.push(body);
             }
           }
@@ -567,9 +570,9 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
     (this as any).updateAABBShape(aabb);
     const ab = (this as any).aabbShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_SpatialHashPhase._nape.phys.BodyList() : output;
-    if (this.failed == null) {
-      this.failed = new ZPP_SpatialHashPhase._nape.phys.BodyList();
-    }
+    const seen = new Set<any>();
+    for (let j = 0; j < ret.length; j++) seen.add(ret.at(j));
+    const failed = new Set<any>();
 
     for (let i = 0; i < this.shapes.length; i++) {
       const shape = this.shapes[i];
@@ -593,36 +596,41 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         if (tmp) {
           if (strict) {
             if (containment) {
-              if (!this.failed.has(body)) {
+              if (!failed.has(body)) {
                 const col = ZPP_Collide.containTest((this as any).aabbShape.zpp_inner, shape);
-                if (!ret.has(body) && col) {
+                if (!seen.has(body) && col) {
+                  seen.add(body);
                   ret.push(body);
                 } else if (!col) {
+                  seen.delete(body);
                   ret.remove(body);
-                  this.failed.push(body);
+                  failed.add(body);
                 }
               }
             } else if (
-              !ret.has(body) &&
+              !seen.has(body) &&
               ZPP_Collide.testCollide_safe(shape, (this as any).aabbShape.zpp_inner)
             ) {
+              seen.add(body);
               ret.push(body);
             }
           } else if (containment) {
-            if (!this.failed.has(body)) {
+            if (!failed.has(body)) {
               const x = shape.aabb;
               const col1 =
                 x.minx >= ab.minx && x.miny >= ab.miny && x.maxx <= ab.maxx && x.maxy <= ab.maxy;
-              if (!ret.has(body) && col1) {
+              if (!seen.has(body) && col1) {
+                seen.add(body);
                 ret.push(body);
               } else if (!col1) {
+                seen.delete(body);
                 ret.remove(body);
-                this.failed.push(body);
+                failed.add(body);
               }
             }
           } else {
             let tmp1: boolean;
-            if (!ret.has(body)) {
+            if (!seen.has(body)) {
               const x1 = shape.aabb;
               tmp1 =
                 x1.minx >= ab.minx &&
@@ -633,13 +641,13 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
               tmp1 = false;
             }
             if (tmp1) {
+              seen.add(body);
               ret.push(body);
             }
           }
         }
       }
     }
-    this.failed.clear();
     return ret;
   }
 
@@ -702,9 +710,9 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
     (this as any).updateCircShape(x, y, r);
     const ab = (this as any).circShape.zpp_inner.aabb;
     const ret = output == null ? new ZPP_SpatialHashPhase._nape.phys.BodyList() : output;
-    if (this.failed == null) {
-      this.failed = new ZPP_SpatialHashPhase._nape.phys.BodyList();
-    }
+    const seen = new Set<any>();
+    for (let j = 0; j < ret.length; j++) seen.add(ret.at(j));
+    const failed = new Set<any>();
 
     for (let i = 0; i < this.shapes.length; i++) {
       const shape = this.shapes[i];
@@ -727,25 +735,27 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         }
         if (tmp) {
           if (containment) {
-            if (!this.failed.has(body)) {
+            if (!failed.has(body)) {
               const col = ZPP_Collide.containTest((this as any).circShape.zpp_inner, shape);
-              if (!ret.has(body) && col) {
+              if (!seen.has(body) && col) {
+                seen.add(body);
                 ret.push(body);
               } else if (!col) {
+                seen.delete(body);
                 ret.remove(body);
-                this.failed.push(body);
+                failed.add(body);
               }
             }
           } else if (
-            !ret.has(body) &&
+            !seen.has(body) &&
             ZPP_Collide.testCollide_safe(shape, (this as any).circShape.zpp_inner)
           ) {
+            seen.add(body);
             ret.push(body);
           }
         }
       }
     }
-    this.failed.clear();
     return ret;
   }
 
@@ -794,9 +804,9 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
     (this as any).validateShape(shape);
     const ab = shape.aabb;
     const ret = output == null ? new ZPP_SpatialHashPhase._nape.phys.BodyList() : output;
-    if (this.failed == null) {
-      this.failed = new ZPP_SpatialHashPhase._nape.phys.BodyList();
-    }
+    const seen = new Set<any>();
+    for (let j = 0; j < ret.length; j++) seen.add(ret.at(j));
+    const failed = new Set<any>();
 
     for (let i = 0; i < this.shapes.length; i++) {
       const shape2 = this.shapes[i];
@@ -819,22 +829,24 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
         }
         if (tmp) {
           if (containment) {
-            if (!this.failed.has(body)) {
+            if (!failed.has(body)) {
               const col = ZPP_Collide.containTest(shape, shape2);
-              if (!ret.has(body) && col) {
+              if (!seen.has(body) && col) {
+                seen.add(body);
                 ret.push(body);
               } else if (!col) {
+                seen.delete(body);
                 ret.remove(body);
-                this.failed.push(body);
+                failed.add(body);
               }
             }
-          } else if (!ret.has(body) && ZPP_Collide.testCollide_safe(shape, shape2)) {
+          } else if (!seen.has(body) && ZPP_Collide.testCollide_safe(shape, shape2)) {
+            seen.add(body);
             ret.push(body);
           }
         }
       }
     }
-    this.failed.clear();
     return ret;
   }
 
