@@ -885,24 +885,10 @@ export class ZPP_Simple {
       o27.next = ZPP_SimpleEvent.zpp_pool;
       ZPP_SimpleEvent.zpp_pool = o27;
     }
-    let _g = 0;
-    const _g1 = ZPP_Simple.inthash!.table.length;
-    while (_g < _g1) {
-      const i = _g++;
-      let n = ZPP_Simple.inthash!.table[i];
-      if (n == null) {
-        continue;
-      }
-      while (n != null) {
-        const t1: Hashable2_Boolfalse | null = n.hnext;
-        n.hnext = null;
-        const o28 = n;
-        o28.next = Hashable2_Boolfalse.zpp_pool;
-        Hashable2_Boolfalse.zpp_pool = o28;
-        n = t1;
-      }
-      ZPP_Simple.inthash!.table[i] = null;
-    }
+    ZPP_Simple.inthash!.clear((o28) => {
+      o28.next = Hashable2_Boolfalse.zpp_pool;
+      Hashable2_Boolfalse.zpp_pool = o28;
+    });
     if (rets == null) {
       rets = new ZNPList_ZPP_GeomVert();
     }

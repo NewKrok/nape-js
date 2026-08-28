@@ -12,9 +12,9 @@ describe("FastHash2_Hashable2_Boolfalse", () => {
   });
 
   describe("constructor", () => {
-    it("should initialize with empty table and zero count", () => {
+    it("should initialize empty with zero count", () => {
       expect(hash.cnt).toBe(0);
-      expect(hash.table.length).toBe(1048576);
+      expect(hash.map.size).toBe(0);
       expect(hash.empty()).toBe(true);
     });
   });
@@ -44,15 +44,16 @@ describe("FastHash2_Hashable2_Boolfalse", () => {
       expect(hash.get(1, 2)).toBe(e1);
       expect(hash.get(3, 4)).toBe(e2);
     });
-  });
 
-  describe("ordered_get", () => {
-    it("should find entry regardless of argument order", () => {
-      const entry = Hashable2_Boolfalse.ordered_get(5, 10, true);
-      hash.add(entry);
-      // entry.id = 5, entry.di = 10
-      expect(hash.ordered_get(5, 10)).toBe(entry);
-      expect(hash.ordered_get(10, 5)).toBe(entry);
+    it("should chain duplicate keys and keep lookups correct", () => {
+      const e1 = Hashable2_Boolfalse.get(1, 2, true);
+      const e2 = Hashable2_Boolfalse.get(1, 2, false);
+      hash.add(e1);
+      hash.add(e2);
+      expect(hash.cnt).toBe(2);
+      expect(hash.get(1, 2)).toBe(e1);
+      hash.remove(e1);
+      expect(hash.get(1, 2)).toBe(e2);
     });
   });
 
@@ -64,11 +65,12 @@ describe("FastHash2_Hashable2_Boolfalse", () => {
       hash.remove(entry);
       expect(hash.cnt).toBe(0);
       expect(hash.get(7, 14)).toBeNull();
+      expect(hash.map.size).toBe(0);
     });
   });
 
   describe("clear", () => {
-    it("should clear all entries from the table", () => {
+    it("should clear all entries and reset count", () => {
       const e1 = Hashable2_Boolfalse.get(1, 2, true);
       const e2 = Hashable2_Boolfalse.get(3, 4, false);
       hash.add(e1);
@@ -76,23 +78,23 @@ describe("FastHash2_Hashable2_Boolfalse", () => {
       hash.clear();
       expect(hash.get(1, 2)).toBeNull();
       expect(hash.get(3, 4)).toBeNull();
-      // Note: clear does not reset cnt
+      expect(hash.cnt).toBe(0);
+      expect(hash.empty()).toBe(true);
     });
-  });
 
-  describe("maybeAdd", () => {
-    it("should add an entry and increment count", () => {
-      const entry = Hashable2_Boolfalse.get(100, 200, true);
-      hash.maybeAdd(entry);
-      expect(hash.cnt).toBe(1);
-      expect(hash.has(100, 200)).toBe(true);
-    });
-  });
-
-  describe("hash", () => {
-    it("should compute hash for a pair of ids", () => {
-      const h = hash.hash(10, 20);
-      expect(h).toBe((10 * 106039 + 20) & 1048575);
+    it("should invoke the free callback on every entry", () => {
+      const e1 = Hashable2_Boolfalse.get(1, 2, true);
+      const e2 = Hashable2_Boolfalse.get(1, 2, false);
+      const e3 = Hashable2_Boolfalse.get(3, 4, true);
+      hash.add(e1);
+      hash.add(e2);
+      hash.add(e3);
+      const freed: Hashable2_Boolfalse[] = [];
+      hash.clear((n) => freed.push(n));
+      expect(freed).toHaveLength(3);
+      expect(freed).toContain(e1);
+      expect(freed).toContain(e2);
+      expect(freed).toContain(e3);
     });
   });
 
