@@ -109,22 +109,13 @@ import { ZPP_SweepPhase } from "../space/ZPP_SweepPhase";
 import { ZPP_SpatialHashPhase } from "../space/ZPP_SpatialHashPhase";
 
 /**
- * Creates and returns the nape namespace object with all ZPP_* classes registered.
- * Previously called from nape-compiled.js; now fully self-contained (Priority 20).
+ * Registers all ZPP_* classes into the given nape namespace (from getNape()).
+ * Invoked once by core/bootstrap.ts; idempotent.
  */
-export function registerZPPClasses(): any {
-  const nape: any = {};
-  const zpp: any = {};
-
-  // --- Public API namespace initialization ---
-  nape.callbacks = {};
-  nape.constraint = {};
-  nape.dynamics = {};
-  nape.geom = {};
-  nape.phys = {};
-  nape.shape = {};
-  nape.space = {};
-  nape.util = {};
+export function registerZPPClasses(nape: any): any {
+  const zpp: any = nape.__zpp;
+  if (zpp.__classesRegistered) return nape;
+  zpp.__classesRegistered = true;
 
   // --- top-level ---
   zpp.ZPP_Const = ZPP_Const;
@@ -397,9 +388,6 @@ export function registerZPPClasses(): any {
   zpp.callbacks.ZPP_InteractionListener._initStatics(zpp);
   zpp.geom.ZPP_Collide._initStatics(zpp);
   zpp.space.ZPP_AABBTree._initStatics();
-
-  // Expose zpp_nape via nape.__zpp for engine.ts and other TS modules.
-  nape.__zpp = zpp;
 
   return nape;
 }

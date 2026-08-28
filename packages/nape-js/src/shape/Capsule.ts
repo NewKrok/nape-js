@@ -6,10 +6,10 @@ import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Shape, _bindCapsuleWrap } from "./Shape";
 import { ShapeType } from "./ShapeType";
 import { ZPP_Polygon } from "../native/shape/ZPP_Polygon";
-import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 import { Config } from "../Config";
+import { CbType } from "../callbacks/CbType";
 
 /**
  * Number of segments per semicircular end-cap.
@@ -187,7 +187,7 @@ export class Capsule extends Shape {
     }
 
     // --- Register ANY_SHAPE callback type ---
-    zpp.insert_cbtype((ZPP_CbType as any).ANY_SHAPE.zpp_inner);
+    zpp.insert_cbtype((CbType.ANY_SHAPE as any).zpp_inner);
   }
 
   /** @internal */

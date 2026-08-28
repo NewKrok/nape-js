@@ -13,7 +13,6 @@ import { Space } from "../space/Space";
 import { BodyType } from "./BodyType";
 import { Interactor, _bindBodyWrapForInteractor } from "./Interactor";
 import { ZPP_Body } from "../native/phys/ZPP_Body";
-import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
@@ -28,6 +27,18 @@ import type { InteractionType } from "../callbacks/InteractionType";
 import type { MassMode } from "./MassMode";
 import type { InertiaMode } from "./InertiaMode";
 import type { GravMassMode } from "./GravMassMode";
+import { CbType } from "../callbacks/CbType";
+
+// Maps ZPP_Body.type ints (1..3) to the BodyType singletons.
+function bodyTypeOf(t: number): BodyType | null {
+  return t === 1
+    ? BodyType.STATIC
+    : t === 2
+      ? BodyType.DYNAMIC
+      : t === 3
+        ? BodyType.KINEMATIC
+        : null;
+}
 
 // Lazily cached iterator classes (created by the list factory at boot).
 let _ArbiterIterator: any = null;
@@ -129,7 +140,7 @@ export class Body extends Interactor {
     if (zpp.world) {
       throw new Error("Space::world is immutable");
     }
-    if (ZPP_Body.types[zpp.type] !== type1) {
+    if (bodyTypeOf(zpp.type) !== type1) {
       if (type1 == null) {
         throw new Error("Cannot use null BodyType");
       }
@@ -153,7 +164,7 @@ export class Body extends Interactor {
     }
 
     // Register ANY_BODY callback type
-    zpp.insert_cbtype((ZPP_CbType as any).ANY_BODY.zpp_inner);
+    zpp.insert_cbtype((CbType.ANY_BODY as any).zpp_inner);
   }
 
   /** @internal */
@@ -187,7 +198,7 @@ export class Body extends Interactor {
 
   /** The body type: DYNAMIC, STATIC, or KINEMATIC. Cannot be changed mid-step. */
   get type(): BodyType {
-    return ZPP_Body.types[this.zpp_inner.type];
+    return bodyTypeOf(this.zpp_inner.type) as BodyType;
   }
   set type(value: BodyType) {
     const zpp = this.zpp_inner;
@@ -195,7 +206,7 @@ export class Body extends Interactor {
     if (zpp.world) {
       throw new Error("Space::world is immutable");
     }
-    if (ZPP_Body.types[zpp.type] !== value) {
+    if (bodyTypeOf(zpp.type) !== value) {
       if (value == null) {
         throw new Error("Cannot use null BodyType");
       }

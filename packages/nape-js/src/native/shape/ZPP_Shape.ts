@@ -21,29 +21,6 @@ export class ZPP_Shape {
   static _nape: any = null;
   static _zpp: any = null;
 
-  // --- Static: shape type enum lookup (populated by _initEnums) ---
-  static types: any[] = [];
-
-  /**
-   * Initialize ShapeType singleton enums. Called once from compiled factory.
-   */
-  static _initEnums(nape: any, ZPP_Flags: any): void {
-    const mk = () => {
-      ZPP_Flags.internal = true;
-      const o = new nape.shape.ShapeType();
-      ZPP_Flags.internal = false;
-      return o;
-    };
-    if (ZPP_Flags.ShapeType_CIRCLE == null) ZPP_Flags.ShapeType_CIRCLE = mk();
-    if (ZPP_Flags.ShapeType_POLYGON == null) ZPP_Flags.ShapeType_POLYGON = mk();
-    if (ZPP_Flags.ShapeType_CAPSULE == null) ZPP_Flags.ShapeType_CAPSULE = mk();
-    ZPP_Shape.types = [
-      ZPP_Flags.ShapeType_CIRCLE,
-      ZPP_Flags.ShapeType_POLYGON,
-      ZPP_Flags.ShapeType_CAPSULE,
-    ];
-  }
-
   // --- Static: init guard ---
   static _initialized = false;
 

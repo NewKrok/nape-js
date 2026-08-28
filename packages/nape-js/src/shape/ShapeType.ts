@@ -1,4 +1,4 @@
-import { getNape, ensureEnumsReady } from "../core/engine";
+import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -56,4 +56,3 @@ export class ShapeType {
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.shape.ShapeType = ShapeType;
-ensureEnumsReady();

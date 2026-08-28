@@ -15,6 +15,7 @@
  */
 
 import { getNape } from "./engine";
+import { registerZPPClasses } from "../native/util/ZPPRegistry";
 
 // --- Config / Debug ---
 import { Config } from "../Config";
@@ -129,6 +130,9 @@ import "../native/util/ZPP_PublicList";
 // ===========================================================================
 
 const nape = getNape();
+
+// Populate the internal ZPP class graph before any wiring below touches it.
+registerZPPClasses(nape);
 
 // Config — alias the exported Config object (single source of truth; runtime
 // mutations of Config are visible to the engine)

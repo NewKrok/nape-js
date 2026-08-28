@@ -3,7 +3,7 @@ import { Vec3 } from "../geom/Vec3";
 import type { NapeInner } from "../geom/Vec2";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
-import type { ArbiterType } from "./ArbiterType";
+import { ArbiterType } from "./ArbiterType";
 import type { Shape } from "../shape/Shape";
 import type { Body } from "../phys/Body";
 import type { CollisionArbiter } from "./CollisionArbiter";
@@ -62,7 +62,14 @@ export class Arbiter {
    * @see {@link ArbiterType}
    */
   get type(): ArbiterType {
-    return ZPP_Arbiter.types[this.zpp_inner.type];
+    const t = this.zpp_inner.type;
+    return (t === 1
+      ? ArbiterType.COLLISION
+      : t === 2
+        ? ArbiterType.SENSOR
+        : t === 4
+          ? ArbiterType.FLUID
+          : null) as unknown as ArbiterType;
   }
 
   /** Cast to CollisionArbiter if this is a collision, else null. */

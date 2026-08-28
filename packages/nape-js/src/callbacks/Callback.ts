@@ -1,7 +1,7 @@
 import { ZPP_Callback } from "../native/callbacks/ZPP_Callback";
-import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
 import type { CbEvent } from "./CbEvent";
 import type { Listener } from "./Listener";
+import { cbEventOf } from "./Listener";
 
 /**
  * Base class for all physics engine callback objects.
@@ -30,7 +30,7 @@ export class Callback {
 
   /** The event type that caused this callback to fire (e.g., `CbEvent.BEGIN`). */
   get event(): CbEvent {
-    return ZPP_Listener.events[this.zpp_inner!.event];
+    return cbEventOf(this.zpp_inner!.event);
   }
 
   /** The listener that this callback was fired from. */

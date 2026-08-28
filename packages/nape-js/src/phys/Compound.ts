@@ -4,8 +4,8 @@ import { Body } from "./Body";
 import { Space } from "../space/Space";
 import { Interactor } from "./Interactor";
 import { ZPP_Compound } from "../native/phys/ZPP_Compound";
-import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import type { Constraint } from "../constraint/Constraint";
+import { CbType } from "../callbacks/CbType";
 
 /**
  * A compound physics object — a hierarchical grouping of Bodies, Constraints,
@@ -32,7 +32,7 @@ export class Compound extends Interactor {
     (this as Writable<Compound>)._inner = this as any;
 
     // Register ANY_COMPOUND callback type
-    zpp.insert_cbtype((ZPP_CbType as any).ANY_COMPOUND.zpp_inner);
+    zpp.insert_cbtype((CbType.ANY_COMPOUND as any).zpp_inner);
   }
 
   /** @internal */

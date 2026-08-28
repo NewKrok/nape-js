@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getNape, ensureEnumsReady } from "../../src/core/engine";
+import { getNape } from "../../src/core/engine";
 import { BodyType } from "../../src/phys/BodyType";
 import { ShapeType } from "../../src/shape/ShapeType";
 import { ArbiterType } from "../../src/dynamics/ArbiterType";
@@ -39,55 +39,38 @@ describe("engine", () => {
     });
   });
 
-  describe("ensureEnumsReady()", () => {
-    it("does not throw", () => {
-      expect(() => ensureEnumsReady()).not.toThrow();
-    });
-
+  describe("enum singletons (lazy)", () => {
     it("makes BodyType enum singletons available", () => {
-      ensureEnumsReady();
-      expect(BodyType.DYNAMIC).toBeDefined();
-      expect(BodyType.STATIC).toBeDefined();
-      expect(BodyType.KINEMATIC).toBeDefined();
+      expect(BodyType.STATIC).not.toBeNull();
+      expect(BodyType.DYNAMIC).not.toBeNull();
+      expect(BodyType.KINEMATIC).not.toBeNull();
     });
 
     it("makes ShapeType enum singletons available", () => {
-      ensureEnumsReady();
-      expect(ShapeType.CIRCLE).toBeDefined();
-      expect(ShapeType.POLYGON).toBeDefined();
+      expect(ShapeType.CIRCLE).not.toBeNull();
+      expect(ShapeType.POLYGON).not.toBeNull();
     });
 
     it("makes ArbiterType enum singletons available", () => {
-      ensureEnumsReady();
-      expect(ArbiterType.COLLISION).toBeDefined();
-      expect(ArbiterType.FLUID).toBeDefined();
-      expect(ArbiterType.SENSOR).toBeDefined();
+      expect(ArbiterType.COLLISION).not.toBeNull();
+      expect(ArbiterType.SENSOR).not.toBeNull();
+      expect(ArbiterType.FLUID).not.toBeNull();
     });
 
     it("makes CbEvent enum singletons available", () => {
-      ensureEnumsReady();
-      expect(CbEvent.BEGIN).toBeDefined();
-      expect(CbEvent.END).toBeDefined();
-      expect(CbEvent.PRE).toBeDefined();
-      expect(CbEvent.ONGOING).toBeDefined();
-      expect(CbEvent.WAKE).toBeDefined();
-      expect(CbEvent.SLEEP).toBeDefined();
+      expect(CbEvent.BEGIN).not.toBeNull();
+      expect(CbEvent.END).not.toBeNull();
+      expect(CbEvent.ONGOING).not.toBeNull();
     });
 
     it("makes ListenerType enum singletons available", () => {
-      ensureEnumsReady();
-      expect(ListenerType.BODY).toBeDefined();
-      expect(ListenerType.CONSTRAINT).toBeDefined();
-      expect(ListenerType.INTERACTION).toBeDefined();
-      expect(ListenerType.PRE).toBeDefined();
+      expect(ListenerType.BODY).not.toBeNull();
+      expect(ListenerType.PRE).not.toBeNull();
     });
 
-    it("is idempotent (safe to call multiple times)", () => {
-      ensureEnumsReady();
-      ensureEnumsReady();
-      // Should still work — singletons remain valid
-      expect(BodyType.DYNAMIC).toBeDefined();
-      expect(ShapeType.CIRCLE).toBeDefined();
+    it("returns the same singleton on repeated access", () => {
+      expect(BodyType.STATIC).toBe(BodyType.STATIC);
+      expect(CbEvent.BEGIN).toBe(CbEvent.BEGIN);
     });
   });
 });

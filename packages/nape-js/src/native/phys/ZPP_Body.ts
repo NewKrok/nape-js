@@ -35,7 +35,6 @@ export class ZPP_Body {
   static _zpp: any = null;
 
   // --- Static fields ---
-  static types: any[] = []; // [null, STATIC, DYNAMIC, KINEMATIC] BodyType singletons
   static bodystack: any = null;
   static bodyset: any = null;
   static cur_graph_depth: number = 0;
@@ -1572,26 +1571,5 @@ export class ZPP_Body {
         (ZPP_Body.prototype as any)[k] = (ZPP_Interactor.prototype as any)[k];
       }
     }
-  }
-
-  /**
-   * Initialize BodyType singleton enums. Called once from compiled factory.
-   */
-  static _initEnums(nape: any, ZPP_Flags: any): void {
-    const mk = () => {
-      ZPP_Flags.internal = true;
-      const o = new nape.phys.BodyType();
-      ZPP_Flags.internal = false;
-      return o;
-    };
-    if (ZPP_Flags.BodyType_STATIC == null) ZPP_Flags.BodyType_STATIC = mk();
-    if (ZPP_Flags.BodyType_DYNAMIC == null) ZPP_Flags.BodyType_DYNAMIC = mk();
-    if (ZPP_Flags.BodyType_KINEMATIC == null) ZPP_Flags.BodyType_KINEMATIC = mk();
-    ZPP_Body.types = [
-      null,
-      ZPP_Flags.BodyType_STATIC,
-      ZPP_Flags.BodyType_DYNAMIC,
-      ZPP_Flags.BodyType_KINEMATIC,
-    ];
   }
 }

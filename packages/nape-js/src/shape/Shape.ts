@@ -10,10 +10,7 @@ import { Material } from "../phys/Material";
 import { FluidProperties } from "../phys/FluidProperties";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Interactor } from "../phys/Interactor";
-// Side-effect import: ShapeType.ts must execute to fix singleton prototypes
-import "./ShapeType";
-import type { ShapeType } from "./ShapeType";
-import { ZPP_Shape } from "../native/shape/ZPP_Shape";
+import { ShapeType } from "./ShapeType";
 import { ZPP_Geom } from "../native/geom/ZPP_Geom";
 import { ZPP_Collide } from "../native/geom/ZPP_Collide";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
@@ -94,7 +91,8 @@ export class Shape extends Interactor {
 
   /** The shape type: CIRCLE or POLYGON. */
   get type(): ShapeType {
-    return ZPP_Shape.types[(this as any).zpp_inner.type];
+    const t = (this as any).zpp_inner.type;
+    return t === 0 ? ShapeType.CIRCLE : t === 1 ? ShapeType.POLYGON : ShapeType.CAPSULE;
   }
 
   /** Returns true if this is a Circle shape. */

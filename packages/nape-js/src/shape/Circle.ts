@@ -5,11 +5,11 @@ import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Shape, _bindCircleWrap } from "./Shape";
 import { ZPP_Circle } from "../native/shape/ZPP_Circle";
-import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 import { ZPP_Const } from "../native/util/ZPP_Const";
 import { Config } from "../Config";
+import { CbType } from "../callbacks/CbType";
 
 /**
  * A circular physics shape. The simplest and most performant collision shape.
@@ -108,7 +108,7 @@ export class Circle extends Shape {
     }
 
     // --- Register ANY_SHAPE callback type ---
-    zpp.insert_cbtype((ZPP_CbType as any).ANY_SHAPE.zpp_inner);
+    zpp.insert_cbtype((CbType.ANY_SHAPE as any).zpp_inner);
   }
 
   /** @internal */

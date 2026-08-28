@@ -29,21 +29,11 @@ export class ZPP_CbType {
   // --- Static: namespace references ---
   static _zpp: any = null;
 
-  // --- Static: ANY_* singleton CbType instances (set by _initEnums) ---
+  // --- Static: ANY_* singleton CbType instances (created lazily by CbType getters) ---
   static ANY_SHAPE: ZPP_CbType | null = null;
   static ANY_BODY: ZPP_CbType | null = null;
   static ANY_COMPOUND: ZPP_CbType | null = null;
   static ANY_CONSTRAINT: ZPP_CbType | null = null;
-
-  /**
-   * Initialize ANY_* singleton CbTypes. Called once from compiled factory.
-   */
-  static _initEnums(nape: any): void {
-    ZPP_CbType.ANY_SHAPE = new nape.callbacks.CbType();
-    ZPP_CbType.ANY_BODY = new nape.callbacks.CbType();
-    ZPP_CbType.ANY_COMPOUND = new nape.callbacks.CbType();
-    ZPP_CbType.ANY_CONSTRAINT = new nape.callbacks.CbType();
-  }
 
   // --- Instance ---
   // outer: public CbType wrapper — any (circular import prevention)
