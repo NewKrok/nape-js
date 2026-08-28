@@ -9,8 +9,6 @@ import {
 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { AABB } from "../geom/AABB";
-import { NapeList } from "../util/NapeList";
-import { Shape } from "../shape/Shape";
 import { Space } from "../space/Space";
 import { BodyType } from "./BodyType";
 import { Interactor, _bindBodyWrapForInteractor } from "./Interactor";
@@ -21,7 +19,7 @@ import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { Compound } from "./Compound";
 import type { Arbiter } from "../dynamics/Arbiter";
-import type { BodyList } from "../util/listTypes";
+import type { BodyList, ShapeList } from "../util/listTypes";
 import type { Mat23 } from "../geom/Mat23";
 import type { Material } from "./Material";
 import type { FluidProperties } from "./FluidProperties";
@@ -53,29 +51,6 @@ function _readVec2Y(v: Vec2): number {
   const inner = v.zpp_inner;
   if (inner._validate != null) inner._validate();
   return inner.y;
-}
-
-/**
- * Set a Vec2 wrapper property from a Vec2 source.
- * This handles the common pattern: validate source, set on wrapper, dispose weak source.
- */
-function _setVec2Prop(
-  propName: string,
-  wrapper: Vec2,
-  source: Vec2,
-  setupFn: (() => void) | null,
-  getWrapper: () => Vec2,
-): Vec2 {
-  checkVec2Disposed(source);
-  if (source == null) {
-    throw new Error("Body::" + propName + " cannot be null");
-  }
-  if (wrapper == null && setupFn != null) {
-    setupFn();
-    wrapper = getWrapper();
-  }
-  wrapper.set(source);
-  return wrapper;
 }
 
 /** Create a new Vec2 from pool with given x,y and weak flag. */
@@ -255,16 +230,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_pos;
   }
   set position(value: Vec2) {
-    _setVec2Prop(
-      "position",
-      this.zpp_inner.wrap_pos,
-      value,
-      () => this.zpp_inner.setupPosition(),
-      () => this.zpp_inner.wrap_pos,
-    );
+    checkVec2Disposed(value);
+    if (value == null) {
+      throw new Error("Body::position cannot be null");
+    }
     if (this.zpp_inner.wrap_pos == null) {
       this.zpp_inner.setupPosition();
     }
+    this.zpp_inner.wrap_pos.set(value);
   }
 
   /**
@@ -305,16 +278,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_vel;
   }
   set velocity(value: Vec2) {
-    _setVec2Prop(
-      "velocity",
-      this.zpp_inner.wrap_vel,
-      value,
-      () => this.zpp_inner.setupVelocity(),
-      () => this.zpp_inner.wrap_vel,
-    );
+    checkVec2Disposed(value);
+    if (value == null) {
+      throw new Error("Body::velocity cannot be null");
+    }
     if (this.zpp_inner.wrap_vel == null) {
       this.zpp_inner.setupVelocity();
     }
+    this.zpp_inner.wrap_vel.set(value);
   }
 
   /** Angular velocity in radians per second. */
@@ -346,16 +317,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_kinvel;
   }
   set kinematicVel(value: Vec2) {
-    _setVec2Prop(
-      "kinematicVel",
-      this.zpp_inner.wrap_kinvel,
-      value,
-      () => this.zpp_inner.setupkinvel(),
-      () => this.zpp_inner.wrap_kinvel,
-    );
+    checkVec2Disposed(value);
+    if (value == null) {
+      throw new Error("Body::kinematicVel cannot be null");
+    }
     if (this.zpp_inner.wrap_kinvel == null) {
       this.zpp_inner.setupkinvel();
     }
+    this.zpp_inner.wrap_kinvel.set(value);
   }
 
   /** Desired angular velocity for kinematic bodies. */
@@ -384,16 +353,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_svel;
   }
   set surfaceVel(value: Vec2) {
-    _setVec2Prop(
-      "surfaceVel",
-      this.zpp_inner.wrap_svel,
-      value,
-      () => this.zpp_inner.setupsvel(),
-      () => this.zpp_inner.wrap_svel,
-    );
+    checkVec2Disposed(value);
+    if (value == null) {
+      throw new Error("Body::surfaceVel cannot be null");
+    }
     if (this.zpp_inner.wrap_svel == null) {
       this.zpp_inner.setupsvel();
     }
+    this.zpp_inner.wrap_svel.set(value);
   }
 
   // ---------------------------------------------------------------------------
@@ -408,16 +375,14 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_force;
   }
   set force(value: Vec2) {
-    _setVec2Prop(
-      "force",
-      this.zpp_inner.wrap_force,
-      value,
-      () => this.zpp_inner.setupForce(),
-      () => this.zpp_inner.wrap_force,
-    );
+    checkVec2Disposed(value);
+    if (value == null) {
+      throw new Error("Body::force cannot be null");
+    }
     if (this.zpp_inner.wrap_force == null) {
       this.zpp_inner.setupForce();
     }
+    this.zpp_inner.wrap_force.set(value);
   }
 
   /** Accumulated torque applied to this body for the current step (only for DYNAMIC bodies). */
@@ -646,8 +611,8 @@ export class Body extends Interactor {
   // ---------------------------------------------------------------------------
 
   /** List of shapes attached to this body. */
-  get shapes(): NapeList<Shape> {
-    return new NapeList(this.zpp_inner.wrap_shapes, Shape._wrap);
+  get shapes(): ShapeList {
+    return this.zpp_inner.wrap_shapes;
   }
 
   /** The Space this body belongs to. Setting adds/removes it from the space. */
@@ -1262,16 +1227,14 @@ export class Body extends Interactor {
     del.rotate(angle);
     const position = centre.add(del, true);
     // inline set_position
-    _setVec2Prop(
-      "position",
-      this.zpp_inner.wrap_pos,
-      position,
-      () => this.zpp_inner.setupPosition(),
-      () => this.zpp_inner.wrap_pos,
-    );
+    checkVec2Disposed(position);
+    if (position == null) {
+      throw new Error("Body::position cannot be null");
+    }
     if (this.zpp_inner.wrap_pos == null) {
       this.zpp_inner.setupPosition();
     }
+    this.zpp_inner.wrap_pos.set(position);
     del.dispose();
     // inline set_rotation
     {

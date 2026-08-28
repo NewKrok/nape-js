@@ -56,6 +56,7 @@ export class Shape extends Interactor {
   /** @internal */
   static _wrap(inner: NapeInner): Shape {
     if (!inner) return null as unknown as Shape;
+    if (inner instanceof Shape) return inner;
 
     // Dispatch to concrete subclass wrapper based on runtime type.
     // Check _isCapsule flag first (capsule is polygon-backed, type=1).

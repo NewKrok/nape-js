@@ -59,7 +59,7 @@ export class Contact {
     if (this.zpp_inner.wrap_position == null) {
       this.zpp_inner.getposition();
     }
-    return Vec2._wrap(this.zpp_inner.wrap_position);
+    return this.zpp_inner.wrap_position;
   }
 
   /** Whether this contact was newly created in the current step. */
