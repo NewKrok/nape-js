@@ -15,7 +15,7 @@ const CY = VIEW_H / 2;
 const ARENA_R_START = 222;
 const ARENA_R_MIN = 92;
 const SHRINK_DELAY = 600;              // frames of grace before shrinking (10s)
-const SHRINK_PER_FRAME = (ARENA_R_START - ARENA_R_MIN) / (70 * 60); // full shrink ≈ 70s
+const SHRINK_PER_FRAME = (ARENA_R_START - ARENA_R_MIN) / (47 * 60); // full shrink ≈ 47s
 
 // Fighters
 const PLAYER_COUNT = 10;               // you + 9 AI
@@ -55,16 +55,18 @@ let _falls = [];          // fall-out animations { x, y, vx, vy, color, t }
 let _sparks = [];         // dash-impact flashes { x, y, t }
 let _isTouch = false;
 
-// Input
+// Input — keyboard plus a single-pointer scheme that works on mobile:
+// hold to steer toward the finger, quick tap to dash toward the tap.
+// (The demo-runner dispatches one pointer, so a stick + separate button
+// can't work: a second finger's release would kill the stick drag.)
 const _keys = Object.create(null);
 let _onKeyDown = null;
 let _onKeyUp = null;
-let _stickActive = false;
-let _stickOrigin = { x: 0, y: 0 };
-let _stickVec = { x: 0, y: 0 };
 const _moveDir = { x: 0, y: 0 };
-const STICK_MAX_R = 60;
-let _dashButton = null;   // screen-space rect rebuilt each frame (touch UI)
+const _pointer = { active: false, x: 0, y: 0, startX: 0, startY: 0, startFrame: 0 };
+const TAP_MAX_FRAMES = 18;   // press shorter than this …
+const TAP_MAX_DRIFT = 14;    // …and steadier than this = tap → dash
+const STEER_DEADZONE = 14;   // stop steering when the finger sits on the puck
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 function rand(min, max) {
@@ -135,8 +137,7 @@ function resetGame(space) {
   _falls = [];
   _sparks = [];
 
-  _stickActive = false;
-  _stickVec = { x: 0, y: 0 };
+  _pointer.active = false;
   _moveDir.x = 0; _moveDir.y = 0;
   for (const k in _keys) delete _keys[k];
 }
@@ -349,20 +350,31 @@ function tickEffects() {
 
 // ── Player input ─────────────────────────────────────────────────────────
 function computeMoveDir() {
-  if (_stickActive && (_stickVec.x !== 0 || _stickVec.y !== 0)) {
-    _moveDir.x = _stickVec.x;
-    _moveDir.y = _stickVec.y;
-    return;
-  }
   let x = 0, y = 0;
   if (_keys["KeyW"] || _keys["ArrowUp"])    y -= 1;
   if (_keys["KeyS"] || _keys["ArrowDown"])  y += 1;
   if (_keys["KeyA"] || _keys["ArrowLeft"])  x -= 1;
   if (_keys["KeyD"] || _keys["ArrowRight"]) x += 1;
   const len = Math.hypot(x, y);
-  if (len > 0) { x /= len; y /= len; }
-  _moveDir.x = x;
-  _moveDir.y = y;
+  if (len > 0) {
+    _moveDir.x = x / len;
+    _moveDir.y = y / len;
+    return;
+  }
+  // No keys — steer toward the held pointer/finger.
+  const p = humanPlayer();
+  if (_pointer.active && p.alive) {
+    const dx = _pointer.x - p.body.position.x;
+    const dy = _pointer.y - p.body.position.y;
+    const d = Math.hypot(dx, dy);
+    if (d > STEER_DEADZONE) {
+      _moveDir.x = dx / d;
+      _moveDir.y = dy / d;
+      return;
+    }
+  }
+  _moveDir.x = 0;
+  _moveDir.y = 0;
 }
 
 // ── Rendering ────────────────────────────────────────────────────────────
@@ -504,58 +516,43 @@ function drawHUD(ctx) {
     ctx.fillRect(x, y, w * pct, h);
     ctx.fillStyle = "rgba(255,255,255,0.7)";
     ctx.font = "10px system-ui, sans-serif";
-    ctx.fillText(pct >= 1 ? "DASH READY (SPACE)" : "DASH", CX, y - 7);
+    const ready = _isTouch ? "DASH READY (TAP)" : "DASH READY (SPACE)";
+    ctx.fillText(pct >= 1 ? ready : "DASH", CX, y - 7);
   }
 }
 
-function drawTouchUI(ctx) {
-  _dashButton = null;
-  if (!_isTouch) return;
+function drawPointerUI(ctx) {
   const p = humanPlayer();
 
-  // Virtual stick zone — bottom-left.
-  if (!_stickActive) {
-    const cx = 70, cy = VIEW_H - 70;
+  // Steering marker while the pointer/finger is held down.
+  if (_pointer.active && p.alive) {
+    const px = p.body.position.x, py = p.body.position.y;
     ctx.beginPath();
-    ctx.arc(cx, cy, STICK_MAX_R, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.moveTo(px, py);
+    ctx.lineTo(_pointer.x, _pointer.y);
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.setLineDash([3, 5]);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(_pointer.x, _pointer.y, 10, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255,255,255,0.45)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
-    ctx.fillStyle = "rgba(255,255,255,0.25)";
-    ctx.font = "10px system-ui, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("move", cx, cy);
-  } else {
-    const { x: ox, y: oy } = _stickOrigin;
-    ctx.beginPath();
-    ctx.arc(ox, oy, STICK_MAX_R, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(ox + _stickVec.x * STICK_MAX_R, oy + _stickVec.y * STICK_MAX_R, 18, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,255,255,0.6)";
-    ctx.fill();
   }
 
-  // Dash button — bottom-right.
-  const bw = 64, bh = 64;
-  const bx = VIEW_W - 24 - bw, by = VIEW_H - 24 - bh;
-  const ready = p.alive && p.dashCd <= 0;
-  ctx.beginPath();
-  ctx.arc(bx + bw / 2, by + bh / 2, bw / 2, 0, Math.PI * 2);
-  ctx.fillStyle = ready ? "rgba(63,185,80,0.25)" : "rgba(30,35,45,0.6)";
-  ctx.fill();
-  ctx.strokeStyle = ready ? "#3fb950" : "rgba(255,255,255,0.2)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = ready ? "#ffffff" : "rgba(255,255,255,0.4)";
-  ctx.font = "bold 12px system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("DASH", bx + bw / 2, by + bh / 2);
-  _dashButton = { x: bx, y: by, w: bw, h: bh };
+  // Control hint for the opening seconds (touch has no keyboard prompt).
+  if (_frame < 420 && p.alive) {
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const hint = _isTouch
+      ? "Hold to move · quick tap to dash"
+      : "WASD to move · SPACE to dash (or hold / tap the mouse)";
+    ctx.fillText(hint, CX, 58);
+  }
 }
 
 function drawBanners(ctx) {
@@ -596,7 +593,7 @@ export default {
   label: "Sumo Arena",
   tags: ["Gameplay", "AI", "Momentum", "Zero Gravity", "Mobile"],
   desc:
-    "10-player free-for-all knock-out on a floating circular platform — shove everyone else off and be the last one standing. You control the blue puck against <b>9 AI fighters</b> with edge-awareness, target picking and their own dash timing. Move with <b>WASD</b>/arrows (or the virtual stick), <b>SPACE</b>/<b>E</b> to <b>dash</b> — a short lunge that knocks whoever it hits flying (they lose control while staggered, so a rim dash is lethal). Contact pushes are pure rigid-body momentum on bouncy, slippery pucks. After 10 seconds the arena starts <b>shrinking</b>, so play the center. Fall out and you can watch the AI finish the brawl.",
+    "10-player free-for-all knock-out on a floating circular platform — shove everyone else off and be the last one standing. You control the blue puck against <b>9 AI fighters</b> with edge-awareness, target picking and their own dash timing. Move with <b>WASD</b>/arrows and <b>SPACE</b>/<b>E</b> to <b>dash</b> — or on any device <b>hold</b> the pointer/finger to steer toward it and <b>quick-tap</b> to dash that way. A dash is a short lunge that knocks whoever it hits flying (they lose control while staggered, so a rim dash is lethal). Contact pushes are pure rigid-body momentum on bouncy, slippery pucks. After 10 seconds the arena starts <b>shrinking</b>, so play the center. Fall out and you can watch the AI finish the brawl.",
   walls: false,
   workerCompatible: false,
 
@@ -676,47 +673,39 @@ export default {
   },
 
   click(x, y) {
-    // Restart when the round is over (or the player is out and spectating,
-    // as long as the tap isn't grabbing the touch controls).
-    const onDashBtn = _dashButton &&
-      x >= _dashButton.x && x <= _dashButton.x + _dashButton.w &&
-      y >= _dashButton.y && y <= _dashButton.y + _dashButton.h;
-
-    if (_gameOver || (!humanPlayer().alive && !onDashBtn)) {
+    // Restart when the round is over or the player is out and spectating.
+    if (_gameOver || !humanPlayer().alive) {
       resetGame(_space);
       return;
     }
-
-    if (onDashBtn) {
-      computeMoveDir();
-      tryDash(humanPlayer(), _moveDir.x, _moveDir.y);
-      return;
-    }
-
-    // Virtual stick activation (touch only, lower-left region).
-    if (_isTouch && x <= VIEW_W * 0.45 && y >= VIEW_H * 0.5) {
-      _stickActive = true;
-      _stickOrigin = { x, y };
-      _stickVec = { x: 0, y: 0 };
-    }
+    // Press begins pointer steering; whether it was a tap (→ dash) is
+    // decided on release.
+    _pointer.active = true;
+    _pointer.x = x; _pointer.y = y;
+    _pointer.startX = x; _pointer.startY = y;
+    _pointer.startFrame = _frame;
   },
 
   drag(x, y) {
-    if (!_stickActive) return;
-    const dx = x - _stickOrigin.x;
-    const dy = y - _stickOrigin.y;
-    const d = Math.hypot(dx, dy);
-    if (d < 1) {
-      _stickVec = { x: 0, y: 0 };
-      return;
-    }
-    const mag = Math.min(1, d / STICK_MAX_R);
-    _stickVec = { x: (dx / d) * mag, y: (dy / d) * mag };
+    if (!_pointer.active) return;
+    _pointer.x = x;
+    _pointer.y = y;
   },
 
   release() {
-    _stickActive = false;
-    _stickVec = { x: 0, y: 0 };
+    if (!_pointer.active) return;
+    _pointer.active = false;
+    const p = humanPlayer();
+    if (!p.alive) return;
+    const held = _frame - _pointer.startFrame;
+    const drift = Math.hypot(_pointer.x - _pointer.startX, _pointer.y - _pointer.startY);
+    if (held < TAP_MAX_FRAMES && drift < TAP_MAX_DRIFT) {
+      // Quick tap → dash toward the tap point (facing dir if it's on the puck).
+      const dx = _pointer.startX - p.body.position.x;
+      const dy = _pointer.startY - p.body.position.y;
+      if (Math.hypot(dx, dy) > STEER_DEADZONE) tryDash(p, dx, dy);
+      else tryDash(p, 0, 0);
+    }
   },
 
   // Canvas2d: full custom draw — arena floor + fighters (no default grid).
@@ -738,7 +727,7 @@ export default {
     drawSparks(ctx);
     drawPlayerMarker(ctx);
     drawHUD(ctx);
-    drawTouchUI(ctx);
+    drawPointerUI(ctx);
     drawBanners(ctx);
     void space; void W; void H;
   },
