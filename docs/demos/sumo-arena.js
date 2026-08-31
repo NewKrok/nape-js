@@ -51,6 +51,8 @@ let _arenaR = ARENA_R_START;
 let _frame = 0;
 let _gameOver = false;
 let _playerRank = 0;      // final placement of the human (1 = winner)
+let _restartLockUntil = 0; // brief lock after a KO/game over — a spammed
+                           // dash key/tap must not skip the result screen
 let _falls = [];          // fall-out animations { x, y, vx, vy, color, t }
 let _sparks = [];         // dash-impact flashes { x, y, t }
 let _isTouch = false;
@@ -134,6 +136,7 @@ function resetGame(space) {
   _frame = 0;
   _gameOver = false;
   _playerRank = 0;
+  _restartLockUntil = 0;
   _falls = [];
   _sparks = [];
 
@@ -313,12 +316,16 @@ function checkRingOuts() {
     });
     p.body.space = null;
 
-    if (p.isHuman) _playerRank = p.rank;
+    if (p.isHuman) {
+      _playerRank = p.rank;
+      _restartLockUntil = _frame + 45;
+    }
   }
 
   const alive = aliveCount();
   if (alive <= 1 && !_gameOver) {
     _gameOver = true;
+    _restartLockUntil = Math.max(_restartLockUntil, _frame + 45);
     for (const p of _players) {
       if (p.alive) {
         p.rank = 1;
@@ -572,7 +579,10 @@ function drawBanners(ctx) {
     ctx.fillText(won ? "Last one standing." : `You placed #${_playerRank} of ${PLAYER_COUNT}.`, CX, CY + 10);
     ctx.fillStyle = "rgba(255,255,255,0.7)";
     ctx.font = "13px system-ui, sans-serif";
-    ctx.fillText("Click / tap anywhere to restart", CX, CY + 36);
+    ctx.fillText(
+      _isTouch ? "Tap anywhere to restart" : "Click or press SPACE to restart",
+      CX, CY + 36,
+    );
     return;
   }
 
@@ -583,7 +593,8 @@ function drawBanners(ctx) {
     ctx.font = "12px system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`Out! You placed #${_playerRank} — click to restart`, CX, VIEW_H - 40);
+    const restartHint = _isTouch ? "tap to restart" : "click or SPACE to restart";
+    ctx.fillText(`Out! You placed #${_playerRank} — ${restartHint}`, CX, VIEW_H - 40);
   }
 }
 
@@ -618,6 +629,13 @@ export default {
       if (!_space) return;
       _keys[e.code] = true;
       if (e.code === "Space" || e.code === "KeyE") {
+        // SPACE doubles as restart once the round is over (or you're out
+        // and spectating) — same as clicking. The lock swallows presses in
+        // the first moments after a KO so dash-spam can't skip the result.
+        if (_gameOver || !humanPlayer().alive) {
+          if (_frame >= _restartLockUntil) resetGame(_space);
+          return;
+        }
         computeMoveDir();
         tryDash(humanPlayer(), _moveDir.x, _moveDir.y);
       }
@@ -673,9 +691,10 @@ export default {
   },
 
   click(x, y) {
-    // Restart when the round is over or the player is out and spectating.
+    // Restart when the round is over or the player is out and spectating
+    // (locked briefly after the KO so a spammed tap can't skip the result).
     if (_gameOver || !humanPlayer().alive) {
-      resetGame(_space);
+      if (_frame >= _restartLockUntil) resetGame(_space);
       return;
     }
     // Press begins pointer steering; whether it was a tap (→ dash) is
