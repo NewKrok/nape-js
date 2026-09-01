@@ -10,6 +10,8 @@
  * - Mixed viscosity (one shape with viscosity, the other without)
  * - Angular damping (polygon vs circle)
  * - Buoyancy magnitude correlates with overlap (deeper → stronger lift)
+ * NOTE: the contact/fluid solver runs inlined inside ZPP_Space.step;
+ * the names below refer to those solver phases, exercised via full simulations.
  */
 
 import { describe, it, expect } from "vitest";

@@ -10,6 +10,8 @@
  * - retire / pool reuse
  * - contacts_adder / contacts_subber
  * - setupcontacts
+ * NOTE: the contact/fluid solver runs inlined inside ZPP_Space.step;
+ * the names below refer to those solver phases, exercised via full simulations.
  */
 
 import { describe, it, expect } from "vitest";

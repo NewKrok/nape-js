@@ -11,6 +11,8 @@
  * - Contact expiration / cleanup
  * - Normal validation after clearing
  * - Free/pool reuse cycle
+ * NOTE: the contact/fluid solver runs inlined inside ZPP_Space.step;
+ * the names below refer to those solver phases, exercised via full simulations.
  */
 
 import { describe, it, expect } from "vitest";

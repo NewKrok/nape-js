@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6171 engine tests across 289 files, plus 73 pixi-adapter tests across 5 files.**
+**6170 engine tests across 289 files, plus 73 pixi-adapter tests across 5 files.**
 
 ---
 
@@ -81,18 +81,19 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~77% | ≥80% |
-| Branches | ~68% | — |
-| Functions | ~88% | — |
+| Statements | ~79% | ≥80% |
+| Branches | ~70% | — |
+| Functions | ~90% | — |
 
 **High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (97%), `packages/nape-js/src/serialization/` (93%)
-**Low coverage modules:** `packages/nape-js/src/native/dynamics/` (43%), `packages/nape-js/src/native/space/` (71%)
+**Low coverage modules:** `packages/nape-js/src/native/space/` (71%), `packages/nape-js/src/native/geom/` (74%)
 
-Note: a large share of the remaining uncovered lines in `src/native/` is
-Haxe-inline-expansion leftover code that is structurally unreachable (e.g. the
-arbiter solver methods duplicated inline inside `ZPP_Space`, and polygon
-branches inside circle-only paths). Removing that dead code is worth more than
-writing tests against it.
+Note: the arbiter classes' dead solver-method duplicates (the live solver is
+inlined inside `ZPP_Space.step`) were removed. A share of the remaining
+uncovered lines in `src/native/` is still Haxe-inline-expansion boilerplate
+that is structurally unreachable (e.g. polygon branches inside circle-only
+paths in `ZPP_Space` / `ZPP_Broadphase` / `ZPP_Collide`); deduplicating those
+inline expansions is worth more than writing tests against them.
 
 ---
 

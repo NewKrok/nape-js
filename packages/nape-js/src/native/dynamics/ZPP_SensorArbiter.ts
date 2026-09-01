@@ -31,24 +31,4 @@ export class ZPP_SensorArbiter extends ZPP_Arbiter {
 
   alloc(): void {}
   free(): void {}
-
-  // ========== Assign ==========
-
-  assign(s1: any, s2: any, id: number, di: number): void {
-    this.sup_assign(s1, s2, id, di);
-  }
-
-  // ========== Retire ==========
-
-  retire(): void {
-    this.sup_retire();
-    // Return to pool
-    this.next = ZPP_SensorArbiter.zpp_pool;
-    ZPP_SensorArbiter.zpp_pool = this;
-  }
-
-  // ========== Mutability (no-ops for sensor) ==========
-
-  makemutable(): void {}
-  makeimmutable(): void {}
 }

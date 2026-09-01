@@ -10,6 +10,8 @@
  * - Restitution velocity threshold (low velocity → no bounce)
  * - Contact persistence across many steps without loss
  * - Sleeping → wake → re-collide cycle
+ * NOTE: the contact/fluid solver runs inlined inside ZPP_Space.step;
+ * the names below refer to those solver phases, exercised via full simulations.
  */
 
 import { describe, it, expect } from "vitest";

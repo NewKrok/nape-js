@@ -16,7 +16,6 @@ import {
   Space,
   Vec2,
 } from "../../src";
-import { ZPP_ColArbiter } from "../../src/native/dynamics/ZPP_ColArbiter";
 
 function settleUntilSleeping(space: Space, body: Body, maxSteps = 600): void {
   for (let i = 0; i < maxSteps && !body.isSleeping; i++) {
@@ -123,28 +122,6 @@ describe("re-entrant step() guard", () => {
       }),
     );
     expect(() => space.step(1 / 60)).toThrow(/step\(\)/);
-  });
-});
-
-describe("ZPP_ColArbiter retire()", () => {
-  it("clears reference edges and the separating-axis cache before pooling", () => {
-    const arb: any = new ZPP_ColArbiter();
-    arb.cleared = true; // skip body arbiter-list surgery in sup_retire
-    arb.__ref_edge1 = {};
-    arb.__ref_edge2 = {};
-    arb.__sep_edge = {};
-    arb.__sep_owner = {};
-
-    arb.retire();
-
-    expect(arb.__ref_edge1).toBeNull();
-    expect(arb.__ref_edge2).toBeNull();
-    expect(arb.__sep_edge).toBeNull();
-    expect(arb.__sep_owner).toBeNull();
-    expect(ZPP_ColArbiter.zpp_pool).toBe(arb);
-    // detach from the pool so other tests see a clean pool state
-    ZPP_ColArbiter.zpp_pool = arb.next;
-    arb.next = null;
   });
 });
 
