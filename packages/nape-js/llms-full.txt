@@ -1,6 +1,6 @@
 # @newkrok/nape-js — Complete API Reference
 
-> Modern TypeScript 2D physics engine for the web. Fully typed, dual ESM/CJS exports (~195 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
+> Modern TypeScript 2D physics engine for the web. Fully typed, dual ESM/CJS exports (~174 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
 
 - **npm**: `npm install @newkrok/nape-js`
 - **GitHub**: https://github.com/NewKrok/nape-js
