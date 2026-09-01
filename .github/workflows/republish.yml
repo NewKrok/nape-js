@@ -1,0 +1,60 @@
+name: Republish tag to npm
+
+# Manual recovery for a stranded release: a version that is tagged on GitHub
+# (release.mjs pushes the commit + tag BEFORE `npm publish`) but missing from
+# the npm registry because the publish step failed — e.g. an expired
+# NPM_TOKEN, which npm reports as `E404 Not Found` on the PUT. The auto
+# release never retries an already-tagged version, so this workflow publishes
+# straight from the tag. It is a no-op when the version is already on npm.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to republish (e.g. nape-js-v3.40.3)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  republish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Publish if the version is missing from the registry
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          tag="${{ inputs.tag }}"
+          short="${tag%-v*}"
+          pkg="$(node -p "require('./packages/$short/package.json').name")"
+          ver="$(node -p "require('./packages/$short/package.json').version")"
+          if [ "$short-v$ver" != "$tag" ]; then
+            echo "::error::Tag $tag does not match packages/$short version $ver"
+            exit 1
+          fi
+          if npm view "$pkg@$ver" version >/dev/null 2>&1; then
+            echo "$pkg@$ver is already on the registry — nothing to do."
+            exit 0
+          fi
+          npm publish -w "$pkg" --access public
+          echo "Published $pkg@$ver"
