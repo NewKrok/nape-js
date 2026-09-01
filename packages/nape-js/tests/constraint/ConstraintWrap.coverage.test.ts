@@ -6,8 +6,20 @@ import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
 import { MotorJoint } from "../../src/constraint/MotorJoint";
 import { SpringJoint } from "../../src/constraint/SpringJoint";
+import { PivotJoint } from "../../src/constraint/PivotJoint";
+import { DistanceJoint } from "../../src/constraint/DistanceJoint";
+import { PulleyJoint } from "../../src/constraint/PulleyJoint";
+import { WeldJoint } from "../../src/constraint/WeldJoint";
+import { LineJoint } from "../../src/constraint/LineJoint";
+import { AngleJoint } from "../../src/constraint/AngleJoint";
 import { ZPP_MotorJoint } from "../../src/native/constraint/ZPP_MotorJoint";
 import { ZPP_SpringJoint } from "../../src/native/constraint/ZPP_SpringJoint";
+import { ZPP_PivotJoint } from "../../src/native/constraint/ZPP_PivotJoint";
+import { ZPP_DistanceJoint } from "../../src/native/constraint/ZPP_DistanceJoint";
+import { ZPP_PulleyJoint } from "../../src/native/constraint/ZPP_PulleyJoint";
+import { ZPP_WeldJoint } from "../../src/native/constraint/ZPP_WeldJoint";
+import { ZPP_LineJoint } from "../../src/native/constraint/ZPP_LineJoint";
+import { ZPP_AngleJoint } from "../../src/native/constraint/ZPP_AngleJoint";
 
 function dynamicCircle(x: number, y: number, r = 10): Body {
   const b = new Body(BodyType.DYNAMIC, new Vec2(x, y));
@@ -120,6 +132,101 @@ describe("MotorJoint wrapping", () => {
     expect(hasConstraint(b1, j)).toBe(false);
   });
 });
+
+// Same _wrap contract across every joint class: null → null, instance →
+// itself, holder with zpp_inner → existing outer, raw zpp without outer →
+// fresh working wrapper, unknown inner → generic fallback wrapper.
+const JOINT_KINDS: Array<[string, any, any, (b1: Body, b2: Body) => any]> = [
+  [
+    "PivotJoint",
+    PivotJoint,
+    ZPP_PivotJoint,
+    (b1, b2) => new PivotJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0)),
+  ],
+  [
+    "DistanceJoint",
+    DistanceJoint,
+    ZPP_DistanceJoint,
+    (b1, b2) => new DistanceJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), 10, 60),
+  ],
+  [
+    "PulleyJoint",
+    PulleyJoint,
+    ZPP_PulleyJoint,
+    (b1, b2) =>
+      new PulleyJoint(
+        b1,
+        b2,
+        b1,
+        b2,
+        new Vec2(0, 0),
+        new Vec2(0, 0),
+        new Vec2(0, 5),
+        new Vec2(0, 5),
+        10,
+        60,
+      ),
+  ],
+  [
+    "WeldJoint",
+    WeldJoint,
+    ZPP_WeldJoint,
+    (b1, b2) => new WeldJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0)),
+  ],
+  [
+    "LineJoint",
+    LineJoint,
+    ZPP_LineJoint,
+    (b1, b2) => new LineJoint(b1, b2, new Vec2(0, 0), new Vec2(0, 0), new Vec2(0, 1), -10, 10),
+  ],
+  ["AngleJoint", AngleJoint, ZPP_AngleJoint, (b1, b2) => new AngleJoint(b1, b2, -1, 1)],
+];
+
+for (const [name, Cls, ZppCls, make] of JOINT_KINDS) {
+  describe(`${name}._wrap`, () => {
+    function joint() {
+      return make(dynamicCircle(0, 0), dynamicCircle(50, 0));
+    }
+
+    it("returns null for null input", () => {
+      expect(Cls._wrap(null)).toBeNull();
+    });
+
+    it("returns the same instance for an already-wrapped joint", () => {
+      const j = joint();
+      expect(Cls._wrap(j)).toBe(j);
+    });
+
+    it("resolves a holder exposing zpp_inner to the existing outer", () => {
+      const j = joint();
+      expect(Cls._wrap({ zpp_inner: (j as any).zpp_inner })).toBe(j);
+    });
+
+    it("re-wraps a raw zpp whose outer was detached", () => {
+      const j = joint();
+      const zpp = (j as any).zpp_inner;
+      zpp.outer = null;
+      const wrapped = Cls._wrap(zpp);
+      expect(wrapped).toBeInstanceOf(Cls);
+      expect((wrapped as any).zpp_inner).toBe(zpp);
+    });
+
+    it("falls back to a generic wrapper for unknown inner objects", () => {
+      const wrapped = Cls._wrap({ zpp_inner: {} });
+      expect(wrapped).toBeInstanceOf(Cls);
+    });
+
+    it("_wrapFn creates a wrapper with debugDraw enabled", () => {
+      const j = joint();
+      const zpp = (j as any).zpp_inner;
+      zpp.outer = null;
+      const wrapped = (ZppCls as any)._wrapFn(zpp);
+      expect(wrapped).toBeInstanceOf(Cls);
+      expect(wrapped.debugDraw).toBe(true);
+      expect(zpp.outer).toBe(wrapped);
+    });
+  });
+}
 
 describe("SpringJoint wrapping", () => {
   function makeSpring(b1: Body, b2: Body): SpringJoint {
