@@ -81,19 +81,21 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~80% | ≥80% ✅ |
-| Branches | ~71% | — |
+| Statements | ~83% | ≥80% ✅ |
+| Branches | ~73% | — |
 | Functions | ~91% | — |
 
 **High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (97%), `packages/nape-js/src/serialization/` (93%)
-**Low coverage modules:** `packages/nape-js/src/native/space/` (71%), `packages/nape-js/src/native/geom/` (74%)
+**Low coverage modules:** `packages/nape-js/src/native/space/` (81%), `packages/nape-js/src/native/geom/` (77%)
 
 Note: the arbiter classes' dead solver-method duplicates (the live solver is
-inlined inside `ZPP_Space.step`) were removed. A share of the remaining
-uncovered lines in `src/native/` is still Haxe-inline-expansion boilerplate
-that is structurally unreachable (e.g. polygon branches inside circle-only
-paths in `ZPP_Space` / `ZPP_Broadphase` / `ZPP_Collide`); deduplicating those
-inline expansions is worth more than writing tests against them.
+inlined inside `ZPP_Space.step`) were removed, and the Haxe-inline-expansion
+shape-cache-validation boilerplate in `ZPP_Space` / `ZPP_Broadphase` /
+`ZPP_Collide` / the broadphase implementations (structurally unreachable
+polygon branches inside circle-only paths and vice versa) was deduplicated
+into the canonical `ZPP_Shape.validate_*` / `ZPP_Body.validate_*` /
+`ZPP_Polygon.validate_gaxi` helpers (issue #229) — statement coverage rose
+~80% → ~83% for free as those unreachable lines disappeared.
 
 ---
 

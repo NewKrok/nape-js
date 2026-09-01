@@ -974,16 +974,7 @@ export class ZPP_Body {
       let cx_ite = this.shapes.head;
       while (cx_ite != null) {
         const s = cx_ite.elt;
-        if (s.zip_aabb) {
-          if (s.body != null) {
-            s.zip_aabb = false;
-            if (s.type === 0) {
-              this._validateCircleAABB(s.circle);
-            } else {
-              this._validatePolygonAABB(s.polygon);
-            }
-          }
-        }
+        s.validate_aabb();
         // Merge shape AABB into body AABB
         if (s.aabb.minx < this.aabb.minx) this.aabb.minx = s.aabb.minx;
         if (s.aabb.maxx > this.aabb.maxx) this.aabb.maxx = s.aabb.maxx;
@@ -991,73 +982,6 @@ export class ZPP_Body {
         if (s.aabb.maxy > this.aabb.maxy) this.aabb.maxy = s.aabb.maxy;
         cx_ite = cx_ite.next;
       }
-    }
-  }
-
-  private _validateCircleAABB(circle: any): void {
-    if (circle.zip_worldCOM) {
-      if (circle.body != null) {
-        circle.zip_worldCOM = false;
-        if (circle.zip_localCOM) {
-          circle.zip_localCOM = false;
-          if (circle.type === 1) {
-            this._computePolygonLocalCOM(circle.polygon);
-          }
-          if (circle.wrap_localCOM != null) {
-            circle.wrap_localCOM.zpp_inner.x = circle.localCOMx;
-            circle.wrap_localCOM.zpp_inner.y = circle.localCOMy;
-          }
-        }
-        this.validate_axis();
-        circle.worldCOMx =
-          circle.body.posx +
-          (circle.body.axisy * circle.localCOMx - circle.body.axisx * circle.localCOMy);
-        circle.worldCOMy =
-          circle.body.posy +
-          (circle.localCOMx * circle.body.axisx + circle.localCOMy * circle.body.axisy);
-      }
-    }
-    const r = circle.radius;
-    circle.aabb.minx = circle.worldCOMx - r;
-    circle.aabb.miny = circle.worldCOMy - r;
-    circle.aabb.maxx = circle.worldCOMx + r;
-    circle.aabb.maxy = circle.worldCOMy + r;
-  }
-
-  private _validatePolygonAABB(poly: any): void {
-    if (poly.zip_gverts) {
-      if (poly.body != null) {
-        poly.zip_gverts = false;
-        poly.validate_lverts();
-        this.validate_axis();
-        let li = poly.lverts.next;
-        let cx_ite = poly.gverts.next;
-        while (cx_ite != null) {
-          const g = cx_ite;
-          const l = li;
-          li = li.next;
-          g.x = poly.body.posx + (poly.body.axisy * l.x - poly.body.axisx * l.y);
-          g.y = poly.body.posy + (l.x * poly.body.axisx + l.y * poly.body.axisy);
-          cx_ite = cx_ite.next;
-        }
-      }
-    }
-    if (poly.lverts.next == null) {
-      throw new Error("An empty polygon has no meaningful bounds");
-    }
-    const p0 = poly.gverts.next;
-    poly.aabb.minx = p0.x;
-    poly.aabb.miny = p0.y;
-    poly.aabb.maxx = p0.x;
-    poly.aabb.maxy = p0.y;
-    let cx_ite2 = poly.gverts.next.next;
-    while (cx_ite2 != null) {
-      const p = cx_ite2;
-      if (p.x < poly.aabb.minx) poly.aabb.minx = p.x;
-      if (p.x > poly.aabb.maxx) poly.aabb.maxx = p.x;
-      if (p.y < poly.aabb.miny) poly.aabb.miny = p.y;
-      if (p.y > poly.aabb.maxy) poly.aabb.maxy = p.y;
-      cx_ite2 = cx_ite2.next;
     }
   }
 
@@ -1079,60 +1003,6 @@ export class ZPP_Body {
     this.zip_worldCOM = true;
   }
 
-  private _computePolygonLocalCOM(poly: any): void {
-    if (poly.lverts.next == null) {
-      throw new Error("An empty polygon has no meaningful localCOM");
-    }
-    if (poly.lverts.next.next == null) {
-      poly.localCOMx = poly.lverts.next.x;
-      poly.localCOMy = poly.lverts.next.y;
-    } else if (poly.lverts.next.next.next == null) {
-      poly.localCOMx = poly.lverts.next.x;
-      poly.localCOMy = poly.lverts.next.y;
-      poly.localCOMx += poly.lverts.next.next.x;
-      poly.localCOMy += poly.lverts.next.next.y;
-      poly.localCOMx *= 0.5;
-      poly.localCOMy *= 0.5;
-    } else {
-      poly.localCOMx = 0;
-      poly.localCOMy = 0;
-      let area = 0.0;
-      let cx_ite = poly.lverts.next;
-      let u = cx_ite;
-      cx_ite = cx_ite.next;
-      let v = cx_ite;
-      cx_ite = cx_ite.next;
-      while (cx_ite != null) {
-        const w = cx_ite;
-        area += v.x * (w.y - u.y);
-        const cf = w.y * v.x - w.x * v.y;
-        poly.localCOMx += (v.x + w.x) * cf;
-        poly.localCOMy += (v.y + w.y) * cf;
-        u = v;
-        v = w;
-        cx_ite = cx_ite.next;
-      }
-      // Wrap-around: last two edges
-      cx_ite = poly.lverts.next;
-      const w1 = cx_ite;
-      area += v.x * (w1.y - u.y);
-      const cf1 = w1.y * v.x - w1.x * v.y;
-      poly.localCOMx += (v.x + w1.x) * cf1;
-      poly.localCOMy += (v.y + w1.y) * cf1;
-      u = v;
-      v = w1;
-      cx_ite = cx_ite.next;
-      const w2 = cx_ite;
-      area += v.x * (w2.y - u.y);
-      const cf2 = w2.y * v.x - w2.x * v.y;
-      poly.localCOMx += (v.x + w2.x) * cf2;
-      poly.localCOMy += (v.y + w2.y) * cf2;
-      area = 1 / (3 * area);
-      poly.localCOMx *= area;
-      poly.localCOMy *= area;
-    }
-  }
-
   validate_localCOM(): void {
     if (this.zip_localCOM) {
       this.zip_localCOM = false;
@@ -1142,16 +1012,7 @@ export class ZPP_Body {
       let cx_ite = this.shapes.head;
       while (cx_ite != null) {
         const s = cx_ite.elt;
-        if (s.zip_localCOM) {
-          s.zip_localCOM = false;
-          if (s.type === 1) {
-            this._computePolygonLocalCOM(s.polygon);
-          }
-          if (s.wrap_localCOM != null) {
-            s.wrap_localCOM.zpp_inner.x = s.localCOMx;
-            s.wrap_localCOM.zpp_inner.y = s.localCOMy;
-          }
-        }
+        s.validate_localCOM();
         s.validate_area_inertia();
         const t = s.area * s.material.density;
         tempx += s.localCOMx * t;
