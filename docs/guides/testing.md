@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6109 engine tests across 282 files, plus 73 pixi-adapter tests across 5 files.**
+**6171 engine tests across 289 files, plus 73 pixi-adapter tests across 5 files.**
 
 ---
 
@@ -81,12 +81,18 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~60% | ≥80% |
-| Branches | ~78% | — |
-| Functions | ~86% | — |
+| Statements | ~77% | ≥80% |
+| Branches | ~68% | — |
+| Functions | ~88% | — |
 
-**High coverage modules:** `packages/nape-js/src/core/` (99%), `packages/nape-js/src/geom/` (83%), `packages/nape-js/src/helpers/` (88%)
-**Low coverage modules:** `packages/nape-js/src/native/dynamics/` (40%), `packages/nape-js/src/worker/` (0%)
+**High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (97%), `packages/nape-js/src/serialization/` (93%)
+**Low coverage modules:** `packages/nape-js/src/native/dynamics/` (43%), `packages/nape-js/src/native/space/` (71%)
+
+Note: a large share of the remaining uncovered lines in `src/native/` is
+Haxe-inline-expansion leftover code that is structurally unreachable (e.g. the
+arbiter solver methods duplicated inline inside `ZPP_Space`, and polygon
+branches inside circle-only paths). Removing that dead code is worth more than
+writing tests against it.
 
 ---
 

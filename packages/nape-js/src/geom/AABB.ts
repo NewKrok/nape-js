@@ -392,6 +392,7 @@ export class AABB {
     }
 
     // Assign via Vec2 set
+    this.zpp_inner.getmax();
     const maxVec = this.zpp_inner.wrap_max;
     this._assignVec2(maxVec, max);
 
@@ -482,7 +483,7 @@ export class AABB {
   /** @internal Dispose a weak Vec2 back to the pool. */
   private _disposeVec2(vec: any): void {
     const napeNs = getNape();
-    const zpp_nape = napeNs.zpp_nape;
+    const zpp_nape = napeNs.__zpp;
 
     if (vec != null && vec.zpp_disp) {
       throw new Error("Vec2 has been disposed and cannot be used!");

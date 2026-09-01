@@ -245,7 +245,7 @@ present, with automatic `postMessage` fallback otherwise.
 ```bash
 npm install
 npm run build      # tsup → packages/*/dist/ (ESM + CJS + DTS)
-npm test           # vitest — 6109 engine tests + 73 pixi-adapter tests
+npm test           # vitest — 6171 engine tests + 73 pixi-adapter tests
 npm run benchmark  # Performance benchmarks
 ```
 

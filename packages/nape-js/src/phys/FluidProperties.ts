@@ -118,7 +118,7 @@ export class FluidProperties {
   }
   set gravity(gravity: any) {
     const napeNs = getNape();
-    const zpp_nape = napeNs.zpp_nape;
+    const zpp_nape = napeNs.__zpp;
 
     if (gravity == null) {
       // Dispose existing gravity Vec2
@@ -293,10 +293,7 @@ export class FluidProperties {
   get shapes(): any {
     if (this.zpp_inner.wrap_shapes == null) {
       const nape = getNape();
-      this.zpp_inner.wrap_shapes = nape.zpp_nape.util.ZPP_ShapeList.get(
-        this.zpp_inner.shapes,
-        true,
-      );
+      this.zpp_inner.wrap_shapes = nape.__zpp.util.ZPP_ShapeList.get(this.zpp_inner.shapes, true);
     }
     return this.zpp_inner.wrap_shapes;
   }
@@ -307,7 +304,7 @@ export class FluidProperties {
 
   copy(): FluidProperties {
     const napeNs = getNape();
-    const zpp_nape = napeNs.zpp_nape;
+    const zpp_nape = napeNs.__zpp;
 
     const ret = new FluidProperties(this.zpp_inner.density * 1000, this.zpp_inner.viscosity);
 
