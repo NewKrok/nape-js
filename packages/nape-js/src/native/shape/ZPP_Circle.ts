@@ -53,6 +53,7 @@ export class ZPP_Circle {
   invalidate_area_inertia!: () => void;
   invalidate_angDrag!: () => void;
   invalidate_localCOM!: () => void;
+  validate_worldCOM!: () => void;
   immutable_midstep!: (name: string) => void;
   setMaterial!: (mat: any) => void;
   setFilter!: (filt: any) => void;
@@ -170,29 +171,7 @@ export class ZPP_Circle {
   }
 
   __validate_aabb(): void {
-    if (this.zip_worldCOM) {
-      if (this.body != null) {
-        this.zip_worldCOM = false;
-        if (this.zip_localCOM) {
-          this.zip_localCOM = false;
-          if (this.type === 1) {
-            this.polygon.__validate_localCOM();
-          }
-          if (this.wrap_localCOM != null) {
-            this.wrap_localCOM.zpp_inner.x = this.localCOMx;
-            this.wrap_localCOM.zpp_inner.y = this.localCOMy;
-          }
-        }
-        const body = this.body;
-        if (body.zip_axis) {
-          body.zip_axis = false;
-          body.axisx = Math.sin(body.rot);
-          body.axisy = Math.cos(body.rot);
-        }
-        this.worldCOMx = body.posx + (body.axisy * this.localCOMx - body.axisx * this.localCOMy);
-        this.worldCOMy = body.posy + (this.localCOMx * body.axisx + this.localCOMy * body.axisy);
-      }
-    }
+    this.validate_worldCOM();
     const rx = this.radius;
     const ry = this.radius;
     this.aabb.minx = this.worldCOMx - rx;

@@ -15,7 +15,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
 - **Replay** — `Recorder` + `Player` with input-log recording, keyframe scrub, binary encode/decode (`@newkrok/nape-js/replay`)
 - **Debug draw** — abstract `DebugDraw` interface, reference impls for Canvas/Three.js/PixiJS/p5.js
 - **Character controller** — geometric collide-and-slide (`CharacterController` class)
-- **~196 KB gzip** bundled (~936 KB raw across `dist/index.js` + engine chunks —
+- **~174 KB gzip** bundled (~852 KB raw across `dist/index.js` + engine chunks —
   measure the total bundled cost, not one file). The published main entry eagerly
   imports `core/bootstrap`, which registers every engine class, so consumers of
   `dist/` always get the full engine; the _source_ module graph is tree-shakeable

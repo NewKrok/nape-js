@@ -29,6 +29,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import "../../../src/core/engine";
 import { ZPP_Broadphase } from "../../../src/native/space/ZPP_Broadphase";
 import { ZPP_AABB } from "../../../src/native/geom/ZPP_AABB";
+import { ZPP_Shape } from "../../../src/native/shape/ZPP_Shape";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -217,9 +218,18 @@ describe("ZPP_Broadphase.sync() — short-circuit branches", () => {
     bp.is_sweep = true;
     sweep.space.continuous = false;
 
-    expect(() =>
-      bp.sync({ zip_aabb: true, body: null, type: 0, circle: null, polygon: null }),
-    ).not.toThrow();
+    // sync() delegates to ZPP_Shape.validate_aabb, whose body-null guard must
+    // leave the shape untouched (zip_aabb stays pending).
+    const shape = {
+      zip_aabb: true,
+      body: null,
+      type: 0,
+      circle: null,
+      polygon: null,
+      validate_aabb: ZPP_Shape.prototype.validate_aabb,
+    };
+    expect(() => bp.sync(shape)).not.toThrow();
+    expect(shape.zip_aabb).toBe(true);
     expect(sweep.syncs).toHaveLength(0);
   });
 

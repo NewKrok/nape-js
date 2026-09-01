@@ -446,89 +446,6 @@ export class ZPP_Ray {
   }
 
   // ---------------------------------------------------------------------------
-  // Helper: validate worldCOM on a shape (used by circlesect/circlesect2)
-  // ---------------------------------------------------------------------------
-
-  private static _validateWorldCOM(c: any): void {
-    if (c.zip_worldCOM) {
-      if (c.body != null) {
-        c.zip_worldCOM = false;
-        if (c.zip_localCOM) {
-          c.zip_localCOM = false;
-          if (c.type == 1) {
-            const _this = c.polygon;
-            if (_this.lverts.next == null) {
-              throw new Error("An empty polygon has no meaningful localCOM");
-            }
-            if (_this.lverts.next.next == null) {
-              _this.localCOMx = _this.lverts.next.x;
-              _this.localCOMy = _this.lverts.next.y;
-            } else if (_this.lverts.next.next.next == null) {
-              _this.localCOMx = _this.lverts.next.x;
-              _this.localCOMy = _this.lverts.next.y;
-              const t = 1.0;
-              _this.localCOMx += _this.lverts.next.next.x * t;
-              _this.localCOMy += _this.lverts.next.next.y * t;
-              const t1 = 0.5;
-              _this.localCOMx *= t1;
-              _this.localCOMy *= t1;
-            } else {
-              _this.localCOMx = 0;
-              _this.localCOMy = 0;
-              let area = 0.0;
-              let cx_ite = _this.lverts.next;
-              let u = cx_ite;
-              cx_ite = cx_ite.next;
-              let v = cx_ite;
-              cx_ite = cx_ite.next;
-              while (cx_ite != null) {
-                const w = cx_ite;
-                area += v.x * (w.y - u.y);
-                const cf = w.y * v.x - w.x * v.y;
-                _this.localCOMx += (v.x + w.x) * cf;
-                _this.localCOMy += (v.y + w.y) * cf;
-                u = v;
-                v = w;
-                cx_ite = cx_ite.next;
-              }
-              cx_ite = _this.lverts.next;
-              const w1 = cx_ite;
-              area += v.x * (w1.y - u.y);
-              const cf1 = w1.y * v.x - w1.x * v.y;
-              _this.localCOMx += (v.x + w1.x) * cf1;
-              _this.localCOMy += (v.y + w1.y) * cf1;
-              u = v;
-              v = w1;
-              cx_ite = cx_ite.next;
-              const w2 = cx_ite;
-              area += v.x * (w2.y - u.y);
-              const cf2 = w2.y * v.x - w2.x * v.y;
-              _this.localCOMx += (v.x + w2.x) * cf2;
-              _this.localCOMy += (v.y + w2.y) * cf2;
-              area = 1 / (3 * area);
-              const t2 = area;
-              _this.localCOMx *= t2;
-              _this.localCOMy *= t2;
-            }
-          }
-          if (c.wrap_localCOM != null) {
-            c.wrap_localCOM.zpp_inner.x = c.localCOMx;
-            c.wrap_localCOM.zpp_inner.y = c.localCOMy;
-          }
-        }
-        const _this1 = c.body;
-        if (_this1.zip_axis) {
-          _this1.zip_axis = false;
-          _this1.axisx = Math.sin(_this1.rot);
-          _this1.axisy = Math.cos(_this1.rot);
-        }
-        c.worldCOMx = c.body.posx + (c.body.axisy * c.localCOMx - c.body.axisx * c.localCOMy);
-        c.worldCOMy = c.body.posy + (c.localCOMx * c.body.axisx + c.localCOMy * c.body.axisy);
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------
   // Helper: compute circle normal at intersection point
   // ---------------------------------------------------------------------------
 
@@ -595,7 +512,7 @@ export class ZPP_Ray {
   // ---------------------------------------------------------------------------
 
   circlesect(c: any, inner: boolean, mint: number): any {
-    ZPP_Ray._validateWorldCOM(c);
+    c.validate_worldCOM();
 
     const acx = this.originx - c.worldCOMx;
     const acy = this.originy - c.worldCOMy;
@@ -646,7 +563,7 @@ export class ZPP_Ray {
   // ---------------------------------------------------------------------------
 
   circlesect2(c: any, inner: boolean, list: any): void {
-    ZPP_Ray._validateWorldCOM(c);
+    c.validate_worldCOM();
 
     const acx = this.originx - c.worldCOMx;
     const acy = this.originy - c.worldCOMy;
