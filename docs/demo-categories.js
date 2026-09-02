@@ -41,6 +41,7 @@ export const GAME_DEMO_IDS = new Set([
   "cargo-crane",
   "sumo-arena",
   "kickoff",
+  "dodgeball",
 ]);
 
 export const CATEGORIES = [
