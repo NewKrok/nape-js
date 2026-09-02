@@ -185,6 +185,8 @@
   "tag.Vehicle": "Fahrzeug",
   "tag.Waypoints": "Wegpunkte",
   "tag.Zero Gravity": "Schwerelosigkeit",
+  "tag.Forces": "Kräfte",
+  "tag.Generative": "Generativ",
   "demo.arena-defense.label": "Arena Defense",
   "demo.arena-defense.desc": "Mash-up aus <b>Top-Down-Shooter</b> + <b>Tower Defense</b> + <b>Portalen</b> + <b>zerstörbaren Bodies</b>. Große <b>1800×1200</b>-Welt mit einer <b>Kamera, die dem Spieler folgt</b>. Gegner treten von jeder Seite entlang eines kurzen L-förmigen Korridors ein und laufen auf die zentrale <b>Basis</b> zu (HP 800, festes Hindernis, feuert automatisch auf den nächsten Gegner). Wellen laufen in einem festen <b>12s-Takt</b> — eine langsame Welle verzögert die nächste nicht, also gehören Anhäufungen zur Herausforderung. <b>WASD</b> bewegen, <b>Space</b> Dash (i-Frames), Autofeuer zielt auf den nächsten Gegner. Betrete ein farbiges <b>Portal</b>, um dich zu teleportieren. Jeder Kill zerschmettert den Gegner per <code>fractureBody</code> (Voronoi-Splitter) plus einem kurzen Funkenstoß des Partikel-Emitters. Wellentypen: <b>Speed</b> (Dash-Stürmer), <b>Healer</b> (heilt Verbündete per grünem Puls) und jede 5. — ein <b>Boss</b> mit Schrotflinte, Minen, beschworenen Schergen und einer AoE-<b>Schockwelle</b>. Power-ups (40% Drop): 2x/3x Streuung, EX explosiv, RF Schnellfeuer, HP Heilung, SH Schild, <b>HM Zielsuchraketen</b>.",
   "demo.asteroid-field.label": "Asteroidenfeld (Spatial Hash)",
@@ -333,6 +335,14 @@
   "demo.wrecking-ball.desc": "Eine schwere Kugel an einer Kette kracht in einen Turm aus Boxen. Klicke, um den Schwung zurückzusetzen.",
   "demo.wyrm.label": "Wyrm",
   "demo.wyrm.desc": "Ein Ein-Knopf-Endless-Runner. <b>Halte Space</b> (oder tippe & halte), um nach oben zu schieben, lass los zum Fallen. Der Tunnel aus statischen <b>Polygon</b>-Streifen wird vor dem Spieler generiert und hinter ihm entfernt. Schnapp dir <b>★ Sterne</b> für Punkte — reine Sensor-Bodies, die beim Aufsammeln in dynamische Splitter zerplatzen (die Splitter kollidieren mit den Wänden, passieren dich aber über Kollisionsfilter). Zeigt <b>body.force</b> pro Frame, Kamera-Folge + Wackeln beim Crash, Parallax-Hintergrund, prozedurales Spawnen/Aufräumen und InteractionListener im <b>SENSOR</b>-Modus.",
+  "demo.dodgeball.label": "Völkerball",
+  "demo.dodgeball.desc": "3-gegen-3-Völkerball in Draufsicht, Best of 3 Runden. Die Mittellinie ist nur für <b>Spieler</b> eine Wand — ein kollisionsgefilterter Zaun, den Pucks nicht überqueren können, Bälle aber glatt überfliegen. Vier Bälle starten auf der Linie: <b>stürm los</b>, lauf in einen hinein, um ihn <b>aufzuheben</b>, trag ihn einen Moment, um ihn <b>scharfzumachen</b> (die klassische Erst-zurückziehen-dann-werfen-Regel), dann <b>wirf</b> — <b>SPACE</b>/<b>E</b> zielt automatisch auf den nächsten Roten, ein <b>Tipp</b> wirft genau dorthin, wo du tippst. Ein geworfener Ball ist <b>scharf</b> (er trägt die Farbe des Werfers), bis er eine Wand berührt oder langsamer wird; ein scharfer Ball, der einen Gegner berührt, <b>wirft ihn raus</b>. Es gibt <b>kein Fangen</b> — kommt ein Ball auf dich zu, <b>weich aus</b>. Auch die Munition schwindet: alle 20 s <b>versickert ein freier Ball endgültig</b> (vorher blinkt er), bis nur noch ein einziger übrig ist. Beweg dich mit <b>WASD</b>/Pfeilen, halte <b>SHIFT</b> zum <b>Sprinten</b> mit einem Ausdauertank, der sich in Sekunden leert und langsam füllt — oder <b>halte</b> auf jedem Gerät den Zeiger zum Steuern (schieb ihn weit weg zum Sprinten) und <b>tippe kurz</b> zum Werfen. Jede KI würfelt ihre eigene <b>Reaktionsdistanz, Vorhalte-Fähigkeit, Wurfstreuung und Aggression</b> aus, also weichen die Roten deinen Würfen seitlich von der Flugbahn aus und halten bei ihren eigenen vor. Trödelst du zu lange, <b>fällt bei 45 s die Linie</b> — der Zaunkörper verlässt den Space und die Runde wird zum Nahkampf aus nächster Nähe. Das letzte stehende Team holt die Runde; wer zuerst 2 Runden hat, gewinnt.",
+  "demo.kickoff.label": "Kickoff",
+  "demo.kickoff.desc": "2-gegen-2-Arena-Fußball in Draufsicht. Du und ein <b>KI-Mitspieler</b> (blau) tretet gegen zwei KI-Gegner auf einem umwandeten Feld mit eingelassenen Tortaschen und runden Pfosten an. Lauf in einen langsamen Ball, um ihn am Fuß zu <b>führen</b>; ein <b>Schuss</b> (<b>SPACE</b>/<b>E</b>) feuert ihn in Blickrichtung ab, und ein Gegner, der deinen geführten Ball überlappt, kann ihn dir <b>abgrätschen</b> — ein Schuss mit voller Geschwindigkeit ist zu schnell zum Abfangen. Beweg dich mit <b>WASD</b>/Pfeilen, halte <b>SHIFT</b> zum <b>Sprinten</b> mit einem Ausdauertank, der sich in Sekunden leert und langsam füllt (leerst du ihn ganz, bist du außer Atem) — oder <b>halte</b> auf jedem Gerät den Zeiger zum Steuern (schieb ihn weit weg zum Sprinten) und <b>tippe kurz</b> zum Schießen. Die KI-Paare teilen sich dynamisch in <b>Angreifer- und Verteidigerrollen</b> auf, dribbeln in die Ecken, machen unterstützende Läufe und haushalten mit ihrer eigenen Ausdauer. Wer zuerst 3 Tore innerhalb der <b>2-Minuten-Uhr</b> schießt, gewinnt — ein Unentschieden nach Ablauf geht ins Golden Goal.",
+  "demo.pulse.label": "Puls",
+  "demo.pulse.desc": "1100 Sechsecke in Schwerelosigkeit, im Zyklus zwischen Ordnung und Chaos. In einer <b>Figur</b> wird jeder Körper per Feder zu seinem eigenen Punkt eines Gitterbilds getrieben — Wabe, Dreieck, konzentrische Ringe, eine Goldener-Winkel-Spirale, ein gefaltetes Wellenraster. Dann reißt ein <b>Puls</b> — ein stehendes Druckfeld, dessen Wellenlänge und Phase jedes Mal neu ausgewürfelt werden — die Figur auseinander, sodass sich die nächste aus einer anderen Streuung zusammensetzt. Die Farbe folgt der Geschwindigkeit, von kalt nach heiß. Jede Figur und jeder Puls ist ein einziger <code>body.force</code>-Schreibzugriff pro Schritt. <b>Klicke</b>, um einen statischen Kreis abzulegen — den Umweg des Schwarms lösen die Kontakte, und die Figuren formen sich gegen alle Hindernisse im Weg neu.",
+  "demo.sumo-arena.label": "Sumo-Arena",
+  "demo.sumo-arena.desc": "Zehn Spieler, jeder gegen jeden, K.-o. auf einer schwebenden runden Plattform — schubs alle anderen runter und bleib als Letzter stehen. Du steuerst den blauen Puck gegen <b>9 KI-Kämpfer</b> mit Randbewusstsein, Zielauswahl und eigenem Dash-Timing. Beweg dich mit <b>WASD</b>/Pfeilen und <b>SPACE</b>/<b>E</b> zum <b>Dash</b> — oder <b>halte</b> auf jedem Gerät Zeiger/Finger zum Steuern und <b>tippe kurz</b>, um in diese Richtung zu dashen. Ein Dash ist ein kurzer Ausfall, der jeden Getroffenen fliegen lässt (er verliert taumelnd die Kontrolle, ein Dash an der Kante ist also tödlich). Kontaktschübe sind reiner Starrkörper-Impuls auf federnden, rutschigen Pucks. Nach 10 Sekunden beginnt die Arena zu <b>schrumpfen</b>, also spiel die Mitte. Fällst du raus, kannst du zusehen, wie die KI die Keilerei zu Ende bringt.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -382,6 +392,16 @@
     "ai.recipes.body",
     "ai.cta",
     "features.p1",
-    "home.hero.tagline"
+    "home.hero.tagline",
+    "demo.dodgeball.label",
+    "demo.dodgeball.desc",
+    "demo.kickoff.label",
+    "demo.kickoff.desc",
+    "demo.pulse.label",
+    "demo.pulse.desc",
+    "demo.sumo-arena.label",
+    "demo.sumo-arena.desc",
+    "tag.Forces",
+    "tag.Generative"
   ]
 }

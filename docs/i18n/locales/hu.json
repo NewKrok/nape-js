@@ -185,6 +185,8 @@
   "tag.Vehicle": "Jármű",
   "tag.Waypoints": "Útpontok",
   "tag.Zero Gravity": "Zéró gravitáció",
+  "tag.Forces": "Erők",
+  "tag.Generative": "Generatív",
   "demo.arena-defense.label": "Aréna védelem",
   "demo.arena-defense.desc": "Egy keverék: <b>felülnézetes lövölde</b> + <b>tornyos védekezés</b> + <b>portálok</b> + <b>rombolható testek</b>. Nagy, <b>1800×1200</b>-as világ, <b>a játékost követő kamerával</b>. Az ellenségek minden oldalról egy rövid, L alakú folyosón lépnek be, és a központi <b>bázisra</b> tartanak (HP 800, tömör akadály, automatikusan a legközelebbi ellenségre tüzel). A hullámok fix <b>12 másodperces ütemben</b> jönnek — egy lassú hullám nem késlelteti a következőt, így a torlódások a kihívás részét képezik. <b>WASD</b> mozgás, <b>Space</b> szökkenés (sérthetetlenségi képkockákkal), az automata tűz a legközelebbi ellenséget célozza. Lépj egy színes <b>portálba</b> a teleportáláshoz. Minden ölés a <code>fractureBody</code> segítségével szilánkokra töri az ellenséget (Voronoi-szilánkok), plusz egy rövid részecskekibocsátó szikracsóva. Hullámtípusok: <b>gyors</b> (szökkenéssel támadók), <b>gyógyító</b> (zöld pulzussal gyógyítja a szövetségeseket), és minden 5.-ként egy <b>főellenség</b> sörétes puskával, aknákkal, idézett kishalakkal és egy AoE <b>lökéshullámmal</b>. Erősítők (40% esély): 2x/3x szórás, EX robbanó, RF gyorstűz, HP gyógyítás, SH pajzs, <b>HM követő rakéták</b>.",
   "demo.asteroid-field.label": "Aszteroidamező (Térbeli hash)",
@@ -333,6 +335,14 @@
   "demo.wrecking-ball.desc": "Egy nehéz golyó egy láncon becsapódik egy dobozokból álló toronyba. Kattints a lengés visszaállításához.",
   "demo.wyrm.label": "Wyrm",
   "demo.wyrm.desc": "Egygombos végtelen futójáték. <b>Tartsd lenyomva a Space-t</b> (vagy koppints és tarts) a felfelé hajtáshoz, engedd el az eséshez. A statikus <b>Polygon</b> csíkokból álló alagút a játékos előtt generálódik, mögötte pedig eltűnik. Gyűjtsd a <b>★ csillagokat</b> pontokért — kizárólag érzékelő testek, amelyek felvételkor dinamikus szilánkokra pukkannak (a szilánkok ütköznek a falakkal, de rajtad áthaladnak az ütközési szűrők révén). Bemutatja a képkockánkénti <b>body.force</b>-ot, a kamerakövetést + rázást ütközéskor, a parallaxis hátteret, a procedurális létrehozást/eltakarítást és a <b>SENSOR</b> módú InteractionListenereket.",
+  "demo.dodgeball.label": "Kidobós",
+  "demo.dodgeball.desc": "3v3 felülnézetes kidobós, az nyer, aki előbb visz 2 szakaszt. A középvonal csak a <b>játékosoknak</b> fal — ütközésszűrt kerítés, amin a korongok nem juthatnak át, de a labdák simán átrepülnek felette. Négy labda indul a vonalon: <b>rohanj</b>, sétálj bele egybe a <b>felvételhez</b>, cipeld egy pillanatig, hogy <b>élesedjen</b> (a klasszikus hátrébb-viszed-mielőtt-dobsz szabály), majd <b>dobj</b> — a <b>SPACE</b>/<b>E</b> automatikusan a legközelebbi pirosra céloz, egy <b>koppintás</b> pontosan oda dob, ahová böktél. Az eldobott labda <b>éles</b> (a dobó színét viseli), amíg falat nem ér vagy le nem lassul; az éles labda érintésre <b>kiüti</b> az ellenfelet. <b>Elkapás nincs</b> — ha feléd száll a labda, <b>térj ki</b>. A pálya lőszere is apad: 20 másodpercenként <b>egy szabad labda örökre elszivárog</b> (előtte villog), míg végül egyetlen labda marad. Mozogj a <b>WASD</b>/nyilakkal, a <b>SHIFT</b>-tel <b>sprintelj</b> egy másodpercek alatt kiürülő és lassan visszatöltődő állóképesség-tartályból — vagy bármilyen eszközön <b>tartsd nyomva</b> a mutatót a kormányzáshoz (told messzire a sprinthez) és <b>koppints gyorsan</b> a dobáshoz. Minden MI saját <b>reakciótávolságot, célravezetési ügyességet, dobásszórást és agressziót</b> sorsol magának, így a pirosak oldalra, a röppályáról lelépve kerülik a dobásaidat, a sajátjaikkal pedig eléd céloznak. Ha túl sokáig húzod, 45 mp-nél <b>a vonal leomlik</b> — a kerítéstest elhagyja a teret, és a szakasz közelharci dobálózássá válik. Az utolsó talpon maradt csapaté a szakasz; 2 nyert szakasz a győzelem.",
+  "demo.kickoff.label": "Kickoff",
+  "demo.kickoff.desc": "2v2 felülnézetes arénafoci. Te és egy <b>MI-csapattársad</b> (kék) két MI-ellenféllel csaptok össze egy falakkal körbevett pályán, süllyesztett kapuzsebekkel és kerek kapufákkal. Sétálj bele egy lassú labdába, hogy a lábadon <b>vezethesd</b>; a <b>rúgás</b> (<b>SPACE</b>/<b>E</b>) arra lövi, amerre nézel, a vezetett labdádba érő ellenfél pedig <b>elszerelheti</b> — a teljes sebességű lövés túl gyors ahhoz, hogy elkapják. Mozogj a <b>WASD</b>/nyilakkal, a <b>SHIFT</b>-tel <b>sprintelj</b> egy másodpercek alatt kiürülő és lassan visszatöltődő állóképesség-tartályból (ha teljesen lemeríted, kifulladsz) — vagy bármilyen eszközön <b>tartsd nyomva</b> a mutatót a kormányzáshoz (told messzire a sprinthez) és <b>koppints gyorsan</b> a rúgáshoz. Az MI-párosok dinamikusan osztanak <b>támadó és védő szerepet</b>, a sarkok felé cseleznek, üres területre futnak, és a saját állóképességükkel is gazdálkodnak. Aki előbb rúg 3 gólt a <b>2 perces órán</b> belül, nyer — döntetlennél aranygól következik.",
+  "demo.pulse.label": "Pulzus",
+  "demo.pulse.desc": "1100 hatszög zéró gravitációban, rend és káosz közt ciklusozva. Egy <b>alakzatban</b> minden testet rugó hajt a saját rácspontja felé egy mintázatban — méhsejt, háromszög, koncentrikus gyűrűk, aranyszög-spirál, hajtogatott hullámrács. Aztán egy <b>pulzus</b> — állóhullámú nyomásmező, hullámhossza és fázisa minden alkalommal újrasorsolva — széttépi az alakzatot, így a következő már más szórásból áll össze. A szín a sebességet követi, hidegtől forróig. Minden alakzat és minden pulzus lépésenként egyetlen <code>body.force</code> írás. <b>Kattints</b> statikus kör lerakásához — a raj kerülőútját ütközések oldják meg, és az alakzatok az útban lévő akadályokhoz igazodva formálódnak újra.",
+  "demo.sumo-arena.label": "Szumóaréna",
+  "demo.sumo-arena.desc": "10 játékos, mindenki mindenki ellen egy lebegő, kör alakú platformon — lökd le az összes többit, és maradj utolsóként talpon. Te irányítod a kék korongot <b>9 MI-harcos</b> ellen, akik figyelik a peremet, célpontot választanak és maguk időzítik a rohamaikat. Mozogj a <b>WASD</b>/nyilakkal, a <b>SPACE</b>/<b>E</b> a <b>roham</b> — vagy bármilyen eszközön <b>tartsd nyomva</b> a mutatót/ujjadat a kormányzáshoz és <b>koppints gyorsan</b> az abba az irányba induló rohamhoz. A roham rövid kitörés, ami elrepíti, akit eltalál (tántorgás közben nem tud irányítani, így a perem melletti roham halálos). A lökdösődés tiszta merevtest-impulzus pattogós, csúszós korongokon. 10 másodperc után az aréna <b>zsugorodni</b> kezd, úgyhogy játssz középen. Ha kiesel, végignézheted, ahogy az MI-k befejezik a bunyót.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -383,6 +393,16 @@
     "ai.recipes.body",
     "ai.cta",
     "features.p1",
-    "home.hero.tagline"
+    "home.hero.tagline",
+    "demo.dodgeball.label",
+    "demo.dodgeball.desc",
+    "demo.kickoff.label",
+    "demo.kickoff.desc",
+    "demo.pulse.label",
+    "demo.pulse.desc",
+    "demo.sumo-arena.label",
+    "demo.sumo-arena.desc",
+    "tag.Forces",
+    "tag.Generative"
   ]
 }

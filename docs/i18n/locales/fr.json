@@ -185,6 +185,8 @@
   "tag.Vehicle": "Véhicule",
   "tag.Waypoints": "Points de passage",
   "tag.Zero Gravity": "Gravité zéro",
+  "tag.Forces": "Forces",
+  "tag.Generative": "Génératif",
   "demo.arena-defense.label": "Défense d'arène",
   "demo.arena-defense.desc": "Mélange de <b>shooter en vue de dessus</b> + <b>tower defense</b> + <b>portails</b> + <b>corps destructibles</b>. Grand monde de <b>1800×1200</b> avec une <b>caméra qui suit le joueur</b>. Les ennemis entrent de chaque côté le long d'un court couloir en L et convergent vers la <b>base</b> centrale (HP 800, obstacle solide, tire automatiquement sur l'ennemi le plus proche). Les vagues suivent une <b>cadence fixe de 12s</b> — une vague lente ne retarde pas la suivante, les embouteillages font donc partie du défi. <b>WASD</b> pour se déplacer, <b>Space</b> pour l'esquive (i-frames), le tir automatique vise l'ennemi le plus proche. Entrez dans un <b>portail</b> coloré pour vous téléporter. Chaque élimination brise l'ennemi via <code>fractureBody</code> (éclats de Voronoï) accompagnée d'une courte gerbe d'étincelles d'un émetteur de particules. Types de vagues : <b>vitesse</b> (fonceurs à l'esquive), <b>soigneur</b> (impulsion verte qui soigne les alliés) et, toutes les 5, un <b>boss</b> doté d'un fusil à pompe, de mines, de sbires invoqués et d'une <b>onde de choc</b> de zone. Bonus (40% de chance de drop) : tir 2x/3x en éventail, EX explosif, RF tir rapide, HP soin, SH bouclier, <b>HM missiles à tête chercheuse</b>.",
   "demo.asteroid-field.label": "Champ d'astéroïdes (Spatial Hash)",
@@ -333,6 +335,14 @@
   "demo.wrecking-ball.desc": "Une lourde boule au bout d'une chaîne s'écrase dans une tour de boîtes. Cliquez pour réinitialiser le balancement.",
   "demo.wyrm.label": "Wyrm",
   "demo.wyrm.desc": "Un endless runner à un seul bouton. <b>Maintenez Space</b> (ou touchez et maintenez) pour propulser vers le haut, relâchez pour tomber. Le tunnel de bandes <b>Polygon</b> statiques est généré devant le joueur et éliminé derrière. Attrapez des <b>étoiles ★</b> pour marquer des points — des corps réservés aux capteurs qui éclatent en éclats dynamiques au ramassage (les éclats entrent en collision avec les murs mais vous traversent grâce aux filtres de collision). Met en valeur la <b>body.force</b> par frame, le suivi de caméra + secousse au crash, l'arrière-plan en parallaxe, l'apparition/nettoyage procédural et des InteractionListeners en mode <b>SENSOR</b>.",
+  "demo.dodgeball.label": "Ballon prisonnier",
+  "demo.dodgeball.desc": "Ballon prisonnier 3c3 en vue de dessus, au meilleur des 3 manches. La ligne centrale n'est un mur que pour les <b>joueurs</b> — une clôture filtrée par collision que les palets ne peuvent pas franchir mais que les balles survolent librement. Quatre balles démarrent sur la ligne : <b>foncez</b>, marchez sur l'une d'elles pour la <b>ramasser</b>, portez-la un instant pour l'<b>armer</b> (la règle classique du repli avant le lancer), puis <b>lancez</b> — <b>SPACE</b>/<b>E</b> vise automatiquement le rouge le plus proche, un <b>tap</b> lance exactement là où vous touchez. Une balle lancée est <b>active</b> (elle porte la couleur du lanceur) jusqu'à ce qu'elle touche un mur ou ralentisse ; une balle active qui touche un adversaire l'<b>élimine</b>. <b>Pas de réception</b> — quand une balle arrive sur vous, <b>esquivez</b>. Les munitions s'épuisent aussi : toutes les 20 s, <b>une balle libre disparaît</b> pour de bon (elle clignote d'abord), jusqu'à n'en laisser qu'une seule. Déplacez-vous avec <b>WASD</b>/flèches, maintenez <b>SHIFT</b> pour <b>sprinter</b> sur une jauge d'endurance qui se vide en quelques secondes et se recharge lentement — ou sur tout appareil <b>maintenez</b> le pointeur pour diriger (poussez-le loin pour sprinter) et <b>tapez brièvement</b> pour lancer. Chaque IA tire au sort sa propre <b>distance de réaction, capacité d'anticipation, dispersion de lancer et agressivité</b> : les rouges esquivent vos tirs en sortant latéralement de la trajectoire et anticipent les vôtres. Si vous traînez trop, à 45 s <b>la ligne tombe</b> — le corps de la clôture quitte l'espace et la manche tourne à la mêlée à bout portant. La dernière équipe debout prend la manche ; la première à 2 manches gagne.",
+  "demo.kickoff.label": "Kickoff",
+  "demo.kickoff.desc": "Football d'arène 2c2 en vue de dessus. Vous et un <b>coéquipier IA</b> (bleu) affrontez deux adversaires IA sur un terrain muré, avec des cages en retrait et des poteaux ronds. Marchez sur un ballon lent pour le <b>conduire</b> au pied ; une <b>frappe</b> (<b>SPACE</b>/<b>E</b>) l'envoie dans la direction où vous regardez, et un adversaire qui chevauche votre ballon conduit peut vous le <b>tacler</b> — un tir à pleine vitesse est trop rapide pour être intercepté. Déplacez-vous avec <b>WASD</b>/flèches, maintenez <b>SHIFT</b> pour <b>sprinter</b> sur une jauge d'endurance qui se vide en quelques secondes et se recharge lentement (videz-la complètement et vous êtes essoufflé) — ou sur tout appareil <b>maintenez</b> le pointeur pour diriger (poussez-le loin pour sprinter) et <b>tapez brièvement</b> pour frapper. Les paires d'IA se répartissent dynamiquement les <b>rôles d'attaquant et de défenseur</b>, dribblent vers les coins, font des appels de soutien et gèrent leur propre endurance. Premier à 3 buts dans le <b>chrono de 2 minutes</b> — une égalité au terme va au but en or.",
+  "demo.pulse.label": "Pulsation",
+  "demo.pulse.desc": "1100 hexagones en gravité zéro, alternant entre ordre et chaos. Dans une <b>figure</b>, chaque corps est tiré par ressort vers son propre point d'une figure en treillis — nid d'abeilles, triangle, anneaux concentriques, spirale à angle d'or, grille d'ondes pliée. Puis une <b>pulsation</b> — un champ de pression stationnaire, dont la longueur d'onde et la phase sont retirées au sort à chaque fois — déchire la figure, si bien que la suivante s'assemble depuis une dispersion différente. La couleur suit la vitesse, du froid au chaud. Chaque figure et chaque pulsation tient en une seule écriture de <code>body.force</code> par pas. <b>Cliquez</b> pour déposer un cercle statique — le détour de l'essaim autour de lui est résolu par les contacts, et les figures se reforment contre les obstacles présents.",
+  "demo.sumo-arena.label": "Arène de sumo",
+  "demo.sumo-arena.desc": "Mêlée générale à 10 joueurs, par élimination, sur une plateforme circulaire flottante — poussez tous les autres dans le vide et restez le dernier debout. Vous contrôlez le palet bleu contre <b>9 combattants IA</b> dotés de conscience du bord, de choix de cible et de leur propre timing de charge. Déplacez-vous avec <b>WASD</b>/flèches et <b>SPACE</b>/<b>E</b> pour <b>charger</b> — ou sur tout appareil <b>maintenez</b> le pointeur/doigt pour diriger et <b>tapez brièvement</b> pour charger dans cette direction. Une charge est une courte ruée qui envoie valser quiconque elle touche (il perd le contrôle en titubant, une charge près du bord est donc fatale). Les poussées de contact sont du pur moment de corps rigide sur des palets rebondissants et glissants. Après 10 secondes, l'arène commence à <b>rétrécir</b>, jouez donc le centre. Si vous tombez, vous pouvez regarder les IA finir la bagarre.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -381,6 +391,16 @@
     "ai.recipes.title",
     "ai.recipes.body",
     "ai.cta",
-    "features.p1"
+    "features.p1",
+    "demo.dodgeball.label",
+    "demo.dodgeball.desc",
+    "demo.kickoff.label",
+    "demo.kickoff.desc",
+    "demo.pulse.label",
+    "demo.pulse.desc",
+    "demo.sumo-arena.label",
+    "demo.sumo-arena.desc",
+    "tag.Forces",
+    "tag.Generative"
   ]
 }

@@ -185,6 +185,8 @@
   "tag.Vehicle": "Vehículo",
   "tag.Waypoints": "Puntos de ruta",
   "tag.Zero Gravity": "Gravedad cero",
+  "tag.Forces": "Fuerzas",
+  "tag.Generative": "Generativo",
   "demo.arena-defense.label": "Defensa de la arena",
   "demo.arena-defense.desc": "Mezcla de <b>shooter cenital</b> + <b>tower defense</b> + <b>portales</b> + <b>cuerpos destructibles</b>. Un mundo grande de <b>1800×1200</b> con una <b>cámara que sigue al jugador</b>. Los enemigos entran por cada lado a lo largo de un corto pasillo en forma de L y convergen en la <b>base</b> central (HP 800, obstáculo sólido, dispara automáticamente al enemigo más cercano). Las oleadas corren con una <b>cadencia fija de 12s</b> — una oleada lenta no retrasa la siguiente, así que las aglomeraciones son parte del reto. <b>WASD</b> para moverse, <b>Space</b> para hacer dash (fotogramas de invulnerabilidad), el fuego automático apunta al enemigo más cercano. Pisa un <b>portal</b> de color para teletransportarte. Cada muerte hace añicos al enemigo mediante <code>fractureBody</code> (fragmentos de Voronoi) más una breve ráfaga de chispas del emisor de partículas. Tipos de oleada: <b>velocidad</b> (embestidores con dash), <b>sanador</b> (pulso verde que cura a los aliados) y cada 5.ª — un <b>jefe</b> con escopeta, minas, súbditos invocados y una <b>onda de choque</b> AoE. Potenciadores (40% de probabilidad de caída): 2x/3x abanico, EX explosivo, RF fuego rápido, HP curación, SH escudo, <b>HM misiles teledirigidos</b>.",
   "demo.asteroid-field.label": "Campo de asteroides (Spatial Hash)",
@@ -333,6 +335,14 @@
   "demo.wrecking-ball.desc": "Una bola pesada en una cadena se estrella contra una torre de cajas. Haz clic para reiniciar el balanceo.",
   "demo.wyrm.label": "Wyrm",
   "demo.wyrm.desc": "Un endless runner de un botón. <b>Mantén Space</b> (o mantén pulsado) para impulsarte hacia arriba, suelta para caer. El túnel de tiras estáticas de <b>Polygon</b> se genera por delante del jugador y se descarta por detrás. Atrapa <b>★ estrellas</b> para conseguir puntos — cuerpos solo-sensor que estallan en fragmentos dinámicos al recogerse (los fragmentos colisionan con las paredes pero te atraviesan mediante filtros de colisión). Muestra la <b>body.force</b> por fotograma, el seguimiento de cámara + sacudida al chocar, fondo con parallax, aparición/limpieza procedural y InteractionListeners en modo <b>SENSOR</b>.",
+  "demo.dodgeball.label": "Balón prisionero",
+  "demo.dodgeball.desc": "Balón prisionero 3c3 en vista cenital, al mejor de 3 rondas. La línea central es una pared solo para los <b>jugadores</b>: una valla con filtro de colisión que los discos no pueden cruzar pero que las pelotas sobrevuelan sin más. Cuatro pelotas empiezan sobre la línea: <b>corre</b>, camina hacia una para <b>recogerla</b>, llévala un instante para <b>armarla</b> (la clásica regla de retroceder antes de lanzar) y luego <b>lanza</b> — <b>SPACE</b>/<b>E</b> apunta automáticamente al rojo más cercano, un <b>toque</b> lanza exactamente adonde tocas. Una pelota lanzada está <b>viva</b> (lleva el color del lanzador) hasta que toca una pared o se frena; una pelota viva que toca a un rival lo <b>elimina</b>. <b>No hay atrapadas</b>: cuando una pelota viene hacia ti, <b>esquiva</b>. La munición también mengua: cada 20 s <b>una pelota suelta se esfuma</b> para siempre (antes parpadea), hasta quedar una sola. Muévete con <b>WASD</b>/flechas, mantén <b>SHIFT</b> para <b>esprintar</b> con un tanque de resistencia que se vacía en segundos y se rellena despacio — o en cualquier dispositivo <b>mantén</b> el puntero para dirigir (aléjalo para esprintar) y <b>toca rápido</b> para lanzar. Cada IA sortea su propia <b>distancia de reacción, habilidad de anticipación, dispersión de lanzamiento y agresividad</b>, así que los rojos esquivan tus tiros saliéndose lateralmente de la trayectoria y anticipan los suyos. Si te demoras demasiado, a los 45 s <b>la línea cae</b>: el cuerpo de la valla sale del espacio y la ronda se convierte en un cuerpo a cuerpo a quemarropa. El último equipo en pie se lleva la ronda; gana el primero en llegar a 2.",
+  "demo.kickoff.label": "Kickoff",
+  "demo.kickoff.desc": "Fútbol de arena 2c2 en vista cenital. Tú y un <b>compañero IA</b> (azul) os enfrentáis a dos rivales IA en un campo amurallado con porterías empotradas y postes redondos. Camina hacia una pelota lenta para <b>llevarla</b> en los pies; una <b>patada</b> (<b>SPACE</b>/<b>E</b>) la dispara hacia donde miras, y un rival que solape tu pelota conducida puede <b>robártela</b> — un disparo a toda velocidad es demasiado rápido para interceptarlo. Muévete con <b>WASD</b>/flechas, mantén <b>SHIFT</b> para <b>esprintar</b> con un tanque de resistencia que se vacía en segundos y se rellena despacio (si lo agotas del todo, te quedas sin aliento) — o en cualquier dispositivo <b>mantén</b> el puntero para dirigir (aléjalo para esprintar) y <b>toca rápido</b> para chutar. Las parejas de IA se reparten dinámicamente los <b>roles de atacante y defensor</b>, regatean hacia las esquinas, hacen desmarques de apoyo y gestionan su propia resistencia. Gana el primero en marcar 3 goles dentro del <b>reloj de 2 minutos</b>; un empate al final va a gol de oro.",
+  "demo.pulse.label": "Pulso",
+  "demo.pulse.desc": "1100 hexágonos en gravedad cero, ciclando entre orden y caos. En una <b>figura</b>, cada cuerpo es empujado por resortes hacia su propio punto de una figura reticular: panal, triángulo, anillos concéntricos, una espiral de ángulo áureo, una malla de ondas plegada. Después un <b>pulso</b> — un campo de presión estacionario, con longitud de onda y fase sorteadas de nuevo cada vez — despedaza la figura, de modo que la siguiente se ensambla desde una dispersión distinta. El color sigue la velocidad, de frío a caliente. Cada figura y cada pulso es una única escritura de <code>body.force</code> por paso. <b>Haz clic</b> para soltar un círculo estático: el desvío del enjambre a su alrededor lo resuelven los contactos, y las figuras se recomponen contra los obstáculos que haya en medio.",
+  "demo.sumo-arena.label": "Arena de sumo",
+  "demo.sumo-arena.desc": "Todos contra todos de 10 jugadores por eliminación en una plataforma circular flotante: empuja a los demás fuera y sé el último en pie. Controlas el disco azul contra <b>9 luchadores IA</b> con conciencia del borde, selección de objetivos y su propio timing de embestida. Muévete con <b>WASD</b>/flechas y <b>SPACE</b>/<b>E</b> para <b>embestir</b> — o en cualquier dispositivo <b>mantén</b> el puntero/dedo para dirigir y <b>toca rápido</b> para embestir en esa dirección. La embestida es una acometida corta que manda volando a quien golpea (pierde el control mientras se tambalea, así que una embestida junto al borde es letal). Los empujones de contacto son puro momento de cuerpo rígido sobre discos rebotones y resbaladizos. Tras 10 segundos la arena empieza a <b>encogerse</b>, así que juega por el centro. Si caes, puedes ver cómo las IA terminan la trifulca.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -383,6 +393,16 @@
     "ai.recipes.body",
     "ai.cta",
     "features.p1",
-    "home.hero.tagline"
+    "home.hero.tagline",
+    "demo.dodgeball.label",
+    "demo.dodgeball.desc",
+    "demo.kickoff.label",
+    "demo.kickoff.desc",
+    "demo.pulse.label",
+    "demo.pulse.desc",
+    "demo.sumo-arena.label",
+    "demo.sumo-arena.desc",
+    "tag.Forces",
+    "tag.Generative"
   ]
 }

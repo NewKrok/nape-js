@@ -30,11 +30,28 @@ const PLAYER_SPEED = 190;
 const CONTROL_BLEND = 0.16;            // soft acceleration → shoves carry through
 const PLAYER_DRAG = 0.96;
 
+// Sprint & stamina — same scheme as the kickoff demo: SHIFT (or pushing the
+// pointer far from your puck) sprints on a tank that burns in ~2.5s and
+// refills in ~6s; draining it fully leaves you winded until it's back to 30%.
+const SPRINT_MULT = 1.45;
+const STAMINA_DRAIN = 1 / 150;
+const STAMINA_REGEN = 1 / 360;
+const WINDED_RECOVER = 0.3;
+const TIRED_SPEED_FLOOR = 0.85;        // base speed multiplier at empty stamina
+const SPRINT_POINTER_DIST = 150;       // touch scheme: push the finger far = sprint
+
 // Balls
 const BALL_COUNT = 4;
 const BALL_R = 9;
 const BALL_DRAG = 0.987;               // floor friction — deep throws die mid-court
 const BALL_MAX_SPEED = 900;
+
+// Ball decay — the court bleeds ammo: past each interval one FREE ball is
+// doomed (blinks, then drains for good), never below BALL_MIN. Scarcity
+// forces engagements late in the round instead of hoarding standoffs.
+const BALL_DECAY_INTERVAL = 20;        // seconds of play per removal
+const BALL_DECAY_WARN = 90;            // blink frames before it vanishes
+const BALL_MIN = 1;
 
 // Throw
 const THROW_SPEED = 700;
@@ -226,6 +243,10 @@ function spawnPlayer(idx) {
     throwCd: 0,
     grabCd: 0,
     holdT: 0,             // frames spent carrying the current ball (AI hoard cap)
+    // Sprint & stamina
+    stamina: 1,
+    winded: false,
+    sprinting: false,
     // Facing — a carried ball rides here; a blind throw fires this way.
     faceX: team === 0 ? 1 : -1,
     faceY: 0,
@@ -238,6 +259,17 @@ function spawnPlayer(idx) {
     aimJitter: rand(0.03, 0.14),      // radians of throw scatter
     reactDist: rand(AI_REACT_MIN, AI_REACT_MAX), // how early incoming fire is dodged
     dodgeSide: Math.random() < 0.5 ? 1 : -1,     // preferred side for dead-on threats
+    // Dodge commitment — the threat test is a hard threshold, so on the
+    // boundary it flickers on/off every frame and the puck twitches
+    // forward/back. Once triggered, the sidestep is held for a few frames.
+    dodgeT: 0,
+    dodgeX: 0,
+    dodgeY: 0,
+    // Armed-advance depth offset from the line — rolled per possession, NOT
+    // per frame (a per-frame rand made the steer target jump through the
+    // puck and the facing flip wildly).
+    pressX: rand(40, 150),
+    chaseBall: null,      // committed loose-ball target (sticky, see tickAI)
     wanderPhase: rand(0, Math.PI * 2),
     wanderFreq: rand(0.012, 0.03),
   };
@@ -258,7 +290,16 @@ function spawnBall(idx) {
   body.shapes.add(shape);
   body.isBullet = true; // throws are fast enough to tunnel a puck otherwise
   body.space = _space;
-  return { body, holder: null, liveTeam: -1, graceT: 0, graceBit: 0, trail: [] };
+  return {
+    body,
+    holder: null,
+    liveTeam: -1,
+    graceT: 0,
+    graceBit: 0,
+    trail: [],
+    doomT: 0,      // >0: blinking, about to drain (frames left)
+    gone: false,   // drained — body out of the space until next round
+  };
 }
 
 function placeRound() {
@@ -271,8 +312,14 @@ function placeRound() {
     p.throwCd = 0;
     p.grabCd = 0;
     p.holdT = 0;
+    p.stamina = 1;
+    p.winded = false;
+    p.sprinting = false;
     p.faceX = p.team === 0 ? 1 : -1;
     p.faceY = 0;
+    p.dodgeT = 0;
+    p.pressX = rand(40, 150);
+    p.chaseBall = null;
   }
   for (let i = 0; i < _balls.length; i++) {
     const b = _balls[i];
@@ -281,6 +328,10 @@ function placeRound() {
     b.graceT = 0;
     b.graceBit = 0;
     b.trail = [];
+    b.doomT = 0;
+    b.gone = false;
+    b.body.userData._hidden = false;
+    if (!b.body.space) b.body.space = _space; // revive drained balls
     setBallMask(b, 0);
     b.body.position = new Vec2(BALL_SPOTS[i].x, BALL_SPOTS[i].y);
     b.body.velocity = new Vec2(0, 0);
@@ -383,6 +434,7 @@ function eliminate(p) {
 // reaches its victim on the same frame it grazes a wall still counts.
 function tickLiveBalls() {
   for (const b of _balls) {
+    if (b.gone) continue;
     // Thrower-immunity countdown (independent of live state — a dropped
     // grace mask must restore even if the ball dies instantly on a wall).
     if (b.graceT > 0 && !b.holder) {
@@ -413,6 +465,50 @@ function tickLiveBalls() {
       by < COURT_T + BALL_R + WALL_DEAD_PAD || by > COURT_B - BALL_R - WALL_DEAD_PAD;
     if (touchedWall || Math.hypot(v.x, v.y) < DEAD_SPEED) b.liveTeam = -1;
   }
+}
+
+// ── Ball decay ───────────────────────────────────────────────────────────
+// Past every BALL_DECAY_INTERVAL of round clock, one FREE dead ball is doomed:
+// it stops being grabbable, blinks for BALL_DECAY_WARN frames, then leaves the
+// space for the rest of the round. Held and live balls are never taken, so a
+// due removal simply waits until something is loose again.
+function tickBallDecay() {
+  for (const b of _balls) {
+    if (b.gone || b.doomT <= 0) continue;
+    if (--b.doomT <= 0) {
+      b.gone = true;
+      b.body.userData._hidden = false;
+      _sparks.push({ x: b.body.position.x, y: b.body.position.y, t: 14 });
+      b.body.space = null;
+      continue;
+    }
+    // Blink, faster on the last beats — hides the body in the 3d/pixi
+    // renderers too (they honor userData._hidden).
+    b.body.userData._hidden = (Math.floor(_frame / (b.doomT > 30 ? 5 : 3)) & 1) === 1;
+  }
+
+  const due = Math.floor(_roundClock / (BALL_DECAY_INTERVAL * 60));
+  let goneOrDoomed = 0;
+  for (const b of _balls) if (b.gone || b.doomT > 0) goneOrDoomed++;
+  if (goneOrDoomed >= due) return;
+  if (_balls.length - goneOrDoomed <= BALL_MIN) return;
+
+  // Doom the free ball farthest from every standing player — the least
+  // contested one, so ammo is never yanked out of a live scramble.
+  let victim = null, bestD = -1;
+  for (const b of _balls) {
+    if (b.gone || b.doomT > 0 || b.holder || b.liveTeam >= 0) continue;
+    let near = Infinity;
+    for (const p of _players) {
+      if (!p.alive) continue;
+      near = Math.min(near, Math.hypot(
+        p.body.position.x - b.body.position.x,
+        p.body.position.y - b.body.position.y,
+      ));
+    }
+    if (near > bestD) { bestD = near; victim = b; }
+  }
+  if (victim) victim.doomT = BALL_DECAY_WARN;
 }
 
 // ── Grab / carry ─────────────────────────────────────────────────────────
@@ -446,7 +542,7 @@ function tickGrab() {
   // player. Near-ties go to the human — the AI teammate snatching your
   // pickup feels terrible.
   for (const b of _balls) {
-    if (b.holder || b.liveTeam >= 0) continue;
+    if (b.holder || b.liveTeam >= 0 || b.gone || b.doomT > 0) continue;
     const v = b.body.velocity;
     if (Math.hypot(v.x, v.y) > GRAB_MAX_BALL_SPEED) continue;
     const bx = b.body.position.x, by = b.body.position.y;
@@ -461,6 +557,7 @@ function tickGrab() {
       b.holder = best;
       b.liveTeam = -1;
       best.holdT = 0;
+      best.pressX = rand(40, 150); // fresh advance depth for this possession
       setBallMask(b, best.groupBit);
     }
   }
@@ -481,10 +578,26 @@ function tickGrab() {
   }
 }
 
+// ── Sprint & stamina ─────────────────────────────────────────────────────
+function tickStamina(p, wantSprint) {
+  if (p.winded && p.stamina >= WINDED_RECOVER) p.winded = false;
+  p.sprinting = wantSprint && !p.winded && p.stamina > 0;
+  if (p.sprinting) {
+    p.stamina = Math.max(0, p.stamina - STAMINA_DRAIN);
+    if (p.stamina === 0) p.winded = true;
+  } else {
+    p.stamina = Math.min(1, p.stamina + STAMINA_REGEN);
+  }
+}
+
 // ── Per-player movement ──────────────────────────────────────────────────
 function applyControl(p, dirX, dirY) {
-  const tvx = dirX * p.speed;
-  const tvy = dirY * p.speed;
+  // Tired legs are slower legs, sprinting ones much faster.
+  const eff = p.speed
+    * (p.sprinting ? SPRINT_MULT : 1)
+    * (TIRED_SPEED_FLOOR + (1 - TIRED_SPEED_FLOOR) * p.stamina);
+  const tvx = dirX * eff;
+  const tvy = dirY * eff;
   const v = p.body.velocity;
   p.body.velocity = new Vec2(
     v.x + (tvx - v.x) * CONTROL_BLEND,
@@ -537,7 +650,9 @@ function tickAI(p) {
   // 1) Incoming fire trumps everything: step off the ball's flight line.
   const threat = scanThreat(p);
   let tx, ty;
+  let dodging = false;
   if (threat) {
+    dodging = true;
     const v = threat.body.velocity;
     const sp = Math.hypot(v.x, v.y) || 1;
     const dirX = v.x / sp, dirY = v.y / sp;
@@ -554,6 +669,16 @@ function tickAI(p) {
     }
     tx = px + lx * DODGE_STEP;
     ty = py + ly * DODGE_STEP;
+    p.dodgeT = 12;
+    p.dodgeX = tx;
+    p.dodgeY = ty;
+  } else if (p.dodgeT > 0) {
+    // Finish the committed sidestep even though the threat test just went
+    // quiet — snapping straight back to the goal is the forward/back twitch.
+    dodging = true;
+    p.dodgeT--;
+    tx = p.dodgeX;
+    ty = p.dodgeY;
   } else if (holding) {
     // 2) Carrying: while the ball is still arming, fall back from the line
     // (the classic retreat); once armed, press right up to it (or, with the
@@ -568,7 +693,7 @@ function tickAI(p) {
         tx = p.team === 0 ? CX - half * 0.5 : CX + half * 0.5;
         ty = py;
       } else if (fenceUp()) {
-        tx = p.team === 0 ? CX - rand(40, 150) : CX + rand(40, 150);
+        tx = p.team === 0 ? CX - p.pressX : CX + p.pressX;
         ty = tty;
       } else {
         tx = ttx; ty = tty;
@@ -612,7 +737,7 @@ function tickAI(p) {
     // especially — is clearly first to it.
     let ball = null, ballD = Infinity;
     for (const b of _balls) {
-      if (b.holder || b.liveTeam >= 0) continue;
+      if (b.holder || b.liveTeam >= 0 || b.gone || b.doomT > 0) continue;
       const bx = b.body.position.x;
       const onOurSide = p.team === 0 ? bx < CX + BALL_R : bx > CX - BALL_R;
       if (fenceUp() && !onOurSide) continue;
@@ -629,6 +754,21 @@ function tickAI(p) {
       if (mateD < d - 25) continue; // theirs — pick another or hover
       ball = b; ballD = d;
     }
+
+    // Sticky chase: with decay down to one loose ball, the mate-yield margin
+    // above flips the claim between two teammates every frame — each snaps
+    // between the ball and its hover lane. Once committed, keep the ball
+    // while it stays chaseable unless a clearly better one appears.
+    const chase = p.chaseBall;
+    const chaseValid = chase && !chase.gone && chase.doomT === 0 &&
+      !chase.holder && chase.liveTeam < 0 &&
+      (!fenceUp() ||
+        (p.team === 0 ? chase.body.position.x < CX + BALL_R : chase.body.position.x > CX - BALL_R));
+    if (chaseValid && ball !== chase) {
+      const chaseD = Math.hypot(chase.body.position.x - px, chase.body.position.y - py);
+      if (!(ball && ballD < chaseD - 60)) ball = chase;
+    }
+    p.chaseBall = ball;
 
     if (ball) {
       tx = ball.body.position.x;
@@ -683,15 +823,36 @@ function tickAI(p) {
   let dx = tx - px, dy = ty - py;
   const dd = Math.hypot(dx, dy);
   if (dd > 4) { dx /= dd; dy /= dd; } else { dx = 0; dy = 0; }
+  // Ease into the steer target instead of sprinting through it — the
+  // overshoot-and-return around a reached target flips the facing every few
+  // frames. The braking radius grows with current speed so a sprint arrival
+  // sheds pace early enough. Never eased mid-dodge: clearing the flight line
+  // is urgent.
+  const cv = p.body.velocity;
+  const brakeR = 30 + Math.hypot(cv.x, cv.y) * 0.12;
+  const ease = dodging ? 1 : Math.min(1, dd / brakeR);
+
+  // Sprint tactics: a dodge is always worth the legs; a fence-down melee is
+  // life-or-death footwork; a long run to loose ammo earns a burst — with
+  // hysteresis, so the burst doesn't flicker at the range boundary and shuts
+  // off before arrival instead of overshooting the ball at full tilt. Never
+  // dip an already-low tank for mere convenience — dodges need the reserve.
+  let wantSprint;
+  if (dodging) wantSprint = true;
+  else if (!fenceUp()) wantSprint = true;
+  else if (!holding) wantSprint = dd > (p.sprinting ? 100 : 180);
+  else wantSprint = false;
+  if (!dodging && !p.sprinting && p.stamina < 0.35) wantSprint = false;
+  tickStamina(p, wantSprint);
 
   // Small wander so the AI reads as alive, not laser-guided — suppressed
   // while dodging, where a wobble can wander back into the flight line.
   p.wanderPhase += p.wanderFreq;
-  const wob = threat ? 0 : Math.sin(p.wanderPhase) * 0.2;
+  const wob = dodging ? 0 : Math.sin(p.wanderPhase) * 0.2;
   const wx = dx - dy * wob;
   const wy = dy + dx * wob;
   const wm = Math.hypot(wx, wy) || 1;
-  applyControl(p, wx / wm, wy / wm);
+  applyControl(p, (wx / wm) * ease, (wy / wm) * ease);
 }
 
 // ── Round flow ───────────────────────────────────────────────────────────
@@ -726,6 +887,7 @@ function tickEffects() {
   _fades = _fades.filter((f) => f.t < 40);
 
   for (const b of _balls) {
+    if (b.gone) { b.trail.length = 0; continue; }
     const v = b.body.velocity;
     if (b.liveTeam >= 0 && Math.hypot(v.x, v.y) > 240) {
       b.trail.push({ x: b.body.position.x, y: b.body.position.y });
@@ -832,6 +994,7 @@ function drawPlayer(ctx, p) {
 }
 
 function drawBall(ctx, b) {
+  if (b.gone || b.body.userData._hidden) return; // drained, or mid-doom blink
   // Motion streak in the throwing team's color while the ball is live.
   const live = b.liveTeam >= 0;
   const trailColor = live ? TEAM_COLORS[b.liveTeam] : "#e6edf3";
@@ -859,6 +1022,21 @@ function drawBall(ctx, b) {
   ctx.arc(x + Math.cos(rot) * BALL_R * 0.45, y + Math.sin(rot) * BALL_R * 0.45, 2, 0, Math.PI * 2);
   ctx.fillStyle = "#57606a";
   ctx.fill();
+}
+
+function drawStaminaBars(ctx) {
+  // Tiny tank readout under every puck — you can see who's gassed.
+  if (_phase === "over") return;
+  const w = 26, h = 3;
+  for (const p of _players) {
+    if (!p.alive) continue;
+    const x = p.body.position.x - w / 2;
+    const y = p.body.position.y + PLAYER_R + 6;
+    ctx.fillStyle = "rgba(13,17,23,0.6)";
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = p.winded ? "#f85149" : p.sprinting ? "#d29922" : "#3fb950";
+    ctx.fillRect(x, y, w * p.stamina, h);
+  }
 }
 
 function drawFades(ctx) {
@@ -1012,8 +1190,8 @@ function drawPointerUI(ctx) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const hint = _isTouch
-      ? "Hold to move · grab a ball, then tap where to throw — no catching, dodge!"
-      : "WASD move · SPACE throws at the nearest red (tap to aim free) — no catching, dodge!";
+      ? "Hold to move (push far to sprint) · grab a ball, then tap where to throw — dodge!"
+      : "WASD move · SHIFT sprint · SPACE throws at the nearest red (tap to aim free) — dodge!";
     ctx.fillText(hint, CX, 56);
   }
 }
@@ -1073,7 +1251,7 @@ export default {
   label: "Dodgeball",
   tags: ["Gameplay", "AI", "Momentum", "Zero Gravity", "Mobile"],
   desc:
-    "3v3 top-down dodgeball, best of 3 rounds. The center line is a wall only for <b>players</b> — a collision-filtered fence pucks can't cross but balls fly straight over. Four balls start on the line: <b>rush</b>, walk into one to <b>pick it up</b>, carry it a beat to <b>arm</b> it (the classic fall-back-before-you-throw rule), then <b>throw</b> — <b>SPACE</b>/<b>E</b> auto-aims the nearest red, a <b>tap</b> throws exactly where you tap. A thrown ball is <b>live</b> (it wears the thrower's color) until it touches a wall or slows down; a live ball that touches an opponent <b>knocks them out</b>. There is <b>no catching</b> — when a ball comes at you, <b>dodge</b>. Move with <b>WASD</b>/arrows, or on any device <b>hold</b> the pointer to steer and <b>quick-tap</b> to throw. Every AI rolls its own <b>reaction distance, lead-aim skill, throw scatter and aggression</b>, so reds dodge your throws sideways off the flight line and lead yours. Stall too long and at 45s <b>the line drops</b> — the fence body leaves the space and the round turns into a point-blank melee. Last team standing takes the round; first to 2 rounds wins.",
+    "3v3 top-down dodgeball, best of 3 rounds. The center line is a wall only for <b>players</b> — a collision-filtered fence pucks can't cross but balls fly straight over. Four balls start on the line: <b>rush</b>, walk into one to <b>pick it up</b>, carry it a beat to <b>arm</b> it (the classic fall-back-before-you-throw rule), then <b>throw</b> — <b>SPACE</b>/<b>E</b> auto-aims the nearest red, a <b>tap</b> throws exactly where you tap. A thrown ball is <b>live</b> (it wears the thrower's color) until it touches a wall or slows down; a live ball that touches an opponent <b>knocks them out</b>. There is <b>no catching</b> — when a ball comes at you, <b>dodge</b>. The court bleeds ammo too: every 20s <b>one loose ball drains away</b> for good (it blinks first), down to a single ball. Move with <b>WASD</b>/arrows, hold <b>SHIFT</b> to <b>sprint</b> on a stamina tank that drains in seconds and refills slowly — or on any device <b>hold</b> the pointer to steer (push it far to sprint) and <b>quick-tap</b> to throw. Every AI rolls its own <b>reaction distance, lead-aim skill, throw scatter and aggression</b>, so reds dodge your throws sideways off the flight line and lead yours. Stall too long and at 45s <b>the line drops</b> — the fence body leaves the space and the round turns into a point-blank melee. Last team standing takes the round; first to 2 rounds wins.",
   walls: false,
   workerCompatible: false,
 
@@ -1137,7 +1315,7 @@ export default {
       p.body.velocity = new Vec2(v.x * PLAYER_DRAG, v.y * PLAYER_DRAG);
     }
     for (const b of _balls) {
-      if (b.holder) continue; // the carry pull overrides drag anyway
+      if (b.holder || b.gone) continue; // the carry pull overrides drag anyway
       const v = b.body.velocity;
       let vx = v.x * BALL_DRAG, vy = v.y * BALL_DRAG;
       const sp = Math.hypot(vx, vy);
@@ -1156,7 +1334,19 @@ export default {
       }
       computeMoveDir();
       const human = humanPlayer();
-      if (human.alive) applyControl(human, _moveDir.x, _moveDir.y);
+      if (human.alive) {
+        const moving = _moveDir.x !== 0 || _moveDir.y !== 0;
+        let wantSprint = moving && (_keys["ShiftLeft"] || _keys["ShiftRight"]);
+        if (!wantSprint && moving && _pointer.active) {
+          // Touch scheme: pushing the finger far from your puck means sprint.
+          wantSprint = Math.hypot(
+            _pointer.x - human.body.position.x,
+            _pointer.y - human.body.position.y,
+          ) > SPRINT_POINTER_DIST;
+        }
+        tickStamina(human, wantSprint);
+        applyControl(human, _moveDir.x, _moveDir.y);
+      }
       // Frame-start velocity snapshot for the AI lead-aim (see tickAI).
       for (const p of _players) {
         const v = p.body.velocity;
@@ -1186,6 +1376,7 @@ export default {
     tickGrab();
     if (_phase === "play") {
       tickLiveBalls();
+      tickBallDecay();
       checkRoundEnd();
     }
     tickEffects();
@@ -1232,6 +1423,7 @@ export default {
   // calls this after render(); the three.js/pixi adapters call it after
   // their own body rendering, so the scoreboard stays visible everywhere.
   render3dOverlay(ctx, space, W, H) {
+    drawStaminaBars(ctx);
     drawFades(ctx);
     drawSparks(ctx);
     drawPlayerMarker(ctx);
