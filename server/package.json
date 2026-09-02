@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "@newkrok/nape-js": "^3.19.0",
-    "ws": "^8.18.0"
+    "ws": "^8.21.0"
   }
 }
