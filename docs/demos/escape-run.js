@@ -7,14 +7,23 @@ import {
 // ---------------------------------------------------------------------------
 // Escape Run — homage to the Warcraft 3 custom-map "escape" genre
 // (Run Kitty Run, Impossible Escape, …). One touch from a patrol kills;
-// checkpoints are circles of power; the exit portal waits behind a locked
-// gate whose key is guarded in a dead-end alcove.
+// checkpoints are circles of power; the exit portal waits behind a gate whose
+// key must be forged from three shards, one stashed off the fast line in each
+// hazard section — so the loop cannot be run start-to-finish in one pass.
 //
 // Four sections, one loop around the map:
-//   1. Patrol Hall   — weave down between sweeping blades
-//   2. Gate Run      — timed portcullises that crush the slow
-//   3. Frozen Ascent — ice floor: you steer, the ice decides
-//   4. Crusher Row   — kinematic pistons shove you into lava; key + gate
+//   1. Patrol Hall   — interleaved counter-phase sweeps + a roaming stalker
+//   2. Gate Run      — timed portcullises, punch-up spikes, crumbling plates
+//   3. Frozen Ascent — ice floor: you steer, the ice decides; a stalker too
+//   4. Crusher Row   — pistons shove you into lava or crush you flat; spikes
+//
+// Hazard vocabulary, cheapest to nastiest:
+//   patrol   analytic path, perfectly periodic — learnable rhythm
+//   gate     periodic solid body, toggled in/out of the Space
+//   piston   kinematic contact that genuinely pushes you into lava
+//   spike    periodic sensor, telegraphed before it can bite
+//   plate    collapses under dwell time — punishes hesitation, re-forms on death
+//   hunter   steers at you inside its aggro ring, but is slower than you
 // ---------------------------------------------------------------------------
 
 const TILE = 50;
@@ -28,7 +37,7 @@ const WORLD_H = MAP_ROWS * TILE; // 1000
 // defined in the data tables below — the map only carries static terrain.
 const MAP = [
   "####################################",
-  "#.....#...........LL..LL..LL.......#",
+  "#.....#...........LL..LL..LL..LL...#",
   "#.....#............................#",
   "#.....#.......................##III#",
   "#..####.......................IIIII#",
@@ -52,21 +61,29 @@ const MAP = [
 // Progression order matters: dying returns you to the LAST one touched.
 // Grid coords; world position is the tile centre.
 const CHECKPOINTS = [
-  { gx: 3, gy: 2, hint: "Slip past the patrols — reach the first circle of power" },
-  { gx: 3, gy: 17, hint: "Time the gates — sprint through while they are raised" },
-  { gx: 32, gy: 17, hint: "The ice gives no grip — drift the switchbacks" },
-  { gx: 32, gy: 2, hint: "Crushers ahead — steal the key from its guardian" },
+  { gx: 3, gy: 2, hint: "Weave the sweeps — and the shard is BEHIND you, at the top of the hall" },
+  { gx: 3, gy: 17, hint: "Gates, spikes and crumbling plates — do not stand still" },
+  { gx: 32, gy: 17, hint: "The ice gives no grip — drift the switchbacks, a stalker hunts here" },
+  { gx: 32, gy: 2, hint: "Crushers ahead — the last shard sits in the guarded alcove" },
 ];
-const HINT_KEYED = "The gate is open — run for the portal!";
+const HINT_KEYED = "Key forged, gate open — run for the portal!";
 const CHECKPOINT_R = 26;
 
 const EXIT_POS = { x: 8 * TILE + 25, y: 2 * TILE + 25 };
 const EXIT_R = 30;
 
-const KEY_POS = { x: 14 * TILE + 25, y: 385 };
-const KEY_R = 16;
+// ── Key shards ───────────────────────────────────────────────────────────
+// The gate takes three shards, one per hazard section, each parked off the
+// fast line: you cannot run the loop once and leave. Every detour doubles
+// back through hazards you already passed, which is the whole point.
+const SHARDS = [
+  { x: 275, y: 90, section: "Patrol Hall" },   // top of the hall, above the sweeps
+  { x: 1600, y: 930, section: "Gate Run" },    // far corner past the last gate
+  { x: 725, y: 385, section: "Crusher Row" },  // the old guarded alcove
+];
+const SHARD_R = 16;
 
-// Locked gate before the exit chamber (opens when the key is picked up).
+// Locked gate before the exit chamber (opens once all shards are held).
 const DOOR_RECT = { x: 525, y: 150, w: 16, h: 200 };
 
 // ── Patrols ──────────────────────────────────────────────────────────────
@@ -76,24 +93,55 @@ const DOOR_RECT = { x: 525, y: 150, w: 16, h: 200 };
 // Positions are driven analytically from the section clock, so patrols are
 // perfectly periodic and deterministic — the player learns the rhythm.
 const PATROLS = [
-  // Section 1 — Patrol Hall (horizontal sweeps between the wall stubs)
-  { type: "line", x0: 75, y0: 300, x1: 275, y1: 300, period: 2.6, phase: 0.0, r: 14 },
-  { type: "line", x0: 75, y0: 450, x1: 275, y1: 450, period: 2.2, phase: 0.5, r: 14 },
-  { type: "line", x0: 75, y0: 600, x1: 275, y1: 600, period: 2.6, phase: 0.25, r: 14 },
-  { type: "line", x0: 75, y0: 725, x1: 275, y1: 725, period: 2.0, phase: 0.7, r: 14 },
-  // Section 2 — Gate Run (orbits between the portcullises)
-  { type: "orbit", cx: 425, cy: 850, r: 15, orbitR: 62, period: 3.0, phase: 0.0, dir: 1 },
-  { type: "orbit", cx: 725, cy: 850, r: 15, orbitR: 62, period: 2.6, phase: 0.3, dir: -1 },
-  { type: "line", x0: 1025, y0: 780, x1: 1025, y1: 920, period: 1.8, phase: 0.0, r: 14 },
-  { type: "orbit", cx: 1325, cy: 850, r: 15, orbitR: 62, period: 2.8, phase: 0.6, dir: 1 },
-  // Section 3 — Frozen Ascent (sweeps you must drift around)
-  { type: "line", x0: 1522, y0: 700, x1: 1728, y1: 700, period: 2.4, phase: 0.0, r: 14 },
-  { type: "line", x0: 1522, y0: 550, x1: 1728, y1: 550, period: 2.0, phase: 0.5, r: 14 },
-  { type: "line", x0: 1522, y0: 400, x1: 1728, y1: 400, period: 2.4, phase: 0.25, r: 14 },
-  { type: "orbit", cx: 1625, cy: 250, r: 14, orbitR: 52, period: 2.4, phase: 0.0, dir: -1 },
-  // Section 4 — Crusher Row (door sentry + key guardian)
-  { type: "line", x0: 625, y0: 80, x1: 625, y1: 220, period: 1.6, phase: 0.0, r: 14 },
-  { type: "orbit", cx: 725, cy: 350, r: 12, orbitR: 45, period: 2.8, phase: 0.0, dir: 1 },
+  // Section 1 — Patrol Hall. Two interleaved sweeps per corridor band at
+  // opposite phase: the safe pocket is the moving gap between them, so you
+  // cannot simply hug one wall and walk down.
+  // Wide bands (cols 1-5). One blade per band, alternating direction, at a
+  // deliberately awkward period ratio so the pattern takes several cycles to
+  // repeat — you cannot ride one rhythm all the way down.
+  //
+  // A counter-phase PAIR inside one band was tried and measured as a wall:
+  // two 28px blades in a 50px band leave less than a kitty's width between
+  // them. Diagonal blades that CROSS bands do the same job safely — they
+  // narrow the pocket without ever sealing it.
+  { type: "line", x0: 75, y0: 285, x1: 275, y1: 285, period: 1.7, phase: 0.0, r: 14 },
+  { type: "line", x0: 275, y0: 440, x1: 75, y1: 440, period: 1.45, phase: 0.35, r: 14 },
+  { type: "line", x0: 75, y0: 600, x1: 275, y1: 600, period: 1.6, phase: 0.7, r: 14 },
+  { type: "line", x0: 75, y0: 775, x1: 375, y1: 775, period: 1.8, phase: 0.2, r: 14 },
+  // One diagonal drifter, in the middle band only. Three of them (one per
+  // band) plus the band sweeps and the neck blades left NO standing-still
+  // survival anywhere in the hall — measured under a second at every sampled
+  // spot, which is past "hard" and into "unreadable".
+  { type: "line", x0: 270, y0: 415, x1: 90, y1: 480, period: 2.9, phase: 0.15, r: 13 },
+  // The serpentine's forced turns need care: a neck is only two tiles (100px)
+  // wide, so a blade centred in it leaves 12px either side for a 24px kitty —
+  // measured as a stand-still kill. These run lengthwise but hug ONE side of
+  // the neck, leaving a real lane on the other: you commit to the far side and
+  // time the pass, rather than waiting for a gap that never comes.
+  { type: "line", x0: 68, y0: 470, x1: 68, y1: 580, period: 1.9, phase: 0.0, r: 13 },   // row10 neck, left lane
+  { type: "line", x0: 282, y0: 620, x1: 282, y1: 730, period: 1.9, phase: 0.35, r: 13 }, // row13 neck, right lane
+  { type: "line", x0: 218, y0: 320, x1: 218, y1: 430, period: 2.0, phase: 0.6, r: 13 },  // row7 neck, left lane
+  { type: "line", x0: 132, y0: 175, x1: 132, y1: 285, period: 2.0, phase: 0.2, r: 13 },  // row4 neck, right lane
+  // Section 2 — Gate Run. Orbits sit in front of each portcullis, so the
+  // timing window is "gate open AND orbit clear", not just "gate open".
+  { type: "orbit", cx: 425, cy: 850, r: 15, orbitR: 74, period: 2.2, phase: 0.0, dir: 1 },
+  { type: "orbit", cx: 725, cy: 850, r: 15, orbitR: 74, period: 2.0, phase: 0.3, dir: -1 },
+  { type: "line", x0: 1025, y0: 770, x1: 1025, y1: 930, period: 1.4, phase: 0.0, r: 14 },
+  { type: "orbit", cx: 1325, cy: 850, r: 15, orbitR: 74, period: 2.1, phase: 0.6, dir: 1 },
+  { type: "orbit", cx: 1075, cy: 875, r: 12, orbitR: 34, period: 1.6, phase: 0.5, dir: -1 },
+  // Section 3 — Frozen Ascent. Sweeps you must drift around, plus a slow
+  // orbit at the top of the switchbacks where grip is worst.
+  { type: "line", x0: 1522, y0: 760, x1: 1728, y1: 760, period: 2.0, phase: 0.0, r: 14 },
+  { type: "line", x0: 1650, y0: 675, x1: 1530, y1: 675, period: 1.9, phase: 0.4, r: 14 },
+  { type: "line", x0: 1522, y0: 520, x1: 1728, y1: 520, period: 1.7, phase: 0.15, r: 14 },
+  { type: "line", x0: 1728, y0: 400, x1: 1522, y1: 400, period: 1.9, phase: 0.55, r: 14 },
+  { type: "orbit", cx: 1640, cy: 245, r: 14, orbitR: 44, period: 2.0, phase: 0.0, dir: -1 },
+  { type: "orbit", cx: 1640, cy: 245, r: 12, orbitR: 22, period: 1.5, phase: 0.5, dir: 1 },
+  // Section 4 — Crusher Row (door sentry + key guardian + shard alcoves)
+  { type: "line", x0: 625, y0: 70, x1: 625, y1: 230, period: 1.3, phase: 0.0, r: 14 },
+  { type: "orbit", cx: 725, cy: 350, r: 12, orbitR: 45, period: 2.2, phase: 0.0, dir: 1 },
+  { type: "line", x0: 1480, y0: 215, x1: 1700, y1: 215, period: 1.8, phase: 0.2, r: 13 },
+  { type: "orbit", cx: 1250, cy: 175, r: 12, orbitR: 42, period: 2.0, phase: 0.25, dir: -1 },
 ];
 
 // ── Timed portcullises (Section 2) ───────────────────────────────────────
@@ -101,34 +149,102 @@ const PATROLS = [
 // player kills ("crushed"). While closed the gate is a solid static body.
 const GATES = [
   { x: 575, y: 850, phase: 0.0 },
-  { x: 875, y: 850, phase: 1.33 },
-  { x: 1175, y: 850, phase: 2.67 },
+  { x: 875, y: 850, phase: 1.05 },
+  { x: 1175, y: 850, phase: 2.1 },
+  { x: 1475, y: 850, phase: 0.5 },
 ];
 const GATE_W = 16;
 const GATE_H = 200;
-const GATE_PERIOD = 4.0; // seconds for a full open+closed cycle
-const GATE_OPEN = 2.2;   // seconds of the cycle spent open
-const GATE_WARN = 0.7;   // final seconds of the open phase blink a warning
+const GATE_PERIOD = 3.1; // seconds for a full open+closed cycle
+const GATE_OPEN = 1.35;  // seconds of the cycle spent open
+const GATE_WARN = 0.45;  // final seconds of the open phase blink a warning
 
 // ── Crusher pistons (Section 4) ──────────────────────────────────────────
 // Kinematic 100×100 blocks oscillating vertically across the corridor.
 // They push with real contacts — get caught on the moving side and you are
 // shoved into the lava strip above or the lava pocket below.
+//
+// Geometry matters here. The corridor's free span is y 50…250 (rows 1-4), so
+// its true mid-line is y=150 — and a 100px block travelling ±50px from there
+// closes flush against each wall without ever entering it. Overshooting that
+// (an earlier ±88 from a mid-line of 175) drove the block 13px into the wall
+// above and 63px into the wall below, which let the solver squeeze a stalled
+// player 26px INSIDE the wall and leave them alive in there. A flush close is
+// the honest version: no room left means you are crushed, and CRUSH_MARGIN
+// below turns that into a clean death rather than a wall-squeeze.
 const PISTONS = [
   { cx: 950, phase: 0.0 },
-  { cx: 1150, phase: 0.33 },
-  { cx: 1350, phase: 0.66 },
+  { cx: 1100, phase: 0.28 },
+  { cx: 1250, phase: 0.56 },
+  { cx: 1400, phase: 0.84 },
 ];
 const PISTON_SIZE = 100;
-const PISTON_MID = 175;  // corridor mid-line the piston oscillates around
-const PISTON_AMP = 75;   // ±75px → sweeps y 100 (rows 1-2) … 250 (rows 4-5)
-const PISTON_PERIOD = 3.2;
+const PISTON_MID = 150;  // true mid-line of the free corridor span (y 50…250)
+const PISTON_AMP = 50;   // ±50px → the block closes flush on each wall
+const PISTON_PERIOD = 2.3;
+
+// Crush detection. A player with less than this much clearance between a
+// piston face and the surface behind them is being crushed, not pushed — the
+// piston kills instead of pressing them into geometry.
+const CRUSH_MARGIN = 3;
+const CORRIDOR_TOP = 50;   // y of the Crusher Row ceiling (row 0 / row 1 line)
+const CORRIDOR_BOT = 250;  // y of its floor line (row 5)
+
+// ── Hunters (Sections 1 & 3) ─────────────────────────────────────────────
+// Unlike the analytic patrols, a hunter steers toward the player — but only
+// while the player is inside `aggro`, and it is slower than the kitty. It
+// always loses a straight footrace; it only kills you if you stall or let it
+// cut a corner. Outside aggro it drifts home, so a section restart is clean.
+const HUNTERS = [
+  { home: { x: 175, y: 470 }, speed: 96, aggro: 175, r: 15 },   // Patrol Hall mid
+  // Frozen Ascent. Toned down from speed 124 / aggro 260: on ice the player's
+  // steering authority is a fraction of normal (STEER_ICE vs STEER_NORMAL), so
+  // a leash that reads as "generous" on stone is nearly inescapable there —
+  // you cannot turn out of it. Slower than the hall's stalker, and a shorter
+  // leash, so there is always ice left to slide away across.
+  { home: { x: 1625, y: 620 }, speed: 88, aggro: 165, r: 15 },  // Frozen Ascent
+];
+const HUNTER_TURN = 0.055;   // velocity lerp — a wide turning circle
+const HUNTER_RETURN = 0.02;  // lazier lerp when drifting home
+
+// ── Spike rows (Sections 2 & 4) ──────────────────────────────────────────
+// Floor spikes that punch up on a cycle: retracted → telegraph → extended
+// (deadly) → retracted. Telegraph is the fair part: the plate rattles for
+// `SPIKE_TELL` seconds before anything can hurt you.
+const SPIKES = [
+  { x: 700, y: 800, w: 100, h: 34, phase: 0.0 },
+  { x: 1000, y: 800, w: 100, h: 34, phase: 0.9 },
+  { x: 1300, y: 900, w: 100, h: 34, phase: 1.8 },
+  { x: 700, y: 250, w: 90, h: 34, phase: 0.6 },
+  { x: 1250, y: 120, w: 90, h: 34, phase: 1.4 },
+];
+const SPIKE_PERIOD = 2.7;
+const SPIKE_TELL = 0.55;  // rattle window before the spikes bite
+const SPIKE_UP = 0.85;    // seconds spent extended and deadly
+
+// ── Collapsing floor plates (Section 2) ──────────────────────────────────
+// Step on one and it starts to crumble; after `PLATE_HOLD` seconds it drops
+// out and the hole is deadly. They re-form on respawn, never mid-run, so a
+// dithering player really can burn their own route away.
+// Only two, and both deliberately clear of every other hazard. A plate
+// promises "you have PLATE_HOLD seconds on this stone"; a blade sweeping over
+// it breaks that promise and reads as an instant, unexplained death. The two
+// big Gate Run orbits (x 425 and x 1325) each covered ~30% of a plate face,
+// and the Gate Run is too crowded to fit a third plate anywhere clear.
+const PLATES = [
+  { x: 950, y: 895, w: 90, h: 90 },   // mid-corridor, between gates 2 and 3
+  { x: 1580, y: 895, w: 90, h: 90 },  // on the run-up to the ice checkpoint
+];
+const PLATE_HOLD = 0.85;    // seconds of standing on it before it drops out
+const PLATE_RECOVER = 0.5;  // dwell decays at half speed once you step off
 
 // Lava sensor rects (match the 'L' tiles): strips along the top wall and
 // pockets under each piston's low position.
 const LAVA_RECTS = [
-  { x: 900, y: 50, w: 100, h: 50 }, { x: 1100, y: 50, w: 100, h: 50 }, { x: 1300, y: 50, w: 100, h: 50 },
-  { x: 900, y: 250, w: 100, h: 50 }, { x: 1100, y: 250, w: 100, h: 50 }, { x: 1300, y: 250, w: 100, h: 50 },
+  { x: 900, y: 50, w: 100, h: 50 }, { x: 1100, y: 50, w: 100, h: 50 },
+  { x: 1300, y: 50, w: 100, h: 50 }, { x: 1500, y: 50, w: 100, h: 50 },
+  { x: 900, y: 250, w: 100, h: 50 }, { x: 1100, y: 250, w: 100, h: 50 },
+  { x: 1300, y: 250, w: 100, h: 50 },
 ];
 
 // ── Player ───────────────────────────────────────────────────────────────
@@ -146,29 +262,37 @@ let _space = null;
 let _player = null;
 let _wallBody = null;
 let _doorBody = null;
-let _keyBody = null;
+let _shardBodies = [];    // parallel to SHARDS
 let _patrolBodies = [];   // parallel to PATROLS
 let _gateBodies = [];     // parallel to GATES
 let _gateClosed = [];     // current solid state per gate
 let _pistonBodies = [];   // parallel to PISTONS
+let _hunterBodies = [];   // parallel to HUNTERS
+let _spikeBodies = [];    // parallel to SPIKES — sensors toggled in and out
+let _spikeUp = [];        // current extended state per spike row
+let _plateBodies = [];    // parallel to PLATES — solid floor while intact
+let _plateHoleBodies = []; // deadly sensor revealed once a plate collapses
+let _plateTouched = [];   // seconds of contact so far, or -1 once collapsed
 
 let _cbPlayer = null;
 let _cbDeadly = null;
 let _cbCheckpoint = null;
-let _cbKey = null;
+let _cbShard = null;
 let _cbExit = null;
+let _cbPlate = null;
 
 let _time = 0;            // running clock (seconds) — drives every hazard
 let _runTime = 0;         // stopwatch shown on the HUD
 let _started = false;     // stopwatch starts on the first movement input
 let _deaths = 0;
 let _checkpointIdx = 0;   // last checkpoint reached (respawn target)
-let _hasKey = false;
+let _shardsHeld = [];     // parallel to SHARDS
 let _complete = false;
 let _invuln = 0;
 let _deathFlash = 0;      // frames of red overlay after dying
 let _cpFlash = 0;         // frames of green pulse after a new checkpoint
-let _keyFlash = 0;        // frames of gold pulse after grabbing the key
+let _keyFlash = 0;        // frames of gold pulse after grabbing a shard
+let _plateOnNow = -1;     // plate index the player is standing on this step
 
 const _keys = Object.create(null);
 let _onKeyDown = null;
@@ -178,7 +302,7 @@ let _pointerPos = { x: 0, y: 0 };
 
 // Listener callbacks fire mid-step, when the space can't be mutated — queue
 // consequences here and drain them from step().
-const _pending = { die: false, checkpoint: -1, key: false, exit: false, reset: false };
+const _pending = { die: false, checkpoint: -1, shard: -1, exit: false, reset: false };
 
 // ---------------------------------------------------------------------------
 // Tile helpers
@@ -225,6 +349,28 @@ function gateIsClosed(g, t) { return gatePhase(g, t) >= GATE_OPEN; }
 function gateWarning(g, t) {
   const f = gatePhase(g, t);
   return f >= GATE_OPEN - GATE_WARN && f < GATE_OPEN;
+}
+
+// Spike cycle: [0, SPIKE_TELL) rattling tell, [SPIKE_TELL, +SPIKE_UP)
+// extended and deadly, remainder retracted.
+function spikePhase(sp, t) {
+  let f = (t + sp.phase) % SPIKE_PERIOD;
+  if (f < 0) f += SPIKE_PERIOD;
+  return f;
+}
+function spikeIsUp(sp, t) {
+  const f = spikePhase(sp, t);
+  return f >= SPIKE_TELL && f < SPIKE_TELL + SPIKE_UP;
+}
+function spikeIsTelling(sp, t) { return spikePhase(sp, t) < SPIKE_TELL; }
+
+// How far out of the floor the spikes stand, 0..1 — drives the drawing only.
+function spikeExtension(sp, t) {
+  const f = spikePhase(sp, t);
+  if (f < SPIKE_TELL) return 0;
+  const up = f - SPIKE_TELL;
+  if (up < SPIKE_UP) return Math.min(1, up / 0.12);
+  return Math.max(0, 1 - (up - SPIKE_UP) / 0.18);
 }
 
 // ---------------------------------------------------------------------------
@@ -274,15 +420,19 @@ function buildWorld(space) {
   exit.userData._isZone = true;
   exit.space = space;
 
-  // Key.
-  _keyBody = new Body(BodyType.STATIC, new Vec2(KEY_POS.x, KEY_POS.y));
-  const keyShape = new Circle(KEY_R);
-  keyShape.sensorEnabled = true;
-  keyShape.cbTypes.add(_cbKey);
-  _keyBody.shapes.add(keyShape);
-  _keyBody.userData._colorIdx = 1;
-  _keyBody.userData._isZone = true;
-  _keyBody.space = space;
+  // Key shards — one sensor per shard, each tagged with its index.
+  _shardBodies = SHARDS.map((sh, i) => {
+    const b = new Body(BodyType.STATIC, new Vec2(sh.x, sh.y));
+    const shape = new Circle(SHARD_R);
+    shape.sensorEnabled = true;
+    shape.cbTypes.add(_cbShard);
+    b.shapes.add(shape);
+    b.userData._shardIdx = i;
+    b.userData._colorIdx = 1;
+    b.userData._isZone = true;
+    b.space = space;
+    return b;
+  });
 
   // Locked gate before the exit.
   _doorBody = new Body(BodyType.STATIC, new Vec2(DOOR_RECT.x, DOOR_RECT.y));
@@ -321,6 +471,61 @@ function buildWorld(space) {
     return b;
   });
 
+  // Hunters — kinematic sensor stalkers, steered from step().
+  _hunterBodies = HUNTERS.map((h) => {
+    const b = new Body(BodyType.KINEMATIC, new Vec2(h.home.x, h.home.y));
+    const shape = new Circle(h.r);
+    shape.sensorEnabled = true;
+    shape.cbTypes.add(_cbDeadly);
+    b.shapes.add(shape);
+    b.userData._colorIdx = 3;
+    b.space = space;
+    return b;
+  });
+
+  // Spike rows — deadly sensors toggled in and out of the Space so they only
+  // exist while extended. Drawing reads the cycle directly.
+  _spikeBodies = SPIKES.map((sp) => {
+    const b = new Body(BodyType.STATIC, new Vec2(sp.x, sp.y));
+    const shape = new Polygon(Polygon.box(sp.w, sp.h));
+    shape.sensorEnabled = true;
+    shape.cbTypes.add(_cbDeadly);
+    b.shapes.add(shape);
+    b.userData._colorIdx = 3;
+    b.userData._isZone = true;
+    return b;
+  });
+  _spikeUp = SPIKES.map(() => false);
+
+  // Collapsing plates — this is a top-down map with no gravity, so "floor" is
+  // tiles, not bodies: an intact plate is a harmless sensor that only reports
+  // that you are standing on it, and collapsing swaps it for a deadly sensor.
+  // Exactly one of each pair is in the Space at any time.
+  _plateBodies = [];
+  _plateHoleBodies = [];
+  PLATES.forEach((pl, i) => {
+    const solid = new Body(BodyType.STATIC, new Vec2(pl.x, pl.y));
+    const ps2 = new Polygon(Polygon.box(pl.w, pl.h));
+    ps2.sensorEnabled = true;
+    ps2.cbTypes.add(_cbPlate);
+    solid.shapes.add(ps2);
+    solid.userData._plateIdx = i;
+    solid.userData._colorIdx = 4;
+    solid.userData._isZone = true;
+    solid.space = space;
+    _plateBodies.push(solid);
+
+    const hole = new Body(BodyType.STATIC, new Vec2(pl.x, pl.y));
+    const hs = new Polygon(Polygon.box(pl.w, pl.h));
+    hs.sensorEnabled = true;
+    hs.cbTypes.add(_cbDeadly);
+    hole.shapes.add(hs);
+    hole.userData._colorIdx = 3;
+    hole.userData._isZone = true;
+    _plateHoleBodies.push(hole);
+  });
+  _plateTouched = PLATES.map(() => 0);
+
   // Player — the kitty. Bullet-flagged so a fast piston can't tunnel past it.
   const spawn = cpWorld(CHECKPOINTS[0]);
   _player = new Body(BodyType.DYNAMIC, new Vec2(spawn.x, spawn.y));
@@ -338,6 +543,21 @@ function respawn() {
   _player.position = new Vec2(x, y);
   _player.velocity = new Vec2(0, 0);
   _invuln = INVULN_FRAMES;
+
+  // Collapsed plates re-form, so a burnt route is never permanent — the
+  // pressure is "do not dither *this* attempt", not a dead run.
+  for (let i = 0; i < PLATES.length; i++) {
+    _plateTouched[i] = 0;
+    if (_plateHoleBodies[i]?.space) _plateHoleBodies[i].space = null;
+    if (_plateBodies[i] && !_plateBodies[i].space) _plateBodies[i].space = _space;
+  }
+
+  // Hunters go back to their posts, so they cannot camp the checkpoint.
+  for (let i = 0; i < HUNTERS.length; i++) {
+    const h = HUNTERS[i];
+    _hunterBodies[i].position = new Vec2(h.home.x, h.home.y);
+    _hunterBodies[i].velocity = new Vec2(0, 0);
+  }
 }
 
 function resetRun() {
@@ -351,11 +571,9 @@ function resetRun() {
   _deathFlash = 0;
   _cpFlash = 0;
   _keyFlash = 0;
-  if (_hasKey) {
-    _hasKey = false;
-    if (_keyBody && !_keyBody.space) _keyBody.space = _space;
-    if (_doorBody && !_doorBody.space) _doorBody.space = _space;
-  }
+  _shardsHeld = SHARDS.map(() => false);
+  for (const b of _shardBodies) if (b && !b.space) b.space = _space;
+  if (_doorBody && !_doorBody.space) _doorBody.space = _space;
   respawn();
   _invuln = 0;
 }
@@ -391,15 +609,19 @@ export default {
   tags: ["Gameplay", "Sensor", "Kinematic", "Camera", "Mobile", "Maze"],
   desc:
     "Homage to the Warcraft 3 <b>escape map</b> genre (<i>Run Kitty Run</i> and friends): " +
-    "one touch from a patrol kills, checkpoints are circles of power, deaths are unlimited " +
-    "— only the clock judges you. Weave the <b>Patrol Hall</b>, sprint the timed " +
-    "portcullises of the <b>Gate Run</b>, drift the frictionless <b>Frozen Ascent</b>, " +
-    "then survive <b>Crusher Row</b>, where kinematic pistons shove you into lava, to " +
-    "steal the key and reach the exit portal. Move with <b>WASD</b>/arrows — or <b>hold</b> " +
-    "the pointer to steer on any device. <b>R</b> restarts the run. Patrols are " +
-    "sensor-only kinematic bodies on analytic paths, gates toggle in and out of the " +
-    "Space, pistons push with real kinematic contacts, and the ice is just a lower " +
-    "steering lerp — one <code>InteractionListener</code> per game rule.",
+    "one touch kills, checkpoints are circles of power, deaths are unlimited — only the " +
+    "clock judges you. The exit gate takes <b>three key shards</b>, one stashed off the " +
+    "fast line in each hazard section, so you cannot run the loop just once. Weave the " +
+    "counter-timed sweeps of the <b>Patrol Hall</b> while a stalker paces its floor, " +
+    "sprint the timed portcullises of the <b>Gate Run</b> between punch-up spikes and " +
+    "flagstones that crumble if you hesitate on them, drift the frictionless " +
+    "<b>Frozen Ascent</b>, then thread <b>Crusher Row</b>, where kinematic pistons shove " +
+    "you into lava — or flatten you outright if you let one close on you. Move with <b>WASD</b>/arrows — or <b>hold</b> the pointer to steer on " +
+    "any device. <b>R</b> restarts the run. Patrols are sensor-only kinematic bodies on " +
+    "analytic paths, gates and spikes toggle in and out of the Space, pistons push with " +
+    "real kinematic contacts, hunters steer at you inside an aggro ring but are slower " +
+    "than you, and the ice is just a lower steering lerp — one " +
+    "<code>InteractionListener</code> per game rule.",
   walls: false,
   workerCompatible: false,
 
@@ -414,7 +636,7 @@ export default {
     _started = false;
     _deaths = 0;
     _checkpointIdx = 0;
-    _hasKey = false;
+    _shardsHeld = SHARDS.map(() => false);
     _complete = false;
     _invuln = 0;
     _deathFlash = 0;
@@ -424,15 +646,17 @@ export default {
     for (const k in _keys) delete _keys[k];
     _pending.die = false;
     _pending.checkpoint = -1;
-    _pending.key = false;
+    _pending.shard = -1;
     _pending.exit = false;
     _pending.reset = false;
+    _plateOnNow = -1;
 
     _cbPlayer = new CbType();
     _cbDeadly = new CbType();
     _cbCheckpoint = new CbType();
-    _cbKey = new CbType();
+    _cbShard = new CbType();
     _cbExit = new CbType();
+    _cbPlate = new CbType();
 
     buildWorld(space);
 
@@ -470,10 +694,32 @@ export default {
       },
     ));
 
-    // Key pickup → the locked gate rumbles open.
+    // Shard pickup → tally it; the gate opens on the third.
     space.listeners.add(new InteractionListener(
-      CbEvent.BEGIN, InteractionType.SENSOR, _cbKey, _cbPlayer,
-      () => { if (!_hasKey) _pending.key = true; },
+      CbEvent.BEGIN, InteractionType.SENSOR, _cbShard, _cbPlayer,
+      (cb) => {
+        const b1 = cb.int1.castBody ?? cb.int1.castShape?.body;
+        const b2 = cb.int2.castBody ?? cb.int2.castShape?.body;
+        const sh = b1?.userData?._shardIdx !== undefined ? b1 : b2;
+        const idx = sh?.userData?._shardIdx;
+        if (idx !== undefined && !_shardsHeld[idx]) _pending.shard = idx;
+      },
+    ));
+
+    // Standing on a collapsing plate — ONGOING so step() can accumulate the
+    // dwell time; the plate itself is harmless until it drops away.
+    const onPlate = (cb) => {
+      const b1 = cb.int1.castBody ?? cb.int1.castShape?.body;
+      const b2 = cb.int2.castBody ?? cb.int2.castShape?.body;
+      const pl = b1?.userData?._plateIdx !== undefined ? b1 : b2;
+      const idx = pl?.userData?._plateIdx;
+      if (idx !== undefined) _plateOnNow = idx;
+    };
+    space.listeners.add(new InteractionListener(
+      CbEvent.BEGIN, InteractionType.SENSOR, _cbPlate, _cbPlayer, onPlate,
+    ));
+    space.listeners.add(new InteractionListener(
+      CbEvent.ONGOING, InteractionType.SENSOR, _cbPlate, _cbPlayer, onPlate,
     ));
 
     // Exit portal → run complete.
@@ -514,12 +760,16 @@ export default {
       _pending.checkpoint = -1;
       _cpFlash = 40;
     }
-    if (_pending.key) {
-      _pending.key = false;
-      _hasKey = true;
-      _keyFlash = 50;
-      if (_keyBody?.space) _keyBody.space = null;
-      if (_doorBody?.space) _doorBody.space = null;
+    if (_pending.shard >= 0) {
+      const idx = _pending.shard;
+      _pending.shard = -1;
+      if (!_shardsHeld[idx]) {
+        _shardsHeld[idx] = true;
+        _keyFlash = 50;
+        if (_shardBodies[idx]?.space) _shardBodies[idx].space = null;
+        // Third shard forges the key and the gate grinds open.
+        if (_shardsHeld.every(Boolean) && _doorBody?.space) _doorBody.space = null;
+      }
     }
     if (_pending.exit) {
       _pending.exit = false;
@@ -560,6 +810,47 @@ export default {
       b.velocity = new Vec2(0, (targetY - b.position.y) / dt);
     }
 
+    // Crush check. The pistons close flush against the corridor walls, so a
+    // player still under a closing face has nowhere left to go. Rather than
+    // let the solver press them into the wall (which it will, and they would
+    // survive it), treat "no clearance left" as a death.
+    if (
+      !_complete && _invuln <= 0 &&
+      // Scoped to the Crusher Row corridor. Without this the check fires on a
+      // player standing anywhere in the piston's COLUMN — including the Gate
+      // Run, 700px below, where plate 2 shares x=950 with piston 1. That read
+      // as "the second plate sometimes kills me instantly".
+      _player.position.y > CORRIDOR_TOP - PLAYER_R &&
+      _player.position.y < CORRIDOR_BOT + PLAYER_R
+    ) {
+      const px = _player.position.x, py = _player.position.y;
+      for (let i = 0; i < PISTONS.length; i++) {
+        const b = _pistonBodies[i];
+        const bx = b.position.x, by = b.position.y;
+        // Only the column the player is actually in can crush them.
+        if (Math.abs(px - bx) > PISTON_SIZE / 2 + PLAYER_R) continue;
+        const half = PISTON_SIZE / 2;
+        // Fire as soon as the shrinking pocket is too small to hold a kitty
+        // AND the kitty is inside it — waiting until they touch the wall lets
+        // the solver bury them a body-width deep first.
+        if (py < by) {
+          // Player above the block: the pocket runs ceiling → block face.
+          const face = by - half;
+          if (face - CORRIDOR_TOP < 2 * PLAYER_R + CRUSH_MARGIN && py < face) {
+            _pending.die = true;
+            break;
+          }
+        } else {
+          // Player below the block: the pocket runs block face → floor.
+          const face = by + half;
+          if (CORRIDOR_BOT - face < 2 * PLAYER_R + CRUSH_MARGIN && py > face) {
+            _pending.die = true;
+            break;
+          }
+        }
+      }
+    }
+
     // Portcullises — toggle solid state; closing on the player crushes.
     for (let i = 0; i < GATES.length; i++) {
       const closed = gateIsClosed(GATES[i], _time);
@@ -582,6 +873,64 @@ export default {
       }
       _gateClosed[i] = closed;
     }
+
+    // Spike rows — the sensor only exists while the spikes are actually out,
+    // so the telegraph window is genuinely safe to stand in.
+    for (let i = 0; i < SPIKES.length; i++) {
+      const up = spikeIsUp(SPIKES[i], _time);
+      if (up !== _spikeUp[i]) {
+        _spikeBodies[i].space = up ? space : null;
+        _spikeUp[i] = up;
+      }
+    }
+
+    // Hunters — steer toward the player inside aggro range, else drift home.
+    // Capped below PLAYER_SPEED and given a wide turning circle, so keeping
+    // your feet moving always beats them.
+    for (let i = 0; i < HUNTERS.length; i++) {
+      const h = HUNTERS[i];
+      const b = _hunterBodies[i];
+      const p = b.position;
+      const dx = _player.position.x - p.x;
+      const dy = _player.position.y - p.y;
+      const dist = Math.hypot(dx, dy);
+      const chasing = !_complete && dist < h.aggro && dist > 1;
+      const tx = chasing ? p.x + (dx / dist) * h.speed : h.home.x;
+      const ty = chasing ? p.y + (dy / dist) * h.speed : h.home.y;
+      let vx, vy;
+      if (chasing) {
+        vx = (tx - p.x); vy = (ty - p.y);
+      } else {
+        // Drift home; stop dead once there so it does not jitter on the post.
+        const hx = h.home.x - p.x, hy = h.home.y - p.y;
+        const hd = Math.hypot(hx, hy);
+        if (hd < 4) { vx = 0; vy = 0; }
+        else { vx = (hx / hd) * h.speed * 0.6; vy = (hy / hd) * h.speed * 0.6; }
+      }
+      const k = chasing ? HUNTER_TURN : HUNTER_RETURN;
+      const v = b.velocity;
+      b.velocity = new Vec2(v.x + (vx - v.x) * k, v.y + (vy - v.y) * k);
+    }
+
+    // Collapsing plates — _plateOnNow was set by the listeners during the
+    // step that just ran; accumulate dwell and drop the plate when it expires.
+    // Stepping off lets the stone settle again (slower than it crumbles), so a
+    // plate you crossed earlier does not collapse the instant you touch it
+    // again — that read as "it killed me with no warning".
+    for (let i = 0; i < PLATES.length; i++) {
+      if (_plateTouched[i] < 0) continue; // already collapsed
+      if (_plateOnNow === i) {
+        _plateTouched[i] += dt;
+        if (_plateTouched[i] >= PLATE_HOLD) {
+          _plateTouched[i] = -1;
+          if (_plateBodies[i]?.space) _plateBodies[i].space = null;
+          _plateHoleBodies[i].space = space;
+        }
+      } else if (_plateTouched[i] > 0) {
+        _plateTouched[i] = Math.max(0, _plateTouched[i] - dt * PLATE_RECOVER);
+      }
+    }
+    _plateOnNow = -1;
 
     // Player steering — the ice only changes how much of your intent lands.
     if (!_complete) {
@@ -622,11 +971,14 @@ export default {
     ctx.fillStyle = "#0b0a10";
     ctx.fillRect(0, 0, WORLD_W, WORLD_H);
     drawFloor(ctx);
+    drawPlates(ctx);
     drawWalls(ctx);
     drawGates(ctx);
     drawDoor(ctx);
     drawPistons(ctx);
+    drawSpikes(ctx);
     drawPatrols(ctx);
+    drawHunters(ctx);
     drawKitty(ctx);
 
     ctx.restore();
@@ -641,8 +993,10 @@ export default {
     ctx.translate(-camX, -camY);
     for (let i = 0; i < CHECKPOINTS.length; i++) drawCircleOfPower(ctx, i);
     drawExitPortal(ctx);
-    drawKey(ctx);
+    drawShards(ctx);
     drawGateWarnings(ctx);
+    drawSpikeTells(ctx);
+    drawPlateCracks(ctx);
     ctx.restore();
 
     drawHud(ctx, W, H);
@@ -818,6 +1172,20 @@ function drawPistons(ctx) {
     ctx.strokeStyle = "rgba(230,200,255,0.4)";
     ctx.lineWidth = 2;
     ctx.strokeRect(p.x - 14, p.y - 14, 28, 28);
+
+    // Crush tell: shade whichever pocket has shrunk below survivable, so the
+    // "you are about to be flattened" state is visible, not a surprise.
+    const half = s / 2;
+    const topPocket = (p.y - half) - CORRIDOR_TOP;
+    const botPocket = CORRIDOR_BOT - (p.y + half);
+    const lethal = 2 * PLAYER_R + CRUSH_MARGIN;
+    ctx.fillStyle = "rgba(248,81,73,0.30)";
+    if (topPocket < lethal && topPocket > 0) {
+      ctx.fillRect(p.x - half, CORRIDOR_TOP, s, topPocket);
+    }
+    if (botPocket < lethal && botPocket > 0) {
+      ctx.fillRect(p.x - half, p.y + half, s, botPocket);
+    }
   }
   ctx.restore();
 }
@@ -973,32 +1341,208 @@ function drawExitPortal(ctx) {
   ctx.restore();
 }
 
-function drawKey(ctx) {
-  if (_hasKey || !_keyBody) return;
+function drawShards(ctx) {
   const now = performance.now();
-  const bob = Math.sin(now / 340) * 4;
-  const x = KEY_POS.x, y = KEY_POS.y + bob;
+  for (let i = 0; i < SHARDS.length; i++) {
+    if (_shardsHeld[i]) continue;
+    const sh = SHARDS[i];
+    const bob = Math.sin(now / 340 + i * 1.7) * 4;
+    const x = sh.x, y = sh.y + bob;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(now / 900 + i);
+    // Shard — a tapered crystal sliver.
+    ctx.fillStyle = "#f7c948";
+    ctx.strokeStyle = "rgba(255,240,190,0.9)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, -13);
+    ctx.lineTo(7, -2);
+    ctx.lineTo(0, 13);
+    ctx.lineTo(-7, -2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+    // Halo so it reads as a pickup from across the room.
+    ctx.save();
+    ctx.globalAlpha = 0.25 + 0.2 * Math.sin(now / 260 + i);
+    ctx.strokeStyle = "#f7c948";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(sh.x, sh.y, SHARD_R + 6, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function drawSpikes(ctx) {
   ctx.save();
-  ctx.strokeStyle = "#f7c948";
-  ctx.fillStyle = "#f7c948";
-  ctx.lineWidth = 3.5;
-  ctx.lineCap = "round";
-  // Bow.
-  ctx.beginPath();
-  ctx.arc(x - 5, y, 5.5, 0, Math.PI * 2);
-  ctx.stroke();
-  // Shaft + teeth.
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x + 12, y);
-  ctx.moveTo(x + 8, y);
-  ctx.lineTo(x + 8, y + 5);
-  ctx.moveTo(x + 12, y);
-  ctx.lineTo(x + 12, y + 6);
-  ctx.stroke();
-  // Sparkle.
-  ctx.globalAlpha = 0.5 + 0.5 * Math.sin(now / 200);
-  ctx.fillRect(x + 4, y - 12, 3, 3);
+  for (const sp of SPIKES) {
+    const ext = spikeExtension(sp, _time);
+    const left = sp.x - sp.w / 2;
+    // Base plate is always visible, so the hazard is never a surprise.
+    ctx.fillStyle = "#241f2c";
+    ctx.fillRect(left, sp.y - sp.h / 2, sp.w, sp.h);
+    ctx.strokeStyle = "#4a4058";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(left, sp.y - sp.h / 2, sp.w, sp.h);
+    if (ext <= 0) continue;
+    // Spikes rise from the plate centre-line.
+    const n = Math.max(3, Math.round(sp.w / 22));
+    const tipH = (sp.h / 2 + 10) * ext;
+    ctx.fillStyle = "#cfd6e4";
+    for (let k = 0; k < n; k++) {
+      const cx = left + (sp.w / n) * (k + 0.5);
+      ctx.beginPath();
+      ctx.moveTo(cx - 8, sp.y + sp.h / 2 - 4);
+      ctx.lineTo(cx, sp.y + sp.h / 2 - 4 - tipH);
+      ctx.lineTo(cx + 8, sp.y + sp.h / 2 - 4);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawSpikeTells(ctx) {
+  // Telegraph pulse — drawn in the overlay pass so pixi/three modes get it.
+  ctx.save();
+  for (const sp of SPIKES) {
+    if (!spikeIsTelling(sp, _time)) continue;
+    const f = spikePhase(sp, _time) / SPIKE_TELL; // 0→1 over the tell
+    ctx.strokeStyle = `rgba(248,81,73,${0.35 + 0.5 * f})`;
+    ctx.lineWidth = 2 + 2 * f;
+    ctx.strokeRect(sp.x - sp.w / 2 - 3, sp.y - sp.h / 2 - 3, sp.w + 6, sp.h + 6);
+    // Rising nubs hint at what is about to come up.
+    ctx.fillStyle = `rgba(207,214,228,${0.25 + 0.35 * f})`;
+    const n = Math.max(3, Math.round(sp.w / 22));
+    for (let k = 0; k < n; k++) {
+      const cx = sp.x - sp.w / 2 + (sp.w / n) * (k + 0.5);
+      ctx.beginPath();
+      ctx.arc(cx, sp.y, 2 + 2 * f, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawPlates(ctx) {
+  ctx.save();
+  for (let i = 0; i < PLATES.length; i++) {
+    const pl = PLATES[i];
+    const left = pl.x - pl.w / 2, top = pl.y - pl.h / 2;
+    if (_plateTouched[i] < 0) {
+      // Collapsed — a lava-lit hole.
+      const glow = 0.7 + 0.3 * Math.sin(performance.now() / 260 + i);
+      ctx.fillStyle = "#0a0509";
+      ctx.fillRect(left, top, pl.w, pl.h);
+      ctx.fillStyle = `rgba(196,60,18,${0.55 * glow})`;
+      ctx.fillRect(left + 6, top + 6, pl.w - 12, pl.h - 12);
+      continue;
+    }
+    // Intact — a fitted flagstone, darkening as it crumbles.
+    const wear = _plateTouched[i] / PLATE_HOLD;
+    ctx.fillStyle = wear > 0 ? "#2a2233" : "#1e1a28";
+    ctx.fillRect(left, top, pl.w, pl.h);
+    ctx.strokeStyle = "#5b4a6b";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 6]);
+    ctx.strokeRect(left + 3, top + 3, pl.w - 6, pl.h - 6);
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+
+function drawPlateCracks(ctx) {
+  // Crack growth + shake, in the overlay pass for pixi/three parity.
+  ctx.save();
+  for (let i = 0; i < PLATES.length; i++) {
+    const t = _plateTouched[i];
+    if (t <= 0) continue; // untouched or already collapsed
+    const pl = PLATES[i];
+    const wear = Math.min(1, t / PLATE_HOLD);
+    const shake = wear * 2.5;
+    const ox = (Math.random() - 0.5) * shake;
+    const oy = (Math.random() - 0.5) * shake;
+    ctx.strokeStyle = `rgba(248,81,73,${0.35 + 0.55 * wear})`;
+    ctx.lineWidth = 1 + 2 * wear;
+    // Three cracks spreading from the centre as the dwell time runs out.
+    for (let k = 0; k < 3; k++) {
+      const a = (Math.PI * 2 * k) / 3 + i;
+      const len = (pl.w / 2) * wear;
+      ctx.beginPath();
+      ctx.moveTo(pl.x + ox, pl.y + oy);
+      ctx.lineTo(
+        pl.x + ox + Math.cos(a) * len,
+        pl.y + oy + Math.sin(a) * len,
+      );
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawHunters(ctx) {
+  ctx.save();
+  const now = performance.now();
+  for (let i = 0; i < _hunterBodies.length; i++) {
+    const b = _hunterBodies[i];
+    const h = HUNTERS[i];
+    const p = b.position;
+    const dist = _player
+      ? Math.hypot(_player.position.x - p.x, _player.position.y - p.y)
+      : Infinity;
+    const chasing = dist < h.aggro;
+    // Aggro ring — the player can see exactly where the leash ends.
+    ctx.globalAlpha = chasing ? 0.16 : 0.08;
+    ctx.strokeStyle = "#f85149";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 10]);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, h.aggro, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    // Body — a hooded stalker; the cowl leans into its heading.
+    const v = b.velocity;
+    const head = Math.hypot(v.x, v.y) > 6 ? Math.atan2(v.y, v.x) : 0;
+    ctx.fillStyle = chasing ? "#7a1d5a" : "#4a2144";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, h.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = chasing ? "#e0518f" : "#8b5a80";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Cowl.
+    ctx.fillStyle = chasing ? "#e0518f" : "#8b5a80";
+    ctx.beginPath();
+    ctx.moveTo(p.x + Math.cos(head) * (h.r + 6), p.y + Math.sin(head) * (h.r + 6));
+    ctx.lineTo(p.x + Math.cos(head + 2.4) * h.r * 0.9, p.y + Math.sin(head + 2.4) * h.r * 0.9);
+    ctx.lineTo(p.x + Math.cos(head - 2.4) * h.r * 0.9, p.y + Math.sin(head - 2.4) * h.r * 0.9);
+    ctx.closePath();
+    ctx.fill();
+    // Eyes — brighten and narrow when locked on.
+    const eyeA = chasing ? 1 : 0.55;
+    ctx.fillStyle = `rgba(255,209,102,${eyeA})`;
+    for (const side of [-0.4, 0.4]) {
+      const ex = p.x + Math.cos(head + side) * h.r * 0.5;
+      const ey = p.y + Math.sin(head + side) * h.r * 0.5;
+      ctx.beginPath();
+      ctx.arc(ex, ey, chasing ? 2.6 : 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Alert flare on lock-on.
+    if (chasing) {
+      ctx.globalAlpha = 0.35 + 0.35 * Math.sin(now / 120 + i);
+      ctx.strokeStyle = "#f85149";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, h.r + 7, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
   ctx.restore();
 }
 
@@ -1015,23 +1559,42 @@ function drawHud(ctx, W, H) {
 
   text(`Time ${_runTime.toFixed(1)}s`, 12, 22, "start");
   text(`Deaths ${_deaths}`, 12, 42, "start", _deaths > 0 ? "#f85149" : "#e6edf3");
+  const held = _shardsHeld.filter(Boolean).length;
+  const allHeld = held === SHARDS.length;
   text(
-    _hasKey ? "Key ✓" : "Key —",
+    allHeld ? "Key ✓ forged" : `Shards ${held}/${SHARDS.length}`,
     W - 12, 22, "end",
-    _hasKey ? "#f7c948" : "#8b949e",
+    allHeld ? "#f7c948" : held > 0 ? "#d9a94a" : "#8b949e",
   );
+  // Per-shard pips, so it is obvious which detours are still owed.
+  for (let i = 0; i < SHARDS.length; i++) {
+    const px = W - 12 - i * 14;
+    ctx.fillStyle = _shardsHeld[i] ? "#f7c948" : "rgba(139,148,158,0.45)";
+    ctx.beginPath();
+    ctx.moveTo(px - 4, 32);
+    ctx.lineTo(px, 27);
+    ctx.lineTo(px + 4, 32);
+    ctx.lineTo(px, 39);
+    ctx.closePath();
+    ctx.fill();
+  }
 
   // Objective hint.
   ctx.font = "12px ui-monospace, monospace";
   const hint = _complete
     ? ""
-    : _hasKey ? HINT_KEYED : CHECKPOINTS[_checkpointIdx].hint;
+    : allHeld ? HINT_KEYED
+    : held > 0 ? `${SHARDS.length - held} shard(s) still out there — ${SHARDS.filter((_, i) => !_shardsHeld[i]).map((sh) => sh.section).join(", ")}`
+    : CHECKPOINTS[_checkpointIdx].hint;
   if (hint) text(hint, W / 2, H - 14, "center", "#9fb3c8");
 
   // Key-grab flash.
   if (_keyFlash > 0) {
     ctx.font = "bold 16px ui-monospace, monospace";
-    text("The gate rumbles open…", W / 2, H / 2 - 60, "center", `rgba(247,201,72,${_keyFlash / 50})`);
+    text(
+      allHeld ? "The shards fuse — the gate grinds open…" : `Shard ${held}/${SHARDS.length} claimed`,
+      W / 2, H / 2 - 60, "center", `rgba(247,201,72,${_keyFlash / 50})`,
+    );
   }
 
   // Death flash.
