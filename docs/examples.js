@@ -99,6 +99,7 @@ import pulse                 from "./demos/pulse.js?v=3.40.0";
 import sumoArena             from "./demos/sumo-arena.js?v=3.40.0";
 import kickoff               from "./demos/kickoff.js?v=3.40.0";
 import dodgeball             from "./demos/dodgeball.js?v=3.40.0";
+import escapeRun             from "./demos/escape-run.js?v=3.40.0";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -158,6 +159,7 @@ const ALL_DEMOS = [
   sumoArena,
   kickoff,
   dodgeball,
+  escapeRun,
 ];
 
 const gtag = window.gtag || function() {};

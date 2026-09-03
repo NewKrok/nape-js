@@ -343,6 +343,8 @@
   "demo.pulse.desc": "1100 hexagones en gravité zéro, alternant entre ordre et chaos. Dans une <b>figure</b>, chaque corps est tiré par ressort vers son propre point d'une figure en treillis — nid d'abeilles, triangle, anneaux concentriques, spirale à angle d'or, grille d'ondes pliée. Puis une <b>pulsation</b> — un champ de pression stationnaire, dont la longueur d'onde et la phase sont retirées au sort à chaque fois — déchire la figure, si bien que la suivante s'assemble depuis une dispersion différente. La couleur suit la vitesse, du froid au chaud. Chaque figure et chaque pulsation tient en une seule écriture de <code>body.force</code> par pas. <b>Cliquez</b> pour déposer un cercle statique — le détour de l'essaim autour de lui est résolu par les contacts, et les figures se reforment contre les obstacles présents.",
   "demo.sumo-arena.label": "Arène de sumo",
   "demo.sumo-arena.desc": "Mêlée générale à 10 joueurs, par élimination, sur une plateforme circulaire flottante — poussez tous les autres dans le vide et restez le dernier debout. Vous contrôlez le palet bleu contre <b>9 combattants IA</b> dotés de conscience du bord, de choix de cible et de leur propre timing de charge. Déplacez-vous avec <b>WASD</b>/flèches et <b>SPACE</b>/<b>E</b> pour <b>charger</b> — ou sur tout appareil <b>maintenez</b> le pointeur/doigt pour diriger et <b>tapez brièvement</b> pour charger dans cette direction. Une charge est une courte ruée qui envoie valser quiconque elle touche (il perd le contrôle en titubant, une charge près du bord est donc fatale). Les poussées de contact sont du pur moment de corps rigide sur des palets rebondissants et glissants. Après 10 secondes, l'arène commence à <b>rétrécir</b>, jouez donc le centre. Si vous tombez, vous pouvez regarder les IA finir la bagarre.",
+  "demo.escape-run.label": "Course d'évasion",
+  "demo.escape-run.desc": "Hommage au genre des <b>cartes d'évasion</b> de Warcraft 3 (<i>Run Kitty Run</i> et consorts) : un seul contact avec une patrouille tue, les checkpoints sont des cercles de pouvoir, les morts sont illimitées — seul le chrono vous juge. Faufilez-vous dans le <b>Hall des Patrouilles</b>, sprintez entre les herses temporisées de la <b>Course aux Portes</b>, dérivez sur l'<b>Ascension Gelée</b> sans friction, puis survivez à la <b>Rangée des Broyeurs</b>, où des pistons cinématiques vous poussent dans la lave — volez la clé et atteignez le portail de sortie. Déplacez-vous avec <b>WASD</b>/flèches — ou <b>maintenez</b> le pointeur pour diriger sur tout appareil. <b>R</b> relance la course. Les patrouilles sont des corps cinématiques capteurs-seulement sur des trajectoires analytiques, les portes entrent et sortent du Space, les pistons poussent avec de vrais contacts cinématiques, et la glace n'est qu'un lerp de direction plus faible — un <code>InteractionListener</code> par règle de jeu.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -401,6 +403,8 @@
     "demo.sumo-arena.label",
     "demo.sumo-arena.desc",
     "tag.Forces",
-    "tag.Generative"
+    "tag.Generative",
+    "demo.escape-run.label",
+    "demo.escape-run.desc"
   ]
 }

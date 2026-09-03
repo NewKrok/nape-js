@@ -343,6 +343,8 @@
   "demo.pulse.desc": "1100 hexágonos en gravedad cero, ciclando entre orden y caos. En una <b>figura</b>, cada cuerpo es empujado por resortes hacia su propio punto de una figura reticular: panal, triángulo, anillos concéntricos, una espiral de ángulo áureo, una malla de ondas plegada. Después un <b>pulso</b> — un campo de presión estacionario, con longitud de onda y fase sorteadas de nuevo cada vez — despedaza la figura, de modo que la siguiente se ensambla desde una dispersión distinta. El color sigue la velocidad, de frío a caliente. Cada figura y cada pulso es una única escritura de <code>body.force</code> por paso. <b>Haz clic</b> para soltar un círculo estático: el desvío del enjambre a su alrededor lo resuelven los contactos, y las figuras se recomponen contra los obstáculos que haya en medio.",
   "demo.sumo-arena.label": "Arena de sumo",
   "demo.sumo-arena.desc": "Todos contra todos de 10 jugadores por eliminación en una plataforma circular flotante: empuja a los demás fuera y sé el último en pie. Controlas el disco azul contra <b>9 luchadores IA</b> con conciencia del borde, selección de objetivos y su propio timing de embestida. Muévete con <b>WASD</b>/flechas y <b>SPACE</b>/<b>E</b> para <b>embestir</b> — o en cualquier dispositivo <b>mantén</b> el puntero/dedo para dirigir y <b>toca rápido</b> para embestir en esa dirección. La embestida es una acometida corta que manda volando a quien golpea (pierde el control mientras se tambalea, así que una embestida junto al borde es letal). Los empujones de contacto son puro momento de cuerpo rígido sobre discos rebotones y resbaladizos. Tras 10 segundos la arena empieza a <b>encogerse</b>, así que juega por el centro. Si caes, puedes ver cómo las IA terminan la trifulca.",
+  "demo.escape-run.label": "Carrera de escape",
+  "demo.escape-run.desc": "Homenaje al género de <b>mapas de escape</b> de Warcraft 3 (<i>Run Kitty Run</i> y compañía): un solo roce de una patrulla mata, los checkpoints son círculos de poder y las muertes son ilimitadas — solo el reloj te juzga. Serpentea por la <b>Sala de Patrullas</b>, esprinta entre los rastrillos temporizados de la <b>Carrera de Puertas</b>, derrapa por el <b>Ascenso Helado</b> sin fricción y sobrevive a la <b>Fila Trituradora</b>, donde pistones cinemáticos te empujan a la lava — roba la llave y alcanza el portal de salida. Muévete con <b>WASD</b>/flechas — o <b>mantén</b> el puntero para dirigir en cualquier dispositivo. <b>R</b> reinicia la carrera. Las patrullas son cuerpos cinemáticos solo-sensor sobre trayectorias analíticas, las puertas entran y salen del Space, los pistones empujan con contactos cinemáticos reales y el hielo es solo un lerp de dirección más bajo — un <code>InteractionListener</code> por regla de juego.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -403,6 +405,8 @@
     "demo.sumo-arena.label",
     "demo.sumo-arena.desc",
     "tag.Forces",
-    "tag.Generative"
+    "tag.Generative",
+    "demo.escape-run.label",
+    "demo.escape-run.desc"
   ]
 }

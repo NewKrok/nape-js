@@ -343,6 +343,8 @@
   "demo.pulse.desc": "1100 Sechsecke in Schwerelosigkeit, im Zyklus zwischen Ordnung und Chaos. In einer <b>Figur</b> wird jeder Körper per Feder zu seinem eigenen Punkt eines Gitterbilds getrieben — Wabe, Dreieck, konzentrische Ringe, eine Goldener-Winkel-Spirale, ein gefaltetes Wellenraster. Dann reißt ein <b>Puls</b> — ein stehendes Druckfeld, dessen Wellenlänge und Phase jedes Mal neu ausgewürfelt werden — die Figur auseinander, sodass sich die nächste aus einer anderen Streuung zusammensetzt. Die Farbe folgt der Geschwindigkeit, von kalt nach heiß. Jede Figur und jeder Puls ist ein einziger <code>body.force</code>-Schreibzugriff pro Schritt. <b>Klicke</b>, um einen statischen Kreis abzulegen — den Umweg des Schwarms lösen die Kontakte, und die Figuren formen sich gegen alle Hindernisse im Weg neu.",
   "demo.sumo-arena.label": "Sumo-Arena",
   "demo.sumo-arena.desc": "Zehn Spieler, jeder gegen jeden, K.-o. auf einer schwebenden runden Plattform — schubs alle anderen runter und bleib als Letzter stehen. Du steuerst den blauen Puck gegen <b>9 KI-Kämpfer</b> mit Randbewusstsein, Zielauswahl und eigenem Dash-Timing. Beweg dich mit <b>WASD</b>/Pfeilen und <b>SPACE</b>/<b>E</b> zum <b>Dash</b> — oder <b>halte</b> auf jedem Gerät Zeiger/Finger zum Steuern und <b>tippe kurz</b>, um in diese Richtung zu dashen. Ein Dash ist ein kurzer Ausfall, der jeden Getroffenen fliegen lässt (er verliert taumelnd die Kontrolle, ein Dash an der Kante ist also tödlich). Kontaktschübe sind reiner Starrkörper-Impuls auf federnden, rutschigen Pucks. Nach 10 Sekunden beginnt die Arena zu <b>schrumpfen</b>, also spiel die Mitte. Fällst du raus, kannst du zusehen, wie die KI die Keilerei zu Ende bringt.",
+  "demo.escape-run.label": "Escape-Lauf",
+  "demo.escape-run.desc": "Hommage an das <b>Escape-Map</b>-Genre von Warcraft 3 (<i>Run Kitty Run</i> und Co.): eine einzige Berührung durch eine Patrouille tötet, Checkpoints sind Kraftkreise, Tode sind unbegrenzt — nur die Uhr richtet über dich. Schlängle dich durch die <b>Patrouillenhalle</b>, sprinte durch die getakteten Fallgitter des <b>Torlaufs</b>, drifte über den reibungsfreien <b>Gefrorenen Aufstieg</b> und überlebe dann die <b>Quetscherreihe</b>, wo kinematische Kolben dich in die Lava schieben — stiehl den Schlüssel und erreiche das Ausgangsportal. Bewegung mit <b>WASD</b>/Pfeilen — oder <b>halte</b> auf jedem Gerät den Zeiger zum Steuern. <b>R</b> startet den Lauf neu. Patrouillen sind reine Sensor-Kinematikkörper auf analytischen Bahnen, Tore schalten sich in den Space ein und aus, Kolben schieben mit echten kinematischen Kontakten, und das Eis ist nur ein kleinerer Lenk-Lerp — ein <code>InteractionListener</code> pro Spielregel.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -402,6 +404,8 @@
     "demo.sumo-arena.label",
     "demo.sumo-arena.desc",
     "tag.Forces",
-    "tag.Generative"
+    "tag.Generative",
+    "demo.escape-run.label",
+    "demo.escape-run.desc"
   ]
 }

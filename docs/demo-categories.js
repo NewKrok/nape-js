@@ -42,6 +42,7 @@ export const GAME_DEMO_IDS = new Set([
   "sumo-arena",
   "kickoff",
   "dodgeball",
+  "escape-run",
 ]);
 
 export const CATEGORIES = [

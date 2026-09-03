@@ -343,6 +343,8 @@
   "demo.pulse.desc": "1100 hatszög zéró gravitációban, rend és káosz közt ciklusozva. Egy <b>alakzatban</b> minden testet rugó hajt a saját rácspontja felé egy mintázatban — méhsejt, háromszög, koncentrikus gyűrűk, aranyszög-spirál, hajtogatott hullámrács. Aztán egy <b>pulzus</b> — állóhullámú nyomásmező, hullámhossza és fázisa minden alkalommal újrasorsolva — széttépi az alakzatot, így a következő már más szórásból áll össze. A szín a sebességet követi, hidegtől forróig. Minden alakzat és minden pulzus lépésenként egyetlen <code>body.force</code> írás. <b>Kattints</b> statikus kör lerakásához — a raj kerülőútját ütközések oldják meg, és az alakzatok az útban lévő akadályokhoz igazodva formálódnak újra.",
   "demo.sumo-arena.label": "Szumóaréna",
   "demo.sumo-arena.desc": "10 játékos, mindenki mindenki ellen egy lebegő, kör alakú platformon — lökd le az összes többit, és maradj utolsóként talpon. Te irányítod a kék korongot <b>9 MI-harcos</b> ellen, akik figyelik a peremet, célpontot választanak és maguk időzítik a rohamaikat. Mozogj a <b>WASD</b>/nyilakkal, a <b>SPACE</b>/<b>E</b> a <b>roham</b> — vagy bármilyen eszközön <b>tartsd nyomva</b> a mutatót/ujjadat a kormányzáshoz és <b>koppints gyorsan</b> az abba az irányba induló rohamhoz. A roham rövid kitörés, ami elrepíti, akit eltalál (tántorgás közben nem tud irányítani, így a perem melletti roham halálos). A lökdösődés tiszta merevtest-impulzus pattogós, csúszós korongokon. 10 másodperc után az aréna <b>zsugorodni</b> kezd, úgyhogy játssz középen. Ha kiesel, végignézheted, ahogy az MI-k befejezik a bunyót.",
+  "demo.escape-run.label": "Escape-futam",
+  "demo.escape-run.desc": "Tisztelgés a Warcraft 3 <b>escape térképek</b> műfaja előtt (<i>Run Kitty Run</i> és társai): a járőr egyetlen érintése öl, a checkpointok hatalom körei, a halálok száma korlátlan — csak az óra ítél feletted. Szlalomozz át a <b>Járőrcsarnokon</b>, sprintelj át a <b>Kapufutam</b> időzített rácskapuin, sodródj a súrlódásmentes <b>Fagyott Emelkedőn</b>, majd éld túl a <b>Zúzósort</b>, ahol kinematikus dugattyúk löknek a lávába — szerezd meg a kulcsot, és érd el a kijárati portált. Mozgás: <b>WASD</b>/nyilak — vagy bármely eszközön <b>tartsd nyomva</b> a mutatót a kormányzáshoz. Az <b>R</b> újraindítja a futamot. A járőrök csak-szenzor kinematikus testek analitikus pályákon, a kapuk ki-be kapcsolódnak a Space-ből, a dugattyúk valódi kinematikus kontaktokkal tolnak, a jég pedig csupán kisebb kormányzási lerp — játékszabályonként egy <code>InteractionListener</code>.",
   "_review": [
     "nav.demos",
     "nav.examples",
@@ -403,6 +405,8 @@
     "demo.sumo-arena.label",
     "demo.sumo-arena.desc",
     "tag.Forces",
-    "tag.Generative"
+    "tag.Generative",
+    "demo.escape-run.label",
+    "demo.escape-run.desc"
   ]
 }
