@@ -20,7 +20,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
   imports `core/bootstrap`, which registers every engine class, so consumers of
   `dist/` always get the full engine; the _source_ module graph is tree-shakeable
   (engine.ts no longer imports the class registry — importing a single class from
-  `src/` costs only its own subgraph). TSDoc documented, 6272 engine tests +
+  `src/` costs only its own subgraph). TSDoc documented, 6274 engine tests +
   73 pixi-adapter tests
 
 ## Repo Layout (npm workspaces)
@@ -61,7 +61,7 @@ npm run format:check # prettier across both workspaces
 
 1. `npm run format:check` — must pass (Prettier code style, both packages)
 2. `npm run lint` — must pass (ESLint, both packages)
-3. `npm test` — all tests must pass (6272 + 73)
+3. `npm test` — all tests must pass (6274 + 73)
 4. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
 
 ## Release (per-package, auto)

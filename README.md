@@ -140,6 +140,7 @@ function update() {
 | ------------- | ---------------------------------------------------------------------- |
 | `NapeList<T>` | Iterable list with `for...of` support                                  |
 | `MatMN`       | Variable-sized M×N matrix — `clone()`, `equals()`, multiply, transpose |
+| `VERSION`     | Engine version string; also queryable from the console as `__NAPE_JS__` after any import (three.js-style) |
 
 ### Helpers
 
@@ -246,7 +247,7 @@ present, with automatic `postMessage` fallback otherwise.
 ```bash
 npm install
 npm run build      # tsup → packages/*/dist/ (ESM + CJS + DTS)
-npm test           # vitest — 6272 engine tests + 73 pixi-adapter tests
+npm test           # vitest — 6274 engine tests + 73 pixi-adapter tests
 npm run benchmark  # Performance benchmarks
 ```
 

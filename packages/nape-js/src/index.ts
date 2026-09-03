@@ -2,6 +2,26 @@
 declare const __PACKAGE_VERSION__: string;
 export const VERSION: string = __PACKAGE_VERSION__;
 
+// Console-queryable version marker, three.js-style (`window.__THREE__`):
+// after any nape-js import, typing `__NAPE_JS__` in the browser devtools or
+// Node REPL reports the loaded engine version. Also flags accidental
+// double-loads (two bundled copies, or mixed ESM + CJS) the same way
+// three.js does.
+const globalScope = globalThis as typeof globalThis & {
+  __NAPE_JS__?: string;
+  console?: { warn(message: string): void };
+};
+if (typeof globalScope.__NAPE_JS__ !== "undefined") {
+  if (globalScope.__NAPE_JS__ !== VERSION) {
+    globalScope.console?.warn(
+      `WARNING: Multiple instances of @newkrok/nape-js being imported ` +
+        `(${globalScope.__NAPE_JS__} and ${VERSION}).`,
+    );
+  }
+} else {
+  globalScope.__NAPE_JS__ = VERSION;
+}
+
 // Bootstrap: centralized nape-namespace registrations and factory callbacks
 import "./core/bootstrap";
 

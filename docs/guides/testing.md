@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6272 engine tests across 294 files, plus 73 pixi-adapter tests across 5 files.**
+**6274 engine tests across 294 files, plus 73 pixi-adapter tests across 5 files.**
 
 ---
 

@@ -35,6 +35,8 @@ function update() {
 }
 ```
 
+Version check: `import { VERSION } from "@newkrok/nape-js"` — or, after any import, read the `__NAPE_JS__` global in the console (three.js-style).
+
 ## Core Classes
 
 - [Space](https://napejs.org/api/classes/Space.html): Physics world — create with gravity, add bodies, call `step(dt)` to simulate. `space.deterministic = true` for same-platform reproducibility (multiplayer rollback/prediction)
