@@ -2,8 +2,7 @@ import { Game, STEP_DT } from "./game/game.js";
 import { Hud } from "./game/hud.js";
 import { createInput } from "./game/input.js";
 
-// Renderer pick — `create-nape-game` rewrites this import to swap renderers.
-// To switch manually, change the path to "./render/threejs.js" or
+// Renderer pick — to switch, change the path to "./render/threejs.js" or
 // "./render/pixi.js" (and update package.json deps accordingly).
 import { Canvas2DRenderer as Renderer } from "./render/canvas2d.js";
 
