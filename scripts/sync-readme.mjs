@@ -57,10 +57,13 @@ out = out
   .replace(/<!--\s*npm:strip\s*-->[\s\S]*?<!--\s*\/npm:strip\s*-->\n?/g, "")
   .replace(/\n{3,}/g, "\n\n");
 
-const banner =
-  "<!-- Generated from the repo-root README.md by scripts/sync-readme.mjs. Edit that file, not this one. -->\n\n";
+// The note goes last: as the first line it becomes the opening bytes of the
+// registry's readme field, which crawlers do read even though npm renders it
+// as an HTML comment.
+const note =
+  "\n<!-- Generated from the repo-root README.md by scripts/sync-readme.mjs. Edit that file, not this one. -->\n";
 
 const target = resolve(root, "packages/nape-js/README.md");
-writeFileSync(target, banner + out);
+writeFileSync(target, out.trimEnd() + "\n" + note);
 
 console.log(`sync-readme: wrote packages/nape-js/README.md (${out.length} chars)`);

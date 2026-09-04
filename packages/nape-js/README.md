@@ -1,5 +1,3 @@
-<!-- Generated from the repo-root README.md by scripts/sync-readme.mjs. Edit that file, not this one. -->
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/NewKrok/nape-js/master/docs/logo.svg" alt="nape-js logo" width="80" />
 </p>
@@ -247,3 +245,5 @@ pre-push checklist, and what gets flagged as a blocker vs. a nit.
 ## License
 
 MIT
+
+<!-- Generated from the repo-root README.md by scripts/sync-readme.mjs. Edit that file, not this one. -->
