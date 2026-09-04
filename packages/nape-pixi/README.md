@@ -1,11 +1,13 @@
 # @newkrok/nape-pixi
 
-PixiJS v8 renderer integration for [@newkrok/nape-js](https://www.npmjs.com/package/@newkrok/nape-js).
+**2D physics for PixiJS v8.** The official renderer integration for
+[@newkrok/nape-js](https://www.npmjs.com/package/@newkrok/nape-js) — a fully
+typed rigid-body physics engine with constraints, collision detection, fluids
+and deterministic simulation.
+
 Keeps PIXI display objects in sync with nape bodies, handles smooth rendering
 under variable frame rates, provides an on-demand debug overlay, and gives you
 the plumbing to run physics off-thread in a Web Worker.
-
-**Status:** 0.1.0-alpha — API is stable. Pending first npm release.
 
 - Zero bundled dependencies — `pixi.js` and `@newkrok/nape-js` are peer deps.
 - Pure structural types: nothing in `src/` imports `pixi.js` at runtime, so
@@ -53,13 +55,13 @@ app.ticker.add(() => {
 
 ## Examples
 
-Self-contained reference code lives in [`./examples`](./examples):
+Self-contained reference code lives in [`./examples`](https://github.com/NewKrok/nape-js/blob/master/packages/nape-pixi/examples):
 
 | File                                             | What it shows                                           |
 | ------------------------------------------------ | ------------------------------------------------------- |
-| [`01-basic.ts`](./examples/01-basic.ts)          | Naive `space.step` → `binding.update()` each frame.     |
-| [`02-interpolation.ts`](./examples/02-interpolation.ts) | `FixedStepper` + render-interpolation alpha.       |
-| [`03-worker-main.ts`](./examples/03-worker-main.ts) + [`03-worker.ts`](./examples/03-worker.ts) | Physics in a Web Worker via `WorkerBridge`. |
+| [`01-basic.ts`](https://github.com/NewKrok/nape-js/blob/master/packages/nape-pixi/examples/01-basic.ts)          | Naive `space.step` → `binding.update()` each frame.     |
+| [`02-interpolation.ts`](https://github.com/NewKrok/nape-js/blob/master/packages/nape-pixi/examples/02-interpolation.ts) | `FixedStepper` + render-interpolation alpha.       |
+| [`03-worker-main.ts`](https://github.com/NewKrok/nape-js/blob/master/packages/nape-pixi/examples/03-worker-main.ts) + [`03-worker.ts`](https://github.com/NewKrok/nape-js/blob/master/packages/nape-pixi/examples/03-worker.ts) | Physics in a Web Worker via `WorkerBridge`. |
 
 ## API
 

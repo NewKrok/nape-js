@@ -1,5 +1,7 @@
+<!-- Generated from the repo-root README.md by scripts/sync-readme.mjs. Edit that file, not this one. -->
+
 <p align="center">
-  <img src="docs/logo.svg" alt="nape-js logo" width="80" />
+  <img src="https://raw.githubusercontent.com/NewKrok/nape-js/master/docs/logo.svg" alt="nape-js logo" width="80" />
 </p>
 
 # @newkrok/nape-js
@@ -23,27 +25,10 @@ Node.js and every browser.
 
 **[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
 
-**[Cookbook](docs/guides/cookbook.md)** | **[Troubleshooting](docs/guides/troubleshooting.md)** | **[Anti-Patterns](docs/guides/anti-patterns.md)**
+**[Cookbook](https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md)** | **[Troubleshooting](https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md)** | **[Anti-Patterns](https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md)**
 
 - Originally created in Haxe by Luca Deltodesco
 - Ported to TypeScript by Istvan Krisztian Somoracz
-
-<!-- npm:strip -->
-
-## Packages
-
-This repo is an npm-workspaces monorepo:
-
-| Package                                    | What it is                                                                                                           |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| [`@newkrok/nape-js`](packages/nape-js)     | The physics engine itself — rigid bodies, constraints, collision, fluids, deterministic multiplayer.                 |
-| [`@newkrok/nape-pixi`](packages/nape-pixi) | PixiJS v8 integration — `BodySpriteBinding`, `FixedStepper` (render interpolation), `PixiDebugDraw`, `WorkerBridge`. |
-
-The [`templates/platformer/`](templates/platformer/) directory holds a
-runnable multi-renderer starter (Canvas2D / Three.js / PixiJS) — clone
-or download it as a starting point for new projects.
-
-<!-- /npm:strip -->
 
 ## Installation
 
@@ -251,30 +236,12 @@ render();
 Uses SharedArrayBuffer for zero-copy transform sharing when COOP/COEP headers are
 present, with automatic `postMessage` fallback otherwise.
 
-<!-- npm:strip -->
-
-## Development
-
-```bash
-npm install
-npm run build      # tsup → packages/*/dist/ (ESM + CJS + DTS)
-npm test           # vitest — 6274 engine tests + 73 pixi-adapter tests
-npm run benchmark  # Performance benchmarks
-```
-
-Releases are automated: see [`docs/guides/workflow.md`](docs/guides/workflow.md#cicd-pipelines)
-for the per-package auto-release pipeline. Run
-`node scripts/ci/release.mjs --dry-run` from the repo root to preview what
-would publish on the next master merge.
-
-<!-- /npm:strip -->
-
 ## Contributing
 
 Pull requests are welcome! Every PR is reviewed collaboratively with
 [Claude Code](https://www.anthropic.com/claude-code) using the playbook in
-[`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md).
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full review process,
+[`.claude/skills/pr-review/SKILL.md`](https://github.com/NewKrok/nape-js/blob/master/.claude/skills/pr-review/SKILL.md).
+See [`CONTRIBUTING.md`](https://github.com/NewKrok/nape-js/blob/master/CONTRIBUTING.md) for the full review process,
 pre-push checklist, and what gets flagged as a blocker vs. a nit.
 
 ## License
