@@ -1,0 +1,34 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://napejs.org/.well-known/api-catalog",
+      "item": [
+        {
+          "href": "https://napejs.org/llms.txt",
+          "type": "text/plain",
+          "title": "nape-js — LLM-readable overview, links and quick start (llms.txt)"
+        },
+        {
+          "href": "https://napejs.org/llms-full.txt",
+          "type": "text/plain",
+          "title": "nape-js — complete API reference in a single file (llms-full.txt)"
+        },
+        {
+          "href": "https://napejs.org/api/index.html",
+          "type": "text/html",
+          "title": "nape-js — TypeDoc-generated API reference"
+        },
+        {
+          "href": "https://registry.npmjs.org/@newkrok/nape-js",
+          "type": "application/json",
+          "title": "@newkrok/nape-js — npm registry metadata (versions, dist, types)"
+        },
+        {
+          "href": "https://github.com/NewKrok/nape-js",
+          "type": "text/html",
+          "title": "nape-js — source repository, issues, contributing guide"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# Apache config for the DotRoll origin (Cloudflare sits in front).
+# Every directive is <IfModule>-guarded so a host without the module
+# degrades silently instead of returning 500 for the whole site.
+
+# --- Agent discovery: Link headers on every HTML response -------------------
+# Lets AI agents find the machine-readable docs and the RFC 9727 API catalog
+# without parsing HTML (Cloudflare "agent readiness" / Link header check).
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header add Link "<https://napejs.org/.well-known/api-catalog>; rel=\"api-catalog\""
+    Header add Link "<https://napejs.org/llms.txt>; rel=\"alternate\"; type=\"text/plain\"; title=\"llms.txt\""
+    Header add Link "<https://napejs.org/sitemap.xml>; rel=\"sitemap\"; type=\"application/xml\""
+  </FilesMatch>
+</IfModule>
+
+# --- Content types for the .well-known files --------------------------------
+# api-catalog has no extension; RFC 9727 wants application/linkset+json with
+# the rfc9727 profile parameter.
+<Files "api-catalog">
+  ForceType application/linkset+json
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
+  </IfModule>
+</Files>
+
+<IfModule mod_mime.c>
+  AddType text/markdown .md
+  AddCharset utf-8 .md .txt .json
+</IfModule>

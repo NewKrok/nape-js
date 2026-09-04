@@ -1,9 +1,17 @@
+## Content Signals (https://contentsignals.org/): nape-js is MIT-licensed,
+## AI-first documentation — search indexing, AI answers, and AI training
+## are all explicitly welcome.
+
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 # Machine-readable documentation for LLMs and coding agents (llms.txt
 # convention). Crawlers are welcome to these instead of the rendered HTML:
 #   https://napejs.org/llms.txt       — API overview + quick start
 #   https://napejs.org/llms-full.txt  — complete API reference, single file
+# Agent discovery:
+#   https://napejs.org/.well-known/api-catalog  — RFC 9727 API catalog
+#   https://napejs.org/.well-known/auth.md      — auth notes (spoiler: none needed)
 
 Sitemap: https://napejs.org/sitemap.xml
