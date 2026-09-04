@@ -1,8 +1,8 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   FluidProperties, DistanceJoint, PivotJoint, AngleJoint, InteractionFilter,
-} from "../nape-js.esm.js?v=3.40.0";
-import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.41.0";
 
 // ---------------------------------------------------------------------------
 // Raft Rapids — build-a-raft passenger run down a river.

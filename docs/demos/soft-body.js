@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Polygon, PivotJoint } from "../nape-js.esm.js?v=3.40.0";
+import { Body, BodyType, Vec2, Polygon, PivotJoint } from "../nape-js.esm.js?v=3.41.0";
 
 
 // All active soft bodies — each entry holds segment bodies and rest area

@@ -2,7 +2,7 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   SpringJoint, LineJoint, MotorJoint, PivotJoint, AngleJoint, WeldJoint,
   ParticleEmitter,
-} from "../nape-js.esm.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
 
 // Dirtline — a side-view hill-climb / trials motorbike with an articulated
 // ragdoll rider. A deliberately richer sibling of `car-sideview.js`: the bike

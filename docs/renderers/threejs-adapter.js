@@ -28,7 +28,7 @@ export function getThree() {
 import {
   BODY_COLORS_HEX, STATIC_COLOR_HEX, CONSTRAINT_COLOR_HEX,
   bodyColorHex, bodyFillAlpha,
-} from "./shared-colors.js?v=3.40.0";
+} from "./shared-colors.js?v=3.41.0";
 
 // Alias for backward compatibility with demos that reference MESH_COLORS
 const MESH_COLORS = BODY_COLORS_HEX;

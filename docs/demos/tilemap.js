@@ -1,9 +1,9 @@
 import {
   Body, BodyType, Vec2, Capsule, Material,
   buildTilemapBody, meshTilemap, CharacterController,
-} from "../nape-js.esm.js?v=3.40.0";
-import { drawBody, drawGrid, COLORS } from "../renderer.js?v=3.40.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { drawBody, drawGrid, COLORS } from "../renderer.js?v=3.41.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.41.0";
 
 // ---------------------------------------------------------------------------
 // Constants

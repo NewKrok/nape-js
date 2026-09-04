@@ -22,7 +22,7 @@
 import {
   Space, Body, BodyType, Vec2, Circle as NapeCircle, Polygon as NapePolygon,
   PivotJoint, Material, FluidProperties
-} from "./nape-js.esm.js?v=3.40.0";
+} from "./nape-js.esm.js?v=3.41.0";
 
 export const NapeAdapter = {
   name: "nape-js",

@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, PivotJoint, AngleJoint } from "../nape-js.esm.js?v=3.40.0";
+import { Body, BodyType, Vec2, Circle, Polygon, PivotJoint, AngleJoint } from "../nape-js.esm.js?v=3.41.0";
 
 function spawnRagdoll(space, x, y, colorBase) {
   // Torso

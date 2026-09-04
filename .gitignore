@@ -19,3 +19,6 @@ docs/serialization/
 !.claude/skills/
 .claude/settings.local.json
 .serena/
+
+# Intermediate written by scripts/build-social-card.mjs when the rasteriser is absent
+docs/assets/social-card.resolved.svg

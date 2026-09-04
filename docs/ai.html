@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js — Build games with an LLM</title>
+  <meta name="description" content="Prompt collection for building 2D games with @newkrok/nape-js and an LLM (Claude, ChatGPT, Copilot, Cursor). Copy-paste system prompts, per-genre starters, and the API gotchas that models get wrong." />
+  <link rel="canonical" href="https://napejs.org/ai.html" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="stylesheet" href="style.css" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://napejs.org/ai.html" />
+  <meta property="og:title" content="nape-js — Build games with an LLM" />
+  <meta property="og:description" content="Copy-paste prompts for building 2D physics games with nape-js and an AI assistant, plus the API mistakes models reliably make." />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:site" content="@KSomoracz" />
+  <meta name="twitter:title" content="nape-js — Build games with an LLM" />
+  <meta name="twitter:description" content="Copy-paste prompts for building 2D physics games with nape-js and an AI assistant, plus the API mistakes models reliably make." />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+
+  <style>
+    .ai-page { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+    .ai-back { display: inline-block; margin-bottom: 24px; color: #8b949e; text-decoration: none; }
+    .ai-back:hover { color: #58a6ff; }
+    .ai-hero { margin-bottom: 40px; }
+    .ai-hero h1 { margin: 0 0 10px; font-size: 34px; }
+    .ai-hero p { color: #8b949e; margin: 0; max-width: 680px; line-height: 1.65; }
+    .ai-page h2 {
+      margin: 48px 0 8px; font-size: 23px;
+      padding-bottom: 8px; border-bottom: 1px solid #21262d;
+    }
+    .ai-page h2:first-of-type { margin-top: 40px; }
+    .ai-lede { color: #8b949e; margin: 0 0 20px; line-height: 1.65; }
+    .ai-page h3 { margin: 28px 0 6px; font-size: 17px; color: #e6edf3; }
+
+    /* Prompt block: a copyable slab. The button sits inside so the whole unit
+       reads as one control rather than a code sample with a stray link. */
+    .prompt {
+      position: relative; background: #0a0e14; border: 1px solid #21262d;
+      border-radius: 10px; margin: 0 0 18px;
+    }
+    .prompt-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 9px 14px; border-bottom: 1px solid #21262d;
+    }
+    .prompt-title { font-size: 13px; color: #8b949e; font-weight: 500; }
+    .prompt-copy {
+      background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+      border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: background .15s, border-color .15s, color .15s;
+    }
+    .prompt-copy:hover { background: #30363d; border-color: #58a6ff; color: #e6edf3; }
+    .prompt-copy.copied { border-color: #3fb950; color: #3fb950; }
+    .prompt pre {
+      margin: 0; padding: 16px; overflow-x: auto;
+      font-size: 13px; line-height: 1.6; color: #c9d1d9;
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    .ai-note {
+      border-left: 3px solid #58a6ff; background: #11161d;
+      padding: 12px 16px; margin: 18px 0; border-radius: 0 6px 6px 0;
+      color: #c9d1d9; font-size: 14px; line-height: 1.6;
+    }
+    .ai-note.warn { border-left-color: #d29922; }
+
+    .gotcha { border: 1px solid #21262d; border-radius: 10px; overflow: hidden; margin: 0 0 14px; }
+    .gotcha summary {
+      padding: 12px 16px; cursor: pointer; font-size: 15px; color: #e6edf3;
+      background: #11161d; list-style: none; display: flex; gap: 10px; align-items: baseline;
+    }
+    .gotcha summary::-webkit-details-marker { display: none; }
+    .gotcha summary::before { content: "▸"; color: #8b949e; font-size: 12px; }
+    .gotcha[open] summary::before { content: "▾"; }
+    .gotcha summary:hover { background: #161b22; }
+    .gotcha-body { padding: 4px 16px 16px 32px; color: #8b949e; font-size: 14px; line-height: 1.7; }
+    .gotcha-body code, .ai-page p code, .ai-note code, .ai-lede code {
+      background: #0a0e14; padding: 1px 6px; border-radius: 4px;
+      font-size: 0.9em; color: #c9d1d9;
+    }
+    .gotcha-body strong { color: #c9d1d9; }
+
+    .ai-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 8px; }
+    .ai-link {
+      display: block; padding: 14px 16px; border: 1px solid #30363d;
+      border-radius: 8px; background: #11161d; text-decoration: none;
+    }
+    .ai-link:hover { border-color: #58a6ff; text-decoration: none; }
+    .ai-link strong { display: block; color: #e6edf3; font-size: 14px; margin-bottom: 3px; }
+    .ai-link span { color: #8b949e; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="ai-page">
+    <a href="index.html" class="ai-back">&larr; Back to homepage</a>
+
+    <div class="ai-hero">
+      <h1>Build a game with an LLM</h1>
+      <p>
+        nape-js ships machine-readable docs, so Claude, ChatGPT, Copilot and Cursor
+        can write against it without guessing. What they still get wrong is the
+        handful of places where this engine differs from Box2D and Matter.js —
+        the prompts below front-load exactly those, so you spend your time on the
+        game instead of on debugging invented API calls.
+      </p>
+    </div>
+
+    <h2>1. Give the model the docs</h2>
+    <p class="ai-lede">
+      Start every session with this. It points the assistant at the full API
+      reference in a single file — roughly 76&nbsp;KB, well within a modern
+      context window — so it stops inferring method names from other engines.
+    </p>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <span class="prompt-title">Context primer — paste first</span>
+        <button class="prompt-copy" type="button">Copy</button>
+      </div>
+      <pre>I'm building a 2D game with @newkrok/nape-js, a TypeScript physics engine.
+
+Before writing any code, read the full API reference:
+https://raw.githubusercontent.com/NewKrok/nape-js/master/packages/nape-js/llms-full.txt
+
+Key rules for this engine, which differ from Box2D/Matter.js:
+- Bodies join a world by assignment: `body.space = space` (there is no `space.add()`).
+- Shapes attach the same way: `body.shapes.add(new Circle(20))`.
+- There is NO `body.applyForce()`. Assign `body.force = new Vec2(x, y)` instead,
+  and clear it each frame — it persists across `space.step()`.
+- `body.applyImpulse(vec)` DOES exist and is the usual way to push things.
+- Gravity is a Vec2 on the Space: `new Space(new Vec2(0, 600))`. Y points down.
+- Step with a fixed timestep: `space.step(1 / 60)`.
+
+Use TypeScript. Ask me before inventing any API you did not see in that file.</pre>
+    </div>
+
+    <div class="ai-note">
+      Working in Cursor, Claude Code, or another repo-aware tool? Save that text as
+      <code>.cursorrules</code>, <code>CLAUDE.md</code>, or
+      <code>.github/copilot-instructions.md</code> in your project and it applies
+      to every request automatically.
+    </div>
+
+    <h2>2. Pick a starting point</h2>
+    <p class="ai-lede">
+      Each of these assumes the primer above is already in context. They are
+      deliberately specific about the physics setup, because that is the part
+      models improvise badly.
+    </p>
+
+    <h3>Platformer</h3>
+    <div class="prompt">
+      <div class="prompt-head">
+        <span class="prompt-title">Side-scrolling platformer</span>
+        <button class="prompt-copy" type="button">Copy</button>
+      </div>
+      <pre>Build a side-scrolling platformer with nape-js and a canvas renderer.
+
+Requirements:
+- Use the built-in `CharacterController` helper for the player rather than
+  hand-rolling ground checks — it already handles slopes, coyote time,
+  one-way platforms, and moving-platform inheritance.
+- Level geometry: static bodies with `Polygon.box()` shapes.
+- A camera that follows the player, updated ONLY on physics steps (not on
+  every animation frame) so movement doesn't stutter on 120Hz displays.
+- Fixed timestep with an accumulator; render interpolation between steps.
+
+Note: `CharacterController` ORs a bit into the body's collision filter group,
+so if I later add projectiles, account for that when setting up filtering.</pre>
+    </div>
+
+    <h3>Top-down / arena</h3>
+    <div class="prompt">
+      <div class="prompt-head">
+        <span class="prompt-title">Top-down arena with AI opponents</span>
+        <button class="prompt-copy" type="button">Copy</button>
+      </div>
+      <pre>Build a top-down arena game with nape-js. No gravity: `new Space(new Vec2(0, 0))`.
+
+Requirements:
+- Player and AI agents are `Circle` shapes (circles steer and slide cleanly;
+  boxes snag on corners).
+- Set `body.allowRotation = false` on agents so they don't spin on contact.
+- Movement by setting `body.velocity` directly, not by applying force.
+- Walls as static bodies around the play area.
+- Simple AI: steer toward a target, with a dead zone around the facing angle
+  so agents don't jitter between left and right when nearly aligned.
+- Detect "is A touching B" by polling `body.interactingBodies()` each step
+  and calling `.clear()` on the returned list — simpler than an
+  InteractionListener when you only need a boolean.</pre>
+    </div>
+
+    <h3>Physics puzzle</h3>
+    <div class="prompt">
+      <div class="prompt-head">
+        <span class="prompt-title">Puzzle / sandbox with joints</span>
+        <button class="prompt-copy" type="button">Copy</button>
+      </div>
+      <pre>Build a physics puzzle game with nape-js where the player drags objects
+to solve each level.
+
+Requirements:
+- Mouse dragging via a `PivotJoint` between a static "hand" body and the
+  grabbed body — create it on mousedown, remove it on mouseup.
+- At least one level using a `DistanceJoint` rope and one using a
+  `PulleyJoint`.
+- A win condition checked with an `InteractionListener` on a sensor shape.
+- Soft joints where a rope or spring rests against the floor: set
+  `stiff = false` with a frequency around 12 and damping 1. A fully rigid
+  joint fights the floor contact and jitters.</pre>
+    </div>
+
+    <h3>Deterministic multiplayer</h3>
+    <div class="prompt">
+      <div class="prompt-head">
+        <span class="prompt-title">Server-authoritative multiplayer</span>
+        <button class="prompt-copy" type="button">Copy</button>
+      </div>
+      <pre>Build a server-authoritative multiplayer prototype with nape-js.
+
+Requirements:
+- Server runs the simulation with `space.deterministic = true` and a fixed
+  timestep; clients render interpolated snapshots.
+- Use `@newkrok/nape-js/serialization` (`spaceToJSON` / `spaceFromJSON`) for
+  the initial world sync, then send per-frame deltas for bodies whose
+  position or rotation actually changed.
+- Set `body.isBullet = true` on fast-moving bodies to enable CCD.
+
+Read the multiplayer guide before designing the protocol:
+https://github.com/NewKrok/nape-js/blob/master/docs/guides/multiplayer-guide.md
+
+Determinism here is same-platform only — floating-point results differ across
+CPU architectures, so don't design for cross-platform lockstep.</pre>
+    </div>
+
+    <h2>3. Mistakes models reliably make</h2>
+    <p class="ai-lede">
+      These come from real sessions. Paste the relevant one when you hit it —
+      or add them to your project rules up front.
+    </p>
+
+    <details class="gotcha">
+      <summary>A Polygon falls straight through the floor</summary>
+      <div class="gotcha-body">
+        A dynamic <code>Polygon</code> constructed with an explicit
+        <code>Material</code> can tunnel through static polygon floors —
+        <code>isBullet</code> does not help.
+        <strong>Fix:</strong> omit the material argument and let the engine use
+        its default (<code>new Polygon(Polygon.box(w, h))</code>), or use a
+        <code>Circle</code> or <code>Capsule</code>, which are unaffected.
+        Most likely to bite in car and vehicle demos, where both the chassis and
+        the track walls are polygons.
+      </div>
+    </details>
+
+    <details class="gotcha">
+      <summary>Invented method: body.applyForce()</summary>
+      <div class="gotcha-body">
+        It doesn't exist. Assign <code>body.force = new Vec2(x, y)</code>.
+        The value <strong>persists across steps</strong>, so zero it each frame
+        unless you want it to accumulate. <code>body.applyImpulse(vec)</code>
+        is a real method and is usually what you actually want.
+      </div>
+    </details>
+
+    <details class="gotcha">
+      <summary>Rotating a shape doesn't rotate its collision geometry</summary>
+      <div class="gotcha-body">
+        Setting <code>shape.rotation</code> changes nothing about how the shape
+        collides. Rotate the <strong>body</strong> instead:
+        <code>body.rotation = Math.PI / 2</code>.
+      </div>
+    </details>
+
+    <details class="gotcha">
+      <summary>Reading space.arbiters throws "Index out of bounds"</summary>
+      <div class="gotcha-body">
+        <code>space.arbiters.at(0)</code> throws when the list is empty, and
+        <code>.length</code> is <code>undefined</code>. Get the count with
+        <code>space.arbiters.zpp_gl()</code> and guard before indexing. Note a
+        sleeping body reports zero arbiters, so use
+        <code>body.isSleeping</code> as a fallback in ground checks.
+      </div>
+    </details>
+
+    <details class="gotcha">
+      <summary>Material with density 0 throws a mass error</summary>
+      <div class="gotcha-body">
+        The signature is
+        <code>new Material(elasticity, dynamicFriction, staticFriction, density)</code>.
+        A density of <code>0</code> yields zero mass on a dynamic body and
+        errors out. Models often pass <code>0</code> meaning "default".
+      </div>
+    </details>
+
+    <details class="gotcha">
+      <summary>An AngleJoint does nothing inside its range</summary>
+      <div class="gotcha-body">
+        With <code>jointMin &lt; jointMax</code> the joint is a pure range limit:
+        no force at all while the angle sits inside the window. For a spring
+        that always pulls toward a target angle, set
+        <code>jointMin === jointMax</code>.
+      </div>
+    </details>
+
+    <details class="gotcha">
+      <summary>The camera stutters at 120Hz but the physics looks fine</summary>
+      <div class="gotcha-body">
+        Camera interpolation running on every animation frame while bodies move
+        only on fixed physics steps reads as stutter. Gate camera updates behind
+        a "stepped this frame" flag so both advance together.
+      </div>
+    </details>
+
+    <h2>4. What to hand the model next</h2>
+    <p class="ai-lede">
+      Beyond the primer, these are the files worth pasting or linking when a task
+      goes deeper.
+    </p>
+
+    <div class="ai-links">
+      <a class="ai-link" href="https://raw.githubusercontent.com/NewKrok/nape-js/master/packages/nape-js/llms-full.txt" target="_blank" rel="noopener">
+        <strong>llms-full.txt</strong>
+        <span>Complete API reference, one file. The default context drop.</span>
+      </a>
+      <a class="ai-link" href="https://raw.githubusercontent.com/NewKrok/nape-js/master/packages/nape-js/llms.txt" target="_blank" rel="noopener">
+        <strong>llms.txt</strong>
+        <span>Condensed index for smaller context budgets.</span>
+      </a>
+      <a class="ai-link" href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener">
+        <strong>Cookbook</strong>
+        <span>Task-oriented recipes: platformer, ragdoll, fluid, replay.</span>
+      </a>
+      <a class="ai-link" href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md" target="_blank" rel="noopener">
+        <strong>Anti-patterns</strong>
+        <span>What not to do, with the reasoning behind each.</span>
+      </a>
+      <a class="ai-link" href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener">
+        <strong>Troubleshooting</strong>
+        <span>Symptom-first fixes for common simulation problems.</span>
+      </a>
+      <a class="ai-link" href="templates.html">
+        <strong>Project templates</strong>
+        <span>Runnable starters — often better than generating from scratch.</span>
+      </a>
+    </div>
+
+    <div class="ai-note warn">
+      One habit worth keeping: ask the model to run the game and describe what it
+      sees, or to write a short headless harness that steps the space and asserts
+      on positions. Physics bugs are visual and behavioural, and code that reads
+      correctly can still simulate wrongly.
+    </div>
+  </main>
+
+  <script>
+    // Copy the <pre> that follows each button. Falls back to a manual range
+    // selection where the async clipboard API is unavailable (http:// origins).
+    document.querySelectorAll(".prompt-copy").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const text = btn.closest(".prompt").querySelector("pre").innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const sel = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(btn.closest(".prompt").querySelector("pre"));
+          sel.removeAllRanges();
+          sel.addRange(range);
+          return;
+        }
+        btn.textContent = "Copied";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "Copy";
+          btn.classList.remove("copied");
+        }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -126,6 +126,22 @@ p a, li a { text-decoration: underline; text-underline-offset: 2px; }
   color: var(--text);
   text-decoration: none;
 }
+/* Icon-only sibling of the GitHub button — square-ish so the glyph sits
+   centred rather than inheriting the label's lopsided padding. */
+.site-header-x { padding: 5px 9px; }
+/* Visually hidden but still read out by screen readers and understood as the
+   link's accessible name. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 /* Below ~900px the nav needs the full width, so it drops to its own row and
    scrolls sideways; the GitHub label collapses to just the mark. */
 @media (max-width: 900px) {
@@ -277,6 +293,53 @@ a.hero-badge:hover {
 }
 .hero-badge[hidden] { display: none; }
 .hero-badge svg { opacity: 0.75; flex-shrink: 0; }
+
+/* Each hero chip carries its own accent so the four numbers read as distinct
+   facts rather than one grey run. Tinted border + a matching translucent
+   wash; the value itself takes the full-strength colour while the label
+   stays dim, so the eye lands on the number first. */
+.version-badge {
+  border-color: rgba(88, 166, 255, 0.45);
+  background: rgba(88, 166, 255, 0.1);
+  color: var(--accent);
+}
+#starBadge {
+  border-color: rgba(210, 153, 34, 0.5);
+  background: rgba(210, 153, 34, 0.12);
+  color: var(--orange);
+}
+#npmBadge {
+  border-color: rgba(63, 185, 80, 0.45);
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--green);
+}
+.size-badge {
+  border-color: rgba(163, 113, 247, 0.45);
+  background: rgba(163, 113, 247, 0.1);
+  color: #a371f7;
+}
+/* The tint lives on the border and background; the text stays bright in every
+   chip so the four read as one row rather than two styles. */
+.version-badge,
+.hero-badge,
+.hero-badge [data-badge-value] {
+  color: var(--text);
+  font-weight: 600;
+}
+/* The star glyph is the one icon worth enlarging — it is the social-proof
+   signal, and at 12px it read as a speck. */
+#starBadge svg {
+  width: 15px;
+  height: 15px;
+  opacity: 1;
+  color: var(--orange);
+}
+a#starBadge:hover,
+a#npmBadge:hover {
+  border-color: currentColor;
+  color: var(--text);
+}
+a#starBadge:hover svg { color: var(--orange); }
 
 /* Language switcher */
 .lang-switcher {
@@ -746,6 +809,9 @@ a.hero-badge:hover {
 }
 .ai-cta {
   margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 /* ---------- API Grid ---------- */

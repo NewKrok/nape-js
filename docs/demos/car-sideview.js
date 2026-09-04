@@ -1,6 +1,6 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, SpringJoint, LineJoint, MotorJoint } from "../nape-js.esm.js?v=3.40.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, SpringJoint, LineJoint, MotorJoint } from "../nape-js.esm.js?v=3.41.0";
 
-import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.41.0";
 
 // ── Drawing helpers ────────────────────────────────────────────────────────
 function drawSpring(ctx, x1, y1, x2, y2, color = '#d29922', coils = 8, amp = 5) {

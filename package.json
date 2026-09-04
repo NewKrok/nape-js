@@ -27,7 +27,8 @@
     "serve:docs": "npx serve docs",
     "dev:pixi": "npm run build -w @newkrok/nape-js && npm run dev -w @newkrok/nape-pixi",
     "dev:multiplayer": "npm run build && cp packages/nape-js/dist/index.js docs/nape-js.esm.js && rm -f docs/chunk-*.js && cp packages/nape-js/dist/chunk-*.js docs/ && mkdir -p docs/serialization docs/replay && cp packages/nape-js/dist/serialization/index.js docs/serialization/index.js && cp packages/nape-js/dist/replay/index.js docs/replay/index.js && cp packages/nape-pixi/dist/index.js docs/nape-pixi.esm.js && npx concurrently -k -n docs,server -c cyan,green \"npx serve docs -l 5500\" \"cd server && PORT=3001 node index.js\"",
-    "sync:readme": "node scripts/sync-readme.mjs"
+    "sync:readme": "node scripts/sync-readme.mjs",
+    "build:social-card": "node scripts/build-social-card.mjs"
   },
   "repository": {
     "type": "git",

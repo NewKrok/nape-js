@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.40.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.41.0";
 
 // ── Kickoff — 2v2 top-down arena soccer (Haxball-style) ──────────────────
 // A walled pitch with a goal pocket on each side. You + an AI teammate (blue)

@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Polygon } from "../nape-js.esm.js?v=3.40.0";
+import { Body, BodyType, Vec2, Polygon } from "../nape-js.esm.js?v=3.41.0";
 
 // Exploding "50" — a celebration demo for the project's 50th GitHub star.
 // The number "50" is spelled out of a grid of solid square blocks, each a

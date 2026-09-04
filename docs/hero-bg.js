@@ -19,7 +19,7 @@
  * canvas carries a radial CSS mask that fades them out behind the centre
  * column where the headline and buttons live (see `.hero-bg` in style.css).
  */
-import { Space, Body, BodyType, Vec2, Circle, Polygon, Material } from "./nape-js.esm.js?v=3.40.0";
+import { Space, Body, BodyType, Vec2, Circle, Polygon, Material } from "./nape-js.esm.js?v=3.41.0";
 
 // Density, not a fixed count: one body per ~18k px² of hero, clamped. A
 // phone's hero is a fraction of a desktop's area, so a fixed count would

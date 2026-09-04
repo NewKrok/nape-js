@@ -10,8 +10,8 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Capsule,
   PivotJoint, UserConstraint,
   CbType, CbEvent, InteractionType, InteractionListener, PreListener, PreFlag,
-} from "../nape-js.esm.js?v=3.40.0";
-import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.41.0";
 
 // ─── Portal data structures ────────────────────────────────────────────────
 

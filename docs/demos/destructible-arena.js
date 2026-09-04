@@ -6,8 +6,8 @@ import {
   buildTilemapBody,
   fractureBody,
   ParticleEmitter,
-} from "../nape-js.esm.js?v=3.40.0";
-import { drawBody, drawConstraints, drawGrid } from "../renderer.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { drawBody, drawConstraints, drawGrid } from "../renderer.js?v=3.41.0";
 
 // 2D side-view shooter built from four nape-js helpers:
 //

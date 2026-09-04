@@ -1,9 +1,9 @@
 import {
   Body, BodyType, Vec2, Polygon, Circle,
   PivotJoint, DistanceJoint, AngleJoint, WeldJoint, MotorJoint, LineJoint, PulleyJoint, SpringJoint,
-} from '../nape-js.esm.js?v=3.40.0';
+} from '../nape-js.esm.js?v=3.41.0';
 
-import { drawBody, drawGrid } from '../renderer.js?v=3.40.0';
+import { drawBody, drawGrid } from '../renderer.js?v=3.41.0';
 
 // ── Layout ──────────────────────────────────────────────────────────────────
 const T = 20; // wall thickness

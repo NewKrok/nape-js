@@ -2,9 +2,9 @@ import {
   Body, BodyType, Vec2, Circle, Capsule, Polygon, Material, CbType, CbEvent,
   InteractionType, InteractionListener, PreListener, PreFlag,
   CharacterController, FluidProperties,
-} from "../nape-js.esm.js?v=3.40.0";
-import { drawBody, drawConstraints, drawGrid, COLORS } from "../renderer.js?v=3.40.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { drawBody, drawConstraints, drawGrid, COLORS } from "../renderer.js?v=3.41.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.41.0";
 
 // ---------------------------------------------------------------------------
 // Constants

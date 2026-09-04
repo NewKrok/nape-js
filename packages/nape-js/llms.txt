@@ -1,6 +1,6 @@
 # @newkrok/nape-js
 
-> Modern TypeScript 2D physics engine for the web. Fully typed, with object pooling and dual ESM/CJS exports (~174 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
+> Modern TypeScript 2D physics engine for the web. Fully typed, with object pooling and dual ESM/CJS exports (~175 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
 
 Install: `npm install @newkrok/nape-js`
 
@@ -9,6 +9,7 @@ Install: `npm install @newkrok/nape-js`
 - [API Reference](https://napejs.org/api/index.html): Full TypeDoc-generated API docs
 - [Interactive Demos](https://napejs.org/examples): Live physics demos with source code
 - [Full LLM Documentation](https://raw.githubusercontent.com/NewKrok/nape-js/master/packages/nape-js/llms-full.txt): Complete API reference in a single file
+- [Prompt Collection](https://napejs.org/ai.html): Copy-paste prompts for building a game with an LLM, plus the API mistakes models reliably make
 - [Cookbook](https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md): Task-oriented recipes (platformer, ragdoll, fluid, serialization, replay, etc.)
 - [Replay Guide](https://github.com/NewKrok/nape-js/blob/master/docs/guides/replay-guide.md): Recorder + Player + binary encode/decode + determinism contract
 - [Troubleshooting](https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md): Common problems and solutions
@@ -36,6 +37,24 @@ function update() {
 ```
 
 Version check: `import { VERSION } from "@newkrok/nape-js"` — or, after any import, read the `__NAPE_JS__` global in the console (three.js-style).
+
+## Common Mistakes (read before generating code)
+
+These are the places nape-js differs from Box2D/Matter.js, where models most often generate broken code.
+
+- **No `space.add()`** — a body joins the world by assignment: `body.space = space`. Shapes attach with `body.shapes.add(shape)`.
+- **No `body.applyForce()`** — assign `body.force = new Vec2(x, y)`. The value **persists across `space.step()`**, so clear it each frame unless you want accumulation. `body.applyImpulse(vec)` is a real method and is usually the right one.
+- **Dynamic `Polygon` + explicit `Material` can tunnel** through static polygon floors; `isBullet` does not help. Omit the material argument (`new Polygon(Polygon.box(w, h))`) or use `Circle`/`Capsule`, which are unaffected. Most likely in vehicle demos where chassis and walls are both polygons.
+- **`shape.rotation` does not rotate collision geometry** — rotate the body: `body.rotation = angle`.
+- **`Material` density of 0 throws** — the signature is `new Material(elasticity, dynamicFriction, staticFriction, density)`; a dynamic body with density 0 has zero mass and errors.
+- **`space.arbiters.at(0)` throws when empty**, and `.length` is `undefined`. Use `space.arbiters.zpp_gl()` for the count. A sleeping body reports zero arbiters, so use `body.isSleeping` as a ground-check fallback.
+- **`AngleJoint` with `jointMin < jointMax` applies no force inside the range** — it is a pure limit. For a spring toward a target angle set `jointMin === jointMax`.
+- **Rigid joints jitter against floor contact** — soften with `stiff = false`, frequency ≈ 12, damping 1.
+- **`buildTilemapBody` returns a detached body** — the caller must set `tm.space = space`; the `space:` option is ignored.
+- **`CharacterController` mutates the body's collision filter group** (ORs in a bit) — account for it when setting up projectile filtering.
+- **Determinism is same-platform only** — floating-point results differ across CPU architectures; do not design for cross-platform lockstep.
+
+Full prompt collection with per-genre starters: https://napejs.org/ai.html
 
 ## Core Classes
 

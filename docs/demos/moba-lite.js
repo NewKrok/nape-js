@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType, Ray,
-} from "../nape-js.esm.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
 
 // ── Pálya geometry ───────────────────────────────────────────────────────
 // Two right-triangle islands meeting along the world's anti-diagonal. The

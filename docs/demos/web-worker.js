@@ -9,8 +9,8 @@
  */
 import {
   Vec2,
-} from "../nape-js.esm.js?v=3.40.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.41.0";
 
 /* ── Constants ──────────────────────────────────────────────────────── */
 const BODY_COUNT      = 300;

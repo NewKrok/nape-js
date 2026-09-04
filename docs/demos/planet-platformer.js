@@ -2,8 +2,8 @@ import {
   Body, BodyType, Vec2, Circle, Capsule, Polygon, Material, CbType, CbEvent,
   InteractionType, InteractionListener,
   CharacterController, RadialGravityField, RadialGravityFieldGroup,
-} from "../nape-js.esm.js?v=3.40.0";
-import { drawBody, drawGrid } from "../renderer.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.41.0";
 
 // ---------------------------------------------------------------------------
 // Constants

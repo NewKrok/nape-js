@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType,
-} from "../nape-js.esm.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
 
 // Collision groups: 1=default (enemies, base), 2=projectiles, 4=towers, 8=walls.
 // Projectiles pass through walls, towers, and each other — only enemies stop them.

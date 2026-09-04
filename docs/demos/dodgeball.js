@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.40.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.41.0";
 
 // ── Dodgeball — 3v3 top-down court, best of 3 rounds ─────────────────────
 // A walled court split by a center line only PLAYERS can't cross (a static

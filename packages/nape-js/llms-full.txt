@@ -1,6 +1,6 @@
 # @newkrok/nape-js — Complete API Reference
 
-> Modern TypeScript 2D physics engine for the web. Fully typed, dual ESM/CJS exports (~174 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
+> Modern TypeScript 2D physics engine for the web. Fully typed, dual ESM/CJS exports (~175 KB gzip bundled). Originally ported from the Haxe Nape engine by Luca Deltodesco.
 
 - **npm**: `npm install @newkrok/nape-js`
 - **GitHub**: https://github.com/NewKrok/nape-js
@@ -8,6 +8,7 @@
 - **Demos**: https://napejs.org/examples
 - **License**: MIT
 - **Version**: 3.41.0 — check at runtime via the `VERSION` export, or the `__NAPE_JS__` global after any import (three.js-style)
+- **Prompt collection**: https://napejs.org/ai.html — prompts for building a game with an LLM, plus the API mistakes models reliably make
 - **Cookbook**: https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md
 - **Troubleshooting**: https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md
 - **Anti-Patterns**: https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md

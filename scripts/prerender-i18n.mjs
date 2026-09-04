@@ -264,6 +264,7 @@ function buildSitemap() {
   // parked, so the page is no longer linked from the site or advertised to
   // crawlers. The file stays in place so existing inbound links don't 404.
   const staticUrls = [
+    { loc: "/ai.html", freq: "monthly", pri: "0.8" },
     { loc: "/benchmark.html", freq: "monthly", pri: "0.7" },
     { loc: "/multiplayer.html", freq: "monthly", pri: "0.7" },
     { loc: "/api/index.html", freq: "weekly", pri: "0.8" },

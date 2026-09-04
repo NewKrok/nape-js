@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   fractureBody, CbType, CbEvent, InteractionListener, InteractionType,
-} from "../nape-js.esm.js?v=3.40.0";
+} from "../nape-js.esm.js?v=3.41.0";
 
 // ── Palette ──────────────────────────────────────────────────────────────
 const FRAG_COLORS = [
