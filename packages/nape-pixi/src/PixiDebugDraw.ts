@@ -310,15 +310,28 @@ export class PixiDebugDraw {
           : baseAlpha;
       const alpha = alphaOverride ?? shapeAlpha;
 
+      // The Graphics object is positioned from the BODY transform, so a
+      // circle/capsule sitting off the body origin (e.g.
+      // `new Circle(r, new Vec2(x, y))`, common in compound static geometry)
+      // must be drawn at its own localCOM or it lands on the body centre.
+      // Polygons already carry the offset in localVerts — don't shift those.
+      let offX = 0;
+      let offY = 0;
+      if (!shape.isPolygon()) {
+        const com = shape.localCOM as { x: number; y: number } | undefined;
+        offX = com?.x ?? 0;
+        offY = com?.y ?? 0;
+      }
+
       if (shape.isCapsule()) {
         const cap = (shape as any).castCapsule;
         if (!cap) continue;
         const hl: number = cap.halfLength;
         const r: number = cap.radius;
-        gfx.roundRect(-hl - r, -r, (hl + r) * 2, r * 2, r);
+        gfx.roundRect(offX - hl - r, offY - r, (hl + r) * 2, r * 2, r);
         gfx.fill({ color: fill, alpha });
         if (this.#showOutlines) {
-          gfx.roundRect(-hl - r, -r, (hl + r) * 2, r * 2, r);
+          gfx.roundRect(offX - hl - r, offY - r, (hl + r) * 2, r * 2, r);
           gfx.stroke({ color: fill, alpha: this.#outlineAlpha, width: this.#lineWidth });
         }
         continue;
@@ -328,14 +341,14 @@ export class PixiDebugDraw {
         const circle = shape.castCircle;
         if (!circle) continue;
         const r: number = (circle as any).radius;
-        gfx.circle(0, 0, r);
+        gfx.circle(offX, offY, r);
         gfx.fill({ color: fill, alpha });
         if (this.#showOutlines) {
-          gfx.circle(0, 0, r);
+          gfx.circle(offX, offY, r);
           gfx.stroke({ color: fill, alpha: this.#outlineAlpha, width: this.#lineWidth });
           // Rotation indicator: short line from centre toward local +X.
-          gfx.moveTo(0, 0);
-          gfx.lineTo(r, 0);
+          gfx.moveTo(offX, offY);
+          gfx.lineTo(offX + r, offY);
           gfx.stroke({ color: fill, alpha: 0.4, width: 1 });
         }
         continue;

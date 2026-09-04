@@ -495,6 +495,18 @@ export class ThreeJSAdapter {
     if (body.userData?._hidden3d || body.userData?._hidden) return;
     for (const shape of body.shapes) {
       let geom;
+      // Circle/Capsule geometry is centred on the shape's own origin, and the
+      // mesh is positioned from the BODY transform — so a shape placed off the
+      // body origin (e.g. `new Circle(r, new Vec2(x, y))`, common for compound
+      // static geometry) must have its localCOM baked into the geometry or it
+      // renders at the body centre instead. Polygons already carry the offset
+      // in localVerts, so they must NOT be shifted again.
+      let offX = 0, offY = 0;
+      if (!shape.isPolygon()) {
+        const com = shape.localCOM;
+        offX = com.x;
+        offY = com.y;
+      }
       if (shape.isCircle()) {
         geom = new _THREE.SphereGeometry(shape.castCircle.radius, 16, 16);
       } else if (shape.isCapsule()) {
@@ -524,6 +536,8 @@ export class ThreeJSAdapter {
         geom.translate(0, 0, -15);
       }
       if (!geom) continue;
+      // World Y is flipped in the three.js scene, so the offset is too.
+      if (offX || offY) geom.translate(offX, -offY, 0);
 
       const color = bodyColorHex(body);
       const isZone = !!body.userData?._isZone;

@@ -87,12 +87,14 @@ type FakeShape =
   | {
       kind: "circle";
       radius: number;
+      localCOM?: { x: number; y: number };
       fluidEnabled?: boolean;
       sensorEnabled?: boolean;
     }
   | {
       kind: "polygon";
       verts: Array<{ x: number; y: number }>;
+      localCOM?: { x: number; y: number };
       fluidEnabled?: boolean;
       sensorEnabled?: boolean;
     }
@@ -100,6 +102,7 @@ type FakeShape =
       kind: "capsule";
       halfLength: number;
       radius: number;
+      localCOM?: { x: number; y: number };
       fluidEnabled?: boolean;
       sensorEnabled?: boolean;
     };
@@ -108,6 +111,7 @@ function wrapShape(s: FakeShape) {
   const base = {
     fluidEnabled: s.fluidEnabled ?? false,
     sensorEnabled: s.sensorEnabled ?? false,
+    localCOM: s.localCOM,
   };
   if (s.kind === "circle") {
     return {
@@ -140,7 +144,10 @@ function wrapShape(s: FakeShape) {
   return {
     ...base,
     isCircle: () => false,
-    isPolygon: () => true, // capsule is polygon-backed in nape
+    // Verified against the engine: a real Capsule answers isPolygon() FALSE
+    // and carries its placement in localCOM (unlike a Polygon, whose localCOM
+    // is the centroid and whose localVerts are already in body-local space).
+    isPolygon: () => false,
     isCapsule: () => true,
     castCircle: null,
     castPolygon: null,
@@ -345,6 +352,66 @@ describe("PixiDebugDraw — shape rendering", () => {
     const rr = gfx.calls.filter((c) => c.method === "roundRect");
     expect(rr).toHaveLength(2);
     expect(rr[0].args).toEqual([-25, -5, 50, 10, 5]);
+  });
+
+  // The Graphics object is positioned from the body transform, so a shape
+  // placed off the body origin (compound bodies) must be drawn at its own
+  // localCOM — otherwise every shape of a multi-shape body piles up on the
+  // body centre.
+  it("draws a circle at its localCOM offset", () => {
+    const body = makeBody({
+      shapes: [{ kind: "circle", radius: 7, localCOM: { x: 40, y: -25 } }],
+    });
+    debug.render(asSpace(makeSpace([body])));
+    const gfx = ((debug.container as FakeContainer).children[0] as FakeContainer)
+      .children[0] as FakeGraphics;
+    const circles = gfx.calls.filter((c) => c.method === "circle");
+    expect(circles).toHaveLength(2);
+    expect(circles[0].args).toEqual([40, -25, 7]);
+  });
+
+  it("draws a capsule at its localCOM offset", () => {
+    const body = makeBody({
+      shapes: [{ kind: "capsule", halfLength: 20, radius: 5, localCOM: { x: 10, y: 3 } }],
+    });
+    debug.render(asSpace(makeSpace([body])));
+    const gfx = ((debug.container as FakeContainer).children[0] as FakeContainer)
+      .children[0] as FakeGraphics;
+    const rr = gfx.calls.filter((c) => c.method === "roundRect");
+    expect(rr[0].args).toEqual([-15, -2, 50, 10, 5]);
+  });
+
+  // A Polygon's localCOM is its CENTROID, not a placement offset, and its
+  // localVerts are already in body-local space — so shifting a polygon by
+  // localCOM would double the offset and displace every wall.
+  it("keeps polygons unshifted — localVerts already carry the offset", () => {
+    const body = makeBody({
+      shapes: [
+        {
+          kind: "polygon",
+          localCOM: { x: 220, y: 70 },
+          verts: [
+            { x: 200, y: 60 },
+            { x: 240, y: 60 },
+            { x: 240, y: 80 },
+          ],
+        },
+      ],
+    });
+    debug.render(asSpace(makeSpace([body])));
+    const gfx = ((debug.container as FakeContainer).children[0] as FakeContainer)
+      .children[0] as FakeGraphics;
+    const polys = gfx.calls.filter((c) => c.method === "poly");
+    expect(polys[0].args[0]).toEqual([200, 60, 240, 60, 240, 80]);
+  });
+
+  it("tolerates a shape with no localCOM", () => {
+    const body = makeBody({ shapes: [{ kind: "circle", radius: 4 }] });
+    expect(() => debug.render(asSpace(makeSpace([body])))).not.toThrow();
+    const gfx = ((debug.container as FakeContainer).children[0] as FakeContainer)
+      .children[0] as FakeGraphics;
+    const circles = gfx.calls.filter((c) => c.method === "circle");
+    expect(circles[0].args).toEqual([0, 0, 4]);
   });
 });
 
