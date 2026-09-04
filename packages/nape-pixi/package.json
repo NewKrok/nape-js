@@ -1,6 +1,6 @@
 {
   "name": "@newkrok/nape-pixi",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "PixiJS v8 renderer integration for @newkrok/nape-js — body-sprite binding, interpolation, debug draw, worker bridge.",
   "type": "module",
   "sideEffects": false,
