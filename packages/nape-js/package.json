@@ -1,6 +1,6 @@
 {
   "name": "@newkrok/nape-js",
-  "version": "3.41.0",
+  "version": "3.42.0",
   "description": "High-performance 2D physics engine for TypeScript & JavaScript — rigid bodies, constraints, fluid simulation, raycasting, and deterministic multiplayer. Tree-shakeable, zero dependencies.",
   "type": "module",
   "sideEffects": [
