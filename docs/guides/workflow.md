@@ -208,7 +208,7 @@ When a PR changes features, APIs, priorities, or versions:
 | `README.md` | Quick start, API tables, badge versions | Public API changes, releases |
 | `packages/nape-pixi/README.md` | Quickstart, API, migration guide | nape-pixi API changes |
 | `packages/nape-js/llms.txt` | Class list, links, quick start | nape-js public API additions/removals |
-| `packages/nape-js/llms-full.txt` | Complete API reference, gotchas, version (line 1) | Any nape-js public API change |
+| `packages/nape-js/llms-full.txt` | Complete API reference, gotchas (the header version line is stamped automatically by `release.mjs`) | Any nape-js public API change |
 | `packages/<pkg>/package.json` | `version` field (CI does this automatically) | Releases |
 
 ---

@@ -21,7 +21,7 @@
  */
 
 import { execSync, spawnSync } from "node:child_process";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -155,6 +155,28 @@ function bumpVersion(pkg, bump) {
   return pkgJson.version;
 }
 
+/**
+ * Keep the human-maintained llms-full.txt in sync with the released version.
+ * The file's header carries a `- **Version**: x.y.z` line that used to be
+ * updated by hand and drifted (3.30.0 shipped on the site while the package
+ * was at 3.41.0). Stamping it here, inside the release commit, makes drift
+ * impossible. No-op for packages without an llms-full.txt.
+ */
+function stampLlmsVersion(pkg, newVersion) {
+  const llmsPath = resolve(REPO_ROOT, "packages", pkg.shortName, "llms-full.txt");
+  if (!existsSync(llmsPath)) return;
+  if (DRY_RUN) {
+    console.error(`(dry-run) stamp llms-full.txt version -> ${newVersion}`);
+    return;
+  }
+  const text = readFileSync(llmsPath, "utf8");
+  const stamped = text.replace(/^(- \*\*Version\*\*: )\S+/m, `$1${newVersion}`);
+  if (stamped !== text) {
+    writeFileSync(llmsPath, stamped, "utf8");
+    run(`git add ${llmsPath}`);
+  }
+}
+
 function ensureNoTagClash(tag) {
   const existing = shq(`git rev-parse --verify ${tag}`);
   if (existing) {
@@ -177,6 +199,7 @@ function releasePackage(pkg, isFirstRelease, bump) {
 
   if (!isFirstRelease) {
     ensureNoTagClash(newTag);
+    stampLlmsVersion(pkg, newVersion);
     run(`git add ${pkg.pkgJsonPath} package-lock.json`);
     // Skip hooks in CI — the commit is deterministic and has already passed CI.
     run(`git commit -m "release(${pkg.shortName}): ${newVersion}"`);
