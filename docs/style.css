@@ -30,6 +30,8 @@ body {
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
+/* Links inside running text must not rely on color alone (WCAG 1.4.1) */
+p a, li a { text-decoration: underline; text-underline-offset: 2px; }
 
 .container {
   max-width: 960px;

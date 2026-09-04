@@ -236,7 +236,8 @@ async function updateCodePreview() {
   const source = await getActiveCode();
   const escaped = source.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   codeBodyEl.innerHTML = `<pre class="line-numbers"><code class="language-javascript">${escaped}</code></pre>`;
-  Prism.highlightAllUnder(codeBodyEl);
+  // Prism arrives deferred from a third-party CDN — the preview must survive without it.
+  if (typeof Prism !== "undefined") Prism.highlightAllUnder(codeBodyEl);
 }
 
 function showToast(msg) {
