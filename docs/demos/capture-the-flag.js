@@ -90,6 +90,7 @@ const TEAM_COLORS = ["#58a6ff", "#f85149"]; // blue = you, red = them
 let _space = null;
 let _players = [];        // { body, team, isHuman, role, speed, ... }
 let _flags = [];          // per team: { team, state, x, y, vx, vy, carrier, ... }
+let _basesDrawnThisFrame = false; // canvas2d draws bases itself (z-order)
 let _frame = 0;
 let _phase = "ready";     // "ready" | "play" | "capture" | "over"
 let _phaseT = 0;
@@ -344,7 +345,45 @@ function dropFlagOf(p, dirX, dirY) {
   flag.vx = dirX * FLAG_DROP_SPEED + v.x * 0.3;
   flag.vy = dirY * FLAG_DROP_SPEED + v.y * 0.3;
   flag.returnT = FLAG_RETURN_SECONDS * 60;
+  // A tackle right against a cover block would drop the flag inside it.
+  pushFlagOutOfCover(flag);
   p.pickupCd = PICKUP_CD_AFTER_DROP;
+}
+
+// A dropped flag is a game object, not a body: nothing stops it entering the
+// static cover blocks. Eject it to the nearest outside point (plus the pickup
+// clearance a player's own collider needs) so a loose flag is always reachable.
+const FLAG_CLEARANCE = PLAYER_R + 4;
+
+function pushFlagOutOfCover(flag) {
+  for (const c of COVER_RECTS) {
+    const l = c.x - FLAG_CLEARANCE;
+    const r = c.x + c.w + FLAG_CLEARANCE;
+    const t = c.y - FLAG_CLEARANCE;
+    const b = c.y + c.h + FLAG_CLEARANCE;
+    if (flag.x <= l || flag.x >= r || flag.y <= t || flag.y >= b) continue;
+    // Inside the inflated rect — leave through the closest edge.
+    const dl = flag.x - l, dr = r - flag.x, dt = flag.y - t, db = b - flag.y;
+    const m = Math.min(dl, dr, dt, db);
+    if (m === dl) { flag.x = l; flag.vx = -Math.abs(flag.vx) * 0.4; }
+    else if (m === dr) { flag.x = r; flag.vx = Math.abs(flag.vx) * 0.4; }
+    else if (m === dt) { flag.y = t; flag.vy = -Math.abs(flag.vy) * 0.4; }
+    else { flag.y = b; flag.vy = Math.abs(flag.vy) * 0.4; }
+  }
+
+  for (const c of COVER_CIRCLES) {
+    const dx = flag.x - c.x, dy = flag.y - c.y;
+    const rr = c.r + FLAG_CLEARANCE;
+    const d = Math.hypot(dx, dy);
+    if (d >= rr) continue;
+    // Dead centre (a direct hit) has no normal — pick one deterministically.
+    const nx = d > 0.001 ? dx / d : 1;
+    const ny = d > 0.001 ? dy / d : 0;
+    flag.x = c.x + nx * rr;
+    flag.y = c.y + ny * rr;
+    const vn = flag.vx * nx + flag.vy * ny;
+    if (vn < 0) { flag.vx -= vn * nx * 1.4; flag.vy -= vn * ny * 1.4; }
+  }
 }
 
 function tickFlags() {
@@ -365,6 +404,10 @@ function tickFlags() {
       flag.vy *= FLAG_SKID_DRAG;
       flag.x = Math.max(FIELD_L + 12, Math.min(FIELD_R - 12, flag.x));
       flag.y = Math.max(FIELD_T + 12, Math.min(FIELD_B - 12, flag.y));
+      // The flag has no collider, so a skid would otherwise settle *inside* a
+      // cover block — where no player (radius PLAYER_R) can ever reach it.
+      // Push it back out along the shallowest axis and bounce the slide.
+      pushFlagOutOfCover(flag);
       if (--flag.returnT <= 0) {
         resetFlag(flag); // nobody claimed it — the flag walks home
         continue;
@@ -720,6 +763,24 @@ function computeMoveDir() {
 }
 
 // ── Rendering ────────────────────────────────────────────────────────────
+// The base circles and the flags are pure game overlay — no physics body
+// backs them — so they are drawn from the shared overlay hook, which every
+// render mode calls. Drawing them inside canvas2d's render() only would leave
+// the three.js and pixi views without a base or a flag to aim at.
+function drawBases(ctx) {
+  for (const team of [0, 1]) {
+    ctx.beginPath();
+    ctx.arc(baseX(team), CY, BASE_R, 0, Math.PI * 2);
+    ctx.fillStyle = TEAM_COLORS[team] + "14";
+    ctx.fill();
+    ctx.strokeStyle = TEAM_COLORS[team] + "88";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
 function drawField(ctx) {
   ctx.fillStyle = "#0d1117";
   ctx.fillRect(0, 0, VIEW_W, VIEW_H);
@@ -740,19 +801,6 @@ function drawField(ctx) {
   ctx.moveTo(CX, FIELD_T);
   ctx.lineTo(CX, FIELD_B);
   ctx.stroke();
-
-  // Bases
-  for (const team of [0, 1]) {
-    ctx.beginPath();
-    ctx.arc(baseX(team), CY, BASE_R, 0, Math.PI * 2);
-    ctx.fillStyle = TEAM_COLORS[team] + "14";
-    ctx.fill();
-    ctx.strokeStyle = TEAM_COLORS[team] + "88";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 6]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
 
   // Cover blocks
   ctx.fillStyle = "#2b3547";
@@ -1193,8 +1241,12 @@ export default {
   // Canvas2d: full custom draw — field, flags, players (no default grid).
   render(ctx, space, W, H, showOutlines) {
     drawField(ctx);
+    // Bases belong UNDER the pucks: their translucent fill would otherwise
+    // wash over them. The overlay skips them once this ran.
+    drawBases(ctx);
+    _basesDrawnThisFrame = true;
     for (const p of _players) drawPlayer(ctx, p);
-    for (const flag of _flags) drawFlag(ctx, flag);
+    // Flags are drawn by render3dOverlay, which runs in every mode.
     void space; void W; void H; void showOutlines;
   },
 
@@ -1202,6 +1254,11 @@ export default {
   // calls this after render(); the three.js/pixi adapters call it after
   // their own body rendering, so the scoreboard stays visible everywhere.
   render3dOverlay(ctx, space, W, H) {
+    // canvas2d already laid the bases down beneath the pucks; the three.js
+    // and pixi adapters render only physics bodies, so draw them here.
+    if (!_basesDrawnThisFrame) drawBases(ctx);
+    _basesDrawnThisFrame = false;
+    for (const flag of _flags) drawFlag(ctx, flag);
     drawStaminaBars(ctx);
     drawSparks(ctx);
     drawPlayerMarker(ctx);
