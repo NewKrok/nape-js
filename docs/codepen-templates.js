@@ -9,18 +9,18 @@
  *  2. Auto-generation from demo hooks (setup/step/click/drag/release) via .toString()
  */
 
-const NAPE_VERSION = "3.41.0";
-const NAPE_PIXI_VERSION = "0.1.2";
+const NAPE_VERSION = "3.42.0";
+const NAPE_PIXI_VERSION = "0.1.3";
 const THREE_VERSION = "0.170.0";
 const PIXI_VERSION = "8";
 
-const NAPE_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.41.0/dist/index.js`;
+const NAPE_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.42.0/dist/index.js`;
 // Serialization (spaceToJSON / spaceFromJSON) lives in a subpath bundle, not
 // the main one — emitted only for demos that use it (e.g. billiards'
 // shadow-sim shot prediction). Bare specifier resolves via the import map.
 const NAPE_SERIALIZATION_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-js@3.35.0/dist/serialization/index.js`;
 const NAPE_SERIALIZATION_BARE = `@newkrok/nape-js/serialization`;
-const NAPE_PIXI_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-pixi@0.1.2/dist/index.js`;
+const NAPE_PIXI_CDN = `https://cdn.jsdelivr.net/npm/@newkrok/nape-pixi@0.1.3/dist/index.js`;
 const THREE_CDN = `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/build/three.module.js`;
 const PIXI_CDN = `https://cdn.jsdelivr.net/npm/pixi.js@${PIXI_VERSION}/dist/pixi.min.mjs`;
 
@@ -300,6 +300,18 @@ function drawConstraintLines() {
 
 const RENDERER_3D = `// ── Three.js Renderer ───────────────────────────────────────────────────────
 const MESH_COLORS = [0x58a6ff, 0xd29922, 0x3fb950, 0xf85149, 0xa371f7, 0xdbabff];
+// The CSS-colour palette demos know from docs/renderer.js. Overlay code drawn
+// on the 2D HUD canvas reads it (usually as \`COLORS?.something ?? fallback\`,
+// which still throws if COLORS is not declared at all), so the 3D runtime has
+// to declare it too — the 2D runtime already does.
+const COLORS = [
+  { fill: "rgba(88,166,255,0.18)",  stroke: "#58a6ff" },
+  { fill: "rgba(210,153,34,0.18)",  stroke: "#d29922" },
+  { fill: "rgba(63,185,80,0.18)",   stroke: "#3fb950" },
+  { fill: "rgba(248,81,73,0.18)",   stroke: "#f85149" },
+  { fill: "rgba(163,113,247,0.18)", stroke: "#a371f7" },
+  { fill: "rgba(219,171,255,0.18)", stroke: "#dbabff" },
+];
 let _showOutlines3D = __OUTLINES__;
 const _meshes = [];
 
@@ -368,6 +380,29 @@ function syncBodies3D(space) {
     mesh.rotation.z = -body.rotation;
   }
 }
+// A minimal stand-in for the docs site's ThreeJSAdapter. Demos receive this as
+// render3d's 9th argument and call the same handful of methods on it, so a
+// demo that decorates the default rendering (custom meshes, restyled bodies)
+// works here without knowing it is running in CodePen.
+const _adapter = {
+  getThree: () => THREE,
+  getRenderer: () => renderer,
+  getScene: () => scene,
+  getCamera: () => camera,
+  syncBodies: (space) => syncBodies3D(space),
+  getTrackedMeshes: () => _meshes,
+  addTrackedMesh: (mesh, body, edges = null) => {
+    scene.add(mesh);
+    _meshes.push({ mesh, body, edges });
+  },
+  addSceneMesh: (mesh) => scene.add(mesh),
+  removeSceneMesh: (mesh) => {
+    scene.remove(mesh);
+    mesh.geometry?.dispose?.();
+    if (Array.isArray(mesh.material)) mesh.material.forEach(m => m.dispose?.());
+    else mesh.material?.dispose?.();
+  },
+};
 // ── End Three.js Renderer ───────────────────────────────────────────────────
 `;
 
@@ -651,7 +686,7 @@ function _loop() {
   const _cx = _camX + _shakeOffX, _cy = _camY + _shakeOffY;
   if (!_demo.render3d) syncBodies3D(space);
   if (_demo.render3d) {
-    _demo.render3d(renderer, scene, camera, space, W, H, _cx, _cy);
+    _demo.render3d(renderer, scene, camera, space, W, H, _cx, _cy, _adapter);
   } else {
     // Offset the 3D camera for follow-camera and/or active shake. When neither
     // applies, _cx/_cy are 0 so the camera stays at its default framing.
@@ -1008,6 +1043,77 @@ const _preambleCache = new Map();
  * or any other depth — `import.meta.url` always points at
  * `/codepen-templates.js`, which sits next to `/demos/`.
  */
+/**
+ * Inline the sources of any `docs/renderers/*.js` module a demo imports.
+ *
+ * CodePen gets a single flat script, and extractModulePreamble drops every
+ * import line — so a demo that factors its visuals into a shared renderer
+ * module would reference functions that do not exist in the pen. Fetching
+ * those modules and stripping their own imports/exports puts the definitions
+ * back at top-level scope, where the demo body expects them.
+ *
+ * `threejs-adapter.js` is deliberately skipped: the 3D runtime already
+ * provides `loadThree()` and its own scene, and inlining the real adapter
+ * would redeclare both.
+ */
+// Modules the runtime templates already carry a copy of. Inlining these a
+// second time redeclares their top-level functions and the pen dies on a
+// duplicate-identifier parse error (water-renderer's waveY, for one).
+const SHARED_SKIP = new Set([
+  "threejs-adapter.js",
+  "pixijs-adapter.js",
+  "canvas2d-adapter.js",
+  "water-renderer.js",   // see WATER_HELPERS_2D / WATER_HELPERS_3D above
+  "shared-colors.js",    // palettes are inlined per template
+]);
+const _sharedCache = new Map();
+
+async function fetchSharedRendererSources(demoSource) {
+  const specifiers = new Set();
+  // Match `from "../renderers/<file>.js..."` in both quote styles.
+  const re = /from\s+["'](?:\.\.?\/)+renderers\/([A-Za-z0-9_-]+\.js)(?:\?[^"']*)?["']/g;
+  let m;
+  while ((m = re.exec(demoSource)) !== null) {
+    if (!SHARED_SKIP.has(m[1])) specifiers.add(m[1]);
+  }
+  if (specifiers.size === 0) return "";
+
+  const parts = [];
+  for (const file of specifiers) {
+    if (_sharedCache.has(file)) {
+      parts.push(_sharedCache.get(file));
+      continue;
+    }
+    try {
+      const url = new URL(`./renderers/${file}?v=${NAPE_VERSION}`, import.meta.url).href;
+      const resp = await fetch(url, { cache: "no-cache" });
+      if (!resp.ok) throw new Error(resp.status);
+      const body = stripModuleSyntax(await resp.text());
+      _sharedCache.set(file, body);
+      parts.push(body);
+    } catch {
+      _sharedCache.set(file, "");
+    }
+  }
+  return parts.filter(Boolean).join("\n\n");
+}
+
+/**
+ * Turn an ES module into script-scope source: drop its import statements and
+ * unwrap `export` keywords so the declarations land as plain top-level ones.
+ */
+function stripModuleSyntax(text) {
+  return text
+    // Whole import statements, single- or multi-line.
+    .replace(/^\s*import\s[\s\S]*?from\s+["'][^"']+["'];?\s*$/gm, "")
+    .replace(/^\s*import\s+["'][^"']+["'];?\s*$/gm, "")
+    // `export function foo` / `export const foo` → plain declarations.
+    .replace(/^\s*export\s+(?=(?:default\s+)?(?:function|const|let|var|class)\b)/gm, "")
+    // Bare re-export lists have no value once everything is top-level.
+    .replace(/^\s*export\s*\{[^}]*\}\s*;?\s*$/gm, "")
+    .trim();
+}
+
 async function fetchModulePreamble(demo) {
   if (!demo.id) return "";
   if (_preambleCache.has(demo.id)) return _preambleCache.get(demo.id);
@@ -1021,7 +1127,14 @@ async function fetchModulePreamble(demo) {
     const resp = await fetch(url, { cache: "no-cache" });
     if (!resp.ok) throw new Error(resp.status);
     const text = await resp.text();
-    const preamble = extractModulePreamble(text);
+    // A demo may pull shared visuals out of docs/renderers/ (the low-poly
+    // character rig, for one). Those imports are stripped along with every
+    // other import, so their sources have to be inlined ahead of the demo's
+    // own preamble or the pen dies on the first call into them.
+    const shared = await fetchSharedRendererSources(text);
+    const preamble = [shared, extractModulePreamble(text)]
+      .filter(Boolean)
+      .join("\n\n");
     _preambleCache.set(demo.id, preamble);
     return preamble;
   } catch {
