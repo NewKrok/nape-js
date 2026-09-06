@@ -95,6 +95,7 @@
   "footer.twitter": "Twitter / X",
   "footer.credits": "基于 <a href=\"https://github.com/deltaluca/nape\">Luca Deltodesco</a> 的原始 Haxe 引擎 • JS 移植由 <a href=\"https://github.com/cspotcode/nape-to-js\">Andrew Bradley</a> 搭建 • TypeScript 重写及持续开发由 <a href=\"https://github.com/NewKrok\">Istvan Krisztian Somoracz</a> 负责",
   "footer.license": "MIT 许可证",
+  "footer.sponsor": "❤ 在 GitHub 上赞助",
   "footer.kofi": "☕ 在 Ko-fi 上支持我",
   "footer.home": "首页",
   "examples.meta.title": "2D 物理示例 — nape-js | TypeScript 物理引擎演示",

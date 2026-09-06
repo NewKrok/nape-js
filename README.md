@@ -12,14 +12,16 @@
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@newkrok/nape-js.svg?label=gzip)](https://bundlephobia.com/package/@newkrok/nape-js)
 [![license](https://img.shields.io/npm/l/@newkrok/nape-js.svg)](https://github.com/NewKrok/nape-js/blob/master/LICENSE)
 [![docs](https://img.shields.io/badge/docs-online-blue.svg)](https://napejs.org/)
+[![sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2.svg)](https://github.com/sponsors/NewKrok)
 
 Fully typed 2D physics engine — a modern TypeScript rewrite of the
 [Nape](https://github.com/deltaluca/nape) Haxe physics engine.
 
 This is the **actively maintained successor** to the original Nape. The Haxe
-engine has been unmaintained since 2022; nape-js carries the same simulation
-model forward as pure TypeScript — no dependencies, no build step, works in
-Node.js and every browser.
+engine saw its last release in 2016 and its last commit that same year (the
+community's Haxe 4 fork, `nape-haxe4`, last shipped in 2020); nape-js carries
+the same simulation model forward as pure TypeScript — no dependencies, no
+build step, works in Node.js and every browser.
 
 **[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
 
@@ -276,6 +278,16 @@ Pull requests are welcome! Every PR is reviewed collaboratively with
 [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md).
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full review process,
 pre-push checklist, and what gets flagged as a blocker vs. a nit.
+
+## Support
+
+nape-js is developed and maintained in my own time. If it saves you some of
+yours, you can support the work:
+
+- [GitHub Sponsors](https://github.com/sponsors/NewKrok) — recurring or one-off
+- [Ko-fi](https://ko-fi.com/newkrok) — one-off
+
+Starring the repo and reporting bugs help just as much.
 
 ## License
 

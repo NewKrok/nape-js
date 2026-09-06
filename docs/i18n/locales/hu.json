@@ -95,6 +95,7 @@
   "footer.twitter": "Twitter / X",
   "footer.credits": "Az eredeti Haxe motor alapján, amelyet <a href=\"https://github.com/deltaluca/nape\">Luca Deltodesco</a> készített • a JS-portot <a href=\"https://github.com/cspotcode/nape-to-js\">Andrew Bradley</a> alapozta meg • a TypeScript-újraírás és a folyamatos fejlesztés <a href=\"https://github.com/NewKrok\">Istvan Krisztian Somoracz</a> munkája",
   "footer.license": "MIT licenc",
+  "footer.sponsor": "❤ Támogass GitHubon",
   "footer.kofi": "☕ Támogass a Ko-fin",
   "footer.home": "Főoldal",
   "examples.meta.title": "2D fizikai példák — nape-js | TypeScript fizikai motor demók",

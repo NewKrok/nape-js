@@ -95,6 +95,7 @@
   "footer.twitter": "Twitter / X",
   "footer.credits": "Basé sur le moteur Haxe original de <a href=\"https://github.com/deltaluca/nape\">Luca Deltodesco</a> • Portage JS initié par <a href=\"https://github.com/cspotcode/nape-to-js\">Andrew Bradley</a> • Réécriture TypeScript et développement continu par <a href=\"https://github.com/NewKrok\">Istvan Krisztian Somoracz</a>",
   "footer.license": "Licence MIT",
+  "footer.sponsor": "❤ Sponsoriser sur GitHub",
   "footer.kofi": "☕ Soutenez-moi sur Ko-fi",
   "footer.home": "Accueil",
   "examples.meta.title": "Exemples de physique 2D — nape-js | Démos du moteur physique TypeScript",

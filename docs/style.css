@@ -1005,7 +1005,15 @@ a#starBadge:hover svg { color: var(--orange); }
   color: var(--text-dim);
 }
 .footer p + p { margin-top: 6px; }
-.footer-support { margin-top: 16px; }
+.footer-support {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+/* .kofi-link is kept as an alias so older markup keeps its styling. */
+.support-link,
 .kofi-link {
   display: inline-block;
   padding: 8px 20px;
@@ -1013,12 +1021,21 @@ a#starBadge:hover svg { color: var(--orange); }
   border-radius: 6px;
   color: var(--text-dim);
   font-size: 0.85rem;
+  /* These live inside a <p>, which the global `p a` rule underlines — wrong
+     for something shaped like a button. */
+  text-decoration: none;
   transition: border-color 0.2s, color 0.2s;
 }
+.support-link:hover,
 .kofi-link:hover {
   border-color: var(--accent);
   color: var(--accent);
   text-decoration: none;
+}
+/* GitHub's own sponsor colour, so the button is recognisable at a glance. */
+.support-link-sponsor:hover {
+  border-color: #db61a2;
+  color: #db61a2;
 }
 
 /* =========================================================================
