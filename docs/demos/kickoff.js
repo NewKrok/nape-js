@@ -1,4 +1,9 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.41.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.42.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.0";
+import {
+  createCharacter, destroyCharacter, syncCharacter, teamPalette,
+  createFootball, destroyFootball, syncBall, createBoardMaterial,
+} from "../renderers/lowpoly-characters.js?v=3.42.0";
 
 // ── Kickoff — 2v2 top-down arena soccer (Haxball-style) ──────────────────
 // A walled pitch with a goal pocket on each side. You + an AI teammate (blue)
@@ -88,6 +93,18 @@ let _clock = 0;           // frames of actual play time elapsed
 let _golden = false;      // full time at a tie — next goal wins
 let _restartLockUntil = 0;
 let _holder = null;       // player currently carrying the ball, or null
+
+// 3D-only: one low-poly figure per player, rebuilt whenever the roster or the
+// three.js scene changes. Purely cosmetic — the physics never sees these.
+let _chars = [];
+let _THREE = null;
+let _charScene = null;    // the three.js scene the figures were added to
+let _pitchMesh = null;    // 3D-only: textured ground plane
+let _pitchScene = null;
+let _ballMesh = null;     // 3D-only: the football standing in for the puck
+let _ballScene = null;
+let _walls = null;        // the static pitch body, kept for 3D restyling
+let _wallsStyled = null;  // the scene its meshes were last restyled for
 let _sparks = [];         // kick flashes { x, y, t }
 let _trail = [];          // recent ball positions for the motion streak
 let _isTouch = false;
@@ -144,7 +161,10 @@ function buildPitch(space) {
 
     // Net pocket behind the goal line — catches the ball for the replay beat.
     const backX = side === 0 ? PITCH_L - GOAL_DEPTH - WALL_T : PITCH_R + GOAL_DEPTH;
-    const lipX = side === 0 ? PITCH_L - GOAL_DEPTH - WALL_T : PITCH_R - WALL_T;
+    // The lip runs from the goal line outward to the back wall. On the right
+    // it has to START at PITCH_R — starting a wall thickness earlier pushed
+    // the pocket 16px back onto the pitch, where players snagged on it.
+    const lipX = side === 0 ? PITCH_L - GOAL_DEPTH - WALL_T : PITCH_R;
     rect(backX, CY - GOAL_HALF - WALL_T, WALL_T, GOAL_HALF * 2 + WALL_T * 2);
     rect(lipX, CY - GOAL_HALF - WALL_T, GOAL_DEPTH + WALL_T, WALL_T);
     rect(lipX, CY + GOAL_HALF, GOAL_DEPTH + WALL_T, WALL_T);
@@ -182,6 +202,10 @@ function spawnPlayer(idx) {
   body.shapes.add(shape);
   body.allowRotation = false;
   body.isBullet = true;
+  // 3D mode draws a low-poly footballer at this position instead of the puck;
+  // the flag has to be set before the body enters the space, because the
+  // adapter builds its meshes on demo load.
+  body.userData._hidden3d = true;
   body.space = _space;
 
   const isHuman = idx === 0;
@@ -220,6 +244,8 @@ function spawnBall() {
   // which lands right in the "ping off the post" zone.
   body.shapes.add(new Circle(BALL_R, undefined, new Material(1.0, 0.02, 0.01, 0.4)));
   body.isBullet = true; // kicks are fast enough to tunnel a 16px wall
+  // 3D mode swaps in a textured football; hide the plain sphere behind it.
+  body.userData._hidden3d = true;
   body.space = _space;
   return body;
 }
@@ -1003,6 +1029,94 @@ function drawBanners(ctx) {
 }
 
 // ── Demo definition ──────────────────────────────────────────────────────
+
+// ── 3D character rigging (three.js mode only) ────────────────────────────
+// The demo has no teardown hook, so the figures are (re)built lazily whenever
+// the roster or the scene they belong to has changed — the same re-entrant
+// pattern setup() uses for its window listeners.
+// The 3D scene has no turf of its own — the adapter only draws bodies, so the
+// pitch markings that make the 2D view readable are simply absent. Rather than
+// model them, the existing canvas2d `drawPitch` is rendered once into an
+// offscreen canvas and used as a texture on a ground plane: one source of
+// truth for the pitch, and the two render modes can never drift apart.
+function ensurePitchMesh(adapter, scene) {
+  if (_pitchScene === scene && _pitchMesh) return;
+  if (_pitchMesh) adapter.removeSceneMesh(_pitchMesh);
+
+  const cv = document.createElement("canvas");
+  cv.width = VIEW_W;
+  cv.height = VIEW_H;
+  drawPitch(cv.getContext("2d"));
+
+  const tex = new _THREE.CanvasTexture(cv);
+  tex.colorSpace = _THREE.SRGBColorSpace;
+  // The plane is built in scene space, which mirrors world Y — so the texture
+  // has to be flipped back, or every marking lands on the wrong half.
+  tex.flipY = true;
+
+  const geom = new _THREE.PlaneGeometry(VIEW_W, VIEW_H);
+  const mesh = new _THREE.Mesh(
+    geom,
+    new _THREE.MeshBasicMaterial({ map: tex }),
+  );
+  // Centre of the plane in scene coords, dropped just below the bodies so it
+  // never z-fights with the walls sitting at z = 0.
+  mesh.position.set(VIEW_W / 2, -VIEW_H / 2, -20);
+  adapter.addSceneMesh(mesh);
+
+  _pitchMesh = mesh;
+  _pitchScene = scene;
+}
+
+// Swap the debug renderer's flat grey off the surrounding boards. The adapter
+// already built and tracks those meshes, so this only replaces their material
+// — no geometry is duplicated, and body/mesh sync keeps working untouched.
+function ensureBoards(adapter, scene) {
+  if (_wallsStyled === scene || !_walls) return;
+  const mat = createBoardMaterial(_THREE, { tint: 0x33414d, worldUnitsPerTile: 48 });
+  let styled = 0;
+  for (const entry of adapter.getTrackedMeshes()) {
+    if (entry.body !== _walls) continue;
+    entry.mesh.material = mat;
+    styled++;
+  }
+  // Only latch once the meshes were actually there to restyle; otherwise a
+  // frame that runs before they exist would mark the job done forever.
+  if (styled > 0) _wallsStyled = scene;
+}
+
+function ensureFootball(adapter, scene) {
+  if (_ballScene === scene && _ballMesh && _ballMesh.mesh) return;
+  if (_ballMesh) destroyFootball(adapter, _ballMesh);
+  _ballMesh = createFootball(adapter, _THREE, { radius: BALL_R });
+  _ballScene = scene;
+}
+
+function ensureCharacters(adapter, scene) {
+  // Rebuild when the scene was torn down (a render-mode switch) or the roster
+  // was respawned. resetGame() replaces every player body while keeping the
+  // roster four strong, so comparing lengths is not enough — the figures are
+  // keyed on the body identities they were built for.
+  const stale = _charScene !== scene
+    || _chars.length !== _players.length
+    || _chars.some((ch, i) => ch.body !== _players[i].body);
+  if (!stale) return;
+
+  for (const ch of _chars) destroyCharacter(adapter, ch);
+  _chars = [];
+
+  for (let i = 0; i < _players.length; i++) {
+    const p = _players[i];
+    const ch = createCharacter(adapter, _THREE, {
+      unit: PLAYER_R,
+      palette: teamPalette(parseInt(TEAM_COLORS[p.team].slice(1), 16)),
+    });
+    ch.body = p.body;
+    _chars.push(ch);
+  }
+  _charScene = scene;
+}
+
 export default {
   id: "kickoff",
   label: "Kickoff",
@@ -1016,7 +1130,7 @@ export default {
     _space = space;
     space.gravity = new Vec2(0, 0);
 
-    buildPitch(space);
+    _walls = buildPitch(space);
     resetGame(space);
 
     _isTouch = typeof window !== "undefined" && (
@@ -1161,6 +1275,62 @@ export default {
     for (const p of _players) drawPlayer(ctx, p);
     drawBall(ctx);
     void space; void W; void H; void showOutlines;
+  },
+
+  // 3D: low-poly footballers instead of pucks. The player bodies are hidden
+  // (`_hidden3d`) and a procedural figure is drawn at each one, driven by the
+  // facing/sprint state the simulation already tracks. Everything else — pitch
+  // walls, posts, ball — renders through the adapter's normal body path.
+  render3d(renderer, scene, camera, space, W, H, camX, camY, adapter) {
+    // Lazy-load THREE (cached by loadThree). Until it lands, the adapter's
+    // own body meshes carry the frame — pucks, but never a blank screen.
+    if (!_THREE) {
+      loadThree().then(mod => { _THREE = mod; });
+      adapter.syncBodies(space);
+      renderer.render(scene, camera);
+      return;
+    }
+
+    ensurePitchMesh(adapter, scene);
+    ensureFootball(adapter, scene);
+    ensureCharacters(adapter, scene);
+
+    // Default body rendering for the pitch furniture and the ball.
+    adapter.syncBodies(space);
+
+    // After syncBodies, so the wall meshes it creates actually exist.
+    ensureBoards(adapter, scene);
+
+    for (let i = 0; i < _players.length; i++) {
+      const p = _players[i];
+      const ch = _chars[i];
+      if (!ch) continue;
+      // During the goal beat the scoring side celebrates and the conceding
+      // side sulks; `_phaseT` counts down from GOAL_FRAMES, so it doubles as
+      // the pose clock once converted to seconds.
+      let mood = null, moodT = 0;
+      if (_phase === "goal") {
+        mood = p.team === _lastScorer ? "celebrate" : "dejected";
+        moodT = (GOAL_FRAMES - _phaseT) / 60;
+      }
+      syncCharacter(ch, {
+        x: p.body.position.x,
+        y: p.body.position.y,
+        faceX: p.faceX,
+        faceY: p.faceY,
+        sprinting: p.sprinting,
+        mood,
+        moodT,
+      });
+    }
+
+    const bv = _ball.velocity;
+    syncBall(_ballMesh, {
+      x: _ball.position.x, y: _ball.position.y, vx: bv.x, vy: bv.y,
+    });
+
+    renderer.render(scene, camera);
+    void W; void H; void camX; void camY;
   },
 
   // All render modes: HUD, effects, marker, banners. The canvas2d adapter
