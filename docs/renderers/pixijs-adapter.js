@@ -29,8 +29,8 @@ export function getPixi() {
 import {
   BODY_COLORS_HEX, STATIC_COLOR_HEX, CONSTRAINT_COLOR_HEX,
   bodyColorHex, bodyFillAlpha,
-} from "./shared-colors.js?v=3.41.0";
-import { PixiDebugDraw } from "../nape-pixi.esm.js?v=3.41.0";
+} from "./shared-colors.js?v=3.42.0";
+import { PixiDebugDraw } from "../nape-pixi.esm.js?v=3.42.0";
 
 // Aliases for backward compatibility
 const FILL_COLORS = BODY_COLORS_HEX;

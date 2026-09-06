@@ -1,9 +1,9 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   CbType, CbEvent, InteractionType, InteractionListener, InteractionFilter,
-} from "../nape-js.esm.js?v=3.41.0";
-import { spaceToJSON, spaceFromJSON } from "../serialization/index.js?v=3.41.0";
-import { drawBody } from "../renderer.js?v=3.41.0";
+} from "../nape-js.esm.js?v=3.42.0";
+import { spaceToJSON, spaceFromJSON } from "../serialization/index.js?v=3.42.0";
+import { drawBody } from "../renderer.js?v=3.42.0";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Billiards — top-down drag-to-aim pool

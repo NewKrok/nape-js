@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js?v=3.41.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js?v=3.42.0";
 
 // ── Capture the Flag — 3v3 top-down arena ────────────────────────────────
 // Two bases, two flags, six pucks. Run into the enemy flag to pick it up,

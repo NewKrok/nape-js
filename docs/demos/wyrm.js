@@ -1,8 +1,8 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionType, InteractionListener,
-} from "../nape-js.esm.js?v=3.41.0";
-import { drawBody, drawGrid } from "../renderer.js?v=3.41.0";
+} from "../nape-js.esm.js?v=3.42.0";
+import { drawBody, drawGrid } from "../renderer.js?v=3.42.0";
 
 // ---------------------------------------------------------------------------
 // Constants — module-level so the codepen extractor picks them up.

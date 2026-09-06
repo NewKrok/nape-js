@@ -4,7 +4,7 @@
  * Provides body/constraint/grid drawing and a global error overlay
  * that surfaces uncaught errors on mobile (where devtools aren't handy).
  */
-import { BODY_COLORS_CSS, bodyColorCSS } from "./renderers/shared-colors.js?v=3.41.0";
+import { BODY_COLORS_CSS, bodyColorCSS } from "./renderers/shared-colors.js?v=3.42.0";
 
 // =========================================================================
 // Color palette (re-exported for backward compatibility)

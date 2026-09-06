@@ -8,9 +8,9 @@
  */
 import {
   Space, Body, BodyType, Vec2, Circle, Polygon,
-} from "../nape-js.esm.js?v=3.41.0";
-import { drawGrid } from "../renderer.js?v=3.41.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.41.0";
+} from "../nape-js.esm.js?v=3.42.0";
+import { drawGrid } from "../renderer.js?v=3.42.0";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.0";
 
 let _THREE = null;
 

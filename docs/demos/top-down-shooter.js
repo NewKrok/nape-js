@@ -1,7 +1,7 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType, Ray,
-} from "../nape-js.esm.js?v=3.41.0";
+} from "../nape-js.esm.js?v=3.42.0";
 
 // Collision groups: 1=default, 2=projectile, 8=wall, 16=player, 32=enemy, 64=powerup.
 // Player bullets stop on walls AND enemies; enemy bullets stop on walls AND player

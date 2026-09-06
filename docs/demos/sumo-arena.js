@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Material } from "../nape-js.esm.js?v=3.41.0";
+import { Body, BodyType, Vec2, Circle, Material } from "../nape-js.esm.js?v=3.42.0";
 
 // ── Sumo Arena — 10-player free-for-all knock-out ────────────────────────
 // One circular platform floating over the void. 10 round fighters (you + 9
