@@ -44,6 +44,7 @@ export const GAME_DEMO_IDS = new Set([
   "dodgeball",
   "escape-run",
   "capture-the-flag",
+  "jungle-strike",
 ]);
 
 export const CATEGORIES = [
