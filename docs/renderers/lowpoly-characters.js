@@ -615,3 +615,514 @@ export function createBoardMaterial(THREE, { tint = 0x2f3b45, worldUnitsPerTile 
   });
 }
 
+
+// ---------------------------------------------------------------------------
+// Side-view rig
+// ---------------------------------------------------------------------------
+//
+// The "sideview" rig is a second, independent character kind for demos whose
+// camera looks straight down -Z at a *vertical* plane — a platformer or a
+// run-and-gun shooter — rather than at a floor. Almost none of the top-down
+// rig's reasoning carries over, so the two share only the palette:
+//
+//   - Depth is now toward the viewer, and the silhouette is what reads. Parts
+//     are therefore stacked in X/Y (the screen plane) and kept *thin in Z*,
+//     the exact opposite of the top-down rig.
+//   - A stride is a limb SWINGING about the hip, and from the side that swing
+//     is fully visible — so the legs rotate (about Z) instead of sliding.
+//   - Facing is a mirror, not a rotation: the figure faces left or right, and
+//     turning it is a sign flip on the root's X scale. Rotating it would spin
+//     it edge-on and it would vanish.
+//   - The aim arm is driven by an absolute angle from the demo, so the gun
+//     points wherever the player is aiming independently of which way the
+//     body faces. That decoupling is the whole point of the rig.
+//
+// Layering along +Z (toward the camera), back to front:
+//   far limbs (-Z) → torso/head (0) → near limbs (+Z) → gun (+Z most)
+// so a swinging arm never disappears into the chest.
+
+// One full two-step cycle per this many character units of travel. Tuned so a
+// figure moving at a run reads as ~2-3 steps a second rather than a blur.
+const STRIDE_UNITS = 4.8;
+
+const SOLDIER_PALETTE = {
+  shirt: 0x3f6f4a,      // fatigues
+  shorts: 0x2b4a33,
+  shoes: 0x2a2622,
+  skin: SKIN,
+  hair: HAIR,
+  eye: EYE,
+  gun: 0x2e3338,
+  gunAccent: 0x6b5334,  // wooden stock/grip
+  headband: 0xc23b3b,
+};
+
+/**
+ * Palette for a side-view fighter. `tint` recolours the fatigues; everything
+ * else keeps the soldier defaults unless overridden.
+ */
+export function soldierPalette(tint, overrides = {}) {
+  return {
+    ...SOLDIER_PALETTE,
+    shirt: tint,
+    shorts: darken(tint, 0.62),
+    ...overrides,
+  };
+}
+
+/**
+ * Build a side-facing humanoid holding a gun.
+ *
+ * Local axes inside the root group: +X = the direction the figure faces,
+ * +Y = up, +Z = toward the camera. The caller sets the root's position and
+ * flips `scale.x` to face the other way; the rig's internals never see the
+ * scene's mirrored Y.
+ *
+ * @returns {{root: object, parts: object}}
+ */
+function buildSideView(THREE, unit, palette) {
+  const root = new THREE.Group();
+  const parts = {};
+  const u = unit;
+
+  // Z depth of each layer. Thin slabs, ordered so near limbs occlude the torso
+  // and far limbs hide behind it.
+  const farZ = -u * 0.30;
+  const nearZ = u * 0.30;
+  const limbD = u * 0.22;
+
+  // Body proportions, measured up from the feet at y = 0. The physics body is
+  // a capsule whose centre is the origin, so everything is finally shifted
+  // down by `hipY + legLen` in syncSoldier — building from the ground up is
+  // simply easier to reason about.
+  const legLen = u * 0.78;
+  const hipY = legLen;                 // hip pivot height
+  const torsoH = u * 0.80;
+  const torsoY = hipY + torsoH * 0.5;
+  const shoulderY = hipY + torsoH * 0.86;
+  const headR = u * 0.30;
+
+  // --- Legs -----------------------------------------------------------------
+  // A hip Group pivoted at the joint, with the limb hanging *below* it, so a
+  // rotation about Z swings the foot fore and aft — the read of a run seen
+  // from the side. `far` is drawn behind the torso, `near` in front.
+  for (const side of ["far", "near"]) {
+    const z = side === "far" ? farZ : nearZ;
+    const hip = new THREE.Group();
+    hip.position.set(0, hipY, z);
+
+    const thigh = box(THREE, u * 0.28, legLen, limbD, palette.shorts);
+    thigh.position.y = -legLen * 0.5;
+    hip.add(thigh);
+
+    // A knee group so the shin can bend independently — a straight-legged
+    // jump tuck reads as a mannequin being lifted rather than a person.
+    const knee = new THREE.Group();
+    knee.position.y = -legLen;
+    hip.add(knee);
+
+    const shin = box(THREE, u * 0.26, legLen * 0.62, limbD * 0.95, palette.skin);
+    shin.position.y = -legLen * 0.31;
+    knee.add(shin);
+
+    const boot = box(THREE, u * 0.42, u * 0.20, limbD * 1.15, palette.shoes);
+    // The boot juts forward of the ankle so the foot has a toe, which is what
+    // sells the direction of travel in a silhouette.
+    boot.position.set(u * 0.07, -legLen * 0.62 - u * 0.08, 0);
+    knee.add(boot);
+
+    root.add(hip);
+    parts[side + "Leg"] = hip;
+    parts[side + "Knee"] = knee;
+  }
+
+  // --- Torso ----------------------------------------------------------------
+  const torso = box(THREE, u * 0.56, torsoH, u * 0.46, palette.shirt);
+  torso.position.set(0, torsoY, 0);
+  root.add(torso);
+  parts.torso = torso;
+
+  // Webbing strap across the chest — a single light diagonal is the cheapest
+  // way to stop a plain box reading as a box.
+  const strap = box(THREE, u * 0.14, torsoH * 0.92, u * 0.50, darken(palette.shirt, 0.5));
+  strap.position.set(-u * 0.04, torsoY, 0);
+  strap.rotation.z = 0.32;
+  root.add(strap);
+  parts.strap = strap;
+
+  // --- Head -----------------------------------------------------------------
+  const neck = new THREE.Group();
+  neck.position.set(0, shoulderY + u * 0.10, 0);
+  root.add(neck);
+  parts.neck = neck;
+
+  const head = box(THREE, headR * 1.75, headR * 2, headR * 1.9, palette.skin);
+  head.position.y = headR * 0.85;
+  neck.add(head);
+  parts.head = head;
+
+  // Hair at the back of the skull only — from the side the profile is the
+  // silhouette, so hair over the whole head just squares it off.
+  const hair = box(THREE, headR * 0.85, headR * 1.5, headR * 1.95, palette.hair);
+  hair.position.set(-headR * 0.62, headR * 1.0, 0);
+  neck.add(hair);
+  parts.hair = hair;
+
+  // Headband — the one flourish that reads at demo zoom and says "action hero"
+  // rather than "generic box man".
+  if (palette.headband != null) {
+    const band = box(THREE, headR * 1.85, headR * 0.34, headR * 2.0, palette.headband);
+    band.position.y = headR * 1.42;
+    neck.add(band);
+    parts.headband = band;
+
+    // Two tails trailing behind the band, offset in Z so they don't merge into
+    // one slab. They get whipped by movement in syncSoldier.
+    for (const [i, name] of ["bandTailA", "bandTailB"].entries()) {
+      const tail = new THREE.Group();
+      tail.position.set(-headR * 0.85, headR * 1.40, (i ? -1 : 1) * headR * 0.42);
+      const strip = box(THREE, headR * 1.5, headR * 0.22, headR * 0.20, palette.headband);
+      strip.position.x = -headR * 0.75;
+      tail.add(strip);
+      neck.add(tail);
+      parts[name] = tail;
+    }
+  }
+
+  // Eye: a single dark pip on the forward face. In profile you only ever see
+  // one, and drawing two makes the head look transparent.
+  const eye = box(THREE, headR * 0.26, headR * 0.30, headR * 2.05, palette.eye);
+  eye.position.set(headR * 0.55, headR * 0.95, 0);
+  neck.add(eye);
+  parts.eye = eye;
+
+  // --- Arms -----------------------------------------------------------------
+  // The far arm swings with the run cycle. The near arm is the AIM arm: it is
+  // rotated to an absolute angle by the demo and carries the gun, so it never
+  // takes part in the run cycle at all.
+  const armLen = u * 0.62;
+
+  const farArm = new THREE.Group();
+  farArm.position.set(0, shoulderY, farZ - u * 0.06);
+  const farLimb = box(THREE, u * 0.24, armLen, limbD, palette.shirt);
+  farLimb.position.y = -armLen * 0.5;
+  farArm.add(farLimb);
+  const farHand = box(THREE, u * 0.24, u * 0.20, limbD, palette.skin);
+  farHand.position.y = -armLen * 0.92;
+  farArm.add(farHand);
+  root.add(farArm);
+  parts.farArm = farArm;
+
+  const aimArm = new THREE.Group();
+  aimArm.position.set(u * 0.06, shoulderY, nearZ + u * 0.10);
+  const aimLimb = box(THREE, armLen, u * 0.24, limbD, palette.shirt);
+  // Built along +X (pointing forward) rather than hanging down: the aim angle
+  // is then simply the group's Z rotation, with zero meaning "aiming straight
+  // ahead", which is what the demo's aim vector already gives.
+  aimLimb.position.x = armLen * 0.5;
+  aimArm.add(aimLimb);
+  const aimHand = box(THREE, u * 0.22, u * 0.24, limbD * 1.1, palette.skin);
+  aimHand.position.x = armLen * 0.95;
+  aimArm.add(aimHand);
+  parts.aimArm = aimArm;
+  root.add(aimArm);
+
+  // --- Gun ------------------------------------------------------------------
+  // Parented to the aim arm, so it inherits the aim angle for free.
+  const gun = new THREE.Group();
+  gun.position.x = armLen * 0.95;
+  aimArm.add(gun);
+  parts.gun = gun;
+
+  const barrel = box(THREE, u * 0.95, u * 0.13, u * 0.16, palette.gun);
+  barrel.position.x = u * 0.48;
+  gun.add(barrel);
+
+  const body = box(THREE, u * 0.40, u * 0.26, u * 0.19, palette.gun);
+  body.position.set(u * 0.05, -u * 0.02, 0);
+  gun.add(body);
+
+  const stock = box(THREE, u * 0.34, u * 0.22, u * 0.17, palette.gunAccent);
+  stock.position.set(-u * 0.22, -u * 0.06, 0);
+  stock.rotation.z = -0.12;
+  gun.add(stock);
+
+  const mag = box(THREE, u * 0.16, u * 0.30, u * 0.15, palette.gun);
+  mag.position.set(u * 0.02, -u * 0.24, 0);
+  mag.rotation.z = 0.18;
+  gun.add(mag);
+
+  // Muzzle flash — a permanent mesh toggled with `.visible`, so firing costs
+  // no allocation. Two crossed quads read as a flash from any angle.
+  const flash = new THREE.Group();
+  flash.position.x = u * 0.98;
+  flash.visible = false;
+  for (let i = 0; i < 2; i++) {
+    const q = new THREE.Mesh(
+      new THREE.PlaneGeometry(u * 0.7, u * 0.42),
+      new THREE.MeshBasicMaterial({
+        color: 0xffd980,
+        transparent: true,
+        opacity: 0.9,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
+    );
+    q.rotation.x = i * Math.PI / 2;
+    flash.add(q);
+  }
+  gun.add(flash);
+  parts.flash = flash;
+
+  // Rest-pose values the animation needs, handed over rather than duplicated.
+  parts.hipY = hipY;
+  parts.legLen = legLen;
+  parts.shoulderY = shoulderY;
+  parts.torsoY = torsoY;
+  parts.headR = headR;
+  parts.armLen = armLen;
+
+  // Where the soles actually are, measured through the chain that puts them
+  // there: hip (y = hipY) → knee (−legLen) → boot centre → half the boot.
+  // They are NOT at local y = 0 — the boot hangs well below the knee — and
+  // assuming they were is what buried the feet in the floor.
+  const bootCentreY = (hipY - legLen) + (-legLen * 0.62 - u * 0.08);
+  parts.soleY = bootCentreY - u * 0.20 * 0.5;
+  parts.crownY = shoulderY + u * 0.10 + headR * 2.0;
+  // True standing height, sole to crown.
+  parts.standHeight = parts.crownY - parts.soleY;
+
+  return { root, parts };
+}
+
+/**
+ * Create a side-view soldier and add it to the adapter's scene.
+ *
+ * @param {object} opts
+ * @param {number} opts.unit       character scale (roughly half the body height)
+ * @param {object} opts.palette    from soldierPalette()
+ * @returns {object} handle for syncSoldier()
+ */
+/**
+ * @param {number} [opts.bodyHeight]  the collider height this figure stands in
+ *        for. The rig is uniformly scaled so its sole-to-crown height matches,
+ *        which is what keeps the feet on the floor; omit it and the rig keeps
+ *        its natural proportions.
+ */
+export function createSoldier(
+  adapter, THREE, { unit = 18, palette = SOLDIER_PALETTE, bodyHeight = null } = {},
+) {
+  const { root, parts } = buildSideView(THREE, unit, palette);
+  // The rig's natural height is ~2.8 units, not the `unit` itself, so a figure
+  // built for an 18px unit stands 52px tall. Scale it to the collider it
+  // represents rather than hoping the two happen to agree.
+  const fit = bodyHeight != null ? bodyHeight / parts.standHeight : 1;
+  root.scale.setScalar(fit);
+  adapter.addSceneMesh(root);
+  return {
+    kind: "sideview",
+    root,
+    parts,
+    unit,
+    fit,
+    palette,
+    phase: 0,
+    lastX: null,
+    amp: 0,
+    face: 1,
+    lastFaceSign: 1,
+    aim: 0,
+    recoil: 0,
+    flashT: 0,
+    hitT: 0,
+  };
+}
+
+/** Remove a soldier from the scene. */
+export function destroySoldier(adapter, ch) {
+  if (!ch?.root) return;
+  adapter.removeSceneMesh(ch.root);
+  ch.root = null;
+}
+
+/**
+ * Drive a side-view soldier from the state a demo already tracks.
+ *
+ * As with the top-down rig the run cycle advances with distance travelled, so
+ * a body frozen by a pause or a knockback never moonwalks.
+ *
+ * @param {object} state
+ * @param {number} state.x         world x (body centre)
+ * @param {number} state.y         world y, unflipped — this function flips it
+ * @param {number} state.face      +1 facing right, -1 facing left
+ * @param {number} state.aim       aim angle in WORLD space (radians, +y down)
+ * @param {boolean} [state.grounded]
+ * @param {number} [state.vy]      world vertical velocity (+ = falling)
+ * @param {boolean} [state.crouching]
+ * @param {boolean} [state.firing] true on the frame a shot leaves the gun
+ * @param {number} [state.dead]    0..1 death/ragdoll blend
+ */
+export function syncSoldier(ch, {
+  x, y, face = 1, aim = 0, grounded = true, vy = 0,
+  crouching = false, firing = false, dead = 0, bodyHeight = null,
+}) {
+  if (!ch?.root) return;
+  const u = ch.unit;
+  const p = ch.parts;
+
+  // --- Stride ---------------------------------------------------------------
+  const dist = ch.lastX === null ? 0 : Math.abs(x - ch.lastX);
+  ch.lastX = x;
+  // One full two-step cycle per STRIDE_UNITS of travel. At u≈18 that is a
+  // stride every ~86px: a runner at 210px/s takes about 2.4 steps a second,
+  // which reads as running. The first cut used u*1.05 (~19px), i.e. eleven
+  // cycles a second — legs blurring in place rather than a run.
+  if (grounded) ch.phase += (dist / (u * STRIDE_UNITS)) * Math.PI * 2;
+
+  // Amplitude ramps in over a real fraction of a stride, so a figure that
+  // starts moving eases into the cycle instead of snapping to full swing.
+  const target = grounded ? Math.min(1, dist / (u * 0.10)) : 0;
+  ch.amp += (target - ch.amp) * 0.18;
+  const amp = ch.amp;
+
+  // --- Placement ------------------------------------------------------------
+  // The caller hands us the physics body's CENTRE, and the collider's feet are
+  // half its height below that. The rig's own soles sit at local `p.soleY`
+  // (negative — the boots hang below the hip chain's origin), and the rig is
+  // uniformly scaled by `ch.fit` to match the collider's height. So:
+  //
+  //   scene sole  = root.y + soleY * fit      must equal   -(y + h/2)
+  //   => root.y   = -(y + h/2) - soleY * fit
+  //
+  // Deriving the drop from the body height alone (as if the soles were at
+  // local 0) leaves the figure sunk by exactly |soleY| — the "legs in the
+  // ground" bug.
+  const h = bodyHeight != null ? bodyHeight : p.standHeight;
+  const groundY = -(y + h * 0.5);
+  ch.root.position.set(x, groundY - p.soleY * ch.fit, 0);
+
+  // Facing is a mirror. Smoothed so a rapid turn is a quick spin rather than
+  // a pop — a hard flip on a fast-moving figure reads as a glitch.
+  ch.face += (face - ch.face) * 0.35;
+  const f = Math.abs(ch.face) < 0.02 ? 0.02 * Math.sign(ch.face || 1) : ch.face;
+  // The mirror multiplies the fit scale — writing a bare 1 here would silently
+  // undo it on Y and Z and stretch the figure.
+  ch.root.scale.set(f * ch.fit, ch.fit, ch.fit);
+
+  // --- Aim ------------------------------------------------------------------
+  // The demo hands over a world-space angle (screen coords, +y down). Scene Y
+  // is mirrored, so negate it; the root's X mirror then flips it again for a
+  // left-facing figure, which is why the mirror has to be undone here.
+  //
+  // The un-mirroring MUST use the target facing, not the smoothed `f`. Deriving
+  // it from `f` couples the arm to the turn animation: during the ~10 frames the
+  // mirror takes to cross zero the two disagree, and the gun swings round to
+  // point behind the character until something forces a correction — which is
+  // exactly the "hand faces the wrong way until it fires" bug. The mirror
+  // animates; which side of the body the arm is solving for does not.
+  const faceSign = face < 0 ? -1 : 1;
+  const sceneAim = -aim;
+  let localAim = faceSign < 0 ? Math.PI - sceneAim : sceneAim;
+  // Keep it in (-π, π] so the smoothing below never takes the long way round.
+  while (localAim > Math.PI) localAim -= Math.PI * 2;
+  while (localAim < -Math.PI) localAim += Math.PI * 2;
+  // On the frame the facing actually flips, snap rather than interpolate: the
+  // shortest path between the two mirrored solutions sweeps through straight
+  // down, which looks like the arm falling off.
+  if (faceSign !== ch.lastFaceSign) {
+    ch.aim = localAim;
+    ch.lastFaceSign = faceSign;
+  }
+  let d = localAim - ch.aim;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  ch.aim += d * 0.4;
+
+  // Recoil kicks the arm back along its own axis and decays.
+  if (firing) { ch.recoil = 1; ch.flashT = 2; }
+  ch.recoil *= 0.78;
+  if (ch.flashT > 0) ch.flashT--;
+
+  p.aimArm.rotation.z = ch.aim + ch.recoil * 0.30;
+  p.aimArm.position.x = u * 0.06 - ch.recoil * u * 0.16;
+  if (p.flash) {
+    p.flash.visible = ch.flashT > 0;
+    if (p.flash.visible) {
+      const s = 0.7 + Math.random() * 0.6;
+      p.flash.scale.set(s, s, s);
+      p.flash.rotation.x = Math.random() * Math.PI;
+    }
+  }
+
+  // --- Death ---------------------------------------------------------------
+  // A full ragdoll would need one body per limb; this is the cheap version —
+  // the figure topples backward, folds up and sinks. It reads at demo zoom and
+  // costs nothing.
+  if (dead > 0) {
+    const k = Math.min(1, dead);
+    ch.root.rotation.z = -k * Math.PI * 0.48 * Math.sign(f || 1);
+    ch.root.position.y -= k * u * 0.55;
+    p.torso.rotation.z = k * 0.3;
+    p.neck.rotation.z = k * 0.5;
+    p.farArm.rotation.z = k * 1.9;
+    p.aimArm.rotation.z = ch.aim - k * 1.4;
+    p.farLeg.rotation.z = k * 0.5;
+    p.nearLeg.rotation.z = -k * 0.7;
+    p.farKnee.rotation.z = -k * 1.1;
+    p.nearKnee.rotation.z = -k * 1.4;
+    return;
+  }
+  ch.root.rotation.z = 0;
+
+  // --- Legs ----------------------------------------------------------------
+  if (!grounded) {
+    // Jump/fall tuck: the leading leg comes up, the trailing one drags. Rising
+    // and falling get different shapes so the apex is readable.
+    const rising = vy < 0;
+    const tuck = rising ? 1 : 0.55;
+    p.nearLeg.rotation.z = 0.85 * tuck;
+    p.farLeg.rotation.z = -0.45 * tuck;
+    p.nearKnee.rotation.z = -1.5 * tuck;
+    p.farKnee.rotation.z = -0.5 * tuck;
+    p.farArm.rotation.z = -0.9 * tuck;
+  } else if (crouching) {
+    p.nearLeg.rotation.z = 1.05;
+    p.farLeg.rotation.z = 0.75;
+    p.nearKnee.rotation.z = -1.9;
+    p.farKnee.rotation.z = -1.6;
+    p.farArm.rotation.z = 0.4;
+  } else {
+    const swing = Math.sin(ch.phase) * 0.85 * amp;
+    p.nearLeg.rotation.z = swing;
+    p.farLeg.rotation.z = -swing;
+    // The knee only ever bends one way, and mostly on the leg travelling back
+    // — a knee that hyperextends forward is the single most obvious tell that
+    // a walk cycle is fake.
+    p.nearKnee.rotation.z = -Math.max(0, -swing) * 1.5 - 0.08;
+    p.farKnee.rotation.z = -Math.max(0, swing) * 1.5 - 0.08;
+    // The free arm counter-swings the near leg.
+    p.farArm.rotation.z = -swing * 0.8;
+  }
+
+  // --- Body carriage --------------------------------------------------------
+  // Crouching drops the whole figure rather than shortening the legs, which
+  // would need a second set of proportions.
+  const crouchDrop = crouching ? u * 0.42 : 0;
+  ch.root.position.y -= crouchDrop;
+
+  // A slight forward lean while running, and a bob at twice stride frequency.
+  p.torso.rotation.z = -amp * 0.14 - (crouching ? 0.25 : 0);
+  p.neck.rotation.z = amp * 0.06;
+  const bob = grounded ? Math.abs(Math.cos(ch.phase)) * u * 0.05 * amp : 0;
+  ch.root.position.y += bob;
+
+  // --- Headband tails -------------------------------------------------------
+  // Whipped backward by speed and lifted by upward motion — the cheapest cue
+  // that the figure is moving fast, and it survives even a still silhouette.
+  if (p.bandTailA) {
+    const whip = Math.min(1, dist / (u * 0.12)) + (grounded ? 0 : 0.5);
+    const t = ch.phase * 1.6;
+    p.bandTailA.rotation.z = -0.25 - whip * 0.55 + Math.sin(t) * 0.18 * whip;
+    p.bandTailB.rotation.z = -0.15 - whip * 0.45 + Math.sin(t + 1.1) * 0.16 * whip;
+  }
+}
