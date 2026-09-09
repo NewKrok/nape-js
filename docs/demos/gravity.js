@@ -1,5 +1,5 @@
-import { Body, BodyType, Vec2, Circle, RadialGravityField } from "../nape-js.esm.js?v=3.42.0";
-import { spawnRandomShape } from "../demo-runner.js?v=3.42.0";
+import { Body, BodyType, Vec2, Circle, RadialGravityField } from "../nape-js.esm.js?v=3.42.1";
+import { spawnRandomShape } from "../demo-runner.js?v=3.42.1";
 
 // Module-level field & planet refs (reset in setup)
 let _planet = null;

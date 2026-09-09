@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js — Multiplayer Implementation Guide | nape-js Guides</title>
+  <meta name="description" content="Recommendations and architectural patterns for building real-time multiplayer games with nape-js." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="" />
+  <meta name="nape-i18n-title-vars" content="" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/guides/multiplayer-guide/" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "nape-js — Multiplayer Implementation Guide",
+    "description": "Recommendations and architectural patterns for building real-time multiplayer games with nape-js.",
+    "url": "https://napejs.org/guides/multiplayer-guide/",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "nape-js",
+      "url": "https://napejs.org/"
+    },
+    "about": {
+      "@type": "SoftwareSourceCode",
+      "name": "nape-js",
+      "codeRepository": "https://github.com/NewKrok/nape-js",
+      "programmingLanguage": "TypeScript"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Istvan Krisztian Somoracz",
+      "url": "https://github.com/NewKrok"
+    },
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="nape-js — Multiplayer Implementation Guide | nape-js Guides" />
+  <meta property="og:description" content="Recommendations and architectural patterns for building real-time multiplayer games with nape-js." />
+  <meta property="og:url" content="https://napejs.org/guides/multiplayer-guide/" />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="nape-js — Multiplayer Implementation Guide | nape-js Guides" />
+  <meta name="twitter:description" content="Recommendations and architectural patterns for building real-time multiplayer games with nape-js." />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+</head>
+<body>
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explore</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="../../examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Examples</span></a>
+            <a class="site-nav-item" href="../../games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Games</span></a>
+            <a class="site-nav-item" href="../../showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Showcase</span></a>
+            <a class="site-nav-item" href="../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Multiplayer demo</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item active" href="../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API reference</span></a>
+            <a class="site-nav-item" href="../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Build with AI</span></a>
+            <a class="site-nav-item" href="../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt for agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+      </nav>
+      <div class="site-header-actions">
+        
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <main>
+  <section class="section guide-page">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../">nape-js</a> <span aria-hidden="true">›</span>
+        <a href="../">Guides</a> <span aria-hidden="true">›</span>
+        <span aria-current="page">nape-js — Multiplayer Implementation Guide</span>
+      </nav>
+      <div class="guide-layout">
+        <aside class="guide-side">
+          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#architecture-server-authoritative">Architecture: Server-Authoritative</a></li><li><a href="#server-setup">Server Setup</a></li><li><a href="#protocol-json--binary-hybrid">Protocol: JSON + Binary Hybrid</a></li><li><a href="#json-vs-binary-serialization">JSON vs Binary Serialization</a></li><li><a href="#client-side-interpolation">Client-Side Interpolation</a></li><li><a href="#client-side-prediction-advanced">Client-Side Prediction (Advanced)</a></li><li><a href="#determinism-considerations">Determinism Considerations</a></li><li><a href="#connection-management">Connection Management</a></li><li><a href="#performance-tips">Performance Tips</a></li><li><a href="#security">Security</a></li><li><a href="#recommended-reading">Recommended Reading</a></li></ul></nav>
+          <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../cookbook/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> nape-js Cookbook</a></li><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../troubleshooting/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg> Troubleshooting Guide</a></li><li><a href="../replay-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg> Replay Guide — @newkrok/nape-js/replay</a></li></ul></nav>
+          <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/multiplayer-guide.md" target="_blank" rel="noopener">Edit on GitHub</a></p>
+        </aside>
+        <article class="guide-content">
+          <h1><span class="guide-h1-icon"><svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>nape-js — Multiplayer Implementation Guide</h1>
+          <p>Recommendations and architectural patterns for building real-time multiplayer
+games with nape-js. Based on the production multiplayer demo (P52) and the
+engine's serialization capabilities.</p>
+<hr>
+<h2 id="architecture-server-authoritative">Architecture: Server-Authoritative</h2>
+<p><strong>Recommendation: Always run physics on the server.</strong></p>
+<p>The server owns the simulation. Clients send inputs, the server applies them,
+steps the physics world, and broadcasts the resulting state. This is the only
+architecture that prevents cheating in competitive games.</p>
+<pre><code>Client A  ──input──→  Server (nape-js Space)  ──state──→  Client A
+Client B  ──input──→        ↓                 ──state──→  Client B
+                      space.step(dt)
+</code></pre>
+<p><strong>Why not peer-to-peer?</strong> P2P physics is inherently vulnerable to cheating
+(any client can lie about state) and requires lockstep synchronization, which
+adds latency equal to the slowest peer. Server-authoritative is the industry
+standard for any game where fairness matters.</p>
+<p><strong>Why not client-authoritative?</strong> Each client running its own simulation diverges
+due to floating-point non-determinism (see Determinism section below). The server
+is the single source of truth.</p>
+<hr>
+<h2 id="server-setup">Server Setup</h2>
+<h3 id="runtime">Runtime</h3>
+<p>nape-js is pure TypeScript with zero DOM dependencies — it runs natively on
+Node.js without any browser polyfills. The recommended server stack:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Recommendation</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runtime</td>
+<td><strong>Node.js 18+</strong></td>
+<td>Native ESM, stable <code>Buffer</code>, good perf</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td><strong><code>ws</code></strong> package</td>
+<td>Lightweight, binary support, proven at scale</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td>Node.js built-in <code>http</code></td>
+<td>No need for Express/Fastify for WS-only servers</td>
+</tr>
+<tr>
+<td>Hosting</td>
+<td><strong>Railway</strong> / <a href="http://Fly.io">Fly.io</a> / Render</td>
+<td>Single-command deploy, WebSocket support, auto-sleep</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="railway-deployment">Railway Deployment</h3>
+<p>The multiplayer demo uses <a href="https://railway.app">Railway</a> with this minimal config:</p>
+<pre><code class="language-toml"># railway.toml
+[build]
+builder = &quot;nixpacks&quot;
+
+[deploy]
+startCommand = &quot;node index.js&quot;
+</code></pre>
+<p><strong>Why Railway?</strong> WebSocket-friendly (no timeout issues), free tier available,
+auto-deploy from GitHub, simple environment variable management.
+<a href="http://Fly.io">Fly.io</a> and Render are equally good alternatives. Avoid serverless platforms
+(Vercel, Netlify Functions, AWS Lambda) — they don't support persistent
+WebSocket connections.</p>
+<h3 id="physics-loop">Physics Loop</h3>
+<p>Run the simulation at a fixed timestep, independent of network or render timing:</p>
+<pre><code class="language-javascript">const TICK_HZ = 60;
+const TICK_MS = 1000 / TICK_HZ;
+
+setInterval(() =&gt; {
+  applyPlayerInputs();           // process queued inputs
+  space.step(TICK_MS / 1000);    // step physics (seconds)
+  const frame = buildStateFrame();
+  if (frame) broadcastBinary(frame);
+}, TICK_MS);
+</code></pre>
+<p><strong>60 Hz is the recommended tick rate.</strong> This matches standard display refresh,
+provides smooth simulation, and the binary delta protocol keeps bandwidth
+manageable even at this rate. For less latency-sensitive games (strategy,
+puzzle), 20–30 Hz saves bandwidth.</p>
+<hr>
+<h2 id="protocol-json--binary-hybrid">Protocol: JSON + Binary Hybrid</h2>
+<p>Use JSON for control messages and binary for state frames. This is the optimal
+split for bandwidth and developer ergonomics.</p>
+<h3 id="client--server-json">Client → Server (JSON)</h3>
+<pre><code class="language-javascript">// Input (sent at 20 Hz — independent of tick rate)
+{ type: &quot;input&quot;, keys: { left: true, right: false, jump: false } }
+
+// Ping (every 2 seconds)
+{ type: &quot;ping&quot; }
+</code></pre>
+<p><strong>Send inputs at 20 Hz (50 ms), not every frame.</strong> Input changes are discrete
+(key pressed/released), so 20 Hz captures all transitions with minimal bandwidth.
+The server applies the latest input state every tick.</p>
+<h3 id="server--client-json-on-events">Server → Client (JSON, on events)</h3>
+<pre><code class="language-javascript">// Init packet (once, on connection)
+{
+  type: &quot;init&quot;,
+  playerId: 1,
+  bodyId: 5,
+  staticBodies: [{ x, y, w, h, oneWay }],
+  sceneObjects: [{ id, shape, size, x, y }],
+  players: [{ id, colorIdx, bodyId }]
+}
+
+// Player join/leave
+{ type: &quot;players&quot;, count: 3, players: [...] }
+</code></pre>
+<h3 id="server--all-binary-every-tick">Server → All (Binary, every tick)</h3>
+<pre><code>[bodyCount: Uint16] + N × [id: Uint16, x: Float32, y: Float32, rot: Float32]
+Total: 2 + N × 14 bytes per frame
+</code></pre>
+<p><strong>This is a custom delta protocol</strong>, not the full <code>spaceToBinary()</code> serializer.
+Only bodies whose position or rotation changed beyond a threshold are included:</p>
+<pre><code class="language-javascript">const POS_THRESHOLD = 0.1;   // pixels
+const ROT_THRESHOLD = 0.001; // radians
+</code></pre>
+<h3 id="bandwidth-budget">Bandwidth Budget</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Bodies/frame</th>
+<th>Bytes/frame</th>
+<th>Bytes/sec (60 Hz)</th>
+<th>KB/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 players, 10 objects moving</td>
+<td>~14</td>
+<td>198</td>
+<td>11,880</td>
+<td>~12</td>
+</tr>
+<tr>
+<td>8 players, 20 objects moving</td>
+<td>~28</td>
+<td>394</td>
+<td>23,640</td>
+<td>~23</td>
+</tr>
+<tr>
+<td>8 players, all 40 objects</td>
+<td>~48</td>
+<td>674</td>
+<td>40,440</td>
+<td>~40</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is well within typical WebSocket budgets. For comparison, most competitive
+games use 30–100 KB/s per client.</p>
+<hr>
+<h2 id="json-vs-binary-serialization">JSON vs Binary Serialization</h2>
+<p>nape-js provides two serialization formats. Choose based on your use case:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>spaceToJSON</code></th>
+<th><code>spaceToBinary</code></th>
+<th>Custom delta protocol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Payload size</strong></td>
+<td>Largest (~100+ bytes/body)</td>
+<td>~40–60% smaller</td>
+<td>Smallest (~14 bytes/body)</td>
+</tr>
+<tr>
+<td><strong>Includes userData</strong></td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Full state restore</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No (positions only)</td>
+</tr>
+<tr>
+<td><strong>Use case</strong></td>
+<td>Save/load, debugging, replay</td>
+<td>Rollback snapshots, full sync</td>
+<td>Per-frame state broadcast</td>
+</tr>
+<tr>
+<td><strong>Import</strong></td>
+<td><code>@newkrok/nape-js/serialization</code></td>
+<td><code>@newkrok/nape-js/serialization</code></td>
+<td>Hand-written (see demo)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Recommendation for multiplayer:</strong></p>
+<ul>
+<li><strong>Per-frame sync:</strong> Custom binary delta protocol (only changed body transforms)</li>
+<li><strong>Full state sync</strong> (on join, reconnect): <code>spaceToBinary()</code> or custom init packet</li>
+<li><strong>Rollback netcode:</strong> <code>spaceToBinary()</code> / <code>spaceFromBinary()</code> for snapshot/restore</li>
+<li><strong>Save/load &amp; debugging:</strong> <code>spaceToJSON()</code> / <code>spaceFromJSON()</code></li>
+</ul>
+<h3 id="when-to-use-full-serialization-over-deltas">When to Use Full Serialization Over Deltas</h3>
+<p>The delta protocol only sends position + rotation. If your game needs to
+synchronize velocity, angular velocity, or custom body properties, consider:</p>
+<ol>
+<li>Extending the delta protocol with additional fields</li>
+<li>Periodic full state sync (e.g., every 5 seconds via <code>spaceToBinary()</code>)</li>
+<li>Using <code>spaceToJSON()</code> for debug snapshots during development</li>
+</ol>
+<hr>
+<h2 id="client-side-interpolation">Client-Side Interpolation</h2>
+<p><strong>The client does NOT run physics.</strong> It receives server state and interpolates
+between snapshots for smooth rendering.</p>
+<h3 id="how-it-works">How It Works</h3>
+<pre><code class="language-javascript">const TICK_MS = 1000 / 60;
+const INTERP_DELAY = TICK_MS * 1.5;  // 25 ms buffer
+
+function interpolate(state, now) {
+  if (!state.ts || !state.pts || state.ts &lt;= state.pts) return state;
+
+  const renderTime = now - INTERP_DELAY;
+  const alpha = Math.max(0, Math.min(1,
+    (renderTime - state.pts) / (state.ts - state.pts)
+  ));
+
+  return {
+    x:   state.px + (state.x - state.px) * alpha,
+    y:   state.py + (state.y - state.py) * alpha,
+    rot: state.prot + (state.rot - state.prot) * alpha,
+  };
+}
+</code></pre>
+<h3 id="key-concepts">Key Concepts</h3>
+<ul>
+<li>
+<p><strong>Interpolation delay (1.5× tick):</strong> The client renders 25 ms behind the
+latest server frame. This ensures there are always two snapshots available to
+interpolate between, even with network jitter.</p>
+</li>
+<li>
+<p><strong>Per-body timestamps:</strong> Each body stores when its last two snapshots arrived.
+This handles cases where bodies update at different rates (e.g., sleeping
+bodies send no updates).</p>
+</li>
+<li>
+<p><strong>No extrapolation:</strong> When a frame is late, the client holds the last known
+position rather than guessing. Extrapolation causes visible snap-back when
+the real frame arrives.</p>
+</li>
+</ul>
+<h3 id="visual-latency">Visual Latency</h3>
+<p>Total visual latency = network RTT/2 + interpolation delay (~25 ms):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ping</th>
+<th>One-way latency</th>
+<th>+ Interp delay</th>
+<th>Total visual delay</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20 ms</td>
+<td>10 ms</td>
+<td>25 ms</td>
+<td>~35 ms</td>
+</tr>
+<tr>
+<td>60 ms</td>
+<td>30 ms</td>
+<td>25 ms</td>
+<td>~55 ms</td>
+</tr>
+<tr>
+<td>120 ms</td>
+<td>60 ms</td>
+<td>25 ms</td>
+<td>~85 ms</td>
+</tr>
+</tbody>
+</table></div>
+<p>For most games, &lt;100 ms total delay feels responsive. Competitive FPS games need
+&lt;50 ms, but physics platformers/sandbox games are comfortable at 50–100 ms.</p>
+<hr>
+<h2 id="client-side-prediction-advanced">Client-Side Prediction (Advanced)</h2>
+<p>The multiplayer demo does <strong>not</strong> use client-side prediction — pure interpolation
+is sufficient for its platformer gameplay at 60 Hz. However, prediction becomes
+important for:</p>
+<ul>
+<li>Competitive games where input responsiveness is critical</li>
+<li>High-latency environments (&gt;100 ms RTT)</li>
+<li>Games where the player's own character must feel instant</li>
+</ul>
+<h3 id="how-prediction-works">How Prediction Works</h3>
+<ol>
+<li>Client runs a local nape-js <code>Space</code> with only the player's body</li>
+<li>On input, immediately apply it locally AND send to server</li>
+<li>Store input history with sequence numbers</li>
+<li>When server state arrives, rewind to the server's confirmed frame</li>
+<li>Re-apply unconfirmed inputs on top of the server state</li>
+<li>Smooth any correction (server vs predicted position) over a few frames</li>
+</ol>
+<h3 id="prediction-with-nape-js">Prediction with nape-js</h3>
+<pre><code class="language-javascript">// Save state for rollback
+import { spaceToBinary, spaceFromBinary } from '@newkrok/nape-js/serialization';
+
+// Snapshot before applying unconfirmed inputs
+const snapshot = spaceToBinary(localSpace);
+
+// On server correction: restore and re-simulate
+const correctedSpace = spaceFromBinary(snapshot);
+for (const input of unconfirmedInputs) {
+  applyInput(correctedSpace, input);
+  correctedSpace.step(TICK_MS / 1000);
+}
+</code></pre>
+<p><strong>Important:</strong> nape-js is NOT guaranteed to be deterministic across platforms
+(see P48). Prediction works best when client and server run on the same platform
+(e.g., both Chrome V8). Minor floating-point differences will be corrected by
+the server authoritative state.</p>
+<hr>
+<h2 id="determinism-considerations">Determinism Considerations</h2>
+<h3 id="soft-determinism-p48">Soft Determinism (P48)</h3>
+<p>nape-js supports <strong>same-platform deterministic simulation</strong> via the
+<code>space.deterministic</code> flag:</p>
+<pre><code class="language-typescript">const space = new Space(Vec2.weak(0, 400));
+space.deterministic = true; // opt-in
+</code></pre>
+<p>When enabled, all internal iteration orders (bodies, constraints, arbiters,
+islands) are sorted by stable IDs, guaranteeing identical results across
+runs on the same browser/OS given the same inputs.</p>
+<h3 id="what-this-means-for-multiplayer">What This Means for Multiplayer</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Determinism needed?</th>
+<th>nape-js support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server-authoritative (recommended)</td>
+<td>No</td>
+<td>Full support</td>
+</tr>
+<tr>
+<td>Client-side prediction + server reconciliation</td>
+<td>Soft (same platform)</td>
+<td><strong>Full support</strong> (<code>deterministic = true</code>)</td>
+</tr>
+<tr>
+<td>Lockstep (P2P)</td>
+<td>Hard (cross-platform)</td>
+<td>Not recommended</td>
+</tr>
+<tr>
+<td>Rollback netcode (GGPO-style)</td>
+<td>Soft (same platform)</td>
+<td><strong>Full support</strong> (<code>deterministic = true</code> + binary snapshots)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="limitations">Limitations</h3>
+<ul>
+<li><strong>Cross-platform:</strong> <code>Math.sin</code>/<code>Math.cos</code> precision and IEEE 754 rounding
+may differ between JS engines (V8 vs SpiderMonkey vs JavaScriptCore).
+True cross-platform bit-exact determinism (like Rapier's WASM approach)
+is impractical in pure JavaScript.</li>
+<li><strong>Performance:</strong> ~1-5% overhead on <code>step()</code> when deterministic mode is enabled.
+Zero overhead when disabled (default).</li>
+<li><strong>Same-platform requirement:</strong> For prediction/rollback, ensure client and
+server run on the same JS engine (e.g., both on V8/Node.js).</li>
+<li><strong>Single space per process:</strong> The engine uses global object pools shared across
+all <code>Space</code> instances. Running two deterministic spaces side-by-side and
+adding/removing bodies at runtime can cause divergence due to shared pool
+state. For multiplayer, use a single <code>Space</code> with binary snapshots for
+rollback rather than maintaining parallel spaces.</li>
+</ul>
+<hr>
+<h2 id="connection-management">Connection Management</h2>
+<h3 id="reconnection">Reconnection</h3>
+<p>Always implement auto-reconnect. Players will lose connection due to network
+switches (WiFi→cellular), brief outages, or server restarts:</p>
+<pre><code class="language-javascript">ws.onclose = () =&gt; {
+  setTimeout(connect, 3000);  // retry after 3 seconds
+};
+</code></pre>
+<p>On reconnect, the server should send a fresh init packet with full scene state.
+The client discards stale state and re-initializes.</p>
+<h3 id="spectator-mode">Spectator Mode</h3>
+<p>When the server reaches max capacity, accept additional connections as
+read-only spectators. They receive binary state frames but cannot send input:</p>
+<pre><code class="language-javascript">if (players.size &gt;= MAX_PLAYERS) {
+  // Send init with spectator: true, no physics body created
+  spectators.add(ws);
+}
+</code></pre>
+<h3 id="player-capacity">Player Capacity</h3>
+<p>The multiplayer demo supports 8 concurrent players. Scaling considerations:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Players</th>
+<th>Bodies (typical)</th>
+<th>Binary frame</th>
+<th>CPU (60 Hz)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–8</td>
+<td>20–50</td>
+<td>&lt;1 KB/frame</td>
+<td>Negligible</td>
+</tr>
+<tr>
+<td>8–32</td>
+<td>50–200</td>
+<td>1–3 KB/frame</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>32–100</td>
+<td>200–500</td>
+<td>3–7 KB/frame</td>
+<td>Moderate</td>
+</tr>
+<tr>
+<td>100+</td>
+<td>500+</td>
+<td>Consider spatial partitioning</td>
+<td>See below</td>
+</tr>
+</tbody>
+</table></div>
+<p>For &gt;32 players, consider:</p>
+<ul>
+<li><strong>Interest management:</strong> Only send bodies near each player (spatial query)</li>
+<li><strong>Lower tick rate</strong> for distant objects</li>
+<li><strong>Multiple rooms/instances</strong> on separate <code>Space</code> objects</li>
+</ul>
+<hr>
+<h2 id="performance-tips">Performance Tips</h2>
+<h3 id="server-side">Server-Side</h3>
+<ol>
+<li>
+<p><strong>Use <code>isBullet = true</code></strong> for player bodies — enables CCD (continuous
+collision detection) to prevent tunneling at high velocities</p>
+</li>
+<li>
+<p><strong>Delta encoding matters.</strong> Only send bodies that actually moved. The
+threshold-based approach (0.1 px / 0.001 rad) skips sleeping and
+near-stationary bodies, often reducing frame size by 50–80%</p>
+</li>
+<li>
+<p><strong>One-way platforms</strong> via <code>PreListener</code> — inspect the collision normal
+direction to decide ACCEPT/IGNORE. This is computed server-side only</p>
+</li>
+<li>
+<p><strong>Avoid creating/destroying bodies per-frame.</strong> Pool and reuse bodies.
+Body creation triggers broadphase insertion which is O(log n)</p>
+</li>
+</ol>
+<h3 id="client-side">Client-Side</h3>
+<ol>
+<li>
+<p><strong>Don't run <code>space.step()</code> on the client</strong> unless doing prediction.
+Just interpolate the server-provided transforms</p>
+</li>
+<li>
+<p><strong>Store previous + current position</strong> per body for interpolation. Don't
+interpolate globally — per-body timestamps handle variable update rates</p>
+</li>
+<li>
+<p><strong>Input debouncing:</strong> Send inputs at 20 Hz, not on every keydown event.
+This prevents flooding the server with redundant messages</p>
+</li>
+</ol>
+<hr>
+<h2 id="security">Security</h2>
+<h3 id="origin-validation">Origin Validation</h3>
+<p>Always validate WebSocket connection origins to prevent unauthorized access:</p>
+<pre><code class="language-javascript">const ALLOWED_ORIGINS = [
+  &quot;https://yourdomain.com&quot;,
+  &quot;http://localhost:5500&quot;,
+];
+
+const wss = new WebSocketServer({
+  server: httpServer,
+  verifyClient: ({ origin }) =&gt; ALLOWED_ORIGINS.some(o =&gt; origin === o),
+});
+</code></pre>
+<h3 id="input-validation">Input Validation</h3>
+<p>Never trust client input. The server should:</p>
+<ul>
+<li>Ignore invalid message formats (wrap parsing in try/catch)</li>
+<li>Cap movement speed server-side (don't let clients set arbitrary velocity)</li>
+<li>Apply jump cooldowns server-side (the demo uses 10 frames / ~167 ms)</li>
+<li>Rate-limit input messages (drop excess messages beyond 30/sec)</li>
+</ul>
+<h3 id="anti-cheat">Anti-Cheat</h3>
+<p>Server-authoritative architecture is the primary anti-cheat measure. The client
+never owns physics state — it only sends button presses. Even a modified client
+cannot teleport, speed-hack, or clip through walls because the server computes
+all physics.</p>
+<hr>
+<h2 id="recommended-reading">Recommended Reading</h2>
+<ul>
+<li><strong>Source code:</strong> <a href="https://github.com/NewKrok/nape-js/blob/master/server/index.js"><code>server/index.js</code></a> — production multiplayer server (~460 lines)</li>
+<li><strong>Client:</strong> <a href="../../multiplayer.html"><code>docs/multiplayer.html</code></a> — WebSocket client with interpolation (~570 lines)</li>
+<li><strong>Serialization API:</strong> <a href="https://github.com/NewKrok/nape-js/tree/master/packages/nape-js/src/serialization/"><code>src/serialization/</code></a> — JSON + binary snapshot/restore</li>
+<li><strong>Roadmap P48:</strong> <a href="https://github.com/NewKrok/nape-js/blob/master/ROADMAP.md">Deterministic mode</a> — planned soft determinism for prediction</li>
+<li><strong>Roadmap P42:</strong> <a href="https://github.com/NewKrok/nape-js/blob/master/ROADMAP.md">Web Worker helper</a> — planned off-main-thread physics</li>
+</ul>
+<h3 id="external-references">External References</h3>
+<ul>
+<li><a href="https://www.gabrielgambetta.com/client-server-game-architecture.html">Gabriel Gambetta — Fast-Paced Multiplayer</a> — the definitive guide to client-server game networking</li>
+<li><a href="https://gafferongames.com/post/networked_physics_in_virtual_reality/">Glenn Fiedler — Networking Physics</a> — state synchronization patterns</li>
+<li><a href="https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking">Valve Developer Wiki — Source Multiplayer Networking</a> — interpolation, prediction, lag compensation</li>
+</ul>
+
+          <section class="guide-related"><h2 id="related-demos">Related demos</h2><p class="section-desc">Interactive demos that exercise what this guide covers.</p><div class="more-demos"><a class="more-demo" href="../../examples/deterministic/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/deterministic.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Deterministic Mode</span></span></a></div></section>
+        </article>
+      </div>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../" data-i18n="footer.home">Home</a>
+        &bull;
+        <a href="../../examples/" data-i18n="nav.examples">Examples</a>
+        &bull;
+        <a href="../../games/" data-i18n="nav.games">Games</a>
+        &bull;
+        <a href="../../guides/" data-i18n="nav.guides">Guides</a>
+        &bull;
+        <a href="../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">API Docs</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">Based on the original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> &bull; JS port scaffolded by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> &bull; TypeScript rewrite &amp; ongoing development by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">MIT License</p>
+    </div>
+  </footer>
+  <script src="../../site-header.js?v=3.42.1" defer></script>
+  <script>
+    // Prism arrives deferred; highlight once it is here.
+    window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
+  </script>
+</body>
+</html>

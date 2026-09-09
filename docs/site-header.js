@@ -122,6 +122,48 @@ function initHeader() {
   const header = document.getElementById("siteHeader");
   if (!header) return;
 
+  // Dropdown groups: hover/focus opens them via CSS; click toggles for touch
+  // and keyboard, and only one stays open at a time.
+  const triggers = [...header.querySelectorAll(".site-nav-trigger")];
+  const closeAll = (except) => {
+    for (const t of triggers) {
+      if (t === except) continue;
+      t.setAttribute("aria-expanded", "false");
+      t.parentElement.classList.remove("open");
+    }
+  };
+  for (const t of triggers) {
+    t.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = t.getAttribute("aria-expanded") === "true";
+      closeAll(t);
+      t.setAttribute("aria-expanded", String(!open));
+      t.parentElement.classList.toggle("open", !open);
+    });
+  }
+
+  // Mobile: ☰ folds the whole nav in and out.
+  const menuBtn = document.getElementById("siteMenuBtn");
+  const nav = document.getElementById("siteNav");
+  const setMenu = (open) => {
+    if (!menuBtn || !nav) return;
+    menuBtn.setAttribute("aria-expanded", String(open));
+    header.classList.toggle("menu-open", open);
+  };
+  if (menuBtn && nav) {
+    menuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setMenu(menuBtn.getAttribute("aria-expanded") !== "true");
+    });
+    nav.addEventListener("click", (e) => e.stopPropagation());
+    const wide = window.matchMedia("(min-width: 901px)");
+    if (wide.addEventListener) wide.addEventListener("change", (m) => { if (m.matches) setMenu(false); });
+  }
+  document.addEventListener("click", () => { closeAll(); setMenu(false); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeAll(); setMenu(false); }
+  });
+
   const onScroll = () => {
     header.classList.toggle("scrolled", window.scrollY > 8);
   };

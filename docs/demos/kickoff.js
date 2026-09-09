@@ -1,9 +1,9 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.42.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter } from "../nape-js.esm.js?v=3.42.1";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.1";
 import {
   createCharacter, destroyCharacter, syncCharacter, teamPalette,
   createFootball, destroyFootball, syncBall, createBoardMaterial,
-} from "../renderers/lowpoly-characters.js?v=3.42.0";
+} from "../renderers/lowpoly-characters.js?v=3.42.1";
 
 // ── Kickoff — 2v2 top-down arena soccer (Haxball-style) ──────────────────
 // A walled pitch with a goal pocket on each side. You + an AI teammate (blue)

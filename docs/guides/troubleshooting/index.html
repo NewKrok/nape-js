@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting Guide | nape-js Guides</title>
+  <meta name="description" content="Common problems, their causes, and solutions. If your issue isn't listed here, check the API Reference or open an issue on GitHub." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="" />
+  <meta name="nape-i18n-title-vars" content="" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/guides/troubleshooting/" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Troubleshooting Guide",
+    "description": "Common problems, their causes, and solutions. If your issue isn't listed here, check the API Reference or open an issue on GitHub.",
+    "url": "https://napejs.org/guides/troubleshooting/",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "nape-js",
+      "url": "https://napejs.org/"
+    },
+    "about": {
+      "@type": "SoftwareSourceCode",
+      "name": "nape-js",
+      "codeRepository": "https://github.com/NewKrok/nape-js",
+      "programmingLanguage": "TypeScript"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Istvan Krisztian Somoracz",
+      "url": "https://github.com/NewKrok"
+    },
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Troubleshooting Guide | nape-js Guides" />
+  <meta property="og:description" content="Common problems, their causes, and solutions. If your issue isn't listed here, check the API Reference or open an issue on GitHub." />
+  <meta property="og:url" content="https://napejs.org/guides/troubleshooting/" />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="Troubleshooting Guide | nape-js Guides" />
+  <meta name="twitter:description" content="Common problems, their causes, and solutions. If your issue isn't listed here, check the API Reference or open an issue on GitHub." />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+</head>
+<body>
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explore</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="../../examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Examples</span></a>
+            <a class="site-nav-item" href="../../games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Games</span></a>
+            <a class="site-nav-item" href="../../showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Showcase</span></a>
+            <a class="site-nav-item" href="../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Multiplayer demo</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item active" href="../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API reference</span></a>
+            <a class="site-nav-item" href="../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Build with AI</span></a>
+            <a class="site-nav-item" href="../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt for agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+      </nav>
+      <div class="site-header-actions">
+        
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <main>
+  <section class="section guide-page">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../">nape-js</a> <span aria-hidden="true">›</span>
+        <a href="../">Guides</a> <span aria-hidden="true">›</span>
+        <span aria-current="page">Troubleshooting Guide</span>
+      </nav>
+      <div class="guide-layout">
+        <aside class="guide-side">
+          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#bodies-fall-through-walls--floors">Bodies fall through walls / floors</a></li><li><a href="#raycast-returns-null-even-though-bodies-exist">Raycast returns null even though bodies exist</a></li><li><a href="#applyforce-is-not-a-function">applyForce() is not a function</a></li><li><a href="#cannot-set-space-on-a-compound-member-body">Cannot set space on a compound member body</a></li><li><a href="#constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</a></li><li><a href="#material-constructor-order-is-confusing">Material constructor order is confusing</a></li><li><a href="#bodies-jitter-or-explode-on-startup">Bodies jitter or explode on startup</a></li><li><a href="#stacked-objects-are-unstable--wobble">Stacked objects are unstable / wobble</a></li><li><a href="#character-slides-on-slopes--doesnt-stop">Character slides on slopes / doesn't stop</a></li><li><a href="#web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</a></li><li><a href="#fluid-buoyancy-doesnt-work">Fluid buoyancy doesn't work</a></li><li><a href="#cannot-read-property-of-disposed-vec2">"Cannot read property of disposed Vec2"</a></li><li><a href="#simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</a></li><li><a href="#deterministic-mode-doesnt-produce-identical-results-across-browsers">Deterministic mode doesn't produce identical results across browsers</a></li></ul></nav>
+          <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../cookbook/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> nape-js Cookbook</a></li><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../multiplayer-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multiplayer Implementation Guide</a></li><li><a href="../replay-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg> Replay Guide — @newkrok/nape-js/replay</a></li></ul></nav>
+          <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener">Edit on GitHub</a> &bull; verified v3.21.4</p>
+        </aside>
+        <article class="guide-content">
+          <h1><span class="guide-h1-icon"><svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg></span>Troubleshooting Guide</h1>
+          <p>Common problems, their causes, and solutions. If your issue isn't listed here,
+check the <a href="https://napejs.org/api/">API Reference</a> or
+<a href="https://github.com/NewKrok/nape-js/issues">open an issue on GitHub</a>.</p>
+<hr>
+<h2 id="bodies-fall-through-walls--floors">Bodies fall through walls / floors</h2>
+<p><strong>Symptoms:</strong> Dynamic bodies pass through static bodies without colliding.</p>
+<h3 id="cause-1-fast-body-no-ccd">Cause 1: Fast body, no CCD</h3>
+<p>Small or fast bodies can skip past thin walls between simulation steps.</p>
+<pre><code class="language-typescript">// Fix: enable CCD on fast-moving bodies
+bullet.isBullet = true;
+</code></pre>
+<h3 id="cause-2-sub-stepping-too-low">Cause 2: Sub-stepping too low</h3>
+<p>Even with CCD, extreme speeds or thin walls can cause tunneling.</p>
+<pre><code class="language-typescript">// Fix: increase sub-steps
+space.subSteps = 4; // each step(dt) runs 4 internal passes at dt/4
+</code></pre>
+<h3 id="cause-3-material-in-wrong-constructor-parameter-p57-bug">Cause 3: Material in wrong constructor parameter (P57 bug)</h3>
+<p>If you created a Polygon with a Material in the wrong position, the Material
+object was silently treated as an InteractionFilter, breaking collision.</p>
+<pre><code class="language-typescript">// WRONG — Material ends up in the filter slot
+new Polygon(verts, undefined, material);
+
+// CORRECT — all of these work
+new Polygon(verts, material);                    // 2-arg shorthand
+new Polygon(verts, localCOM, material, filter);  // full signature
+new Polygon(verts, undefined, material);         // also works after P57 fix
+</code></pre>
+<p>If you're on a version <strong>before</strong> 3.19, update to the latest.</p>
+<h3 id="cause-4-zero-friction-tunneling">Cause 4: Zero friction tunneling</h3>
+<p>Bodies with <code>friction = 0</code> and horizontal velocity can tunnel through floors.</p>
+<pre><code class="language-typescript">// Fix: use a small minimum friction
+for (const s of body.shapes) {
+  s.material.dynamicFriction = Math.max(s.material.dynamicFriction, 0.01);
+  s.material.staticFriction = Math.max(s.material.staticFriction, 0.01);
+}
+</code></pre>
+<hr>
+<h2 id="raycast-returns-null-even-though-bodies-exist">Raycast returns null even though bodies exist</h2>
+<p><strong>Cause:</strong> The broadphase hasn't indexed the shapes yet. Static bodies are
+only registered after the first simulation step.</p>
+<pre><code class="language-typescript">// Fix: call step() at least once before raycasting
+space.step(1 / 60);
+
+const result = space.rayCast(ray);
+// Now result will include static bodies
+</code></pre>
+<hr>
+<h2 id="applyforce-is-not-a-function"><code>applyForce()</code> is not a function</h2>
+<p><strong>Cause:</strong> nape-js uses <code>applyImpulse()</code> instead of <code>applyForce()</code>.</p>
+<ul>
+<li><strong>Impulse</strong> = instantaneous velocity change (used once)</li>
+<li><strong>Force</strong> = continuous acceleration (you'd apply it every frame)</li>
+</ul>
+<pre><code class="language-typescript">// For a one-time push (e.g., explosion, jump):
+body.applyImpulse(new Vec2(0, -5000));
+
+// For continuous acceleration (e.g., thrust), apply impulse every frame:
+function update(dt: number) {
+  body.applyImpulse(new Vec2(thrustX * dt, thrustY * dt));
+  space.step(dt);
+}
+</code></pre>
+<hr>
+<h2 id="cannot-set-space-on-a-compound-member-body">Cannot set <code>space</code> on a compound member body</h2>
+<p><strong>Cause:</strong> Bodies inside a <code>Compound</code> share the compound's space. You can only
+set <code>.space</code> on the root compound, not on individual member bodies.</p>
+<pre><code class="language-typescript">// WRONG — throws an error
+compound.bodies.at(0).space = space;
+
+// CORRECT — set space on the compound
+compound.space = space;
+</code></pre>
+<hr>
+<h2 id="constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</h2>
+<p><strong>Cause:</strong> <code>CbType.ANY_CONSTRAINT</code> does <strong>not</strong> work for BREAK or SLEEP events.
+You must create a dedicated <code>CbType</code> and assign it to the constraint.</p>
+<pre><code class="language-typescript">// WRONG — listener never fires
+space.listeners.add(
+  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, handler),
+);
+
+// CORRECT — create and assign a custom tag
+const breakableTag = new CbType();
+joint.cbTypes.add(breakableTag);
+
+space.listeners.add(
+  new ConstraintListener(CbEvent.BREAK, breakableTag, handler),
+);
+</code></pre>
+<hr>
+<h2 id="material-constructor-order-is-confusing">Material constructor order is confusing</h2>
+<p>The parameter order is:</p>
+<pre><code>Material(elasticity, dynamicFriction, staticFriction, density, rollingFriction)
+</code></pre>
+<p>Elasticity comes <strong>first</strong>. This differs from some engines where friction is first.</p>
+<pre><code class="language-typescript">// Bouncy rubber ball
+const rubber = new Material(
+  0.9,  // elasticity (high = bouncy)
+  0.8,  // dynamicFriction
+  0.9,  // staticFriction
+  1.2,  // density
+  0.01, // rollingFriction
+);
+
+// Or use a built-in preset:
+const preset = Material.rubber(); // pre-configured values
+</code></pre>
+<hr>
+<h2 id="bodies-jitter-or-explode-on-startup">Bodies jitter or explode on startup</h2>
+<p><strong>Cause:</strong> Bodies spawned overlapping each other. The solver pushes them apart
+aggressively, causing a &quot;physics explosion.&quot;</p>
+<p><strong>Fix:</strong> Ensure bodies don't overlap at spawn. Leave at least 1-2 px gap, or
+use <code>space.subSteps = 4</code> to improve solver stability.</p>
+<hr>
+<h2 id="stacked-objects-are-unstable--wobble">Stacked objects are unstable / wobble</h2>
+<p><strong>Fix 1:</strong> Increase sub-steps:</p>
+<pre><code class="language-typescript">space.subSteps = 4;
+</code></pre>
+<p><strong>Fix 2:</strong> Increase solver iterations:</p>
+<pre><code class="language-typescript">// Default is step(dt, 10, 10)
+space.step(1 / 60, 20, 20); // more velocity + position iterations
+</code></pre>
+<p><strong>Fix 3:</strong> Increase friction on the shapes:</p>
+<pre><code class="language-typescript">for (const s of body.shapes) {
+  s.material.staticFriction = 2.0;
+  s.material.dynamicFriction = 1.5;
+}
+</code></pre>
+<hr>
+<h2 id="character-slides-on-slopes--doesnt-stop">Character slides on slopes / doesn't stop</h2>
+<p><strong>Cause:</strong> Using force/impulse-based movement instead of <code>CharacterController</code>.</p>
+<p>Dynamic body movement with forces inherently slides on slopes due to gravity
+decomposition. Use the geometric <code>CharacterController</code> for precise platformer
+movement.</p>
+<pre><code class="language-typescript">import { CharacterController } from &quot;@newkrok/nape-js&quot;;
+
+const cc = new CharacterController(space, body, {
+  maxSlopeAngle: Math.PI / 4, // 45° walkable
+});
+</code></pre>
+<hr>
+<h2 id="web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</h2>
+<p><strong>Possible causes:</strong></p>
+<ol>
+<li>
+<p><strong><code>postMessage</code> fallback</strong> — If <code>SharedArrayBuffer</code> is not available (missing
+COOP/COEP headers), transforms are copied via postMessage each frame.
+Ensure your server sends:</p>
+<pre><code>Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+</code></pre>
+</li>
+<li>
+<p><strong>Too many bodies</strong> — Worker communication overhead per body is fixed.
+For &lt; 50 bodies, main-thread physics is often faster.</p>
+</li>
+</ol>
+<hr>
+<h2 id="fluid-buoyancy-doesnt-work">Fluid buoyancy doesn't work</h2>
+<p><strong>Checklist:</strong></p>
+<ol>
+<li>Is <code>fluidEnabled = true</code> on the fluid shape?</li>
+<li>Did you set <code>fluidProperties</code>?</li>
+<li>Is the fluid body's type <code>STATIC</code> (or <code>KINEMATIC</code>)?</li>
+<li>Is the dynamic body's shape density different from the fluid density?</li>
+</ol>
+<pre><code class="language-typescript">// Correct fluid setup
+const waterShape = new Polygon(Polygon.box(300, 100));
+waterShape.fluidEnabled = true; // &lt;-- often forgotten
+waterShape.fluidProperties = new FluidProperties(1.5, 3.0);
+waterBody.shapes.add(waterShape);
+</code></pre>
+<hr>
+<h2 id="cannot-read-property-of-disposed-vec2">&quot;Cannot read property of disposed Vec2&quot;</h2>
+<p><strong>Cause:</strong> Using a <code>Vec2.weak()</code> or manually disposed vector after it's been
+returned to the object pool.</p>
+<pre><code class="language-typescript">// WRONG — weak vectors are auto-disposed after one use
+const v = Vec2.weak(10, 0);
+body.applyImpulse(v);
+console.log(v.x); // ERROR: disposed
+
+// CORRECT — use Vec2.get() and dispose manually
+const v = Vec2.get(10, 0);
+body.applyImpulse(v);
+console.log(v.x); // OK
+v.dispose(); // return to pool when done
+</code></pre>
+<hr>
+<h2 id="simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</h2>
+<p>Use the built-in performance profiler to identify which phase is eating time.</p>
+<pre><code class="language-typescript">import { PerformanceOverlay } from &quot;nape-js/profiler&quot;;
+
+// Quick visual overlay
+const overlay = new PerformanceOverlay(space, { position: &quot;top-right&quot; });
+
+// Or headless: enable metrics and read them programmatically
+space.profilerEnabled = true;
+space.step(1 / 60);
+const m = space.metrics;
+console.log(`broadphase: ${m.broadphaseTime}ms, narrowphase: ${m.narrowphaseTime}ms`);
+</code></pre>
+<p><strong>Common bottlenecks and fixes:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Bottleneck</th>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Broadphase</td>
+<td><code>broadphaseTime</code> high, many bodies</td>
+<td>Switch broadphase strategy (<code>SweepAndPrune</code> → <code>DynamicAABBTree</code> or <code>SpatialHashGrid</code>)</td>
+</tr>
+<tr>
+<td>Narrowphase</td>
+<td><code>narrowphaseTime</code> high</td>
+<td>Too many overlapping shapes — simplify geometry, use collision filtering</td>
+</tr>
+<tr>
+<td>Velocity solver</td>
+<td><code>velocitySolverTime</code> high</td>
+<td>Reduce solver iterations: <code>space.step(dt, 8, 8)</code> instead of default 10</td>
+</tr>
+<tr>
+<td>Sleeping bodies low</td>
+<td><code>sleepingBodyCount</code> near 0</td>
+<td>Ensure sleep is enabled — resting bodies should auto-sleep to save CPU</td>
+</tr>
+<tr>
+<td>Too many contacts</td>
+<td><code>contactCount</code> very high</td>
+<td>Use <code>InteractionFilter</code> bit masks to skip unnecessary collisions</td>
+</tr>
+</tbody>
+</table></div>
+<p>See the <a href="../cookbook/#performance-profiling">Cookbook — Performance Profiling</a> recipe for full setup.</p>
+<hr>
+<h2 id="deterministic-mode-doesnt-produce-identical-results-across-browsers">Deterministic mode doesn't produce identical results across browsers</h2>
+<p><strong>This is expected.</strong> nape-js provides &quot;soft&quot; determinism — identical results
+on the <strong>same platform</strong> (same browser + OS + architecture). Cross-platform
+bit-exact IEEE 754 determinism is not possible in pure JavaScript because
+different JS engines handle floating-point edge cases differently.</p>
+<p>For multiplayer, use server-authoritative architecture with periodic state
+sync rather than relying on cross-platform determinism. See the
+<a href="../multiplayer-guide/">Multiplayer Guide</a>.</p>
+
+          <section class="guide-related"><h2 id="related-demos">Related demos</h2><p class="section-desc">Interactive demos that exercise what this guide covers.</p><div class="more-demos"><a class="more-demo" href="../../examples/pyramid/"><img class="more-demo-thumb" src="../../assets/posters/pyramid.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Pyramid Stress Test</span></span></a><a class="more-demo" href="../../examples/stacking/"><img class="more-demo-thumb" src="../../assets/posters/stacking.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Stacking</span></span></a><a class="more-demo" href="../../examples/dominos/"><img class="more-demo-thumb" src="../../assets/posters/dominos.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Dominos</span></span></a><a class="more-demo" href="../../examples/sub-stepping/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/sub-stepping.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Sub-Stepping Solver</span></span></a><a class="more-demo" href="../../examples/brickline/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/brickline.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Brickline</span></span></a></div></section>
+        </article>
+      </div>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../" data-i18n="footer.home">Home</a>
+        &bull;
+        <a href="../../examples/" data-i18n="nav.examples">Examples</a>
+        &bull;
+        <a href="../../games/" data-i18n="nav.games">Games</a>
+        &bull;
+        <a href="../../guides/" data-i18n="nav.guides">Guides</a>
+        &bull;
+        <a href="../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">API Docs</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">Based on the original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> &bull; JS port scaffolded by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> &bull; TypeScript rewrite &amp; ongoing development by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">MIT License</p>
+    </div>
+  </footer>
+  <script src="../../site-header.js?v=3.42.1" defer></script>
+  <script>
+    // Prism arrives deferred; highlight once it is here.
+    window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
+  </script>
+</body>
+</html>

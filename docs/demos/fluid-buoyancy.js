@@ -1,13 +1,13 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, FluidProperties,
-} from "../nape-js.esm.js?v=3.42.0";
-import { drawBody, drawGrid, drawConstraints } from "../renderer.js?v=3.42.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.0";
+} from "../nape-js.esm.js?v=3.42.1";
+import { drawBody, drawGrid, drawConstraints } from "../renderer.js?v=3.42.1";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.1";
 import {
   waveY, drawWaveSurface2D,
   createWater3D, updateWater3D,
   drawWaterPixi,
-} from "../renderers/water-renderer.js?v=3.42.0";
+} from "../renderers/water-renderer.js?v=3.42.1";
 
 // ---------------------------------------------------------------------------
 // State

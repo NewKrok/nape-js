@@ -2,16 +2,16 @@
  * nape-js Examples Page — grid of interactive physics demos with play overlay,
  * per-card stats, search/tag filtering, size toggle, outline toggle, and View Code.
  */
-import { VERSION } from "./nape-js.esm.js?v=3.42.0";
-import { installErrorOverlay } from "./renderer.js?v=3.42.0";
-import { DemoRunner } from "./demo-runner.js?v=3.42.0";
-import { Canvas2DAdapter } from "./renderers/canvas2d-adapter.js?v=3.42.0";
-import { ThreeJSAdapter, loadThree } from "./renderers/threejs-adapter.js?v=3.42.0";
-import { PixiJSAdapter, loadPixi } from "./renderers/pixijs-adapter.js?v=3.42.0";
-import { openInCodePen as _openInCodePen, getPreviewCode } from "./codepen-templates.js?v=3.42.0";
-import { openInStackBlitz as _openInStackBlitz } from "./stackblitz-templates.js?v=3.42.0";
-import { CATEGORIES, categoryOf } from "./demo-categories.js?v=3.42.0";
-import { t as i18n } from "./i18n/i18n.js?v=3.42.0";
+import { VERSION } from "./nape-js.esm.js?v=3.42.1";
+import { installErrorOverlay } from "./renderer.js?v=3.42.1";
+import { DemoRunner } from "./demo-runner.js?v=3.42.1";
+import { Canvas2DAdapter } from "./renderers/canvas2d-adapter.js?v=3.42.1";
+import { ThreeJSAdapter, loadThree } from "./renderers/threejs-adapter.js?v=3.42.1";
+import { PixiJSAdapter, loadPixi } from "./renderers/pixijs-adapter.js?v=3.42.1";
+import { openInCodePen as _openInCodePen, getPreviewCode } from "./codepen-templates.js?v=3.42.1";
+import { openInStackBlitz as _openInStackBlitz } from "./stackblitz-templates.js?v=3.42.1";
+import { CATEGORIES, tierOf, matchesCategory } from "./demo-categories.js?v=3.42.1";
+import { t as i18n } from "./i18n/i18n.js?v=3.42.1";
 
 // Localized demo text with English-source fallback. Demo files keep their
 // original label/desc/tags; the dictionary overrides them by id when a
@@ -19,91 +19,92 @@ import { t as i18n } from "./i18n/i18n.js?v=3.42.0";
 const demoLabel = (demo) => i18n(`demo.${demo.id}.label`, demo.label);
 const demoDesc = (demo) => i18n(`demo.${demo.id}.desc`, demo.desc ?? "");
 const tagText = (tag) => i18n(`tag.${tag}`, tag);
-const catLabel = (catId) => i18n(`cat.${catId}.label`, catId === "game" ? "Game" : "Physics");
+const CAT_FALLBACK = { physics: "Physics", game: "Game", showpiece: "Showpiece" };
+const catLabel = (catId) => i18n(`cat.${catId}.label`, CAT_FALLBACK[catId] ?? catId);
 
 // All demos
-import falling     from "./demos/falling.js?v=3.42.0";
-import pyramid     from "./demos/pyramid.js?v=3.42.0";
-import chain       from "./demos/chain.js?v=3.42.0";
-import explosion   from "./demos/explosion.js?v=3.42.0";
-import constraints from "./demos/constraints.js?v=3.42.0";
-import gravity     from "./demos/gravity.js?v=3.42.0";
-import stacking    from "./demos/stacking.js?v=3.42.0";
-import ragdoll     from "./demos/ragdoll.js?v=3.42.0";
-import strandbeast from "./demos/strandbeast.js?v=3.42.0";
-import carSideview    from "./demos/car-sideview.js?v=3.42.0";
-import trackedVehicle from "./demos/tracked-vehicle.js?v=3.42.0";
-import carTopdown     from "./demos/car-topdown.js?v=3.42.0";
-import ropeBridge     from "./demos/rope-bridge.js?v=3.42.0";
-import wreckingBall   from "./demos/wrecking-ball.js?v=3.42.0";
-import newtonsCradle  from "./demos/newtons-cradle.js?v=3.42.0";
-import dominos        from "./demos/dominos.js?v=3.42.0";
-import conveyorBelts  from "./demos/conveyor-belts.js?v=3.42.0";
-import trebuchet      from "./demos/trebuchet.js?v=3.42.0";
-import seesaw         from "./demos/seesaw.js?v=3.42.0";
-import pinball        from "./demos/pinball.js?v=3.42.0";
-import cloth          from "./demos/cloth.js?v=3.42.0";
-import funnel         from "./demos/funnel.js?v=3.42.0";
-import softBody       from "./demos/soft-body.js?v=3.42.0";
-import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.42.0";
-import filteringInteractions from "./demos/filtering-interactions.js?v=3.42.0";
-import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.42.0";
-import dropImageBody     from "./demos/drop-image-body.js?v=3.42.0";
-import capsule           from "./demos/capsule.js?v=3.42.0";
-import destructibleTerrain from "./demos/destructible-terrain.js?v=3.42.0";
-import webWorker           from "./demos/web-worker.js?v=3.42.0";
-import asteroidField       from "./demos/asteroid-field.js?v=3.42.0";
-import fluidBuoyancy       from "./demos/fluid-buoyancy.js?v=3.42.0";
-import deterministic       from "./demos/deterministic.js?v=3.42.0";
-import subStepping         from "./demos/sub-stepping.js?v=3.42.0";
-import characterController from "./demos/character-controller.js?v=3.42.0";
-import triggerZones        from "./demos/trigger-zones.js?v=3.42.0";
-import fracture            from "./demos/fracture.js?v=3.42.0";
-import slingshot           from "./demos/slingshot.js?v=3.42.0";
-import springJoint         from "./demos/spring-joint.js?v=3.42.0";
-import portals             from "./demos/portals.js?v=3.42.0";
-import towerDefense        from "./demos/tower-defense.js?v=3.42.0";
-import topDownShooter      from "./demos/top-down-shooter.js?v=3.42.0";
-import mobaLite            from "./demos/moba-lite.js?v=3.42.0";
-import plinko              from "./demos/plinko.js?v=3.42.0";
-import threeBody           from "./demos/three-body.js?v=3.42.0";
-import tilemap             from "./demos/tilemap.js?v=3.42.0";
-import planetPlatformer    from "./demos/planet-platformer.js?v=3.42.0";
-import volcano             from "./demos/volcano.js?v=3.42.0";
-import destructibleArena   from "./demos/destructible-arena.js?v=3.42.0";
-import arenaDefense        from "./demos/arena-defense.js?v=3.42.0";
-import saveLoadRewind      from "./demos/save-load-rewind.js?v=3.42.0";
-import replayRecorder      from "./demos/replay-recorder.js?v=3.42.0";
-import popcorn             from "./demos/popcorn.js?v=3.42.0";
-import rollercoaster       from "./demos/rollercoaster.js?v=3.42.0";
-import convexCast          from "./demos/convex-cast.js?v=3.42.0";
-import floppyFists         from "./demos/floppy-fists.js?v=3.42.0";
-import minigolf             from "./demos/minigolf.js?v=3.42.0";
-import wyrm                 from "./demos/wyrm.js?v=3.42.0";
-import brickline            from "./demos/brickline.js?v=3.42.0";
-import pulleyCrane          from "./demos/pulley-crane.js?v=3.42.0";
-import tinywheelsCup        from "./demos/tinywheels-cup.js?v=3.42.0";
-import tiltrun               from "./demos/tiltrun.js?v=3.42.0";
-import dirtline              from "./demos/dirtline.js?v=3.42.0";
-import explodingFifty        from "./demos/exploding-50.js?v=3.42.0";
-import billiards             from "./demos/billiards.js?v=3.42.0";
-import standoff              from "./demos/standoff.js?v=3.42.0";
-import stickyBuilder         from "./demos/sticky-builder.js?v=3.42.0";
-import contraptionGarage     from "./demos/contraption-garage.js?v=3.42.0";
-import crashTestHero         from "./demos/crash-test-hero.js?v=3.42.0";
-import raftRapids            from "./demos/raft-rapids.js?v=3.42.0";
-import skyHook               from "./demos/sky-hook.js?v=3.42.0";
-import ragdollRoyale         from "./demos/ragdoll-royale.js?v=3.42.0";
-import cargoCrane            from "./demos/cargo-crane.js?v=3.42.0";
-import pulse                 from "./demos/pulse.js?v=3.42.0";
-import sumoArena             from "./demos/sumo-arena.js?v=3.42.0";
-import kickoff               from "./demos/kickoff.js?v=3.42.0";
-import dodgeball             from "./demos/dodgeball.js?v=3.42.0";
-import escapeRun             from "./demos/escape-run.js?v=3.42.0";
-import captureTheFlag        from "./demos/capture-the-flag.js?v=3.42.0";
-import jungleStrike          from "./demos/jungle-strike.js?v=3.42.0";
-import shardRush             from "./demos/shard-rush.js?v=3.42.0";
-import bladeWaltz            from "./demos/blade-waltz.js?v=3.42.0";
+import falling     from "./demos/falling.js?v=3.42.1";
+import pyramid     from "./demos/pyramid.js?v=3.42.1";
+import chain       from "./demos/chain.js?v=3.42.1";
+import explosion   from "./demos/explosion.js?v=3.42.1";
+import constraints from "./demos/constraints.js?v=3.42.1";
+import gravity     from "./demos/gravity.js?v=3.42.1";
+import stacking    from "./demos/stacking.js?v=3.42.1";
+import ragdoll     from "./demos/ragdoll.js?v=3.42.1";
+import strandbeast from "./demos/strandbeast.js?v=3.42.1";
+import carSideview    from "./demos/car-sideview.js?v=3.42.1";
+import trackedVehicle from "./demos/tracked-vehicle.js?v=3.42.1";
+import carTopdown     from "./demos/car-topdown.js?v=3.42.1";
+import ropeBridge     from "./demos/rope-bridge.js?v=3.42.1";
+import wreckingBall   from "./demos/wrecking-ball.js?v=3.42.1";
+import newtonsCradle  from "./demos/newtons-cradle.js?v=3.42.1";
+import dominos        from "./demos/dominos.js?v=3.42.1";
+import conveyorBelts  from "./demos/conveyor-belts.js?v=3.42.1";
+import trebuchet      from "./demos/trebuchet.js?v=3.42.1";
+import seesaw         from "./demos/seesaw.js?v=3.42.1";
+import pinball        from "./demos/pinball.js?v=3.42.1";
+import cloth          from "./demos/cloth.js?v=3.42.1";
+import funnel         from "./demos/funnel.js?v=3.42.1";
+import softBody       from "./demos/soft-body.js?v=3.42.1";
+import oneWayPlatforms from "./demos/one-way-platforms.js?v=3.42.1";
+import filteringInteractions from "./demos/filtering-interactions.js?v=3.42.1";
+import bodyFromGraphic    from "./demos/body-from-graphic.js?v=3.42.1";
+import dropImageBody     from "./demos/drop-image-body.js?v=3.42.1";
+import capsule           from "./demos/capsule.js?v=3.42.1";
+import destructibleTerrain from "./demos/destructible-terrain.js?v=3.42.1";
+import webWorker           from "./demos/web-worker.js?v=3.42.1";
+import asteroidField       from "./demos/asteroid-field.js?v=3.42.1";
+import fluidBuoyancy       from "./demos/fluid-buoyancy.js?v=3.42.1";
+import deterministic       from "./demos/deterministic.js?v=3.42.1";
+import subStepping         from "./demos/sub-stepping.js?v=3.42.1";
+import characterController from "./demos/character-controller.js?v=3.42.1";
+import triggerZones        from "./demos/trigger-zones.js?v=3.42.1";
+import fracture            from "./demos/fracture.js?v=3.42.1";
+import slingshot           from "./demos/slingshot.js?v=3.42.1";
+import springJoint         from "./demos/spring-joint.js?v=3.42.1";
+import portals             from "./demos/portals.js?v=3.42.1";
+import towerDefense        from "./demos/tower-defense.js?v=3.42.1";
+import topDownShooter      from "./demos/top-down-shooter.js?v=3.42.1";
+import mobaLite            from "./demos/moba-lite.js?v=3.42.1";
+import plinko              from "./demos/plinko.js?v=3.42.1";
+import threeBody           from "./demos/three-body.js?v=3.42.1";
+import tilemap             from "./demos/tilemap.js?v=3.42.1";
+import planetPlatformer    from "./demos/planet-platformer.js?v=3.42.1";
+import volcano             from "./demos/volcano.js?v=3.42.1";
+import destructibleArena   from "./demos/destructible-arena.js?v=3.42.1";
+import arenaDefense        from "./demos/arena-defense.js?v=3.42.1";
+import saveLoadRewind      from "./demos/save-load-rewind.js?v=3.42.1";
+import replayRecorder      from "./demos/replay-recorder.js?v=3.42.1";
+import popcorn             from "./demos/popcorn.js?v=3.42.1";
+import rollercoaster       from "./demos/rollercoaster.js?v=3.42.1";
+import convexCast          from "./demos/convex-cast.js?v=3.42.1";
+import floppyFists         from "./demos/floppy-fists.js?v=3.42.1";
+import minigolf             from "./demos/minigolf.js?v=3.42.1";
+import wyrm                 from "./demos/wyrm.js?v=3.42.1";
+import brickline            from "./demos/brickline.js?v=3.42.1";
+import pulleyCrane          from "./demos/pulley-crane.js?v=3.42.1";
+import tinywheelsCup        from "./demos/tinywheels-cup.js?v=3.42.1";
+import tiltrun               from "./demos/tiltrun.js?v=3.42.1";
+import dirtline              from "./demos/dirtline.js?v=3.42.1";
+import explodingFifty        from "./demos/exploding-50.js?v=3.42.1";
+import billiards             from "./demos/billiards.js?v=3.42.1";
+import standoff              from "./demos/standoff.js?v=3.42.1";
+import stickyBuilder         from "./demos/sticky-builder.js?v=3.42.1";
+import contraptionGarage     from "./demos/contraption-garage.js?v=3.42.1";
+import crashTestHero         from "./demos/crash-test-hero.js?v=3.42.1";
+import raftRapids            from "./demos/raft-rapids.js?v=3.42.1";
+import skyHook               from "./demos/sky-hook.js?v=3.42.1";
+import ragdollRoyale         from "./demos/ragdoll-royale.js?v=3.42.1";
+import cargoCrane            from "./demos/cargo-crane.js?v=3.42.1";
+import pulse                 from "./demos/pulse.js?v=3.42.1";
+import sumoArena             from "./demos/sumo-arena.js?v=3.42.1";
+import kickoff               from "./demos/kickoff.js?v=3.42.1";
+import dodgeball             from "./demos/dodgeball.js?v=3.42.1";
+import escapeRun             from "./demos/escape-run.js?v=3.42.1";
+import captureTheFlag        from "./demos/capture-the-flag.js?v=3.42.1";
+import jungleStrike          from "./demos/jungle-strike.js?v=3.42.1";
+import shardRush             from "./demos/shard-rush.js?v=3.42.1";
+import bladeWaltz            from "./demos/blade-waltz.js?v=3.42.1";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -207,6 +208,18 @@ function createCard(demo, { onTagClick } = {}) {
   const renderWrap = document.createElement("div");
   renderWrap.className = "example-card-canvas";
   renderWrap.style.position = "relative";
+  // Poster (docs/assets/posters/<id>.webp) as a lazily loaded <img> behind
+  // the live preview canvas; a missing file just leaves the dark box. Resolved
+  // against this module (docs root), not the page, so /<lang>/examples/ works.
+  const poster = document.createElement("img");
+  poster.className = "example-card-poster";
+  poster.loading = "lazy";
+  poster.decoding = "async";
+  poster.alt = "";
+  poster.width = 900; poster.height = 500;
+  poster.src = new URL(`./assets/posters/${demo.id}.webp`, import.meta.url).href;
+  poster.addEventListener("error", () => poster.remove());
+  renderWrap.appendChild(poster);
   card.appendChild(renderWrap);
 
   // --- DemoRunner with adapters ---
@@ -465,16 +478,27 @@ function createCard(demo, { onTagClick } = {}) {
   const h3 = document.createElement("h3");
   const tagSpans = [];
 
-  const catId = categoryOf(demo);
+  const catId = tierOf(demo);
   const catBadge = document.createElement("span");
   catBadge.className = "card-category-badge category-pill-" + catId;
   catBadge.addEventListener("click", (e) => {
     e.stopPropagation();
     setActiveCategory(activeCategory === catId ? null : catId);
   });
+  // The title is a real link to the demo's own static page (/examples/<id>/)
+  // so crawlers and "open in new tab" both work; a plain click still expands
+  // the card in place.
+  const titleLink = document.createElement("a");
+  titleLink.className = "card-title-link";
+  titleLink.href = `${demo.id}/`;
   const labelNode = document.createTextNode(demoLabel(demo));
+  titleLink.appendChild(labelNode);
+  titleLink.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // let the browser open a tab
+    e.preventDefault();
+  });
   h3.appendChild(catBadge);
-  h3.appendChild(labelNode);
+  h3.appendChild(titleLink);
 
   // Refresh the card's localized text (title, badge, description, tags).
   // Called on build and again on language change.
@@ -562,11 +586,15 @@ function createCard(demo, { onTagClick } = {}) {
   shareBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     gtag("event", "click", { event_category: "demo_action", event_label: "share", demo: demo.id });
+    // Share the demo's own indexable page (with the current renderer/outline
+    // state), not the ?open= card deep link.
     const params = new URLSearchParams();
-    params.set("open", demo.id);
     if (cardMode === "3d") params.set("mode", "3d");
+    if (cardMode === "pixi") params.set("mode", "pixi");
     if (!runner.debugDraw) params.set("outline", "0");
-    const url = window.location.origin + "/examples?" + params.toString();
+    const langPrefix = window.location.pathname.match(/^\/([a-z]{2})\/examples/)?.[1];
+    const qs = params.toString();
+    const url = window.location.origin + (langPrefix ? `/${langPrefix}` : "") + `/examples/${demo.id}/` + (qs ? "?" + qs : "");
     navigator.clipboard.writeText(url).then(() => {
       const prev = shareBtn.innerHTML;
       shareBtn.textContent = "Copied!";
@@ -747,7 +775,7 @@ function buildCategoryBar() {
   categoryBar.appendChild(all);
 
   for (const cat of CATEGORIES) {
-    const count = ALL_DEMOS.filter(d => categoryOf(d) === cat.id).length;
+    const count = ALL_DEMOS.filter(d => matchesCategory(d, cat.id)).length;
     const btn = document.createElement("button");
     btn.className = "category-pill category-pill-" + cat.id + (activeCategory === cat.id ? " active" : "");
     btn.textContent = `${catLabel(cat.id)} (${count})`;
@@ -788,11 +816,17 @@ function setActiveTag(tag) {
   applyFilter();
 }
 
-function setActiveCategory(cat) {
+function setActiveCategory(cat, { updateUrl = true } = {}) {
   activeCategory = cat;
   if (cat) gtag("event", "click", { event_category: "category_filter", event_label: cat });
   buildCategoryBar();
   applyFilter();
+  if (updateUrl) {
+    const params = new URLSearchParams(window.location.search);
+    if (cat) params.set("cat", cat); else params.delete("cat");
+    const qs = params.toString();
+    history.replaceState(null, "", window.location.pathname + (qs ? "?" + qs : "") + window.location.hash);
+  }
 }
 
 function applyFilter() {
@@ -807,8 +841,8 @@ function applyFilter() {
       || demoDesc(demo).toLowerCase().includes(q)
       || demo.tags?.some(t => tagText(t).toLowerCase().includes(q));
     const matchesTag = !activeTag || demo.tags?.includes(activeTag);
-    const matchesCategory = !activeCategory || categoryOf(demo) === activeCategory;
-    const visible = matchesSearch && matchesTag && matchesCategory;
+    const matchesCat = matchesCategory(demo, activeCategory);
+    const visible = matchesSearch && matchesTag && matchesCat;
     card.style.display = visible ? "" : "none";
     if (visible) anyVisible = true;
   }
@@ -847,8 +881,17 @@ const cardEntries = [...ALL_DEMOS].reverse().map((demo) => {
   return { ...result, demo };
 });
 
+// ?cat=physics|game|showpiece pre-selects a category pill (linked from the
+// home page and the /games/ landing page).
+{
+  const initialCat = new URLSearchParams(window.location.search).get("cat");
+  if (initialCat && CATEGORIES.some((c) => c.id === initialCat)) {
+    activeCategory = initialCat;
+  }
+}
 buildCategoryBar();
 buildTagBar();
+if (activeCategory) applyFilter();
 
 // Re-localize all JS-generated text when the language changes. Static
 // [data-i18n] elements are handled by the i18n runtime's applyTranslations();

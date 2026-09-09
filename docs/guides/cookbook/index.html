@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nape-js Cookbook | nape-js Guides</title>
+  <meta name="description" content="Practical, copy-paste-ready recipes for common game physics tasks. Each recipe shows the minimal working code and explains the &quot;why&quot; behind key decisions." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="" />
+  <meta name="nape-i18n-title-vars" content="" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/guides/cookbook/" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "nape-js Cookbook",
+    "description": "Practical, copy-paste-ready recipes for common game physics tasks. Each recipe shows the minimal working code and explains the \"why\" behind key decisions.",
+    "url": "https://napejs.org/guides/cookbook/",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "nape-js",
+      "url": "https://napejs.org/"
+    },
+    "about": {
+      "@type": "SoftwareSourceCode",
+      "name": "nape-js",
+      "codeRepository": "https://github.com/NewKrok/nape-js",
+      "programmingLanguage": "TypeScript"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Istvan Krisztian Somoracz",
+      "url": "https://github.com/NewKrok"
+    },
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="nape-js Cookbook | nape-js Guides" />
+  <meta property="og:description" content="Practical, copy-paste-ready recipes for common game physics tasks. Each recipe shows the minimal working code and explains the &quot;why&quot; behind key decisions." />
+  <meta property="og:url" content="https://napejs.org/guides/cookbook/" />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="nape-js Cookbook | nape-js Guides" />
+  <meta name="twitter:description" content="Practical, copy-paste-ready recipes for common game physics tasks. Each recipe shows the minimal working code and explains the &quot;why&quot; behind key decisions." />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+</head>
+<body>
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explore</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="../../examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Examples</span></a>
+            <a class="site-nav-item" href="../../games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Games</span></a>
+            <a class="site-nav-item" href="../../showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Showcase</span></a>
+            <a class="site-nav-item" href="../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Multiplayer demo</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item active" href="../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API reference</span></a>
+            <a class="site-nav-item" href="../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Build with AI</span></a>
+            <a class="site-nav-item" href="../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt for agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+      </nav>
+      <div class="site-header-actions">
+        
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <main>
+  <section class="section guide-page">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../">nape-js</a> <span aria-hidden="true">›</span>
+        <a href="../">Guides</a> <span aria-hidden="true">›</span>
+        <span aria-current="page">nape-js Cookbook</span>
+      </nav>
+      <div class="guide-layout">
+        <aside class="guide-side">
+          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#table-of-contents">Table of Contents</a></li><li><a href="#basic-setup">Basic Setup</a></li><li><a href="#platformer-character">Platformer Character</a></li><li><a href="#one-way-platforms">One-Way Platforms</a></li><li><a href="#ragdoll">Ragdoll</a></li><li><a href="#rope--chain">Rope / Chain</a></li><li><a href="#vehicle-top-down">Vehicle (Top-Down)</a></li><li><a href="#fluid--water-pool">Fluid / Water Pool</a></li><li><a href="#raycasting">Raycasting</a></li><li><a href="#convex-cast-swept-shape-queries">Convex Cast (Swept-Shape Queries)</a></li><li><a href="#sensor--trigger-zone">Sensor / Trigger Zone</a></li><li><a href="#collision-filtering">Collision Filtering</a></li><li><a href="#explosion-impulse">Explosion Impulse</a></li><li><a href="#voronoi-fracture-destruction">Voronoi Fracture (Destruction)</a></li><li><a href="#particle-emitter-bullets-sparks-debris">Particle Emitter (Bullets, Sparks, Debris)</a></li><li><a href="#conveyor-belt">Conveyor Belt</a></li><li><a href="#breakable-constraint">Breakable Constraint</a></li><li><a href="#soft-constraint-spring-like">Soft Constraint (Spring-Like)</a></li><li><a href="#constraint-reference--which-joint-to-use">Constraint Reference — Which Joint to Use</a></li><li><a href="#serialization-save--load">Serialization (Save / Load)</a></li><li><a href="#binary-snapshot-multiplayer">Binary Snapshot (Multiplayer)</a></li><li><a href="#replay--recording-deterministic-playback">Replay &amp; Recording (Deterministic Playback)</a></li><li><a href="#web-worker-off-thread-physics">Web Worker Off-Thread Physics</a></li><li><a href="#ccd-bullet-bodies">CCD (Bullet Bodies)</a></li><li><a href="#sub-stepping-for-stability">Sub-Stepping for Stability</a></li><li><a href="#kinematic-moving-platform">Kinematic Moving Platform</a></li><li><a href="#custom-material-presets">Custom Material Presets</a></li><li><a href="#performance-profiling">Performance Profiling</a></li><li><a href="#wave-spawner-timer-driven-cadence">Wave Spawner (Timer-Driven Cadence)</a></li><li><a href="#viewport-bounded-auto-aim">Viewport-Bounded Auto-Aim</a></li><li><a href="#homing-missile-steered-projectile">Homing Missile (Steered Projectile)</a></li></ul></nav>
+          <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../troubleshooting/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg> Troubleshooting Guide</a></li><li><a href="../multiplayer-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multiplayer Implementation Guide</a></li><li><a href="../replay-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg> Replay Guide — @newkrok/nape-js/replay</a></li></ul></nav>
+          <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener">Edit on GitHub</a> &bull; verified v3.31.0</p>
+        </aside>
+        <article class="guide-content">
+          <h1><span class="guide-h1-icon"><svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>nape-js Cookbook</h1>
+          <p>Practical, copy-paste-ready recipes for common game physics tasks.
+Each recipe shows the minimal working code and explains the &quot;why&quot; behind key decisions.</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#basic-setup">Basic Setup</a></li>
+<li><a href="#platformer-character">Platformer Character</a></li>
+<li><a href="#one-way-platforms">One-Way Platforms</a></li>
+<li><a href="#ragdoll">Ragdoll</a></li>
+<li><a href="#rope--chain">Rope / Chain</a></li>
+<li><a href="#vehicle-top-down">Vehicle (Top-Down)</a></li>
+<li><a href="#fluid--water-pool">Fluid / Water Pool</a></li>
+<li><a href="#raycasting">Raycasting</a></li>
+<li><a href="#convex-cast-swept-shape-queries">Convex Cast (Swept-Shape Queries)</a></li>
+<li><a href="#sensor--trigger-zone">Sensor / Trigger Zone</a></li>
+<li><a href="#collision-filtering">Collision Filtering</a></li>
+<li><a href="#explosion-impulse">Explosion Impulse</a></li>
+<li><a href="#voronoi-fracture-destruction">Voronoi Fracture (Destruction)</a></li>
+<li><a href="#particle-emitter-bullets-sparks-debris">Particle Emitter (Bullets, Sparks, Debris)</a></li>
+<li><a href="#conveyor-belt">Conveyor Belt</a></li>
+<li><a href="#breakable-constraint">Breakable Constraint</a></li>
+<li><a href="#soft-constraint-spring-like">Soft Constraint (Spring-Like)</a></li>
+<li><a href="#constraint-reference--which-joint-to-use">Constraint Reference — Which Joint to Use</a></li>
+<li><a href="#serialization-save--load">Serialization (Save / Load)</a></li>
+<li><a href="#binary-snapshot-multiplayer">Binary Snapshot (Multiplayer)</a></li>
+<li><a href="#replay--recording-deterministic-playback">Replay &amp; Recording (Deterministic Playback)</a></li>
+<li><a href="#web-worker-off-thread-physics">Web Worker Off-Thread Physics</a></li>
+<li><a href="#ccd-bullet-bodies">CCD (Bullet Bodies)</a></li>
+<li><a href="#sub-stepping-for-stability">Sub-Stepping for Stability</a></li>
+<li><a href="#kinematic-moving-platform">Kinematic Moving Platform</a></li>
+<li><a href="#custom-material-presets">Custom Material Presets</a></li>
+<li><a href="#performance-profiling">Performance Profiling</a></li>
+<li><a href="#wave-spawner-timer-driven-cadence">Wave Spawner (Timer-Driven Cadence)</a></li>
+<li><a href="#viewport-bounded-auto-aim">Viewport-Bounded Auto-Aim</a></li>
+<li><a href="#homing-missile-steered-projectile">Homing Missile (Steered Projectile)</a></li>
+</ul>
+<hr>
+<h2 id="basic-setup">Basic Setup</h2>
+<p>Create a world, a floor, and a falling ball — the &quot;Hello World&quot; of nape-js.</p>
+<pre><code class="language-typescript">import { Space, Body, BodyType, Vec2, Circle, Polygon } from &quot;@newkrok/nape-js&quot;;
+
+const space = new Space(new Vec2(0, 600)); // gravity: 600 px/s² downward
+
+// Static floor
+const floor = new Body(BodyType.STATIC, new Vec2(400, 550));
+floor.shapes.add(new Polygon(Polygon.box(800, 20)));
+floor.space = space;
+
+// Dynamic ball
+const ball = new Body(BodyType.DYNAMIC, new Vec2(400, 100));
+ball.shapes.add(new Circle(20));
+ball.space = space;
+
+// Game loop
+function update() {
+  space.step(1 / 60);
+  // Read ball.position.x, ball.position.y, ball.rotation for rendering
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>space.step(1/60)</code> advances the simulation by one frame at 60 fps</li>
+<li>Assign <code>body.space = space</code> to add a body — don't call a separate <code>addBody()</code> method</li>
+<li>Gravity is in <strong>pixels/s²</strong> (not meters) — no conversion needed</li>
+</ul>
+<hr>
+<h2 id="platformer-character">Platformer Character</h2>
+<p>Use <code>CharacterController</code> for pixel-perfect movement with slope handling, step climbing, and wall detection.</p>
+<pre><code class="language-typescript">import {
+  Space, Body, BodyType, Vec2, Circle, CbType,
+  CharacterController,
+} from &quot;@newkrok/nape-js&quot;;
+
+const space = new Space(new Vec2(0, 600));
+
+// Player body — DYNAMIC with rotation disabled
+const player = new Body(BodyType.DYNAMIC, new Vec2(100, 100));
+player.shapes.add(new Circle(14));
+player.allowRotation = false;
+player.isBullet = true; // enable CCD to prevent tunneling
+player.space = space;
+
+// Optional: tag for one-way platform filtering
+const platformTag = new CbType();
+
+const cc = new CharacterController(space, player, {
+  maxSlopeAngle: Math.PI / 4, // 45° climbable
+  oneWayPlatformTag: platformTag,
+});
+
+// Each frame:
+function update(dt: number, keys: { left: boolean; right: boolean; jump: boolean }) {
+  const speed = 200;
+  const dx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+
+  cc.setVelocity(dx * speed, player.velocity.y);
+  space.step(dt);
+
+  const result = cc.moveResult;
+  if (keys.jump &amp;&amp; result.grounded) {
+    player.velocity.y = -400; // jump impulse
+  }
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li>Use <code>allowRotation = false</code> so the character doesn't tumble</li>
+<li><code>isBullet = true</code> enables CCD — prevents falling through thin platforms</li>
+<li><code>CharacterController</code> handles slopes, steps, and wall detection automatically</li>
+</ul>
+<hr>
+<h2 id="one-way-platforms">One-Way Platforms</h2>
+<p>Platforms the player can jump through from below but stand on from above.</p>
+<pre><code class="language-typescript">import {
+  Space, Body, BodyType, Vec2, Polygon, Material,
+  CbType, PreListener, PreFlag,
+} from &quot;@newkrok/nape-js&quot;;
+
+const platformTag = new CbType();
+const playerTag = new CbType();
+
+// Create platform
+const platform = new Body(BodyType.STATIC, new Vec2(300, 400));
+platform.shapes.add(new Polygon(Polygon.box(120, 12)));
+platform.cbTypes.add(platformTag);
+platform.space = space;
+
+// Add player's CbType
+playerBody.cbTypes.add(playerTag);
+
+// PreListener: ignore collision when player moves upward
+space.listeners.add(
+  new PreListener(
+    InteractionType.COLLISION,
+    playerTag,
+    platformTag,
+    (cb) =&gt; {
+      const arbiter = cb.arbiter.collisionArbiter;
+      // Normal points from shape1 to shape2; ignore if pointing down
+      return arbiter &amp;&amp; arbiter.normal.y &gt; 0 ? PreFlag.IGNORE : PreFlag.ACCEPT;
+    },
+  ),
+);
+</code></pre>
+<p><strong>Key point:</strong> The <code>PreListener</code> fires <em>before</em> collision resolution — returning <code>PreFlag.IGNORE</code> lets the body pass through.</p>
+<hr>
+<h2 id="ragdoll">Ragdoll</h2>
+<p>A multi-body character held together by <code>PivotJoint</code> (position) and <code>AngleJoint</code> (rotation limits).</p>
+<pre><code class="language-typescript">import {
+  Space, Body, BodyType, Vec2, Circle, Polygon,
+  PivotJoint, AngleJoint,
+} from &quot;@newkrok/nape-js&quot;;
+
+function createRagdoll(space: Space, x: number, y: number) {
+  const torso = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+  torso.shapes.add(new Polygon(Polygon.box(24, 48)));
+  torso.space = space;
+
+  const head = new Body(BodyType.DYNAMIC, new Vec2(x, y - 38));
+  head.shapes.add(new Circle(12));
+  head.space = space;
+
+  // Pin head to torso
+  const neck = new PivotJoint(torso, head, new Vec2(0, -24), new Vec2(0, 12));
+  neck.space = space;
+
+  // Limit head rotation to ±23°
+  const neckAngle = new AngleJoint(torso, head, -0.4, 0.4);
+  neckAngle.stiff = false;
+  neckAngle.frequency = 8;
+  neckAngle.damping = 0.6;
+  neckAngle.space = space;
+
+  // Upper arm
+  const arm = new Body(BodyType.DYNAMIC, new Vec2(x - 26, y - 14));
+  arm.shapes.add(new Polygon(Polygon.box(28, 8)));
+  arm.space = space;
+
+  new PivotJoint(torso, arm, new Vec2(-12, -20), new Vec2(14, 0)).space = space;
+  new AngleJoint(torso, arm, -Math.PI * 0.75, Math.PI * 0.75).space = space;
+
+  // Add more limbs following the same pattern...
+  return { torso, head, arm };
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>PivotJoint</code> pins two bodies at a shared point — use for all joint connections</li>
+<li><code>AngleJoint</code> with <code>stiff = false</code> creates soft rotation limits (more natural)</li>
+<li><code>frequency</code> and <code>damping</code> control the &quot;springiness&quot; of the joint</li>
+</ul>
+<hr>
+<h2 id="rope--chain">Rope / Chain</h2>
+<p>A chain of bodies connected by distance-constrained joints.</p>
+<pre><code class="language-typescript">const LINKS = 12;
+const LINK_LEN = 20;
+let prev: Body | null = space.world; // anchor to static world body
+
+for (let i = 0; i &lt; LINKS; i++) {
+  const link = new Body(BodyType.DYNAMIC, new Vec2(300, 100 + i * LINK_LEN));
+  link.shapes.add(new Circle(4));
+  link.space = space;
+
+  const joint = new PivotJoint(
+    prev,
+    link,
+    prev === space.world ? new Vec2(300, 100) : new Vec2(0, LINK_LEN / 2),
+    new Vec2(0, -LINK_LEN / 2),
+  );
+  joint.space = space;
+  prev = link;
+}
+</code></pre>
+<p><strong>Key point:</strong> Use <code>space.world</code> as the first body to anchor the chain to a fixed point in the world.</p>
+<hr>
+<h2 id="vehicle-top-down">Vehicle (Top-Down)</h2>
+<p>Kinematic body with velocity-based steering.</p>
+<pre><code class="language-typescript">const car = new Body(BodyType.DYNAMIC, new Vec2(400, 300));
+car.shapes.add(new Polygon(Polygon.box(20, 40)));
+car.allowRotation = true;
+car.space = space;
+
+function updateCar(steer: number, throttle: number) {
+  const angle = car.rotation;
+  const forward = new Vec2(Math.sin(angle), -Math.cos(angle));
+
+  // Apply forward thrust
+  car.applyImpulse(Vec2.get(forward.x * throttle, forward.y * throttle));
+
+  // Steering: apply angular impulse
+  car.applyAngularImpulse(steer * 0.5);
+
+  // Kill lateral velocity for tighter handling
+  const lateral = new Vec2(-forward.y, forward.x);
+  const latSpeed = car.velocity.x * lateral.x + car.velocity.y * lateral.y;
+  car.velocity.x -= lateral.x * latSpeed * 0.9;
+  car.velocity.y -= lateral.y * latSpeed * 0.9;
+}
+</code></pre>
+<hr>
+<h2 id="fluid--water-pool">Fluid / Water Pool</h2>
+<p>Create a body with <code>fluidEnabled = true</code> shapes for buoyancy and drag.</p>
+<pre><code class="language-typescript">import { Body, BodyType, Vec2, Polygon, FluidProperties } from &quot;@newkrok/nape-js&quot;;
+
+// Water zone (static body, sensor-like)
+const water = new Body(BodyType.STATIC, new Vec2(400, 450));
+const waterShape = new Polygon(Polygon.box(300, 100));
+waterShape.fluidEnabled = true;
+waterShape.fluidProperties = new FluidProperties(1.5, 3.0); // density, viscosity
+water.shapes.add(waterShape);
+water.space = space;
+
+// Light object — floats
+const buoy = new Body(BodyType.DYNAMIC, new Vec2(400, 200));
+const buoyShape = new Circle(15);
+buoy.shapes.add(buoyShape);
+for (const s of buoy.shapes) {
+  s.material.density = 0.3; // lighter than water (1.5) → floats
+}
+buoy.space = space;
+
+// Heavy object — sinks slowly
+const anchor = new Body(BodyType.DYNAMIC, new Vec2(420, 200));
+anchor.shapes.add(new Polygon(Polygon.box(20, 20)));
+for (const s of anchor.shapes) {
+  s.material.density = 5.0; // heavier than water → sinks
+}
+anchor.space = space;
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>FluidProperties(density, viscosity)</code> — higher density = stronger buoyancy, higher viscosity = more drag</li>
+<li>The body's <code>material.density</code> relative to the fluid's density determines floating vs sinking</li>
+<li>Fluid simulation is <strong>unique to nape-js</strong> — no other pure-JS engine has this</li>
+</ul>
+<hr>
+<h2 id="raycasting">Raycasting</h2>
+<p>Cast a ray and find the first body it hits.</p>
+<pre><code class="language-typescript">import { Space, Ray, Vec2 } from &quot;@newkrok/nape-js&quot;;
+
+// Important: call space.step() at least once before raycasting
+// so the broadphase registers all shapes
+space.step(1 / 60);
+
+const ray = new Ray(
+  new Vec2(100, 300), // origin
+  new Vec2(1, 0),     // direction (rightward)
+);
+
+const result = space.rayCast(ray, false); // false = outer surfaces only
+
+if (result) {
+  console.log(&quot;Hit body:&quot;, result.shape.body);
+  console.log(&quot;Hit point:&quot;, result.point);
+  console.log(&quot;Distance:&quot;, result.distance);
+  console.log(&quot;Normal:&quot;, result.normal);
+}
+</code></pre>
+<p><strong>Gotcha:</strong> <code>space.rayCast()</code> on static bodies may return null if you haven't called <code>space.step()</code> at least once — the broadphase needs a step to index the shapes.</p>
+<hr>
+<h2 id="convex-cast-swept-shape-queries">Convex Cast (Swept-Shape Queries)</h2>
+<p>Where <code>rayCast</code> queries an infinitely thin ray, <code>convexCast</code> and <code>convexMultiCast</code>
+sweep a full convex shape along its body's current velocity — useful for wide
+projectile hit-prediction, look-ahead for melee weapons, or tunnelling prevention
+for fast-moving objects.</p>
+<pre><code class="language-typescript">import { Space, Body, BodyType, Vec2, Capsule } from &quot;@newkrok/nape-js&quot;;
+
+// Create a &quot;sword&quot; body — a capsule that rotates around its centre.
+const sword = new Body(BodyType.KINEMATIC, new Vec2(450, 250));
+const blade = new Capsule(160, 10); // 160 px long, 10 px wide
+sword.shapes.add(blade);
+sword.angularVel = 2.0; // radians per second
+sword.space = space;
+
+// Important: the broadphase needs at least one step before casts return results.
+space.step(1 / 60);
+
+// ── convexCast — first hit in the next frame ──────────────────────────────
+const result = space.convexCast(blade, 1 / 60, false);
+if (result) {
+  console.log(&quot;First hit at:&quot;, result.position.x, result.position.y);
+  console.log(&quot;Surface normal:&quot;, result.normal.x, result.normal.y);
+  console.log(&quot;Time-of-impact (seconds):&quot;, result.toi);
+  console.log(&quot;Shape hit:&quot;, result.shape);
+  result.dispose(); // always dispose to return to pool
+}
+
+// ── convexMultiCast — all hits in the next 0.3 seconds ───────────────────
+const results = space.convexMultiCast(blade, 0.3, false);
+for (const r of results) {
+  console.log(&quot;Hit shape:&quot;, r.shape, &quot;at toi:&quot;, r.toi.toFixed(3));
+  r.dispose(); // dispose each individual result
+}
+</code></pre>
+<p><strong><code>ConvexResult</code> properties:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>position</code></td>
+<td><code>Vec2</code></td>
+<td>World-space contact point</td>
+</tr>
+<tr>
+<td><code>normal</code></td>
+<td><code>Vec2</code></td>
+<td>Surface normal at contact, pointing away from the hit shape</td>
+</tr>
+<tr>
+<td><code>toi</code></td>
+<td><code>number</code></td>
+<td>Time-of-impact in seconds — <code>0</code> = immediate contact, up to <code>deltaTime</code></td>
+</tr>
+<tr>
+<td><code>shape</code></td>
+<td><code>Shape</code></td>
+<td>The shape that was hit</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Tips:</strong></p>
+<ul>
+<li><code>liveSweep = true</code> (third argument) accounts for the <em>other</em> body's velocity
+during the sweep — useful when predicting a projectile hitting a moving target.</li>
+<li>Always call <code>result.dispose()</code> (and each item from <code>convexMultiCast</code>) to return
+pooled objects; skipping this causes a small per-frame allocation leak.</li>
+<li>The shape must belong to a body that is already in the space.</li>
+<li>Combine with <code>InteractionFilter</code> to restrict which shapes are eligible hits
+(e.g. ignore sensors or specific collision groups).</li>
+</ul>
+<blockquote>
+<p><strong>See also:</strong> the <a href="../../examples/">Convex Cast demo</a> — spinning sword with real-time
+swept-arc visualisation and HUD showing both APIs side-by-side.</p>
+</blockquote>
+<hr>
+<h2 id="sensor--trigger-zone">Sensor / Trigger Zone</h2>
+<p>Detect bodies entering/exiting an area without physical collision.</p>
+<pre><code class="language-typescript">import {
+  Body, BodyType, Vec2, Polygon,
+  CbType, CbEvent, InteractionType, InteractionListener,
+} from &quot;@newkrok/nape-js&quot;;
+
+const sensorTag = new CbType();
+const enemyTag = new CbType();
+
+// Sensor zone — no physical collision, only detection
+const zone = new Body(BodyType.STATIC, new Vec2(500, 400));
+const zoneShape = new Polygon(Polygon.box(100, 100));
+zoneShape.sensorEnabled = true;
+zone.shapes.add(zoneShape);
+zone.cbTypes.add(sensorTag);
+zone.space = space;
+
+// Enemy body
+enemy.cbTypes.add(enemyTag);
+
+// Detect entry
+space.listeners.add(
+  new InteractionListener(CbEvent.BEGIN, InteractionType.SENSOR, sensorTag, enemyTag, (cb) =&gt; {
+    console.log(&quot;Enemy entered zone!&quot;, cb.int2);
+  }),
+);
+
+// Detect exit
+space.listeners.add(
+  new InteractionListener(CbEvent.END, InteractionType.SENSOR, sensorTag, enemyTag, (cb) =&gt; {
+    console.log(&quot;Enemy left zone!&quot;, cb.int2);
+  }),
+);
+</code></pre>
+<hr>
+<h2 id="collision-filtering">Collision Filtering</h2>
+<p>Control which bodies collide using <code>InteractionFilter</code> bit masks.</p>
+<pre><code class="language-typescript">import { Body, Circle, InteractionFilter } from &quot;@newkrok/nape-js&quot;;
+
+// Define layers as bit flags
+const PLAYER = 1;
+const ENEMY = 2;
+const BULLET = 4;
+const WALL = 8;
+
+// Player collides with enemies and walls, not own bullets
+for (const s of playerBody.shapes) {
+  s.filter.collisionGroup = PLAYER;
+  s.filter.collisionMask = ENEMY | WALL;
+}
+
+// Enemy collides with player, bullets, and walls
+for (const s of enemyBody.shapes) {
+  s.filter.collisionGroup = ENEMY;
+  s.filter.collisionMask = PLAYER | BULLET | WALL;
+}
+
+// Bullet collides with enemies and walls only
+for (const s of bulletBody.shapes) {
+  s.filter.collisionGroup = BULLET;
+  s.filter.collisionMask = ENEMY | WALL;
+}
+</code></pre>
+<p><strong>Key point:</strong> Two shapes collide when <code>(A.collisionGroup &amp; B.collisionMask) !== 0 AND (B.collisionGroup &amp; A.collisionMask) !== 0</code>. Both must agree.</p>
+<hr>
+<h2 id="explosion-impulse">Explosion Impulse</h2>
+<p>Apply radial impulse to all nearby bodies.</p>
+<pre><code class="language-typescript">function explode(space: Space, center: Vec2, radius: number, force: number) {
+  for (const body of space.bodies) {
+    if (body.type !== BodyType.DYNAMIC) continue;
+
+    const dx = body.position.x - center.x;
+    const dy = body.position.y - center.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist &lt; radius &amp;&amp; dist &gt; 0) {
+      const strength = force * (1 - dist / radius); // falloff
+      const impulse = Vec2.get((dx / dist) * strength, (dy / dist) * strength);
+      body.applyImpulse(impulse);
+      impulse.dispose();
+    }
+  }
+}
+
+// Usage:
+explode(space, new Vec2(400, 300), 200, 5000);
+</code></pre>
+<p><strong>Gotcha:</strong> nape-js has <code>applyImpulse()</code>, not <code>applyForce()</code>. Impulse is instantaneous (velocity change), force is continuous (applied per step).</p>
+<hr>
+<h2 id="voronoi-fracture-destruction">Voronoi Fracture (Destruction)</h2>
+<p>Shatter a body into Voronoi fragments on impact. Works with any convex polygon shape.</p>
+<pre><code class="language-typescript">import { fractureBody } from &quot;@newkrok/nape-js&quot;;
+
+// Fracture a body at the impact point
+const result = fractureBody(body, impactPoint, {
+  fragmentCount: 6,       // number of pieces (default: 8)
+  explosionImpulse: 30,   // radial blast force in px/s (default: 0)
+});
+
+// result.fragments — array of new Body instances (already in space)
+// result.originalBody — the original body (removed from space)
+result.fragments.forEach((f) =&gt; {
+  f.userData._breakable = f.shapes.at(0).area &gt;= 300; // re-fracture only large pieces
+});
+</code></pre>
+<p><strong>Collision-triggered fracture</strong> — use an <code>InteractionListener</code> to fracture on impact:</p>
+<pre><code class="language-typescript">import { CbType, CbEvent, InteractionType, InteractionListener } from &quot;@newkrok/nape-js&quot;;
+
+const cbProjectile = new CbType();
+const cbBreakable = new CbType();
+
+// Tag bodies
+projectile.cbTypes.add(cbProjectile);
+wall.cbTypes.add(cbBreakable);
+
+space.listeners.add(new InteractionListener(
+  CbEvent.BEGIN,
+  InteractionType.COLLISION,
+  cbProjectile,
+  cbBreakable,
+  (cb) =&gt; {
+    const b1 = cb.int1.castBody ?? cb.int1.castShape?.body;
+    const b2 = cb.int2.castBody ?? cb.int2.castShape?.body;
+    if (!b1 || !b2) return;
+    const target = b1.userData._breakable ? b1 : b2;
+    const mx = (b1.position.x + b2.position.x) / 2;
+    const my = (b1.position.y + b2.position.y) / 2;
+    // Defer to avoid modifying space during callback
+    setTimeout(() =&gt; {
+      if (target.space) fractureBody(target, Vec2.get(mx, my), { fragmentCount: 4 });
+    }, 0);
+  },
+));
+</code></pre>
+<p><strong>Gotchas:</strong></p>
+<ul>
+<li><code>fractureBody</code> only works on <strong>polygon</strong> shapes (not circles/capsules).</li>
+<li>Always <code>setTimeout</code> the fracture call inside listeners — modifying the space during a collision callback throws.</li>
+<li>Fragments inherit the original body's velocity and rotation. Set <code>explosionImpulse</code> &gt; 0 for a blast effect.</li>
+<li>For deterministic results (multiplayer), pass a seeded <code>random: () =&gt; number</code> function in options.</li>
+</ul>
+<hr>
+<h2 id="particle-emitter-bullets-sparks-debris">Particle Emitter (Bullets, Sparks, Debris)</h2>
+<p><code>ParticleEmitter</code> is a physics-aware particle system: every &quot;particle&quot; is a real <code>Body</code> (with shape, mass, friction, collisions), but the emitter pools/recycles bodies, samples spawn positions and velocities from configurable patterns, ages them, and tears them down for you. Use it any time you would otherwise hand-roll a body pool with a per-frame <code>for</code>-loop.</p>
+<p>It replaces the typical &quot;make N small bodies and track them in an array&quot; snippet with one config object.</p>
+<h3 id="three-flavours-continuous-manual-burst-projectile-with-callback">Three flavours: continuous, manual burst, projectile-with-callback</h3>
+<pre><code class="language-typescript">import {
+  ParticleEmitter, Body, BodyType, Vec2, Material, InteractionFilter, CbType,
+} from &quot;@newkrok/nape-js&quot;;
+
+// 1) CONTINUOUS — emits at `rate` particles/sec for as long as it exists.
+//    Spawn pattern, velocity pattern, lifetime, and origin (Vec2 OR Body)
+//    are all sampled each spawn. Bodies are pooled internally up to
+//    `maxParticles`; older particles get recycled (`overflowPolicy`).
+const lava = new ParticleEmitter({
+  space,
+  origin: new Vec2(450, 230),                // can also be a Body — tracked each spawn
+  spawn: { kind: &quot;arc&quot;, radius: 6, angleStart: -Math.PI, angleEnd: 0 },
+  velocity: { kind: &quot;cone&quot;, direction: -Math.PI / 2, spread: Math.PI / 5,
+              speedMin: 320, speedMax: 520 },
+  rate: 90,
+  maxParticles: 600,
+  lifetimeMin: 4, lifetimeMax: 7,
+  particleRadius: 2.5,
+  particleMaterial: new Material(0.05, 0.4, 0.6, 0.6),
+  selfCollision: false,                       // particles don't collide with each other
+});
+
+// 2) MANUAL BURST — `rate: 0`, fire with `.emit(n)` whenever you want.
+const debris = new ParticleEmitter({
+  space,
+  origin: new Vec2(0, 0),                     // moved on each burst
+  velocity: { kind: &quot;radial&quot;, speedMin: 130, speedMax: 420 },
+  maxParticles: 400,
+  lifetimeMin: 0.5, lifetimeMax: 1.4,
+  particleRadius: 1.7,
+  selfCollision: false,
+});
+
+function explodeAt(x: number, y: number) {
+  // origin is a Vec2 — mutate in place; the emitter reads it on the next emit().
+  (debris.origin as Vec2).setxy(x, y);
+  debris.emit(40);
+}
+
+// 3) PROJECTILES WITH COLLISION CALLBACK — bullets that die on first contact.
+//    `particleCbType` + `onCollide` wires up the InteractionListener for you;
+//    `requestKill` is a deferred kill that's safe to call from inside the
+//    callback (modifying the space during a collision callback throws).
+const bulletCb = new CbType();
+const bullets = new ParticleEmitter({
+  space,
+  origin: player,                             // bullets spawn from the player's centre
+  velocity: { kind: &quot;fixed&quot;, value: new Vec2(700, 0) }, // mutated per shot
+  maxParticles: 64,
+  lifetimeMin: 1.7, lifetimeMax: 1.7,
+  particleRadius: 2,
+  particleCbType: bulletCb,
+  onCollide: (bullet, other) =&gt; {
+    other.userData?._hp != null &amp;&amp; (other.userData._hp -= 1);
+    bullets.requestKill(bullet);              // safe — runs at the start of next update()
+  },
+  selfCollision: false,
+});
+
+// Shoot toward an aim point: mutate the velocity pattern in place, then emit().
+function fire(aim: Vec2) {
+  const dx = aim.x - player.position.x, dy = aim.y - player.position.y;
+  const len = Math.hypot(dx, dy) || 1;
+  (bullets.velocity as { kind: &quot;fixed&quot;; value: Vec2 }).value =
+    new Vec2(dx / len * 700, dy / len * 700);
+  bullets.emit(1);
+}
+</code></pre>
+<h3 id="wire-it-into-the-loop">Wire it into the loop</h3>
+<pre><code class="language-typescript">function update(dt: number) {
+  lava.update(dt);
+  debris.update(dt);
+  bullets.update(dt);
+  space.step(dt);
+}
+
+// Render: walk live particles + their parallel age/lifetime arrays.
+for (let i = 0; i &lt; lava.active.length; i++) {
+  const b = lava.active[i];
+  const t = lava.ages[i] / lava.lifetimes[i];
+  // ... fade colour by t, draw a circle at b.position
+}
+</code></pre>
+<h3 id="filter-gotcha--emitters-need-their-own-collision-group">Filter gotcha — emitters need their own collision group</h3>
+<p>Particles are real bodies, so they show up in <strong>every</strong> collision check, including:</p>
+<ul>
+<li><strong>Other particle emitters</strong> — bullets fired through a debris cloud will deflect off floating sparks unless you mask them out.</li>
+<li><strong><code>CharacterController</code> ground-/wall-detection raycasts</strong> — the auto-generated CC raycast filter only excludes the character itself. If you fire bullets from the player's centre, the player can stand on their own bullets and &quot;fly&quot; by spamming the fire button.</li>
+</ul>
+<p>Solution: put every emitter into a dedicated collision group, and have projectile/character filters mask that group out.</p>
+<pre><code class="language-typescript">const PARTICLE_GROUP = 1 &lt;&lt; 10;
+const CHAR_GROUP     = 1 &lt;&lt; 8;   // CharacterController already uses this internally
+
+// Bullets: in PARTICLE_GROUP, but mask it out of THEIR mask too — so bullets
+// don't deflect off other particles, and the CC ray-cast skips them.
+new ParticleEmitter({
+  /* ... */
+  particleFilter: new InteractionFilter(PARTICLE_GROUP, ~(CHAR_GROUP | PARTICLE_GROUP)),
+});
+
+// Debris/sparks: same group, but only need to skip the player.
+new ParticleEmitter({
+  /* ... */
+  particleFilter: new InteractionFilter(PARTICLE_GROUP, ~CHAR_GROUP),
+});
+
+// CharacterController: pass an explicit filter that skips both the character
+// AND every particle. Otherwise its default filter keeps PARTICLE_GROUP in
+// scope and the player can stand on their own shots.
+new CharacterController(space, player, {
+  /* ... */,
+  filter: new InteractionFilter(1, ~(CHAR_GROUP | PARTICLE_GROUP)),
+});
+</code></pre>
+<h3 id="lifecycle-hooks">Lifecycle hooks</h3>
+<p>All hooks are optional:</p>
+<ul>
+<li><code>onSpawn(state)</code> — set per-particle <code>userData</code> (color, damage, frame index).</li>
+<li><code>onUpdate(body, age, dt)</code> — per-frame mutation (e.g. shrink radius, apply custom drag).</li>
+<li><code>onDeath(body, reason)</code> — <code>&quot;lifetime&quot;</code> / <code>&quot;manual&quot;</code> / <code>&quot;bounds&quot;</code>. Trigger a death-burst here.</li>
+<li><code>onCollide(particle, other)</code> — collision-driven death; pair with <code>requestKill</code>.</li>
+</ul>
+<h3 id="gotchas">Gotchas</h3>
+<ul>
+<li><code>update(dt)</code> must run <strong>before</strong> <code>space.step(dt)</code> (so deferred kills land before the next physics tick).</li>
+<li><code>origin</code> as a <code>Vec2</code> is captured by reference — mutate it in place to move the emitter; don't reassign with <code>=</code>.</li>
+<li><code>origin</code> as a <code>Body</code> is tracked each spawn — handy for muzzle-attached emitters; the body doesn't even need to be in the same space.</li>
+<li><code>selfCollision: false</code> (default) gives every particle a self-excluding filter. If you provide an explicit <code>particleFilter</code>, set <code>selfCollision: true</code> if you want particles to collide with each other.</li>
+<li>For deterministic results (multiplayer), pass a seeded <code>random: () =&gt; number</code> in the options.</li>
+</ul>
+<hr>
+<h2 id="conveyor-belt">Conveyor Belt</h2>
+<p>Use <code>surfaceVel</code> on a shape's material to create a moving surface.</p>
+<pre><code class="language-typescript">const belt = new Body(BodyType.STATIC, new Vec2(400, 500));
+const beltShape = new Polygon(Polygon.box(200, 10));
+belt.shapes.add(beltShape);
+belt.space = space;
+
+// Set surface velocity — pushes objects rightward at 100 px/s
+for (const s of belt.shapes) {
+  s.material.dynamicFriction = 2;
+  s.material.staticFriction = 2;
+  s.surfaceVel.setXY(100, 0);
+}
+</code></pre>
+<hr>
+<h2 id="breakable-constraint">Breakable Constraint</h2>
+<p>A joint that snaps when force exceeds a threshold.</p>
+<pre><code class="language-typescript">import { PivotJoint, CbType, CbEvent, ConstraintListener } from &quot;@newkrok/nape-js&quot;;
+
+const joint = new PivotJoint(bodyA, bodyB, new Vec2(0, 0), new Vec2(0, 0));
+joint.breakUnderForce = true;
+joint.maxForce = 5000;     // breaks above this force
+joint.removeOnBreak = true; // auto-remove from space
+
+// Listen for the break event
+const jointTag = new CbType();
+joint.cbTypes.add(jointTag); // IMPORTANT: must add a custom CbType
+
+space.listeners.add(
+  new ConstraintListener(CbEvent.BREAK, jointTag, (cb) =&gt; {
+    console.log(&quot;Joint broke!&quot;, cb.constraint);
+    // Spawn particles, play sound, etc.
+  }),
+);
+
+joint.space = space;
+</code></pre>
+<p><strong>Gotcha:</strong> <code>CbType.ANY_CONSTRAINT</code> does <strong>not</strong> work for BREAK/SLEEP events. You must create and assign a dedicated <code>CbType</code> to the joint's <code>cbTypes</code>.</p>
+<hr>
+<h2 id="soft-constraint-spring-like">Soft Constraint (Spring-Like)</h2>
+<p>Any constraint can be made soft by setting <code>stiff = false</code> with frequency and damping.</p>
+<pre><code class="language-typescript">const joint = new DistanceJoint(bodyA, bodyB,
+  new Vec2(0, 0), new Vec2(0, 0),
+  50, 150, // min, max distance
+);
+joint.stiff = false;
+joint.frequency = 4;   // oscillation speed (Hz)
+joint.damping = 0.3;   // 0 = no damping, 1 = critical damping
+joint.space = space;
+</code></pre>
+<p><strong>Key point:</strong> This works on <strong>any</strong> constraint type (PivotJoint, AngleJoint, WeldJoint, etc.) — not just DistanceJoint. Set <code>stiff = false</code>, then tune <code>frequency</code> and <code>damping</code>.</p>
+<hr>
+<h2 id="constraint-reference--which-joint-to-use">Constraint Reference — Which Joint to Use</h2>
+<p>nape-js has 8 built-in constraint types. Each constrains a different degree of freedom between two bodies.</p>
+<h3 id="quick-reference">Quick reference</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>What it does</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PivotJoint</strong></td>
+<td>Pins two bodies at a shared world point (removes 2 translational DOFs)</td>
+<td>Hinges, ragdoll joints, pin-to-world anchors</td>
+</tr>
+<tr>
+<td><strong>WeldJoint</strong></td>
+<td>Pins two bodies at a point AND locks relative rotation</td>
+<td>Rigid attachment, gluing pieces together</td>
+</tr>
+<tr>
+<td><strong>DistanceJoint</strong></td>
+<td>Constrains the distance between two anchor points to a <code>[min, max]</code> range</td>
+<td>Ropes, chains, rods, tethers</td>
+</tr>
+<tr>
+<td><strong>SpringJoint</strong></td>
+<td>Continuously pulls/pushes two anchors toward a <code>restLength</code> using Hooke's law</td>
+<td>Suspension, soft-bodies, bouncy connections</td>
+</tr>
+<tr>
+<td><strong>LineJoint</strong></td>
+<td>Constrains one body to slide along an axis defined on the other body</td>
+<td>Pistons, sliders, guided rails</td>
+</tr>
+<tr>
+<td><strong>AngleJoint</strong></td>
+<td>Constrains the relative rotation between two bodies to a <code>[min, max]</code> range</td>
+<td>Rotation limits on ragdoll limbs, turrets</td>
+</tr>
+<tr>
+<td><strong>MotorJoint</strong></td>
+<td>Drives relative angular velocity at a target <code>rate</code> with a gear <code>ratio</code></td>
+<td>Wheels, motors, conveyor rollers</td>
+</tr>
+<tr>
+<td><strong>PulleyJoint</strong></td>
+<td>Couples the distance of two body pairs so that <code>d1 + ratio * d2 ≤ maxDist</code></td>
+<td>Pulleys, counterweights, elevators</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="distancejoint-vs-springjoint">DistanceJoint vs SpringJoint</h3>
+<p>These two are often confused because both relate to distance between bodies.</p>
+<p><strong>DistanceJoint</strong> is a <em>constraint</em> — it enforces a distance range <code>[min, max]</code>. If the bodies are within range, the joint does nothing. Think of it as a rope with a fixed length.</p>
+<p><strong>SpringJoint</strong> is a <em>force generator</em> — it always applies force proportional to how far the current distance is from <code>restLength</code> (Hooke's law). It oscillates and bounces. Think of it as a coil spring.</p>
+<pre><code class="language-typescript">// Rope: keeps bodies between 50–150 apart, otherwise limp
+const rope = new DistanceJoint(a, b, v0, v0, 50, 150);
+
+// Spring: always pulls toward rest length 100, oscillates
+const spring = new SpringJoint(a, b, v0, v0, 100);
+spring.frequency = 4;  // Hz — how fast it oscillates
+spring.damping = 0.3;  // 0 = bouncy forever, 1 = no overshoot
+</code></pre>
+<p><strong>When to choose which:</strong></p>
+<ul>
+<li>Fixed length / slack rope → <code>DistanceJoint</code></li>
+<li>Bungee / oscillation / soft-body mesh → <code>SpringJoint</code></li>
+<li>Vehicle suspension → <code>SpringJoint</code> + <code>LineJoint</code> (spring handles vertical force, line joint prevents lateral drift)</li>
+</ul>
+<h3 id="softening-any-constraint">Softening any constraint</h3>
+<p>Every constraint (except SpringJoint which is always soft) has a <code>stiff</code> flag. Setting <code>stiff = false</code> with <code>frequency</code> and <code>damping</code> adds spring-like compliance:</p>
+<pre><code class="language-typescript">const pivot = new PivotJoint(bodyA, bodyB, anchorA, anchorB);
+pivot.stiff = false;
+pivot.frequency = 4;   // Hz
+pivot.damping = 0.5;
+</code></pre>
+<p>This is useful for soft ragdolls, squishy hinges, or damped connections — but it's a different mechanism than <code>SpringJoint</code>. Soft constraints still enforce their geometric rule (e.g. shared point for PivotJoint), just with spring-like error correction. <code>SpringJoint</code> applies Hooke's law force with no geometric constraint at all.</p>
+<h3 id="common-patterns">Common patterns</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Constraints used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ragdoll limbs</td>
+<td><code>PivotJoint</code> + <code>AngleJoint</code> (limit rotation range)</td>
+</tr>
+<tr>
+<td>Rope / chain</td>
+<td><code>PivotJoint</code> per link, or <code>DistanceJoint</code> between nodes</td>
+</tr>
+<tr>
+<td>Vehicle suspension</td>
+<td><code>SpringJoint</code> + <code>LineJoint</code> per wheel</td>
+</tr>
+<tr>
+<td>Driven wheel</td>
+<td><code>MotorJoint</code> (set <code>rate</code> to control speed)</td>
+</tr>
+<tr>
+<td>Elevator / counterweight</td>
+<td><code>PulleyJoint</code> with ratio</td>
+</tr>
+<tr>
+<td>Breakable connection</td>
+<td>Any joint + check <code>isActive</code> / force magnitude, then remove</td>
+</tr>
+<tr>
+<td>Soft-body blob</td>
+<td>Ring of <code>SpringJoint</code>s + cross-bracing <code>SpringJoint</code>s</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="serialization-save--load">Serialization (Save / Load)</h2>
+<p>Save and restore the entire physics state as JSON.</p>
+<pre><code class="language-typescript">import { spaceToJSON, spaceFromJSON } from &quot;@newkrok/nape-js/serialization&quot;;
+
+// Save
+const snapshot = spaceToJSON(space);
+const json = JSON.stringify(snapshot);
+localStorage.setItem(&quot;physics-save&quot;, json);
+
+// Load
+const saved = localStorage.getItem(&quot;physics-save&quot;);
+if (saved) {
+  const restoredSpace = spaceFromJSON(JSON.parse(saved));
+  // restoredSpace is a fully functional Space with all bodies, constraints, etc.
+}
+</code></pre>
+<p><strong>Key point:</strong> JSON serialization preserves <code>userData</code> on bodies. Binary does not.</p>
+<hr>
+<h2 id="binary-snapshot-multiplayer">Binary Snapshot (Multiplayer)</h2>
+<p>Compact binary format for network sync.</p>
+<pre><code class="language-typescript">import { spaceToBinary, spaceFromBinary } from &quot;@newkrok/nape-js/serialization&quot;;
+
+// Server: serialize
+const binary = spaceToBinary(space); // Uint8Array
+
+// Send binary over WebSocket
+ws.send(binary);
+
+// Client: deserialize
+ws.onmessage = (event) =&gt; {
+  const restored = spaceFromBinary(new Uint8Array(event.data));
+  // Use restored space for prediction/rendering
+};
+</code></pre>
+<hr>
+<h2 id="replay--recording-deterministic-playback">Replay &amp; Recording (Deterministic Playback)</h2>
+<p><code>@newkrok/nape-js/replay</code> records a simulation as <code>(initial snapshot, per-frame input log)</code> and plays it back deterministically — same machine, another machine,
+days later. Useful for debug repro, multiplayer rollback foundations, shareable
+replays, and regression tests.</p>
+<p>The library does not patch <code>body.applyImpulse</code>. You provide an <code>applyInput</code>
+callback that translates a recorded payload into Space mutations — exactly the
+same calls you'd make during the live recording.</p>
+<pre><code class="language-typescript">import &quot;@newkrok/nape-js&quot;;
+import { Recorder, Player, encodeReplay, decodeReplay } from &quot;@newkrok/nape-js/replay&quot;;
+
+// ── Record ────────────────────────────────────────────────────────────────
+type Input = { fire?: boolean; mouseX?: number; mouseY?: number };
+
+space.deterministic = true; // mandatory for replay determinism
+const recorder = new Recorder&lt;Input&gt;(space, { keyframeEvery: 60 });
+
+for (let frame = 0; frame &lt; 600; frame++) {
+  const input = readUserInput(); // your own logic — may be null
+  recorder.recordFrame(input);
+  if (input?.fire) ball.applyImpulse(new Vec2(0, -200));
+  space.step(1 / 60);
+}
+
+const replay = recorder.finish();
+const blob = encodeReplay(replay); // Uint8Array — store / share / transfer
+
+// ── Replay (anywhere on the same platform) ────────────────────────────────
+const replay2 = decodeReplay&lt;Input&gt;(blob);
+const player = new Player(replay2, (input, sp, frame) =&gt; {
+  if (input.fire) sp.bodies.at(1).applyImpulse(new Vec2(0, -200));
+});
+
+const sp = player.restore();           // restore initial snapshot
+while (!player.finished) player.step();
+// Or: player.stepTo(150) for random-access scrub via keyframes
+</code></pre>
+<h3 id="determinism-contract">Determinism contract</h3>
+<p>Replay reproduces the recording bit-close on the <strong>same platform</strong> when:</p>
+<ol>
+<li><code>space.deterministic = true</code> is set on the recording space (and survives in the snapshot).</li>
+<li>Both sides use a fixed <code>dt</code> and matching velocity/position iteration counts.</li>
+<li>Your <code>applyInput</code> is a pure function of <code>(input, space, frame)</code> — no <code>Math.random()</code>, no wall-clock reads, no closure mutation.</li>
+</ol>
+<p>Cross-platform bit-exact replay is not currently supported — floating-point
+rounding differs across CPUs (see roadmap P74 for a fixed-point math layer).</p>
+<h3 id="scrubbing">Scrubbing</h3>
+<p>Backward <code>stepTo(target)</code> jumps restore the latest keyframe ≤ target, then step
+forward through the input log. Without keyframes (<code>keyframeEvery: 0</code>), backward
+scrub re-restores from the initial snapshot — still works, just slower.</p>
+<pre><code class="language-typescript">// Long replay, scrub to 5 seconds in
+player.stepTo(60 * 5);
+
+// Then back to 2 seconds
+player.stepTo(60 * 2);
+</code></pre>
+<h3 id="whats-not-captured">What's NOT captured</h3>
+<ul>
+<li><code>body.userData</code> — binary serialization skips it (it's not size-bounded). If
+you need to round-trip userData, encode it into your input payload yourself,
+or use <code>spaceToJSON</code> instead.</li>
+<li>Sleeping state — bodies wake fresh on snapshot restore. The simulation
+re-resolves sleep on the next step.</li>
+</ul>
+<h3 id="validating-determinism-config">Validating determinism config</h3>
+<pre><code class="language-typescript">import { validateDeterministicConfig } from &quot;@newkrok/nape-js/replay&quot;;
+
+const { ok, warnings } = validateDeterministicConfig(space);
+if (!ok) console.warn(&quot;Replay may drift:&quot;, warnings);
+</code></pre>
+<hr>
+<h2 id="web-worker-off-thread-physics">Web Worker Off-Thread Physics</h2>
+<p>Run physics simulation on a background thread to keep the UI at 60 fps.</p>
+<pre><code class="language-typescript">import {
+  PhysicsWorkerManager,
+  buildWorkerScript,
+} from &quot;@newkrok/nape-js/worker&quot;;
+
+const manager = new PhysicsWorkerManager();
+
+// Initialize worker with engine URL
+await manager.init(buildWorkerScript(&quot;/node_modules/@newkrok/nape-js/dist/index.js&quot;));
+
+// Add bodies (mirrored in the worker)
+manager.addBody({ id: &quot;ball&quot;, type: &quot;dynamic&quot;, x: 400, y: 100, shape: &quot;circle&quot;, radius: 20 });
+manager.addBody({ id: &quot;floor&quot;, type: &quot;static&quot;, x: 400, y: 550, shape: &quot;box&quot;, width: 800, height: 20 });
+
+// Start simulation
+manager.start();
+
+// Read transforms for rendering (zero-copy with SharedArrayBuffer)
+function render() {
+  const transforms = manager.getTransforms();
+  for (const [id, { x, y, rotation }] of transforms) {
+    // Update your rendering objects
+  }
+  requestAnimationFrame(render);
+}
+</code></pre>
+<hr>
+<h2 id="ccd-bullet-bodies">CCD (Bullet Bodies)</h2>
+<p>Prevent fast-moving objects from tunneling through thin walls.</p>
+<pre><code class="language-typescript">// Enable CCD on fast-moving bodies
+bullet.isBullet = true;
+
+// Optional: fine-tune per body
+bullet.disableCCD = false; // default, CCD active when isBullet = true
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li>CCD is <strong>per-body</strong>, not per-space — there is no <code>space.disableCCD</code></li>
+<li>Only set <code>isBullet = true</code> on bodies that actually move fast (bullets, projectiles)</li>
+<li>CCD adds CPU cost — don't enable it on every body</li>
+</ul>
+<hr>
+<h2 id="sub-stepping-for-stability">Sub-Stepping for Stability</h2>
+<p>Improve simulation quality for stacking, fast objects, and stiff constraints.</p>
+<pre><code class="language-typescript">// Run 4 sub-steps per frame (each at dt/4)
+space.subSteps = 4;
+
+// Then step normally — it internally runs 4 smaller steps
+space.step(1 / 60);
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>subSteps = 1</code> is the default (zero overhead)</li>
+<li><code>subSteps = 4</code> is a good balance for most games</li>
+<li>Cost scales linearly — <code>subSteps = 4</code> costs ~4x more CPU</li>
+<li>Particularly useful for: stacking stability, thin wall collisions, stiff constraints</li>
+</ul>
+<hr>
+<h2 id="kinematic-moving-platform">Kinematic Moving Platform</h2>
+<p>A platform that moves on a fixed path and pushes dynamic bodies.</p>
+<pre><code class="language-typescript">const platform = new Body(BodyType.KINEMATIC, new Vec2(300, 400));
+platform.shapes.add(new Polygon(Polygon.box(100, 12)));
+platform.space = space;
+
+// Move back and forth
+let time = 0;
+function updatePlatform(dt: number) {
+  time += dt;
+  const targetX = 300 + Math.sin(time) * 150;
+  // Set velocity so the solver pushes bodies correctly
+  platform.velocity.x = (targetX - platform.position.x) / dt;
+  platform.velocity.y = 0;
+}
+</code></pre>
+<p><strong>Key point:</strong> Set <code>velocity</code> on kinematic bodies — don't set <code>position</code> directly. The solver uses velocity to push dynamic bodies that are standing on the platform.</p>
+<hr>
+<h2 id="custom-material-presets">Custom Material Presets</h2>
+<p>nape-js includes built-in presets, or create your own.</p>
+<pre><code class="language-typescript">import { Material } from &quot;@newkrok/nape-js&quot;;
+
+// Built-in presets
+const wood = Material.wood();
+const steel = Material.steel();
+const ice = Material.ice();
+const rubber = Material.rubber();
+const glass = Material.glass();
+const sand = Material.sand();
+
+// Custom material
+// Constructor order: elasticity, dynamicFriction, staticFriction, density, rollingFriction
+const bouncy = new Material(0.9, 0.1, 0.1, 1.0, 0.01);
+const heavy = new Material(0.2, 0.8, 0.9, 10.0, 0.5);
+
+// Apply to a shape
+for (const s of body.shapes) {
+  s.material = bouncy;
+}
+</code></pre>
+<p><strong>Gotcha:</strong> The constructor order is <code>(elasticity, dynamicFriction, staticFriction, density, rollingFriction)</code> — elasticity comes <strong>first</strong>, not friction. This differs from some other engines.</p>
+<hr>
+<h2 id="performance-profiling">Performance Profiling</h2>
+<p>Visualise per-step timing and entity counts with the built-in performance overlay.</p>
+<h3 id="quick-overlay-canvas">Quick overlay (Canvas)</h3>
+<pre><code class="language-typescript">import { PerformanceOverlay } from &quot;nape-js/profiler&quot;;
+
+// Attaches a canvas overlay to the page (auto-creates canvas if omitted)
+const overlay = new PerformanceOverlay(space, {
+  position: &quot;top-right&quot;, // &quot;top-left&quot; | &quot;top-right&quot; | &quot;bottom-left&quot; | &quot;bottom-right&quot;
+  width: 260,
+  showGraph: true,       // rolling step-time graph (120 frames)
+  showBreakdown: true,   // broadphase / narrowphase / solver / CCD / sleep bar
+  showCounters: true,    // body / contact / constraint counts
+});
+
+// In your game loop, after space.step():
+function update() {
+  space.step(1 / 60);
+  overlay.update();
+}
+</code></pre>
+<h3 id="headless--custom-metrics-no-dom">Headless / custom metrics (no DOM)</h3>
+<pre><code class="language-typescript">// Enable profiling without the overlay
+space.profilerEnabled = true;
+
+function update() {
+  space.step(1 / 60);
+
+  const m = space.metrics;
+  console.log(
+    `step ${m.totalStepTime.toFixed(2)}ms ` +
+    `(broad ${m.broadphaseTime.toFixed(2)} / narrow ${m.narrowphaseTime.toFixed(2)} / ` +
+    `velSolve ${m.velocitySolverTime.toFixed(2)} / posSolve ${m.positionSolverTime.toFixed(2)} / ` +
+    `ccd ${m.ccdTime.toFixed(2)} / sleep ${m.sleepTime.toFixed(2)})`,
+  );
+  console.log(
+    `bodies ${m.bodyCount} (dyn ${m.dynamicBodyCount}, sleep ${m.sleepingBodyCount}) ` +
+    `contacts ${m.contactCount} constraints ${m.constraintCount}`,
+  );
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>PerformanceOverlay</code> auto-enables <code>space.profilerEnabled</code> — no extra setup needed</li>
+<li>Metrics are <strong>zero-allocation</strong> (reused object, no GC pressure)</li>
+<li>The overlay respects HiDPI (<code>devicePixelRatio</code>) automatically</li>
+<li>When <code>profilerEnabled = false</code> (default), timing instrumentation is skipped — zero overhead in production</li>
+</ul>
+<hr>
+<h2 id="wave-spawner-timer-driven-cadence">Wave Spawner (Timer-Driven Cadence)</h2>
+<p>A common arena-mode pattern: enemies spawn in waves, and the next wave
+starts on a fixed timer regardless of whether the previous one is
+finished. Pile-ups are part of the challenge.</p>
+<pre><code class="language-javascript">const WAVE_INTERVAL = 12 * 60;    // 12s @ 60fps between wave starts
+const FIRST_WAVE_DELAY = 3 * 60;  // 3s grace period before wave 1
+let waveTimer = FIRST_WAVE_DELAY;
+let wave = 0;
+let toSpawn = 0;
+let spawnTimer = 0;
+let spawnInterval = 60;
+let waveActive = false;
+
+function startWave() {
+  wave++;
+  waveActive = true;
+  toSpawn = 8 + Math.floor(wave / 2);
+  spawnInterval = Math.max(20, 70 - wave * 2);
+  spawnTimer = 30;
+}
+
+function spawnForWave(space) {
+  if (toSpawn &lt;= 0) return;
+  spawnTimer--;
+  if (spawnTimer &gt; 0) return;
+  spawnTimer = spawnInterval;
+  spawnEnemy(space);   // your function — body + shape + filter
+  toSpawn--;
+}
+
+// Inside your per-frame step():
+function tickWaves(space) {
+  waveTimer--;
+  if (waveTimer &lt;= 0) {
+    startWave();
+    waveTimer = WAVE_INTERVAL;
+  }
+  if (waveActive) {
+    spawnForWave(space);
+    if (toSpawn &lt;= 0) waveActive = false;
+  }
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li>The timer keeps ticking even while a wave is active — slow waves don't delay the next one.</li>
+<li>Within a wave, <code>spawnInterval</code> controls per-enemy spacing; tighter intervals on later waves create pressure.</li>
+<li>The HUD can read <code>waveTimer / 60</code> for a &quot;next wave in Ns&quot; countdown.</li>
+<li>Vary the wave shape (boss / speed / healer) by <code>wave % N</code> checks inside <code>startWave()</code>.</li>
+</ul>
+<hr>
+<h2 id="viewport-bounded-auto-aim">Viewport-Bounded Auto-Aim</h2>
+<p>When the camera follows the player, off-screen enemies shouldn't be
+auto-targetable — that lets the player snipe through walls they can't
+see. Constrain target search to the visible viewport rectangle:</p>
+<pre><code class="language-javascript">const VIEW_W = 900;       // canvas width
+const VIEW_H = 500;       // canvas height
+const AIM_INSET = 20;     // small inset so enemies near the screen edge don't pop in/out
+
+function findNearestVisibleEnemy(space, player) {
+  const px = player.position.x, py = player.position.y;
+  const halfW = VIEW_W / 2 - AIM_INSET;
+  const halfH = VIEW_H / 2 - AIM_INSET;
+  let best = null, bestD2 = Infinity;
+  for (const body of space.bodies) {
+    if (!body.userData?._enemy) continue;
+    const ex = body.position.x, ey = body.position.y;
+    if (Math.abs(ex - px) &gt; halfW) continue;     // outside horizontally
+    if (Math.abs(ey - py) &gt; halfH) continue;     // outside vertically
+    const dx = ex - px, dy = ey - py;
+    const d2 = dx * dx + dy * dy;
+    if (d2 &lt; bestD2) { bestD2 = d2; best = body; }
+  }
+  return best;
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li>A box check is cheaper than a distance check (no <code>sqrt</code>, just two <code>abs</code>).</li>
+<li>This works because the camera follows the player — the player is roughly viewport-centered.</li>
+<li>For a non-following camera, replace <code>(px, py)</code> with the actual camera-center world coords.</li>
+<li>For a circular field-of-view instead of a rectangle, just use <code>distSq &lt; range*range</code>.</li>
+</ul>
+<hr>
+<h2 id="homing-missile-steered-projectile">Homing Missile (Steered Projectile)</h2>
+<p>A projectile that gradually turns toward the nearest target each frame.
+Constant speed + capped turn rate produces visible arcs (vs instant
+homing, which looks robotic).</p>
+<pre><code class="language-javascript">const HOMING_SPEED = 360;
+const HOMING_TURN_RATE = 0.18;        // radians per frame max
+const HOMING_ACQUIRE_RANGE = 520;     // px
+
+function spawnMissile(space, x, y, vx, vy) {
+  const body = new Body(BodyType.DYNAMIC, new Vec2(x, y));
+  body.shapes.add(new Circle(4, undefined, new Material(0.1, 0.1, 0.1, 0.05)));
+  body.isBullet = true;                // CCD — fast bodies tunnel otherwise
+  body.userData._homing = true;
+  body.userData._life = 150;
+  body.velocity = new Vec2(vx, vy);
+  body.space = space;
+}
+
+// Call once per frame for every active missile:
+function steerMissile(space, body) {
+  const px = body.position.x, py = body.position.y;
+  let best = null, bestD2 = HOMING_ACQUIRE_RANGE * HOMING_ACQUIRE_RANGE;
+  for (const e of space.bodies) {
+    if (!e.userData?._enemy) continue;
+    const dx = e.position.x - px, dy = e.position.y - py;
+    const d2 = dx * dx + dy * dy;
+    if (d2 &lt; bestD2) { bestD2 = d2; best = e; }
+  }
+  if (!best) return;                   // no target — fly straight
+
+  const desired = Math.atan2(best.position.y - py, best.position.x - px);
+  const current = Math.atan2(body.velocity.y, body.velocity.x);
+  let diff = desired - current;
+  // Normalize to (-π, π) so we always turn the short way around
+  while (diff &gt; Math.PI)  diff -= Math.PI * 2;
+  while (diff &lt; -Math.PI) diff += Math.PI * 2;
+  const turn = Math.max(-HOMING_TURN_RATE, Math.min(HOMING_TURN_RATE, diff));
+  const ang = current + turn;
+  body.velocity = new Vec2(Math.cos(ang) * HOMING_SPEED, Math.sin(ang) * HOMING_SPEED);
+  body.rotation = ang;                 // optional — orient the sprite
+}
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><strong>Constant speed</strong> (re-set every frame) keeps the trajectory readable; varying speed makes missiles feel laggy.</li>
+<li><strong>Cap the turn rate</strong> — without it, the missile snaps to its target and looks like a teleport.</li>
+<li>Use <code>body.isBullet = true</code> so the missile doesn't tunnel through enemies at high speed.</li>
+<li>Pair with <code>Body.userData._life</code> (decremented each frame) to age the missile out if it never hits anything.</li>
+</ul>
+
+          <section class="guide-related"><h2 id="related-demos">Related demos</h2><p class="section-desc">Interactive demos that exercise what this guide covers.</p><div class="more-demos"><a class="more-demo" href="../../examples/chain/"><img class="more-demo-thumb" src="../../assets/posters/chain.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Pendulum Chain</span></span></a><a class="more-demo" href="../../examples/explosion/"><img class="more-demo-thumb" src="../../assets/posters/explosion.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Impulse Blast</span></span></a><a class="more-demo" href="../../examples/constraints/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/constraints.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Constraints Showcase</span></span></a><a class="more-demo" href="../../examples/ragdoll/"><img class="more-demo-thumb" src="../../assets/posters/ragdoll.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Ragdoll</span></span></a><a class="more-demo" href="../../examples/strandbeast/"><img class="more-demo-thumb" src="../../assets/posters/strandbeast.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Strand Beast</span></span></a><a class="more-demo" href="../../examples/car-sideview/"><img class="more-demo-thumb" src="../../assets/posters/car-sideview.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>2D Car — Side View</span></span></a><a class="more-demo" href="../../examples/tracked-vehicle/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/tracked-vehicle.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Tracked Vehicle</span></span></a><a class="more-demo" href="../../examples/car-topdown/"><img class="more-demo-thumb" src="../../assets/posters/car-topdown.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>2D Car — Top Down</span></span></a><a class="more-demo" href="../../examples/rope-bridge/"><img class="more-demo-thumb" src="../../assets/posters/rope-bridge.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Rope Bridge</span></span></a><a class="more-demo" href="../../examples/wrecking-ball/"><img class="more-demo-thumb" src="../../assets/posters/wrecking-ball.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Wrecking Ball</span></span></a><a class="more-demo" href="../../examples/newtons-cradle/"><img class="more-demo-thumb" src="../../assets/posters/newtons-cradle.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Newton's Cradle</span></span></a><a class="more-demo" href="../../examples/conveyor-belts/"><img class="more-demo-thumb" src="../../assets/posters/conveyor-belts.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Conveyor Belts</span></span></a><a class="more-demo" href="../../examples/trebuchet/"><img class="more-demo-thumb" src="../../assets/posters/trebuchet.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Trebuchet</span></span></a><a class="more-demo" href="../../examples/seesaw/"><img class="more-demo-thumb" src="../../assets/posters/seesaw.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Seesaw</span></span></a><a class="more-demo" href="../../examples/pinball/"><img class="more-demo-thumb" src="../../assets/posters/pinball.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Pinball</span></span></a><a class="more-demo" href="../../examples/cloth/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/cloth.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Cloth Simulation</span></span></a><a class="more-demo" href="../../examples/soft-body/"><img class="more-demo-thumb" src="../../assets/posters/soft-body.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Soft Body</span></span></a><a class="more-demo" href="../../examples/one-way-platforms/"><img class="more-demo-thumb" src="../../assets/posters/one-way-platforms.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>One-Way Platforms</span></span></a><a class="more-demo" href="../../examples/filtering-interactions/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/filtering-interactions.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Filtering Interactions</span></span></a><a class="more-demo" href="../../examples/web-worker/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/web-worker.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Web Worker Physics</span></span></a><a class="more-demo" href="../../examples/asteroid-field/"><img class="more-demo-thumb" src="../../assets/posters/asteroid-field.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Asteroid Field (Spatial Hash)</span></span></a><a class="more-demo" href="../../examples/fluid-buoyancy/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/fluid-buoyancy.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Fluid &amp; Buoyancy</span></span></a><a class="more-demo" href="../../examples/deterministic/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/deterministic.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Deterministic Mode</span></span></a><a class="more-demo" href="../../examples/sub-stepping/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/sub-stepping.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Sub-Stepping Solver</span></span></a><a class="more-demo" href="../../examples/character-controller/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/character-controller.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Character Controller</span></span></a><a class="more-demo" href="../../examples/trigger-zones/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/trigger-zones.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Trigger Zones</span></span></a><a class="more-demo" href="../../examples/fracture/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/fracture.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Voronoi Fracture</span></span></a><a class="more-demo" href="../../examples/slingshot/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/slingshot.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Slingshot Siege</span></span></a><a class="more-demo" href="../../examples/spring-joint/"><img class="more-demo-thumb" src="../../assets/posters/spring-joint.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Spring / Damper Joint</span></span></a><a class="more-demo" href="../../examples/portals/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/portals.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Portals</span></span></a><a class="more-demo" href="../../examples/tower-defense/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/tower-defense.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Tower Defense</span></span></a><a class="more-demo" href="../../examples/top-down-shooter/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/top-down-shooter.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Top-down Shooter</span></span></a><a class="more-demo" href="../../examples/plinko/"><img class="more-demo-thumb" src="../../assets/posters/plinko.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Plinko</span></span></a><a class="more-demo" href="../../examples/tilemap/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/tilemap.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Tilemap (Greedy Meshing)</span></span></a><a class="more-demo" href="../../examples/planet-platformer/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/planet-platformer.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Planet Platformer</span></span></a><a class="more-demo" href="../../examples/volcano/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/volcano.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Volcano</span></span></a><a class="more-demo" href="../../examples/destructible-arena/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/destructible-arena.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Destructible Arena</span></span></a><a class="more-demo" href="../../examples/arena-defense/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/arena-defense.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Arena Defense</span></span></a><a class="more-demo" href="../../examples/save-load-rewind/"><img class="more-demo-thumb" src="../../assets/posters/save-load-rewind.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Save / Load / Rewind</span></span></a><a class="more-demo" href="../../examples/popcorn/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/popcorn.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Popcorn</span></span></a><a class="more-demo" href="../../examples/rollercoaster/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/rollercoaster.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Rollercoaster</span></span></a><a class="more-demo" href="../../examples/convex-cast/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/convex-cast.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Convex Cast</span></span></a><a class="more-demo" href="../../examples/floppy-fists/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/floppy-fists.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Floppy Fists</span></span></a><a class="more-demo" href="../../examples/minigolf/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/minigolf.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Minigolf</span></span></a><a class="more-demo" href="../../examples/wyrm/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/wyrm.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Wyrm</span></span></a><a class="more-demo" href="../../examples/pulley-crane/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/pulley-crane.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Pulley Lift</span></span></a><a class="more-demo" href="../../examples/tinywheels-cup/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/tinywheels-cup.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Tinywheels Cup</span></span></a><a class="more-demo" href="../../examples/tiltrun/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/tiltrun.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Tilt-Run Marble Maze</span></span></a><a class="more-demo" href="../../examples/dirtline/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/dirtline.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Dirtline</span></span></a><a class="more-demo" href="../../examples/exploding-50/"><img class="more-demo-thumb" src="../../assets/posters/exploding-50.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Exploding 50</span></span></a><a class="more-demo" href="../../examples/billiards/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/billiards.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Billiards</span></span></a><a class="more-demo" href="../../examples/standoff/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/standoff.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Standoff</span></span></a><a class="more-demo" href="../../examples/sticky-builder/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/sticky-builder.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Sticky Builder</span></span></a><a class="more-demo" href="../../examples/contraption-garage/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/contraption-garage.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Contraption Garage</span></span></a><a class="more-demo" href="../../examples/crash-test-hero/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/crash-test-hero.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Crash Test Hero</span></span></a><a class="more-demo" href="../../examples/raft-rapids/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/raft-rapids.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Raft Rapids</span></span></a><a class="more-demo" href="../../examples/sky-hook/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/sky-hook.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Sky Hook</span></span></a><a class="more-demo" href="../../examples/ragdoll-royale/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/ragdoll-royale.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Ragdoll Royale</span></span></a><a class="more-demo" href="../../examples/cargo-crane/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/cargo-crane.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Cargo Crane Captain</span></span></a><a class="more-demo" href="../../examples/pulse/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/pulse.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Pulse</span></span></a><a class="more-demo" href="../../examples/sumo-arena/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/sumo-arena.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Gameplay slice</span><span>Sumo Arena</span></span></a><a class="more-demo" href="../../examples/kickoff/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/kickoff.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Kickoff</span></span></a><a class="more-demo" href="../../examples/dodgeball/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/dodgeball.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Dodgeball</span></span></a><a class="more-demo" href="../../examples/escape-run/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/escape-run.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Escape Run</span></span></a><a class="more-demo" href="../../examples/capture-the-flag/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/capture-the-flag.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Capture the Flag</span></span></a><a class="more-demo" href="../../examples/jungle-strike/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/jungle-strike.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Jungle Strike</span></span></a><a class="more-demo" href="../../examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/shard-rush.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Shard Rush</span></span></a><a class="more-demo" href="../../examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/blade-waltz.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span>Blade Waltz</span></span></a></div></section>
+        </article>
+      </div>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../" data-i18n="footer.home">Home</a>
+        &bull;
+        <a href="../../examples/" data-i18n="nav.examples">Examples</a>
+        &bull;
+        <a href="../../games/" data-i18n="nav.games">Games</a>
+        &bull;
+        <a href="../../guides/" data-i18n="nav.guides">Guides</a>
+        &bull;
+        <a href="../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">API Docs</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">Based on the original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> &bull; JS port scaffolded by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> &bull; TypeScript rewrite &amp; ongoing development by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">MIT License</p>
+    </div>
+  </footer>
+  <script src="../../site-header.js?v=3.42.1" defer></script>
+  <script>
+    // Prism arrives deferred; highlight once it is here.
+    window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
+  </script>
+</body>
+</html>

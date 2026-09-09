@@ -34,9 +34,12 @@ packages/
 templates/        # canonical runnable starters — clone or open in StackBlitz
   platformer/     # multi-renderer platformer starter (canvas2d/threejs/pixi)
 benchmarks/       # cross-package perf suite
-docs/             # GitHub Pages site + demos
+docs/             # GitHub Pages site + demos (82 demos in demos/, tiered physics /
+                  #   game / showpiece via demo-categories.js; per-demo pages,
+                  #   games/, showcase/, guides/ are GENERATED — see workflow guide)
 scripts/          # repo-wide tooling
   ci/release.mjs  # independent per-package auto-release driver
+  build-site-pages.mjs  # docs page generator (demo pages, /games/, /guides/, sitemap input)
 ```
 
 Root `package.json` is a private workspaces manifest. Scripts fan out with

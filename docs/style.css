@@ -14,6 +14,15 @@
   --green:      #3fb950;
   --orange:     #d29922;
   --red:        #f85149;
+  --purple:     #a371f7;
+  /* Vivid "gamer" accents — used sparingly on top of the dark base: headline
+     gradients, tier colours, hover glows, hero glows. */
+  --neon-cyan:  #22d3ee;
+  --neon-pink:  #f472b6;
+  --neon-lime:  #a3e635;
+  --neon-amber: #fbbf24;
+  --neon-violet:#a371f7;
+  --grad-brand: linear-gradient(115deg, var(--neon-cyan) 0%, var(--accent) 35%, var(--neon-violet) 70%, var(--neon-pink) 100%);
   --radius:     8px;
   --font-mono:  'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
 }
@@ -40,8 +49,11 @@ p a, li a { text-decoration: underline; text-underline-offset: 2px; }
 }
 
 /* ---------- Site Header ----------
-   Sticky top bar on the home page. Kept above page content but below the
-   copy toast (1000) and the fullscreen canvas (10000). */
+   Sticky top bar shared by the home page and every generated page (the
+   markup comes from scripts/build-site-pages.mjs). Three top-level items —
+   two dropdown groups + Benchmarks — so it fits a narrow window; below 900px
+   the nav folds into a panel behind the ☰ button. Kept above page content
+   but below the copy toast (1000) and the fullscreen canvas (10000). */
 .site-header {
   position: sticky;
   top: 0;
@@ -52,11 +64,18 @@ p a, li a { text-decoration: underline; text-underline-offset: 2px; }
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-/* Added by site-header.js once the page scrolls, so the bar only separates
-   itself from the hero when it is actually overlapping content. */
 .site-header.scrolled {
   border-bottom-color: var(--border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+/* Thin brand-gradient hairline along the top edge. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--grad-brand);
+  opacity: 0.9;
 }
 .site-header-inner {
   display: flex;
@@ -73,7 +92,7 @@ p a, li a { text-decoration: underline; text-underline-offset: 2px; }
   color: var(--text);
   flex-shrink: 0;
 }
-.site-brand:hover { text-decoration: none; color: var(--accent); }
+.site-brand:hover { text-decoration: none; color: var(--neon-cyan); }
 .site-brand-logo {
   width: 22px;
   height: 22px;
@@ -82,30 +101,88 @@ p a, li a { text-decoration: underline; text-underline-offset: 2px; }
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   margin-right: auto;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.site-nav::-webkit-scrollbar { display: none; }
 .site-nav-link {
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: var(--text-dim);
   white-space: nowrap;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
   transition: color 0.15s, background 0.15s;
 }
-.site-nav-link:hover {
+.site-nav-link:hover,
+.site-nav-group.open > .site-nav-trigger,
+.site-nav-group:hover > .site-nav-trigger {
   color: var(--text);
   background: var(--surface);
   text-decoration: none;
 }
-.site-nav-link.active { color: var(--accent); }
-.site-header-actions {
+.site-nav-link.active { color: var(--neon-cyan); }
+.site-nav-caret { transition: transform 0.15s; opacity: 0.7; }
+.site-nav-group.open .site-nav-caret,
+.site-nav-group:hover .site-nav-caret { transform: rotate(180deg); }
+
+/* Dropdown */
+.site-nav-group { position: relative; }
+.site-nav-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 240px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(34, 211, 238, 0.06);
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 110;
+}
+.site-nav-group.open > .site-nav-menu,
+.site-nav-group:hover > .site-nav-menu,
+.site-nav-group:focus-within > .site-nav-menu { display: flex; }
+/* Bridge the gap so the menu survives the mouse travelling down to it. */
+.site-nav-group::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 100%;
+  height: 8px;
+}
+.site-nav-item {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-nav-item:hover { background: var(--bg-alt); color: var(--neon-cyan); text-decoration: none; }
+.site-nav-item.active { color: var(--neon-cyan); }
+.site-nav-item-icon { display: inline-flex; width: 20px; justify-content: center; color: var(--neon-cyan); opacity: 0.85; }
+.site-nav-item:hover .site-nav-item-icon { opacity: 1; }
+.icon { display: inline-block; vertical-align: -0.15em; flex-shrink: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
   flex-shrink: 0;
 }
 .site-header-actions .lang-switcher { margin-left: 0; }
@@ -114,63 +191,83 @@ p a, li a { text-decoration: underline; text-underline-offset: 2px; }
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: 20px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface);
-  color: var(--text-dim);
-  font-size: 0.82rem;
-  transition: border-color 0.15s, color 0.15s;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 .site-header-gh:hover {
-  border-color: var(--accent);
-  color: var(--text);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
   text-decoration: none;
 }
-/* Icon-only sibling of the GitHub button — square-ish so the glyph sits
-   centred rather than inheriting the label's lopsided padding. */
 .site-header-x { padding: 5px 9px; }
-/* Visually hidden but still read out by screen readers and understood as the
-   link's accessible name. */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.site-menu-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
 }
-/* Below ~900px the nav needs the full width, so it drops to its own row and
-   scrolls sideways; the GitHub label collapses to just the mark. */
+.site-menu-btn .site-menu-icon-close { display: none; }
+.site-header.menu-open .site-menu-btn .site-menu-icon-open { display: none; }
+.site-header.menu-open .site-menu-btn .site-menu-icon-close { display: block; }
+
+/* Below ~900px: hamburger + full-width panel with the groups expanded. */
 @media (max-width: 900px) {
-  .site-header-inner {
-    height: auto;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-  .site-nav {
-    order: 3;
-    width: 100%;
-    margin-right: 0;
-    padding-bottom: 2px;
-  }
-  .site-header-actions { margin-left: auto; }
+  .site-header-inner { gap: 10px; }
+  .site-menu-btn { display: inline-flex; }
   .site-header-gh-label { display: none; }
-  .site-header-gh { padding: 5px 9px; }
+  .site-header-gh { padding: 6px 9px; }
+  .site-nav {
+    display: none;
+    position: absolute;
+    left: 0; right: 0;
+    top: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 10px 16px 16px;
+    background: rgba(13, 17, 23, 0.97);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .site-header.menu-open .site-nav { display: flex; }
+  .site-nav-trigger {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+  .site-nav-caret { display: none; }
+  .site-nav-menu {
+    position: static;
+    display: flex;
+    min-width: 0;
+    padding: 0 0 8px;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+  .site-nav-group::after { display: none; }
+  .site-nav-item { padding: 10px 12px; font-size: 1rem; }
+  .site-nav > .site-nav-link { padding: 10px 12px; font-size: 1rem; }
 }
-/* Anchor targets must clear the sticky bar when jumped to. Scoped to pages
-   that actually have the header (the examples page shares this stylesheet
-   but has its own hero); browsers without :has() simply skip the offset. */
-html:has(.site-header) {
-  scroll-padding-top: 72px;
-}
-@media (max-width: 900px) {
-  html:has(.site-header) { scroll-padding-top: 116px; }
-}
+/* Anchor targets must clear the sticky bar when jumped to. */
+html:has(.site-header) { scroll-padding-top: 72px; }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -244,7 +341,7 @@ html:has(.site-header) {
   font-size: 3.2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--accent), var(--green));
+  background: var(--grad-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -458,6 +555,8 @@ a#starBadge:hover svg { color: var(--orange); }
 }
 .section-alt {
   background: var(--bg-alt);
+  border-top: 1px solid rgba(34, 211, 238, 0.08);
+  border-bottom: 1px solid rgba(163, 113, 247, 0.08);
 }
 .section h2 {
   font-size: 1.8rem;
@@ -468,6 +567,38 @@ a#starBadge:hover svg { color: var(--orange); }
   color: var(--text-dim);
   margin-bottom: 24px;
 }
+
+/* ---------- Proof strip (hero) ---------- */
+.proof-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+  margin-top: 22px;
+}
+.proof-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(13, 17, 23, 0.55);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+.proof-item strong { color: var(--text); font-weight: 700; }
+.proof-item:hover { color: var(--text); text-decoration: none; }
+.proof-strip .proof-item:nth-child(1) strong { color: var(--neon-cyan); }
+.proof-strip .proof-item:nth-child(2) strong { color: var(--neon-amber); }
+.proof-strip .proof-item:nth-child(3) strong { color: var(--neon-pink); }
+.proof-strip .proof-item:nth-child(4) strong { color: var(--neon-lime); }
+.proof-strip .proof-item:nth-child(1):hover { border-color: var(--neon-cyan); }
+.proof-strip .proof-item:nth-child(2):hover { border-color: var(--neon-amber); }
+.proof-strip .proof-item:nth-child(3):hover { border-color: var(--neon-pink); }
+.proof-strip .proof-item:nth-child(4):hover { border-color: var(--neon-lime); }
 
 /* ---------- Demo Tabs ---------- */
 .demo-tabs {
@@ -502,8 +633,9 @@ a#starBadge:hover svg { color: var(--orange); }
   vertical-align: middle;
   background: var(--text-dim);
 }
-.tab-cat-dot-physics { background: var(--accent); }
-.tab-cat-dot-game    { background: var(--orange); }
+.tab-cat-dot-physics { background: var(--neon-cyan); }
+.tab-cat-dot-game    { background: var(--neon-amber); }
+.tab-cat-dot-showpiece { background: var(--neon-pink); }
 .cat-legend {
   display: inline-flex;
   gap: 14px;
@@ -540,6 +672,20 @@ a#starBadge:hover svg { color: var(--orange); }
 }
 .tab-mp:hover {
   background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+}
+.tab-games { gap: 7px; }
+.tab-games {
+  background: transparent;
+  color: var(--neon-pink);
+  border-color: var(--neon-pink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.tab-games:hover {
+  background: var(--neon-pink);
   color: var(--bg);
   text-decoration: none;
 }
@@ -708,7 +854,7 @@ a#starBadge:hover svg { color: var(--orange); }
   transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 .showcase-card:hover {
-  border-color: var(--accent);
+  border-color: var(--neon-lime);
   transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
   text-decoration: none;
@@ -1378,3 +1524,364 @@ body.has-expanded-demo::before {
 .drop-image-overlay.active ~ .drop-image-static-hint {
   opacity: 1;
 }
+
+
+/* ---------- Generated pages (scripts/build-site-pages.mjs) ---------- */
+/* Shared hero for /games/, /showcase/, /guides/ */
+.page-hero {
+  position: relative;
+  text-align: center;
+  padding: 48px 24px 36px;
+  background:
+    radial-gradient(60% 70% at 15% 0%, rgba(34, 211, 238, 0.12), transparent 60%),
+    radial-gradient(50% 60% at 85% 10%, rgba(163, 113, 247, 0.14), transparent 60%),
+    radial-gradient(40% 50% at 60% 100%, rgba(244, 114, 182, 0.08), transparent 60%),
+    linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  border-bottom: 1px solid var(--border);
+}
+.page-hero h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.page-hero-intro {
+  color: var(--text-dim);
+  margin: 10px auto 0;
+  max-width: 720px;
+  line-height: 1.6;
+}
+.page-hero-alt {
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.page-hero .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+.page-hero .proof-strip { margin-top: 18px; }
+
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.breadcrumb a { color: var(--text-dim); }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb [aria-current] { color: var(--text); }
+
+/* Tag chips (shared with the inline copy on examples/index.html) */
+.example-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  margin-right: 4px;
+  margin-top: 6px;
+  user-select: none;
+}
+
+/* Tier badge (physics / gameplay slice / complete game) */
+.tier-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-right: 8px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.tier-badge-physics   { background: rgba(34, 211, 238, 0.12);  color: var(--neon-cyan);  border-color: rgba(34, 211, 238, 0.4); }
+.tier-badge-game      { background: rgba(251, 191, 36, 0.12);  color: var(--neon-amber); border-color: rgba(251, 191, 36, 0.4); }
+.tier-badge-showpiece { background: linear-gradient(120deg, rgba(163, 113, 247, 0.22), rgba(244, 114, 182, 0.22)); color: #f9a8d4; border-color: rgba(244, 114, 182, 0.5); }
+
+/* Per-demo page */
+.demo-page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.demo-page-title .tier-badge { font-size: 0.7rem; }
+.demo-page-desc {
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin: 10px 0 20px;
+  max-width: 900px;
+}
+.demo-page-desc code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-alt);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.demo-bar-hint { color: var(--text-dim); font-size: 0.8rem; margin-left: auto; white-space: normal; }
+.demo-page-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.demo-page .code-panel { margin-top: 0; }
+.demo-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+.demo-page-block { margin-top: 24px; }
+.demo-page-block h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+.demo-page-tags .example-tag { cursor: default; }
+.demo-page-tags .example-tag:hover { background: var(--bg); color: var(--accent); }
+.demo-page-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.demo-page-links a { font-size: 0.92rem; }
+.demo-page-all { margin-top: 14px; font-size: 0.9rem; }
+.more-demos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.more-demo {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.more-demo:hover {
+  border-color: var(--neon-cyan);
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 0 18px rgba(34, 211, 238, 0.14);
+}
+.more-demo-thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 5;
+  object-fit: cover;
+  background: #0a0e14;
+  border-bottom: 1px solid var(--border);
+}
+.more-demo-thumb-empty { background: radial-gradient(circle at 50% 120%, rgba(34, 211, 238, 0.25), #0a0e14 70%); }
+.more-demo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  font-weight: 600;
+}
+.more-demo-text .tier-badge { margin-right: 0; }
+@media (prefers-reduced-motion: reduce) { .more-demo { transition: none; } .more-demo:hover { transform: none; } }
+
+/* Games landing */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.game-grid-large { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+@media (max-width: 460px) { .game-grid-large { grid-template-columns: 1fr; } }
+.game-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.game-card:hover {
+  border-color: var(--neon-pink);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 24px rgba(244, 114, 182, 0.18);
+}
+.game-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.game-card:hover .game-card-img { transform: scale(1.03); }
+.game-card-canvas {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 5;
+  background: #0a0e14 radial-gradient(ellipse at 50% 120%, rgba(163, 113, 247, 0.18), transparent 60%);
+  overflow: hidden;
+  text-decoration: none;
+}
+.game-card-canvas canvas,
+.game-card-canvas > div > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.game-card-play {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid var(--neon-pink);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.9;
+  transition: background 0.15s;
+}
+.game-card:hover .game-card-play { background: var(--neon-pink); color: #0d1117; }
+.game-card-body { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; flex: 1; }
+.game-card-body h3 { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; flex-wrap: wrap; gap: 2px; }
+.game-card-body h3 a { color: var(--text); text-decoration: none; }
+.game-card-body h3 a:hover { color: var(--accent); }
+.game-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.game-card-large .game-card-desc { -webkit-line-clamp: 6; }
+.game-card-desc code { font-family: var(--font-mono); font-size: 0.85em; }
+.game-card-tags { margin-top: auto; }
+.game-card-tags .example-tag { cursor: default; }
+.game-card-tags .example-tag:hover { background: var(--bg); color: var(--accent); }
+@media (prefers-reduced-motion: reduce) {
+  .game-card { transition: none; }
+  .game-card:hover { transform: none; }
+}
+
+/* Home: latest games + support */
+.game-grid-large.game-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .game-grid-large.game-grid-3 { grid-template-columns: 1fr; } }
+.section-more { margin-top: 22px; }
+.support-section { text-align: center; }
+.support-section .section-desc { max-width: 640px; margin: 0 auto 22px; }
+.support-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.support-actions .btn { display: inline-flex; align-items: center; gap: 8px; }
+.btn-sponsor { background: linear-gradient(120deg, var(--neon-pink), var(--neon-violet)); border-color: transparent; color: #fff; }
+.btn-sponsor:hover { filter: brightness(1.1); background: linear-gradient(120deg, var(--neon-pink), var(--neon-violet)); }
+.btn-kofi:hover { border-color: var(--neon-amber); color: var(--neon-amber); }
+.guide-card-icon svg, .guide-h1-icon svg { color: var(--neon-cyan); }
+.guide-h1-icon { display: inline-flex; margin-right: 10px; vertical-align: -4px; }
+.guide-others svg { color: var(--neon-cyan); opacity: 0.8; margin-right: 2px; }
+
+/* Guides */
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.guide-card:hover { border-color: var(--neon-cyan); transform: translateY(-2px); text-decoration: none; box-shadow: 0 0 22px rgba(34, 211, 238, 0.12); }
+.guide-card-icon { display: inline-flex; }
+.guide-card-title { font-weight: 700; font-size: 1.05rem; }
+.guide-card-text { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+.guide-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 900px) { .guide-layout { grid-template-columns: 1fr; gap: 24px; } }
+.guide-side { position: sticky; top: 80px; font-size: 0.88rem; }
+@media (max-width: 900px) { .guide-side { position: static; } }
+.guide-side h2 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0 0 8px;
+}
+.guide-side ul { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 5px; }
+.guide-side a { color: var(--text-dim); text-decoration: none; }
+.guide-side a:hover { color: var(--accent); }
+.guide-toc { max-height: 60vh; overflow-y: auto; padding-right: 6px; }
+.guide-edit { color: var(--text-dim); font-size: 0.8rem; }
+.guide-content { min-width: 0; line-height: 1.7; }
+.guide-content h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 18px; }
+.guide-content h2 { font-size: 1.45rem; font-weight: 700; margin: 40px 0 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+.guide-content h3 { font-size: 1.1rem; font-weight: 700; margin: 26px 0 8px; }
+.guide-content h4 { font-size: 0.98rem; font-weight: 700; margin: 18px 0 6px; }
+.guide-content p, .guide-content ul, .guide-content ol { margin: 0 0 14px; }
+.guide-content ul, .guide-content ol { padding-left: 24px; }
+.guide-content li { margin: 4px 0; }
+.guide-content code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.guide-content pre {
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 0 0 18px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+.guide-content pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.guide-content blockquote {
+  margin: 0 0 14px;
+  padding: 10px 16px;
+  border-left: 3px solid var(--accent);
+  background: rgba(88, 166, 255, 0.06);
+  color: var(--text-dim);
+}
+.guide-content hr { border: 0; border-top: 1px solid var(--border); margin: 28px 0; }
+.guide-content .table-wrap { overflow-x: auto; margin: 0 0 18px; }
+.guide-content table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+.guide-content th, .guide-content td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+.guide-content th { background: var(--bg-alt); }
+.guide-content img { max-width: 100%; }
+.guide-related { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); }
+.guide-related h2 { border-top: 0; margin-top: 0; }

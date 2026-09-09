@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js?v=3.42.0";
+import { Body, BodyType, Vec2, Circle, Polygon, Material } from "../nape-js.esm.js?v=3.42.1";
 
 
 export default {

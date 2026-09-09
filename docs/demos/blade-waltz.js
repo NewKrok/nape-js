@@ -1,10 +1,10 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material, InteractionFilter,
   CbType, CbEvent, InteractionListener, InteractionType,
-} from "../nape-js.esm.js?v=3.42.0";
-import { drawBody } from "../renderer.js?v=3.42.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.0";
-import { createBoardMaterial } from "../renderers/lowpoly-characters.js?v=3.42.0";
+} from "../nape-js.esm.js?v=3.42.1";
+import { drawBody } from "../renderer.js?v=3.42.1";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.1";
+import { createBoardMaterial } from "../renderers/lowpoly-characters.js?v=3.42.1";
 
 // ── Blade Waltz — a Tales-style linear-motion arena gauntlet ──────────────
 //

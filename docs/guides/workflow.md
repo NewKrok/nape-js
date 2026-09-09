@@ -81,6 +81,34 @@ workspace owns its own `tsup.config.ts` under `packages/<name>/`.
 
 Root `npm run build` fans out to every workspace (`--workspaces --if-present`).
 
+### Docs site build (`npm run build:docs`)
+
+Copies the bundles into `docs/`, then runs four generators in this order:
+
+| Step | Script | Output |
+|------|--------|--------|
+| 1 | `scripts/stamp-docs.mjs` | `?v=<version>` cache-busting on every local asset / module import |
+| 2 | `scripts/build-site-pages.mjs` | Per-demo pages `docs/examples/<id>/` (+ `<lang>/`), `docs/games/`, `docs/showcase/`, `docs/guides/` (+ one page per user-facing `.md` guide); stamps the hero counts in `index.html` and the A–Z demo index in `examples/index.html` |
+| 2b | `scripts/build-posters.mjs` (manual, local) | `docs/assets/posters/<id>.webp` — one 900×500 screenshot per demo from headless Chrome — demos with custom Three.js content (render3d hooks / THREE usage) are shot in 3D with outlines off, the rest in 2D; the mode lands in `manifest.json` and poster cards deep-link into that renderer. Used as og:image, /games/ card art, "More demos" thumbnails and the placeholder behind lazy previews. Only renders missing/changed-mode posters; `--force` / `--redo-3d` / `--only=id` / `--mode=2d\|3d` |
+| 3 | `scripts/prerender-i18n.mjs` | Localized copies of the two hand-authored pages + `sitemap.xml` (includes every generated page via `generatedPages()`) |
+| 4 | `typedoc` | `docs/api/` |
+
+Everything under step 2 derives from `docs/examples.js` (registry order), each
+demo's `export default { id, label, tags, desc }` header and
+`docs/demo-categories.js` (physics / game / showpiece tiers) — there is no
+hand-maintained page list. Shared localization helpers live in
+`scripts/lib/i18n-html.mjs`; the header parser in `scripts/lib/demo-meta.mjs`.
+`npm run build:site-pages` re-runs steps 2–3 alone. The generated output is
+committed, so run it locally before pushing a demo or guide change — the
+`Docs pages fresh` CI job regenerates and fails on any drift (ignoring `?v=`
+stamps and sitemap dates). After adding a demo also run
+`node scripts/build-posters.mjs` (needs local Google Chrome) and commit the poster.
+
+The site header (dropdown nav + ☰) is generated too: `headerHtml()` in
+`build-site-pages.mjs` is stamped into `index.html` and `examples/index.html`
+between `<!-- site-header:start/end -->` markers, so edit the nav there, not in
+the HTML.
+
 ---
 
 ## Linting & Formatting
@@ -144,7 +172,7 @@ Notes:
 
 ### deploy-pages.yml — Docs site
 
-Runs `npm run build:docs` (tsup + TypeDoc) → deploys `docs/` to GitHub Pages.
+Runs `npm run build:docs` (tsup + site generators + TypeDoc) → deploys `docs/` to GitHub Pages.
 Triggered once at the end of each release run.
 
 ### benchmark.yml — Performance budget
@@ -205,6 +233,8 @@ When a PR changes features, APIs, priorities, or versions:
 | `docs/guides/cookbook.md` | Add recipe for new feature, update existing recipes | New features, API changes |
 | `docs/guides/troubleshooting.md` | Add entry for new gotchas, update fixes | Bug fixes, API gotchas |
 | `docs/guides/anti-patterns.md` | Add entry for new pitfalls | Bug fixes, performance changes |
+| `docs/demo-categories.js` | Add the id to `GAME_DEMO_IDS` / `SHOWPIECE_DEMO_IDS` | New game demo (default tier is physics) |
+| `scripts/build-site-pages.mjs` | `TAG_GUIDES` (tag → guide anchor), `GUIDES` list | New cookbook section, new guide |
 | `README.md` | Quick start, API tables, badge versions | Public API changes, releases |
 | `packages/nape-pixi/README.md` | Quickstart, API, migration guide | nape-pixi API changes |
 | `packages/nape-js/llms.txt` | Class list, links, quick start | nape-js public API additions/removals |
@@ -230,7 +260,8 @@ out to both nape-js and nape-pixi where applicable.
 | `npm run benchmark` | Performance benchmark (uses `packages/nape-js/dist/`) |
 | `npm run benchmark:compare` | Compare vs baseline |
 | `npm run benchmark:update-baseline` | Save new baseline |
-| `npm run build:docs` | Build bundle + TypeDoc |
+| `npm run build:docs` | Build bundle + stamp + generate site pages + prerender + TypeDoc |
+| `npm run build:site-pages` | Regenerate demo/games/showcase/guide pages + sitemap only |
 | `npm run build:typedoc` | TypeDoc only (entry: `packages/nape-js/src/index.ts`) |
 | `npm run serve:docs` | Local docs server (port 5500) |
 | `npm run dev:multiplayer` | Docs (5500) + server (3001) |

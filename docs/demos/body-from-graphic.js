@@ -1,6 +1,6 @@
 import {
   Body, BodyType, Vec2, AABB, Polygon, MarchingSquares, PivotJoint,
-} from "../nape-js.esm.js?v=3.42.0";
+} from "../nape-js.esm.js?v=3.42.1";
 
 
 // ---------------------------------------------------------------------------
@@ -115,7 +115,7 @@ let _dragX = 0, _dragY = 0;`,
 
   async preload() {
     // Load at the largest required size; smaller ones will be downscaled from this
-    _cogCanvas = await loadImageToCanvas("../assets/cog.webp", COG_SIZES[COG_SIZES.length - 1], COG_SIZES[COG_SIZES.length - 1]);
+    _cogCanvas = await loadImageToCanvas(new URL("../assets/cog.webp", import.meta.url).href, COG_SIZES[COG_SIZES.length - 1], COG_SIZES[COG_SIZES.length - 1]);
   },
 
   setup(space, W, H) {

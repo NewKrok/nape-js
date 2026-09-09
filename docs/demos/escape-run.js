@@ -2,7 +2,7 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   CbType, CbEvent, InteractionType, InteractionListener,
   buildTilemapBody,
-} from "../nape-js.esm.js?v=3.42.0";
+} from "../nape-js.esm.js?v=3.42.1";
 
 // ---------------------------------------------------------------------------
 // Escape Run — homage to the Warcraft 3 custom-map "escape" genre

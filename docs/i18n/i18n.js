@@ -142,6 +142,36 @@ function updateHtmlLangMeta(lang) {
   }
 }
 
+/** Page-level override of a reserved meta key; "" disables, absent → default. */
+function pageMetaKey(metaName, defaultKey) {
+  try {
+    const m = document.querySelector(`meta[name="${metaName}"]`);
+    if (!m) return defaultKey;
+    const v = m.getAttribute("content");
+    return v ? v : null;
+  } catch {
+    return defaultKey;
+  }
+}
+
+/** Replace {name} placeholders using "name=i18n.key,…" from a meta tag. */
+function substituteVars(text, metaName) {
+  try {
+    const m = document.querySelector(`meta[name="${metaName}"]`);
+    if (!m) return text;
+    for (const pair of (m.getAttribute("content") || "").split(",")) {
+      const idx = pair.indexOf("=");
+      if (idx === -1) continue;
+      const name = pair.slice(0, idx).trim();
+      const val = t(pair.slice(idx + 1).trim(), null);
+      if (val != null) text = text.split(`{${name}}`).join(val);
+    }
+    return text;
+  } catch {
+    return text;
+  }
+}
+
 /**
  * Apply translations to every `data-i18n*` element under `root`.
  * Also handles the document <title> and <meta name="description"> via the
@@ -151,8 +181,21 @@ export function applyTranslations(root = document) {
   // Text content
   root.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
-    const val = t(key, null);
-    if (val != null) el.textContent = val;
+    let val = t(key, null);
+    if (val == null) return;
+    // Optional placeholder substitution: data-i18n-vars="cat=cat.game.label"
+    // replaces {cat} with the translation of cat.game.label.
+    const vars = el.getAttribute("data-i18n-vars");
+    if (vars) {
+      for (const pair of vars.split(",")) {
+        const idx = pair.indexOf("=");
+        if (idx === -1) continue;
+        const name = pair.slice(0, idx).trim();
+        const sub = t(pair.slice(idx + 1).trim(), null);
+        if (sub != null) val = val.split(`{${name}}`).join(sub);
+      }
+    }
+    el.textContent = val;
   });
 
   // Inner HTML (descriptions with <b>/<code>)
@@ -176,10 +219,20 @@ export function applyTranslations(root = document) {
   });
 
   // Reserved: document title + meta description (only when the root is document).
+  //
+  // Generated pages (per-demo pages, /games/, /showcase/) carry their own
+  // title/description and declare the keys to use via
+  //   <meta name="nape-i18n-title" content="demopage.meta.title">
+  //   <meta name="nape-i18n-title-vars" content="label=demo.<id>.label">
+  //   <meta name="nape-i18n-description" content="">   (empty → leave baked)
+  // so a client-side language swap never overwrites a page-specific title
+  // with the generic site title.
   if (root === document) {
-    const title = t("meta.title", null);
-    if (title != null) document.title = title;
-    const descKey = t("meta.description", null);
+    const titleKey = pageMetaKey("nape-i18n-title", "meta.title");
+    const title = titleKey ? t(titleKey, null) : null;
+    if (title != null) document.title = substituteVars(title, "nape-i18n-title-vars");
+    const descKey0 = pageMetaKey("nape-i18n-description", "meta.description");
+    const descKey = descKey0 ? t(descKey0, null) : null;
     if (descKey != null) {
       document
         .querySelectorAll(

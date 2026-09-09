@@ -21,6 +21,29 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  docs-pages:
+    name: Docs pages fresh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # sitemap <lastmod> comes from git history
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      # Fails fast when a demo header can't be parsed or a locale key is
+      # missing, instead of only breaking the (manual) Pages deploy.
+      - run: node docs/i18n/check-locales.mjs
+      - run: node scripts/build-site-pages.mjs && node scripts/prerender-i18n.mjs
+      # The generated pages are committed; they must match the registry.
+      # Cache-busting stamps (?v=…) and sitemap dates are ignored so a
+      # version bump alone never fails this check.
+      - run: git diff --exit-code --stat -I '\?v=[0-9][^"]*' -I '<lastmod>' -- docs/ || (echo "::error::Generated docs pages are stale — run 'npm run build:site-pages' and commit the result." && exit 1)
+
   coverage:
     name: Coverage
     runs-on: ubuntu-latest

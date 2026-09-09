@@ -16,7 +16,7 @@
   <!-- Open Graph -->
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="nape-js — 2D Physics Engine for TypeScript &amp; JavaScript" />
+  <meta property="og:title" content="nape-js — 面向 TypeScript 和 JavaScript 的 2D 物理引擎" />
   <meta property="og:description" content="nape-js 是面向 TypeScript 与 JavaScript 的全类型 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人同步、Web Worker。零依赖，约 174 KB gzip。免费开源（MIT）。" />
   <meta property="og:url" content="https://napejs.org/zh/" />
   <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
@@ -28,7 +28,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:site" content="@KSomoracz" />
-  <meta name="twitter:title" content="nape-js — 2D Physics Engine for TypeScript &amp; JavaScript" />
+  <meta name="twitter:title" content="nape-js — 面向 TypeScript 和 JavaScript 的 2D 物理引擎" />
   <meta name="twitter:description" content="nape-js 是面向 TypeScript 与 JavaScript 的全类型 2D 物理引擎——刚体动力学、约束、流体浮力、射线检测、断裂、确定性多人同步、Web Worker。零依赖，约 174 KB gzip。免费开源（MIT）。" />
   <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
   <!-- JSON-LD: SoftwareSourceCode -->
@@ -144,11 +144,11 @@
     gtag('config', 'G-TF84DLZ4X8');
   </script>
   <link rel="icon" type="image/svg+xml" href="../logo.svg" />
-  <link rel="stylesheet" href="../style.css?v=3.42.0" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.0" media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.0" /></noscript>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.0" media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.0" /></noscript>
+  <link rel="stylesheet" href="../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.1" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.1" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.1" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.1" /></noscript>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
@@ -168,35 +168,50 @@
        bar works with JS off; site-header.js only adds the scrolled shadow
        and the scroll-spy highlight. Section links point at the in-page
        anchors, the rest are separate pages. -->
+  <!-- site-header:start -->
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="#top" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
         <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
         <span>nape-js</span>
       </a>
-
-      <nav class="site-nav" id="siteNav">
-        <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">演示</a>
-        <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">作品展示</a>
-        <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">示例</a>
-        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
-        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">性能测试</a>
-        <a class="site-nav-link" href="../api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">API 文档</a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">探索</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">示例</span></a>
+            <a class="site-nav-item" href="games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">游戏</span></a>
+            <a class="site-nav-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">作品展示</span></a>
+            <a class="site-nav-item" href="../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">多人演示</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">文档</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item" href="../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">指南</span></a>
+            <a class="site-nav-item" href="../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API 参考</span></a>
+            <a class="site-nav-item" href="../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">用 AI 构建</span></a>
+            <a class="site-nav-item" href="../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">面向代理的 llms.txt</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">性能测试</a>
       </nav>
-
       <div class="site-header-actions">
         <span class="lang-switcher" id="langSwitcher"></span>
         <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           <span class="site-header-gh-label">GitHub</span>
         </a>
-        <a class="site-header-gh site-header-x" href="https://x.com/KSomoracz" target="_blank" rel="noopener" title="在 X 上关注 @KSomoracz" data-i18n-attr="title:nav.x" onclick="gtag('event','navigation',{event_category:'header',event_label:'x'})">
+        <a class="site-header-gh site-header-x" href="https://x.com/KSomoracz" target="_blank" rel="noopener" title="在 X 上关注 @KSomoracz" aria-label="在 X 上关注 @KSomoracz" data-i18n-attr="title:nav.x,aria-label:nav.x" onclick="gtag('event','navigation',{event_category:'header',event_label:'x'})">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 1.2h3.7l-8.1 9.2 9.5 12.5h-7.4l-5.8-7.6-6.7 7.6H.4l8.6-9.9L0 1.2h7.6l5.2 6.9zm-1.3 19.5h2L6.5 3.3H4.3z"/></svg>
-          <span class="sr-only">X</span>
         </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="菜单" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
       </div>
     </div>
   </div>
+  <!-- site-header:end -->
 
   <!-- ===== HERO ===== -->
   <header class="hero" id="top">
@@ -229,6 +244,23 @@
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
       </div>
+      <!-- Proof strip: one line that tells both audiences where to go. The
+           numbers are stamped by scripts/build-site-pages.mjs from the demo
+           registry (data-site-count), so they never go stale by hand. -->
+      <nav class="proof-strip" aria-label="Site sections">
+        <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
+          <strong data-site-count="demos">82</strong> <span data-i18n="home.proof.demos">个交互演示</span>
+        </a>
+        <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
+          <strong data-site-count="games">38</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
+        </a>
+        <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
+          <strong data-site-count="showpieces">18</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
+        </a>
+        <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
+          <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span>
+        </a>
+      </nav>
     </div>
   </header>
 
@@ -248,6 +280,7 @@
 
       <nav class="demo-tabs" id="demoTabs">
         <a href="examples/" class="tab tab-more" data-i18n="home.demos.more" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'more_examples'})">更多 →</a>
+        <a href="games/" class="tab tab-games" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'games'})"><svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg><span data-i18n="home.demos.games">可玩游戏</span></a>
         <a href="../multiplayer.html" class="tab tab-mp" data-i18n="home.demos.multiplayer" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'multiplayer'})">► 多人联机</a>
       </nav>
 
@@ -366,7 +399,53 @@
         </a>
       </div>
 
+      <p class="showcase-foot" data-i18n-html="showcase.ladder">想知道一个演示如何成长为这样的游戏？<a href="games/">游戏页面</a>展示了从单一机制到完整游戏的阶梯，每个都只有一个文件。</p>
       <p class="showcase-foot" data-i18n-html="showcase.foot">用 nape-js 做了作品？<a href="https://github.com/NewKrok/nape-js/issues/new">提交一个 issue</a>，就有机会出现在这里。</p>
+    </div>
+  </section>
+
+  <!-- ===== LATEST COMPLETE GAME DEMOS =====
+       Cards are stamped by scripts/build-site-pages.mjs (three newest
+       showpieces, with their posters); edit the tier sets, not this block. -->
+  <section id="games" class="section">
+    <div class="container">
+      <h2 data-i18n="home.featuredGames.heading">最新完整游戏演示</h2>
+      <p class="section-desc" data-i18n="home.featuredGames.desc">基于该引擎的最新多系统游戏——AI、波次、摄像机和 3D 骨架，每个都是可在 CodePen 打开的单个文件。</p>
+      <div class="game-grid game-grid-large game-grid-3">
+        <!-- featured-games:start -->
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0" aria-label="Blade Waltz">
+            <img class="game-card-img" src="../assets/posters/blade-waltz.webp" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">圆形竞技场上的<b>《传说》系列风格动作战斗连战</b>：十波怪物、四人小队，而你只操控剑士。自由跑动，打出<b>三段连击</b>（<b>J</b> / 点击），消耗 TP 施放<b>秘技</b>（<b>K</b> —— 中立方向为地面冲击波 Demon Fang，朝向目标为冲刺突刺 Sonic Thrust，背向目标为挑飞斩 Tiger Blade），用 <b>L</b> <b>防御</b>，当 Overlimit 计量表因造成与承受伤害而充满时，按<b>空格</b>释放<b>秘奥义</b>。普通攻击回复 TP；防御只护住正面；石魔像与头目无视零散的单次攻击。你的<b>AI 队友</b>各司其职：枪兵近身缠斗并连续突刺，弓手拉开距离齐射，贤者治疗、复活并施放火与石魔法，且<b>施法时间可被打断</b>。第十波是一头<b>飞龙</b>，拥有利爪、回旋尾击、火焰吐息、咆哮和召唤鬼火。每个战斗者都是静态墙段环内的动态圆盘；近战由扇形范围判定，而箭矢、弩矢、火球和冲击波则是由 <code>InteractionListener</code> 处理的<b>传感器刚体</b>，阵营过滤全部通过传感器掩码完成。<b>3D</b> 模式下，侧向追踪摄像机取景玩家与目标之间的连线，俯瞰草原上的石制竞技场，所有战斗者都是带关节的低多边形模型。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/shard-rush/?mode=3d&outline=0" aria-label="Shard Rush">
+            <img class="game-card-img" src="../assets/posters/shard-rush.webp" width="900" height="500" loading="lazy" decoding="async" alt="Shard Rush — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 俯视角<b>英雄竞技场</b>。地图中央的矿井每隔几秒吐出一枚<b>碎片</b>——全队合计拿到 <b>10</b> 枚并撑过 <b>15 秒倒计时</b>即可获胜。阵亡会掉落你持有的全部碎片。在选择界面从<b>六位英雄</b>中挑选一位——霰弹枪手、快枪手、摔角手、吟游诗人、投掷手、工程师——每位都有专属攻击、随时间回充的 <b>3 发弹药</b>，以及命中即充能的<b>大招</b>：破墙轰击、穿透连射、跃起重击、治疗和弦、烧瓶弹幕、自动炮塔。<b>草丛</b>能隐藏你，直到你攻击或有人靠近；<b>木箱</b>可以炸开。用 <b>WASD</b> 移动，<b>鼠标瞄准</b>并点击攻击，<b>E</b> 自动攻击最近的敌人，<b>SPACE</b>/<b>Q</b> 释放大招——在任何设备上也可以<b>按住</b>来移动、<b>轻点</b>攻击并轻点大招按钮。两名 <b>AI 队友</b>和三名 AI 对手运行同一套了解自身技能的大脑：射程区间、掩体、潜行、撤退回血、控矿与大招时机。每一发弹丸都是一个<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 派发，队伍过滤完全由传感器组与掩码完成。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/jungle-strike/?mode=3d&outline=0" aria-label="Jungle Strike">
+            <img class="game-card-img" src="../assets/posters/jungle-strike.webp" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">丛林突袭</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">十一屏的<b>魂斗罗式横版射击</b>。一路杀穿丛林突击场——巡逻的士兵、掘壕固守的<b>炮塔</b>、跳跃冲锋的<b>突击兵</b>，以及开火前会用激光瞄准你的<b>狙击手</b>——直到三管<b>炮台首领</b>：它只有发光的核心可被击伤，每轮齐射前都有预警，进入过载后还会轮换火箭弹与迫击炮。关卡由 <b>CharacterController</b> 搭配手工设计的地形构成：单向树冠平台、一座<b>会塌陷的绳桥</b>、需要踩石过河的河道，之后还有战壕、爬塔和被淹没的海湾。拾取 <b>SPREAD</b>、<b>MACHINE</b> 与 <b>LASER</b> 强化道具——死亡会失去武器，并在十一个<b>存档点</b>中最后到达的一个复活。使用 <b>WASD</b>/方向键移动，<b>SPACE</b> 跳跃，<b>S</b>/<b>↓</b> 蹲下，并用<b>鼠标自由瞄准</b>——按住即可开火。在 <b>3D 模式</b>下，每个战斗人员都是程序化生成的低多边形角色，持枪手臂独立瞄准。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Platformer">平台跳跃</span><span class="example-tag" data-i18n="tag.AI">AI</span></div>
+          </div>
+        </article>
+        <!-- featured-games:end -->
+      </div>
+      <p class="section-more"><a href="games/" class="btn btn-secondary" data-i18n="home.featuredGames.all" onclick="gtag('event','navigation',{event_category:'featured_games',event_label:'all_games'})">全部游戏 →</a></p>
     </div>
   </section>
 
@@ -410,11 +489,11 @@
         </div>
         <div class="ai-card">
           <h3 data-i18n="ai.pitfalls.title">已记录的陷阱</h3>
-          <p data-i18n-html="ai.pitfalls.body"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md">反模式指南</a>与<a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md">排错指南</a>明确列出了模型在物理 API 上最常犯的错误。</p>
+          <p data-i18n-html="ai.pitfalls.body"><a href="../guides/anti-patterns/">反模式指南</a>与<a href="../guides/troubleshooting/">排错指南</a>明确列出了模型在物理 API 上最常犯的错误。</p>
         </div>
         <div class="ai-card">
           <h3 data-i18n="ai.recipes.title">按任务组织的范例</h3>
-          <p data-i18n-html="ai.recipes.body"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md">实用手册</a>按目标划分 —— 平台跳跃、布娃娃、流体、回放 —— 这正是提示词通常出现的形式。</p>
+          <p data-i18n-html="ai.recipes.body"><a href="../guides/cookbook/">实用手册</a>按目标划分 —— 平台跳跃、布娃娃、流体、回放 —— 这正是提示词通常出现的形式。</p>
         </div>
       </div>
 
@@ -487,14 +566,32 @@
   </section>
 
   <!-- ===== FOOTER ===== -->
+  <!-- ===== SUPPORT ===== -->
+  <section id="support" class="section section-alt support-section">
+    <div class="container">
+      <h2 data-i18n="support.heading">支持 nape-js</h2>
+      <p class="section-desc" data-i18n="support.desc">nape-js 采用 MIT 许可并公开开发。如果它为你节省了时间——或者驱动着你的游戏——赞助能让演示、指南和版本持续更新。</p>
+      <div class="support-actions">
+        <a href="https://github.com/sponsors/NewKrok" target="_blank" rel="noopener" class="btn btn-primary btn-sponsor" onclick="gtag('event','navigation',{event_category:'support',event_label:'sponsor'})">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <span data-i18n="footer.sponsor">在 GitHub 上赞助</span>
+        </a>
+        <a href="https://ko-fi.com/newkrok" target="_blank" rel="noopener" class="btn btn-secondary btn-kofi" onclick="gtag('event','navigation',{event_category:'support',event_label:'kofi'})">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          <span data-i18n="footer.kofi">在 Ko-fi 上支持我</span>
+        </a>
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'support',event_label:'star'})">★ <span data-i18n="support.star">在 GitHub 上加星</span></a>
+      </div>
+    </div>
+  </section>
   </main>
 
   <footer class="footer">
     <div class="container">
       <p class="footer-links">
-        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener" data-i18n="footer.cookbook" onclick="gtag('event','navigation',{event_category:'footer',event_label:'cookbook'})">实用手册</a>
+        <a href="../guides/cookbook/" data-i18n="footer.cookbook" onclick="gtag('event','navigation',{event_category:'footer',event_label:'cookbook'})">实用手册</a>
         &bull;
-        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener" data-i18n="footer.troubleshooting" onclick="gtag('event','navigation',{event_category:'footer',event_label:'troubleshooting'})">疑难解答</a>
+        <a href="../guides/troubleshooting/" data-i18n="footer.troubleshooting" onclick="gtag('event','navigation',{event_category:'footer',event_label:'troubleshooting'})">疑难解答</a>
         &bull;
         <a href="../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs" onclick="gtag('event','navigation',{event_category:'footer',event_label:'api_docs'})">API 文档</a>
         &bull;
@@ -505,20 +602,20 @@
       <p data-i18n-html="footer.credits">基于 <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> 的原始 Haxe 引擎 • JS 移植由 <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> 搭建 • TypeScript 重写及持续开发由 <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a> 负责</p>
       <p data-i18n="footer.license">MIT 许可证</p>
       <p class="footer-support">
-        <a href="https://github.com/sponsors/NewKrok" target="_blank" rel="noopener" class="support-link support-link-sponsor" data-i18n="footer.sponsor" onclick="gtag('event','navigation',{event_category:'footer',event_label:'sponsor'})">❤ 在 GitHub 上赞助</a>
-        <a href="https://ko-fi.com/newkrok" target="_blank" rel="noopener" class="support-link kofi-link" data-i18n="footer.kofi" onclick="gtag('event','navigation',{event_category:'footer',event_label:'kofi'})">☕ 在 Ko-fi 上支持我</a>
+        <a href="https://github.com/sponsors/NewKrok" target="_blank" rel="noopener" class="support-link support-link-sponsor" data-i18n="footer.sponsor" onclick="gtag('event','navigation',{event_category:'footer',event_label:'sponsor'})">在 GitHub 上赞助</a>
+        <a href="https://ko-fi.com/newkrok" target="_blank" rel="noopener" class="support-link kofi-link" data-i18n="footer.kofi" onclick="gtag('event','navigation',{event_category:'footer',event_label:'kofi'})">在 Ko-fi 上支持我</a>
       </p>
     </div>
   </footer>
 
   <script type="module">
-    import { initI18n } from "../i18n/i18n.js?v=3.42.0";
-    import { mountLangSwitcher } from "../i18n/lang-switcher.js?v=3.42.0";
+    import { initI18n } from "../i18n/i18n.js?v=3.42.1";
+    import { mountLangSwitcher } from "../i18n/lang-switcher.js?v=3.42.1";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="../site-header.js?v=3.42.0"></script>
-  <script type="module" src="../hero-bg.js?v=3.42.0"></script>
-  <script type="module" src="../app.js?v=3.42.0"></script>
+  <script type="module" src="../site-header.js?v=3.42.1"></script>
+  <script type="module" src="../hero-bg.js?v=3.42.1"></script>
+  <script type="module" src="../app.js?v=3.42.1"></script>
 </body>
 </html>

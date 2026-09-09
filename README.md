@@ -23,7 +23,7 @@ community's Haxe 4 fork, `nape-haxe4`, last shipped in 2020); nape-js carries
 the same simulation model forward as pure TypeScript — no dependencies, no
 build step, works in Node.js and every browser.
 
-**[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
+**[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Games built on nape-js](https://napejs.org/games/)** | **[Guides](https://napejs.org/guides/)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
 
 **[Cookbook](docs/guides/cookbook.md)** | **[Troubleshooting](docs/guides/troubleshooting.md)** | **[Anti-Patterns](docs/guides/anti-patterns.md)**
 
@@ -31,6 +31,19 @@ build step, works in Node.js and every browser.
 - Ported to TypeScript by Istvan Krisztian Somoracz
 
 <!-- npm:strip -->
+
+## Demos, games & guides
+
+The docs site is organised as a ladder from engine technique to shipped product:
+
+| Tier | What | Where |
+|------|------|-------|
+| Physics demos | 44 technique demos — joints, fluids, fracture, raycasting, soft body, determinism, serialization | [napejs.org/examples](https://napejs.org/examples/?cat=physics) |
+| Gameplay slices | 20 playable demos that isolate one mechanic — character controller, pinball, slingshot, vehicles | [napejs.org/examples?cat=game](https://napejs.org/examples/?cat=game) |
+| Complete game demos | 18 multi-system games in one file each — AI, waves, cameras, 3D rigs (Blade Waltz, Shard Rush, Jungle Strike, Kickoff, …) | [napejs.org/games](https://napejs.org/games/) |
+| Shipped games | Released titles running nape-js in production | [napejs.org/showcase](https://napejs.org/showcase/) |
+
+Every demo has its own page (`napejs.org/examples/<id>/`) with a full-size canvas, 2D / Three.js / PixiJS renderers, the source, CodePen / StackBlitz export and links into the [guides](https://napejs.org/guides/) (cookbook, anti-patterns, troubleshooting, multiplayer, replay). The demo sources live in [`docs/demos/`](docs/demos/).
 
 ## Packages
 

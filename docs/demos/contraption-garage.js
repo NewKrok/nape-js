@@ -1,8 +1,8 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   DistanceJoint, MotorJoint, PivotJoint, InteractionFilter,
-} from "../nape-js.esm.js?v=3.42.0";
-import { drawBody, drawGrid } from "../renderer.js?v=3.42.0";
+} from "../nape-js.esm.js?v=3.42.1";
+import { drawBody, drawGrid } from "../renderer.js?v=3.42.1";
 
 // ---------------------------------------------------------------------------
 // Contraption Garage — build-a-vehicle physics mini-game.

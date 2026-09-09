@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Replay Guide — @newkrok/nape-js/replay | nape-js Guides</title>
+  <meta name="description" content="Record a deterministic simulation, store it as a compact binary blob, and play it back later — same machine, another machine, days later. Useful for:" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="" />
+  <meta name="nape-i18n-title-vars" content="" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/guides/replay-guide/" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Replay Guide — @newkrok/nape-js/replay",
+    "description": "Record a deterministic simulation, store it as a compact binary blob, and play it back later — same machine, another machine, days later. Useful for:",
+    "url": "https://napejs.org/guides/replay-guide/",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "nape-js",
+      "url": "https://napejs.org/"
+    },
+    "about": {
+      "@type": "SoftwareSourceCode",
+      "name": "nape-js",
+      "codeRepository": "https://github.com/NewKrok/nape-js",
+      "programmingLanguage": "TypeScript"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Istvan Krisztian Somoracz",
+      "url": "https://github.com/NewKrok"
+    },
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Replay Guide — @newkrok/nape-js/replay | nape-js Guides" />
+  <meta property="og:description" content="Record a deterministic simulation, store it as a compact binary blob, and play it back later — same machine, another machine, days later. Useful for:" />
+  <meta property="og:url" content="https://napejs.org/guides/replay-guide/" />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="Replay Guide — @newkrok/nape-js/replay | nape-js Guides" />
+  <meta name="twitter:description" content="Record a deterministic simulation, store it as a compact binary blob, and play it back later — same machine, another machine, days later. Useful for:" />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+</head>
+<body>
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explore</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="../../examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Examples</span></a>
+            <a class="site-nav-item" href="../../games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Games</span></a>
+            <a class="site-nav-item" href="../../showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Showcase</span></a>
+            <a class="site-nav-item" href="../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Multiplayer demo</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item active" href="../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API reference</span></a>
+            <a class="site-nav-item" href="../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Build with AI</span></a>
+            <a class="site-nav-item" href="../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt for agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+      </nav>
+      <div class="site-header-actions">
+        
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <main>
+  <section class="section guide-page">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../">nape-js</a> <span aria-hidden="true">›</span>
+        <a href="../">Guides</a> <span aria-hidden="true">›</span>
+        <span aria-current="page">Replay Guide — @newkrok/nape-js/replay</span>
+      </nav>
+      <div class="guide-layout">
+        <aside class="guide-side">
+          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#architecture">Architecture</a></li><li><a href="#core-principle-inputs-in-simulation-out">Core principle: inputs in, simulation out</a></li><li><a href="#recording">Recording</a></li><li><a href="#encoding--sharing">Encoding &amp; sharing</a></li><li><a href="#playback">Playback</a></li><li><a href="#whats-not-preserved">What's NOT preserved</a></li><li><a href="#determinism-contract">Determinism contract</a></li><li><a href="#validating-config">Validating config</a></li><li><a href="#sizing--performance">Sizing &amp; performance</a></li><li><a href="#multiplayer-rollback-foundation-only">Multiplayer rollback (foundation only)</a></li><li><a href="#demos">Demos</a></li></ul></nav>
+          <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../cookbook/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> nape-js Cookbook</a></li><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../troubleshooting/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg> Troubleshooting Guide</a></li><li><a href="../multiplayer-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multiplayer Implementation Guide</a></li></ul></nav>
+          <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/replay-guide.md" target="_blank" rel="noopener">Edit on GitHub</a></p>
+        </aside>
+        <article class="guide-content">
+          <h1><span class="guide-h1-icon"><svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg></span>Replay Guide — @newkrok/nape-js/replay</h1>
+          <p>Record a deterministic simulation, store it as a compact binary blob, and play
+it back later — same machine, another machine, days later. Useful for:</p>
+<ul>
+<li><strong>Bug reproduction</strong> — capture a misbehaving session, share the blob, replay it locally with a debugger attached.</li>
+<li><strong>Multiplayer rollback foundation</strong> — server records authoritative inputs, clients replay-with-prediction.</li>
+<li><strong>Shareable replays</strong> — post a base64'd replay URL; anyone can load and watch it.</li>
+<li><strong>Regression tests</strong> — store a replay, assert that simulation X always produces position Y.</li>
+</ul>
+<p>The library is intentionally a thin layer over <code>/serialization</code> plus
+<code>space.deterministic = true</code>. It owns the snapshot + input-log plumbing; you
+own the <code>applyInput</code> callback.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>┌─ Recorder&lt;T&gt; ───────────────────────┐    ┌─ Replay&lt;T&gt; ────────────┐
+│  initial = spaceToBinary(space) ────┼──▶ │ initialSnapshot        │
+│  recordFrame(input) per frame ──────┼──▶ │ inputs[]               │
+│  keyframeEvery: 60 (optional) ──────┼──▶ │ keyframes[]            │
+└─────────────────────────────────────┘    │ frameCount             │
+                                           └──┬─────────────────────┘
+                                              │ encodeReplay
+                                              ▼ Uint8Array (binary blob)
+                                              │ decodeReplay
+                                              ▼
+┌─ Player&lt;T&gt; ──────────────────────────┐
+│  space = spaceFromBinary(initial)    │
+│  step(): applyInput + space.step()   │
+│  stepTo(frame): scrub via keyframes  │
+└──────────────────────────────────────┘
+</code></pre>
+<h2 id="core-principle-inputs-in-simulation-out">Core principle: inputs in, simulation out</h2>
+<p>The library does NOT patch <code>body.applyImpulse</code> or any other Space mutator.
+Instead, you provide an <code>applyInput</code> callback that the player calls once per
+frame, BEFORE stepping. The callback turns a recorded payload into the same
+Space mutations you'd make during a live session.</p>
+<p>This is the right boundary:</p>
+<ul>
+<li><strong>Engine determinism</strong> is the engine's responsibility (<code>space.deterministic = true</code> already gives same-platform bit-equivalence).</li>
+<li><strong>Logic determinism</strong> is your responsibility — the callback must be pure.</li>
+<li><strong>The library</strong> is the thin glue: snapshot, input log, frame counter.</li>
+</ul>
+<h2 id="recording">Recording</h2>
+<pre><code class="language-typescript">import &quot;@newkrok/nape-js&quot;;
+import { Recorder } from &quot;@newkrok/nape-js/replay&quot;;
+
+type Input = { jump?: boolean; mouseX?: number; mouseY?: number };
+
+space.deterministic = true; // mandatory — without this, replays drift
+
+const recorder = new Recorder&lt;Input&gt;(space, { keyframeEvery: 60 });
+
+for (let frame = 0; frame &lt; 600; frame++) {
+  const input = readUserInput();    // your code — may be null
+
+  recorder.recordFrame(input);       // logs the payload at the current frame
+  applyInput(input, space, frame);   // your own logic
+  space.step(1 / 60);
+}
+
+const replay = recorder.finish();    // immutable Replay&lt;Input&gt;
+</code></pre>
+<p><strong>Key constraints during recording:</strong></p>
+<ul>
+<li><code>space.deterministic = true</code> must be set BEFORE <code>new Recorder(space)</code>. The
+flag is captured into the initial snapshot and restored on playback.</li>
+<li>The recording space MUST keep stepping the same instance — keyframes are
+sampled from it.</li>
+<li>Stick to a fixed <code>dt</code> and iteration counts. The <code>Player</code> defaults to
+<code>dt = 1/60</code>, <code>velocityIterations = 8</code>, <code>positionIterations = 3</code>. Pass
+matching values via the player's options if you used different ones.</li>
+<li><code>applyInput</code> must be a pure function of <code>(input, space, frame)</code> — no
+<code>Math.random()</code>, no <code>Date.now()</code>, no global mutation, no reading from
+<code>body.userData</code> (binary serialization skips it).</li>
+</ul>
+<h3 id="keyframeevery"><code>keyframeEvery</code></h3>
+<p>Each keyframe is a full snapshot — sized like the initial one (~150-300 bytes
+per body). With <code>keyframeEvery: 60</code> and a 30-second replay containing 100
+bodies, that's roughly <code>30 keyframes × 100 bodies × 200 bytes ≈ 600 KB</code> of
+keyframe data. Disable with <code>keyframeEvery: 0</code> if you don't need scrub and
+want the smallest possible blob.</p>
+<h2 id="encoding--sharing">Encoding &amp; sharing</h2>
+<pre><code class="language-typescript">import { encodeReplay, decodeReplay } from &quot;@newkrok/nape-js/replay&quot;;
+
+const bytes = encodeReplay(replay);   // Uint8Array
+
+// Persist to disk, send over WebSocket, embed in a URL, ...
+const restored = decodeReplay&lt;Input&gt;(bytes);
+</code></pre>
+<p>The binary format is versioned (magic <code>RPLY</code>, version <code>u16</code>); decoding throws
+on mismatch. Inputs are JSON-encoded as UTF-8 — keep payloads to plain
+JSON-serialisable types (numbers, strings, booleans, plain objects, arrays). If
+you need binary in a payload, base64-encode it into a string.</p>
+<h2 id="playback">Playback</h2>
+<pre><code class="language-typescript">import { Player } from &quot;@newkrok/nape-js/replay&quot;;
+
+const player = new Player&lt;Input&gt;(replay, (input, space, frame) =&gt; {
+  // Same logic as during recording — translate input → space mutations.
+  if (input.jump) findPlayer(space).applyImpulse(new Vec2(0, -200));
+});
+
+const space = player.restore();      // Space deserialised from snapshot
+while (!player.finished) player.step();
+</code></pre>
+<p>The player's <code>space</code> is a fresh <code>Space</code> it owns; the library never reuses
+your recording space.</p>
+<h3 id="random-access-scrub">Random-access scrub</h3>
+<pre><code class="language-typescript">player.stepTo(60 * 5);   // jump to 5 seconds in
+player.stepTo(60 * 2);   // jump back to 2 seconds — uses keyframes
+</code></pre>
+<p>Forward scrub steps through the input log. Backward scrub restores the latest
+keyframe ≤ target, then steps forward. Without keyframes, backward scrub
+re-restores from frame 0 and walks forward — still correct, just O(target).</p>
+<h3 id="loop--restart">Loop / restart</h3>
+<pre><code class="language-typescript">player.restore();   // idempotent — rewinds to frame 0
+</code></pre>
+<h2 id="whats-not-preserved">What's NOT preserved</h2>
+<ul>
+<li><strong><code>body.userData</code></strong> — binary serialization skips it (it's not size-bounded).
+If you need to round-trip userData, encode it into your input payload, or
+use <code>spaceToJSON</code> directly (and accept the size cost).</li>
+<li><strong>Sleeping state</strong> — bodies wake fresh on snapshot restore. The simulation
+re-resolves sleep on the next step.</li>
+<li><strong><code>UserConstraint</code> instances</strong> — not serialisable; recordings using them
+fail to restore correctly.</li>
+<li><strong>Listeners / callbacks</strong> — not part of the snapshot. If your replay relies
+on <code>InteractionListener</code> callbacks, attach them BEFORE you restore (e.g. in
+the same code that creates the listener types).</li>
+</ul>
+<h2 id="determinism-contract">Determinism contract</h2>
+<p>Replay reproduces the recording bit-close when ALL of these hold:</p>
+<ol>
+<li><strong>Same platform</strong> — same OS, same CPU architecture (x86-64 ↔ x86-64,
+ARM64 ↔ ARM64). Cross-platform requires fixed-point math (roadmap P74).</li>
+<li><strong><code>space.deterministic = true</code></strong> — set on the recording space.</li>
+<li><strong>Fixed <code>dt</code></strong> — both sides step with the same <code>dt</code> and iteration counts.</li>
+<li><strong>Pure <code>applyInput</code></strong> — <code>(input, space, frame)</code> → mutations only. No
+ambient nondeterminism.</li>
+<li><strong>Matching engine version</strong> — <code>BINARY_SNAPSHOT_VERSION</code> is bumped on
+breaking layout changes; replays don't load across major engine versions.</li>
+</ol>
+<h2 id="validating-config">Validating config</h2>
+<pre><code class="language-typescript">import { validateDeterministicConfig } from &quot;@newkrok/nape-js/replay&quot;;
+
+const { ok, warnings } = validateDeterministicConfig(space);
+if (!ok) console.warn(&quot;Replay may drift:&quot;, warnings);
+</code></pre>
+<p>Currently checks <code>space.deterministic</code>. The function is a tiny pure
+inspection — extend it as you discover more failure modes in your codebase.</p>
+<h2 id="sizing--performance">Sizing &amp; performance</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Replay length</th>
+<th>30 bodies, no keyframes</th>
+<th>30 bodies, keyframeEvery: 60</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 sec (600 frames)</td>
+<td>~5 KB</td>
+<td>~55 KB</td>
+</tr>
+<tr>
+<td>60 sec (3600 frames)</td>
+<td>~5 KB</td>
+<td>~310 KB</td>
+</tr>
+<tr>
+<td>5 min (18000 frames)</td>
+<td>~5 KB</td>
+<td>~1.5 MB</td>
+</tr>
+</tbody>
+</table></div>
+<p>(Approximate — input log size depends on your payload shape.)</p>
+<p>For multiplayer rollback netcode, you typically want very small <code>keyframeEvery</code>
+(or 0) and short replays — most rollback windows are &lt; 200 ms.</p>
+<h2 id="multiplayer-rollback-foundation-only">Multiplayer rollback (foundation only)</h2>
+<p>P69 is the <strong>building block</strong> for rollback netcode, not a complete
+implementation. A typical setup:</p>
+<ul>
+<li>Server records authoritative inputs as <code>Recorder&lt;NetInput&gt;</code>.</li>
+<li>Server sends <code>encodeReplay(replay)</code> snapshots periodically + diff inputs.</li>
+<li>Client uses a local <code>Player</code> to predict ahead, then re-syncs on server
+state by <code>stepTo(serverFrame)</code> and re-applying any local pending inputs.</li>
+</ul>
+<p>A higher-level <code>@newkrok/nape-mp</code> (or similar) package on top of this would
+make sense as a future addition; the primitives shipped here cover the core
+record/restore/replay loop.</p>
+<h2 id="demos">Demos</h2>
+<p>Two demos in the <a href="../../examples/">examples grid</a> exercise this API:</p>
+<ul>
+<li><strong>Save / Load / Rewind</strong> (<code>save-load-rewind</code>) — uses the underlying
+<code>spaceToBinary</code> directly with a 3-second ring buffer for time-scrub. The
+P71 prototype that fed the P69 design.</li>
+<li><strong>Deterministic Replay</strong> (<code>replay-recorder</code>) — full Recorder + Player flow.
+Click to throw balls, Stop, then Replay — identical physics every time.</li>
+</ul>
+
+          <section class="guide-related"><h2 id="related-demos">Related demos</h2><p class="section-desc">Interactive demos that exercise what this guide covers.</p><div class="more-demos"><a class="more-demo" href="../../examples/deterministic/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/deterministic.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Deterministic Mode</span></span></a><a class="more-demo" href="../../examples/replay-recorder/"><img class="more-demo-thumb" src="../../assets/posters/replay-recorder.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physics</span><span>Deterministic Replay</span></span></a></div></section>
+        </article>
+      </div>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../" data-i18n="footer.home">Home</a>
+        &bull;
+        <a href="../../examples/" data-i18n="nav.examples">Examples</a>
+        &bull;
+        <a href="../../games/" data-i18n="nav.games">Games</a>
+        &bull;
+        <a href="../../guides/" data-i18n="nav.guides">Guides</a>
+        &bull;
+        <a href="../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">API Docs</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">Based on the original Haxe engine by <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> &bull; JS port scaffolded by <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> &bull; TypeScript rewrite &amp; ongoing development by <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">MIT License</p>
+    </div>
+  </footer>
+  <script src="../../site-header.js?v=3.42.1" defer></script>
+  <script>
+    // Prism arrives deferred; highlight once it is here.
+    window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
+  </script>
+</body>
+</html>

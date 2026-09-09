@@ -1,4 +1,4 @@
-import { Body, BodyType, Vec2, Polygon, Circle } from "../nape-js.esm.js?v=3.42.0";
+import { Body, BodyType, Vec2, Polygon, Circle } from "../nape-js.esm.js?v=3.42.1";
 
 // Pulse.
 //

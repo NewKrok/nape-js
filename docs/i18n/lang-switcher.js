@@ -15,7 +15,7 @@ import {
   DEFAULT_LANG,
   LANG_LABELS,
   getLanguage,
-} from "./i18n.js?v=3.42.0";
+} from "./i18n.js?v=3.42.1";
 
 /**
  * Compute the URL of the current page in another language.

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="nape-prerendered" content="zh" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>基于 2D 物理引擎的浏览器游戏 — nape-js 游戏</title>
+  <meta name="description" content="基于 nape-js 的完整可玩游戏演示——动作战斗、射击、竞速、足球、平台跳跃——每个都是一个带源码的 TypeScript 文件，还有运行在该引擎上的已发布游戏。" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="games.meta.title" />
+  <meta name="nape-i18n-title-vars" content="" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/zh/games/" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Games built on nape-js",
+    "description": "Complete playable game demos built on nape-js — action battles, shooters, racers, soccer, platformers — each in one TypeScript file with source, plus the shipped games running on the engine.",
+    "url": "https://napejs.org/games/",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "nape-js",
+      "url": "https://napejs.org/"
+    },
+    "hasPart": [
+      {
+        "@type": "VideoGame",
+        "name": "Blade Waltz",
+        "url": "https://napejs.org/examples/blade-waltz/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Shard Rush",
+        "url": "https://napejs.org/examples/shard-rush/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Jungle Strike",
+        "url": "https://napejs.org/examples/jungle-strike/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Raft Rapids",
+        "url": "https://napejs.org/examples/raft-rapids/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Kickoff",
+        "url": "https://napejs.org/examples/kickoff/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Crash Test Hero",
+        "url": "https://napejs.org/examples/crash-test-hero/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Sky Hook",
+        "url": "https://napejs.org/examples/sky-hook/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Ragdoll Royale",
+        "url": "https://napejs.org/examples/ragdoll-royale/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Escape Run",
+        "url": "https://napejs.org/examples/escape-run/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Capture the Flag",
+        "url": "https://napejs.org/examples/capture-the-flag/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Dodgeball",
+        "url": "https://napejs.org/examples/dodgeball/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Standoff",
+        "url": "https://napejs.org/examples/standoff/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Arena Defense",
+        "url": "https://napejs.org/examples/arena-defense/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "MOBA-lite",
+        "url": "https://napejs.org/examples/moba-lite/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Tinywheels Cup",
+        "url": "https://napejs.org/examples/tinywheels-cup/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Dirtline",
+        "url": "https://napejs.org/examples/dirtline/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Top-down Shooter",
+        "url": "https://napejs.org/examples/top-down-shooter/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Contraption Garage",
+        "url": "https://napejs.org/examples/contraption-garage/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      }
+    ]
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="基于 2D 物理引擎的浏览器游戏 — nape-js 游戏" />
+  <meta property="og:description" content="基于 nape-js 的完整可玩游戏演示——动作战斗、射击、竞速、足球、平台跳跃——每个都是一个带源码的 TypeScript 文件，还有运行在该引擎上的已发布游戏。" />
+  <meta property="og:url" content="https://napejs.org/zh/games/" />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="基于 2D 物理引擎的浏览器游戏 — nape-js 游戏" />
+  <meta name="twitter:description" content="基于 nape-js 的完整可玩游戏演示——动作战斗、射击、竞速、足球、平台跳跃——每个都是一个带源码的 TypeScript 文件，还有运行在该引擎上的已发布游戏。" />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <!-- i18n:hreflang:start -->
+  <link rel="alternate" hreflang="en" href="https://napejs.org/games/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/games/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/games/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/games/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/games/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/games/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/games/" />
+  <!-- i18n:hreflang:end -->
+</head>
+<body>
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../zh/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">探索</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="../../zh/examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">示例</span></a>
+            <a class="site-nav-item active" href="../../zh/games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">游戏</span></a>
+            <a class="site-nav-item" href="../../zh/showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">作品展示</span></a>
+            <a class="site-nav-item" href="../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">多人演示</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">文档</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item" href="../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">指南</span></a>
+            <a class="site-nav-item" href="../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API 参考</span></a>
+            <a class="site-nav-item" href="../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">用 AI 构建</span></a>
+            <a class="site-nav-item" href="../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">面向代理的 llms.txt</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">性能测试</a>
+      </nav>
+      <div class="site-header-actions">
+        <span class="lang-switcher" id="langSwitcher"></span>
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="菜单" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <header class="page-hero">
+    <div class="container">
+      <a href="../../zh/" class="back-link" data-i18n="games.back">← 返回首页</a>
+      <h1 data-i18n="games.heading">基于 nape-js 构建的游戏</h1>
+      <p class="page-hero-intro" data-i18n="games.intro">从单一机制到已发布作品：下面的每个游戏都运行在同一个开源 2D 物理引擎上。在浏览器中试玩，然后打开源码。</p>
+      <nav class="proof-strip" aria-label="Game tiers">
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>18</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
+        <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">个玩法切片</span></a>
+        <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span></a>
+      </nav>
+      <p class="page-hero-alt"><span data-i18n="games.physicsCta.lead">只对物理感兴趣，不关心游戏？</span> <a href="../../zh/examples/?cat=physics" data-i18n="games.physicsCta.link">浏览技术演示</a> <span data-i18n="games.physicsCta.tail">——关节、流体、破碎、射线检测、确定性。</span></p>
+    </div>
+  </header>
+  <main>
+  <section class="section" id="showpieces">
+    <div class="container">
+      <h2 data-i18n="games.showpieces.heading">完整游戏演示</h2>
+      <p class="section-desc" data-i18n="games.showpieces.desc">每个都是单文件的多系统游戏——AI 对手、波次、摄像机、计分和 3D 骨架。在这里试玩，或在 CodePen 和 StackBlitz 上打开源码。</p>
+      <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/blade-waltz/?mode=3d&outline=0" aria-label="Blade Waltz">
+            <img class="game-card-img" src="../../assets/posters/blade-waltz.webp" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">圆形竞技场上的<b>《传说》系列风格动作战斗连战</b>：十波怪物、四人小队，而你只操控剑士。自由跑动，打出<b>三段连击</b>（<b>J</b> / 点击），消耗 TP 施放<b>秘技</b>（<b>K</b> —— 中立方向为地面冲击波 Demon Fang，朝向目标为冲刺突刺 Sonic Thrust，背向目标为挑飞斩 Tiger Blade），用 <b>L</b> <b>防御</b>，当 Overlimit 计量表因造成与承受伤害而充满时，按<b>空格</b>释放<b>秘奥义</b>。普通攻击回复 TP；防御只护住正面；石魔像与头目无视零散的单次攻击。你的<b>AI 队友</b>各司其职：枪兵近身缠斗并连续突刺，弓手拉开距离齐射，贤者治疗、复活并施放火与石魔法，且<b>施法时间可被打断</b>。第十波是一头<b>飞龙</b>，拥有利爪、回旋尾击、火焰吐息、咆哮和召唤鬼火。每个战斗者都是静态墙段环内的动态圆盘；近战由扇形范围判定，而箭矢、弩矢、火球和冲击波则是由 <code>InteractionListener</code> 处理的<b>传感器刚体</b>，阵营过滤全部通过传感器掩码完成。<b>3D</b> 模式下，侧向追踪摄像机取景玩家与目标之间的连线，俯瞰草原上的石制竞技场，所有战斗者都是带关节的低多边形模型。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/shard-rush/?mode=3d&outline=0" aria-label="Shard Rush">
+            <img class="game-card-img" src="../../assets/posters/shard-rush.webp" width="900" height="500" loading="lazy" decoding="async" alt="Shard Rush — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 俯视角<b>英雄竞技场</b>。地图中央的矿井每隔几秒吐出一枚<b>碎片</b>——全队合计拿到 <b>10</b> 枚并撑过 <b>15 秒倒计时</b>即可获胜。阵亡会掉落你持有的全部碎片。在选择界面从<b>六位英雄</b>中挑选一位——霰弹枪手、快枪手、摔角手、吟游诗人、投掷手、工程师——每位都有专属攻击、随时间回充的 <b>3 发弹药</b>，以及命中即充能的<b>大招</b>：破墙轰击、穿透连射、跃起重击、治疗和弦、烧瓶弹幕、自动炮塔。<b>草丛</b>能隐藏你，直到你攻击或有人靠近；<b>木箱</b>可以炸开。用 <b>WASD</b> 移动，<b>鼠标瞄准</b>并点击攻击，<b>E</b> 自动攻击最近的敌人，<b>SPACE</b>/<b>Q</b> 释放大招——在任何设备上也可以<b>按住</b>来移动、<b>轻点</b>攻击并轻点大招按钮。两名 <b>AI 队友</b>和三名 AI 对手运行同一套了解自身技能的大脑：射程区间、掩体、潜行、撤退回血、控矿与大招时机。每一发弹丸都是一个<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 派发，队伍过滤完全由传感器组与掩码完成。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/jungle-strike/?mode=3d&outline=0" aria-label="Jungle Strike">
+            <img class="game-card-img" src="../../assets/posters/jungle-strike.webp" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">丛林突袭</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">十一屏的<b>魂斗罗式横版射击</b>。一路杀穿丛林突击场——巡逻的士兵、掘壕固守的<b>炮塔</b>、跳跃冲锋的<b>突击兵</b>，以及开火前会用激光瞄准你的<b>狙击手</b>——直到三管<b>炮台首领</b>：它只有发光的核心可被击伤，每轮齐射前都有预警，进入过载后还会轮换火箭弹与迫击炮。关卡由 <b>CharacterController</b> 搭配手工设计的地形构成：单向树冠平台、一座<b>会塌陷的绳桥</b>、需要踩石过河的河道，之后还有战壕、爬塔和被淹没的海湾。拾取 <b>SPREAD</b>、<b>MACHINE</b> 与 <b>LASER</b> 强化道具——死亡会失去武器，并在十一个<b>存档点</b>中最后到达的一个复活。使用 <b>WASD</b>/方向键移动，<b>SPACE</b> 跳跃，<b>S</b>/<b>↓</b> 蹲下，并用<b>鼠标自由瞄准</b>——按住即可开火。在 <b>3D 模式</b>下，每个战斗人员都是程序化生成的低多边形角色，持枪手臂独立瞄准。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Platformer">平台跳跃</span><span class="example-tag" data-i18n="tag.AI">AI</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/raft-rapids/?mode=3d&outline=0" aria-label="Raft Rapids">
+            <img class="game-card-img" src="../../assets/posters/raft-rapids.webp" width="900" height="500" loading="lazy" decoding="async" alt="Raft Rapids — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/raft-rapids/?mode=3d&outline=0" data-i18n="demo.raft-rapids.label">木筏激流</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.raft-rapids.desc">在真实<b>流体浮力</b>上进行的木筏载人漂流。在装载湾中<b>点击</b>放置漂浮的木桶、甲板节点和兜风的船帆，并<b>从部件拖到部件</b>用弹性连杆连接它们。按下<b>启动</b>：木筏落水，起重机吊下一个<b>布娃娃乘客</b>——他比水更重，落水就会下沉、本轮即告失败——水流会带着一切冲下四屏长的河道：一段<b>三级瀑布阶梯</b>，一级比一级更高，其间穿插巨石回旋区和加速引水道，直到交付码头。乘客会用一个可断裂的关节<b>抓紧</b>木筏：回旋区的颠簸他扛得住，但大落差会扯断抓握、把他甩出去——而如果水流把木筏重新推回他下方，他就会再次抓牢。连杆是带实时应变的软性 <b>DistanceJoint</b>，撞上礁石会绷断；船帆保持干燥时会朝<b>阵性顺风</b>方向拉动木筏。一旦启动，整段漂流<b>无法干预</b>：你设计的木筏要么成功，要么失败。<b>空格</b>启动，<b>1–4</b>选择工具，<b>R</b>重置。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Buoyancy">Buoyancy</span><span class="example-tag" data-i18n="tag.DistanceJoint">DistanceJoint</span><span class="example-tag" data-i18n="tag.Ragdoll">布娃娃</span><span class="example-tag" data-i18n="tag.Building">搭建</span><span class="example-tag" data-i18n="tag.Drag">拖动</span><span class="example-tag" data-i18n="tag.Gameplay">玩法</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/kickoff/?mode=3d&outline=0" aria-label="Kickoff">
+            <img class="game-card-img" src="../../assets/posters/kickoff.webp" width="900" height="500" loading="lazy" decoding="async" alt="Kickoff — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/kickoff/?mode=3d&outline=0" data-i18n="demo.kickoff.label">开球</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.kickoff.desc">2v2 俯视竞技场足球。你和一名 <b>AI 队友</b>（蓝方）对阵两名 AI 对手，球场四面围墙，球门内凹并有圆形门柱。走向慢速球即可把它<b>带在脚下</b>；<b>踢球</b>（<b>SPACE</b>/<b>E</b>）朝你面对的方向射出，而与你带的球重叠的对手可以<b>铲断</b>——全速射门快到无法拦截。用 <b>WASD</b>/方向键移动，按住 <b>SHIFT</b> <b>冲刺</b>，体力槽几秒耗尽、缓慢回复（完全耗尽会喘不上气）——或在任何设备上<b>按住</b>指针转向（推远即冲刺）、<b>快速点按</b>踢球。AI 双人组会动态分配<b>进攻与防守角色</b>，向角旗区盘带、做支援跑动，并管理自己的体力。<b>2 分钟计时</b>内先进 3 球者胜——终场平局进入金球制。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Momentum">动量</span><span class="example-tag" data-i18n="tag.Zero Gravity">零重力</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/crash-test-hero/?mode=3d&outline=0" aria-label="Crash Test Hero">
+            <img class="game-card-img" src="../../assets/posters/crash-test-hero.webp" width="900" height="500" loading="lazy" decoding="async" alt="Crash Test Hero — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/crash-test-hero/?mode=3d&outline=0" data-i18n="demo.crash-test-hero.label">碰撞测试英雄</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.crash-test-hero.desc">Turbo Dismount 风格的碰撞计分。<b>拖拽</b>布娃娃假人的任意身体部位来摆姿势，然后<b>按住空格键</b>（或 LAUNCH 按钮）为往返摆动的力量条蓄力，松开即发射——冲下坡道、飞越深坑、滚下楼梯，撞进蹦床、旋转桨轮和木箱墙。伤害就是分数：每次硬碰撞都按测得的 <code>totalContactsImpulse</code> 付分（头部命中 ×3），安全带、脖子、肩膀和髋部都是真正的<b>可断裂约束</b>（<code>maxForce</code> + <code>breakUnderForce</code>），通过 <code>ConstraintListener(BREAK)</code> 断裂并奖励加分。重击会冻结时间并震动镜头。下坡途中时间几乎冻结——再按<b>空格</b>：假人按快速摆动的瞄准箭头角度<b>弹射</b>而出——FlatOut 风格——直冲障碍长廊：保龄球瓶、拆迁铁球、只有精准弧线才够得着的旋转转子阵、跷跷板和木箱墙。弹射后按空格惊慌挥舞（3 次）。<b>R</b> 重新开始。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Ragdoll">布娃娃</span><span class="example-tag" data-i18n="tag.Breakable">可断裂</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Drag">拖动</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/sky-hook/?mode=3d&outline=0" aria-label="Sky Hook">
+            <img class="game-card-img" src="../../assets/posters/sky-hook.webp" width="900" height="500" loading="lazy" decoding="async" alt="Sky Hook — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/sky-hook/?mode=3d&outline=0" data-i18n="demo.sky-hook.label">天钩救援</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.sky-hook.desc">直升机医疗救援，吊挂布娃娃——<b>三名伤员</b>被困在峡谷的三个不同地点，医院停机坪位于地图中央。用<b>方向键/WASD</b>飞行（触屏按住指针转向），将链节绳索的挂钩悬停到伤员旁，按<b>空格</b>把他绞入吊带——然后带着在机身下摇摆的他穿过高塔、桥下通道、悬在空中的方块、巡逻平台、摆动的破碎球和旋转的 <b>X / I / 十字旋翼</b>，送回医院。颈部、肩部和髋部是真正的<b>可断裂约束</b>（<code>maxForce</code> + <code>breakUnderForce</code>）——撞上障碍会扯断肢体；猛拉过头<b>吊带会断裂</b>。每次剧烈碰撞都会按实测的 <code>totalContactsImpulse</code> 削减直升机的<b>机体</b>耐久——归零就会坠机。<b>空格</b>释放，<b>R</b> 重新开始。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Ragdoll">布娃娃</span><span class="example-tag" data-i18n="tag.Breakable">可断裂</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Keyboard">Keyboard</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/ragdoll-royale/?mode=3d&outline=0" aria-label="Ragdoll Royale">
+            <img class="game-card-img" src="../../assets/posters/ragdoll-royale.webp" width="900" height="500" loading="lazy" decoding="async" alt="Ragdoll Royale — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/ragdoll-royale/?mode=3d&outline=0" data-i18n="demo.ragdoll-royale.label">布娃娃大乱斗</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.ragdoll-royale.desc">观赏型大逃杀：<b>50 个编号布娃娃</b>在五层平台上列队站立。世界会屏住呼吸，直到你做出唯一的那个决定（点击一个布娃娃下注，<b>空格</b>随机选择）—— 随后一份带种子的灾害时间表吞噬竞技场：有预警的<b>间歇泉</b>喷发、沿墙上下移动的<b>弹球炮</b>、从预警的天花板舱口落下的<b>落石</b>、从所有人脚下抽走的平台、一边沿轴上下移动一边随机反向的<b>运动学转子</b>，以及<b>以随机顺序</b>塌入虚空的地板。伤害是实测的而非脚本化的 —— 硬碰撞通过 <code>totalContactsImpulse</code> 造成擦伤，脖子/肩膀/髋部是真实的<b>可断裂约束</b>，会在剧烈拉扯下扯断，0% 即 KO。场上最后一个布娃娃获胜；结算横幅按名次给你的下注评分。每个布娃娃独立的 <code>InteractionGroup</code> 让 500 个布娃娃部件互相碰撞但绝不与自身碰撞。每一轮都重新播种 —— <b>R</b> 重新开始。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Ragdoll">布娃娃</span><span class="example-tag" data-i18n="tag.Breakable">可断裂</span><span class="example-tag" data-i18n="tag.Chaos">混沌</span><span class="example-tag" data-i18n="tag.Destruction">破坏</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/escape-run/?mode=3d&outline=0" aria-label="Escape Run">
+            <img class="game-card-img" src="../../assets/posters/escape-run.webp" width="900" height="500" loading="lazy" decoding="async" alt="Escape Run — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/escape-run/?mode=3d&outline=0" data-i18n="demo.escape-run.label">逃亡快跑</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.escape-run.desc">致敬魔兽争霸 3 的<b>逃亡地图</b>类型（<i>Run Kitty Run</i> 等）：碰一下即死，检查点是能量之环，死亡次数不限——只有计时器评判你。出口大门需要<b>三块钥匙碎片</b>，每块都藏在某个危险区段的主路之外，所以跑一圈是不够的。在<b>巡逻大厅</b>反向交错的刀刃间穿行，那里还有一只猎手来回巡视；在<b>闸门跑道</b>上于定时闸门、破土而出的地刺以及一犹豫就塌陷的石板之间冲刺；在无摩擦的<b>冰封坡道</b>上漂移；再穿过<b>碾压长廊</b>——动力学活塞会把你推进岩浆——若让活塞压到身上更会被直接压扁。用 <b>WASD</b>/方向键移动，或在任何设备上<b>按住</b>指针操控。按 <b>R</b> 重新开始。巡逻怪是走解析路径的纯传感器运动学刚体，闸门与地刺在 Space 中动态添加移除，活塞以真实的运动学接触推动你，猎手在仇恨范围内会朝你转向但速度比你慢，而冰面只是更低的转向插值——每条游戏规则对应一个 <code>InteractionListener</code>。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Sensor">传感器</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span><span class="example-tag" data-i18n="tag.Maze">Maze</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/capture-the-flag/?mode=3d&outline=0" aria-label="Capture the Flag">
+            <img class="game-card-img" src="../../assets/posters/capture-the-flag.webp" width="900" height="500" loading="lazy" decoding="async" alt="Capture the Flag — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/capture-the-flag/?mode=3d&outline=0" data-i18n="demo.capture-the-flag.label">夺旗</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.capture-the-flag.desc">3v3 俯视夺旗。撞上敌方旗帜即可<b>夺走它</b>，再把它带回你自己的基地圆圈——但只有当你<b>自己的旗帜在家</b>时夺旗才算分，所以必须有人防守。<b>冲刺突进</b>（<b>SPACE</b>/<b>E</b>，或<b>快速点按</b>）既是抢断也是逃脱：撞进对手会用真实的动量冲击让其踉跄，并<b>必定击落其携带的旗帜</b>；掉落的旗帜会滑行、闪烁，10 秒内无人认领就自动回家——己方触碰则立刻送回。中场的<b>掩体方块</b>把直线追逐变成绕桩缠斗。用 <b>WASD</b>/方向键移动，按住 <b>SHIFT</b> <b>冲刺</b>，体力槽几秒耗尽、缓慢回复（完全耗尽会喘不上气；持旗者跑得略沉）——或在任何设备上<b>按住</b>指针转向（推远即冲刺）、<b>点按</b>发动突进。每个 AI 都随机自己的速度与攻击性，并扮演鲜活角色——<b>突袭者、中场拦截者或门将式护旗手</b>——追击持旗者、护送己方旗帜回家、抢夺散落的旗帜。<b>2:30 计时</b>内先完成 3 次夺旗者胜；终场平局进入突然死亡，届时连护旗手也会弃守出击。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Momentum">动量</span><span class="example-tag" data-i18n="tag.Zero Gravity">零重力</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/dodgeball/?mode=3d&outline=0" aria-label="Dodgeball">
+            <img class="game-card-img" src="../../assets/posters/dodgeball.webp" width="900" height="500" loading="lazy" decoding="async" alt="Dodgeball — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/dodgeball/?mode=3d&outline=0" data-i18n="demo.dodgeball.label">躲避球</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.dodgeball.desc">3v3 俯视躲避球，三局两胜。中线只对<b>玩家</b>是一堵墙——一道经过碰撞过滤的围栏，圆盘无法穿过，球却能直接飞越。四颗球排在中线上：<b>冲刺</b>，走到球上即可<b>拾取</b>，持球片刻使其<b>就绪</b>（经典的先撤再投规则），然后<b>投掷</b>——<b>SPACE</b>/<b>E</b> 自动瞄准最近的红方，<b>点按</b>则精确投向你点的位置。掷出的球处于<b>活球</b>状态（带有投掷者的颜色），直到碰墙或减速；活球碰到对手即将其<b>淘汰</b>。<b>没有接球</b>——球飞过来时，<b>闪避</b>。场上的弹药也会流失：每 20 秒<b>一颗空闲的球永久消失</b>（消失前会闪烁），直到只剩一颗。用 <b>WASD</b>/方向键移动，按住 <b>SHIFT</b> <b>冲刺</b>，体力槽几秒耗尽、缓慢回复——或在任何设备上<b>按住</b>指针转向（推远即冲刺）、<b>快速点按</b>投掷。每个 AI 都会随机生成自己的<b>反应距离、提前量水平、投掷散布和攻击性</b>，所以红方会侧向跳出弹道躲你的球，也会预判你的走位。拖延太久的话，45 秒时<b>中线倒下</b>——围栏刚体离开空间，回合变成贴脸混战。最后站立的队伍拿下该局；先赢 2 局者获胜。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Momentum">动量</span><span class="example-tag" data-i18n="tag.Zero Gravity">零重力</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/standoff/?mode=3d&outline=0" aria-label="Standoff">
+            <img class="game-card-img" src="../../assets/posters/standoff.webp" width="900" height="500" loading="lazy" decoding="async" alt="Standoff — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/standoff/?mode=3d&outline=0" data-i18n="demo.standoff.label">对峙</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.standoff.desc">一款俯视的<b>静止即射击</b>类肉鸽游戏。你的英雄<b>仅在静止不动时</b>自动向最近的敌人开火——一旦移动，武器立刻冷却，所以每场战斗都是停-射-闪。清空一个房间的所有敌人后，<b>从三个永久强化中抽取一个</b>，它们会在整局中叠加：额外箭矢方向（<b>前</b>、<b>侧</b>、<b>后</b>、<b>斜向</b>）、路径（<b>穿透</b>、<b>墙面反弹</b>、敌人间<b>弹射</b>）、载荷（<b>爆炸射击</b>、<b>闪电</b>链式电击、<b>冰冻</b>、<b>中毒</b>）、随从（<b>灵体</b>球），以及属性（暴击、伤害、速度、嗜血、快速拔枪）。清空的房间会打开一扇随机墙上的<b>出口门</b>；走进去便淡出到下一个竞技场。<b>近战</b>敌人带电冲锋，<b>远程</b>敌人放风筝狙击，<b>闪现兵</b>瞬移逼近，每第 5 个房间是带霰弹枪和弹幕环的 <b>Boss</b>。更深的房间会加入<b>动态危险物</b>：有预警的<b>尖刺陷阱</b>、<b>熔岩池</b>，以及旋转的<b>锯片</b>（横扫竞技场并阻挡射击的运动学横杆）。被击败的敌人有时会掉落<b>治疗之心</b>——受伤时走过去即可回血。使用 <b>WASD</b> / 方向键或左下虚拟摇杆移动。每次击杀、命中、触发陷阱和 Boss 砸击时<b>摄像机抖动</b>。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Roguelite">类肉鸽</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Camera shake">摄像机抖动</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/arena-defense/?mode=3d&outline=0" aria-label="Arena Defense">
+            <img class="game-card-img" src="../../assets/posters/arena-defense.webp" width="900" height="500" loading="lazy" decoding="async" alt="Arena Defense — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/arena-defense/?mode=3d&outline=0" data-i18n="demo.arena-defense.label">竞技场防御</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.arena-defense.desc">融合了<b>俯视射击</b> + <b>塔防</b> + <b>传送门</b> + <b>可破坏刚体</b>的玩法。庞大的 <b>1800×1200</b> 世界，配备<b>跟随玩家的摄像机</b>。敌人沿着短小的 L 形走廊从各个方向进入，并汇聚到中央<b>基地</b>（HP 800，实心障碍物，自动向最近的敌人开火）。波次以固定的 <b>12 秒节奏</b>刷新——慢波次不会推迟下一波，所以敌人的堆积也是挑战的一部分。<b>WASD</b> 移动，<b>Space</b> 冲刺（无敌帧），自动开火瞄准最近的敌人。踏入彩色<b>传送门</b>即可传送。每次击杀都会通过 <code>fractureBody</code>（Voronoi 碎片）将敌人击碎，并伴随一段短暂的粒子发射器火花爆发。波次类型：<b>速度</b>（冲刺型）、<b>治疗者</b>（绿色脉冲治疗友军），以及每第 5 波——带有霰弹枪、地雷、召唤小兵和 AoE <b>冲击波</b>的 <b>Boss</b>。强化道具（40% 掉落率）：2x/3x 散射、EX 爆炸弹、RF 速射、HP 治疗、SH 护盾、<b>HM 追踪导弹</b>。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.fractureBody">fractureBody</span><span class="example-tag" data-i18n="tag.Portals">Portals</span><span class="example-tag" data-i18n="tag.ParticleEmitter">ParticleEmitter</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/moba-lite/?mode=3d&outline=0" aria-label="MOBA-lite">
+            <img class="game-card-img" src="../../assets/posters/moba-lite.webp" width="900" height="500" loading="lazy" decoding="async" alt="MOBA-lite — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/moba-lite/?mode=3d&outline=0" data-i18n="demo.moba-lite.label">MOBA 简版</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.moba-lite.desc">粗略的 MOBA 草图——穿过三角岛屿迷宫的三条兵线、小兵波、12 座塔和两座主水晶。使用 <b>WASD</b>（或左下虚拟摇杆）移动；自动攻击射向范围内最近的敌人。<b>Q</b> 放置一枚 2 秒后<b>爆开成 10 发径向子弹</b>的地雷，<b>E</b> 是带有短暂无敌帧的<b>冲刺</b>。击杀小兵/塔可获得金币和经验；最高升到 10 级。左上角的商店按钮可购买 <b>+3 DMG</b> 或 <b>治疗 50</b>。摧毁红方主水晶 ★ 即获胜；蓝方主水晶被摧毁则失败。摄像机跟随玩家穿越 1800×1000 的世界。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.AOE">AOE</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span><span class="example-tag" data-i18n="tag.MOBA">MOBA</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/tinywheels-cup/?mode=3d&outline=0" aria-label="Tinywheels Cup">
+            <img class="game-card-img" src="../../assets/posters/tinywheels-cup.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tinywheels Cup — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/tinywheels-cup/?mode=3d&outline=0" data-i18n="demo.tinywheels-cup.label">小轮杯</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tinywheels-cup.desc">俯视卡丁车竞速——你（蓝色）对阵三名由路径点驱动的 AI 对手，在封闭的三圈赛道上比拼。马力欧卡丁车风格的道具箱：拾取一个 <b>?</b> 道具板，随机抽一个道具进入你的道具槽，然后按 <b>E</b> 使用。<b>蘑菇</b> = 加速爆发，<b>雷电</b> = 减速所有对手，<b>香蕉</b> = 在身后放置陷阱，<b>龟壳</b> = 向前发射弹体。当心旋转横杆和弹力球——它们会把你撞离赛道。操作：<b>↑ ↓ ← →</b>（或 WASD），<b>Space</b> 刹车，<b>Shift</b> 漂移，<b>E</b> 使用道具。率先跑完三圈者获胜。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Top-Down">Top-Down</span><span class="example-tag" data-i18n="tag.Zero Gravity">零重力</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">路径点</span><span class="example-tag" data-i18n="tag.Sensor">传感器</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Race">竞速</span><span class="example-tag" data-i18n="tag.Items">道具</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/dirtline/?mode=3d&outline=0" aria-label="Dirtline">
+            <img class="game-card-img" src="../../assets/posters/dirtline.webp" width="900" height="500" loading="lazy" decoding="async" alt="Dirtline — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/dirtline/?mode=3d&outline=0" data-i18n="demo.dirtline.label">泥地越野</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.dirtline.desc">登山攀爬式越野摩托，一名铰接布娃娃车手被焊接在座位上，行驶在带有若干大跳跃的长赛道上。<b>→</b> / <b>D</b> 油门，<b>←</b> / <b>A</b> 倒车，<b>↑</b> / <b>W</b> 后仰（翘前轮），<b>↓</b> / <b>S</b> 前倾（压车头）。转动的车轮甩出基于物理的碎石，在赛道上四处弹跳。翻车或重重摔地，车手就会脱离并以布娃娃状态飞出。<b>R</b> 或点击重生。展示 SpringJoint 悬挂上的 MotorJoint 车轮、附着于移动载具的布娃娃、可断开的 WeldJoint，以及仅作用于地形的 ParticleEmitter。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span><span class="example-tag" data-i18n="tag.SpringJoint">SpringJoint</span><span class="example-tag" data-i18n="tag.WeldJoint">WeldJoint</span><span class="example-tag" data-i18n="tag.Ragdoll">布娃娃</span><span class="example-tag" data-i18n="tag.Vehicle">载具</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Break-away">Break-away</span><span class="example-tag" data-i18n="tag.ParticleEmitter">ParticleEmitter</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/top-down-shooter/?mode=3d&outline=0" aria-label="Top-down Shooter">
+            <img class="game-card-img" src="../../assets/posters/top-down-shooter.webp" width="900" height="500" loading="lazy" decoding="async" alt="Top-down Shooter — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/top-down-shooter/?mode=3d&outline=0" data-i18n="demo.top-down-shooter.label">俯视射击</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.top-down-shooter.desc">俯视生存射击——敌人从 4 个刷新点涌入，每第 5 波以一个 <b>Boss</b> 收尾，它会冲锋、投放地雷并发射霰弹。<b>近战</b>敌人以爆发冲刺追击你，<b>远程</b>敌人保持距离狙击。移动：<b>WASD</b> 或左下虚拟摇杆（移动端）。<b>自动开火</b>瞄准最近的敌人；墙壁会挡住子弹。敌人有 40% 掉落几率掉出持续 10 秒的强化道具：<b>2x</b> / <b>3x</b> 散射、<b>KB</b> 击退爆破、<b>EX</b> 爆炸 AOE 子弹、<b>RF</b> 速射、<b>HP</b> 立即治疗。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span><span class="example-tag" data-i18n="tag.Auto-fire">Auto-fire</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/contraption-garage/?mode=3d&outline=0" aria-label="Contraption Garage">
+            <img class="game-card-img" src="../../assets/posters/contraption-garage.webp" width="900" height="500" loading="lazy" decoding="async" alt="Contraption Garage — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/contraption-garage/?mode=3d&outline=0" data-i18n="demo.contraption-garage.label">机械车库</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.contraption-garage.desc">Fantastic Contraption 风格的载具建造游戏。在建造区<b>点击</b>放置动力轮（向右 / 向左驱动）和框架节点，并<b>从部件拖到部件</b>用弹性连杆连接它们。按下<b>测试</b>：连杆成为柔性 <b>DistanceJoint</b>，每个轮子通过 <b>MotorJoint</b> 相对框架驱动，镜头会跟随你的机器驶过三屏长的赛道——深坑、连续颠簸、需要跨越的沟壑、阶梯爬坡和悬崖滑道。机器自己到达旗帜毫无意义：高台上有一颗粉色<b>货物球</b>在等着，必须让它抵达旗帜。动力轮缘会带着回旋把球踢开，光秃秃的车只会碾过它——试试用反转的轮子做进料滚轮，并带上足够的牵引力把货物推上最后的坡道。连杆实时显示<b>应变</b>，过载时会断裂；测试中你可以用弹性枢轴之手<b>抓住</b>部件，而且得益于 <b>InteractionFilter</b> 分组，部件可以自由重叠。<b>空格</b>切换测试，<b>1–4</b> 选择工具，<b>R</b> 重置。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span><span class="example-tag" data-i18n="tag.DistanceJoint">DistanceJoint</span><span class="example-tag" data-i18n="tag.Building">搭建</span><span class="example-tag" data-i18n="tag.Vehicle">载具</span><span class="example-tag" data-i18n="tag.Drag">拖动</span><span class="example-tag" data-i18n="tag.Gameplay">玩法</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="slices">
+    <div class="container">
+      <h2 data-i18n="games.slices.heading">玩法切片</h2>
+      <p class="section-desc" data-i18n="games.slices.desc">聚焦单一机制的小型可玩演示——角色控制器、弹球台、弹弓、载具。</p>
+      <div class="game-grid">
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/sumo-arena/?mode=3d&outline=0" aria-label="Sumo Arena">
+            <img class="game-card-img" src="../../assets/posters/sumo-arena.webp" width="900" height="500" loading="lazy" decoding="async" alt="Sumo Arena — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/sumo-arena/?mode=3d&outline=0" data-i18n="demo.sumo-arena.label">相扑竞技场</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.sumo-arena.desc">10 名玩家在漂浮的圆形平台上进行淘汰制大混战——把其他所有人推下去，成为最后站立者。你操控蓝色圆盘对抗 <b>9 名 AI 斗士</b>，它们懂得提防台缘、挑选目标并自行掌握冲撞时机。用 <b>WASD</b>/方向键移动，<b>SPACE</b>/<b>E</b> <b>冲撞</b>——或在任何设备上<b>按住</b>指针/手指转向、<b>快速点按</b>朝该方向冲撞。冲撞是一次短促突进，被撞者会被击飞（踉跄期间失去控制，所以在台缘的一记冲撞是致命的）。身体推挤是弹性又打滑的圆盘之间纯粹的刚体动量。10 秒后竞技场开始<b>收缩</b>，所以要占住中心。跌出后可以旁观 AI 打完这场混战。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Momentum">动量</span><span class="example-tag" data-i18n="tag.Zero Gravity">零重力</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/cargo-crane/?mode=3d&outline=0" aria-label="Cargo Crane Captain">
+            <img class="game-card-img" src="../../assets/posters/cargo-crane.webp" width="900" height="500" loading="lazy" decoding="async" alt="Cargo Crane Captain — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/cargo-crane/?mode=3d&outline=0" data-i18n="demo.cargo-crane.label">起重机船长</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.cargo-crane.desc">把十个箱子装到一艘<b>真正漂浮</b>的驳船上——这是启用了流体的水体，而不是静态平台。真实的 <code>PulleyJoint</code> 会在绞盘放缆时把活动配重沿导轨拉起；操控小车，然后按 <b>SPACE</b> 抓取和释放。每放下一个箱子都会改变驳船的浮力，装载不均会使它<b>倾斜</b>——倾斜过大就会倾覆。没对准甲板箱子就会沉没；撞得太狠它会<b>碎裂</b>。<b>←/→</b> 小车，<b>↑/↓</b> 绞盘，<b>R</b> 重新开始。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Buoyancy">Buoyancy</span><span class="example-tag" data-i18n="tag.PulleyJoint">PulleyJoint</span><span class="example-tag" data-i18n="tag.PivotJoint">PivotJoint</span><span class="example-tag" data-i18n="tag.Keys">Keys</span><span class="example-tag" data-i18n="tag.Game">游戏</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/sticky-builder/?mode=3d&outline=0" aria-label="Sticky Builder">
+            <img class="game-card-img" src="../../assets/posters/sticky-builder.webp" width="900" height="500" loading="lazy" decoding="async" alt="Sticky Builder — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/sticky-builder/?mode=3d&outline=0" data-i18n="demo.sticky-builder.label">黏合建造</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.sticky-builder.desc">物理建造游戏。将一个备用团块<b>拖动</b>到桁架附近并<b>松开</b>，即可用有弹性的 <b>DistanceJoint</b> 支撑（软约束——<code>stiff=false</code>）把它焊接上去。跨越宽阔的裂谷——中段的一根岩柱会有所帮助——并在备用团块用尽前到达远处平台上方的信标；连接成功后，幸存者会沿着支撑走回家。支撑会显示实时<b>应变</b>，过度拉伸时会崩断——<b>猛拽</b>一个已焊接的节点（有弹性的 <b>PivotJoint</b> 之手）即可撕开桁架并回收其团块。种子的双脚由 <b>PivotJoint</b> 锚点固定，得益于 <b>InteractionFilter</b> 分组，团块之间从不互相碰撞。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.DistanceJoint">DistanceJoint</span><span class="example-tag" data-i18n="tag.Soft Constraints">软约束</span><span class="example-tag" data-i18n="tag.Building">搭建</span><span class="example-tag" data-i18n="tag.Drag">拖动</span><span class="example-tag" data-i18n="tag.Gameplay">玩法</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/billiards/?mode=3d&outline=0" aria-label="Billiards">
+            <img class="game-card-img" src="../../assets/posters/billiards.webp" width="900" height="500" loading="lazy" decoding="async" alt="Billiards — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/billiards/?mode=3d&outline=0" data-i18n="demo.billiards.label">台球</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.billiards.desc">俯视台球——零重力台面。从母球向后<b>拖动</b>以瞄准，<b>松开</b>即可开球。高弹性的球体互相碰撞发出脆响，并带着摩擦滚向六个传感器球袋；把母球打进则算犯规。台面完全静止前锁定输入。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Billiards">Billiards</span><span class="example-tag" data-i18n="tag.Sensor">传感器</span><span class="example-tag" data-i18n="tag.Material">Material</span><span class="example-tag" data-i18n="tag.Drag">拖动</span><span class="example-tag" data-i18n="tag.TopDown">TopDown</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/tiltrun/?mode=3d&outline=0" aria-label="Tilt-Run Marble Maze">
+            <img class="game-card-img" src="../../assets/posters/tiltrun.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tilt-Run Marble Maze — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/tiltrun/?mode=3d&outline=0" data-i18n="demo.tiltrun.label">倾斜滚珠迷宫</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tiltrun.desc">俯视倾斜迷宫。将<b>指针</b>移离迷宫中心即可倾斜世界——重力指向光标。滚动滚珠穿过三座迷宫抵达绿色目标，同时收集金币并避开红色深坑。展示动态的 <code>space.gravity</code>、传感器驱动的游戏状态，以及 <code>buildTilemapBody</code> 辅助函数。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Tilemap">Tilemap</span><span class="example-tag" data-i18n="tag.Sensor">传感器</span><span class="example-tag" data-i18n="tag.Gravity">重力</span><span class="example-tag" data-i18n="tag.Pointer">指针</span><span class="example-tag" data-i18n="tag.Game">游戏</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/brickline/?mode=3d&outline=0" aria-label="Brickline">
+            <img class="game-card-img" src="../../assets/posters/brickline.webp" width="900" height="500" loading="lazy" decoding="async" alt="Brickline — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/brickline/?mode=3d&outline=0" data-i18n="demo.brickline.label">叠砖</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.brickline.desc">尽可能叠高的街机演示。一块 <b>KINEMATIC</b> 砖块在塔顶上方滑动；<b>点击 / Space</b> 会将其转为 <b>DYNAMIC</b>，让它落到堆叠上。稳定性完全来自刚体接触和高 <b>Material.staticFriction</b>。砖块偏离中心太远，塔就会倒塌。摄像机跟随堆叠顶部上移。展示<b>运动学 → 动态转换</b>、仅靠摩擦的堆叠，以及质心倾覆。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Stacking">堆叠</span><span class="example-tag" data-i18n="tag.Friction">摩擦</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Click">点击</span><span class="example-tag" data-i18n="tag.Gameplay">玩法</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/wyrm/?mode=3d&outline=0" aria-label="Wyrm">
+            <img class="game-card-img" src="../../assets/posters/wyrm.webp" width="900" height="500" loading="lazy" decoding="async" alt="Wyrm — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/wyrm/?mode=3d&outline=0" data-i18n="demo.wyrm.label">飞龙</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.wyrm.desc">一款单按键的无尽跑酷。<b>按住 Space</b>（或长按）向上推进，松开则下落。由静态 <b>Polygon</b> 条带组成的隧道在玩家前方生成，并在身后被剔除。抓取 <b>★ 星星</b>得分——它们是仅作传感器的刚体，拾取时爆开成动态碎片（碎片会与墙壁碰撞，但通过碰撞过滤穿过你）。展示逐帧的 <b>body.force</b>、坠毁时的摄像机跟随 + 抖动、视差背景、程序化生成/清理，以及 <b>SENSOR</b> 模式的 InteractionListener。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Procedural">程序化生成</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/minigolf/?mode=3d&outline=0" aria-label="Minigolf">
+            <img class="game-card-img" src="../../assets/posters/minigolf.webp" width="900" height="500" loading="lazy" decoding="async" alt="Minigolf — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/minigolf/?mode=3d&outline=0" data-i18n="demo.minigolf.label">迷你高尔夫</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.minigolf.desc">俯视迷你高尔夫——零重力台面，从球处<b>拖动</b>瞄准，<b>松开</b>推杆。斜坡区（传感器驱动的力场）会让击球弯曲；球洞是一个 <code>TriggerZone</code> 传感器。按 <b>R</b> 可重打此洞。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Sensor">传感器</span><span class="example-tag" data-i18n="tag.Material">Material</span><span class="example-tag" data-i18n="tag.TriggerZone">TriggerZone</span><span class="example-tag" data-i18n="tag.Drag">拖动</span><span class="example-tag" data-i18n="tag.TopDown">TopDown</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/floppy-fists/?mode=3d&outline=0" aria-label="Floppy Fists">
+            <img class="game-card-img" src="../../assets/posters/floppy-fists.webp" width="900" height="500" loading="lazy" decoding="async" alt="Floppy Fists — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/floppy-fists/?mode=3d&outline=0" data-i18n="demo.floppy-fists.label">软绵拳击</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.floppy-fists.desc">两个布娃娃斗士在小小的擂台上格斗——把对手击晕（HP ≤ 0）或打下平台。四肢通过每帧改变 <code>AngleJoint</code> 目标角度来驱动（无需 <code>MotorJoint</code> 的类电机控制）；<code>InteractionListener</code> 根据接触冲量统计伤害。<b>P1</b>：<code>A/D</code> 移动，<code>W</code> 跳跃，<code>F</code> 刺拳，<code>G</code> 踢腿，<code>H</code> 重拳。<b>P2</b>：方向键 + <code>J/K/L</code>，或由 AI 操控。按 <code>T</code> 切换 AI/双人，<code>R</code> 重新开始，<code>I</code> 查看帮助。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Ragdoll">布娃娃</span><span class="example-tag" data-i18n="tag.AngleJoint">AngleJoint</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.AI">AI</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/destructible-arena/?mode=3d&outline=0" aria-label="Destructible Arena">
+            <img class="game-card-img" src="../../assets/posters/destructible-arena.webp" width="900" height="500" loading="lazy" decoding="async" alt="Destructible Arena — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/destructible-arena/?mode=3d&outline=0" data-i18n="demo.destructible-arena.label">可破坏竞技场</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.destructible-arena.desc">由 <b>buildTilemapBody</b> + <b>CharacterController</b> + 两个 <b>ParticleEmitter</b> + <b>fractureBody</b> 构建的侧视射击游戏。竞技场宽度为画布的 3 倍；摄像机跟随玩家，并在每次击杀时抖动。<b>WASD/方向键</b>移动，<b>Space</b> 跳跃。在半空中<b>贴住墙壁</b>可贴墙下滑，按 <b>Space</b> 可蹬墙跳。向上穿过紫色的单向平台；青色平台作为运动学刚体来回滑行。按住<b>鼠标</b>向光标方向开火。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.ParticleEmitter">ParticleEmitter</span><span class="example-tag" data-i18n="tag.fractureBody">fractureBody</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Tilemap">Tilemap</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/planet-platformer/?mode=3d&outline=0" aria-label="Planet Platformer">
+            <img class="game-card-img" src="../../assets/posters/planet-platformer.webp" width="900" height="500" loading="lazy" decoding="async" alt="Planet Platformer — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/planet-platformer/?mode=3d&outline=0" data-i18n="demo.planet-platformer.label">行星平台跳跃</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.planet-platformer.desc">在八颗小行星之间行走——每颗都有自己的 <b>RadialGravityField</b>，包括东侧一个巨大的歌利亚星。重力指向最近的行星，<b>CharacterController.down</b> 方向每帧更新，因此在任何朝向下跳跃、走斜坡和地面检测都能正常工作。摄像机跟随玩家穿越世界。收集金币，到达歌利亚星顶部的 <b>★ 星星</b>。<b>WASD/方向键</b> + <b>Space</b>。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.RadialGravityField">RadialGravityField</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Mario-Galaxy-style">Mario-Galaxy-style</span><span class="example-tag" data-i18n="tag.Pickups">拾取物</span><span class="example-tag" data-i18n="tag.Platformer">平台跳跃</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/plinko/" aria-label="Plinko">
+            <img class="game-card-img" src="../../assets/posters/plinko.webp" width="900" height="500" loading="lazy" decoding="async" alt="Plinko — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/plinko/" data-i18n="demo.plinko.label">普林克掉球</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.plinko.desc">1000 个球穿过密集交错的挡钉阵列层层落下，沉入卡槽，再循环回到顶部。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Bouncy">Bouncy</span><span class="example-tag" data-i18n="tag.Static shapes">静态形状</span><span class="example-tag" data-i18n="tag.Particles">粒子</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/tower-defense/?mode=3d&outline=0" aria-label="Tower Defense">
+            <img class="game-card-img" src="../../assets/posters/tower-defense.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tower Defense — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/tower-defense/?mode=3d&outline=0" data-i18n="demo.tower-defense.label">塔防</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tower-defense.desc">建造<b>弓箭手</b>（单体）和<b>炸弹</b>（AOE + 击退）塔来保卫基地。敌人是物理刚体——炸弹会把它们撞向墙壁，而它们会奋力挤回赛道。<b>点击</b>空位建造，<b>点击</b>塔进行升级。敌人 HP 随波次提升；每第 3 波带来快速奔跑者，每第 5 波是每次涌入 5 个的大群。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.AOE">AOE</span><span class="example-tag" data-i18n="tag.Impulse">Impulse</span><span class="example-tag" data-i18n="tag.Upgrades">升级</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/portals/?mode=3d&outline=0" aria-label="Portals">
+            <img class="game-card-img" src="../../assets/posters/portals.webp" width="900" height="500" loading="lazy" decoding="async" alt="Portals — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/portals/?mode=3d&outline=0" data-i18n="demo.portals.label">传送门</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.portals.desc">使用 <code>UserConstraint</code> 和回调实现的传送门物理。将形状<b>拖入</b>传送门——它们会从相连的另一端出现。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.UserConstraint">UserConstraint</span><span class="example-tag" data-i18n="tag.Callback">Callback</span><span class="example-tag" data-i18n="tag.Sensor">传感器</span><span class="example-tag" data-i18n="tag.Portal">Portal</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/slingshot/?mode=3d&outline=0" aria-label="Slingshot Siege">
+            <img class="game-card-img" src="../../assets/posters/slingshot.webp" width="900" height="500" loading="lazy" decoding="async" alt="Slingshot Siege — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/slingshot/?mode=3d&outline=0" data-i18n="demo.slingshot.label">弹弓攻城</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.slingshot.desc">从弹弓向后<b>拖动</b>瞄准，<b>松开</b>发射！球撞上城堡时会将其击碎。<b>点击</b>弹弓可重新装填。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Destruction">破坏</span><span class="example-tag" data-i18n="tag.Voronoi">Voronoi</span><span class="example-tag" data-i18n="tag.Slingshot">Slingshot</span><span class="example-tag" data-i18n="tag.Click">点击</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/character-controller/?mode=3d&outline=0" aria-label="Character Controller">
+            <img class="game-card-img" src="../../assets/posters/character-controller.webp" width="900" height="500" loading="lazy" decoding="async" alt="Character Controller — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/character-controller/?mode=3d&outline=0" data-i18n="demo.character-controller.label">角色控制器</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.character-controller.desc">WASD/方向键移动，<b>Space</b> 跳跃。特性：斜坡、单向平台、移动平台、贴墙下滑、蹬墙跳、冰面、土狼时间。使用内置的 <code>CharacterController</code> 类配合动态刚体物理。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Platformer">平台跳跃</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.One-Way">One-Way</span><span class="example-tag" data-i18n="tag.Slope">斜坡</span><span class="example-tag" data-i18n="tag.Wall-Jump">Wall-Jump</span><span class="example-tag" data-i18n="tag.Ice">冰面</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/pinball/" aria-label="Pinball">
+            <img class="game-card-img" src="../../assets/posters/pinball.webp" width="900" height="500" loading="lazy" decoding="async" alt="Pinball — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/pinball/" data-i18n="demo.pinball.label">弹珠台</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.pinball.desc">带有非对称保险杠、弹弓、挡钉、发射通道和一个来回摆动挡块的弹珠台。左/右方向键或 A/D 拨动挡板。移动端点击左/右半边拨动挡板。点击上部区域可生成球。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Circle">Circle</span><span class="example-tag" data-i18n="tag.Restitution">Restitution</span><span class="example-tag" data-i18n="tag.Bumpers">Bumpers</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/car-topdown/" aria-label="2D Car — Top Down">
+            <img class="game-card-img" src="../../assets/posters/car-topdown.webp" width="900" height="500" loading="lazy" decoding="async" alt="2D Car — Top Down — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/car-topdown/" data-i18n="demo.car-topdown.label">2D 汽车 — 俯视图</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.car-topdown.desc">在蜿蜒拉力赛道上采用街机物理的俯视竞速汽车。使用 <b>↑ ↓ ← →</b> 方向键（或 WASD），<b>Space</b> 手刹/漂移，<b>Shift</b> 刹车。触屏时：点按前/后油门/刹车，点按左/右转向。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Top-Down">Top-Down</span><span class="example-tag" data-i18n="tag.Zero Gravity">零重力</span><span class="example-tag" data-i18n="tag.Friction">摩擦</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Camera Shake">摄像机抖动</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/tracked-vehicle/?mode=3d&outline=0" aria-label="Tracked Vehicle">
+            <img class="game-card-img" src="../../assets/posters/tracked-vehicle.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tracked Vehicle — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/tracked-vehicle/?mode=3d&outline=0" data-i18n="demo.tracked-vehicle.label">履带车辆</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tracked-vehicle.desc">带炮塔的坦克式履带车辆。用 <b>← →</b>（或 A/D）驾驶，用 <b>↑ ↓</b>（或 W/S）瞄准，用 <b>Space</b> 开火。炮弹会炸开可破坏地形。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.PivotJoint">PivotJoint</span><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span><span class="example-tag" data-i18n="tag.InteractionFilter">InteractionFilter</span><span class="example-tag" data-i18n="tag.Chain">链条</span><span class="example-tag" data-i18n="tag.MarchingSquares">MarchingSquares</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/car-sideview/" aria-label="2D Car — Side View">
+            <img class="game-card-img" src="../../assets/posters/car-sideview.webp" width="900" height="500" loading="lazy" decoding="async" alt="2D Car — Side View — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">玩法切片</span><a href="../../zh/examples/car-sideview/" data-i18n="demo.car-sideview.label">2D 汽车 — 侧视图</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.car-sideview.desc">一辆在起伏地形上带有 SpringJoint 悬挂的汽车。使用 <b>← →</b> 方向键或点按左/右来驾驶。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.SpringJoint">SpringJoint</span><span class="example-tag" data-i18n="tag.LineJoint">LineJoint</span><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="shipped">
+    <div class="container">
+      <h2 data-i18n="games.shipped.heading">已发布游戏</h2>
+      <p class="section-desc" data-i18n="games.shipped.desc">在生产环境中运行 nape-js 物理的已发布作品——在浏览器中试玩，或获取原生版本。</p>
+      <div class="showcase-grid">
+        <a class="showcase-card" href="https://loaf.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'life_of_a_fish'})">
+          <span class="showcase-shot">
+            <img src="../../assets/showcase/loaf.webp" width="960" height="540" loading="lazy" decoding="async" alt="Life of a Fish —— 珊瑚礁上方的体素小鱼" data-i18n-attr="alt:showcase.loaf.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Life of a Fish</span>
+            <span class="showcase-text" data-i18n="showcase.loaf.desc">像素风水下冒险：在洞穴中游动、冲刺与闪避，包含多阶段 Boss 战和每日下潜挑战。</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">网页试玩</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">loaf.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://mxdash.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'mx_dash'})">
+          <span class="showcase-shot">
+            <img src="../../assets/showcase/mx-dash.webp" width="960" height="540" loading="lazy" decoding="async" alt="MX Dash —— 体素越野摩托车手跃过起伏地形" data-i18n-attr="alt:showcase.mxdash.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">MX Dash</span>
+            <span class="showcase-text" data-i18n="showcase.mxdash.desc">侧视越野摩托街机：带真实悬挂的关节骑手、大跳、空翻与慢动作摔车回放。</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">网页试玩</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">mxdash.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://dustkings.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'dust_kings'})">
+          <span class="showcase-shot">
+            <img src="../../assets/showcase/dust-kings.webp" width="960" height="540" loading="lazy" decoding="async" alt="Dust Kings —— 体素怪物卡车在泥土赛道上揚起尘土" data-i18n-attr="alt:showcase.dustkings.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Dust Kings</span>
+            <span class="showcase-text" data-i18n="showcase.dustkings.desc">体素怪物卡车竞速：手工搭建的泥土赛道、快速比赛与每日挑战。目前处于封闭测试。</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag" data-i18n="showcase.tag.beta">测试版</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">网页试玩</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">dustkings.newkrok.com &rarr;</span>
+          </span>
+        </a>
+      </div>
+      <p class="showcase-foot" data-i18n-html="showcase.foot">用 nape-js 做了作品？<a href="https://github.com/NewKrok/nape-js/issues/new">提交一个 issue</a>，就有机会出现在这里。</p>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../zh/" data-i18n="footer.home">首页</a>
+        &bull;
+        <a href="../../zh/examples/" data-i18n="nav.examples">示例</a>
+        &bull;
+        <a href="../../zh/games/" data-i18n="nav.games">游戏</a>
+        &bull;
+        <a href="../../guides/" data-i18n="nav.guides">指南</a>
+        &bull;
+        <a href="../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">API 文档</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">基于 <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> 的原始 Haxe 引擎 • JS 移植由 <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> 搭建 • TypeScript 重写及持续开发由 <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a> 负责</p>
+      <p data-i18n="footer.license">MIT 许可证</p>
+    </div>
+  </footer>
+  <script type="module">
+    import { initI18n } from "../../i18n/i18n.js?v=3.42.1";
+    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.42.1";
+    await initI18n();
+    mountLangSwitcher();
+  </script>
+  <script src="../../site-header.js?v=3.42.1" defer></script>
+  <script type="module" src="../../games.js?v=3.42.1"></script>
+</body>
+</html>

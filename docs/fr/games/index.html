@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="nape-prerendered" content="fr" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeux navigateur sur un moteur physique 2D — Jeux nape-js</title>
+  <meta name="description" content="Des démos de jeu complètes et jouables sur nape-js — combats d'action, shooters, courses, football, plateformes — chacune dans un fichier TypeScript avec le code source, plus les jeux publiés qui tournent sur le moteur." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="games.meta.title" />
+  <meta name="nape-i18n-title-vars" content="" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/fr/games/" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Games built on nape-js",
+    "description": "Complete playable game demos built on nape-js — action battles, shooters, racers, soccer, platformers — each in one TypeScript file with source, plus the shipped games running on the engine.",
+    "url": "https://napejs.org/games/",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "nape-js",
+      "url": "https://napejs.org/"
+    },
+    "hasPart": [
+      {
+        "@type": "VideoGame",
+        "name": "Blade Waltz",
+        "url": "https://napejs.org/examples/blade-waltz/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Shard Rush",
+        "url": "https://napejs.org/examples/shard-rush/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Jungle Strike",
+        "url": "https://napejs.org/examples/jungle-strike/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Raft Rapids",
+        "url": "https://napejs.org/examples/raft-rapids/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Kickoff",
+        "url": "https://napejs.org/examples/kickoff/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Crash Test Hero",
+        "url": "https://napejs.org/examples/crash-test-hero/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Sky Hook",
+        "url": "https://napejs.org/examples/sky-hook/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Ragdoll Royale",
+        "url": "https://napejs.org/examples/ragdoll-royale/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Escape Run",
+        "url": "https://napejs.org/examples/escape-run/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Capture the Flag",
+        "url": "https://napejs.org/examples/capture-the-flag/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Dodgeball",
+        "url": "https://napejs.org/examples/dodgeball/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Standoff",
+        "url": "https://napejs.org/examples/standoff/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Arena Defense",
+        "url": "https://napejs.org/examples/arena-defense/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "MOBA-lite",
+        "url": "https://napejs.org/examples/moba-lite/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Tinywheels Cup",
+        "url": "https://napejs.org/examples/tinywheels-cup/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Dirtline",
+        "url": "https://napejs.org/examples/dirtline/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Top-down Shooter",
+        "url": "https://napejs.org/examples/top-down-shooter/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Contraption Garage",
+        "url": "https://napejs.org/examples/contraption-garage/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      }
+    ]
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Jeux navigateur sur un moteur physique 2D — Jeux nape-js" />
+  <meta property="og:description" content="Des démos de jeu complètes et jouables sur nape-js — combats d'action, shooters, courses, football, plateformes — chacune dans un fichier TypeScript avec le code source, plus les jeux publiés qui tournent sur le moteur." />
+  <meta property="og:url" content="https://napejs.org/fr/games/" />
+  <meta property="og:image" content="https://napejs.org/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="Jeux navigateur sur un moteur physique 2D — Jeux nape-js" />
+  <meta name="twitter:description" content="Des démos de jeu complètes et jouables sur nape-js — combats d'action, shooters, courses, football, plateformes — chacune dans un fichier TypeScript avec le code source, plus les jeux publiés qui tournent sur le moteur." />
+  <meta name="twitter:image" content="https://napejs.org/assets/social-card.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <!-- i18n:hreflang:start -->
+  <link rel="alternate" hreflang="en" href="https://napejs.org/games/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/games/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/games/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/games/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/games/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/games/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/games/" />
+  <!-- i18n:hreflang:end -->
+</head>
+<body>
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../fr/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explorer</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="../../fr/examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Exemples</span></a>
+            <a class="site-nav-item active" href="../../fr/games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Jeux</span></a>
+            <a class="site-nav-item" href="../../fr/showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Vitrine</span></a>
+            <a class="site-nav-item" href="../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Démo multijoueur</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item" href="../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">Référence API</span></a>
+            <a class="site-nav-item" href="../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Créer avec l'IA</span></a>
+            <a class="site-nav-item" href="../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt pour agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+      </nav>
+      <div class="site-header-actions">
+        <span class="lang-switcher" id="langSwitcher"></span>
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <header class="page-hero">
+    <div class="container">
+      <a href="../../fr/" class="back-link" data-i18n="games.back">← Retour à l'accueil</a>
+      <h1 data-i18n="games.heading">Jeux construits sur nape-js</h1>
+      <p class="page-hero-intro" data-i18n="games.intro">D'une simple mécanique à un titre publié : chaque jeu ci-dessous tourne sur le même moteur physique 2D open source. Jouez dans le navigateur, puis ouvrez le code.</p>
+      <nav class="proof-strip" aria-label="Game tiers">
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>18</strong> <span data-i18n="home.proof.showpieces">démos de jeu complètes</span></a>
+        <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">briques de gameplay</span></a>
+        <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">titres publiés</span></a>
+      </nav>
+      <p class="page-hero-alt"><span data-i18n="games.physicsCta.lead">Vous êtes là pour la physique, pas pour les jeux ?</span> <a href="../../fr/examples/?cat=physics" data-i18n="games.physicsCta.link">Parcourez les démos techniques</a> <span data-i18n="games.physicsCta.tail">— articulations, fluides, fracture, raycasting, déterminisme.</span></p>
+    </div>
+  </header>
+  <main>
+  <section class="section" id="showpieces">
+    <div class="container">
+      <h2 data-i18n="games.showpieces.heading">Démos de jeu complètes</h2>
+      <p class="section-desc" data-i18n="games.showpieces.desc">Des jeux multi-systèmes dans un seul fichier chacun — adversaires IA, vagues, caméras, score et rigs 3D. Jouez ici ou ouvrez le code sur CodePen et StackBlitz.</p>
+      <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/blade-waltz/?mode=3d&outline=0" aria-label="Blade Waltz">
+            <img class="game-card-img" src="../../assets/posters/blade-waltz.webp" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">Un <b>défi de combat d'action à la Tales</b> sur une arène circulaire : dix vagues de monstres, un groupe de quatre, et vous ne contrôlez que l'épéiste. Courez librement, enchaînez des <b>combos de 3 coups</b> (<b>J</b> / clic), dépensez des TP en <b>artes</b> (<b>K</b> — neutre pour l'onde au sol Demon Fang, vers la cible pour la ruée Sonic Thrust, à l'opposé pour le Tiger Blade qui projette en l'air), <b>gardez</b> avec <b>L</b> et déchaînez l'<b>Arte Mystique</b> avec <b>ESPACE</b> quand la jauge d'Overlimit se remplit à force de donner et d'encaisser des coups. Les coups normaux rendent des TP ; la garde ne couvre que votre front ; golems de pierre et boss encaissent les coups isolés. Votre <b>groupe piloté par l'IA</b> tient ses rôles : la lancière cogne et enchaîne les estocades, l'archère garde ses distances et tire des salves, la sage soigne, ranime et lance feu et pierre avec des <b>temps d'incantation interruptibles</b>. La dixième vague est un <b>drake</b> à griffes, coup de queue tournoyant, souffle de feu, rugissement et invocation de feux follets. Chaque combattant est un palet dynamique dans un anneau de segments de mur statiques ; le corps à corps est résolu par arcs, tandis que flèches, carreaux, boules de feu et ondes sont des <b>corps capteurs</b> livrés par des <code>InteractionListener</code>, le filtrage des camps se faisant par masques de capteur. En <b>3D</b>, une caméra de poursuite latérale cadre la ligne joueur–cible au-dessus d'une arène de pierre dans une prairie, avec des figurines low-poly articulées pour tous les combattants.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/shard-rush/?mode=3d&outline=0" aria-label="Shard Rush">
+            <img class="game-card-img" src="../../assets/posters/shard-rush.webp" width="900" height="500" loading="lazy" decoding="async" alt="Shard Rush — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc"><b>Arène de héros</b> 3v3 vue de dessus. Une mine au centre crache un <b>éclat</b> toutes les quelques secondes — portez-en <b>10</b> à l'échelle de l'équipe et survivez à un <b>compte à rebours de 15 secondes</b> pour gagner. Mourez et vous lâchez tout ce que vous tenez. Choisissez l'un des <b>six héros</b> sur l'écran de sélection — tireur au fusil, pistolero, lutteur, barde, lanceur, ingénieur — chacun avec sa propre attaque, <b>3 munitions</b> qui se rechargent avec le temps, et une <b>SUPER</b> qui se charge à chaque coup au but : une décharge qui brise les murs, une volée perforante, un saut-écrasement, un accord soignant, un barrage de fioles, une tourelle automatique. Les <b>buissons</b> vous cachent jusqu'à ce que vous attaquiez ou que quelqu'un s'approche ; les <b>caisses</b> peuvent être éclatées. Déplacez-vous avec <b>WASD</b>, <b>visez à la souris</b> et cliquez pour attaquer, <b>E</b> attaque automatiquement l'ennemi le plus proche, <b>SPACE</b>/<b>Q</b> déclenche la super — ou, sur n'importe quel appareil, <b>maintenez</b> pour diriger, <b>tapez</b> pour attaquer et tapez le bouton SUPER. Deux <b>coéquipiers IA</b> et trois adversaires IA partagent le même cerveau conscient de son kit : bandes de portée, couverture, furtivité, repli pour se soigner, contrôle de la mine et timing des supers. Chaque projectile est un <b>corps capteur</b> dont les impacts passent par des <code>InteractionListener</code>, le filtrage d'équipe étant assuré par les groupes et masques de capteurs.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/jungle-strike/?mode=3d&outline=0" aria-label="Jungle Strike">
+            <img class="game-card-img" src="../../assets/posters/jungle-strike.webp" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">Jungle Strike</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">Un <b>run-and-gun façon Contra</b> sur onze écrans. Fraye-toi un chemin dans un parcours d'assaut en jungle — soldats en patrouille, <b>tourelles</b> retranchées, <b>fonceurs</b> bondissants et <b>tireurs d'élite</b> qui te visent au laser avant de tirer — jusqu'à un <b>boss d'emplacement</b> à trois canons qui n'encaisse de dégâts que sur son cœur incandescent, télégraphie chaque salve et alterne roquettes et mortiers une fois en surrégime. Le niveau repose sur un <b>CharacterController</b> au-dessus d'un terrain conçu à la main : plateformes de canopée à sens unique, un <b>pont de corde qui s'effondre</b>, une rivière franchie de pierre en pierre, puis une tranchée, une ascension de tour et une baie inondée. Ramasse les bonus <b>SPREAD</b>, <b>MACHINE</b> et <b>LASER</b> — la mort te fait perdre ton arme et te renvoie au dernier des onze <b>points de contrôle</b>. Déplace-toi avec <b>WASD</b>/flèches, <b>SPACE</b> pour sauter, <b>S</b>/<b>↓</b> pour t'accroupir, et <b>vise librement à la souris</b> — maintiens pour tirer. En <b>mode 3D</b>, chaque combattant est une figurine low-poly procédurale dont le bras armé vise indépendamment.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.AI">IA</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/raft-rapids/?mode=3d&outline=0" aria-label="Raft Rapids">
+            <img class="game-card-img" src="../../assets/posters/raft-rapids.webp" width="900" height="500" loading="lazy" decoding="async" alt="Raft Rapids — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/raft-rapids/?mode=3d&outline=0" data-i18n="demo.raft-rapids.label">Radeau des rapides</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.raft-rapids.desc">Course de passager en radeau sur une vraie <b>flottabilité des fluides</b>. Dans la baie de chargement, <b>cliquez</b> pour poser des tonneaux flottants, des nœuds de pont et des voiles qui prennent le vent, puis <b>glissez de pièce en pièce</b> pour les relier par des tiges élastiques. Appuyez sur <b>Lancer</b> : le radeau plonge, la grue descend un <b>passager ragdoll</b> plus dense que l'eau — par-dessus bord il coule et la course est perdue — et le courant emporte tout le long d'une rivière de quatre écrans : un <b>escalier de trois cascades</b>, chacune plus haute que la précédente, avec des slaloms de rochers et des biefs accélérés entre elles, jusqu'au quai de livraison. Le passager <b>se cramponne</b> via une liaison cassable : il encaisse les bosses du slalom, mais une grande chute arrache sa prise et il bascule ; et si le courant ramène le radeau sous lui, il se raccroche. Les tiges sont des <b>DistanceJoint</b>s souples à contrainte en direct qui cassent sur les chocs durs, et les voiles tirent vers un <b>vent arrière en rafales</b> tant qu'elles restent sèches. Une fois lancée, la course se déroule <b>sans intervention</b> : le radeau que vous avez conçu y arrive, ou pas. <b>Espace</b> lance, <b>1–4</b> choisit l'outil, <b>R</b> réinitialise.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Buoyancy">Buoyancy</span><span class="example-tag" data-i18n="tag.DistanceJoint">DistanceJoint</span><span class="example-tag" data-i18n="tag.Ragdoll">Ragdoll</span><span class="example-tag" data-i18n="tag.Building">Construction</span><span class="example-tag" data-i18n="tag.Drag">Glisser</span><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/kickoff/?mode=3d&outline=0" aria-label="Kickoff">
+            <img class="game-card-img" src="../../assets/posters/kickoff.webp" width="900" height="500" loading="lazy" decoding="async" alt="Kickoff — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/kickoff/?mode=3d&outline=0" data-i18n="demo.kickoff.label">Kickoff</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.kickoff.desc">Football d'arène 2c2 en vue de dessus. Vous et un <b>coéquipier IA</b> (bleu) affrontez deux adversaires IA sur un terrain muré, avec des cages en retrait et des poteaux ronds. Marchez sur un ballon lent pour le <b>conduire</b> au pied ; une <b>frappe</b> (<b>SPACE</b>/<b>E</b>) l'envoie dans la direction où vous regardez, et un adversaire qui chevauche votre ballon conduit peut vous le <b>tacler</b> — un tir à pleine vitesse est trop rapide pour être intercepté. Déplacez-vous avec <b>WASD</b>/flèches, maintenez <b>SHIFT</b> pour <b>sprinter</b> sur une jauge d'endurance qui se vide en quelques secondes et se recharge lentement (videz-la complètement et vous êtes essoufflé) — ou sur tout appareil <b>maintenez</b> le pointeur pour diriger (poussez-le loin pour sprinter) et <b>tapez brièvement</b> pour frapper. Les paires d'IA se répartissent dynamiquement les <b>rôles d'attaquant et de défenseur</b>, dribblent vers les coins, font des appels de soutien et gèrent leur propre endurance. Premier à 3 buts dans le <b>chrono de 2 minutes</b> — une égalité au terme va au but en or.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Momentum">Quantité de mouvement</span><span class="example-tag" data-i18n="tag.Zero Gravity">Gravité zéro</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/crash-test-hero/?mode=3d&outline=0" aria-label="Crash Test Hero">
+            <img class="game-card-img" src="../../assets/posters/crash-test-hero.webp" width="900" height="500" loading="lazy" decoding="async" alt="Crash Test Hero — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/crash-test-hero/?mode=3d&outline=0" data-i18n="demo.crash-test-hero.label">Héros du crash-test</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.crash-test-hero.desc">Score de crash façon Turbo Dismount. Posez le mannequin ragdoll sur son chariot en <b>faisant glisser</b> n'importe quelle partie du corps, puis <b>maintenez Espace</b> (ou le bouton LAUNCH) pour charger la jauge de puissance en va-et-vient et relâchez pour le lancer — en bas de la rampe, par-dessus la fosse, dans l'escalier puis dans le trampoline, la roue à pales en rotation et le mur de caisses. Les dégâts SONT le score : chaque contact violent rapporte des points selon le <code>totalContactsImpulse</code> mesuré (coups à la tête ×3), et la ceinture, le cou, les épaules et les hanches sont de vraies <b>contraintes cassables</b> (<code>maxForce</code> + <code>breakUnderForce</code>) qui cèdent pour des points bonus via un <code>ConstraintListener(BREAK)</code>. Les gros impacts figent le temps et secouent la caméra. Pendant la descente, le temps se fige presque — appuyez à nouveau sur <b>Espace</b> : le mannequin est <b>éjecté</b> selon l'angle de la flèche de visée qui balaie à toute vitesse — façon FlatOut — droit dans le parcours d'obstacles : quilles, boules de démolition, un champ de rotors tournants que seule une belle trajectoire peut atteindre, une bascule et le mur de caisses. Après l'éjection, Espace fait gesticuler de panique (3 charges). <b>R</b> relance.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Ragdoll">Ragdoll</span><span class="example-tag" data-i18n="tag.Breakable">Cassable</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Drag">Glisser</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/sky-hook/?mode=3d&outline=0" aria-label="Sky Hook">
+            <img class="game-card-img" src="../../assets/posters/sky-hook.webp" width="900" height="500" loading="lazy" decoding="async" alt="Sky Hook — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/sky-hook/?mode=3d&outline=0" data-i18n="demo.sky-hook.label">Crochet céleste</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.sky-hook.desc">Évacuation médicale en hélicoptère avec des ragdolls suspendus — <b>trois patients</b> sont bloqués à travers le canyon, la plateforme de l'hôpital est au centre. Volez avec les <b>flèches/WASD</b> (sur tactile, maintenez le pointeur pour diriger), amenez le crochet de la corde à maillons près d'un patient et appuyez sur <b>Espace</b> pour le treuiller dans le harnais — puis transportez-le, se balançant sous l'hélicoptère, devant des tours, un passage sous un pont, des blocs suspendus au ciel, des plateformes en patrouille, des boules de démolition et des <b>rotors tournants en X / I / croix</b> jusqu'à l'hôpital. Cous, épaules et hanches sont de vraies <b>contraintes cassables</b> (<code>maxForce</code> + <code>breakUnderForce</code>) — percutez un patient et des membres s'arrachent ; tirez assez fort et le <b>harnais se rompt</b>. Chaque contact violent entame la <b>coque</b> de l'hélicoptère via le <code>totalContactsImpulse</code> mesuré — à zéro, il tombe du ciel. <b>Espace</b> relâche, <b>R</b> redémarre.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Ragdoll">Ragdoll</span><span class="example-tag" data-i18n="tag.Breakable">Cassable</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Keyboard">Keyboard</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/ragdoll-royale/?mode=3d&outline=0" aria-label="Ragdoll Royale">
+            <img class="game-card-img" src="../../assets/posters/ragdoll-royale.webp" width="900" height="500" loading="lazy" decoding="async" alt="Ragdoll Royale — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/ragdoll-royale/?mode=3d&outline=0" data-i18n="demo.ragdoll-royale.label">Ragdoll Royale</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.ragdoll-royale.desc">Battle royale en mode spectateur avec <b>50 pantins numérotés</b> au garde-à-vous sur cinq niveaux. Le monde retient son souffle jusqu'à ta seule décision (clique sur un pantin pour parier sur lui, <b>Espace</b> choisit au hasard) — ensuite un programme de dangers seedé dévore l'arène : jets de <b>geyser</b> télégraphiés, <b>canons à boulets</b> qui montent et descendent le long des murs, des <b>chutes de pierres</b> depuis des trappes de plafond télégraphiées, plateformes arrachées sous les pieds de tous, <b>rotors cinématiques</b> qui s'inversent au hasard tout en parcourant leurs arbres, et un sol qui <b>s'effondre dans un ordre aléatoire</b> dans le vide. Les dégâts sont mesurés, pas scriptés — les contacts durs contusionnent via <code>totalContactsImpulse</code>, les cous/épaules/hanches sont de vraies <b>contraintes cassables</b> qui s'arrachent sous les secousses violentes, et 0 % = KO. Le dernier pantin en jeu gagne ; la bannière note ton pari selon le classement. Un <code>InteractionGroup</code> par pantin permet à 500 pièces de collisionner entre elles mais jamais avec elles-mêmes. Chaque manche est reseedée — <b>R</b> relance.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Ragdoll">Ragdoll</span><span class="example-tag" data-i18n="tag.Breakable">Cassable</span><span class="example-tag" data-i18n="tag.Chaos">Chaos</span><span class="example-tag" data-i18n="tag.Destruction">Destruction</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/escape-run/?mode=3d&outline=0" aria-label="Escape Run">
+            <img class="game-card-img" src="../../assets/posters/escape-run.webp" width="900" height="500" loading="lazy" decoding="async" alt="Escape Run — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/escape-run/?mode=3d&outline=0" data-i18n="demo.escape-run.label">Course d'évasion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.escape-run.desc">Hommage au genre des <b>cartes d'évasion</b> de Warcraft 3 (<i>Run Kitty Run</i> et consorts) : un seul contact tue, les checkpoints sont des cercles de pouvoir, les morts sont illimitées — seul le chronomètre vous juge. La porte de sortie réclame <b>trois éclats de clé</b>, chacun planqué à l'écart de la ligne rapide dans une section piégée : impossible de boucler le circuit d'une seule traite. Slalomez entre les lames à contretemps du <b>Hall des Patrouilles</b>, où rôde aussi un traqueur, sprintez sous les herses cadencées du <b>Couloir des Portes</b> entre les pointes qui jaillissent du sol et les dalles qui s'effondrent si vous hésitez dessus, dérivez sur l'<b>Ascension Gelée</b> sans frottement, puis enfilez la <b>Rangée des Broyeurs</b>, où des pistons cinématiques vous poussent dans la lave — ou vous écrasent net si vous laissez l’un se refermer sur vous. Déplacement avec <b>WASD</b>/flèches — ou <b>maintenez</b> le pointeur sur n'importe quel appareil. <b>R</b> relance la course. Les patrouilles sont des corps cinématiques purement capteurs sur des trajectoires analytiques, les portes et les pointes entrent et sortent du Space, les pistons poussent avec de vrais contacts cinématiques, les traqueurs vous visent dans leur cercle d'agression mais sont plus lents que vous, et la glace n'est qu'un lerp de direction plus faible — un <code>InteractionListener</code> par règle de jeu.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Sensor">Capteur</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span><span class="example-tag" data-i18n="tag.Maze">Maze</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/capture-the-flag/?mode=3d&outline=0" aria-label="Capture the Flag">
+            <img class="game-card-img" src="../../assets/posters/capture-the-flag.webp" width="900" height="500" loading="lazy" decoding="async" alt="Capture the Flag — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/capture-the-flag/?mode=3d&outline=0" data-i18n="demo.capture-the-flag.label">Capture de drapeau</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.capture-the-flag.desc">Capture de drapeau 3v3 en vue du dessus. Foncez dans le drapeau ennemi pour le <b>voler</b>, puis rapportez-le dans le cercle de votre propre base — mais la capture ne compte que si votre <b>propre drapeau est à la maison</b> : il faut donc défendre. Le <b>dash</b> (<b>SPACE</b>/<b>E</b>, ou un <b>tap rapide</b>) sert à la fois de tacle et de fuite : percuter un adversaire l'étourdit d'une vraie poussée d'inertie et <b>fait toujours lâcher un drapeau porté</b> ; un drapeau lâché glisse, clignote et rentre seul au bout de 10 s si personne ne le réclame — le contact de votre équipe le renvoie instantanément. Les <b>blocs de couverture</b> du milieu de terrain transforment les poursuites rectilignes en duels de virages. Déplacez-vous avec <b>WASD</b>/flèches, maintenez <b>SHIFT</b> pour <b>sprinter</b> sur une jauge d'endurance qui se vide en quelques secondes et se recharge lentement (à sec, vous êtes essoufflé ; le porteur court un peu alourdi) — ou sur n'importe quel appareil, <b>maintenez</b> le pointeur pour vous diriger (poussez-le loin pour sprinter) et <b>tapez</b> pour le dash. Chaque IA tire sa propre vitesse et son agressivité et joue un rôle vivant — <b>pillard, intercepteur du milieu ou gardien de drapeau façon goal</b> — : elle poursuit les porteurs, escorte le vôtre et fonce sur les drapeaux perdus. Le premier à 3 captures dans le <b>temps de 2:30</b> l'emporte ; une égalité à la fin se joue en mort subite, où même les gardiens quittent leur poste pour piller.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Momentum">Quantité de mouvement</span><span class="example-tag" data-i18n="tag.Zero Gravity">Gravité zéro</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/dodgeball/?mode=3d&outline=0" aria-label="Dodgeball">
+            <img class="game-card-img" src="../../assets/posters/dodgeball.webp" width="900" height="500" loading="lazy" decoding="async" alt="Dodgeball — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/dodgeball/?mode=3d&outline=0" data-i18n="demo.dodgeball.label">Ballon prisonnier</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.dodgeball.desc">Ballon prisonnier 3c3 en vue de dessus, au meilleur des 3 manches. La ligne centrale n'est un mur que pour les <b>joueurs</b> — une clôture filtrée par collision que les palets ne peuvent pas franchir mais que les balles survolent librement. Quatre balles démarrent sur la ligne : <b>foncez</b>, marchez sur l'une d'elles pour la <b>ramasser</b>, portez-la un instant pour l'<b>armer</b> (la règle classique du repli avant le lancer), puis <b>lancez</b> — <b>SPACE</b>/<b>E</b> vise automatiquement le rouge le plus proche, un <b>tap</b> lance exactement là où vous touchez. Une balle lancée est <b>active</b> (elle porte la couleur du lanceur) jusqu'à ce qu'elle touche un mur ou ralentisse ; une balle active qui touche un adversaire l'<b>élimine</b>. <b>Pas de réception</b> — quand une balle arrive sur vous, <b>esquivez</b>. Les munitions s'épuisent aussi : toutes les 20 s, <b>une balle libre disparaît</b> pour de bon (elle clignote d'abord), jusqu'à n'en laisser qu'une seule. Déplacez-vous avec <b>WASD</b>/flèches, maintenez <b>SHIFT</b> pour <b>sprinter</b> sur une jauge d'endurance qui se vide en quelques secondes et se recharge lentement — ou sur tout appareil <b>maintenez</b> le pointeur pour diriger (poussez-le loin pour sprinter) et <b>tapez brièvement</b> pour lancer. Chaque IA tire au sort sa propre <b>distance de réaction, capacité d'anticipation, dispersion de lancer et agressivité</b> : les rouges esquivent vos tirs en sortant latéralement de la trajectoire et anticipent les vôtres. Si vous traînez trop, à 45 s <b>la ligne tombe</b> — le corps de la clôture quitte l'espace et la manche tourne à la mêlée à bout portant. La dernière équipe debout prend la manche ; la première à 2 manches gagne.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Momentum">Quantité de mouvement</span><span class="example-tag" data-i18n="tag.Zero Gravity">Gravité zéro</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/standoff/?mode=3d&outline=0" aria-label="Standoff">
+            <img class="game-card-img" src="../../assets/posters/standoff.webp" width="900" height="500" loading="lazy" decoding="async" alt="Standoff — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/standoff/?mode=3d&outline=0" data-i18n="demo.standoff.label">Standoff</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.standoff.desc">Un roguelite en vue de dessus où l'on <b>reste immobile pour tirer</b>. Votre héros tire automatiquement sur l'ennemi le plus proche <b>uniquement à l'arrêt</b> — dès que vous bougez, l'arme se refroidit, chaque combat est donc arrêt-tir-esquive. Éliminez tous les ennemis d'une salle et <b>choisissez l'un des trois atouts permanents</b> qui s'accumulent pour toute la partie : directions de flèches supplémentaires (<b>avant</b>, <b>côté</b>, <b>arrière</b>, <b>diagonale</b>), routage (<b>perçant</b>, <b>ricochet mural</b>, <b>ricochet</b> d'ennemi à ennemi), charge (<b>tir explosif</b>, chaîne d'éclairs <b>bolt</b>, <b>gel</b>, <b>poison</b>), compagnons (orbes <b>esprit</b>) et stats (crit, dégâts, vitesse, soif de sang, dégainage rapide). Les salles nettoyées ouvrent une <b>porte de sortie</b> à mur aléatoire ; y entrer fait un fondu vers l'arène suivante. Les ennemis de <b>mêlée</b> foncent en charge, les <b>distants</b> gardent leurs distances et snipent, les <b>dasheurs</b> apparaissent par téléportation, et toutes les 5 salles se trouve un <b>boss</b> doté de fusils à pompe et d'anneaux de balles. Les salles plus profondes ajoutent des <b>dangers actifs</b> : <b>pièges à pointes</b> télégraphiés, <b>flaques de lave</b> et <b>lames rotatives</b> (barres cinématiques qui balaient l'arène et bloquent les tirs). Les ennemis abattus laissent parfois tomber un <b>cœur de soin</b> — marchez dessus quand vous êtes blessé pour vous rétablir. Déplacez-vous avec <b>WASD</b> / flèches ou le stick virtuel en bas à gauche. <b>Secousse de caméra</b> à chaque élimination, coup, piège et frappe de boss.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Camera shake">Secousse de caméra</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/arena-defense/?mode=3d&outline=0" aria-label="Arena Defense">
+            <img class="game-card-img" src="../../assets/posters/arena-defense.webp" width="900" height="500" loading="lazy" decoding="async" alt="Arena Defense — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/arena-defense/?mode=3d&outline=0" data-i18n="demo.arena-defense.label">Défense d'arène</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.arena-defense.desc">Mélange de <b>shooter en vue de dessus</b> + <b>tower defense</b> + <b>portails</b> + <b>corps destructibles</b>. Grand monde de <b>1800×1200</b> avec une <b>caméra qui suit le joueur</b>. Les ennemis entrent de chaque côté le long d'un court couloir en L et convergent vers la <b>base</b> centrale (HP 800, obstacle solide, tire automatiquement sur l'ennemi le plus proche). Les vagues suivent une <b>cadence fixe de 12s</b> — une vague lente ne retarde pas la suivante, les embouteillages font donc partie du défi. <b>WASD</b> pour se déplacer, <b>Space</b> pour l'esquive (i-frames), le tir automatique vise l'ennemi le plus proche. Entrez dans un <b>portail</b> coloré pour vous téléporter. Chaque élimination brise l'ennemi via <code>fractureBody</code> (éclats de Voronoï) accompagnée d'une courte gerbe d'étincelles d'un émetteur de particules. Types de vagues : <b>vitesse</b> (fonceurs à l'esquive), <b>soigneur</b> (impulsion verte qui soigne les alliés) et, toutes les 5, un <b>boss</b> doté d'un fusil à pompe, de mines, de sbires invoqués et d'une <b>onde de choc</b> de zone. Bonus (40% de chance de drop) : tir 2x/3x en éventail, EX explosif, RF tir rapide, HP soin, SH bouclier, <b>HM missiles à tête chercheuse</b>.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.fractureBody">fractureBody</span><span class="example-tag" data-i18n="tag.Portals">Portals</span><span class="example-tag" data-i18n="tag.ParticleEmitter">ParticleEmitter</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/moba-lite/?mode=3d&outline=0" aria-label="MOBA-lite">
+            <img class="game-card-img" src="../../assets/posters/moba-lite.webp" width="900" height="500" loading="lazy" decoding="async" alt="MOBA-lite — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/moba-lite/?mode=3d&outline=0" data-i18n="demo.moba-lite.label">MOBA-lite</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.moba-lite.desc">Ébauche sommaire de MOBA — trois voies à travers un labyrinthe d'îles triangulaires, vagues de creeps, 12 tours et deux Ancients. Déplacez-vous avec <b>WASD</b> (ou le stick virtuel en bas à gauche) ; l'auto-attaque tire sur l'ennemi le plus proche à portée. <b>Q</b> pose une <b>mine</b> de 2s qui éclate en 10 projectiles radiaux, <b>E</b> est une <b>ruée</b> avec de courtes i-frames. Gagnez de l'or + XP en tuant creeps/tours ; montez jusqu'au niveau 10. Les boutons de boutique en haut à gauche achètent <b>+3 DMG</b> ou <b>soin 50</b>. Détruisez l'Ancient rouge ★ pour gagner ; vous perdez si l'Ancient bleu tombe. La caméra suit le joueur à travers le monde de 1800×1000.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.AOE">AOE</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span><span class="example-tag" data-i18n="tag.MOBA">MOBA</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/tinywheels-cup/?mode=3d&outline=0" aria-label="Tinywheels Cup">
+            <img class="game-card-img" src="../../assets/posters/tinywheels-cup.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tinywheels Cup — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/tinywheels-cup/?mode=3d&outline=0" data-i18n="demo.tinywheels-cup.label">Coupe Tinywheels</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tinywheels-cup.desc">Course de karts en vue de dessus — vous (bleu) contre trois adversaires IA pilotés par points de passage sur un circuit fermé de trois tours. Boîtes à objets façon Mario Kart : ramassez un pad <b>?</b> pour tirer un objet aléatoire dans votre emplacement, puis <b>E</b> pour l'utiliser. <b>Champignon</b> = poussée de vitesse, <b>Éclair</b> = ralentir tous les rivaux, <b>Banane</b> = poser un piège derrière, <b>Carapace</b> = projectile vers l'avant. Méfiez-vous des barres rotatives et des balles rebondissantes — elles vous feront sortir de la trajectoire. Commandes : <b>↑ ↓ ← →</b> (ou WASD), <b>Space</b> pour freiner, <b>Shift</b> pour déraper, <b>E</b> pour utiliser un objet. Le premier à trois tours gagne.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Top-Down">Top-Down</span><span class="example-tag" data-i18n="tag.Zero Gravity">Gravité zéro</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Waypoints">Points de passage</span><span class="example-tag" data-i18n="tag.Sensor">Capteur</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Race">Course</span><span class="example-tag" data-i18n="tag.Items">Objets</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/dirtline/?mode=3d&outline=0" aria-label="Dirtline">
+            <img class="game-card-img" src="../../assets/posters/dirtline.webp" width="900" height="500" loading="lazy" decoding="async" alt="Dirtline — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/dirtline/?mode=3d&outline=0" data-i18n="demo.dirtline.label">Dirtline</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.dirtline.desc">Moto de trial en montée avec un pilote ragdoll articulé soudé au siège, sur un long parcours comportant plusieurs grands sauts. <b>→</b> / <b>D</b> pour accélérer, <b>←</b> / <b>A</b> pour reculer, <b>↑</b> / <b>W</b> pour se pencher en arrière (lever la roue avant), <b>↓</b> / <b>S</b> pour se pencher en avant (piquer du nez). Les roues en mouvement projettent des graviers physiques qui ricochent sur la piste. Faites basculer la moto ou heurtez violemment le sol et le pilote se détache et part en ragdoll. <b>R</b> ou clic pour réapparaître. Met en valeur des roues MotorJoint sur une suspension SpringJoint, un ragdoll attaché à un véhicule en mouvement, un WeldJoint qui se rompt et un ParticleEmitter réservé au terrain.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span><span class="example-tag" data-i18n="tag.SpringJoint">SpringJoint</span><span class="example-tag" data-i18n="tag.WeldJoint">WeldJoint</span><span class="example-tag" data-i18n="tag.Ragdoll">Ragdoll</span><span class="example-tag" data-i18n="tag.Vehicle">Véhicule</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Break-away">Break-away</span><span class="example-tag" data-i18n="tag.ParticleEmitter">ParticleEmitter</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/top-down-shooter/?mode=3d&outline=0" aria-label="Top-down Shooter">
+            <img class="game-card-img" src="../../assets/posters/top-down-shooter.webp" width="900" height="500" loading="lazy" decoding="async" alt="Top-down Shooter — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/top-down-shooter/?mode=3d&outline=0" data-i18n="demo.top-down-shooter.label">Shooter en vue de dessus</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.top-down-shooter.desc">Shooter de survie en vue de dessus — les ennemis affluent de 4 points d'apparition, toutes les 5 vagues se termine par un <b>boss</b> qui fonce, pose des mines et tire au fusil à pompe. Les ennemis de <b>mêlée</b> vous poursuivent en ruées, les <b>distants</b> gardent leurs distances et snipent. Déplacement : <b>WASD</b> ou stick virtuel en bas à gauche (mobile). L'<b>auto-tir</b> vise l'ennemi le plus proche ; les murs bloquent les balles. 40% de chance de drop ennemi pour des bonus de 10s : tir en éventail <b>2x</b> / <b>3x</b>, souffle de recul <b>KB</b>, balles explosives de zone <b>EX</b>, tir rapide <b>RF</b>, soin instantané <b>HP</b>.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span><span class="example-tag" data-i18n="tag.Auto-fire">Auto-fire</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/contraption-garage/?mode=3d&outline=0" aria-label="Contraption Garage">
+            <img class="game-card-img" src="../../assets/posters/contraption-garage.webp" width="900" height="500" loading="lazy" decoding="async" alt="Contraption Garage — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/contraption-garage/?mode=3d&outline=0" data-i18n="demo.contraption-garage.label">Garage à machines</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.contraption-garage.desc">Constructeur de véhicules façon Fantastic Contraption. Dans la zone de construction, <b>cliquez</b> pour placer des roues motorisées (marche à droite / à gauche) et des nœuds de châssis, puis <b>glissez de pièce en pièce</b> pour les relier avec des tiges élastiques. Appuyez sur <b>Test</b> : les tiges deviennent des <b>DistanceJoint</b>s souples, chaque roue est entraînée par un <b>MotorJoint</b> contre son châssis, et la caméra suit votre machine le long d'un parcours de trois écrans — fosse, bosses, un gouffre à ponter, un escalier et une glissade de falaise. Atteindre le drapeau soi-même ne rapporte rien : une <b>balle de cargaison</b> rose attend sur le haut plateau, et c'est ELLE qui doit atteindre le drapeau. Les jantes motorisées éjectent la balle avec un effet rétro, une simple voiture ne fait que la piétiner — essayez une roue à rotation inversée comme rouleau d'entraînement, et prévoyez assez de traction pour pousser la cargaison sur la rampe finale. Les tiges affichent leur <b>tension</b> en direct et cassent en surcharge, pendant le test vous pouvez <b>saisir</b> des pièces avec une main pivot élastique, et les pièces se chevauchent librement grâce aux groupes <b>InteractionFilter</b>. <b>Espace</b> bascule le test, <b>1–4</b> choisissent l'outil, <b>R</b> réinitialise.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span><span class="example-tag" data-i18n="tag.DistanceJoint">DistanceJoint</span><span class="example-tag" data-i18n="tag.Building">Construction</span><span class="example-tag" data-i18n="tag.Vehicle">Véhicule</span><span class="example-tag" data-i18n="tag.Drag">Glisser</span><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="slices">
+    <div class="container">
+      <h2 data-i18n="games.slices.heading">Briques de gameplay</h2>
+      <p class="section-desc" data-i18n="games.slices.desc">Des démos jouables plus petites qui isolent une mécanique — un contrôleur de personnage, un flipper, une fronde, un véhicule.</p>
+      <div class="game-grid">
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/sumo-arena/?mode=3d&outline=0" aria-label="Sumo Arena">
+            <img class="game-card-img" src="../../assets/posters/sumo-arena.webp" width="900" height="500" loading="lazy" decoding="async" alt="Sumo Arena — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/sumo-arena/?mode=3d&outline=0" data-i18n="demo.sumo-arena.label">Arène de sumo</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.sumo-arena.desc">Mêlée générale à 10 joueurs, par élimination, sur une plateforme circulaire flottante — poussez tous les autres dans le vide et restez le dernier debout. Vous contrôlez le palet bleu contre <b>9 combattants IA</b> dotés de conscience du bord, de choix de cible et de leur propre timing de charge. Déplacez-vous avec <b>WASD</b>/flèches et <b>SPACE</b>/<b>E</b> pour <b>charger</b> — ou sur tout appareil <b>maintenez</b> le pointeur/doigt pour diriger et <b>tapez brièvement</b> pour charger dans cette direction. Une charge est une courte ruée qui envoie valser quiconque elle touche (il perd le contrôle en titubant, une charge près du bord est donc fatale). Les poussées de contact sont du pur moment de corps rigide sur des palets rebondissants et glissants. Après 10 secondes, l'arène commence à <b>rétrécir</b>, jouez donc le centre. Si vous tombez, vous pouvez regarder les IA finir la bagarre.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Momentum">Quantité de mouvement</span><span class="example-tag" data-i18n="tag.Zero Gravity">Gravité zéro</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/cargo-crane/?mode=3d&outline=0" aria-label="Cargo Crane Captain">
+            <img class="game-card-img" src="../../assets/posters/cargo-crane.webp" width="900" height="500" loading="lazy" decoding="async" alt="Cargo Crane Captain — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/cargo-crane/?mode=3d&outline=0" data-i18n="demo.cargo-crane.label">Capitaine de Grue</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.cargo-crane.desc">Chargez dix caisses sur une barge qui <b>flotte vraiment</b> — un corps d'eau à fluide, pas une plateforme statique. Un vrai <code>PulleyJoint</code> hisse un contrepoids vivant le long de son rail pendant que le treuil file ; pilotez le chariot, puis <b>SPACE</b> pour saisir et relâcher. Chaque caisse posée déplace la flottabilité de la barge, une charge déséquilibrée la fait <b>gîter</b> — et trop de gîte la fait chavirer. Ratez le pont et la caisse coule ; frappez trop fort et elle <b>se brise</b>. <b>←/→</b> chariot, <b>↑/↓</b> treuil, <b>R</b> redémarrer.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Buoyancy">Buoyancy</span><span class="example-tag" data-i18n="tag.PulleyJoint">PulleyJoint</span><span class="example-tag" data-i18n="tag.PivotJoint">PivotJoint</span><span class="example-tag" data-i18n="tag.Keys">Keys</span><span class="example-tag" data-i18n="tag.Game">Jeu</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/sticky-builder/?mode=3d&outline=0" aria-label="Sticky Builder">
+            <img class="game-card-img" src="../../assets/posters/sticky-builder.webp" width="900" height="500" loading="lazy" decoding="async" alt="Sticky Builder — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/sticky-builder/?mode=3d&outline=0" data-i18n="demo.sticky-builder.label">Sticky Builder</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.sticky-builder.desc">Jeu de construction physique. <b>Glissez</b> un blob de réserve près de la structure et <b>relâchez</b> pour le souder avec des entretoises <b>DistanceJoint</b> élastiques (contraintes souples — <code>stiff=false</code>). Franchissez le large gouffre — un pilier rocheux à mi-portée aide — et atteignez la balise au-dessus de la plateforme éloignée avant que les blobs de réserve ne s'épuisent ; à la connexion, les survivants rentrent chez eux en marchant le long des entretoises. Les entretoises affichent leur <b>tension</b> en direct et cassent quand elles sont trop étirées — <b>tirez</b> sur un nœud soudé (main <b>PivotJoint</b> élastique) pour déchirer la structure et récupérer son blob. Les pieds de la graine sont épinglés par des ancres <b>PivotJoint</b>, et les blobs n'entrent jamais en collision entre eux grâce aux groupes <b>InteractionFilter</b>.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.DistanceJoint">DistanceJoint</span><span class="example-tag" data-i18n="tag.Soft Constraints">Contraintes souples</span><span class="example-tag" data-i18n="tag.Building">Construction</span><span class="example-tag" data-i18n="tag.Drag">Glisser</span><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/billiards/?mode=3d&outline=0" aria-label="Billiards">
+            <img class="game-card-img" src="../../assets/posters/billiards.webp" width="900" height="500" loading="lazy" decoding="async" alt="Billiards — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/billiards/?mode=3d&outline=0" data-i18n="demo.billiards.label">Billard</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.billiards.desc">Billard en vue de dessus — table sans gravité. <b>Glissez</b> vers l'arrière depuis la boule blanche pour viser, <b>relâchez</b> pour casser. Les boules à forte restitution s'entrechoquent et roulent avec friction vers six poches à capteur ; empocher la blanche est une faute. Les commandes sont verrouillées jusqu'à ce que la table s'immobilise.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Billiards">Billiards</span><span class="example-tag" data-i18n="tag.Sensor">Capteur</span><span class="example-tag" data-i18n="tag.Material">Material</span><span class="example-tag" data-i18n="tag.Drag">Glisser</span><span class="example-tag" data-i18n="tag.TopDown">TopDown</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/tiltrun/?mode=3d&outline=0" aria-label="Tilt-Run Marble Maze">
+            <img class="game-card-img" src="../../assets/posters/tiltrun.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tilt-Run Marble Maze — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/tiltrun/?mode=3d&outline=0" data-i18n="demo.tiltrun.label">Labyrinthe de bille à incliner</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tiltrun.desc">Labyrinthe à incliner en vue de dessus. Éloignez le <b>pointeur</b> du centre du labyrinthe pour incliner le monde — la gravité pointe vers le curseur. Faites rouler la bille à travers trois labyrinthes jusqu'à l'objectif vert tout en collectant des pièces d'or et en évitant les fosses rouges. Met en valeur la <code>space.gravity</code> dynamique, l'état de jeu piloté par capteur et l'utilitaire <code>buildTilemapBody</code>.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Tilemap">Tilemap</span><span class="example-tag" data-i18n="tag.Sensor">Capteur</span><span class="example-tag" data-i18n="tag.Gravity">Gravité</span><span class="example-tag" data-i18n="tag.Pointer">Pointeur</span><span class="example-tag" data-i18n="tag.Game">Jeu</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/brickline/?mode=3d&outline=0" aria-label="Brickline">
+            <img class="game-card-img" src="../../assets/posters/brickline.webp" width="900" height="500" loading="lazy" decoding="async" alt="Brickline — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/brickline/?mode=3d&outline=0" data-i18n="demo.brickline.label">Brickline</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.brickline.desc">Démo arcade où l'on empile le plus haut possible. Une brique <b>KINEMATIC</b> glisse au-dessus de la tour ; <b>cliquez / Space</b> pour la convertir en <b>DYNAMIC</b> afin qu'elle tombe sur la pile. La stabilité repose uniquement sur le contact des corps rigides et une forte <b>Material.staticFriction</b>. Lâchez une brique trop décentrée et la tour bascule. La caméra suit le sommet de la pile vers le haut. Met en valeur la <b>conversion kinematic → dynamic</b>, l'empilement par friction seule et le basculement lié au centre de masse.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Stacking">Empilement</span><span class="example-tag" data-i18n="tag.Friction">Friction</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Click">Clic</span><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/wyrm/?mode=3d&outline=0" aria-label="Wyrm">
+            <img class="game-card-img" src="../../assets/posters/wyrm.webp" width="900" height="500" loading="lazy" decoding="async" alt="Wyrm — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/wyrm/?mode=3d&outline=0" data-i18n="demo.wyrm.label">Wyrm</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.wyrm.desc">Un endless runner à un seul bouton. <b>Maintenez Space</b> (ou touchez et maintenez) pour propulser vers le haut, relâchez pour tomber. Le tunnel de bandes <b>Polygon</b> statiques est généré devant le joueur et éliminé derrière. Attrapez des <b>étoiles ★</b> pour marquer des points — des corps réservés aux capteurs qui éclatent en éclats dynamiques au ramassage (les éclats entrent en collision avec les murs mais vous traversent grâce aux filtres de collision). Met en valeur la <b>body.force</b> par frame, le suivi de caméra + secousse au crash, l'arrière-plan en parallaxe, l'apparition/nettoyage procédural et des InteractionListeners en mode <b>SENSOR</b>.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Procedural">Procédural</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/minigolf/?mode=3d&outline=0" aria-label="Minigolf">
+            <img class="game-card-img" src="../../assets/posters/minigolf.webp" width="900" height="500" loading="lazy" decoding="async" alt="Minigolf — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/minigolf/?mode=3d&outline=0" data-i18n="demo.minigolf.label">Minigolf</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.minigolf.desc">Minigolf en vue de dessus — table sans gravité, <b>glissez</b> depuis la balle pour viser, <b>relâchez</b> pour putter. Des zones de pente (champs de force pilotés par capteur) infléchissent votre coup ; le trou est un capteur <code>TriggerZone</code>. Appuyez sur <b>R</b> pour retenter le trou.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Sensor">Capteur</span><span class="example-tag" data-i18n="tag.Material">Material</span><span class="example-tag" data-i18n="tag.TriggerZone">TriggerZone</span><span class="example-tag" data-i18n="tag.Drag">Glisser</span><span class="example-tag" data-i18n="tag.TopDown">TopDown</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/floppy-fists/?mode=3d&outline=0" aria-label="Floppy Fists">
+            <img class="game-card-img" src="../../assets/posters/floppy-fists.webp" width="900" height="500" loading="lazy" decoding="async" alt="Floppy Fists — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/floppy-fists/?mode=3d&outline=0" data-i18n="demo.floppy-fists.label">Floppy Fists</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.floppy-fists.desc">Deux bagarreurs ragdoll s'affrontent dans un petit ring — mettez l'adversaire KO (HP ≤ 0) ou faites-le tomber de la plateforme. Les membres sont pilotés en mutant les cibles des <code>AngleJoint</code> à chaque frame (contrôle façon moteur sans <code>MotorJoint</code>) ; <code>InteractionListener</code> comptabilise les dégâts d'après l'impulsion de contact. <b>P1</b> : <code>A/D</code> pour se déplacer, <code>W</code> pour sauter, <code>F</code> jab, <code>G</code> coup de pied, <code>H</code> coup lourd. <b>P2</b> : flèches + <code>J/K/L</code>, ou IA. Appuyez sur <code>T</code> pour basculer IA/2J, <code>R</code> pour recommencer, <code>I</code> pour l'aide.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Ragdoll">Ragdoll</span><span class="example-tag" data-i18n="tag.AngleJoint">AngleJoint</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.AI">IA</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/destructible-arena/?mode=3d&outline=0" aria-label="Destructible Arena">
+            <img class="game-card-img" src="../../assets/posters/destructible-arena.webp" width="900" height="500" loading="lazy" decoding="async" alt="Destructible Arena — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/destructible-arena/?mode=3d&outline=0" data-i18n="demo.destructible-arena.label">Arène destructible</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.destructible-arena.desc">Shooter en vue de côté construit à partir de <b>buildTilemapBody</b> + <b>CharacterController</b> + deux <b>ParticleEmitter</b> + <b>fractureBody</b>. L'arène fait 3× la largeur du canvas ; la caméra suit le joueur et tremble à chaque élimination. <b>WASD/Flèches</b> pour se déplacer, <b>Space</b> pour sauter. Maintenez <b>contre un mur</b> en l'air pour glisser dessus, et appuyez sur <b>Space</b> pour en faire un saut mural. Sautez à travers les plateformes violettes à sens unique par le bas ; la plateforme cyan glisse d'avant en arrière en tant que corps cinématique. Maintenez la <b>souris</b> pour tirer vers le curseur.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.ParticleEmitter">ParticleEmitter</span><span class="example-tag" data-i18n="tag.fractureBody">fractureBody</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Tilemap">Tilemap</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/planet-platformer/?mode=3d&outline=0" aria-label="Planet Platformer">
+            <img class="game-card-img" src="../../assets/posters/planet-platformer.webp" width="900" height="500" loading="lazy" decoding="async" alt="Planet Platformer — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/planet-platformer/?mode=3d&outline=0" data-i18n="demo.planet-platformer.label">Platformer planétaire</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.planet-platformer.desc">Parcourez huit planétoïdes — chacun avec son propre <b>RadialGravityField</b>, dont un géant Goliath à l'est. La gravité pointe vers la planète la plus proche, la direction <b>CharacterController.down</b> est mise à jour à chaque frame, de sorte que le saut, la marche en pente et la détection du sol fonctionnent dans toutes les orientations. La caméra suit le joueur à travers le monde. Collectez des pièces et atteignez l'<b>étoile ★</b> au sommet de Goliath. <b>WASD/Flèches</b> + <b>Space</b>.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.RadialGravityField">RadialGravityField</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Mario-Galaxy-style">Mario-Galaxy-style</span><span class="example-tag" data-i18n="tag.Pickups">Ramassages</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/plinko/" aria-label="Plinko">
+            <img class="game-card-img" src="../../assets/posters/plinko.webp" width="900" height="500" loading="lazy" decoding="async" alt="Plinko — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/plinko/" data-i18n="demo.plinko.label">Plinko</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.plinko.desc">1000 balles cascadent à travers un champ dense de quilles décalées, se posent dans des fentes et sont recyclées vers le haut.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Bouncy">Bouncy</span><span class="example-tag" data-i18n="tag.Static shapes">Formes statiques</span><span class="example-tag" data-i18n="tag.Particles">Particules</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/tower-defense/?mode=3d&outline=0" aria-label="Tower Defense">
+            <img class="game-card-img" src="../../assets/posters/tower-defense.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tower Defense — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/tower-defense/?mode=3d&outline=0" data-i18n="demo.tower-defense.label">Tower Defense</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tower-defense.desc">Construisez des tours d'<b>archer</b> (cible unique) et de <b>bombe</b> (zone + recul) pour défendre la base. Les ennemis sont des corps physiques — les bombes les projettent contre les murs, et ils reviennent tant bien que mal sur la piste. <b>Cliquez</b> sur un emplacement vide pour construire, <b>cliquez</b> sur une tour pour l'améliorer. Les HP des ennemis augmentent avec la vague ; toutes les 3 vagues amène des coureurs rapides, toutes les 5 vagues est une horde qui déferle par 5.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.AOE">AOE</span><span class="example-tag" data-i18n="tag.Impulse">Impulse</span><span class="example-tag" data-i18n="tag.Upgrades">Améliorations</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/portals/?mode=3d&outline=0" aria-label="Portals">
+            <img class="game-card-img" src="../../assets/posters/portals.webp" width="900" height="500" loading="lazy" decoding="async" alt="Portals — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/portals/?mode=3d&outline=0" data-i18n="demo.portals.label">Portails</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.portals.desc">Physique de portails avec <code>UserConstraint</code> et callbacks. <b>Glissez</b> des formes dans les portails — elles ressortent du partenaire lié.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.UserConstraint">UserConstraint</span><span class="example-tag" data-i18n="tag.Callback">Callback</span><span class="example-tag" data-i18n="tag.Sensor">Capteur</span><span class="example-tag" data-i18n="tag.Portal">Portal</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/slingshot/?mode=3d&outline=0" aria-label="Slingshot Siege">
+            <img class="game-card-img" src="../../assets/posters/slingshot.webp" width="900" height="500" loading="lazy" decoding="async" alt="Slingshot Siege — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/slingshot/?mode=3d&outline=0" data-i18n="demo.slingshot.label">Siège au lance-pierre</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.slingshot.desc"><b>Glissez</b> depuis le lance-pierre pour viser, <b>relâchez</b> pour tirer ! Les balles fracassent le château à l'impact. <b>Cliquez</b> sur le lance-pierre pour recharger.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Destruction">Destruction</span><span class="example-tag" data-i18n="tag.Voronoi">Voronoi</span><span class="example-tag" data-i18n="tag.Slingshot">Slingshot</span><span class="example-tag" data-i18n="tag.Click">Clic</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/character-controller/?mode=3d&outline=0" aria-label="Character Controller">
+            <img class="game-card-img" src="../../assets/posters/character-controller.webp" width="900" height="500" loading="lazy" decoding="async" alt="Character Controller — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/character-controller/?mode=3d&outline=0" data-i18n="demo.character-controller.label">Contrôleur de personnage</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.character-controller.desc">Touches WASD/fléchées pour se déplacer, <b>Space</b> pour sauter. Fonctionnalités : pentes, plateformes à sens unique, plateformes mobiles, glissade murale, saut mural, glace, coyote time. Utilise la classe intégrée <code>CharacterController</code> avec une physique de corps dynamique.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.One-Way">One-Way</span><span class="example-tag" data-i18n="tag.Slope">Pente</span><span class="example-tag" data-i18n="tag.Wall-Jump">Wall-Jump</span><span class="example-tag" data-i18n="tag.Ice">Glace</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/pinball/" aria-label="Pinball">
+            <img class="game-card-img" src="../../assets/posters/pinball.webp" width="900" height="500" loading="lazy" decoding="async" alt="Pinball — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/pinball/" data-i18n="demo.pinball.label">Flipper</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.pinball.desc">Flipper avec bumpers asymétriques, slingshots, quilles, une rampe de lancement et un bloqueur oscillant. Flèches gauche/droite ou A/D pour actionner les flippers. Cliquez sur la moitié gauche/droite pour actionner sur mobile. Cliquez dans la zone supérieure pour faire apparaître des balles.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Circle">Circle</span><span class="example-tag" data-i18n="tag.Restitution">Restitution</span><span class="example-tag" data-i18n="tag.Bumpers">Bumpers</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/car-topdown/" aria-label="2D Car — Top Down">
+            <img class="game-card-img" src="../../assets/posters/car-topdown.webp" width="900" height="500" loading="lazy" decoding="async" alt="2D Car — Top Down — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/car-topdown/" data-i18n="demo.car-topdown.label">Voiture 2D — Vue de dessus</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.car-topdown.desc">Voiture de course en vue de dessus avec une physique arcade sur un circuit de rallye sinueux. Utilisez les touches fléchées <b>↑ ↓ ← →</b> (ou WASD), <b>Space</b> pour le frein à main/dérapage, <b>Shift</b> pour freiner. Sur écran tactile : touchez l'avant/l'arrière pour accélérer/freiner, gauche/droite pour diriger.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Top-Down">Top-Down</span><span class="example-tag" data-i18n="tag.Zero Gravity">Gravité zéro</span><span class="example-tag" data-i18n="tag.Friction">Friction</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Camera Shake">Secousse de caméra</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/tracked-vehicle/?mode=3d&outline=0" aria-label="Tracked Vehicle">
+            <img class="game-card-img" src="../../assets/posters/tracked-vehicle.webp" width="900" height="500" loading="lazy" decoding="async" alt="Tracked Vehicle — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/tracked-vehicle/?mode=3d&outline=0" data-i18n="demo.tracked-vehicle.label">Véhicule à chenilles</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tracked-vehicle.desc">Véhicule à chenilles façon char avec un canon. Conduisez avec <b>← →</b> (ou A/D), visez avec <b>↑ ↓</b> (ou W/S), tirez avec <b>Space</b>. Les obus font exploser le terrain destructible.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.PivotJoint">PivotJoint</span><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span><span class="example-tag" data-i18n="tag.InteractionFilter">InteractionFilter</span><span class="example-tag" data-i18n="tag.Chain">Chaîne</span><span class="example-tag" data-i18n="tag.MarchingSquares">MarchingSquares</span></div>
+          </div>
+        </article>
+        <article class="game-card">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/car-sideview/" aria-label="2D Car — Side View">
+            <img class="game-card-img" src="../../assets/posters/car-sideview.webp" width="900" height="500" loading="lazy" decoding="async" alt="2D Car — Side View — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-game" data-i18n="games.tier.game">Brique de gameplay</span><a href="../../fr/examples/car-sideview/" data-i18n="demo.car-sideview.label">Voiture 2D — Vue de côté</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.car-sideview.desc">Une voiture avec suspension SpringJoint sur un terrain ondulé. Utilisez les touches fléchées <b>← →</b> ou touchez gauche/droite pour conduire.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.SpringJoint">SpringJoint</span><span class="example-tag" data-i18n="tag.LineJoint">LineJoint</span><span class="example-tag" data-i18n="tag.MotorJoint">MotorJoint</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="shipped">
+    <div class="container">
+      <h2 data-i18n="games.shipped.heading">Jeux publiés</h2>
+      <p class="section-desc" data-i18n="games.shipped.desc">Des titres sortis avec la physique nape-js en production — jouez dans le navigateur ou récupérez la version native.</p>
+      <div class="showcase-grid">
+        <a class="showcase-card" href="https://loaf.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'life_of_a_fish'})">
+          <span class="showcase-shot">
+            <img src="../../assets/showcase/loaf.webp" width="960" height="540" loading="lazy" decoding="async" alt="Life of a Fish — un poisson en voxels au-dessus d'un récif de corail" data-i18n-attr="alt:showcase.loaf.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Life of a Fish</span>
+            <span class="showcase-text" data-i18n="showcase.loaf.desc">Une plongée sous-marine en pixels : nagez, esquivez et traversez les grottes, avec des boss à plusieurs phases et une descente quotidienne.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Démo web</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">loaf.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://mxdash.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'mx_dash'})">
+          <span class="showcase-shot">
+            <img src="../../assets/showcase/mx-dash.webp" width="960" height="540" loading="lazy" decoding="async" alt="MX Dash — un pilote de motocross en voxels en plein saut au-dessus d'un terrain vallonné" data-i18n-attr="alt:showcase.mxdash.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">MX Dash</span>
+            <span class="showcase-text" data-i18n="showcase.mxdash.desc">Arcade de motocross en vue de côté — un pilote articulé sur suspension réelle, gros sauts, flips et replays de chute au ralenti.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag">iOS</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Démo web</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">mxdash.newkrok.com &rarr;</span>
+          </span>
+        </a>
+
+        <a class="showcase-card" href="https://dustkings.newkrok.com" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'showcase',event_label:'dust_kings'})">
+          <span class="showcase-shot">
+            <img src="../../assets/showcase/dust-kings.webp" width="960" height="540" loading="lazy" decoding="async" alt="Dust Kings — un monster truck en voxels soulevant la poussière sur une piste en terre" data-i18n-attr="alt:showcase.dustkings.alt" />
+          </span>
+          <span class="showcase-body">
+            <span class="showcase-title">Dust Kings</span>
+            <span class="showcase-text" data-i18n="showcase.dustkings.desc">Course de monster trucks en voxels — circuits en terre faits main, courses rapides et défi quotidien. Actuellement en bêta fermée.</span>
+            <span class="showcase-tags">
+              <span class="showcase-tag" data-i18n="showcase.tag.beta">Bêta</span>
+              <span class="showcase-tag" data-i18n="showcase.tag.web">Démo web</span>
+              <span class="showcase-tag">Three.js</span>
+            </span>
+            <span class="showcase-link">dustkings.newkrok.com &rarr;</span>
+          </span>
+        </a>
+      </div>
+      <p class="showcase-foot" data-i18n-html="showcase.foot">Vous avez publié quelque chose avec nape-js ? <a href="https://github.com/NewKrok/nape-js/issues/new">Ouvrez une issue</a> et cela pourra figurer ici.</p>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../fr/" data-i18n="footer.home">Accueil</a>
+        &bull;
+        <a href="../../fr/examples/" data-i18n="nav.examples">Exemples</a>
+        &bull;
+        <a href="../../fr/games/" data-i18n="nav.games">Jeux</a>
+        &bull;
+        <a href="../../guides/" data-i18n="nav.guides">Guides</a>
+        &bull;
+        <a href="../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">Documentation API</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">Basé sur le moteur Haxe original de <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> • Portage JS initié par <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> • Réécriture TypeScript et développement continu par <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">Licence MIT</p>
+    </div>
+  </footer>
+  <script type="module">
+    import { initI18n } from "../../i18n/i18n.js?v=3.42.1";
+    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.42.1";
+    await initI18n();
+    mountLangSwitcher();
+  </script>
+  <script src="../../site-header.js?v=3.42.1" defer></script>
+  <script type="module" src="../../games.js?v=3.42.1"></script>
+</body>
+</html>

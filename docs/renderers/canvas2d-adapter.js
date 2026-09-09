@@ -6,7 +6,7 @@
  */
 import {
   drawBody, drawConstraints, drawGrid, bodyColor, COLORS,
-} from "../renderer.js?v=3.42.0";
+} from "../renderer.js?v=3.42.1";
 
 export class Canvas2DAdapter {
   id = "canvas2d";

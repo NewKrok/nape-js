@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="nape-prerendered" content="fr" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pendule de Newton — Démo interactive de physique 2D | nape-js</title>
+  <meta name="description" content="Le classique pendule de Newton démontrant la conservation de la quantité de mouvement et de l'énergie." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="generator" content="nape-js build-site-pages" />
+  <meta name="nape-i18n-title" content="demopage.meta.title" />
+  <meta name="nape-i18n-title-vars" content="label=demo.newtons-cradle.label" />
+  <meta name="nape-i18n-description" content="" />
+  <link rel="canonical" href="https://napejs.org/fr/examples/newtons-cradle/" />
+  <link rel="icon" type="image/svg+xml" href="../../../logo.svg" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "nape-js",
+            "item": "https://napejs.org/fr/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Exemples",
+            "item": "https://napejs.org/fr/examples/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Physique",
+            "item": "https://napejs.org/fr/examples/?cat=physics"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "Pendule de Newton",
+            "item": "https://napejs.org/fr/examples/newtons-cradle/"
+          }
+        ]
+      },
+      {
+        "@type": "SoftwareSourceCode",
+        "name": "Pendule de Newton",
+        "inLanguage": "fr",
+        "image": "https://napejs.org/assets/posters/newtons-cradle.webp",
+        "description": "Le classique pendule de Newton démontrant la conservation de la quantité de mouvement et de l'énergie.",
+        "url": "https://napejs.org/fr/examples/newtons-cradle/",
+        "codeRepository": "https://github.com/NewKrok/nape-js/blob/master/docs/demos/newtons-cradle.js",
+        "programmingLanguage": [
+          "TypeScript",
+          "JavaScript"
+        ],
+        "runtimePlatform": "Web browser",
+        "keywords": "PivotJoint, Momentum",
+        "isPartOf": {
+          "@type": "SoftwareSourceCode",
+          "name": "nape-js",
+          "codeRepository": "https://github.com/NewKrok/nape-js"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Istvan Krisztian Somoracz",
+          "url": "https://github.com/NewKrok"
+        },
+        "license": "https://opensource.org/licenses/MIT"
+      }
+    ]
+  }
+  </script>
+  <meta property="og:site_name" content="nape-js" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Pendule de Newton — Démo interactive de physique 2D | nape-js" />
+  <meta property="og:description" content="Le classique pendule de Newton démontrant la conservation de la quantité de mouvement et de l'énergie." />
+  <meta property="og:url" content="https://napejs.org/fr/examples/newtons-cradle/" />
+  <meta property="og:image" content="https://napejs.org/assets/posters/newtons-cradle.webp" />
+  <meta property="og:image:width" content="900" />
+  <meta property="og:image:height" content="500" />
+  <meta property="og:image:alt" content="Pendule de Newton — nape-js demo screenshot" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@KSomoracz" />
+  <meta name="twitter:title" content="Pendule de Newton — Démo interactive de physique 2D | nape-js" />
+  <meta name="twitter:description" content="Le classique pendule de Newton démontrant la conservation de la quantité de mouvement et de l'énergie." />
+  <meta name="twitter:image" content="https://napejs.org/assets/posters/newtons-cradle.webp" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TF84DLZ4X8');
+  </script>
+  <link rel="stylesheet" href="../../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+  <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.1" />
+  <link rel="modulepreload" href="../../../demos/newtons-cradle.js?v=3.42.1" />
+  <!-- i18n:hreflang:start -->
+  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/newtons-cradle/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/newtons-cradle/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/newtons-cradle/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/newtons-cradle/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/newtons-cradle/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/newtons-cradle/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/newtons-cradle/" />
+  <!-- i18n:hreflang:end -->
+</head>
+<body data-demo-id="newtons-cradle">
+  <div class="site-header" id="siteHeader">
+    <div class="container site-header-inner">
+      <a class="site-brand" href="../../../fr/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
+        <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
+        <span>nape-js</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger active" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explorer</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item active" href="../../../fr/examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Exemples</span></a>
+            <a class="site-nav-item" href="../../../fr/games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Jeux</span></a>
+            <a class="site-nav-item" href="../../../fr/showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Vitrine</span></a>
+            <a class="site-nav-item" href="../../../multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Démo multijoueur</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item" href="../../../guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="../../../api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">Référence API</span></a>
+            <a class="site-nav-item" href="../../../ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Créer avec l'IA</span></a>
+            <a class="site-nav-item" href="../../../llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt pour agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="../../../benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
+      </nav>
+      <div class="site-header-actions">
+        <span class="lang-switcher" id="langSwitcher"></span>
+        <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="site-header-gh-label">GitHub</span>
+        </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <main>
+  <section class="section demo-page">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../../fr/">nape-js</a> <span aria-hidden="true">›</span>
+        <a href="../../../fr/examples/" data-i18n="nav.examples">Exemples</a> <span aria-hidden="true">›</span>
+        <a href="../../../fr/examples/?cat=physics" data-i18n="cat.physics.label">Physique</a> <span aria-hidden="true">›</span>
+        <span aria-current="page" data-i18n="demo.newtons-cradle.label">Pendule de Newton</span>
+      </nav>
+      <h1 class="demo-page-title"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.newtons-cradle.label">Pendule de Newton</span></h1>
+      <p class="demo-page-desc" data-i18n-html="demo.newtons-cradle.desc">Le classique pendule de Newton démontrant la conservation de la quantité de mouvement et de l'énergie.</p>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="demoCanvas" width="900" height="500"></canvas>
+        <div class="canvas-overlay" id="canvasOverlay" data-i18n="demopage.loading">Chargement du moteur…</div>
+        <div class="canvas-controls" id="canvasControls" style="opacity:1">
+          <div class="card-render-toggle" id="renderModeToggle">
+            <button class="card-render-btn active" data-mode="2d">2D</button>
+            <button class="card-render-btn" data-mode="3d">3D</button>
+            <button class="card-render-btn" data-mode="pixi">PixiJS</button>
+          </div>
+          <button class="canvas-outline-btn active" id="outlineBtn" title="Basculer les contours" data-i18n-attr="title:canvas.outline">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><circle cx="8" cy="8" r="3"/></svg>
+          </button>
+          <button class="canvas-fs-btn canvas-profiler-btn" id="profilerBtn" title="Basculer la surcouche du profileur" data-i18n-attr="title:canvas.profiler">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,12 4,5 7,9 10,2 14,7"/><line x1="1" y1="14" x2="14" y2="14"/></svg>
+          </button>
+          <button class="canvas-fs-btn canvas-worker-btn" id="workerBtn" title="Basculer la physique Web Worker" data-i18n-attr="title:canvas.worker" style="display:none">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+          </button>
+          <button class="canvas-fs-btn canvas-reset-btn" id="resetBtn" title="Réinitialiser la démo" data-i18n-attr="title:canvas.reset">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 1 1 1.1 3.3"/><polyline points="2.5,3.5 2.5,8 7,8"/></svg>
+          </button>
+          <button class="canvas-fs-btn" id="fsBtn" title="Plein écran" data-i18n-attr="title:canvas.fullscreen">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 2,2 6,2"/><polyline points="10,2 14,2 14,6"/><polyline points="14,10 14,14 10,14"/><polyline points="6,14 2,14 2,10"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="demo-bar">
+        <span id="fpsLabel" data-i18n="demoBar.fps">FPS : —</span>
+        <span id="bodyCount" data-i18n="demoBar.bodies">Corps : —</span>
+        <span id="stepTime" data-i18n="demoBar.step">Step : —</span>
+        <span class="demo-bar-right demo-bar-hint" data-i18n="demopage.controls">Faites glisser ou touchez le canvas pour interagir. Changez de moteur de rendu avec les boutons 2D / 3D / PixiJS.</span>
+      </div>
+
+      <div class="demo-page-actions">
+        <button class="btn btn-secondary" id="codeToggleBtn" aria-expanded="false" aria-controls="codePanel" data-i18n="demopage.openSource">Ouvrir le code</button>
+        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/newtons-cradle.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'newtons-cradle'})">GitHub</a>
+      </div>
+      <div class="code-panel" id="codePanel" hidden>
+        <div class="code-panel-header">
+          <span class="code-panel-title" data-i18n="code.title">Code source</span>
+          <div class="code-panel-actions">
+            <button class="btn btn-small" id="copyCodeBtn" title="Copier dans le presse-papiers" data-i18n="code.copy" data-i18n-attr="title:code.copyTitle">Copier</button>
+            <button class="btn btn-small btn-codepen" id="codepenBtn" title="Ouvrir dans CodePen" data-i18n="code.codepen" data-i18n-attr="title:code.codepenTitle">CodePen</button>
+            <button class="btn btn-small btn-stackblitz" id="stackblitzBtn" title="Ouvrir dans StackBlitz (véritable npm install)" data-i18n="code.stackblitz" data-i18n-attr="title:code.stackblitzTitle">StackBlitz</button>
+          </div>
+        </div>
+        <pre class="code-panel-body" id="codeBody"><code></code></pre>
+      </div>
+
+      <div class="demo-page-grid">
+        <section class="demo-page-block">
+          <h2 data-i18n="demopage.features">Fonctions du moteur utilisées</h2>
+          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.PivotJoint">PivotJoint</span><span class="example-tag" data-i18n="tag.Momentum">Quantité de mouvement</span></div>
+        </section>
+        <section class="demo-page-block">
+          <h2 data-i18n="demopage.related">Guides associés</h2>
+          <ul class="demo-page-links">
+            <li><a href="../../../guides/cookbook/#constraint-reference--which-joint-to-use">Which joint to use</a></li>
+            <li><a href="../../../guides/cookbook/">Cookbook</a></li>
+            <li><a href="../../../guides/anti-patterns/">Anti-patterns</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <section class="demo-page-block">
+        <h2 data-i18n="demopage.more">Plus de démos</h2>
+        <div class="more-demos">
+          <a class="more-demo" href="../../../fr/examples/wrecking-ball/"><img class="more-demo-thumb" src="../../../assets/posters/wrecking-ball.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.wrecking-ball.label">Boule de démolition</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/dominos/"><img class="more-demo-thumb" src="../../../assets/posters/dominos.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.dominos.label">Dominos</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/rope-bridge/"><img class="more-demo-thumb" src="../../../assets/posters/rope-bridge.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.rope-bridge.label">Pont de corde</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/conveyor-belts/"><img class="more-demo-thumb" src="../../../assets/posters/conveyor-belts.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.conveyor-belts.label">Tapis roulants</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/trebuchet/"><img class="more-demo-thumb" src="../../../assets/posters/trebuchet.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.trebuchet.label">Trébuchet</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/seesaw/"><img class="more-demo-thumb" src="../../../assets/posters/seesaw.webp" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-physics" data-i18n="cat.physics.label">Physique</span><span data-i18n="demo.seesaw.label">Balançoire à bascule</span></span></a>
+        </div>
+        <p class="demo-page-all"><a href="../../../fr/examples/?cat=physics" data-i18n="demopage.allInCategory" data-i18n-vars="cat=cat.physics.label">Toutes les démos Physique →</a></p>
+      </section>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-links">
+        <a href="../../../fr/" data-i18n="footer.home">Accueil</a>
+        &bull;
+        <a href="../../../fr/examples/" data-i18n="nav.examples">Exemples</a>
+        &bull;
+        <a href="../../../fr/games/" data-i18n="nav.games">Jeux</a>
+        &bull;
+        <a href="../../../guides/" data-i18n="nav.guides">Guides</a>
+        &bull;
+        <a href="../../../api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs">Documentation API</a>
+        &bull;
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      </p>
+      <p data-i18n-html="footer.credits">Basé sur le moteur Haxe original de <a href="https://github.com/deltaluca/nape">Luca Deltodesco</a> • Portage JS initié par <a href="https://github.com/cspotcode/nape-to-js">Andrew Bradley</a> • Réécriture TypeScript et développement continu par <a href="https://github.com/NewKrok">Istvan Krisztian Somoracz</a></p>
+      <p data-i18n="footer.license">Licence MIT</p>
+    </div>
+  </footer>
+  <script type="module">
+    import { initI18n } from "../../../i18n/i18n.js?v=3.42.1";
+    import { mountLangSwitcher } from "../../../i18n/lang-switcher.js?v=3.42.1";
+    await initI18n();
+    mountLangSwitcher();
+  </script>
+  <script src="../../../site-header.js?v=3.42.1" defer></script>
+  <script type="module" src="../../../demo-page.js?v=3.42.1"></script>
+</body>
+</html>

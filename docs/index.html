@@ -143,11 +143,11 @@
     gtag('config', 'G-TF84DLZ4X8');
   </script>
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
-  <link rel="stylesheet" href="style.css?v=3.42.0" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.0" media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.0" /></noscript>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.0" media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.0" /></noscript>
+  <link rel="stylesheet" href="style.css?v=3.42.1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.1" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css?v=3.42.1" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.1" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css?v=3.42.1" /></noscript>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" data-manual defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
@@ -167,35 +167,50 @@
        bar works with JS off; site-header.js only adds the scrolled shadow
        and the scroll-spy highlight. Section links point at the in-page
        anchors, the rest are separate pages. -->
+  <!-- site-header:start -->
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="#top" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
         <svg class="site-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303 287" aria-hidden="true"><g transform="translate(0,287) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1705 2430 c-145 -27 -292 -101 -399 -201 -40 -37 -72 -59 -87 -59 -39 0 -121 -45 -161 -86 -105 -111 -103 -282 5 -385 l34 -33 -26 -55 c-22 -47 -26 -70 -26 -146 0 -82 3 -97 33 -157 58 -118 179 -208 327 -245 45 -11 66 -21 70 -34 10 -29 61 -60 102 -61 25 -1 63 10 107 31 127 60 263 101 331 100 22 0 11 -6 -41 -23 -97 -31 -226 -101 -324 -176 -68 -52 -86 -61 -108 -55 -56 13 -204 71 -397 155 -206 90 -292 116 -348 105 -17 -3 -75 -27 -127 -53 -129 -64 -177 -65 -306 -5 -124 58 -166 55 -180 -13 -11 -58 67 -122 209 -171 86 -30 275 -42 372 -24 l59 11 51 -48 c337 -325 618 -462 951 -462 207 0 385 52 528 154 221 157 296 385 196 592 -32 66 -136 186 -181 209 l-28 15 32 54 c32 54 32 54 87 58 101 7 193 70 234 158 29 63 28 170 -1 226 -41 77 -114 131 -194 141 -37 5 -40 9 -54 56 -55 186 -239 357 -441 411 -73 20 -232 28 -299 16z m-268 -331 c15 -5 39 -21 53 -34 l26 -24 64 25 c145 59 316 4 379 -122 47 -94 27 -217 -47 -297 -33 -35 -103 -72 -155 -81 -37 -7 -37 -7 -23 -34 35 -69 27 -150 -21 -223 -56 -84 -182 -131 -305 -111 -251 38 -376 263 -243 436 l34 45 -19 45 c-32 71 -36 150 -11 221 23 64 76 129 126 151 36 16 104 18 142 3z"/><path d="M1316 1859 c-19 -22 -26 -42 -26 -73 0 -49 13 -66 51 -66 57 0 99 93 69 151 -17 30 -63 25 -94 -12z"/><path d="M1582 1825 c-78 -66 -59 -168 28 -145 56 15 91 118 52 153 -26 23 -45 21 -80 -8z"/><path d="M1310 1596 c0 -21 34 -54 63 -61 27 -7 97 18 97 35 0 15 -41 29 -106 36 -46 6 -54 4 -54 -10z"/><path d="M381 1540 l-114 -38 59 -16 c33 -10 87 -28 122 -41 l62 -23 58 22 c31 12 84 31 117 41 l61 19 -116 38 c-63 21 -119 37 -125 37 -5 0 -61 -18 -124 -39z"/><path d="M243 1339 l2 -150 80 -35 c44 -20 99 -44 123 -55 l42 -18 0 153 0 153 -42 12 c-24 7 -80 30 -125 51 l-82 38 2 -149z"/><path d="M767 1483 c-4 -4 -56 -28 -115 -53 l-107 -46 -3 -147 c-1 -88 1 -147 7 -147 11 0 213 90 224 100 4 3 6 73 5 154 -2 81 -7 144 -11 139z"/></g></svg>
         <span>nape-js</span>
       </a>
-
-      <nav class="site-nav" id="siteNav">
-        <a class="site-nav-link" href="#demos" data-i18n="nav.demos" onclick="gtag('event','navigation',{event_category:'header',event_label:'demos'})">Demos</a>
-        <a class="site-nav-link" href="#showcase" data-i18n="nav.showcase" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})">Showcase</a>
-        <a class="site-nav-link" href="examples/" data-i18n="nav.examples" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})">Examples</a>
-        <a class="site-nav-link" href="#ai" data-i18n="nav.ai" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})">AI</a>
-        <a class="site-nav-link" href="#benchmarks" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
-        <a class="site-nav-link" href="api/index.html" target="_blank" rel="noopener" data-i18n="nav.apiDocs" onclick="gtag('event','navigation',{event_category:'header',event_label:'api_docs'})">API Docs</a>
+      <nav class="site-nav" id="siteNav" aria-label="Site">
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-explore"><span data-i18n="nav.explore">Explore</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-explore">
+            <a class="site-nav-item" href="examples/" onclick="gtag('event','navigation',{event_category:'header',event_label:'examples'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span data-i18n="nav.examples">Examples</span></a>
+            <a class="site-nav-item" href="games/" onclick="gtag('event','navigation',{event_category:'header',event_label:'games'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg></span><span data-i18n="nav.games">Games</span></a>
+            <a class="site-nav-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'header',event_label:'showcase'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-2.9a2 2 0 0 0-3 0z"/><path d="M12 15l-3-3 3.7-5.6A9 9 0 0 1 21 2a9 9 0 0 1-4.4 8.3z"/><path d="M9 12H4l2.5-3.5M12 15v5l3.5-2.5"/><circle cx="15" cy="9" r="1"/></svg></span><span data-i18n="nav.showcase">Showcase</span></a>
+            <a class="site-nav-item" href="multiplayer.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'multiplayer'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span data-i18n="nav.multiplayer">Multiplayer demo</span></a>
+          </div>
+        </div>
+        <div class="site-nav-group">
+          <button type="button" class="site-nav-link site-nav-trigger" aria-expanded="false" aria-controls="siteMenu-docs"><span data-i18n="nav.docs">Docs</span><svg class="site-nav-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          <div class="site-nav-menu" id="siteMenu-docs">
+            <a class="site-nav-item" href="guides/" onclick="gtag('event','navigation',{event_category:'header',event_label:'guides'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span data-i18n="nav.guides">Guides</span></a>
+            <a class="site-nav-item" href="api/index.html" target="_blank" rel="noopener" onclick="gtag('event','navigation',{event_category:'header',event_label:'api'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span data-i18n="nav.apiDocs">API reference</span></a>
+            <a class="site-nav-item" href="ai.html" onclick="gtag('event','navigation',{event_category:'header',event_label:'ai'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></svg></span><span data-i18n="nav.ai">Build with AI</span></a>
+            <a class="site-nav-item" href="llms-full.txt" onclick="gtag('event','navigation',{event_category:'header',event_label:'llms'})"><span class="site-nav-item-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span><span data-i18n="nav.llms">llms.txt for agents</span></a>
+          </div>
+        </div>
+        <a class="site-nav-link" href="benchmark.html" data-i18n="nav.benchmarks" onclick="gtag('event','navigation',{event_category:'header',event_label:'benchmarks'})">Benchmarks</a>
       </nav>
-
       <div class="site-header-actions">
         <span class="lang-switcher" id="langSwitcher"></span>
         <a class="site-header-gh" href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" title="GitHub" data-i18n-attr="title:nav.github" onclick="gtag('event','navigation',{event_category:'header',event_label:'github'})">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           <span class="site-header-gh-label">GitHub</span>
         </a>
-        <a class="site-header-gh site-header-x" href="https://x.com/KSomoracz" target="_blank" rel="noopener" title="Follow @KSomoracz on X" data-i18n-attr="title:nav.x" onclick="gtag('event','navigation',{event_category:'header',event_label:'x'})">
+        <a class="site-header-gh site-header-x" href="https://x.com/KSomoracz" target="_blank" rel="noopener" title="Follow @KSomoracz on X" aria-label="Follow @KSomoracz on X" data-i18n-attr="title:nav.x,aria-label:nav.x" onclick="gtag('event','navigation',{event_category:'header',event_label:'x'})">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 1.2h3.7l-8.1 9.2 9.5 12.5h-7.4l-5.8-7.6-6.7 7.6H.4l8.6-9.9L0 1.2h7.6l5.2 6.9zm-1.3 19.5h2L6.5 3.3H4.3z"/></svg>
-          <span class="sr-only">X</span>
         </a>
+        <button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Menu" data-i18n-attr="aria-label:nav.menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="site-menu-icon-open" d="M2 4h14M2 9h14M2 14h14"/><path class="site-menu-icon-close" d="M4 4l10 10M14 4L4 14"/></svg>
+        </button>
       </div>
     </div>
   </div>
+  <!-- site-header:end -->
 
   <!-- ===== HERO ===== -->
   <header class="hero" id="top">
@@ -233,6 +248,23 @@
       <div class="install-box">
         <code>npm install @newkrok/nape-js</code>
       </div>
+      <!-- Proof strip: one line that tells both audiences where to go. The
+           numbers are stamped by scripts/build-site-pages.mjs from the demo
+           registry (data-site-count), so they never go stale by hand. -->
+      <nav class="proof-strip" aria-label="Site sections">
+        <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
+          <strong data-site-count="demos">82</strong> <span data-i18n="home.proof.demos">interactive demos</span>
+        </a>
+        <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
+          <strong data-site-count="games">38</strong> <span data-i18n="home.proof.games">playable games</span>
+        </a>
+        <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
+          <strong data-site-count="showpieces">18</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
+        </a>
+        <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
+          <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">shipped titles</span>
+        </a>
+      </nav>
     </div>
   </header>
 
@@ -252,6 +284,7 @@
 
       <nav class="demo-tabs" id="demoTabs">
         <a href="examples/" class="tab tab-more" data-i18n="home.demos.more" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'more_examples'})">More &rarr;</a>
+        <a href="games/" class="tab tab-games" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'games'})"><svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M6.5 12.5h4M8.5 10.5v4M15.5 11.5h.01M18.5 13.5h.01"/></svg><span data-i18n="home.demos.games">Playable games</span></a>
         <a href="multiplayer.html" class="tab tab-mp" data-i18n="home.demos.multiplayer" onclick="gtag('event','navigation',{event_category:'demo_tab',event_label:'multiplayer'})">&#9654; Multiplayer</a>
       </nav>
 
@@ -370,7 +403,53 @@
         </a>
       </div>
 
+      <p class="showcase-foot" data-i18n-html="showcase.ladder">Curious how a demo grows into one of these? The <a href="games/">games page</a> walks the ladder from a single mechanic to a complete game, all in one file each.</p>
       <p class="showcase-foot" data-i18n-html="showcase.foot">Shipped something with nape-js? <a href="https://github.com/NewKrok/nape-js/issues/new">Open an issue</a> and it can land here.</p>
+    </div>
+  </section>
+
+  <!-- ===== LATEST COMPLETE GAME DEMOS =====
+       Cards are stamped by scripts/build-site-pages.mjs (three newest
+       showpieces, with their posters); edit the tier sets, not this block. -->
+  <section id="games" class="section">
+    <div class="container">
+      <h2 data-i18n="home.featuredGames.heading">Latest complete game demos</h2>
+      <p class="section-desc" data-i18n="home.featuredGames.desc">The newest multi-system games built on the engine — AI, waves, cameras and 3D rigs, each in a single file you can open on CodePen.</p>
+      <div class="game-grid game-grid-large game-grid-3">
+        <!-- featured-games:start -->
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/blade-waltz/?mode=3d&outline=0" aria-label="Blade Waltz">
+            <img class="game-card-img" src="assets/posters/blade-waltz.webp" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">A <b>Tales-style action-battle gauntlet</b> on a round arena: ten waves of monsters, a party of four, and you control the swordsman only. Run freely, land <b>3-hit combos</b> (<b>J</b> / click), spend TP on <b>artes</b> (<b>K</b> — neutral for the Demon Fang ground wave, toward the target for the Sonic Thrust dash, away for the launching Tiger Blade), <b>guard</b> with <b>L</b>, and unleash the <b>Mystic Arte</b> with <b>SPACE</b> once the Overlimit gauge fills from dealing and taking hits. Normal hits refill TP; guards only cover your front; stone golems and bosses shrug off single hits. Your <b>AI party</b> plays its roles: the lancer brawls and chains thrusts, the archer kites and volleys, the sage heals, revives and casts fire and stone with <b>interruptible cast times</b>. The tenth wave is a <b>drake</b> with claws, a tail spin, fire breath, a roar and wisp summons. Every combatant is a dynamic puck inside a ring of static wall segments; melee is resolved from arcs, while arrows, bolts, fireballs and waves are <b>sensor bodies</b> delivered by <code>InteractionListener</code>s with side filtering done by sensor masks. In <b>3D</b> a side-on chase camera frames the player–target line over a stone arena in a meadow, with jointed low-poly rigs for every combatant.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/shard-rush/?mode=3d&outline=0" aria-label="Shard Rush">
+            <img class="game-card-img" src="assets/posters/shard-rush.webp" width="900" height="500" loading="lazy" decoding="async" alt="Shard Rush — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 top-down <b>hero arena</b>. A mine in the middle coughs up a <b>shard</b> every few seconds — carry <b>10</b> between your team and survive a <b>15-second countdown</b> to win. Die and you drop everything you hold. Pick one of <b>six heroes</b> on the select screen — shotgunner, gunslinger, wrestler, bard, thrower, engineer — each with its own attack, <b>3-shot ammo</b> that reloads over time, and a <b>SUPER</b> that charges as you land hits: a wall-breaking blast, a piercing volley, a leap-and-slam, a healing chord, a flask barrage, an auto-turret. <b>Bushes</b> hide you until you attack or someone walks in close; <b>crates</b> can be blown open. Move with <b>WASD</b>, <b>aim with the mouse</b> and click to attack, <b>E</b> auto-attacks the nearest enemy, <b>SPACE</b>/<b>Q</b> fires the super — or on any device <b>hold</b> to steer, <b>tap</b> to attack and tap the SUPER button. Two <b>AI teammates</b> and three AI opponents run the same kit-aware brain: range bands, cover, stealth, retreat-to-heal, mine control and super timing. Every projectile is a <b>sensor body</b> delivered through <code>InteractionListener</code>s, with team filtering done by sensor groups and masks.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/jungle-strike/?mode=3d&outline=0" aria-label="Jungle Strike">
+            <img class="game-card-img" src="assets/posters/jungle-strike.webp" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">Jungle Strike</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">An eleven-screen <b>Contra-style run-and-gun</b>. Fight right through a jungle assault course — patrolling grunts, dug-in <b>turrets</b>, leaping <b>chargers</b> and <b>snipers</b> that paint you with a laser sight before they fire — to a three-barrel <b>emplacement boss</b> that only takes damage in its glowing core, telegraphs every volley, and rotates rockets and mortars once it drops into overdrive. The level is built from a <b>CharacterController</b> over hand-authored terrain: one-way canopy platforms, a <b>collapsing rope bridge</b>, a river you cross on stepping stones, and a trench, tower climb and flooded bay after that. Grab <b>SPREAD</b>, <b>MACHINE</b> and <b>LASER</b> power-ups — you lose your weapon on death, and respawn at the last of eleven <b>checkpoints</b>. Move with <b>WASD</b>/arrows, <b>SPACE</b> to jump, <b>S</b>/<b>↓</b> to crouch, and <b>aim freely with the mouse</b> — hold to fire. In <b>3D mode</b> every fighter is a procedural low-poly figure with an independently-aimed gun arm.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.AI">AI</span></div>
+          </div>
+        </article>
+        <!-- featured-games:end -->
+      </div>
+      <p class="section-more"><a href="games/" class="btn btn-secondary" data-i18n="home.featuredGames.all" onclick="gtag('event','navigation',{event_category:'featured_games',event_label:'all_games'})">All games &rarr;</a></p>
     </div>
   </section>
 
@@ -425,11 +504,11 @@
         </div>
         <div class="ai-card">
           <h3 data-i18n="ai.pitfalls.title">Documented pitfalls</h3>
-          <p data-i18n-html="ai.pitfalls.body">An <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md">anti-patterns guide</a> and a <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md">troubleshooting guide</a> spell out the mistakes models most often make with physics APIs.</p>
+          <p data-i18n-html="ai.pitfalls.body">An <a href="guides/anti-patterns/">anti-patterns guide</a> and a <a href="guides/troubleshooting/">troubleshooting guide</a> spell out the mistakes models most often make with physics APIs.</p>
         </div>
         <div class="ai-card">
           <h3 data-i18n="ai.recipes.title">Task-shaped recipes</h3>
-          <p data-i18n-html="ai.recipes.body">The <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md">cookbook</a> is organised by goal &mdash; platformer, ragdoll, fluid, replay &mdash; which is the shape a prompt usually arrives in.</p>
+          <p data-i18n-html="ai.recipes.body">The <a href="guides/cookbook/">cookbook</a> is organised by goal &mdash; platformer, ragdoll, fluid, replay &mdash; which is the shape a prompt usually arrives in.</p>
         </div>
       </div>
 
@@ -505,14 +584,32 @@
   </section>
 
   <!-- ===== FOOTER ===== -->
+  <!-- ===== SUPPORT ===== -->
+  <section id="support" class="section section-alt support-section">
+    <div class="container">
+      <h2 data-i18n="support.heading">Support nape-js</h2>
+      <p class="section-desc" data-i18n="support.desc">nape-js is MIT-licensed and built in the open. If it saves you time — or ships your game — a sponsorship keeps the demos, guides and releases coming.</p>
+      <div class="support-actions">
+        <a href="https://github.com/sponsors/NewKrok" target="_blank" rel="noopener" class="btn btn-primary btn-sponsor" onclick="gtag('event','navigation',{event_category:'support',event_label:'sponsor'})">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <span data-i18n="footer.sponsor">Sponsor on GitHub</span>
+        </a>
+        <a href="https://ko-fi.com/newkrok" target="_blank" rel="noopener" class="btn btn-secondary btn-kofi" onclick="gtag('event','navigation',{event_category:'support',event_label:'kofi'})">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          <span data-i18n="footer.kofi">Support me on Ko-fi</span>
+        </a>
+        <a href="https://github.com/NewKrok/nape-js" target="_blank" rel="noopener" class="btn btn-secondary" onclick="gtag('event','navigation',{event_category:'support',event_label:'star'})">★ <span data-i18n="support.star">Star on GitHub</span></a>
+      </div>
+    </div>
+  </section>
   </main>
 
   <footer class="footer">
     <div class="container">
       <p class="footer-links">
-        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener" data-i18n="footer.cookbook" onclick="gtag('event','navigation',{event_category:'footer',event_label:'cookbook'})">Cookbook</a>
+        <a href="guides/cookbook/" data-i18n="footer.cookbook" onclick="gtag('event','navigation',{event_category:'footer',event_label:'cookbook'})">Cookbook</a>
         &bull;
-        <a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener" data-i18n="footer.troubleshooting" onclick="gtag('event','navigation',{event_category:'footer',event_label:'troubleshooting'})">Troubleshooting</a>
+        <a href="guides/troubleshooting/" data-i18n="footer.troubleshooting" onclick="gtag('event','navigation',{event_category:'footer',event_label:'troubleshooting'})">Troubleshooting</a>
         &bull;
         <a href="api/index.html" target="_blank" rel="noopener" data-i18n="footer.apiDocs" onclick="gtag('event','navigation',{event_category:'footer',event_label:'api_docs'})">API Docs</a>
         &bull;
@@ -534,13 +631,13 @@
   </footer>
 
   <script type="module">
-    import { initI18n } from "./i18n/i18n.js?v=3.42.0";
-    import { mountLangSwitcher } from "./i18n/lang-switcher.js?v=3.42.0";
+    import { initI18n } from "./i18n/i18n.js?v=3.42.1";
+    import { mountLangSwitcher } from "./i18n/lang-switcher.js?v=3.42.1";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="site-header.js?v=3.42.0"></script>
-  <script type="module" src="hero-bg.js?v=3.42.0"></script>
-  <script type="module" src="app.js?v=3.42.0"></script>
+  <script type="module" src="site-header.js?v=3.42.1"></script>
+  <script type="module" src="hero-bg.js?v=3.42.1"></script>
+  <script type="module" src="app.js?v=3.42.1"></script>
 </body>
 </html>

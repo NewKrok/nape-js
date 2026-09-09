@@ -1,12 +1,12 @@
 import {
   Body, BodyType, Vec2, Circle, Polygon, Capsule, Material, InteractionFilter,
   CharacterController, CbType,
-} from "../nape-js.esm.js?v=3.42.0";
-import { drawBody, drawConstraints, drawGrid } from "../renderer.js?v=3.42.0";
-import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.0";
+} from "../nape-js.esm.js?v=3.42.1";
+import { drawBody, drawConstraints, drawGrid } from "../renderer.js?v=3.42.1";
+import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.1";
 import {
   createSoldier, destroySoldier, syncSoldier, soldierPalette, createBoardMaterial,
-} from "../renderers/lowpoly-characters.js?v=3.42.0";
+} from "../renderers/lowpoly-characters.js?v=3.42.1";
 
 // ── Jungle Strike — Contra-style side-scrolling run-and-gun ───────────────
 //

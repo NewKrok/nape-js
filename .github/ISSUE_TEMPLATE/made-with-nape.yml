@@ -1,0 +1,49 @@
+name: "🎮 Made with nape-js — showcase submission"
+description: Shipped a game or app on nape-js? Submit it for the Showcase on napejs.org.
+title: "[Showcase] <game name>"
+labels: ["showcase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for building on nape-js! Fill this in and the entry can land on
+        https://napejs.org/showcase/ (and the "Shipped games" section of https://napejs.org/games/).
+  - type: input
+    id: name
+    attributes:
+      label: Game / app name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Playable URL or store link
+      placeholder: https://…
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: One-paragraph description
+      description: What is it, what does the physics do in it? 1–3 sentences, this is used as the card text.
+    validations:
+      required: true
+  - type: input
+    id: platforms
+    attributes:
+      label: Platforms / tech
+      placeholder: "Web, iOS, Android · Three.js / PixiJS / Canvas"
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Key art or screenshot
+      description: Drag a 16:9 image here (≥ 960×540). It will be cropped to 960×540 WebP.
+    validations:
+      required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Permission
+      options:
+        - label: I own this work (or have permission) and agree to it being listed on napejs.org with the image above.
+          required: true
