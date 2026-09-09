@@ -102,11 +102,14 @@ function box(THREE, w, h, d, color) {
  *
  * @returns {{root: object, parts: object}} root group + named part references
  */
-function buildTopDown(THREE, unit, palette) {
+function buildTopDown(THREE, unit, palette, props = {}) {
   const root = new THREE.Group();
   const parts = {};
 
   const u = unit;
+  // `bulk` widens the torso, hips and shoulders without touching the head or
+  // the limb lengths — a heavyweight reads as broad, not as tall, from above.
+  const bulk = props.bulk ?? 1;
 
   // Z layering, ground (0) upward. Each layer is a slab; the camera sees the
   // topmost one of any overlapping pair, so the order sets what reads.
@@ -122,7 +125,7 @@ function buildTopDown(THREE, unit, palette) {
   // slides these groups along Y. (Rotation is the wrong tool here: about X it
   // lifts the limb toward the camera, which barely reads from overhead, and
   // about Z it sweeps the limb sideways, which reads as a scissor kick.)
-  const hipX = u * 0.26;
+  const hipX = u * 0.26 * bulk;
   const legLen = u * 0.58;
   for (const side of ["left", "right"]) {
     const hip = new THREE.Group();
@@ -145,13 +148,13 @@ function buildTopDown(THREE, unit, palette) {
   // The shoulder slab is deliberately broad in X and sits just under the head:
   // the colour then reads as a band on either side of the face, which is what
   // makes blue-vs-red legible at demo zoom.
-  const torso = box(THREE, u * 1.16, u * 0.70, u * 0.62, palette.shirt);
+  const torso = box(THREE, u * 1.16 * bulk, u * 0.70, u * 0.62, palette.shirt);
   torso.position.set(0, 0, torsoZ);
   root.add(torso);
   parts.torso = torso;
 
   // Shorts: a darker slab at the base of the torso, peeking out behind it.
-  const shorts = box(THREE, u * 0.80, u * 0.66, u * 0.34, palette.shorts);
+  const shorts = box(THREE, u * 0.80 * bulk, u * 0.66, u * 0.34, palette.shorts);
   shorts.position.set(0, -u * 0.10, legZ + u * 0.16);
   root.add(shorts);
   parts.shorts = shorts;
@@ -159,7 +162,7 @@ function buildTopDown(THREE, unit, palette) {
   // --- Arms -----------------------------------------------------------------
   // Pivoted at the shoulder and centred on it, like the legs, so the same
   // fore/aft slide drives them.
-  const shoulderX = u * 0.66;
+  const shoulderX = u * 0.66 * bulk;
   const armLen = u * 0.56;
   for (const side of ["left", "right"]) {
     const shoulder = new THREE.Group();
@@ -223,8 +226,298 @@ function buildTopDown(THREE, unit, palette) {
   parts.legZ = legZ;
   parts.armX = shoulderX;
   parts.neckZ = neck.position.z;
+  parts.headR = headR;
+  parts.armLen = armLen;
+  parts.torsoZ = torsoZ;
+
+  // Hero dressing — headgear on the neck group, a weapon in one or both hands.
+  // Both are optional; a plain footballer passes neither.
+  if (props.hat) addTopDownHat(THREE, parts, u, palette, props.hat);
+  parts.twoHanded = false;
+  if (props.weapon) addTopDownWeapon(THREE, root, parts, u, palette, props.weapon);
+
+  // Materials that take the hit flash. Skin and shirt only — flashing the hat
+  // and weapon too turns the figure into one white blob.
+  parts.flashMats = [torso.material, head.material, shorts.material];
 
   return { root, parts };
+}
+
+// ---------------------------------------------------------------------------
+// Top-down hero dressing
+// ---------------------------------------------------------------------------
+//
+// Everything here hangs off the plain footballer rig. Seen from directly above
+// a hat is the single strongest silhouette cue there is — it changes the
+// outline of the head, which is the biggest shape on screen — so each hero
+// archetype gets a distinct one. Weapons are thin and long so they read as a
+// line sticking out of the figure rather than as a second body.
+
+function addTopDownHat(THREE, parts, u, palette, hat) {
+  const neck = parts.neck;
+  const headR = parts.headR;
+  const hatColor = palette.hat ?? darken(palette.shirt, 0.7);
+  const accent = palette.accent ?? 0xffd166;
+  const headTopZ = u * 0.22 + u * 0.22;   // the skull box spans z 0..0.44u in the neck group
+  const fwdY = u * 0.02;                  // the head sits a hair forward of the neck pivot
+
+  const group = new THREE.Group();
+  neck.add(group);
+  parts.hat = group;
+
+  if (hat === "cowboy") {
+    // Wide flat brim plus a squat crown. The brim doubles the head's footprint
+    // — unmistakable from above.
+    const brim = new THREE.Mesh(
+      new THREE.CylinderGeometry(headR * 1.6, headR * 1.6, u * 0.05, 12), mat(THREE, hatColor),
+    );
+    brim.rotation.x = Math.PI / 2;
+    brim.position.set(0, fwdY, headTopZ + u * 0.03);
+    group.add(brim);
+    const crown = box(THREE, headR * 1.25, headR * 1.35, u * 0.24, hatColor);
+    crown.position.set(0, fwdY, headTopZ + u * 0.16);
+    group.add(crown);
+    const band = box(THREE, headR * 1.3, headR * 1.4, u * 0.06, accent);
+    band.position.set(0, fwdY, headTopZ + u * 0.07);
+    group.add(band);
+  } else if (hat === "bandana") {
+    // A band round the brow with a tail out the back. Sits below the eye row
+    // so the face stays readable.
+    const band = box(THREE, headR * 2.1, headR * 2.1, u * 0.08, hatColor);
+    band.position.set(0, fwdY, u * 0.34);
+    group.add(band);
+    const tail = box(THREE, headR * 0.45, headR * 1.1, u * 0.06, hatColor);
+    tail.position.set(headR * 0.3, fwdY - headR * 1.3, u * 0.33);
+    tail.rotation.z = -0.35;
+    group.add(tail);
+  } else if (hat === "mask") {
+    // Wrestler's mask: a full cap in the mask colour with a contrasting stripe
+    // running fore-and-aft. Covers the hair entirely.
+    const cap = box(THREE, headR * 2.06, headR * 2.06, u * 0.12, hatColor);
+    cap.position.set(0, fwdY, headTopZ + u * 0.02);
+    group.add(cap);
+    const stripe = box(THREE, headR * 0.55, headR * 2.1, u * 0.13, accent);
+    stripe.position.set(0, fwdY, headTopZ + u * 0.025);
+    group.add(stripe);
+    const rim = box(THREE, headR * 2.12, headR * 2.12, u * 0.06, accent);
+    rim.position.set(0, fwdY, u * 0.30);
+    group.add(rim);
+  } else if (hat === "sombrero") {
+    const brim = new THREE.Mesh(
+      new THREE.CylinderGeometry(headR * 2.1, headR * 2.1, u * 0.05, 12), mat(THREE, hatColor),
+    );
+    brim.rotation.x = Math.PI / 2;
+    brim.position.set(0, fwdY, headTopZ + u * 0.03);
+    group.add(brim);
+    const cone = new THREE.Mesh(
+      new THREE.ConeGeometry(headR * 0.95, u * 0.32, 8), mat(THREE, hatColor),
+    );
+    cone.rotation.x = Math.PI / 2;
+    cone.position.set(0, fwdY, headTopZ + u * 0.05 + u * 0.16);
+    group.add(cone);
+    const trim = new THREE.Mesh(
+      new THREE.CylinderGeometry(headR * 2.15, headR * 2.15, u * 0.02, 12), mat(THREE, accent),
+    );
+    trim.rotation.x = Math.PI / 2;
+    trim.position.set(0, fwdY, headTopZ + u * 0.065);
+    group.add(trim);
+  } else if (hat === "goggles") {
+    // A strap round the skull and two lenses pushed up on the forehead.
+    const band = box(THREE, headR * 2.1, headR * 2.1, u * 0.07, hatColor);
+    band.position.set(0, fwdY, u * 0.38);
+    group.add(band);
+    for (const side of [-1, 1]) {
+      const lens = new THREE.Mesh(
+        new THREE.CylinderGeometry(headR * 0.3, headR * 0.3, u * 0.08, 10), mat(THREE, accent),
+      );
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(side * headR * 0.42, fwdY + headR * 0.55, headTopZ + u * 0.03);
+      group.add(lens);
+    }
+  } else if (hat === "cap") {
+    const crown = box(THREE, headR * 1.9, headR * 1.9, u * 0.10, hatColor);
+    crown.position.set(0, fwdY, headTopZ + u * 0.02);
+    group.add(crown);
+    const brim = box(THREE, headR * 1.6, headR * 0.95, u * 0.05, hatColor);
+    brim.position.set(0, fwdY + headR * 1.35, headTopZ);
+    group.add(brim);
+    const button = box(THREE, headR * 0.3, headR * 0.3, u * 0.06, accent);
+    button.position.set(0, fwdY, headTopZ + u * 0.09);
+    group.add(button);
+  }
+}
+
+function addTopDownWeapon(THREE, root, parts, u, palette, weapon) {
+  const handY = parts.armLen * 0.5;      // the hand end of the arm box
+  const gunColor = palette.gun ?? 0x2e3338;
+  const accent = palette.accent ?? 0xffd166;
+  const wood = palette.wood ?? 0x8a5f33;
+
+  // Weapons hang off a group at the hand so the arm's own slide carries them.
+  const hold = (arm) => {
+    const g = new THREE.Group();
+    g.position.set(0, handY, u * 0.06);
+    arm.add(g);
+    return g;
+  };
+
+  if (weapon === "shotgun") {
+    // Long barrel forward of the right hand, wooden stock back along the arm.
+    // Two-handed: the left arm reaches across to the pump in syncCharacter.
+    const g = hold(parts.rightArm);
+    const barrel = box(THREE, u * 0.15, u * 1.15, u * 0.15, gunColor);
+    barrel.position.y = u * 0.42;
+    g.add(barrel);
+    const pump = box(THREE, u * 0.22, u * 0.22, u * 0.18, wood);
+    pump.position.y = u * 0.22;
+    g.add(pump);
+    const stock = box(THREE, u * 0.18, u * 0.34, u * 0.16, wood);
+    stock.position.y = -u * 0.18;
+    g.add(stock);
+    parts.weapon = g;
+    parts.twoHanded = true;
+  } else if (weapon === "pistols") {
+    for (const arm of [parts.leftArm, parts.rightArm]) {
+      const g = hold(arm);
+      const barrel = box(THREE, u * 0.12, u * 0.52, u * 0.12, gunColor);
+      barrel.position.y = u * 0.22;
+      g.add(barrel);
+      const grip = box(THREE, u * 0.12, u * 0.14, u * 0.2, accent);
+      grip.position.set(0, -u * 0.02, -u * 0.08);
+      g.add(grip);
+    }
+    parts.weapon = parts.rightArm.children[parts.rightArm.children.length - 1];
+  } else if (weapon === "fists") {
+    // Oversized gloves — the weapon IS the hand.
+    for (const arm of [parts.leftArm, parts.rightArm]) {
+      const g = hold(arm);
+      const glove = box(THREE, u * 0.42, u * 0.42, u * 0.42, accent);
+      g.add(glove);
+    }
+    parts.weapon = parts.rightArm.children[parts.rightArm.children.length - 1];
+  } else if (weapon === "lute") {
+    // Held across the chest in the left hand; the right hand strums it.
+    const g = hold(parts.leftArm);
+    g.rotation.z = -0.9;
+    const body = box(THREE, u * 0.52, u * 0.5, u * 0.16, wood);
+    g.add(body);
+    const neck = box(THREE, u * 0.11, u * 0.7, u * 0.1, darken(wood, 0.7));
+    neck.position.y = u * 0.52;
+    g.add(neck);
+    const strings = box(THREE, u * 0.2, u * 0.9, u * 0.02, 0xe8e8e8);
+    strings.position.set(0, u * 0.2, u * 0.09);
+    g.add(strings);
+    const hole = box(THREE, u * 0.2, u * 0.2, u * 0.02, 0x1b1410);
+    hole.position.set(0, -u * 0.04, u * 0.09);
+    g.add(hole);
+    parts.weapon = g;
+    parts.twoHanded = true;
+  } else if (weapon === "bottle") {
+    const g = hold(parts.rightArm);
+    const flask = new THREE.Mesh(
+      new THREE.CylinderGeometry(u * 0.12, u * 0.15, u * 0.38, 8), mat(THREE, accent),
+    );
+    flask.position.y = u * 0.1;
+    g.add(flask);
+    const cork = box(THREE, u * 0.1, u * 0.1, u * 0.1, wood);
+    cork.position.y = u * 0.33;
+    g.add(cork);
+    parts.weapon = g;
+    // A satchel of spares on the back.
+    const satchel = box(THREE, u * 0.56, u * 0.26, u * 0.34, wood);
+    satchel.position.set(0, -u * 0.44, parts.torsoZ + u * 0.06);
+    root.add(satchel);
+  } else if (weapon === "wrench") {
+    const g = hold(parts.rightArm);
+    const shaft = box(THREE, u * 0.11, u * 0.72, u * 0.11, gunColor);
+    shaft.position.y = u * 0.3;
+    g.add(shaft);
+    const head = box(THREE, u * 0.34, u * 0.14, u * 0.12, gunColor);
+    head.position.y = u * 0.7;
+    g.add(head);
+    for (const side of [-1, 1]) {
+      const jaw = box(THREE, u * 0.1, u * 0.16, u * 0.12, gunColor);
+      jaw.position.set(side * u * 0.12, u * 0.82, 0);
+      g.add(jaw);
+    }
+    parts.weapon = g;
+  }
+}
+
+/**
+ * Hero-specific pose layer for the top-down rig — the pieces a fighting
+ * character needs on top of the footballer's run cycle. Runs after the run
+ * cycle has posed the limbs, and overrides what it must.
+ */
+function applyHeroExtras(ch, { attacking, hit, dead, lift }) {
+  const u = ch.unit;
+  const p = ch.parts;
+
+  // Attack thrust: a one-frame trigger that decays here, so the demo only has
+  // to say "fired" on the frame it happens.
+  if (attacking) ch.attack = 1;
+  ch.attack *= 0.82;
+  if (ch.attack < 0.01) ch.attack = 0;
+
+  if (p.twoHanded) {
+    // Both hands on the weapon: arms held forward and inward, no run swing,
+    // and the recoil pulls the whole grip back along the facing axis.
+    const back = ch.attack * u * 0.18;
+    p.rightArm.position.y = u * 0.12 - back;
+    p.rightArm.position.x = p.armX * 0.62;
+    p.leftArm.position.y = u * 0.30 - back;
+    p.leftArm.position.x = -p.armX * 0.22;
+  } else if (ch.attack > 0) {
+    // One-handed thrust: the right arm punches forward past the run pose.
+    p.rightArm.position.y += ch.attack * u * 0.36;
+    if (p.weapon && p.weapon.parent === p.leftArm) {
+      p.leftArm.position.y += ch.attack * u * 0.36;
+    } else if (ch.props?.weapon === "pistols") {
+      p.leftArm.position.y += ch.attack * u * 0.30;
+    }
+  }
+  // A little forward lunge of the torso on every attack.
+  p.torso.rotation.x += ch.attack * 0.25;
+
+  // Hit flash: skin and shirt go white for a few frames.
+  if (hit) ch.hitT = 4;
+  const flashOn = ch.hitT > 0;
+  if (flashOn) ch.hitT--;
+  if (flashOn !== ch.flashOn) {
+    ch.flashOn = flashOn;
+    for (const m of p.flashMats) m.emissive.setScalar(flashOn ? 0.85 : 0);
+  }
+
+  // Height cue: a perspective camera already makes a lifted figure larger, so
+  // this is only a small boost to sell a leap that is mostly vertical.
+  if (lift !== 1) ch.root.scale.multiplyScalar(lift);
+
+  // Death: from above, a figure that spins down into nothing reads as "gone"
+  // far better than a topple, which just turns the silhouette into a smear.
+  if (dead > 0) {
+    const k = Math.min(1, dead);
+    const s = Math.max(0.001, 1 - k * k);
+    ch.root.scale.set(s, s, s);
+    ch.root.rotation.z += k * 7;
+    ch.root.position.z += k * u * 0.8;
+  }
+}
+
+/**
+ * Palette for a top-down hero: shirt colour plus the accent colours the hat and
+ * weapon builders read. Anything not given falls back to a sensible derivative.
+ */
+export function heroPalette(shirtHex, overrides = {}) {
+  return {
+    ...DEFAULT_PALETTE,
+    shirt: shirtHex,
+    shorts: darken(shirtHex, 0.55),
+    hat: darken(shirtHex, 0.7),
+    accent: 0xffd166,
+    gun: 0x2e3338,
+    wood: 0x8a5f33,
+    ...overrides,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -245,11 +538,19 @@ function buildTopDown(THREE, unit, palette) {
  * @param {string} [opts.kind]    "topdown" (default)
  * @returns {object} character handle
  */
-export function createCharacter(adapter, THREE, { unit = 15, palette = DEFAULT_PALETTE, kind = "topdown" } = {}) {
+/**
+ * @param {object} [opts.props]   hero dressing — `{ weapon, hat, bulk }`.
+ *        weapon: "shotgun" | "pistols" | "fists" | "lute" | "bottle" | "wrench"
+ *        hat:    "cowboy" | "bandana" | "mask" | "sombrero" | "goggles" | "cap"
+ *        bulk:   torso/shoulder width multiplier (1 = the footballer)
+ */
+export function createCharacter(
+  adapter, THREE, { unit = 15, palette = DEFAULT_PALETTE, kind = "topdown", props = null } = {},
+) {
   if (kind !== "topdown") {
     throw new Error(`lowpoly-characters: unknown rig kind "${kind}"`);
   }
-  const { root, parts } = buildTopDown(THREE, unit, palette);
+  const { root, parts } = buildTopDown(THREE, unit, palette, props || {});
   adapter.addSceneMesh(root);
   return {
     kind,
@@ -257,6 +558,7 @@ export function createCharacter(adapter, THREE, { unit = 15, palette = DEFAULT_P
     parts,
     unit,
     palette,
+    props: props || null,
     // Animation state
     phase: 0,      // run-cycle phase in radians
     lastX: null,   // previous world position, for distance-driven stride
@@ -264,6 +566,10 @@ export function createCharacter(adapter, THREE, { unit = 15, palette = DEFAULT_P
     lean: 0,       // smoothed lean into the direction of travel
     amp: 0,        // smoothed run-cycle amplitude (0 = standing)
     bob: 0,
+    // Hero extras (see applyHeroExtras)
+    attack: 0,
+    hitT: 0,
+    flashOn: false,
   };
 }
 
@@ -383,8 +689,16 @@ function applyMood(ch, { x, y, faceX, faceY, z, mood, moodT }) {
 }
 
 
+/**
+ * Hero extras (all optional, ignored by a plain footballer):
+ * @param {boolean} [state.attacking]  true on the frame an attack fires
+ * @param {boolean} [state.hit]        true on the frame damage lands
+ * @param {number}  [state.dead]       0..1 death animation progress
+ * @param {number}  [state.lift]       extra uniform scale (height cue for a leap)
+ */
 export function syncCharacter(ch, {
   x, y, faceX = 0, faceY = 1, sprinting = false, z = 0, mood = null, moodT = 0,
+  attacking = false, hit = false, dead = 0, lift = 1,
 }) {
   if (!ch?.root) return;
 
@@ -457,6 +771,12 @@ export function syncCharacter(ch, {
   // Vertical bob at twice the stride frequency (one rise per footfall).
   ch.bob = Math.abs(Math.cos(ch.phase)) * ch.unit * 0.06 * amp;
   ch.root.position.z = z + ch.bob;
+
+  // Weapon grip, attack thrust, hit flash, leap lift, death — only figures
+  // built with `props` (or handed these fields) ever take this path.
+  if (ch.props || attacking || hit || dead > 0 || lift !== 1) {
+    applyHeroExtras(ch, { attacking, hit, dead, lift });
+  }
 }
 
 // ---------------------------------------------------------------------------
