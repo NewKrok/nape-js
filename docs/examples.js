@@ -103,6 +103,7 @@ import escapeRun             from "./demos/escape-run.js?v=3.42.0";
 import captureTheFlag        from "./demos/capture-the-flag.js?v=3.42.0";
 import jungleStrike          from "./demos/jungle-strike.js?v=3.42.0";
 import shardRush             from "./demos/shard-rush.js?v=3.42.0";
+import bladeWaltz            from "./demos/blade-waltz.js?v=3.42.0";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -166,6 +167,7 @@ const ALL_DEMOS = [
   captureTheFlag,
   jungleStrike,
   shardRush,
+  bladeWaltz,
 ];
 
 const gtag = window.gtag || function() {};

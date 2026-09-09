@@ -46,6 +46,7 @@ export const GAME_DEMO_IDS = new Set([
   "capture-the-flag",
   "jungle-strike",
   "shard-rush",
+  "blade-waltz",
 ]);
 
 export const CATEGORIES = [
