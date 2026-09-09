@@ -7,13 +7,14 @@ Install: `npm install @newkrok/nape-js`
 - [GitHub Repository](https://github.com/NewKrok/nape-js): Source code, issues, contributing guide
 - [npm Package](https://www.npmjs.com/package/@newkrok/nape-js): Published package with TypeScript declarations
 - [API Reference](https://napejs.org/api/index.html): Full TypeDoc-generated API docs
-- [Interactive Demos](https://napejs.org/examples): Live physics demos with source code
+- [Interactive Demos](https://napejs.org/examples): Live physics demos with source code — every demo also has its own page at https://napejs.org/examples/<id>/
+- [Games built on nape-js](https://napejs.org/games/): Complete playable game demos (AI, waves, cameras, 3D rigs) and shipped titles — the reference for "how do I build X" questions
 - [Full LLM Documentation](https://raw.githubusercontent.com/NewKrok/nape-js/master/packages/nape-js/llms-full.txt): Complete API reference in a single file
 - [Prompt Collection](https://napejs.org/ai.html): Copy-paste prompts for building a game with an LLM, plus the API mistakes models reliably make
-- [Cookbook](https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md): Task-oriented recipes (platformer, ragdoll, fluid, serialization, replay, etc.)
-- [Replay Guide](https://github.com/NewKrok/nape-js/blob/master/docs/guides/replay-guide.md): Recorder + Player + binary encode/decode + determinism contract
-- [Troubleshooting](https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md): Common problems and solutions
-- [Anti-Patterns](https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md): Common mistakes to avoid
+- [Cookbook](https://napejs.org/guides/cookbook/): Task-oriented recipes (platformer, ragdoll, fluid, serialization, replay, etc.)
+- [Replay Guide](https://napejs.org/guides/replay-guide/): Recorder + Player + binary encode/decode + determinism contract
+- [Troubleshooting](https://napejs.org/guides/troubleshooting/): Common problems and solutions
+- [Anti-Patterns](https://napejs.org/guides/anti-patterns/): Common mistakes to avoid
 - [PixiJS Integration](https://www.npmjs.com/package/@newkrok/nape-pixi) (`@newkrok/nape-pixi`): Sibling package — body/sprite sync, fixed-step render interpolation, debug draw, and off-thread physics bridge. PIXI v8.
 
 ## Quick Start

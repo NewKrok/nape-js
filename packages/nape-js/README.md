@@ -23,7 +23,7 @@ community's Haxe 4 fork, `nape-haxe4`, last shipped in 2020); nape-js carries
 the same simulation model forward as pure TypeScript — no dependencies, no
 build step, works in Node.js and every browser.
 
-**[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
+**[Homepage & Interactive Demos](https://napejs.org/)** | **[API Reference](https://napejs.org/api/)** | **[Examples](https://napejs.org/examples)** | **[Games built on nape-js](https://napejs.org/games/)** | **[Guides](https://napejs.org/guides/)** | **[Multiplayer Demo](https://napejs.org/multiplayer.html)**
 
 **[Cookbook](https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md)** | **[Troubleshooting](https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md)** | **[Anti-Patterns](https://github.com/NewKrok/nape-js/blob/master/docs/guides/anti-patterns.md)**
 
