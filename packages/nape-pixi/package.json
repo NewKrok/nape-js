@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "@newkrok/nape-js": "*",
-    "pixi.js": "^8.18.1",
-    "vite": "^8.0.10"
+    "pixi.js": "^8.20.1",
+    "vite": "^8.3.0"
   },
   "repository": {
     "type": "git",

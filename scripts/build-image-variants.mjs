@@ -21,7 +21,8 @@
  * Run via: npm run build:image-variants (and from build:docs).
  */
 
-import { readdirSync, readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
@@ -33,6 +34,17 @@ const WIDTHS = [320, 640];
 const QUALITY = 0.82;
 /** Matches `<name>@<width>.webp` — the variants this script itself produces. */
 const VARIANT_RE = /@\d+\.webp$/;
+/**
+ * Source hashes of the variants on disk.
+ *
+ * Deliberately not mtimes: the variants are committed artifacts, and a fresh
+ * CI checkout stamps every file with the checkout time, so an mtime rule
+ * decides "stale" or "fresh" essentially at random — which would have this
+ * script launching a browser during the Pages deploy for no reason.
+ */
+const MANIFEST_PATH = resolve(DOCS, "assets/image-variants.json");
+const manifest = existsSync(MANIFEST_PATH) ? JSON.parse(readFileSync(MANIFEST_PATH, "utf8")) : {};
+const hashOf = (buf) => createHash("sha256").update(buf).digest("hex").slice(0, 16);
 
 /** Sources that need at least one variant (re)built. */
 function pending() {
@@ -43,12 +55,15 @@ function pending() {
     for (const name of readdirSync(abs)) {
       if (!name.endsWith(".webp") || VARIANT_RE.test(name)) continue;
       const src = join(abs, name);
-      const srcTime = statSync(src).mtimeMs;
-      const widths = WIDTHS.filter((w) => {
-        const out = join(abs, name.replace(/\.webp$/, `@${w}.webp`));
-        return !existsSync(out) || statSync(out).mtimeMs < srcTime;
-      });
-      if (widths.length) jobs.push({ dir, name, src, widths });
+      const bytes = readFileSync(src);
+      const key = `${dir}/${name}`;
+      const hash = hashOf(bytes);
+      const widths = WIDTHS.filter(
+        (w) =>
+          !existsSync(join(abs, name.replace(/\.webp$/, `@${w}.webp`))) ||
+          manifest[key] !== hash,
+      );
+      if (widths.length) jobs.push({ dir, name, key, hash, bytes, widths });
     }
   }
   return jobs;
@@ -60,16 +75,28 @@ if (!jobs.length) {
   process.exit(0);
 }
 
-const browser = await chromium.launch({
-  channel: "chrome",
-  args: ["--no-sandbox", "--use-gl=swiftshader", "--enable-unsafe-swiftshader"],
-});
+// The variants are committed, so a machine without Chrome (or with a broken
+// one) must not fail the build: the pages simply keep offering whatever
+// variants are already on disk — build-site-pages only ever writes a srcset
+// candidate for a file it can see.
+let browser;
+try {
+  browser = await chromium.launch({
+    channel: "chrome",
+    args: ["--no-sandbox", "--use-gl=swiftshader", "--enable-unsafe-swiftshader"],
+  });
+} catch (err) {
+  console.warn(
+    `image variants: skipping ${jobs.length} source(s) — no usable Chrome (${err.message.split("\n")[0]})`,
+  );
+  process.exit(0);
+}
 const page = await browser.newPage();
 await page.setContent("<!doctype html><title>variants</title>");
 
 let written = 0;
 for (const job of jobs) {
-  const dataUrl = `data:image/webp;base64,${readFileSync(job.src).toString("base64")}`;
+  const dataUrl = `data:image/webp;base64,${job.bytes.toString("base64")}`;
   for (const width of job.widths) {
     const out = await page.evaluate(
       async ({ dataUrl, width, quality }) => {
@@ -94,7 +121,9 @@ for (const job of jobs) {
     writeFileSync(join(DOCS, job.dir, job.name.replace(/\.webp$/, `@${width}.webp`)), buf);
     written++;
   }
+  manifest[job.key] = job.hash;
 }
 
 await browser.close();
+writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
 console.log(`image variants: wrote ${written} file(s) for ${jobs.length} source(s)`);

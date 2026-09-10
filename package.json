@@ -45,17 +45,20 @@
   "homepage": "https://napejs.org/",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vitest/coverage-v8": "^4.1.4",
-    "eslint": "^10.2.1",
+    "@vitest/coverage-v8": "^4.1.11",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "madge": "^8.0.0",
     "markdown-it": "^14.3.1",
     "playwright-core": "^1.63.0",
     "prettier": "^3.8.3",
     "tsup": "^8.4.0",
-    "typedoc": "^0.28.19",
+    "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.0",
-    "vitest": "^4.1.4"
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "esbuild": "^0.28.2"
   }
 }
