@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page not found — nape-js</title>
+  <meta name="description" content="That page does not exist on napejs.org. Jump to the demos, the playable games, the guides or the API reference instead." />
+  <!-- GitHub Pages serves this file for any unmatched path at any depth, so
+       every asset reference here must be root-absolute: a relative "style.css"
+       would 404 a second time when the miss happened under /examples/foo/. -->
+  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+  <link rel="stylesheet" href="/style.css" />
+  <meta name="robots" content="noindex, follow" />
+  <style>
+    .nf {
+      min-height: 78vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 18px;
+      padding: 48px 20px;
+    }
+    .nf-code {
+      font-family: var(--font-mono);
+      font-size: clamp(3.5rem, 14vw, 7rem);
+      line-height: 1;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(100deg, var(--accent), var(--neon-cyan) 55%, var(--green));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nf h1 { margin: 0; font-size: clamp(1.2rem, 4vw, 1.6rem); }
+    .nf p { margin: 0; color: var(--text-dim); max-width: 46ch; }
+    .nf-links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 8px; }
+    .nf-logo { width: 48px; height: 48px; opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <img class="nf-logo" src="/logo.svg" width="48" height="48" alt="" />
+    <p class="nf-code">404</p>
+    <h1>This page rolled off the edge of the world</h1>
+    <p>
+      No body here — the URL does not match anything on napejs.org. It may have
+      moved, or the link that brought you may be out of date.
+    </p>
+    <div class="nf-links">
+      <a class="btn btn-primary" href="/">Home</a>
+      <a class="btn btn-secondary" href="/examples/">Demos</a>
+      <a class="btn btn-secondary" href="/games/">Games</a>
+      <a class="btn btn-secondary" href="/guides/">Guides</a>
+      <a class="btn btn-secondary" href="/api/index.html">API reference</a>
+    </div>
+  </main>
+</body>
+</html>

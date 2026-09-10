@@ -130,6 +130,19 @@ function bumpRelativePaths(html, page) {
   };
 
   html = html.replace(/\b(href|src)="([^"]+)"/g, (m, attr, ref) => `${attr}="${fix(ref)}"`);
+  // srcset carries a comma-separated list of "<url> <descriptor>" pairs, so it
+  // needs its own pass — the href|src rule above does not match it (the "src"
+  // in "srcset" is not followed by "="), and a candidate left un-bumped would
+  // resolve inside <lang>/ and 404, which is worse than offering no srcset at
+  // all: the browser would pick a missing file over the working `src`.
+  html = html.replace(/\bsrcset="([^"]+)"/g, (m, list) => {
+    const fixed = list.split(",").map((candidate) => {
+      const part = candidate.trim();
+      const space = part.indexOf(" ");
+      return space === -1 ? fix(part) : fix(part.slice(0, space)) + part.slice(space);
+    });
+    return `srcset="${fixed.join(", ")}"`;
+  });
   html = html.replace(/\bfrom\s+"([^"]+)"/g, (m, ref) => `from "${fix(ref)}"`);
   return html;
 }

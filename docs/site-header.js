@@ -17,6 +17,8 @@
  *     live in the HTML and never depend on this file.
  */
 
+import { afterFirstPaint } from "./after-paint.js?v=3.42.1";
+
 const NPM_ENDPOINT = "https://api.npmjs.org/downloads/point/last-month/@newkrok/nape-js";
 const GITHUB_ENDPOINT = "https://api.github.com/repos/NewKrok/nape-js";
 const CACHE_KEY = "nape-badges";
@@ -204,7 +206,16 @@ function initHeader() {
 }
 
 initHeader();
-loadBadges();
+
+// The two badge numbers come from api.npmjs.org and api.github.com. They are
+// pure decoration — a badge that cannot resolve a number stays hidden — but
+// as module-evaluation-time fetches they sat on the document's critical
+// request chain, and Lighthouse measured them as its *longest* path there
+// (266 ms for npm, 171 ms for GitHub) on every page of the site. A cached
+// result needs no network at all, so it still renders at once; only a cold
+// fetch waits until the page has painted.
+if (readCache()) loadBadges();
+else afterFirstPaint().then(loadBadges);
 
 // The tooltips are localized, so refresh them if the visitor switches
 // language without a full page load.

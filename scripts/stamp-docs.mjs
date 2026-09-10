@@ -59,6 +59,20 @@ for (const htmlFile of ["index.html", "examples/index.html"]) {
   ]);
 }
 
+// --- index.html: bake the version badge text ---
+// app.js also sets this at boot, but doing it there and only there meant the
+// badge grew from empty to "v3.42.1" after first paint, widening the hero's
+// badge row enough to wrap it and shift everything below down (a measured
+// 0.024 of the home page's layout shift). Baked here it is correct in the
+// served markup, and app.js's assignment becomes a no-op that writes the same
+// string.
+stamp(resolve(docs, "index.html"), [
+  [
+    /(<span class="version-badge" id="versionBadge">)[^<]*(<\/span>)/,
+    (_m, open, close) => `${open}v${version}${close}`,
+  ],
+]);
+
 // --- JS files: stamp ES import paths for local modules ---
 // Every hand-written module under docs/ must import local files through the
 // SAME stamped URL: a mix of stamped and bare specifiers makes the browser

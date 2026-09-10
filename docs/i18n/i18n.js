@@ -56,9 +56,20 @@ const OG_LOCALES = {
 const STORAGE_KEY = "nape-lang";
 const DEV = typeof location !== "undefined" && /localhost|127\.0\.0\.1/.test(location.hostname);
 
-// Version query for cache-busting the JSON files — keep in sync with the
-// ?v= used by the HTML pages.
-const ASSET_VERSION = "3.35.0";
+// Version query for cache-busting the JSON files. Derived from this module's
+// own ?v= stamp rather than hard-coded: scripts/stamp-docs.mjs rewrites every
+// `from "./i18n.js?v=3.42.1"` import, so import.meta.url already carries the
+// current version and the two can never drift apart. (They did: this was
+// pinned at 3.35.0 while the pages had moved on to 3.42.x, so seven releases
+// of locale edits could sit behind a stale cache entry.) Unstamped loads —
+// dev servers, direct imports — fall back to "dev".
+const ASSET_VERSION = (() => {
+  try {
+    return new URL(import.meta.url).searchParams.get("v") || "dev";
+  } catch {
+    return "dev";
+  }
+})();
 
 // Resolve the locales directory relative to this module, so the pages under
 // /examples/ and / both fetch the same files.

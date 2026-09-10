@@ -20,6 +20,7 @@
  * column where the headline and buttons live (see `.hero-bg` in style.css).
  */
 import { Space, Body, BodyType, Vec2, Circle, Polygon, Material } from "./nape-js.esm.js?v=3.42.1";
+import { afterFirstPaint } from "./after-paint.js?v=3.42.1";
 
 // Density, not a fixed count: one body per ~18k px² of hero, clamped. A
 // phone's hero is a fraction of a desktop's area, so a fixed count would
@@ -56,7 +57,10 @@ function init() {
   const ctx = canvas.getContext("2d", { alpha: true });
   if (!ctx) return;
 
-  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  // Kept as a live query, not a snapshot: `boot()` subscribes to changes so
+  // the drift can be stopped and resumed without a reload.
+  const motionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+  let reduceMotion = !!motionQuery?.matches;
 
   let space = null;
   let bodies = [];
@@ -294,59 +298,88 @@ function init() {
 
   // --- wiring --------------------------------------------------------------
 
-  build();
-  // Let the shapes settle into a less grid-like arrangement before the first
-  // paint, so the hero never flashes a raw random scatter.
-  for (let i = 0; i < 90; i++) step();
-  render();
-
-  if (reduceMotion) return; // static frame only — no loop, no listeners
-
-  let inView = true;
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(
-      ([entry]) => {
-        inView = entry.isIntersecting;
-        if (inView && !document.hidden) start();
-        else stop();
-      },
-      { threshold: 0 },
-    ).observe(hero);
-  } else {
-    start();
+  /**
+   * Build the world and paint the first settled frame.
+   *
+   * The 90 warm-up steps let the shapes drift out of their initial random
+   * scatter before anything is shown, so the hero never flashes a raw grid.
+   * They cost ~50 ms on a 4x-throttled CPU, which is why `boot()` is kept off
+   * the critical path (see the scheduling at the bottom of this file): the
+   * hero is decoration, and it must never delay the headline's paint.
+   */
+  function settle(steps) {
+    build();
+    for (let i = 0; i < steps; i++) step();
+    render();
   }
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stop();
-    else if (inView) start();
-  });
+  function boot() {
+    settle(90);
 
-  hero.addEventListener(
-    "pointermove",
-    (event) => {
-      const rect = hero.getBoundingClientRect();
-      pointer.x = event.clientX - rect.left;
-      pointer.y = event.clientY - rect.top;
-      pointer.active = true;
-    },
-    { passive: true },
-  );
-  hero.addEventListener("pointerleave", () => {
-    pointer.active = false;
-  });
+    let inView = true;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(
+        ([entry]) => {
+          inView = entry.isIntersecting;
+          if (inView && !document.hidden) start();
+          else stop();
+        },
+        { threshold: 0 },
+      ).observe(hero);
+    } else {
+      start();
+    }
 
-  let resizeTimer = 0;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      const wasRunning = running;
-      stop();
-      build();
-      for (let i = 0; i < 60; i++) step();
-      render();
-      if (wasRunning) start();
-    }, 200);
-  });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop();
+      else if (inView) start();
+    });
 
-  start();
+    // Honour a *change* of the motion preference, not just its value at load:
+    // switching "reduce motion" on in the OS stops the drift on the spot and
+    // leaves the settled frame standing, and switching it off resumes.
+    motionQuery?.addEventListener?.("change", (event) => {
+      reduceMotion = event.matches;
+      if (reduceMotion) stop();
+      else if (inView && !document.hidden) start();
+    });
+
+    // Pointer interaction only means something while the field is moving.
+    if (!reduceMotion) {
+      hero.addEventListener(
+        "pointermove",
+        (event) => {
+          const rect = hero.getBoundingClientRect();
+          pointer.x = event.clientX - rect.left;
+          pointer.y = event.clientY - rect.top;
+          pointer.active = true;
+        },
+        { passive: true },
+      );
+      hero.addEventListener("pointerleave", () => {
+        pointer.active = false;
+      });
+    }
+
+    // Registered under reduced motion too: without it a phone rotation would
+    // leave the static frame stretched at the old hero size.
+    let resizeTimer = 0;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const wasRunning = running;
+        stop();
+        settle(60);
+        if (wasRunning) start();
+      }, 200);
+    });
+
+    start(); // no-op under reduced motion — the settled frame is the whole show
+  }
+
+  // Everything above is decoration behind the headline, so none of it may
+  // compete with the paint: the hero shows its CSS gradient (the same
+  // fallback it uses when the engine fails to load) until the main thread has
+  // nothing better to do.
+  afterFirstPaint().then(boot);
 }

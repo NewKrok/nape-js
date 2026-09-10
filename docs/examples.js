@@ -217,7 +217,15 @@ function createCard(demo, { onTagClick } = {}) {
   poster.decoding = "async";
   poster.alt = "";
   poster.width = 900; poster.height = 500;
-  poster.src = new URL(`./assets/posters/${demo.id}.webp`, import.meta.url).href;
+  const posterBase = new URL(`./assets/posters/${demo.id}`, import.meta.url).href;
+  poster.src = `${posterBase}.webp`;
+  // Narrow variants from scripts/build-image-variants.mjs. At phone width a
+  // card fills the row (~364 CSS px), so the 900px source is roughly 40% more
+  // pixels than even a 1.75-DPR screen can use; on desktop the grid's 420px
+  // minimum keeps the full-width source in play. A variant that was never
+  // built simply 404s out of the candidate list, leaving `src` to serve.
+  poster.srcset = `${posterBase}@320.webp 320w, ${posterBase}@640.webp 640w, ${posterBase}.webp 900w`;
+  poster.sizes = "(min-width: 500px) 440px, calc(100vw - 48px)";
   poster.addEventListener("error", () => poster.remove());
   renderWrap.appendChild(poster);
   card.appendChild(renderWrap);

@@ -19,6 +19,7 @@ import { PixiJSAdapter, loadPixi } from "./renderers/pixijs-adapter.js?v=3.42.1"
 import { openInCodePen, getPreviewCode } from "./codepen-templates.js?v=3.42.1";
 import { openInStackBlitz } from "./stackblitz-templates.js?v=3.42.1";
 import { t as i18n } from "./i18n/i18n.js?v=3.42.1";
+import { afterFirstPaint } from "./after-paint.js?v=3.42.1";
 
 const gtag = window.gtag || function () {};
 
@@ -201,6 +202,12 @@ async function startDemo() {
 }
 
 (async () => {
+  // The demo is the point of this page, but the description, code panel and
+  // navigation around it are all prerendered — building a Space and starting
+  // a render loop ahead of their paint only delays them. The "Loading engine"
+  // overlay covers the wait.
+  await afterFirstPaint();
+
   try {
     const mod = await import(stamped(`./demos/${demoId}.js`));
     demo = mod.default;

@@ -77,10 +77,49 @@ const homeHtml = readFileSync(resolve(DOCS_DIR, "index.html"), "utf8");
 const showcaseMatch = homeHtml.match(/<div class="showcase-grid">([\s\S]*?)<\/div>\s*\n\s*<p class="showcase-foot"/);
 if (!showcaseMatch) throw new Error("build-site-pages: showcase grid not found in docs/index.html");
 const showcaseGridInner = showcaseMatch[1];
+
+/**
+ * Re-base the site-root-relative asset paths in markup lifted out of
+ * docs/index.html (depth 0) onto a page at some other depth.
+ *
+ * `src` and *every* `srcset` candidate has to move. A missed srcset candidate
+ * is the nastiest kind of broken image: the `src` still resolves, so the page
+ * looks fine at the width you happen to test at, and only breaks on the
+ * viewports that pick the candidate.
+ */
+const rebaseAssets = (html, root) =>
+  html
+    .replace(/src="assets\//g, `src="${root}assets/`)
+    .replace(
+      /srcset="([^"]+)"/g,
+      (_m, list) => `srcset="${list.replace(/(^|,\s*)assets\//g, `$1${root}assets/`)}"`,
+    );
 const shippedCount = (showcaseGridInner.match(/class="showcase-card"/g) || []).length;
 
 /** Relative (site-root) path of a demo's poster, or null when not rendered yet. */
 const posterOf = (id) => (existsSync(resolve(DOCS_DIR, "assets/posters", `${id}.webp`)) ? `assets/posters/${id}.webp` : null);
+
+/**
+ * `srcset`/`sizes` for a card image, offering the narrow variants that
+ * scripts/build-image-variants.mjs emits alongside each source.
+ *
+ * Every one of these images is authored at 900-960px and displayed in a slot
+ * a third of that, so without candidates the browser has no choice but the
+ * full-width file. A variant is only offered if it exists on disk, which
+ * keeps the markup correct on a tree where the variants have not been built.
+ */
+function responsiveAttrs(relPath, root, sizes) {
+  const candidates = [];
+  for (const width of [320, 640]) {
+    const variant = relPath.replace(/\.webp$/, `@${width}.webp`);
+    if (existsSync(resolve(DOCS_DIR, variant))) candidates.push(`${root}${variant} ${width}w`);
+  }
+  if (!candidates.length) return "";
+  // The source itself is the widest candidate; posters are 900w, showcase 960w.
+  const naturalWidth = relPath.startsWith("assets/showcase/") ? 960 : 900;
+  candidates.push(`${root}${relPath} ${naturalWidth}w`);
+  return ` srcset="${candidates.join(", ")}" sizes="${sizes}"`;
+}
 // build-posters.mjs records which renderer each poster shows; cards that show a
 // 3D poster deep-link into the 3D renderer so the click matches the picture.
 const posterManifestPath = resolve(DOCS_DIR, "assets/posters/manifest.json");
@@ -399,7 +438,7 @@ function i18nBootHtml(paths, { switcher = true } = {}) {
     await initI18n();
     ${switcher ? "mountLangSwitcher();" : ""}
   </script>
-  <script src="${paths.root}site-header.js${V}" defer></script>`;
+  <script type="module" src="${paths.root}site-header.js${V}"></script>`;
 }
 
 const PRISM_HEAD = `  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
@@ -420,7 +459,7 @@ const tierBadge = (demo) => {
 function moreDemoLink(d, paths, { localized = true } = {}) {
   const poster = posterOf(d.id);
   const thumb = poster
-    ? `<img class="more-demo-thumb" src="${paths.root}${poster}" width="900" height="500" loading="lazy" decoding="async" alt="" />`
+    ? `<img class="more-demo-thumb" src="${paths.root}${poster}"${responsiveAttrs(poster, paths.root, "(max-width: 400px) calc(100vw - 48px), 220px")} width="900" height="500" loading="lazy" decoding="async" alt="" />`
     : `<span class="more-demo-thumb more-demo-thumb-empty" aria-hidden="true"></span>`;
   const label = localized ? `<span data-i18n="demo.${d.id}.label">${escText(d.label)}</span>` : `<span>${escText(d.label)}</span>`;
   return `<a class="more-demo" href="${paths.home}examples/${d.id}/${posterQuery(d.id)}">${thumb}<span class="more-demo-text">${tierBadge(d)}${label}</span></a>`;
@@ -623,11 +662,20 @@ function gameCard(demo, paths, { large }) {
   const href = `${paths.home}examples/${demo.id}/${posterQuery(demo.id)}`;
   const poster = posterOf(demo.id);
   const media = poster
-    ? `<img class="game-card-img" src="${paths.root}${poster}" width="900" height="500" loading="lazy" decoding="async" alt="${escAttr(demo.label)} — gameplay screenshot" />`
+    ? `<img class="game-card-img" src="${paths.root}${poster}"${responsiveAttrs(poster, paths.root, "(min-width: 900px) 290px, calc(100vw - 48px)")} width="900" height="500" loading="lazy" decoding="async" alt="${escAttr(demo.label)} — gameplay screenshot" />`
     : "";
+  // No aria-label on the link. It used to carry just the game's name, which
+  // *replaced* the accessible name rather than adding to it — so the link
+  // announced "Blade Waltz" while showing "Play →", and a voice-control user
+  // asking for "Play" matched nothing (axe: label-content-name-mismatch).
+  // Left alone, the name is composed from the poster's alt text and the
+  // visible "Play →", which contains both. Cards without a poster have no alt
+  // to contribute, so they get the name from a visually-hidden span instead —
+  // still real text content, so the visible label stays part of the name.
+  const hiddenName = poster ? "" : `<span class="sr-only">${escText(demo.label)}</span>`;
   return `        <article class="game-card${large ? " game-card-large" : ""}">
-          <a class="game-card-canvas${poster ? " has-poster" : ""}" href="${href}"${poster ? "" : ` data-demo-id="${demo.id}"`} aria-label="${escAttr(demo.label)}">
-            ${media}<span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          <a class="game-card-canvas${poster ? " has-poster" : ""}" href="${href}"${poster ? "" : ` data-demo-id="${demo.id}"`}>
+            ${hiddenName}${media}<span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
           </a>
           <div class="game-card-body">
             <h3>${tierBadge(demo)}<a href="${href}" data-i18n="demo.${demo.id}.label">${escText(demo.label)}</a></h3>
@@ -656,9 +704,7 @@ function gamesPage(lang) {
       isAccessibleForFree: true,
     })),
   };
-  const shipped = showcaseGridInner
-    .replace(/src="assets\//g, `src="${paths.root}assets/`)
-    .replace(/loading="lazy"/g, 'loading="lazy"');
+  const shipped = rebaseAssets(showcaseGridInner, paths.root);
 
   const body = `<body>
 ${headerHtml(paths, "games")}
@@ -721,7 +767,7 @@ function showcasePage(lang) {
   const paths = pathsFor(1, lang);
   const title = t(lang, "showcasePage.meta.title");
   const description = t(lang, "showcasePage.meta.description");
-  const shipped = showcaseGridInner.replace(/src="assets\//g, `src="${paths.root}assets/`);
+  const shipped = rebaseAssets(showcaseGridInner, paths.root);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -900,7 +946,7 @@ ${headerHtml(paths, "guides", { langSwitcher: false })}
   </section>
   </main>
 ${footerHtml(paths)}
-  <script src="../../site-header.js${V}" defer></script>
+  <script type="module" src="../../site-header.js${V}"></script>
   <script>
     // Prism arrives deferred; highlight once it is here.
     window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
@@ -957,7 +1003,7 @@ ${cards}
   </section>
   </main>
 ${footerHtml(paths)}
-  <script src="../site-header.js${V}" defer></script>
+  <script type="module" src="../site-header.js${V}"></script>
 </body>
 </html>
 `;

@@ -14,6 +14,7 @@ import { openInStackBlitz as _openInStackBlitz } from "./stackblitz-templates.js
 
 import { categoryOf } from "./demo-categories.js?v=3.42.1";
 import { t as i18n } from "./i18n/i18n.js?v=3.42.1";
+import { afterFirstPaint } from "./after-paint.js?v=3.42.1";
 
 // Localized demo label/desc with English-source fallback.
 const demoLabel = (demo) => i18n(`demo.${demo.id}.label`, demo.label);
@@ -232,12 +233,53 @@ async function getActiveCode() {
   return getPreviewCode(demo, runner.mode, { showOutlines: runner.debugDraw });
 }
 
+// Prism turns the featured demo's source into roughly 2 000 <span>s — on its
+// own the single largest contributor to this page's DOM (2 878 elements, of
+// which 2 043 were this one code block), and it lands well below the fold.
+// The escaped source is written into the panel immediately, so the code is
+// readable from the first paint; the syntax colours arrive when the panel is
+// actually close to being looked at. Unlike the demo pages this panel is open
+// by default, which is why it needs the viewport check rather than a
+// `hidden` check.
+let codeHighlightDirty = false;
+let codePanelSeen = false;
+
+function highlightCodePanel() {
+  // Prism arrives deferred from a third-party CDN — the preview must survive
+  // without it, and must still colour up once it lands (hence: stay dirty).
+  if (typeof Prism === "undefined") return;
+  Prism.highlightAllUnder(codeBodyEl);
+  codeHighlightDirty = false;
+}
+
+if ("IntersectionObserver" in window) {
+  new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      codePanelSeen = true;
+      if (codeHighlightDirty) highlightCodePanel();
+    },
+    { rootMargin: "300px 0px" },
+  ).observe(codeBodyEl);
+  // Prism is `defer`red, so it may not have existed when the panel first came
+  // into view. `load` is the point at which it definitely does.
+  window.addEventListener(
+    "load",
+    () => {
+      if (codePanelSeen && codeHighlightDirty) highlightCodePanel();
+    },
+    { once: true },
+  );
+} else {
+  codePanelSeen = true;
+}
+
 async function updateCodePreview() {
   const source = await getActiveCode();
   const escaped = source.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   codeBodyEl.innerHTML = `<pre class="line-numbers"><code class="language-javascript">${escaped}</code></pre>`;
-  // Prism arrives deferred from a third-party CDN — the preview must survive without it.
-  if (typeof Prism !== "undefined") Prism.highlightAllUnder(codeBodyEl);
+  codeHighlightDirty = true;
+  if (codePanelSeen) highlightCodePanel();
 }
 
 function showToast(msg) {
@@ -350,4 +392,6 @@ if (versionBadge) versionBadge.textContent = `v${VERSION}`;
 loadingOverlay.classList.add("hidden");
 
 buildTabs();
-startDemo(FEATURED[0].id);
+// The featured demo builds a Space and starts a rAF loop; both are deferred
+// so the prerendered copy above the canvas paints first.
+afterFirstPaint().then(() => startDemo(FEATURED[0].id));
