@@ -389,7 +389,7 @@
     .example-card-info {
       padding: 14px 16px;
     }
-    .example-card-info h3 {
+    .example-card-info h2 {
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 4px;
@@ -557,7 +557,10 @@
       </div>
 
       <!-- Category filter bar (always visible — Physics vs Game) -->
-      <div class="examples-categories" id="categoryFilterBar" role="tablist" aria-label="Filter demos by category"></div>
+      <!-- role="group", not "tablist": these pills filter the grid in place, they
+           do not switch tab panels, and a tablist requires role="tab" children
+           (axe: aria-required-children). The pressed state is set in examples.js. -->
+      <div class="examples-categories" id="categoryFilterBar" role="group" aria-label="Filter demos by category"></div>
 
       <!-- Tag filter bar (collapsible, populated by JS) -->
       <div class="examples-tags-wrapper" id="tagFilterWrapper">

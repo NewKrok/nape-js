@@ -235,9 +235,18 @@ function createCard(demo, { onTagClick } = {}) {
   let threeRegistered = false;
   let pixiRegistered = false;
 
-  const overlay = document.createElement("div");
+  // A real <button>, not a div carrying an aria-label. The overlay *is* the
+  // play control — a click anywhere over the card's canvas starts the demo —
+  // so it has to be focusable and operable from the keyboard, and aria-label
+  // is only valid on an element that has a role (axe: aria-prohibited-attr).
+  // The triangle inside is pure decoration and is hidden from the tree.
+  const playLabel = () =>
+    i18n("examples.playDemo", "Run the {label} demo").replace("{label}", demoLabel(demo));
+  const overlay = document.createElement("button");
+  overlay.type = "button";
   overlay.className = "play-overlay";
-  overlay.innerHTML = `<div class="play-btn" aria-label="Play"></div>`;
+  overlay.setAttribute("aria-label", playLabel());
+  overlay.innerHTML = `<span class="play-btn" aria-hidden="true"></span>`;
   renderWrap.appendChild(overlay);
 
   const statsBar = document.createElement("div");
@@ -481,7 +490,7 @@ function createCard(demo, { onTagClick } = {}) {
 
   const titleRow = document.createElement("div");
   titleRow.className = "card-title-row";
-  const h3 = document.createElement("h3");
+  const heading = document.createElement("h2");
   const tagSpans = [];
 
   const catId = tierOf(demo);
@@ -503,13 +512,14 @@ function createCard(demo, { onTagClick } = {}) {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // let the browser open a tab
     e.preventDefault();
   });
-  h3.appendChild(catBadge);
-  h3.appendChild(titleLink);
+  heading.appendChild(catBadge);
+  heading.appendChild(titleLink);
 
   // Refresh the card's localized text (title, badge, description, tags).
   // Called on build and again on language change.
   function applyCardText() {
     labelNode.textContent = demoLabel(demo);
+    overlay.setAttribute("aria-label", playLabel());
     catBadge.textContent = catLabel(catId);
     catBadge.title = i18n("examples.filterTo", "Filter to {cat} demos").replace("{cat}", catLabel(catId));
     p.innerHTML = demoDesc(demo);
@@ -613,7 +623,7 @@ function createCard(demo, { onTagClick } = {}) {
   });
   btnGroup.appendChild(shareBtn);
 
-  titleRow.append(h3, btnGroup);
+  titleRow.append(heading, btnGroup);
   info.appendChild(titleRow);
 
   const p = document.createElement("p");
@@ -776,6 +786,7 @@ function buildCategoryBar() {
   // "All" pill
   const all = document.createElement("button");
   all.className = "category-pill" + (!activeCategory ? " active" : "");
+  all.setAttribute("aria-pressed", String(!activeCategory));
   all.textContent = `${i18n("examples.all", "All")} (${ALL_DEMOS.length})`;
   all.addEventListener("click", () => setActiveCategory(null));
   categoryBar.appendChild(all);
@@ -784,6 +795,7 @@ function buildCategoryBar() {
     const count = ALL_DEMOS.filter(d => matchesCategory(d, cat.id)).length;
     const btn = document.createElement("button");
     btn.className = "category-pill category-pill-" + cat.id + (activeCategory === cat.id ? " active" : "");
+    btn.setAttribute("aria-pressed", String(activeCategory === cat.id));
     btn.textContent = `${catLabel(cat.id)} (${count})`;
     btn.title = cat.desc;
     btn.addEventListener("click", () => setActiveCategory(activeCategory === cat.id ? null : cat.id));

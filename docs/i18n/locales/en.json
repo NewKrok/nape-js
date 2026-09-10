@@ -110,6 +110,7 @@
   "examples.tagsExpanded": "Tags ▴",
   "examples.tagsClear": "✕ Clear",
   "examples.all": "All",
+  "examples.playDemo": "Run the {label} demo",
   "examples.noResults": "No demos match your search.",
   "examples.scrollTop": "Scroll to top",
   "examples.filterTo": "Filter to {cat} demos",

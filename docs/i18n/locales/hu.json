@@ -110,6 +110,7 @@
   "examples.tagsExpanded": "Címkék ▴",
   "examples.tagsClear": "✕ Törlés",
   "examples.all": "Összes",
+  "examples.playDemo": "{label} demó indítása",
   "examples.noResults": "Nincs a keresésnek megfelelő demó.",
   "examples.scrollTop": "Görgetés a tetejére",
   "examples.filterTo": "Szűrés a(z) {cat} demókra",

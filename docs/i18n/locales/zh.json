@@ -110,6 +110,7 @@
   "examples.tagsExpanded": "标签 ▴",
   "examples.tagsClear": "✕ 清除",
   "examples.all": "全部",
+  "examples.playDemo": "运行 {label} 示例",
   "examples.noResults": "没有符合搜索条件的演示。",
   "examples.scrollTop": "回到顶部",
   "examples.filterTo": "筛选 {cat} 类演示",

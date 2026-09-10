@@ -110,6 +110,7 @@
   "examples.tagsExpanded": "Etiquetas ▴",
   "examples.tagsClear": "✕ Limpiar",
   "examples.all": "Todas",
+  "examples.playDemo": "Ejecutar la demo {label}",
   "examples.noResults": "Ninguna demo coincide con tu búsqueda.",
   "examples.scrollTop": "Ir arriba",
   "examples.filterTo": "Filtrar a las demos de {cat}",
