@@ -326,5 +326,9 @@
   "exploding-50": {
     "mode": "2d",
     "renderedAt": "2026-09-09"
+  },
+  "tin-legion": {
+    "mode": "3d",
+    "renderedAt": "2026-09-11"
   }
 }

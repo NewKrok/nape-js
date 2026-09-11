@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">82</strong> <span data-i18n="home.proof.demos">interaktive Demos</span>
+          <strong data-site-count="demos">83</strong> <span data-i18n="home.proof.demos">interaktive Demos</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">38</strong> <span data-i18n="home.proof.games">spielbare Spiele</span>
+          <strong data-site-count="games">39</strong> <span data-i18n="home.proof.games">spielbare Spiele</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">18</strong> <span data-i18n="home.proof.showpieces">komplette Spiele-Demos</span>
+          <strong data-site-count="showpieces">19</strong> <span data-i18n="home.proof.showpieces">komplette Spiele-Demos</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">veröffentlichte Titel</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Spielen →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">Ein <b>Belagerungs-Armeebaukasten auf drei Straßen</b> auf einem großen Schlachtfeld: Gold tröpfelt herein, unten warten fünf Truppenkarten, und jede ausgespielte setzt einen Trupp Zinnfiguren ab, der von allein losmarschiert. Du steuerst nie einen Soldaten — du entscheidest, <b>was</b> du aufstellst, <b>wo</b> du es absetzt und <b>wann</b>; hältst du eine Karte, wird der Weg dieses Trupps auf den Boden gezeichnet, und die Seite deines Tores wählt seine Straße. Drei Straßen führen zwischen den Burgen hindurch, je ein <b>Wachturm</b> sichert die mittlere, und auf den Flanken liegen zwei <b>Goldminen</b> hinter neutralen Lagern. Eine eroberte Mine zahlt Gold und schiebt deine Absetzzone nach vorn; eine Burg ist <b>geschützt, solange ihr eigener Wachturm steht</b>. Zehn Karten, ein kostenloser Feldherr und drei Schwierigkeitsgrade für den gegnerischen. Physik: jede Figur ist ein dynamischer Kreis in einem schwerelosen <code>Space</code>, sodass Pulks von selbst schieben; Geschosse sind <b>Sensorkörper</b>, deren Treffer <code>InteractionListener</code> liefern, und Eigenbeschuss schließen Sensorgruppen und -masken aus statt einer if-Abfrage; Fässer detonieren mit echtem radialem Impuls, Flieger haben eine eigene Kollisionsgruppe. In <b>3D</b> ein grasiges Plateau im Nebel, mit gelenkigem Low-Poly-Rig je Truppentyp.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">KI</span><span class="example-tag" data-i18n="tag.Waypoints">Wegpunkte</span><span class="example-tag" data-i18n="tag.Sensors">Sensoren</span><span class="example-tag" data-i18n="tag.Groups">Gruppen</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/blade-waltz.webp" srcset="../assets/posters/blade-waltz@320.webp 320w, ../assets/posters/blade-waltz@640.webp 640w, ../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Spielen →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><a href="../examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3-<b>Heldenarena</b> aus der Vogelperspektive. Eine Mine in der Mitte spuckt alle paar Sekunden einen <b>Splitter</b> aus — trage als Team <b>10</b> davon und überlebe einen <b>15-Sekunden-Countdown</b>, um zu gewinnen. Stirbst du, lässt du alles fallen, was du hältst. Wähle auf dem Auswahlbildschirm einen von <b>sechs Helden</b> — Schrotschütze, Revolverheld, Ringer, Barde, Werfer, Ingenieur — jeder mit eigenem Angriff, <b>3 Schuss Munition</b>, die sich mit der Zeit nachlädt, und einer <b>SUPER</b>, die sich mit jedem Treffer auflädt: eine mauerbrechende Salve, eine durchschlagende Kugelreihe, ein Sprung mit Aufschlag, ein heilender Akkord, ein Flaschenhagel, ein automatischer Geschützturm. <b>Büsche</b> verstecken dich, bis du angreifst oder jemand nahe herankommt; <b>Kisten</b> lassen sich aufsprengen. Bewege dich mit <b>WASD</b>, <b>ziele mit der Maus</b> und klicke zum Angreifen, <b>E</b> greift automatisch den nächsten Gegner an, <b>SPACE</b>/<b>Q</b> zündet die Super — oder auf jedem Gerät: <b>halten</b> zum Steuern, <b>tippen</b> zum Angreifen und auf den SUPER-Knopf tippen. Zwei <b>KI-Teamkollegen</b> und drei KI-Gegner nutzen dasselbe kit-bewusste Gehirn: Reichweitenbänder, Deckung, Tarnung, Rückzug zum Heilen, Minenkontrolle und Super-Timing. Jedes Projektil ist ein <b>Sensor-Body</b>, dessen Treffer über <code>InteractionListener</code> zugestellt werden; die Teamfilterung erledigen Sensorgruppen und -masken.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">KI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Sensors">Sensoren</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/jungle-strike/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/jungle-strike.webp" srcset="../assets/posters/jungle-strike@320.webp 320w, ../assets/posters/jungle-strike@640.webp 640w, ../assets/posters/jungle-strike.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Spielen →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><a href="../examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">Jungle Strike</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">Ein <b>Run-and-Gun im Contra-Stil</b> über elf Bildschirme. Kämpfe dich durch einen Dschungel-Hindernisparcours — patrouillierende Soldaten, eingegrabene <b>Geschütztürme</b>, springende <b>Stürmer</b> und <b>Scharfschützen</b>, die dich vor dem Schuss mit einem Laser anvisieren — bis zum dreiläufigen <b>Stellungs-Boss</b>, der nur an seinem glühenden Kern Schaden nimmt, jede Salve ankündigt und im Overdrive zwischen Raketen und Mörsern wechselt. Das Level basiert auf einem <b>CharacterController</b> über handgebautem Terrain: Einweg-Plattformen im Blätterdach, eine <b>einstürzende Hängebrücke</b>, ein Fluss mit Trittsteinen und danach ein Graben, ein Turmaufstieg und eine überflutete Bucht. Sammle <b>SPREAD</b>-, <b>MACHINE</b>- und <b>LASER</b>-Power-ups — beim Tod verlierst du deine Waffe und startest am letzten von elf <b>Checkpoints</b>. Bewegung mit <b>WASD</b>/Pfeiltasten, <b>SPACE</b> zum Springen, <b>S</b>/<b>↓</b> zum Ducken, und <b>freies Zielen mit der Maus</b> — halten zum Feuern. Im <b>3D-Modus</b> ist jeder Kämpfer eine prozedurale Low-Poly-Figur mit unabhängig zielendem Waffenarm.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.AI">KI</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

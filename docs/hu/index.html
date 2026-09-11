@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">82</strong> <span data-i18n="home.proof.demos">interaktív demó</span>
+          <strong data-site-count="demos">83</strong> <span data-i18n="home.proof.demos">interaktív demó</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">38</strong> <span data-i18n="home.proof.games">játszható játék</span>
+          <strong data-site-count="games">39</strong> <span data-i18n="home.proof.games">játszható játék</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">18</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span>
+          <strong data-site-count="showpieces">19</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">kiadott játék</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc"><b>Sávos ostromra épülő seregépítő</b> egyetlen nagy csatatéren: az arany folyamatosan csordogál, a képernyő alján öt egységkártya vár, és minden kijátszott kártya egy raj ónkatonát tesz le, amely magától indul útnak. Egyetlen katonát sem irányítasz — azt döntöd el, <b>mit</b> állítasz ki, <b>hová</b> teszed le és <b>mikor</b>; ha kártyát tartasz, a pályára rajzolódik az az út, amelyen az a raj elindulna, a sávot pedig az dönti el, hogy a kapud melyik oldalára teszed le. Három út vezet a két vár között, a középső utat egy-egy <b>őrtorony</b> vigyázza, a szárnyakon pedig két <b>aranybánya</b> áll semleges táborok mögött. Az elfoglalt bánya aranyat hoz és előretolja a letevési zónádat; a vár <b>pajzs alatt áll, amíg a saját őrtornya áll</b>. Tíz kártya, egy ingyenes hadvezér és három nehézségi szint az ellenfélhez. Fizika: minden figura dinamikus kör egy gravitáció nélküli <code>Space</code>-ben, így a tömeg magától tolakszik és folyik szét; a lövedék <b>szenzortest</b>, amelynek találatait <code>InteractionListener</code>-ek kézbesítik, és a baráti tüzet nem egy if-ág, hanem a szenzorcsoportok és -maszkok zárják ki; a hordók valódi sugárirányú impulzussal robbannak, a repülőknek pedig saját ütközési csoportjuk van. <b>3D</b>-ben ködben lebegő füves fennsík, egységtípusonként saját ízelt low-poly bábuval.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Waypoints">Útpontok</span><span class="example-tag" data-i18n="tag.Sensors">Érzékelők</span><span class="example-tag" data-i18n="tag.Groups">Csoportok</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/blade-waltz.webp" srcset="../assets/posters/blade-waltz@320.webp 320w, ../assets/posters/blade-waltz@640.webp 640w, ../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 felülnézetes <b>hős-aréna</b>. A pálya közepén álló bánya néhány másodpercenként egy <b>kristályszilánkot</b> dob ki — gyűjts össze csapatként <b>10</b>-et, és éld túl a <b>15 másodperces visszaszámlálást</b> a győzelemhez. Ha meghalsz, minden nálad lévő szilánkot elejtesz. Válassz <b>hat hős</b> közül a választóképernyőn — puskás, revolverhős, birkózó, bárd, dobáló, mérnök — mindegyiknek saját támadása, idővel újratöltődő <b>3 lövésnyi lőszere</b> és találatokkal töltődő <b>SUPER</b>-e van: falromboló sortűz, átütő sorozat, ugrás-és-lecsapás, gyógyító akkord, lombikzápor, automata lövegtorony. A <b>bokrok</b> elrejtenek, amíg nem támadsz vagy valaki a közeledbe nem sétál; a <b>ládák</b> szétlőhetők. Mozgás <b>WASD</b>-vel, <b>célzás az egérrel</b>, kattintás a támadáshoz, <b>E</b> automatikusan a legközelebbi ellenfélre támad, <b>SPACE</b>/<b>Q</b> indítja a supert — vagy bármely eszközön <b>tartsd nyomva</b> a kormányzáshoz, <b>koppints</b> a támadáshoz, és koppints a SUPER gombra. Két <b>AI csapattárs</b> és három AI ellenfél ugyanazt a képességtudatos agyat futtatja: hatótáv-sávok, fedezék, rejtőzés, visszavonulás gyógyulni, bánya-kontroll és super-időzítés. Minden lövedék egy <b>szenzor test</b>, amelyet <code>InteractionListener</code>-ek kezelnek, a csapatszűrést pedig szenzorcsoportok és -maszkok végzik.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Sensors">Érzékelők</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/jungle-strike/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/jungle-strike.webp" srcset="../assets/posters/jungle-strike@320.webp 320w, ../assets/posters/jungle-strike@640.webp 640w, ../assets/posters/jungle-strike.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">Jungle Strike</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">Tizenegy képernyős <b>Contra-stílusú run-and-gun</b>. Verekedd át magad egy dzsungel-akadálypályán — járőröző közkatonák, beásott <b>lövegállások</b>, ugró <b>rohamozók</b> és <b>mesterlövészek</b>, akik lézerrel céloznak be, mielőtt tüzelnének — egészen a háromcsövű <b>emplacement bossig</b>, amely csak az izzó magján sebezhető, minden sorozatot előre jelez, és túlhajtásba kapcsolva rakétákat és aknagránátokat váltogat. A pálya <b>CharacterController</b>-re épül, kézzel megtervezett terepen: egyirányú lombkorona-platformok, egy <b>beszakadó kötélhíd</b>, egy folyó, amelyen ugrókövekkel kelsz át, majd egy lövészárok, egy toronymászás és egy elárasztott öböl. Szedd fel a <b>SPREAD</b>, <b>MACHINE</b> és <b>LASER</b> fejlesztéseket — halálkor elveszíted a fegyvered, és a tizenegy <b>ellenőrzőpont</b> közül az utolsónál éledsz újra. Mozgás: <b>WASD</b>/nyilak, <b>SPACE</b> az ugrás, <b>S</b>/<b>↓</b> a guggolás, és <b>szabadon célzol az egérrel</b> — tartsd nyomva a tüzeléshez. <b>3D módban</b> minden harcos procedurális low-poly figura, a testtől függetlenül célzó fegyverkarral.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.AI">MI</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

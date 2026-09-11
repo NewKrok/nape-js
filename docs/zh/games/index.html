@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Tin Legion",
+        "url": "https://napejs.org/examples/tin-legion/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Blade Waltz",
         "url": "https://napejs.org/examples/blade-waltz/",
         "gamePlatform": "Web browser",
@@ -234,7 +241,7 @@
       <h1 data-i18n="games.heading">基于 nape-js 构建的游戏</h1>
       <p class="page-hero-intro" data-i18n="games.intro">从单一机制到已发布作品：下面的每个游戏都运行在同一个开源 2D 物理引擎上。在浏览器中试玩，然后打开源码。</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>18</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">个玩法切片</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span></a>
       </nav>
@@ -247,6 +254,16 @@
       <h2 data-i18n="games.showpieces.heading">完整游戏演示</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">每个都是单文件的多系统游戏——AI 对手、波次、摄像机、计分和 3D 骨架。在这里试玩，或在 CodePen 和 StackBlitz 上打开源码。</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/tin-legion.webp" srcset="../../assets/posters/tin-legion@320.webp 320w, ../../assets/posters/tin-legion@640.webp 640w, ../../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">在一张大地图上进行的<b>三路攻城建军对战</b>：金币持续累积，屏幕下方是五张部队卡，每打出一张就会放下一队锡制小兵，它们自己出发行军。你从不操控单兵——你决定<b>投什么</b>、<b>投在哪</b>、<b>什么时候投</b>；拿着卡时，这支部队的路线会画在地面上，而你放在自家大门的哪一侧，决定了他们走哪条路。两座主堡之间有三条路，中路各由一座<b>哨塔</b>把守，两翼各有一座中立营地守着的<b>金矿</b>。占下金矿能带来收入并把部署区往前推；主堡<b>在自家哨塔未倒之前始终受护盾保护</b>。十张卡、一位免费统帅，外加三档敌方难度。物理：每个小兵都是零重力 <code>Space</code> 中的动态圆形，人群会自然推挤与绕流；射出的弹丸是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 传回，友军伤害由传感器分组与掩码排除，而不是靠一句 if 判断；火药桶引爆时施加真实的径向冲量，飞行单位有独立的碰撞分组。<b>3D</b> 模式下是一片浮在云雾中的草地高台，每种兵种都有独立的关节化低多边形模型。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">路径点</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Groups">分组</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../zh/examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/blade-waltz.webp" srcset="../../assets/posters/blade-waltz@320.webp 320w, ../../assets/posters/blade-waltz@640.webp 640w, ../../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>

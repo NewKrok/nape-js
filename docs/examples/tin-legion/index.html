@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shard Rush — Interactive 2D Physics Demo | nape-js</title>
-  <meta name="description" content="3v3 top-down hero arena. A mine in the middle coughs up a shard every few seconds — carry 10 between your team and survive a 15-second countdown to win." />
+  <title>Tin Legion — Interactive 2D Physics Demo | nape-js</title>
+  <meta name="description" content="A lane-siege army builder on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad…" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
   <meta name="nape-i18n-title" content="demopage.meta.title" />
-  <meta name="nape-i18n-title-vars" content="label=demo.shard-rush.label" />
+  <meta name="nape-i18n-title-vars" content="label=demo.tin-legion.label" />
   <meta name="nape-i18n-description" content="" />
-  <link rel="canonical" href="https://napejs.org/examples/shard-rush/" />
+  <link rel="canonical" href="https://napejs.org/examples/tin-legion/" />
   <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
   <script type="application/ld+json">
   {
@@ -41,23 +41,23 @@
           {
             "@type": "ListItem",
             "position": 4,
-            "name": "Shard Rush",
-            "item": "https://napejs.org/examples/shard-rush/"
+            "name": "Tin Legion",
+            "item": "https://napejs.org/examples/tin-legion/"
           }
         ]
       },
       {
         "@type": "VideoGame",
-        "name": "Shard Rush",
+        "name": "Tin Legion",
         "inLanguage": "en",
-        "image": "https://napejs.org/assets/posters/shard-rush.webp",
-        "description": "3v3 top-down hero arena. A mine in the middle coughs up a shard every few seconds — carry 10 between your team and survive a 15-second countdown to win. Die and you drop everything you hold.",
-        "url": "https://napejs.org/examples/shard-rush/",
+        "image": "https://napejs.org/assets/posters/tin-legion.webp",
+        "description": "A lane-siege army builder on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad of tin figurines that marches off on its own.",
+        "url": "https://napejs.org/examples/tin-legion/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
         "operatingSystem": "Any",
         "playMode": "SinglePlayer",
-        "keywords": "Gameplay, AI, Shooter, Camera, Sensors, Mobile",
+        "keywords": "Gameplay, AI, Waypoints, Sensors, Groups, Camera, Mobile",
         "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
@@ -81,19 +81,19 @@
   </script>
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Shard Rush — Interactive 2D Physics Demo | nape-js" />
-  <meta property="og:description" content="3v3 top-down hero arena. A mine in the middle coughs up a shard every few seconds — carry 10 between your team and survive a 15-second countdown to win." />
-  <meta property="og:url" content="https://napejs.org/examples/shard-rush/" />
-  <meta property="og:image" content="https://napejs.org/assets/posters/shard-rush.webp" />
+  <meta property="og:title" content="Tin Legion — Interactive 2D Physics Demo | nape-js" />
+  <meta property="og:description" content="A lane-siege army builder on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad…" />
+  <meta property="og:url" content="https://napejs.org/examples/tin-legion/" />
+  <meta property="og:image" content="https://napejs.org/assets/posters/tin-legion.webp" />
   <meta property="og:image:width" content="900" />
   <meta property="og:image:height" content="500" />
-  <meta property="og:image:alt" content="Shard Rush — nape-js demo screenshot" />
+  <meta property="og:image:alt" content="Tin Legion — nape-js demo screenshot" />
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
-  <meta name="twitter:title" content="Shard Rush — Interactive 2D Physics Demo | nape-js" />
-  <meta name="twitter:description" content="3v3 top-down hero arena. A mine in the middle coughs up a shard every few seconds — carry 10 between your team and survive a 15-second countdown to win." />
-  <meta name="twitter:image" content="https://napejs.org/assets/posters/shard-rush.webp" />
+  <meta name="twitter:title" content="Tin Legion — Interactive 2D Physics Demo | nape-js" />
+  <meta name="twitter:description" content="A lane-siege army builder on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad…" />
+  <meta name="twitter:image" content="https://napejs.org/assets/posters/tin-legion.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -110,18 +110,18 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
   <link rel="modulepreload" href="../../nape-js.esm.js?v=3.42.1" />
-  <link rel="modulepreload" href="../../demos/shard-rush.js?v=3.42.1" />
+  <link rel="modulepreload" href="../../demos/tin-legion.js?v=3.42.1" />
   <!-- i18n:hreflang:start -->
-  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/shard-rush/" />
-  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/shard-rush/" />
-  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/shard-rush/" />
-  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/shard-rush/" />
-  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/shard-rush/" />
-  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/shard-rush/" />
-  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/shard-rush/" />
+  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/tin-legion/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/tin-legion/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/tin-legion/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/tin-legion/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/tin-legion/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/tin-legion/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/tin-legion/" />
   <!-- i18n:hreflang:end -->
 </head>
-<body data-demo-id="shard-rush">
+<body data-demo-id="tin-legion">
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="../../" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
@@ -168,10 +168,10 @@
         <a href="../../">nape-js</a> <span aria-hidden="true">›</span>
         <a href="../../examples/" data-i18n="nav.examples">Examples</a> <span aria-hidden="true">›</span>
         <a href="../../examples/?cat=game" data-i18n="cat.game.label">Game</a> <span aria-hidden="true">›</span>
-        <span aria-current="page" data-i18n="demo.shard-rush.label">Shard Rush</span>
+        <span aria-current="page" data-i18n="demo.tin-legion.label">Tin Legion</span>
       </nav>
-      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.shard-rush.desc">3v3 top-down <b>hero arena</b>. A mine in the middle coughs up a <b>shard</b> every few seconds — carry <b>10</b> between your team and survive a <b>15-second countdown</b> to win. Die and you drop everything you hold. Pick one of <b>six heroes</b> on the select screen — shotgunner, gunslinger, wrestler, bard, thrower, engineer — each with its own attack, <b>3-shot ammo</b> that reloads over time, and a <b>SUPER</b> that charges as you land hits: a wall-breaking blast, a piercing volley, a leap-and-slam, a healing chord, a flask barrage, an auto-turret. <b>Bushes</b> hide you until you attack or someone walks in close; <b>crates</b> can be blown open. Move with <b>WASD</b>, <b>aim with the mouse</b> and click to attack, <b>E</b> auto-attacks the nearest enemy, <b>SPACE</b>/<b>Q</b> fires the super — or on any device <b>hold</b> to steer, <b>tap</b> to attack and tap the SUPER button. Two <b>AI teammates</b> and three AI opponents run the same kit-aware brain: range bands, cover, stealth, retreat-to-heal, mine control and super timing. Every projectile is a <b>sensor body</b> delivered through <code>InteractionListener</code>s, with team filtering done by sensor groups and masks.</p>
+      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></h1>
+      <p class="demo-page-desc" data-i18n-html="demo.tin-legion.desc">A <b>lane-siege army builder</b> on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad of tin figurines that marches off on its own. You never steer a soldier — you choose <b>what</b> to field, <b>where</b> to drop it and <b>when</b>; hold a card and the road that squad would take is drawn on the ground, and the side of your gate you drop on picks its lane. Three roads run between the two keeps, a <b>watchtower</b> guards each centre road, and two <b>gold mines</b> sit on the flanks behind neutral camps. A captured mine pays gold and pushes your drop zone forward; a keep is <b>shielded until its own watchtower falls</b>. Ten cards, a free commander, and three difficulty levels for the opposing one. Physics: every figurine is a dynamic circle in a zero-gravity <code>Space</code>, so crowds shove and flow for free; shot is a <b>sensor body</b> delivered by <code>InteractionListener</code>s, with friendly fire ruled out by sensor groups and masks rather than an if-statement; kegs detonate with a real radial impulse, and flyers have their own collision group. In <b>3D</b> it is a grassy plateau floating in mist, with a jointed low-poly rig per troop type.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
@@ -208,7 +208,7 @@
 
       <div class="demo-page-actions">
         <button class="btn btn-secondary" id="codeToggleBtn" aria-expanded="false" aria-controls="codePanel" data-i18n="demopage.openSource">Open the source</button>
-        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/shard-rush.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'shard-rush'})">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/tin-legion.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'tin-legion'})">GitHub</a>
       </div>
       <div class="code-panel" id="codePanel" hidden>
         <div class="code-panel-header">
@@ -225,14 +225,13 @@
       <div class="demo-page-grid">
         <section class="demo-page-block">
           <h2 data-i18n="demopage.features">Engine features used</h2>
-          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">Waypoints</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Groups">Groups</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
         </section>
         <section class="demo-page-block">
           <h2 data-i18n="demopage.related">Related guides</h2>
           <ul class="demo-page-links">
             <li><a href="../../guides/cookbook/#sensor--trigger-zone">Sensor / trigger zone</a></li>
             <li><a href="../../guides/cookbook/#wave-spawner-timer-driven-cadence">Wave spawner</a></li>
-            <li><a href="../../guides/cookbook/#viewport-bounded-auto-aim">Auto-aim</a></li>
             <li><a href="../../guides/cookbook/">Cookbook</a></li>
           </ul>
         </section>
@@ -241,10 +240,10 @@
       <section class="demo-page-block">
         <h2 data-i18n="demopage.more">More demos</h2>
         <div class="more-demos">
-          <a class="more-demo" href="../../examples/jungle-strike/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/jungle-strike.webp" srcset="../../assets/posters/jungle-strike@320.webp 320w, ../../assets/posters/jungle-strike@640.webp 640w, ../../assets/posters/jungle-strike.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.jungle-strike.label">Jungle Strike</span></span></a>
           <a class="more-demo" href="../../examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/blade-waltz.webp" srcset="../../assets/posters/blade-waltz@320.webp 320w, ../../assets/posters/blade-waltz@640.webp 640w, ../../assets/posters/blade-waltz.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.blade-waltz.label">Blade Waltz</span></span></a>
+          <a class="more-demo" href="../../examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/shard-rush.webp" srcset="../../assets/posters/shard-rush@320.webp 320w, ../../assets/posters/shard-rush@640.webp 640w, ../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>
+          <a class="more-demo" href="../../examples/jungle-strike/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/jungle-strike.webp" srcset="../../assets/posters/jungle-strike@320.webp 320w, ../../assets/posters/jungle-strike@640.webp 640w, ../../assets/posters/jungle-strike.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.jungle-strike.label">Jungle Strike</span></span></a>
           <a class="more-demo" href="../../examples/capture-the-flag/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/capture-the-flag.webp" srcset="../../assets/posters/capture-the-flag@320.webp 320w, ../../assets/posters/capture-the-flag@640.webp 640w, ../../assets/posters/capture-the-flag.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.capture-the-flag.label">Capture the Flag</span></span></a>
-          <a class="more-demo" href="../../examples/tin-legion/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/tin-legion.webp" srcset="../../assets/posters/tin-legion@320.webp 320w, ../../assets/posters/tin-legion@640.webp 640w, ../../assets/posters/tin-legion.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></span></a>
           <a class="more-demo" href="../../examples/escape-run/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/escape-run.webp" srcset="../../assets/posters/escape-run@320.webp 320w, ../../assets/posters/escape-run@640.webp 640w, ../../assets/posters/escape-run.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.escape-run.label">Escape Run</span></span></a>
           <a class="more-demo" href="../../examples/dodgeball/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../assets/posters/dodgeball.webp" srcset="../../assets/posters/dodgeball@320.webp 320w, ../../assets/posters/dodgeball@640.webp 640w, ../../assets/posters/dodgeball.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.dodgeball.label">Dodgeball</span></span></a>
         </div>

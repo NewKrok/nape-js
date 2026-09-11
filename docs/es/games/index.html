@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Tin Legion",
+        "url": "https://napejs.org/examples/tin-legion/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Blade Waltz",
         "url": "https://napejs.org/examples/blade-waltz/",
         "gamePlatform": "Web browser",
@@ -234,7 +241,7 @@
       <h1 data-i18n="games.heading">Juegos construidos sobre nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">De una sola mecánica a un título publicado: todos los juegos de abajo corren sobre el mismo motor de física 2D de código abierto. Juega en el navegador y luego abre el código.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>18</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">piezas de jugabilidad</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">títulos publicados</span></a>
       </nav>
@@ -247,6 +254,16 @@
       <h2 data-i18n="games.showpieces.heading">Demos de juego completas</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Juegos con varios sistemas en un solo archivo cada uno — oponentes con IA, oleadas, cámaras, puntuación y rigs 3D. Juega aquí o abre el código en CodePen y StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../es/examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/tin-legion.webp" srcset="../../assets/posters/tin-legion@320.webp 320w, ../../assets/posters/tin-legion@640.webp 640w, ../../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><a href="../../es/examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">Un <b>constructor de ejércitos de asedio por caminos</b> en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que juegas suelta un escuadrón de figuritas de estaño que marcha por su cuenta. Nunca diriges a un soldado: decides <b>qué</b> despliegas, <b>dónde</b> lo sueltas y <b>cuándo</b>; si mantienes una carta, el camino de ese escuadrón se dibuja en el suelo, y el lado de tu puerta elige su ruta. Tres caminos unen las dos fortalezas, una <b>atalaya</b> guarda cada camino central y en los flancos hay dos <b>minas de oro</b> tras campamentos neutrales. Una mina capturada paga oro y adelanta tu zona de despliegue; una fortaleza está <b>protegida mientras siga en pie su propia atalaya</b>. Diez cartas, un comandante gratuito y tres niveles de dificultad para el rival. Física: cada figurita es un círculo dinámico en un <code>Space</code> sin gravedad, así que las multitudes se empujan solas; los disparos son <b>cuerpos sensores</b> cuyos impactos llegan por <code>InteractionListener</code>, y el fuego amigo lo descartan los grupos y máscaras de sensor, no un if; los barriles detonan con un impulso radial real y los voladores tienen su propio grupo de colisión. En <b>3D</b> es una meseta de hierba flotando en la niebla, con un aparejo low-poly articulado por tipo de tropa.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Waypoints">Puntos de ruta</span><span class="example-tag" data-i18n="tag.Sensors">Sensores</span><span class="example-tag" data-i18n="tag.Groups">Grupos</span><span class="example-tag" data-i18n="tag.Camera">Cámara</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../es/examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/blade-waltz.webp" srcset="../../assets/posters/blade-waltz@320.webp 320w, ../../assets/posters/blade-waltz@640.webp 640w, ../../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>

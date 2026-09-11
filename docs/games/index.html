@@ -28,6 +28,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Tin Legion",
+        "url": "https://napejs.org/examples/tin-legion/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Blade Waltz",
         "url": "https://napejs.org/examples/blade-waltz/",
         "gamePlatform": "Web browser",
@@ -233,7 +240,7 @@
       <h1 data-i18n="games.heading">Games built on nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">From a single mechanic to a shipped title: every game below runs on the same open-source 2D physics engine. Play in the browser, then open the source.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>18</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">gameplay slices</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">shipped titles</span></a>
       </nav>
@@ -246,6 +253,16 @@
       <h2 data-i18n="games.showpieces.heading">Complete game demos</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Multi-system games in one file each — AI opponents, waves, cameras, scoring and 3D rigs. Play them here or open the source on CodePen and StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">A <b>lane-siege army builder</b> on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad of tin figurines that marches off on its own. You never steer a soldier — you choose <b>what</b> to field, <b>where</b> to drop it and <b>when</b>; hold a card and the road that squad would take is drawn on the ground, and the side of your gate you drop on picks its lane. Three roads run between the two keeps, a <b>watchtower</b> guards each centre road, and two <b>gold mines</b> sit on the flanks behind neutral camps. A captured mine pays gold and pushes your drop zone forward; a keep is <b>shielded until its own watchtower falls</b>. Ten cards, a free commander, and three difficulty levels for the opposing one. Physics: every figurine is a dynamic circle in a zero-gravity <code>Space</code>, so crowds shove and flow for free; shot is a <b>sensor body</b> delivered by <code>InteractionListener</code>s, with friendly fire ruled out by sensor groups and masks rather than an if-statement; kegs detonate with a real radial impulse, and flyers have their own collision group. In <b>3D</b> it is a grassy plateau floating in mist, with a jointed low-poly rig per troop type.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">Waypoints</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Groups">Groups</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/blade-waltz.webp" srcset="../assets/posters/blade-waltz@320.webp 320w, ../assets/posters/blade-waltz@640.webp 640w, ../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>

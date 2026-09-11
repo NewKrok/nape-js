@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="nape-prerendered" content="de" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jungle Strike — Interaktive 2D-Physik-Demo | nape-js</title>
-  <meta name="description" content="Ein Run-and-Gun im Contra-Stil über elf Bildschirme. Kämpfe dich durch einen Dschungel-Hindernisparcours — patrouillierende Soldaten, eingegrabene…" />
+  <title>Tin Legion — Interaktive 2D-Physik-Demo | nape-js</title>
+  <meta name="description" content="Ein Belagerungs-Armeebaukasten auf drei Straßen auf einem großen Schlachtfeld: Gold tröpfelt herein, unten warten fünf Truppenkarten, und jede ausgespielte…" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
   <meta name="nape-i18n-title" content="demopage.meta.title" />
-  <meta name="nape-i18n-title-vars" content="label=demo.jungle-strike.label" />
+  <meta name="nape-i18n-title-vars" content="label=demo.tin-legion.label" />
   <meta name="nape-i18n-description" content="" />
-  <link rel="canonical" href="https://napejs.org/de/examples/jungle-strike/" />
+  <link rel="canonical" href="https://napejs.org/de/examples/tin-legion/" />
   <link rel="icon" type="image/svg+xml" href="../../../logo.svg" />
   <script type="application/ld+json">
   {
@@ -42,23 +42,23 @@
           {
             "@type": "ListItem",
             "position": 4,
-            "name": "Jungle Strike",
-            "item": "https://napejs.org/de/examples/jungle-strike/"
+            "name": "Tin Legion",
+            "item": "https://napejs.org/de/examples/tin-legion/"
           }
         ]
       },
       {
         "@type": "VideoGame",
-        "name": "Jungle Strike",
+        "name": "Tin Legion",
         "inLanguage": "de",
-        "image": "https://napejs.org/assets/posters/jungle-strike.webp",
-        "description": "Ein Run-and-Gun im Contra-Stil über elf Bildschirme. Kämpfe dich durch einen Dschungel-Hindernisparcours — patrouillierende Soldaten, eingegrabene Geschütztürme, springende Stürmer und Scharfschützen, die dich vor dem Schuss mit einem Laser anvisieren — bis zum dreiläufigen Stellungs-Boss, der nur…",
-        "url": "https://napejs.org/de/examples/jungle-strike/",
+        "image": "https://napejs.org/assets/posters/tin-legion.webp",
+        "description": "Ein Belagerungs-Armeebaukasten auf drei Straßen auf einem großen Schlachtfeld: Gold tröpfelt herein, unten warten fünf Truppenkarten, und jede ausgespielte setzt einen Trupp Zinnfiguren ab, der von allein losmarschiert.",
+        "url": "https://napejs.org/de/examples/tin-legion/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
         "operatingSystem": "Any",
         "playMode": "SinglePlayer",
-        "keywords": "Gameplay, Shooter, CharacterController, Camera, Platformer, AI",
+        "keywords": "Gameplay, AI, Waypoints, Sensors, Groups, Camera, Mobile",
         "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
@@ -82,19 +82,19 @@
   </script>
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Jungle Strike — Interaktive 2D-Physik-Demo | nape-js" />
-  <meta property="og:description" content="Ein Run-and-Gun im Contra-Stil über elf Bildschirme. Kämpfe dich durch einen Dschungel-Hindernisparcours — patrouillierende Soldaten, eingegrabene…" />
-  <meta property="og:url" content="https://napejs.org/de/examples/jungle-strike/" />
-  <meta property="og:image" content="https://napejs.org/assets/posters/jungle-strike.webp" />
+  <meta property="og:title" content="Tin Legion — Interaktive 2D-Physik-Demo | nape-js" />
+  <meta property="og:description" content="Ein Belagerungs-Armeebaukasten auf drei Straßen auf einem großen Schlachtfeld: Gold tröpfelt herein, unten warten fünf Truppenkarten, und jede ausgespielte…" />
+  <meta property="og:url" content="https://napejs.org/de/examples/tin-legion/" />
+  <meta property="og:image" content="https://napejs.org/assets/posters/tin-legion.webp" />
   <meta property="og:image:width" content="900" />
   <meta property="og:image:height" content="500" />
-  <meta property="og:image:alt" content="Jungle Strike — nape-js demo screenshot" />
+  <meta property="og:image:alt" content="Tin Legion — nape-js demo screenshot" />
   <meta property="og:locale" content="de_DE" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
-  <meta name="twitter:title" content="Jungle Strike — Interaktive 2D-Physik-Demo | nape-js" />
-  <meta name="twitter:description" content="Ein Run-and-Gun im Contra-Stil über elf Bildschirme. Kämpfe dich durch einen Dschungel-Hindernisparcours — patrouillierende Soldaten, eingegrabene…" />
-  <meta name="twitter:image" content="https://napejs.org/assets/posters/jungle-strike.webp" />
+  <meta name="twitter:title" content="Tin Legion — Interaktive 2D-Physik-Demo | nape-js" />
+  <meta name="twitter:description" content="Ein Belagerungs-Armeebaukasten auf drei Straßen auf einem großen Schlachtfeld: Gold tröpfelt herein, unten warten fünf Truppenkarten, und jede ausgespielte…" />
+  <meta name="twitter:image" content="https://napejs.org/assets/posters/tin-legion.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -111,18 +111,18 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
   <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.1" />
-  <link rel="modulepreload" href="../../../demos/jungle-strike.js?v=3.42.1" />
+  <link rel="modulepreload" href="../../../demos/tin-legion.js?v=3.42.1" />
   <!-- i18n:hreflang:start -->
-  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/jungle-strike/" />
-  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/jungle-strike/" />
-  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/jungle-strike/" />
-  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/jungle-strike/" />
-  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/jungle-strike/" />
-  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/jungle-strike/" />
-  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/jungle-strike/" />
+  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/tin-legion/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/tin-legion/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/tin-legion/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/tin-legion/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/tin-legion/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/tin-legion/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/tin-legion/" />
   <!-- i18n:hreflang:end -->
 </head>
-<body data-demo-id="jungle-strike">
+<body data-demo-id="tin-legion">
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="../../../de/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
@@ -169,10 +169,10 @@
         <a href="../../../de/">nape-js</a> <span aria-hidden="true">›</span>
         <a href="../../../de/examples/" data-i18n="nav.examples">Beispiele</a> <span aria-hidden="true">›</span>
         <a href="../../../de/examples/?cat=game" data-i18n="cat.game.label">Spiel</a> <span aria-hidden="true">›</span>
-        <span aria-current="page" data-i18n="demo.jungle-strike.label">Jungle Strike</span>
+        <span aria-current="page" data-i18n="demo.tin-legion.label">Tin Legion</span>
       </nav>
-      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.jungle-strike.label">Jungle Strike</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.jungle-strike.desc">Ein <b>Run-and-Gun im Contra-Stil</b> über elf Bildschirme. Kämpfe dich durch einen Dschungel-Hindernisparcours — patrouillierende Soldaten, eingegrabene <b>Geschütztürme</b>, springende <b>Stürmer</b> und <b>Scharfschützen</b>, die dich vor dem Schuss mit einem Laser anvisieren — bis zum dreiläufigen <b>Stellungs-Boss</b>, der nur an seinem glühenden Kern Schaden nimmt, jede Salve ankündigt und im Overdrive zwischen Raketen und Mörsern wechselt. Das Level basiert auf einem <b>CharacterController</b> über handgebautem Terrain: Einweg-Plattformen im Blätterdach, eine <b>einstürzende Hängebrücke</b>, ein Fluss mit Trittsteinen und danach ein Graben, ein Turmaufstieg und eine überflutete Bucht. Sammle <b>SPREAD</b>-, <b>MACHINE</b>- und <b>LASER</b>-Power-ups — beim Tod verlierst du deine Waffe und startest am letzten von elf <b>Checkpoints</b>. Bewegung mit <b>WASD</b>/Pfeiltasten, <b>SPACE</b> zum Springen, <b>S</b>/<b>↓</b> zum Ducken, und <b>freies Zielen mit der Maus</b> — halten zum Feuern. Im <b>3D-Modus</b> ist jeder Kämpfer eine prozedurale Low-Poly-Figur mit unabhängig zielendem Waffenarm.</p>
+      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></h1>
+      <p class="demo-page-desc" data-i18n-html="demo.tin-legion.desc">Ein <b>Belagerungs-Armeebaukasten auf drei Straßen</b> auf einem großen Schlachtfeld: Gold tröpfelt herein, unten warten fünf Truppenkarten, und jede ausgespielte setzt einen Trupp Zinnfiguren ab, der von allein losmarschiert. Du steuerst nie einen Soldaten — du entscheidest, <b>was</b> du aufstellst, <b>wo</b> du es absetzt und <b>wann</b>; hältst du eine Karte, wird der Weg dieses Trupps auf den Boden gezeichnet, und die Seite deines Tores wählt seine Straße. Drei Straßen führen zwischen den Burgen hindurch, je ein <b>Wachturm</b> sichert die mittlere, und auf den Flanken liegen zwei <b>Goldminen</b> hinter neutralen Lagern. Eine eroberte Mine zahlt Gold und schiebt deine Absetzzone nach vorn; eine Burg ist <b>geschützt, solange ihr eigener Wachturm steht</b>. Zehn Karten, ein kostenloser Feldherr und drei Schwierigkeitsgrade für den gegnerischen. Physik: jede Figur ist ein dynamischer Kreis in einem schwerelosen <code>Space</code>, sodass Pulks von selbst schieben; Geschosse sind <b>Sensorkörper</b>, deren Treffer <code>InteractionListener</code> liefern, und Eigenbeschuss schließen Sensorgruppen und -masken aus statt einer if-Abfrage; Fässer detonieren mit echtem radialem Impuls, Flieger haben eine eigene Kollisionsgruppe. In <b>3D</b> ein grasiges Plateau im Nebel, mit gelenkigem Low-Poly-Rig je Truppentyp.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
@@ -209,7 +209,7 @@
 
       <div class="demo-page-actions">
         <button class="btn btn-secondary" id="codeToggleBtn" aria-expanded="false" aria-controls="codePanel" data-i18n="demopage.openSource">Quellcode öffnen</button>
-        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/jungle-strike.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'jungle-strike'})">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/tin-legion.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'tin-legion'})">GitHub</a>
       </div>
       <div class="code-panel" id="codePanel" hidden>
         <div class="code-panel-header">
@@ -226,14 +226,13 @@
       <div class="demo-page-grid">
         <section class="demo-page-block">
           <h2 data-i18n="demopage.features">Verwendete Engine-Features</h2>
-          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.AI">KI</span></div>
+          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">KI</span><span class="example-tag" data-i18n="tag.Waypoints">Wegpunkte</span><span class="example-tag" data-i18n="tag.Sensors">Sensoren</span><span class="example-tag" data-i18n="tag.Groups">Gruppen</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
         </section>
         <section class="demo-page-block">
           <h2 data-i18n="demopage.related">Passende Guides</h2>
           <ul class="demo-page-links">
-            <li><a href="../../../guides/cookbook/#platformer-character">Platformer character</a></li>
+            <li><a href="../../../guides/cookbook/#sensor--trigger-zone">Sensor / trigger zone</a></li>
             <li><a href="../../../guides/cookbook/#wave-spawner-timer-driven-cadence">Wave spawner</a></li>
-            <li><a href="../../../guides/cookbook/#viewport-bounded-auto-aim">Auto-aim</a></li>
             <li><a href="../../../guides/cookbook/">Cookbook</a></li>
           </ul>
         </section>
@@ -242,12 +241,12 @@
       <section class="demo-page-block">
         <h2 data-i18n="demopage.more">Weitere Demos</h2>
         <div class="more-demos">
-          <a class="more-demo" href="../../../de/examples/capture-the-flag/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/capture-the-flag.webp" srcset="../../../assets/posters/capture-the-flag@320.webp 320w, ../../../assets/posters/capture-the-flag@640.webp 640w, ../../../assets/posters/capture-the-flag.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.capture-the-flag.label">Capture the Flag</span></span></a>
-          <a class="more-demo" href="../../../de/examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/shard-rush.webp" srcset="../../../assets/posters/shard-rush@320.webp 320w, ../../../assets/posters/shard-rush@640.webp 640w, ../../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>
-          <a class="more-demo" href="../../../de/examples/escape-run/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/escape-run.webp" srcset="../../../assets/posters/escape-run@320.webp 320w, ../../../assets/posters/escape-run@640.webp 640w, ../../../assets/posters/escape-run.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.escape-run.label">Escape-Lauf</span></span></a>
           <a class="more-demo" href="../../../de/examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/blade-waltz.webp" srcset="../../../assets/posters/blade-waltz@320.webp 320w, ../../../assets/posters/blade-waltz@640.webp 640w, ../../../assets/posters/blade-waltz.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.blade-waltz.label">Blade Waltz</span></span></a>
+          <a class="more-demo" href="../../../de/examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/shard-rush.webp" srcset="../../../assets/posters/shard-rush@320.webp 320w, ../../../assets/posters/shard-rush@640.webp 640w, ../../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>
+          <a class="more-demo" href="../../../de/examples/jungle-strike/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/jungle-strike.webp" srcset="../../../assets/posters/jungle-strike@320.webp 320w, ../../../assets/posters/jungle-strike@640.webp 640w, ../../../assets/posters/jungle-strike.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.jungle-strike.label">Jungle Strike</span></span></a>
+          <a class="more-demo" href="../../../de/examples/capture-the-flag/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/capture-the-flag.webp" srcset="../../../assets/posters/capture-the-flag@320.webp 320w, ../../../assets/posters/capture-the-flag@640.webp 640w, ../../../assets/posters/capture-the-flag.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.capture-the-flag.label">Capture the Flag</span></span></a>
+          <a class="more-demo" href="../../../de/examples/escape-run/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/escape-run.webp" srcset="../../../assets/posters/escape-run@320.webp 320w, ../../../assets/posters/escape-run@640.webp 640w, ../../../assets/posters/escape-run.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.escape-run.label">Escape-Lauf</span></span></a>
           <a class="more-demo" href="../../../de/examples/dodgeball/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/dodgeball.webp" srcset="../../../assets/posters/dodgeball@320.webp 320w, ../../../assets/posters/dodgeball@640.webp 640w, ../../../assets/posters/dodgeball.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.dodgeball.label">Völkerball</span></span></a>
-          <a class="more-demo" href="../../../de/examples/tin-legion/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/tin-legion.webp" srcset="../../../assets/posters/tin-legion@320.webp 320w, ../../../assets/posters/tin-legion@640.webp 640w, ../../../assets/posters/tin-legion.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></span></a>
         </div>
         <p class="demo-page-all"><a href="../../../de/examples/?cat=game" data-i18n="demopage.allInCategory" data-i18n-vars="cat=cat.game.label">Alle Spiel-Demos →</a></p>
       </section>

@@ -253,13 +253,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">82</strong> <span data-i18n="home.proof.demos">interactive demos</span>
+          <strong data-site-count="demos">83</strong> <span data-i18n="home.proof.demos">interactive demos</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">38</strong> <span data-i18n="home.proof.games">playable games</span>
+          <strong data-site-count="games">39</strong> <span data-i18n="home.proof.games">playable games</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">18</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
+          <strong data-site-count="showpieces">19</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">shipped titles</span>
@@ -418,6 +418,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="assets/posters/tin-legion.webp" srcset="assets/posters/tin-legion@320.webp 320w, assets/posters/tin-legion@640.webp 640w, assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">A <b>lane-siege army builder</b> on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad of tin figurines that marches off on its own. You never steer a soldier — you choose <b>what</b> to field, <b>where</b> to drop it and <b>when</b>; hold a card and the road that squad would take is drawn on the ground, and the side of your gate you drop on picks its lane. Three roads run between the two keeps, a <b>watchtower</b> guards each centre road, and two <b>gold mines</b> sit on the flanks behind neutral camps. A captured mine pays gold and pushes your drop zone forward; a keep is <b>shielded until its own watchtower falls</b>. Ten cards, a free commander, and three difficulty levels for the opposing one. Physics: every figurine is a dynamic circle in a zero-gravity <code>Space</code>, so crowds shove and flow for free; shot is a <b>sensor body</b> delivered by <code>InteractionListener</code>s, with friendly fire ruled out by sensor groups and masks rather than an if-statement; kegs detonate with a real radial impulse, and flyers have their own collision group. In <b>3D</b> it is a grassy plateau floating in mist, with a jointed low-poly rig per troop type.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">Waypoints</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Groups">Groups</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="assets/posters/blade-waltz.webp" srcset="assets/posters/blade-waltz@320.webp 320w, assets/posters/blade-waltz@640.webp 640w, assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
           </a>
@@ -435,16 +445,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 top-down <b>hero arena</b>. A mine in the middle coughs up a <b>shard</b> every few seconds — carry <b>10</b> between your team and survive a <b>15-second countdown</b> to win. Die and you drop everything you hold. Pick one of <b>six heroes</b> on the select screen — shotgunner, gunslinger, wrestler, bard, thrower, engineer — each with its own attack, <b>3-shot ammo</b> that reloads over time, and a <b>SUPER</b> that charges as you land hits: a wall-breaking blast, a piercing volley, a leap-and-slam, a healing chord, a flask barrage, an auto-turret. <b>Bushes</b> hide you until you attack or someone walks in close; <b>crates</b> can be blown open. Move with <b>WASD</b>, <b>aim with the mouse</b> and click to attack, <b>E</b> auto-attacks the nearest enemy, <b>SPACE</b>/<b>Q</b> fires the super — or on any device <b>hold</b> to steer, <b>tap</b> to attack and tap the SUPER button. Two <b>AI teammates</b> and three AI opponents run the same kit-aware brain: range bands, cover, stealth, retreat-to-heal, mine control and super timing. Every projectile is a <b>sensor body</b> delivered through <code>InteractionListener</code>s, with team filtering done by sensor groups and masks.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="examples/jungle-strike/?mode=3d&outline=0">
-            <img class="game-card-img" src="assets/posters/jungle-strike.webp" srcset="assets/posters/jungle-strike@320.webp 320w, assets/posters/jungle-strike@640.webp 640w, assets/posters/jungle-strike.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">Jungle Strike</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">An eleven-screen <b>Contra-style run-and-gun</b>. Fight right through a jungle assault course — patrolling grunts, dug-in <b>turrets</b>, leaping <b>chargers</b> and <b>snipers</b> that paint you with a laser sight before they fire — to a three-barrel <b>emplacement boss</b> that only takes damage in its glowing core, telegraphs every volley, and rotates rockets and mortars once it drops into overdrive. The level is built from a <b>CharacterController</b> over hand-authored terrain: one-way canopy platforms, a <b>collapsing rope bridge</b>, a river you cross on stepping stones, and a trench, tower climb and flooded bay after that. Grab <b>SPREAD</b>, <b>MACHINE</b> and <b>LASER</b> power-ups — you lose your weapon on death, and respawn at the last of eleven <b>checkpoints</b>. Move with <b>WASD</b>/arrows, <b>SPACE</b> to jump, <b>S</b>/<b>↓</b> to crouch, and <b>aim freely with the mouse</b> — hold to fire. In <b>3D mode</b> every fighter is a procedural low-poly figure with an independently-aimed gun arm.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Platformer">Platformer</span><span class="example-tag" data-i18n="tag.AI">AI</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

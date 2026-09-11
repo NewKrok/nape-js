@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">82</strong> <span data-i18n="home.proof.demos">个交互演示</span>
+          <strong data-site-count="demos">83</strong> <span data-i18n="home.proof.demos">个交互演示</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">38</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
+          <strong data-site-count="games">39</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">18</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
+          <strong data-site-count="showpieces">19</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">在一张大地图上进行的<b>三路攻城建军对战</b>：金币持续累积，屏幕下方是五张部队卡，每打出一张就会放下一队锡制小兵，它们自己出发行军。你从不操控单兵——你决定<b>投什么</b>、<b>投在哪</b>、<b>什么时候投</b>；拿着卡时，这支部队的路线会画在地面上，而你放在自家大门的哪一侧，决定了他们走哪条路。两座主堡之间有三条路，中路各由一座<b>哨塔</b>把守，两翼各有一座中立营地守着的<b>金矿</b>。占下金矿能带来收入并把部署区往前推；主堡<b>在自家哨塔未倒之前始终受护盾保护</b>。十张卡、一位免费统帅，外加三档敌方难度。物理：每个小兵都是零重力 <code>Space</code> 中的动态圆形，人群会自然推挤与绕流；射出的弹丸是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 传回，友军伤害由传感器分组与掩码排除，而不是靠一句 if 判断；火药桶引爆时施加真实的径向冲量，飞行单位有独立的碰撞分组。<b>3D</b> 模式下是一片浮在云雾中的草地高台，每种兵种都有独立的关节化低多边形模型。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">路径点</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Groups">分组</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/blade-waltz.webp" srcset="../assets/posters/blade-waltz@320.webp 320w, ../assets/posters/blade-waltz@640.webp 640w, ../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 俯视角<b>英雄竞技场</b>。地图中央的矿井每隔几秒吐出一枚<b>碎片</b>——全队合计拿到 <b>10</b> 枚并撑过 <b>15 秒倒计时</b>即可获胜。阵亡会掉落你持有的全部碎片。在选择界面从<b>六位英雄</b>中挑选一位——霰弹枪手、快枪手、摔角手、吟游诗人、投掷手、工程师——每位都有专属攻击、随时间回充的 <b>3 发弹药</b>，以及命中即充能的<b>大招</b>：破墙轰击、穿透连射、跃起重击、治疗和弦、烧瓶弹幕、自动炮塔。<b>草丛</b>能隐藏你，直到你攻击或有人靠近；<b>木箱</b>可以炸开。用 <b>WASD</b> 移动，<b>鼠标瞄准</b>并点击攻击，<b>E</b> 自动攻击最近的敌人，<b>SPACE</b>/<b>Q</b> 释放大招——在任何设备上也可以<b>按住</b>来移动、<b>轻点</b>攻击并轻点大招按钮。两名 <b>AI 队友</b>和三名 AI 对手运行同一套了解自身技能的大脑：射程区间、掩体、潜行、撤退回血、控矿与大招时机。每一发弹丸都是一个<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 派发，队伍过滤完全由传感器组与掩码完成。</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/jungle-strike/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/jungle-strike.webp" srcset="../assets/posters/jungle-strike@320.webp 320w, ../assets/posters/jungle-strike@640.webp 640w, ../assets/posters/jungle-strike.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Jungle Strike — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/jungle-strike/?mode=3d&outline=0" data-i18n="demo.jungle-strike.label">丛林突袭</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.jungle-strike.desc">十一屏的<b>魂斗罗式横版射击</b>。一路杀穿丛林突击场——巡逻的士兵、掘壕固守的<b>炮塔</b>、跳跃冲锋的<b>突击兵</b>，以及开火前会用激光瞄准你的<b>狙击手</b>——直到三管<b>炮台首领</b>：它只有发光的核心可被击伤，每轮齐射前都有预警，进入过载后还会轮换火箭弹与迫击炮。关卡由 <b>CharacterController</b> 搭配手工设计的地形构成：单向树冠平台、一座<b>会塌陷的绳桥</b>、需要踩石过河的河道，之后还有战壕、爬塔和被淹没的海湾。拾取 <b>SPREAD</b>、<b>MACHINE</b> 与 <b>LASER</b> 强化道具——死亡会失去武器，并在十一个<b>存档点</b>中最后到达的一个复活。使用 <b>WASD</b>/方向键移动，<b>SPACE</b> 跳跃，<b>S</b>/<b>↓</b> 蹲下，并用<b>鼠标自由瞄准</b>——按住即可开火。在 <b>3D 模式</b>下，每个战斗人员都是程序化生成的低多边形角色，持枪手臂独立瞄准。</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.CharacterController">CharacterController</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Platformer">平台跳跃</span><span class="example-tag" data-i18n="tag.AI">AI</span></div>
           </div>
         </article>
         <!-- featured-games:end -->
