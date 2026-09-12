@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Swarm Night",
+        "url": "https://napejs.org/examples/swarm-night/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Tin Legion",
         "url": "https://napejs.org/examples/tin-legion/",
         "gamePlatform": "Web browser",
@@ -241,7 +248,7 @@
       <h1 data-i18n="games.heading">Jeux construits sur nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">D'une simple mécanique à un titre publié : chaque jeu ci-dessous tourne sur le même moteur physique 2D open source. Jouez dans le navigateur, puis ouvrez le code.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">démos de jeu complètes</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">démos de jeu complètes</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">briques de gameplay</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">titres publiés</span></a>
       </nav>
@@ -254,6 +261,16 @@
       <h2 data-i18n="games.showpieces.heading">Démos de jeu complètes</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Des jeux multi-systèmes dans un seul fichier chacun — adversaires IA, vagues, caméras, score et rigs 3D. Jouez ici ou ouvrez le code sur CodePen et StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/swarm-night/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/swarm-night.webp" srcset="../../assets/posters/swarm-night@320.webp 320w, ../../assets/posters/swarm-night@640.webp 640w, ../../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">Un <b>roguelite de survie</b> (façon Vampire Survivors) : cinq minutes dans un cimetière clôturé face à une nuit qui ne cesse jamais de faire apparaître des monstres, et vous ne faites que <b>vous déplacer</b> — chaque arme tire toute seule. Vous commencez avec le <b>Fouet d'Argent</b> ; les victimes lâchent des <b>gemmes d'XP</b>, et une barre pleine met la nuit en pause pour proposer <b>trois cartes d'amélioration</b> : la Baguette Lunaire qui vise le monstre le plus proche, les Couteaux de Lancer qui volent dans votre direction de course, le Cercle d'Ail qui blesse et <b>repousse</b> tout autour de vous, les Orbes Spirituels qui vous encerclent, l'Appel de la Tempête qui enchaîne les éclairs, et huit passifs (vitesse, vie, aimant, recharge, dégâts, armure, régénération, zone). Six types de monstres arrivent selon un calendrier — <b>chauves-souris</b> en piqué, <b>goules</b>, <b>squelettes</b>, <b>cracheurs</b> à distance, lourdes <b>brutes</b> et <b>spectres</b> qui traversent les pierres tombales — plus des anneaux et des murs scriptés, deux <b>chevaliers du tombeau</b> qui chargent et portent un trésor, et un <b>colosse d'os</b> à 4:00 dont le coup au sol projette toute la foule. L'aube à 5:00 est la victoire. <b>WASD</b> / flèches pour bouger, <b>1 / 2 / 3</b> ou clic pour choisir une carte ; sur tactile, <b>maintenez n'importe où</b> pour diriger et touchez une carte. Physique : jusqu'à <b>420 monstres</b> sont des cercles dynamiques dans un <code>Space</code> sans gravité, la horde se presse, se comprime et s'écoule entre les pierres sans une ligne de code de nuée ; le recul est une vraie impulsion proportionnelle à la masse, le cercle et le coup au sol sont des impulsions radiales, et projectiles, couteaux, crachats et orbes sont des <b>corps capteurs</b> livrés par des <code>InteractionListener</code>, le filtrage des camps étant fait par groupes et masques de capteur. Les dégâts de contact viennent d'un écouteur de collision <code>ONGOING</code>. En <b>3D</b>, c'est un cimetière au clair de lune — clôture en fer, arbres morts, un mausolée, lanternes vacillantes, brume au sol et la propre lanterne du héros — où chaque type de monstre est un rig low-poly articulé fait de <b>pièces instanciées</b>, de sorte que des centaines s'animent pour une poignée de draw calls.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span><span class="example-tag" data-i18n="tag.Performance">Performance</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../fr/examples/tin-legion/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/tin-legion.webp" srcset="../../assets/posters/tin-legion@320.webp 320w, ../../assets/posters/tin-legion@640.webp 640w, ../../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>

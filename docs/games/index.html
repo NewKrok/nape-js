@@ -28,6 +28,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Swarm Night",
+        "url": "https://napejs.org/examples/swarm-night/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Tin Legion",
         "url": "https://napejs.org/examples/tin-legion/",
         "gamePlatform": "Web browser",
@@ -240,7 +247,7 @@
       <h1 data-i18n="games.heading">Games built on nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">From a single mechanic to a shipped title: every game below runs on the same open-source 2D physics engine. Play in the browser, then open the source.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">gameplay slices</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">shipped titles</span></a>
       </nav>
@@ -253,6 +260,16 @@
       <h2 data-i18n="games.showpieces.heading">Complete game demos</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Multi-system games in one file each — AI opponents, waves, cameras, scoring and 3D rigs. Play them here or open the source on CodePen and StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="../examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">A <b>survivor roguelite</b> (Vampire Survivors-style): five minutes in a walled graveyard against a night that never stops spawning, and you only ever <b>steer</b> — every weapon fires on its own. Start with the <b>Silver Whip</b>; kills drop <b>XP gems</b>, and a full bar pauses the night and offers <b>three upgrade cards</b>: the Moon Wand that picks the nearest monster, Throwing Knives that fly the way you run, the Garlic Ward that hurts and <b>shoves</b> everything around you, Spirit Orbs that circle you, Storm Call that chains lightning, and eight passives (speed, health, magnet, cooldown, damage, armour, regen, area). Six monster types arrive on a schedule — swooping <b>bats</b>, <b>ghouls</b>, <b>skeletons</b>, ranged <b>spitters</b>, heavy <b>brutes</b> and <b>wraiths</b> that drift through gravestones — plus scripted rings and walls, two <b>grave knights</b> that charge and carry treasure, and a <b>bone colossus</b> at 4:00 with a ground slam that throws the whole crowd. Dawn at 5:00 is the win. <b>WASD</b> / arrows to move, <b>1 / 2 / 3</b> or click to pick a card — on touch, <b>hold anywhere</b> to steer and tap a card. Physics: up to <b>420 monsters</b> are dynamic circles in a zero-gravity <code>Space</code>, so the horde crowds, squeezes and streams around the stones with no flocking code at all; knockback is a real impulse scaled by mass, the ward and the slam are radial impulses, and bolts, knives, spit and orbs are <b>sensor bodies</b> delivered through <code>InteractionListener</code>s, with side filtering done by sensor groups and masks. Contact damage comes from an <code>ONGOING</code> collision listener. In <b>3D</b> it is a moonlit graveyard — iron fence, dead trees, a mausoleum, flickering lanterns, ground mist and the hero's own lantern light — where every monster type is a jointed low-poly rig built from <b>instanced parts</b>, so hundreds animate for a handful of draw calls.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Performance">Performance</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>

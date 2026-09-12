@@ -330,5 +330,9 @@
   "tin-legion": {
     "mode": "3d",
     "renderedAt": "2026-09-11"
+  },
+  "swarm-night": {
+    "mode": "3d",
+    "renderedAt": "2026-09-12"
   }
 }

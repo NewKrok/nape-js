@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">83</strong> <span data-i18n="home.proof.demos">个交互演示</span>
+          <strong data-site-count="demos">84</strong> <span data-i18n="home.proof.demos">个交互演示</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">39</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
+          <strong data-site-count="games">40</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">19</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
+          <strong data-site-count="showpieces">20</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">一款<b>幸存者类 roguelite</b>（吸血鬼幸存者风格）：在围栏环绕的墓园里熬过五分钟，夜晚永不停止地刷出怪物，而你只需<b>移动</b>——所有武器自动开火。开局持有<b>银鞭</b>；击杀掉落<b>经验宝石</b>，经验条满时夜晚暂停，提供<b>三张升级卡</b>：锁定最近怪物的月杖、顺着跑动方向飞出的飞刀、伤害并<b>推开</b>周围一切的蒜环、绕你旋转的灵珠、连锁闪电的唤雷，以及八种被动（移速、生命、磁力、冷却、伤害、护甲、回复、范围）。六种怪物按时间表登场——俯冲的<b>蝙蝠</b>、<b>食尸鬼</b>、<b>骷髅</b>、远程<b>喷吐者</b>、沉重的<b>蛮兽</b>和穿过墓碑的<b>幽魂</b>——另有脚本化的包围圈与怪墙、两名会冲锋并携带宝藏的<b>墓骑士</b>，以及 4:00 登场的<b>骨巨像</b>，其震地一击能把整群怪物掀飞。5:00 黎明即为胜利。<b>WASD</b> / 方向键移动，<b>1 / 2 / 3</b> 或点击选卡；触屏上<b>按住任意位置</b>操控，点按选卡。物理：最多 <b>420 只怪物</b>都是零重力 <code>Space</code> 中的动态圆形，怪群挤压、推挤并绕着墓碑流动，无需一行群集代码；击退是按质量缩放的真实冲量，蒜环与震地是径向冲量，法球、飞刀、唾液与灵珠都是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 送达，阵营过滤由传感器组与掩码完成。接触伤害来自 <code>ONGOING</code> 碰撞监听器。<b>3D</b> 模式是月光下的墓园——铁栏、枯树、陵墓、闪烁的灯柱、地面雾气和主角自带的灯光——每种怪物都是由<b>实例化部件</b>组成的关节式低多边形模型，数百只怪物只需寥寥几次绘制调用即可动起来。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Roguelite">类肉鸽</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Performance">性能</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">圆形竞技场上的<b>《传说》系列风格动作战斗连战</b>：十波怪物、四人小队，而你只操控剑士。自由跑动，打出<b>三段连击</b>（<b>J</b> / 点击），消耗 TP 施放<b>秘技</b>（<b>K</b> —— 中立方向为地面冲击波 Demon Fang，朝向目标为冲刺突刺 Sonic Thrust，背向目标为挑飞斩 Tiger Blade），用 <b>L</b> <b>防御</b>，当 Overlimit 计量表因造成与承受伤害而充满时，按<b>空格</b>释放<b>秘奥义</b>。普通攻击回复 TP；防御只护住正面；石魔像与头目无视零散的单次攻击。你的<b>AI 队友</b>各司其职：枪兵近身缠斗并连续突刺，弓手拉开距离齐射，贤者治疗、复活并施放火与石魔法，且<b>施法时间可被打断</b>。第十波是一头<b>飞龙</b>，拥有利爪、回旋尾击、火焰吐息、咆哮和召唤鬼火。每个战斗者都是静态墙段环内的动态圆盘；近战由扇形范围判定，而箭矢、弩矢、火球和冲击波则是由 <code>InteractionListener</code> 处理的<b>传感器刚体</b>，阵营过滤全部通过传感器掩码完成。<b>3D</b> 模式下，侧向追踪摄像机取景玩家与目标之间的连线，俯瞰草原上的石制竞技场，所有战斗者都是带关节的低多边形模型。</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/shard-rush/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/shard-rush.webp" srcset="../assets/posters/shard-rush@320.webp 320w, ../assets/posters/shard-rush@640.webp 640w, ../assets/posters/shard-rush.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Shard Rush — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/shard-rush/?mode=3d&outline=0" data-i18n="demo.shard-rush.label">Shard Rush</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.shard-rush.desc">3v3 俯视角<b>英雄竞技场</b>。地图中央的矿井每隔几秒吐出一枚<b>碎片</b>——全队合计拿到 <b>10</b> 枚并撑过 <b>15 秒倒计时</b>即可获胜。阵亡会掉落你持有的全部碎片。在选择界面从<b>六位英雄</b>中挑选一位——霰弹枪手、快枪手、摔角手、吟游诗人、投掷手、工程师——每位都有专属攻击、随时间回充的 <b>3 发弹药</b>，以及命中即充能的<b>大招</b>：破墙轰击、穿透连射、跃起重击、治疗和弦、烧瓶弹幕、自动炮塔。<b>草丛</b>能隐藏你，直到你攻击或有人靠近；<b>木箱</b>可以炸开。用 <b>WASD</b> 移动，<b>鼠标瞄准</b>并点击攻击，<b>E</b> 自动攻击最近的敌人，<b>SPACE</b>/<b>Q</b> 释放大招——在任何设备上也可以<b>按住</b>来移动、<b>轻点</b>攻击并轻点大招按钮。两名 <b>AI 队友</b>和三名 AI 对手运行同一套了解自身技能的大脑：射程区间、掩体、潜行、撤退回血、控矿与大招时机。每一发弹丸都是一个<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 派发，队伍过滤完全由传感器组与掩码完成。</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Shooter">Shooter</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

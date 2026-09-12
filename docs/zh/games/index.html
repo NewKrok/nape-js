@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Swarm Night",
+        "url": "https://napejs.org/examples/swarm-night/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Tin Legion",
         "url": "https://napejs.org/examples/tin-legion/",
         "gamePlatform": "Web browser",
@@ -241,7 +248,7 @@
       <h1 data-i18n="games.heading">基于 nape-js 构建的游戏</h1>
       <p class="page-hero-intro" data-i18n="games.intro">从单一机制到已发布作品：下面的每个游戏都运行在同一个开源 2D 物理引擎上。在浏览器中试玩，然后打开源码。</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">个玩法切片</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span></a>
       </nav>
@@ -254,6 +261,16 @@
       <h2 data-i18n="games.showpieces.heading">完整游戏演示</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">每个都是单文件的多系统游戏——AI 对手、波次、摄像机、计分和 3D 骨架。在这里试玩，或在 CodePen 和 StackBlitz 上打开源码。</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/swarm-night/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/swarm-night.webp" srcset="../../assets/posters/swarm-night@320.webp 320w, ../../assets/posters/swarm-night@640.webp 640w, ../../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">一款<b>幸存者类 roguelite</b>（吸血鬼幸存者风格）：在围栏环绕的墓园里熬过五分钟，夜晚永不停止地刷出怪物，而你只需<b>移动</b>——所有武器自动开火。开局持有<b>银鞭</b>；击杀掉落<b>经验宝石</b>，经验条满时夜晚暂停，提供<b>三张升级卡</b>：锁定最近怪物的月杖、顺着跑动方向飞出的飞刀、伤害并<b>推开</b>周围一切的蒜环、绕你旋转的灵珠、连锁闪电的唤雷，以及八种被动（移速、生命、磁力、冷却、伤害、护甲、回复、范围）。六种怪物按时间表登场——俯冲的<b>蝙蝠</b>、<b>食尸鬼</b>、<b>骷髅</b>、远程<b>喷吐者</b>、沉重的<b>蛮兽</b>和穿过墓碑的<b>幽魂</b>——另有脚本化的包围圈与怪墙、两名会冲锋并携带宝藏的<b>墓骑士</b>，以及 4:00 登场的<b>骨巨像</b>，其震地一击能把整群怪物掀飞。5:00 黎明即为胜利。<b>WASD</b> / 方向键移动，<b>1 / 2 / 3</b> 或点击选卡；触屏上<b>按住任意位置</b>操控，点按选卡。物理：最多 <b>420 只怪物</b>都是零重力 <code>Space</code> 中的动态圆形，怪群挤压、推挤并绕着墓碑流动，无需一行群集代码；击退是按质量缩放的真实冲量，蒜环与震地是径向冲量，法球、飞刀、唾液与灵珠都是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 送达，阵营过滤由传感器组与掩码完成。接触伤害来自 <code>ONGOING</code> 碰撞监听器。<b>3D</b> 模式是月光下的墓园——铁栏、枯树、陵墓、闪烁的灯柱、地面雾气和主角自带的灯光——每种怪物都是由<b>实例化部件</b>组成的关节式低多边形模型，数百只怪物只需寥寥几次绘制调用即可动起来。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Roguelite">类肉鸽</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Performance">性能</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../zh/examples/tin-legion/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/tin-legion.webp" srcset="../../assets/posters/tin-legion@320.webp 320w, ../../assets/posters/tin-legion@640.webp 640w, ../../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>

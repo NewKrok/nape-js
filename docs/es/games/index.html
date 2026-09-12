@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Swarm Night",
+        "url": "https://napejs.org/examples/swarm-night/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Tin Legion",
         "url": "https://napejs.org/examples/tin-legion/",
         "gamePlatform": "Web browser",
@@ -241,7 +248,7 @@
       <h1 data-i18n="games.heading">Juegos construidos sobre nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">De una sola mecánica a un título publicado: todos los juegos de abajo corren sobre el mismo motor de física 2D de código abierto. Juega en el navegador y luego abre el código.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>19</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">piezas de jugabilidad</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">títulos publicados</span></a>
       </nav>
@@ -254,6 +261,16 @@
       <h2 data-i18n="games.showpieces.heading">Demos de juego completas</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Juegos con varios sistemas en un solo archivo cada uno — oponentes con IA, oleadas, cámaras, puntuación y rigs 3D. Juega aquí o abre el código en CodePen y StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../es/examples/swarm-night/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/swarm-night.webp" srcset="../../assets/posters/swarm-night@320.webp 320w, ../../assets/posters/swarm-night@640.webp 640w, ../../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><a href="../../es/examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">Un <b>roguelite de supervivencia</b> (al estilo Vampire Survivors): cinco minutos en un cementerio vallado contra una noche que nunca deja de generar monstruos, y tú solo <b>te mueves</b>: cada arma dispara por sí sola. Empiezas con el <b>Látigo de Plata</b>; las muertes sueltan <b>gemas de XP</b>, y una barra llena detiene la noche y ofrece <b>tres cartas de mejora</b>: la Varita Lunar que elige al monstruo más cercano, Cuchillos Arrojadizos que vuelan hacia donde corres, el Escudo de Ajo que hiere y <b>empuja</b> todo a tu alrededor, Orbes Espirituales que te rodean, Llamada de Tormenta que encadena rayos, y ocho pasivas (velocidad, vida, imán, enfriamiento, daño, armadura, regeneración, área). Seis tipos de monstruo llegan según un horario — <b>murciélagos</b> en picado, <b>gules</b>, <b>esqueletos</b>, <b>escupidores</b> a distancia, <b>brutos</b> pesados y <b>espectros</b> que atraviesan las lápidas — más anillos y muros programados, dos <b>caballeros sepulcrales</b> que embisten y llevan tesoro, y un <b>coloso de hueso</b> a las 4:00 cuyo golpe de suelo lanza a toda la multitud. El amanecer a las 5:00 es la victoria. <b>WASD</b> / flechas para moverte, <b>1 / 2 / 3</b> o clic para elegir carta; en táctil, <b>mantén pulsado en cualquier sitio</b> para dirigir y toca una carta. Física: hasta <b>420 monstruos</b> son círculos dinámicos en un <code>Space</code> sin gravedad, así que la horda se apiña, se comprime y fluye entre las lápidas sin una sola línea de código de bandada; el retroceso es un impulso real escalado por masa, el escudo y el golpe son impulsos radiales, y proyectiles, cuchillos, escupitajos y orbes son <b>cuerpos sensores</b> entregados mediante <code>InteractionListener</code>, con el filtrado de bandos hecho por grupos y máscaras de sensor. El daño por contacto llega desde un listener de colisión <code>ONGOING</code>. En <b>3D</b> es un cementerio a la luz de la luna — valla de hierro, árboles muertos, un mausoleo, faroles parpadeantes, niebla baja y la propia lámpara del héroe — donde cada tipo de monstruo es un rig low-poly articulado hecho de <b>piezas instanciadas</b>, así cientos se animan con un puñado de draw calls.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Camera">Cámara</span><span class="example-tag" data-i18n="tag.Sensors">Sensores</span><span class="example-tag" data-i18n="tag.Performance">Rendimiento</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../es/examples/tin-legion/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/tin-legion.webp" srcset="../../assets/posters/tin-legion@320.webp 320w, ../../assets/posters/tin-legion@640.webp 640w, ../../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>

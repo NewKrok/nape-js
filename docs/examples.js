@@ -106,6 +106,7 @@ import jungleStrike          from "./demos/jungle-strike.js?v=3.42.1";
 import shardRush             from "./demos/shard-rush.js?v=3.42.1";
 import bladeWaltz            from "./demos/blade-waltz.js?v=3.42.1";
 import tinLegion             from "./demos/tin-legion.js?v=3.42.1";
+import swarmNight            from "./demos/swarm-night.js?v=3.42.1";
 
 // Note on order: cardEntries reverses ALL_DEMOS, so the LAST tuple entry
 // becomes the TOP card in the grid. New demos go at the end so they take
@@ -171,6 +172,7 @@ const ALL_DEMOS = [
   shardRush,
   bladeWaltz,
   tinLegion,
+  swarmNight,
 ];
 
 const gtag = window.gtag || function() {};
