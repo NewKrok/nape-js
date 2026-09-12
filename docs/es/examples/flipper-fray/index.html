@@ -5,7 +5,7 @@
   <meta name="nape-prerendered" content="es" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flipper Fray — Demo interactiva de física 2D | nape-js</title>
-  <meta name="description" content="Una pelea de pinball para seis jugadores: una mesa redonda, seis bolsillos y un par de flippers guardando cada uno." />
+  <meta name="description" content="Una pelea de pinball para cinco jugadores: una mesa redonda, cinco bolsillos y un par de flippers guardando cada uno." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -52,7 +52,7 @@
         "name": "Flipper Fray",
         "inLanguage": "es",
         "image": "https://napejs.org/assets/posters/flipper-fray.webp",
-        "description": "Una pelea de pinball para seis jugadores: una mesa redonda, seis bolsillos y un par de flippers guardando cada uno. Las bolas derivan hacia fuera, los bumpers y las slingshots las lanzan de un lado a otro, y cada bola que pasa tus flippers te cuesta una vida — cinco vidas, gana el último bolsillo…",
+        "description": "Una pelea de pinball para cinco jugadores: una mesa redonda, cinco bolsillos y un par de flippers guardando cada uno. Las bolas derivan hacia fuera, los bumpers y las slingshots las lanzan de un lado a otro, y cada bola que pasa tus flippers te cuesta una vida — cinco vidas, gana el último…",
         "url": "https://napejs.org/es/examples/flipper-fray/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -83,7 +83,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Flipper Fray — Demo interactiva de física 2D | nape-js" />
-  <meta property="og:description" content="Una pelea de pinball para seis jugadores: una mesa redonda, seis bolsillos y un par de flippers guardando cada uno." />
+  <meta property="og:description" content="Una pelea de pinball para cinco jugadores: una mesa redonda, cinco bolsillos y un par de flippers guardando cada uno." />
   <meta property="og:url" content="https://napejs.org/es/examples/flipper-fray/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <meta property="og:image:width" content="900" />
@@ -93,7 +93,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Flipper Fray — Demo interactiva de física 2D | nape-js" />
-  <meta name="twitter:description" content="Una pelea de pinball para seis jugadores: una mesa redonda, seis bolsillos y un par de flippers guardando cada uno." />
+  <meta name="twitter:description" content="Una pelea de pinball para cinco jugadores: una mesa redonda, cinco bolsillos y un par de flippers guardando cada uno." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -172,7 +172,7 @@
         <span aria-current="page" data-i18n="demo.flipper-fray.label">Flipper Fray</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">Una <b>pelea de pinball para seis jugadores</b>: una mesa redonda, seis bolsillos y un par de flippers guardando cada uno. Las bolas derivan hacia fuera, los bumpers y las slingshots las lanzan de un lado a otro, y cada bola que pasa tus flippers te cuesta una vida — <b>cinco vidas</b>, gana el último bolsillo en pie, o el que más vidas tenga cuando se acaben los tres minutos. Defiendes el bolsillo inferior contra <b>cinco porteros IA</b>; el <b>multibola</b> suelta bolas extra según un calendario y cada medio minuto sale una <b>bola bomba</b>: dos vidas si entra, una explosión si nadie se la traga. <b>← →</b> / <b>A D</b> para los flippers, <b>ESPACIO</b> ambos; en táctil, mantén pulsada la mitad izquierda o derecha de la pantalla. Física: los flippers son <b>cuerpos cinemáticos</b> movidos con <code>setVelocityFromTarget</code>, así que un golpe transmite velocidad angular real a la bola; las bolas son círculos con <b>marca bullet</b>, así que nada atraviesa las finas paredes del anillo; los empujones de bumpers y slingshots y la anotación de goles llegan por <code>InteractionListener</code>. En <b>3D</b>, una arena de neón con bolas cromadas, bolsillos luminosos y luces de carril, vista desde detrás de tu propio bolsillo.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">Una <b>pelea de pinball para cinco jugadores</b>: una mesa redonda, cinco bolsillos y un par de flippers guardando cada uno. Las bolas derivan hacia fuera, los bumpers y las slingshots las lanzan de un lado a otro, y cada bola que pasa tus flippers te cuesta una vida — <b>cinco vidas</b>, gana el último bolsillo en pie, o el que más vidas tenga cuando se acaben los tres minutos. Defiendes el bolsillo inferior contra <b>cuatro porteros IA</b>; el <b>multibola</b> suelta bolas extra según un calendario y cada medio minuto sale una <b>bola bomba</b>: dos vidas si entra, una explosión si nadie se la traga. <b>← →</b> / <b>A D</b> para los flippers, <b>ESPACIO</b> ambos; en táctil, mantén pulsada la mitad izquierda o derecha de la pantalla. Física: los flippers son <b>cuerpos cinemáticos</b> movidos con <code>setVelocityFromTarget</code>, así que un golpe transmite velocidad angular real a la bola; las bolas son círculos con <b>marca bullet</b>, así que nada atraviesa las finas paredes del anillo; los empujones de bumpers y slingshots y la anotación de goles llegan por <code>InteractionListener</code>. En <b>3D</b>, una arena de neón con bolas cromadas, bolsillos luminosos y luces de carril, vista desde detrás de tu propio bolsillo.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>

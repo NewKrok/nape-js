@@ -5,7 +5,7 @@
   <meta name="nape-prerendered" content="fr" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flipper Fray — Démo interactive de physique 2D | nape-js</title>
-  <meta name="description" content="Une bagarre de flipper à six joueurs : une table ronde, six poches, chacune gardée par une paire de flippers." />
+  <meta name="description" content="Une bagarre de flipper à cinq joueurs : une table ronde, cinq poches, chacune gardée par une paire de flippers." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -52,7 +52,7 @@
         "name": "Flipper Fray",
         "inLanguage": "fr",
         "image": "https://napejs.org/assets/posters/flipper-fray.webp",
-        "description": "Une bagarre de flipper à six joueurs : une table ronde, six poches, chacune gardée par une paire de flippers. Les billes dérivent vers l'extérieur, les bumpers et les slingshots les projettent partout, et chaque bille qui passe vos flippers vous coûte une vie — cinq vies, la dernière poche debout…",
+        "description": "Une bagarre de flipper à cinq joueurs : une table ronde, cinq poches, chacune gardée par une paire de flippers. Les billes dérivent vers l'extérieur, les bumpers et les slingshots les projettent partout, et chaque bille qui passe vos flippers vous coûte une vie — cinq vies, la dernière poche…",
         "url": "https://napejs.org/fr/examples/flipper-fray/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -83,7 +83,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Flipper Fray — Démo interactive de physique 2D | nape-js" />
-  <meta property="og:description" content="Une bagarre de flipper à six joueurs : une table ronde, six poches, chacune gardée par une paire de flippers." />
+  <meta property="og:description" content="Une bagarre de flipper à cinq joueurs : une table ronde, cinq poches, chacune gardée par une paire de flippers." />
   <meta property="og:url" content="https://napejs.org/fr/examples/flipper-fray/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <meta property="og:image:width" content="900" />
@@ -93,7 +93,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Flipper Fray — Démo interactive de physique 2D | nape-js" />
-  <meta name="twitter:description" content="Une bagarre de flipper à six joueurs : une table ronde, six poches, chacune gardée par une paire de flippers." />
+  <meta name="twitter:description" content="Une bagarre de flipper à cinq joueurs : une table ronde, cinq poches, chacune gardée par une paire de flippers." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -172,7 +172,7 @@
         <span aria-current="page" data-i18n="demo.flipper-fray.label">Flipper Fray</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">Une <b>bagarre de flipper à six joueurs</b> : une table ronde, six poches, chacune gardée par une paire de flippers. Les billes dérivent vers l'extérieur, les bumpers et les slingshots les projettent partout, et chaque bille qui passe vos flippers vous coûte une vie — <b>cinq vies</b>, la dernière poche debout gagne, ou celle qui a le plus de vies au bout de trois minutes. Vous tenez la poche du bas contre <b>cinq gardiens IA</b> ; le <b>multibille</b> lâche des billes supplémentaires selon un calendrier et toutes les trente secondes une <b>bille-bombe</b> sort : deux vies si elle tombe, une explosion si personne ne l'avale. <b>← →</b> / <b>A D</b> pour les flippers, <b>ESPACE</b> pour les deux ; en tactile, maintenez la moitié gauche ou droite de l'écran. Physique : les flippers sont des <b>corps cinématiques</b> pilotés par <code>setVelocityFromTarget</code>, si bien qu'un coup transmet une vraie vitesse angulaire à la bille ; les billes sont des cercles <b>marqués bullet</b>, donc rien ne traverse les fines parois de l'anneau ; les impulsions des bumpers et des slingshots et l'attribution des buts passent par des <code>InteractionListener</code>. En <b>3D</b>, une arène néon avec des billes chromées, des poches lumineuses et des lignes de couloir, vue de derrière votre propre poche.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">Une <b>bagarre de flipper à cinq joueurs</b> : une table ronde, cinq poches, chacune gardée par une paire de flippers. Les billes dérivent vers l'extérieur, les bumpers et les slingshots les projettent partout, et chaque bille qui passe vos flippers vous coûte une vie — <b>cinq vies</b>, la dernière poche debout gagne, ou celle qui a le plus de vies au bout de trois minutes. Vous tenez la poche du bas contre <b>quatre gardiens IA</b> ; le <b>multibille</b> lâche des billes supplémentaires selon un calendrier et toutes les trente secondes une <b>bille-bombe</b> sort : deux vies si elle tombe, une explosion si personne ne l'avale. <b>← →</b> / <b>A D</b> pour les flippers, <b>ESPACE</b> pour les deux ; en tactile, maintenez la moitié gauche ou droite de l'écran. Physique : les flippers sont des <b>corps cinématiques</b> pilotés par <code>setVelocityFromTarget</code>, si bien qu'un coup transmet une vraie vitesse angulaire à la bille ; les billes sont des cercles <b>marqués bullet</b>, donc rien ne traverse les fines parois de l'anneau ; les impulsions des bumpers et des slingshots et l'attribution des buts passent par des <code>InteractionListener</code>. En <b>3D</b>, une arène néon avec des billes chromées, des poches lumineuses et des lignes de couloir, vue de derrière votre propre poche.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>

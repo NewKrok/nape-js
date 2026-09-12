@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flipper Fray — Interactive 2D Physics Demo | nape-js</title>
-  <meta name="description" content="A six-player pinball brawl: one round table, six pockets, a pair of flippers guarding each." />
+  <meta name="description" content="A five-player pinball brawl: one round table, five pockets, a pair of flippers guarding each." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -51,7 +51,7 @@
         "name": "Flipper Fray",
         "inLanguage": "en",
         "image": "https://napejs.org/assets/posters/flipper-fray.webp",
-        "description": "A six-player pinball brawl: one round table, six pockets, a pair of flippers guarding each. Balls drift outward, bumpers and slingshots throw them around, and every ball that gets past your flippers costs you a life — five lives, last pocket standing wins, or the most lives when three minutes run…",
+        "description": "A five-player pinball brawl: one round table, five pockets, a pair of flippers guarding each. Balls drift outward, bumpers and slingshots throw them around, and every ball that gets past your flippers costs you a life — five lives, last pocket standing wins, or the most lives when three minutes…",
         "url": "https://napejs.org/examples/flipper-fray/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -82,7 +82,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Flipper Fray — Interactive 2D Physics Demo | nape-js" />
-  <meta property="og:description" content="A six-player pinball brawl: one round table, six pockets, a pair of flippers guarding each." />
+  <meta property="og:description" content="A five-player pinball brawl: one round table, five pockets, a pair of flippers guarding each." />
   <meta property="og:url" content="https://napejs.org/examples/flipper-fray/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <meta property="og:image:width" content="900" />
@@ -92,7 +92,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Flipper Fray — Interactive 2D Physics Demo | nape-js" />
-  <meta name="twitter:description" content="A six-player pinball brawl: one round table, six pockets, a pair of flippers guarding each." />
+  <meta name="twitter:description" content="A five-player pinball brawl: one round table, five pockets, a pair of flippers guarding each." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -171,7 +171,7 @@
         <span aria-current="page" data-i18n="demo.flipper-fray.label">Flipper Fray</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">A <b>six-player pinball brawl</b>: one round table, six pockets, a pair of flippers guarding each. Balls drift outward, bumpers and slingshots throw them around, and every ball that gets past your flippers costs you a life — <b>five lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>five AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">A <b>five-player pinball brawl</b>: one round table, five pockets, a pair of flippers guarding each. Balls drift outward, bumpers and slingshots throw them around, and every ball that gets past your flippers costs you a life — <b>five lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>four AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
