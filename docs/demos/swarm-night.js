@@ -714,6 +714,8 @@ function dropGem(x, y, xp) {
 }
 function gemTier(xp) { return xp >= 30 ? 3 : xp >= 8 ? 2 : xp >= 3 ? 1 : 0; }
 const GEM_COLORS = ["#58a6ff", "#3fb950", "#f85149", "#ffd166"];
+const PICKUP_CSS = { heart: "#ff6b6b", magnet: "#58a6ff", bomb: "#ffd166", chest: "#ffd166" };
+const PICKUP_HEX = { heart: 0xff6b6b, magnet: 0x58a6ff, bomb: 0xffd166, chest: 0xffd166 };
 
 function dropPickup(m) {
   const r = Math.random();
@@ -764,10 +766,12 @@ function usePickup(p) {
     burst(hx, hy, 10, "#ff6b6b", 2);
   } else if (p.kind === "magnet") {
     for (const g of _gems) g.pull = true;
+    addFloater(hx, hy - 24, "MAGNET", C_XP, 1.1);
     pushBanner("MAGNET", C_XP, 60);
     _rings.push({ x: hx, y: hy, r: 10, max: 700, t: 0, T: 30, color: C_XP });
   } else if (p.kind === "bomb") {
     _flash = 1;
+    addFloater(hx, hy - 24, "BOMB!", "#ffd166", 1.2);
     if (_runnerRef) _runnerRef.shakeCamera(14, 0.4);
     _rings.push({ x: hx, y: hy, r: 10, max: 520, t: 0, T: 26, color: "#ffd166" });
     for (const m of [..._monsters]) {
@@ -779,6 +783,7 @@ function usePickup(p) {
     pushBanner("BOOM", "#ffd166", 60);
   } else if (p.kind === "chest") {
     _levelUpQueue++;
+    addFloater(hx, hy - 24, "TREASURE", "#ffd166", 1.1);
     pushBanner("TREASURE", "#ffd166", 60);
   }
 }
@@ -1479,6 +1484,13 @@ function drawGems2d(ctx) {
     const bob = Math.sin(p.t * 0.1) * 2;
     ctx.save();
     ctx.translate(p.x, p.y + bob);
+    // Glowing halo, so a dark bomb reads on dark grass.
+    const hr = 16 + Math.sin(p.t * 0.12) * 3;
+    const hg = ctx.createRadialGradient(0, 0, 3, 0, 0, hr);
+    hg.addColorStop(0, PICKUP_CSS[p.kind] + "88");
+    hg.addColorStop(1, PICKUP_CSS[p.kind] + "00");
+    ctx.fillStyle = hg;
+    ctx.beginPath(); ctx.arc(0, 0, hr, 0, Math.PI * 2); ctx.fill();
     if (p.kind === "heart") {
       ctx.fillStyle = "#ff6b6b";
       ctx.beginPath();
@@ -1501,8 +1513,9 @@ function drawGems2d(ctx) {
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(-7, 3); ctx.lineTo(-7, 6); ctx.moveTo(7, 3); ctx.lineTo(7, 6); ctx.stroke();
     } else if (p.kind === "bomb") {
-      ctx.fillStyle = "#1f242c";
+      ctx.fillStyle = "#2a303a";
       ctx.beginPath(); ctx.arc(0, 2, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 1.5; ctx.stroke();
       ctx.strokeStyle = "#c9d1d9"; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(3, -6); ctx.quadraticCurveTo(8, -12, 12, -9); ctx.stroke();
       ctx.fillStyle = Math.floor(_frame / 6) % 2 ? "#ffd166" : "#ff8a3d";
@@ -2861,13 +2874,22 @@ function syncPools(adapter) {
     let mesh = _pickupMeshes.get(rec);
     if (!mesh) {
       const T = _THREE;
-      if (rec.kind === "heart") { mesh = new T.Mesh(_geos.gem, new T.MeshBasicMaterial({ color: 0xff6b6b })); mesh.scale.set(8, 8, 7); }
-      else if (rec.kind === "magnet") { mesh = new T.Mesh(new T.TorusGeometry(7, 2.5, 8, 16, Math.PI), new T.MeshBasicMaterial({ color: 0x58a6ff })); mesh.rotation.x = Math.PI / 2; }
-      else if (rec.kind === "bomb") { mesh = new T.Mesh(_geos.sph, lam(0x1f242c)); mesh.scale.setScalar(9); }
-      else {
-        // A group, not a child of the scaled body — a child would inherit the
-        // 24×16×14 scale and turn the lid into a 576×256×70 slab.
-        mesh = new T.Group();
+      // Every pickup is a Group: the item plus a glowing halo on the ground,
+      // so a dark bomb reads on dark grass at night. (Scaled meshes never get
+      // children here — a child would inherit the parent's scale.)
+      mesh = new T.Group();
+      const halo = new T.Mesh(_geos.disc, new T.MeshBasicMaterial({ color: PICKUP_HEX[rec.kind], transparent: true, opacity: 0.35, depthWrite: false }));
+      halo.position.z = -10.5;
+      mesh.add(halo);
+      mesh.userData.halo = halo;
+      if (rec.kind === "heart") { const m = new T.Mesh(_geos.gem, new T.MeshBasicMaterial({ color: 0xff6b6b })); m.scale.set(8, 8, 7); mesh.add(m); }
+      else if (rec.kind === "magnet") { const m = new T.Mesh(new T.TorusGeometry(7, 2.5, 8, 16, Math.PI), new T.MeshBasicMaterial({ color: 0x58a6ff })); m.rotation.x = Math.PI / 2; mesh.add(m); }
+      else if (rec.kind === "bomb") {
+        const ball = new T.Mesh(_geos.sph, lam(0x2a303a)); ball.scale.setScalar(9); mesh.add(ball);
+        const fuse = new T.Mesh(_geos.cyl, lam(0xc9d1d9)); fuse.scale.set(1.2, 1.2, 8); fuse.position.set(3, 3, 11); fuse.rotation.set(0.5, -0.5, 0); mesh.add(fuse);
+        const spark = new T.Mesh(_geos.sph, new T.MeshBasicMaterial({ color: 0xffd166 })); spark.scale.setScalar(3.2); spark.position.set(5.5, 5.5, 14); mesh.add(spark);
+        mesh.userData.spark = spark;
+      } else {
         const body = box3(24, 16, 12, lam(0x8a5a2b)); body.position.z = -3; mesh.add(body);
         const lid = box3(26, 18, 6, lam(0xffd166)); lid.position.z = 6; mesh.add(lid);
         const clasp = box3(6, 4, 8, lam(0xffe9a8)); clasp.position.set(0, -9, 1); mesh.add(clasp);
@@ -2875,8 +2897,15 @@ function syncPools(adapter) {
       adapter.addSceneMesh(mesh);
       _pickupMeshes.set(rec, mesh);
     }
-    mesh.position.set(rec.x, -rec.y, GROUND_Z + 12 + Math.sin(rec.t * 0.1) * 2);
+    const bob = Math.sin(rec.t * 0.1) * 2;
+    mesh.position.set(rec.x, -rec.y, GROUND_Z + 12 + bob);
     if (rec.kind !== "chest") mesh.rotation.z = rec.t * 0.04;
+    const halo = mesh.userData.halo;
+    const hs = 15 + Math.sin(rec.t * 0.12) * 3;
+    halo.scale.set(hs, hs, 1);
+    halo.position.z = -10.5 - bob;
+    halo.material.opacity = 0.28 + Math.sin(rec.t * 0.12) * 0.1;
+    if (mesh.userData.spark) mesh.userData.spark.visible = Math.floor(rec.t / 6) % 2 === 0;
   }
 }
 
