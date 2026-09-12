@@ -5,7 +5,7 @@
   <meta name="nape-prerendered" content="hu" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Swarm Night — Interaktív 2D fizikai demó | nape-js</title>
-  <meta name="description" content="Survivor-roguelite (Vampire Survivors-stílusban): öt perc egy kerítéssel körbevett temetőben egy éjszaka ellen, amely sosem hagyja abba a szörnyek küldését…" />
+  <meta name="description" content="Survivor-roguelite Vampire Survivors-stílusban: öt perc egy körbekerített temetőben, és te csak irányítasz — minden fegyver magától tüzel." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -52,7 +52,7 @@
         "name": "Swarm Night",
         "inLanguage": "hu",
         "image": "https://napejs.org/assets/posters/swarm-night.webp",
-        "description": "Survivor-roguelite (Vampire Survivors-stílusban): öt perc egy kerítéssel körbevett temetőben egy éjszaka ellen, amely sosem hagyja abba a szörnyek küldését, és te csak irányítasz — minden fegyver magától tüzel.",
+        "description": "Survivor-roguelite Vampire Survivors-stílusban: öt perc egy körbekerített temetőben, és te csak irányítasz — minden fegyver magától tüzel.",
         "url": "https://napejs.org/hu/examples/swarm-night/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -83,7 +83,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Swarm Night — Interaktív 2D fizikai demó | nape-js" />
-  <meta property="og:description" content="Survivor-roguelite (Vampire Survivors-stílusban): öt perc egy kerítéssel körbevett temetőben egy éjszaka ellen, amely sosem hagyja abba a szörnyek küldését…" />
+  <meta property="og:description" content="Survivor-roguelite Vampire Survivors-stílusban: öt perc egy körbekerített temetőben, és te csak irányítasz — minden fegyver magától tüzel." />
   <meta property="og:url" content="https://napejs.org/hu/examples/swarm-night/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <meta property="og:image:width" content="900" />
@@ -93,7 +93,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Swarm Night — Interaktív 2D fizikai demó | nape-js" />
-  <meta name="twitter:description" content="Survivor-roguelite (Vampire Survivors-stílusban): öt perc egy kerítéssel körbevett temetőben egy éjszaka ellen, amely sosem hagyja abba a szörnyek küldését…" />
+  <meta name="twitter:description" content="Survivor-roguelite Vampire Survivors-stílusban: öt perc egy körbekerített temetőben, és te csak irányítasz — minden fegyver magától tüzel." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -172,7 +172,7 @@
         <span aria-current="page" data-i18n="demo.swarm-night.label">Swarm Night</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc"><b>Survivor-roguelite</b> (Vampire Survivors-stílusban): öt perc egy kerítéssel körbevett temetőben egy éjszaka ellen, amely sosem hagyja abba a szörnyek küldését, és te csak <b>irányítasz</b> — minden fegyver magától tüzel. Az <b>Ezüst Ostorral</b> indulsz; a megölt szörnyek <b>XP-gyémántokat</b> ejtenek, a betelt sáv megállítja az éjszakát, és <b>három fejlesztéskártyát</b> kínál: a Holdpálca a legközelebbi szörnyre lő, a Dobókések a futás irányába repülnek, a Fokhagymapajzs sebzi és <b>ellöki</b>, ami körülötted van, a Szellemgömbök körülötted keringenek, a Viharhívás villámokat láncol, és nyolc passzív képesség (sebesség, életerő, mágnes, visszatöltés, sebzés, védelem, regeneráció, hatóterület). Hat szörnytípus érkezik menetrend szerint — csapongó <b>denevérek</b>, <b>ghoulok</b>, <b>csontvázak</b>, távolra köpő <b>köpködők</b>, nehéz <b>brutálisok</b> és a sírköveken átsikló <b>lidércek</b> —, ezekre jönnek a szkriptelt gyűrűk és falak, két rohamozó, kincset hordó <b>sírlovag</b>, és 4:00-nál a <b>csontkolosszus</b>, amelynek földcsapása az egész tömeget szétrepíti. A hajnal 5:00-kor a győzelem. Mozgás <b>WASD</b>-vel / nyilakkal, kártya az <b>1 / 2 / 3</b>-mal vagy kattintással — érintőképernyőn <b>tarts nyomva bárhol</b> az irányításhoz, és érints meg egy kártyát. Fizika: akár <b>420 szörny</b> dinamikus kör egy zéró gravitációs <code>Space</code>-ben, így a horda tolakodik, összepréselődik és a kövek között áramlik, egyetlen sor rajzás-kód nélkül; a hátralökés valódi, tömeggel skálázott impulzus, a pajzs és a földcsapás radiális impulzus, a lövedékek, kések, köpetek és gömbök pedig <b>szenzortestek</b>, amelyek találatai <code>InteractionListener</code>-eken át érkeznek, az oldalak szűrését szenzorcsoportok és -maszkok végzik. Az érintési sebzés egy <code>ONGOING</code> ütközésfigyelőből jön. <b>3D</b>-ben holdfényes temető — vaskerítés, holt fák, mauzóleum, pislákoló lámpások, talajköd és a hős saját lámpafénye —, ahol minden szörnytípus <b>instance-olt részekből</b> épített, csuklós low-poly rig, így több száz mozog egy maréknyi rajzolási hívásból.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc"><b>Survivor-roguelite</b> Vampire Survivors-stílusban: öt perc egy körbekerített temetőben, és te csak <b>irányítasz</b> — minden fegyver magától tüzel. A megölt szörnyek <b>XP-gyémántokat</b> ejtenek; a betelt sáv megállítja az éjszakát, és <b>három fejlesztéskártyát</b> kínál hat fegyverből (ostor, pálca, kések, pajzs, gömbök, villám) és nyolc passzívból. Hat szörnytípus érkezik menetrend szerint, plusz rohamozó, kincset hordó <b>sírlovagok</b> és 4:00-nál a <b>csontkolosszus</b>, amelynek földcsapása az egész tömeget szétrepíti. A hajnal 5:00-kor a győzelem. Mozgás <b>WASD</b>-vel / nyilakkal, kártya az <b>1 / 2 / 3</b>-mal vagy kattintással; érintőképernyőn <b>tarts nyomva bárhol</b> az irányításhoz. Fizika: akár <b>420 szörny</b> dinamikus kör egy zéró gravitációs <code>Space</code>-ben, így a horda rajzás-kód nélkül tolakodik és áramlik a kövek között; a hátralökés tömeggel skálázott impulzus, a lövedékek, kések, köpetek és gömbök pedig <b>szenzortestek</b>, amelyek találatai <code>InteractionListener</code>-eken át érkeznek, szenzormaszkos oldalszűréssel. <b>3D</b>-ben holdfényes temető, ahol minden szörny instance-olt low-poly rig.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>

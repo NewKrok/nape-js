@@ -5,7 +5,7 @@
   <meta name="nape-prerendered" content="de" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Swarm Night — Interaktive 2D-Physik-Demo | nape-js</title>
-  <meta name="description" content="Ein Survivor-Roguelite (im Stil von Vampire Survivors): fünf Minuten auf einem umzäunten Friedhof gegen eine Nacht, die nie aufhört zu spawnen — und du…" />
+  <meta name="description" content="Ein Survivor-Roguelite nach Vampire-Survivors-Art: fünf Minuten auf einem umzäunten Friedhof, und du steuerst nur — jede Waffe feuert von selbst." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -52,7 +52,7 @@
         "name": "Swarm Night",
         "inLanguage": "de",
         "image": "https://napejs.org/assets/posters/swarm-night.webp",
-        "description": "Ein Survivor-Roguelite (im Stil von Vampire Survivors): fünf Minuten auf einem umzäunten Friedhof gegen eine Nacht, die nie aufhört zu spawnen — und du steuerst nur, jede Waffe feuert von selbst.",
+        "description": "Ein Survivor-Roguelite nach Vampire-Survivors-Art: fünf Minuten auf einem umzäunten Friedhof, und du steuerst nur — jede Waffe feuert von selbst.",
         "url": "https://napejs.org/de/examples/swarm-night/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -83,7 +83,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Swarm Night — Interaktive 2D-Physik-Demo | nape-js" />
-  <meta property="og:description" content="Ein Survivor-Roguelite (im Stil von Vampire Survivors): fünf Minuten auf einem umzäunten Friedhof gegen eine Nacht, die nie aufhört zu spawnen — und du…" />
+  <meta property="og:description" content="Ein Survivor-Roguelite nach Vampire-Survivors-Art: fünf Minuten auf einem umzäunten Friedhof, und du steuerst nur — jede Waffe feuert von selbst." />
   <meta property="og:url" content="https://napejs.org/de/examples/swarm-night/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <meta property="og:image:width" content="900" />
@@ -93,7 +93,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Swarm Night — Interaktive 2D-Physik-Demo | nape-js" />
-  <meta name="twitter:description" content="Ein Survivor-Roguelite (im Stil von Vampire Survivors): fünf Minuten auf einem umzäunten Friedhof gegen eine Nacht, die nie aufhört zu spawnen — und du…" />
+  <meta name="twitter:description" content="Ein Survivor-Roguelite nach Vampire-Survivors-Art: fünf Minuten auf einem umzäunten Friedhof, und du steuerst nur — jede Waffe feuert von selbst." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -172,7 +172,7 @@
         <span aria-current="page" data-i18n="demo.swarm-night.label">Swarm Night</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">Ein <b>Survivor-Roguelite</b> (im Stil von Vampire Survivors): fünf Minuten auf einem umzäunten Friedhof gegen eine Nacht, die nie aufhört zu spawnen — und du <b>steuerst</b> nur, jede Waffe feuert von selbst. Start mit der <b>Silberpeitsche</b>; Kills lassen <b>XP-Edelsteine</b> fallen, eine volle Leiste hält die Nacht an und bietet <b>drei Upgrade-Karten</b>: den Mondstab, der das nächste Monster wählt, Wurfmesser, die in Laufrichtung fliegen, den Knoblauchschild, der alles um dich verletzt und <b>wegstößt</b>, Geisterkugeln, die dich umkreisen, Sturmruf, der Blitze verkettet, und acht Passive (Tempo, Leben, Magnet, Abklingzeit, Schaden, Rüstung, Regeneration, Fläche). Sechs Monstertypen kommen nach Zeitplan — stürzende <b>Fledermäuse</b>, <b>Ghule</b>, <b>Skelette</b>, spuckende <b>Speier</b>, schwere <b>Brocken</b> und <b>Geister</b>, die durch Grabsteine gleiten — dazu geskriptete Ringe und Wände, zwei stürmende <b>Grabritter</b> mit Schatz und um 4:00 ein <b>Knochenkoloss</b>, dessen Bodenschlag die ganze Menge wegwirft. Die Dämmerung um 5:00 ist der Sieg. <b>WASD</b> / Pfeile zum Laufen, <b>1 / 2 / 3</b> oder Klick für eine Karte — auf Touch <b>irgendwo halten</b> zum Steuern und eine Karte antippen. Physik: bis zu <b>420 Monster</b> sind dynamische Kreise in einem <code>Space</code> ohne Gravitation, die Horde drängt, quetscht und fließt ohne eine Zeile Flocking-Code um die Steine; Rückstoß ist ein echter, massenskalierter Impuls, Schild und Bodenschlag sind radiale Impulse, und Geschosse, Messer, Speichel und Kugeln sind <b>Sensorkörper</b>, deren Treffer über <code>InteractionListener</code> eintreffen, Seitenfilterung über Sensorgruppen und -masken. Kontaktschaden kommt aus einem <code>ONGOING</code>-Kollisionslistener. In <b>3D</b> ein mondbeschienener Friedhof — Eisenzaun, tote Bäume, ein Mausoleum, flackernde Laternen, Bodennebel und das eigene Laternenlicht des Helden — in dem jeder Monstertyp ein gelenkiges Low-Poly-Rig aus <b>instanzierten Teilen</b> ist, sodass Hunderte für eine Handvoll Draw-Calls animieren.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">Ein <b>Survivor-Roguelite</b> nach Vampire-Survivors-Art: fünf Minuten auf einem umzäunten Friedhof, und du <b>steuerst</b> nur — jede Waffe feuert von selbst. Kills lassen <b>XP-Edelsteine</b> fallen; eine volle Leiste hält die Nacht an und bietet <b>drei Upgrade-Karten</b> aus sechs Waffen (Peitsche, Stab, Messer, Schild, Kugeln, Blitz) und acht Passiven. Sechs Monstertypen kommen nach Zeitplan, dazu stürmende <b>Grabritter</b> mit Schatz und um 4:00 ein <b>Knochenkoloss</b>, dessen Bodenschlag die ganze Menge wegwirft. Die Dämmerung um 5:00 ist der Sieg. <b>WASD</b> / Pfeile zum Laufen, <b>1 / 2 / 3</b> oder Klick für eine Karte; auf Touch <b>irgendwo halten</b> zum Steuern. Physik: bis zu <b>420 Monster</b> sind dynamische Kreise in einem <code>Space</code> ohne Gravitation — die Horde drängt und fließt ohne Flocking-Code um die Steine; Rückstoß ist ein massenskalierter Impuls, und Geschosse, Messer, Speichel und Kugeln sind <b>Sensorkörper</b>, deren Treffer über <code>InteractionListener</code> mit Sensormasken-Seitenfilterung eintreffen. In <b>3D</b> ein mondbeschienener Friedhof, in dem jedes Monster ein instanziertes Low-Poly-Rig ist.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>

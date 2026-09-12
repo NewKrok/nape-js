@@ -5,7 +5,7 @@
   <meta name="nape-prerendered" content="fr" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Swarm Night — Démo interactive de physique 2D | nape-js</title>
-  <meta name="description" content="Un roguelite de survie (façon Vampire Survivors) : cinq minutes dans un cimetière clôturé face à une nuit qui ne cesse jamais de faire apparaître des…" />
+  <meta name="description" content="Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -52,7 +52,7 @@
         "name": "Swarm Night",
         "inLanguage": "fr",
         "image": "https://napejs.org/assets/posters/swarm-night.webp",
-        "description": "Un roguelite de survie (façon Vampire Survivors) : cinq minutes dans un cimetière clôturé face à une nuit qui ne cesse jamais de faire apparaître des monstres, et vous ne faites que vous déplacer — chaque arme tire toute seule.",
+        "description": "Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule.",
         "url": "https://napejs.org/fr/examples/swarm-night/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -83,7 +83,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Swarm Night — Démo interactive de physique 2D | nape-js" />
-  <meta property="og:description" content="Un roguelite de survie (façon Vampire Survivors) : cinq minutes dans un cimetière clôturé face à une nuit qui ne cesse jamais de faire apparaître des…" />
+  <meta property="og:description" content="Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule." />
   <meta property="og:url" content="https://napejs.org/fr/examples/swarm-night/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <meta property="og:image:width" content="900" />
@@ -93,7 +93,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Swarm Night — Démo interactive de physique 2D | nape-js" />
-  <meta name="twitter:description" content="Un roguelite de survie (façon Vampire Survivors) : cinq minutes dans un cimetière clôturé face à une nuit qui ne cesse jamais de faire apparaître des…" />
+  <meta name="twitter:description" content="Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -172,7 +172,7 @@
         <span aria-current="page" data-i18n="demo.swarm-night.label">Swarm Night</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">Un <b>roguelite de survie</b> (façon Vampire Survivors) : cinq minutes dans un cimetière clôturé face à une nuit qui ne cesse jamais de faire apparaître des monstres, et vous ne faites que <b>vous déplacer</b> — chaque arme tire toute seule. Vous commencez avec le <b>Fouet d'Argent</b> ; les victimes lâchent des <b>gemmes d'XP</b>, et une barre pleine met la nuit en pause pour proposer <b>trois cartes d'amélioration</b> : la Baguette Lunaire qui vise le monstre le plus proche, les Couteaux de Lancer qui volent dans votre direction de course, le Cercle d'Ail qui blesse et <b>repousse</b> tout autour de vous, les Orbes Spirituels qui vous encerclent, l'Appel de la Tempête qui enchaîne les éclairs, et huit passifs (vitesse, vie, aimant, recharge, dégâts, armure, régénération, zone). Six types de monstres arrivent selon un calendrier — <b>chauves-souris</b> en piqué, <b>goules</b>, <b>squelettes</b>, <b>cracheurs</b> à distance, lourdes <b>brutes</b> et <b>spectres</b> qui traversent les pierres tombales — plus des anneaux et des murs scriptés, deux <b>chevaliers du tombeau</b> qui chargent et portent un trésor, et un <b>colosse d'os</b> à 4:00 dont le coup au sol projette toute la foule. L'aube à 5:00 est la victoire. <b>WASD</b> / flèches pour bouger, <b>1 / 2 / 3</b> ou clic pour choisir une carte ; sur tactile, <b>maintenez n'importe où</b> pour diriger et touchez une carte. Physique : jusqu'à <b>420 monstres</b> sont des cercles dynamiques dans un <code>Space</code> sans gravité, la horde se presse, se comprime et s'écoule entre les pierres sans une ligne de code de nuée ; le recul est une vraie impulsion proportionnelle à la masse, le cercle et le coup au sol sont des impulsions radiales, et projectiles, couteaux, crachats et orbes sont des <b>corps capteurs</b> livrés par des <code>InteractionListener</code>, le filtrage des camps étant fait par groupes et masques de capteur. Les dégâts de contact viennent d'un écouteur de collision <code>ONGOING</code>. En <b>3D</b>, c'est un cimetière au clair de lune — clôture en fer, arbres morts, un mausolée, lanternes vacillantes, brume au sol et la propre lanterne du héros — où chaque type de monstre est un rig low-poly articulé fait de <b>pièces instanciées</b>, de sorte que des centaines s'animent pour une poignée de draw calls.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">Un <b>roguelite de survie</b> façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que <b>vous déplacer</b> — chaque arme tire toute seule. Les victimes lâchent des <b>gemmes d'XP</b> ; une barre pleine met la nuit en pause et propose <b>trois cartes d'amélioration</b> parmi six armes (fouet, baguette, couteaux, cercle, orbes, foudre) et huit passifs. Six types de monstres arrivent selon un calendrier, plus des <b>chevaliers du tombeau</b> qui chargent avec un trésor et un <b>colosse d'os</b> à 4:00 dont le coup au sol projette toute la foule. L'aube à 5:00 est la victoire. <b>WASD</b> / flèches pour bouger, <b>1 / 2 / 3</b> ou clic pour choisir une carte ; sur tactile, <b>maintenez n'importe où</b> pour diriger. Physique : jusqu'à <b>420 monstres</b> sont des cercles dynamiques dans un <code>Space</code> sans gravité, la horde se presse et s'écoule entre les pierres sans code de nuée ; le recul est une impulsion proportionnelle à la masse, et projectiles, couteaux, crachats et orbes sont des <b>corps capteurs</b> livrés par des <code>InteractionListener</code> avec filtrage des camps par masques. En <b>3D</b>, un cimetière au clair de lune où chaque monstre est un rig low-poly instancié.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>

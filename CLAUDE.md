@@ -103,3 +103,4 @@ Engine bootstrap (packages/nape-js/src/core/engine.ts → ZPPRegistry.ts + boots
 | Workflow     | `docs/guides/workflow.md`          | Build system, CI/CD, linting, commit conventions, doc update matrix, all scripts      |
 | Multiplayer  | `docs/guides/multiplayer-guide.md` | Server-authoritative architecture, binary protocol, prediction, deployment            |
 | Replay       | `docs/guides/replay-guide.md`      | `Recorder` / `Player` / `encodeReplay`, determinism contract, scrub, sizing           |
+| Demo designs | `docs/guides/demo-designs.md`      | Full showpiece write-ups (weapons, rosters, schedules, balance); `desc` stays a teaser |

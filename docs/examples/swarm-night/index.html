@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Swarm Night — Interactive 2D Physics Demo | nape-js</title>
-  <meta name="description" content="A survivor roguelite (Vampire Survivors-style): five minutes in a walled graveyard against a night that never stops spawning, and you only ever steer …" />
+  <meta name="description" content="A survivor roguelite in the Vampire Survivors mould: five minutes in a walled graveyard, and you only steer — every weapon fires on its own." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -51,7 +51,7 @@
         "name": "Swarm Night",
         "inLanguage": "en",
         "image": "https://napejs.org/assets/posters/swarm-night.webp",
-        "description": "A survivor roguelite (Vampire Survivors-style): five minutes in a walled graveyard against a night that never stops spawning, and you only ever steer — every weapon fires on its own.",
+        "description": "A survivor roguelite in the Vampire Survivors mould: five minutes in a walled graveyard, and you only steer — every weapon fires on its own.",
         "url": "https://napejs.org/examples/swarm-night/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -82,7 +82,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Swarm Night — Interactive 2D Physics Demo | nape-js" />
-  <meta property="og:description" content="A survivor roguelite (Vampire Survivors-style): five minutes in a walled graveyard against a night that never stops spawning, and you only ever steer …" />
+  <meta property="og:description" content="A survivor roguelite in the Vampire Survivors mould: five minutes in a walled graveyard, and you only steer — every weapon fires on its own." />
   <meta property="og:url" content="https://napejs.org/examples/swarm-night/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <meta property="og:image:width" content="900" />
@@ -92,7 +92,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Swarm Night — Interactive 2D Physics Demo | nape-js" />
-  <meta name="twitter:description" content="A survivor roguelite (Vampire Survivors-style): five minutes in a walled graveyard against a night that never stops spawning, and you only ever steer …" />
+  <meta name="twitter:description" content="A survivor roguelite in the Vampire Survivors mould: five minutes in a walled graveyard, and you only steer — every weapon fires on its own." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -171,7 +171,7 @@
         <span aria-current="page" data-i18n="demo.swarm-night.label">Swarm Night</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">A <b>survivor roguelite</b> (Vampire Survivors-style): five minutes in a walled graveyard against a night that never stops spawning, and you only ever <b>steer</b> — every weapon fires on its own. Start with the <b>Silver Whip</b>; kills drop <b>XP gems</b>, and a full bar pauses the night and offers <b>three upgrade cards</b>: the Moon Wand that picks the nearest monster, Throwing Knives that fly the way you run, the Garlic Ward that hurts and <b>shoves</b> everything around you, Spirit Orbs that circle you, Storm Call that chains lightning, and eight passives (speed, health, magnet, cooldown, damage, armour, regen, area). Six monster types arrive on a schedule — swooping <b>bats</b>, <b>ghouls</b>, <b>skeletons</b>, ranged <b>spitters</b>, heavy <b>brutes</b> and <b>wraiths</b> that drift through gravestones — plus scripted rings and walls, two <b>grave knights</b> that charge and carry treasure, and a <b>bone colossus</b> at 4:00 with a ground slam that throws the whole crowd. Dawn at 5:00 is the win. <b>WASD</b> / arrows to move, <b>1 / 2 / 3</b> or click to pick a card — on touch, <b>hold anywhere</b> to steer and tap a card. Physics: up to <b>420 monsters</b> are dynamic circles in a zero-gravity <code>Space</code>, so the horde crowds, squeezes and streams around the stones with no flocking code at all; knockback is a real impulse scaled by mass, the ward and the slam are radial impulses, and bolts, knives, spit and orbs are <b>sensor bodies</b> delivered through <code>InteractionListener</code>s, with side filtering done by sensor groups and masks. Contact damage comes from an <code>ONGOING</code> collision listener. In <b>3D</b> it is a moonlit graveyard — iron fence, dead trees, a mausoleum, flickering lanterns, ground mist and the hero's own lantern light — where every monster type is a jointed low-poly rig built from <b>instanced parts</b>, so hundreds animate for a handful of draw calls.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">A <b>survivor roguelite</b> in the Vampire Survivors mould: five minutes in a walled graveyard, and you only <b>steer</b> — every weapon fires on its own. Kills drop <b>XP gems</b>; a full bar pauses the night for <b>three upgrade cards</b> drawn from six weapons (whip, wand, knives, ward, orbs, lightning) and eight passives. Six monster types arrive on a schedule, plus charging <b>grave knights</b> that carry treasure and a <b>bone colossus</b> at 4:00 whose slam throws the whole crowd. Dawn at 5:00 is the win. <b>WASD</b> / arrows to move, <b>1 / 2 / 3</b> or click to pick a card; on touch, <b>hold anywhere</b> to steer. Physics: up to <b>420 monsters</b> are dynamic circles in a zero-gravity <code>Space</code>, so the horde crowds and streams around the stones with no flocking code; knockback is a mass-scaled impulse, and bolts, knives, spit and orbs are <b>sensor bodies</b> delivered through <code>InteractionListener</code>s with sensor-mask side filtering. In <b>3D</b> a moonlit graveyard where every monster is an instanced low-poly rig.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>

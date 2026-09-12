@@ -104,6 +104,11 @@ committed, so run it locally before pushing a demo or guide change — the
 stamps and sitemap dates). After adding a demo also run
 `node scripts/build-posters.mjs` (needs local Google Chrome) and commit the poster.
 
+A demo's `desc` is the card teaser — keep it under ~1000 characters including
+markup (what it is, how to play, the physics hook, one line on 3D). Weapon
+tables, rosters, timelines and balance notes belong in
+`docs/guides/demo-designs.md`, one section per showpiece.
+
 The site header (dropdown nav + ☰) is generated too: `headerHtml()` in
 `build-site-pages.mjs` is stamped into `index.html` and `examples/index.html`
 between `<!-- site-header:start/end -->` markers, so edit the nav there, not in
