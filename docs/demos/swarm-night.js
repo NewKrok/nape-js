@@ -2557,8 +2557,8 @@ function rigSpec(def) {
         { g: "sph", s: [1.8, 1.8, 1.8], p: [r * 0.22, r * 0.7, r * 2.6], c: red },
         { g: "hang", s: [r * 0.4, r * 0.4, r * 1.0], p: [-r * 0.35, 0, r * 1.05], c: 0x3f8a52, a: "legL", k: 0.7 },
         { g: "hang", s: [r * 0.4, r * 0.4, r * 1.0], p: [r * 0.35, 0, r * 1.05], c: 0x3f8a52, a: "legR", k: 0.7 },
-        { g: "hang", s: [r * 0.3, r * 0.3, r * 1.1], p: [-r * 0.8, r * 0.2, r * 2.1], c: 0x7fd08f, a: "armL", b: -1.3, k: 0.25 },
-        { g: "hang", s: [r * 0.3, r * 0.3, r * 1.1], p: [r * 0.8, r * 0.2, r * 2.1], c: 0x7fd08f, a: "armR", b: -1.3, k: 0.25 },
+        { g: "hang", s: [r * 0.3, r * 0.3, r * 1.1], p: [-r * 0.8, r * 0.2, r * 2.1], c: 0x7fd08f, a: "armL", b: 1.3, k: 0.25 },
+        { g: "hang", s: [r * 0.3, r * 0.3, r * 1.1], p: [r * 0.8, r * 0.2, r * 2.1], c: 0x7fd08f, a: "armR", b: 1.3, k: 0.25 },
       ] };
     case "skeleton": return {
       fly: 0, bobK: 0, parts: [
@@ -2605,8 +2605,8 @@ function rigSpec(def) {
         { g: "cone", s: [r * 0.75, r * 0.75, r * 1.0], p: [0, -r * 0.15, r * 3.6], c: 0x3ca4b3 },
         { g: "sph", s: [1.8, 1.8, 1.8], p: [-r * 0.2, r * 0.45, r * 3.35], c: 0xffffff },
         { g: "sph", s: [1.8, 1.8, 1.8], p: [r * 0.2, r * 0.45, r * 3.35], c: 0xffffff },
-        { g: "hang", s: [r * 0.22, r * 0.22, r * 1.1], p: [-r * 0.6, r * 0.2, r * 2.6], c, a: "armL", b: -1.0, k: 0.2 },
-        { g: "hang", s: [r * 0.22, r * 0.22, r * 1.1], p: [r * 0.6, r * 0.2, r * 2.6], c, a: "armR", b: -1.0, k: 0.2 },
+        { g: "hang", s: [r * 0.22, r * 0.22, r * 1.1], p: [-r * 0.6, r * 0.2, r * 2.6], c, a: "armL", b: 1.0, k: 0.2 },
+        { g: "hang", s: [r * 0.22, r * 0.22, r * 1.1], p: [r * 0.6, r * 0.2, r * 2.6], c, a: "armR", b: 1.0, k: 0.2 },
       ] };
     case "knight": return {
       fly: 0, bobK: 0, parts: [
