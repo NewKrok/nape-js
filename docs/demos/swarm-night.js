@@ -2355,24 +2355,32 @@ function ensureEnvironment(adapter) {
       g.rotation.z = -(o.rot || 0);
       add(g);
     } else if (o.kind === "tree") {
+      // Dead tree: a tapered trunk and limbs that grow out of each other.
+      // Every limb is a cylinder whose local +Z is aimed along its direction
+      // with a quaternion (not Euler angles, which only approximate a tilt),
+      // and whose centre sits half a length past its base, so limbs connect.
       const g = new T.Group();
-      const trunk = new T.Mesh(_geos.cyl, woodMat);
-      trunk.scale.set(o.r * 0.95, o.r * 0.95, 110);
-      trunk.position.z = 55;
-      g.add(trunk);
+      const up = new T.Vector3(0, 0, 1);
+      const limb = (from, dir, L, r0, r1, mat) => {
+        const m = new T.Mesh(new T.CylinderGeometry(r1, r0, 1, 7).rotateX(Math.PI / 2), mat);
+        m.scale.set(1, 1, L);
+        m.quaternion.setFromUnitVectors(up, dir);
+        m.position.copy(from).addScaledVector(dir, L / 2);
+        g.add(m);
+        return from.clone().addScaledVector(dir, L);
+      };
+      const tilted = (a, tilt) => new T.Vector3(Math.cos(a) * Math.sin(tilt), Math.sin(a) * Math.sin(tilt), Math.cos(tilt));
+      const trunkH = 96 + o.r * 0.6;
+      limb(new T.Vector3(0, 0, 0), up, trunkH, o.r * 0.95, o.r * 0.45, woodMat);
       const trnd = srand(Math.floor(o.seed * 1e6));
       for (let i = 0; i < 5; i++) {
-        const a = trnd() * Math.PI * 2, L = 50 + trnd() * 50;
-        const br = new T.Mesh(_geos.cyl, woodDark);
-        br.scale.set(3.5, 3.5, L);
-        br.position.set(Math.cos(a) * (o.r * 0.5 + L * 0.35), Math.sin(a) * (o.r * 0.5 + L * 0.35), 90 + trnd() * 30 + L * 0.3);
-        br.rotation.set(-Math.sin(a) * 1.0, Math.cos(a) * 1.0, 0);
-        g.add(br);
-        const twig = new T.Mesh(_geos.cyl, woodDark);
-        twig.scale.set(2, 2, L * 0.55);
-        twig.position.set(Math.cos(a) * (o.r + L * 0.75), Math.sin(a) * (o.r + L * 0.75), 110 + L * 0.65);
-        twig.rotation.set(-Math.sin(a + 0.8) * 1.1, Math.cos(a + 0.8) * 1.1, 0);
-        g.add(twig);
+        const a = (i / 5) * Math.PI * 2 + trnd() * 0.9;
+        const base = new T.Vector3(Math.cos(a) * o.r * 0.25, Math.sin(a) * o.r * 0.25, trunkH * (0.62 + trnd() * 0.36));
+        const L = 40 + trnd() * 45;
+        const end = limb(base, tilted(a, 0.55 + trnd() * 0.5), L, o.r * 0.28, o.r * 0.14, woodDark);
+        const tip = limb(end, tilted(a + (trnd() - 0.5) * 1.4, 0.35 + trnd() * 0.5), L * 0.55, o.r * 0.13, o.r * 0.05, woodDark);
+        if (trnd() < 0.6) limb(end, tilted(a + (trnd() - 0.5) * 2.4, 0.9 + trnd() * 0.5), L * 0.4, o.r * 0.1, o.r * 0.04, woodDark);
+        void tip;
       }
       const roots = new T.Mesh(_geos.cyl, woodMat);
       roots.scale.set(o.r * 1.5, o.r * 1.5, 6);
@@ -2856,7 +2864,14 @@ function syncPools(adapter) {
       if (rec.kind === "heart") { mesh = new T.Mesh(_geos.gem, new T.MeshBasicMaterial({ color: 0xff6b6b })); mesh.scale.set(8, 8, 7); }
       else if (rec.kind === "magnet") { mesh = new T.Mesh(new T.TorusGeometry(7, 2.5, 8, 16, Math.PI), new T.MeshBasicMaterial({ color: 0x58a6ff })); mesh.rotation.x = Math.PI / 2; }
       else if (rec.kind === "bomb") { mesh = new T.Mesh(_geos.sph, lam(0x1f242c)); mesh.scale.setScalar(9); }
-      else { mesh = box3(24, 16, 14, lam(0x8a5a2b)); const lid = box3(24, 16, 5, lam(0xffd166)); lid.position.z = 0.65; mesh.add(lid); }
+      else {
+        // A group, not a child of the scaled body — a child would inherit the
+        // 24×16×14 scale and turn the lid into a 576×256×70 slab.
+        mesh = new T.Group();
+        const body = box3(24, 16, 12, lam(0x8a5a2b)); body.position.z = -3; mesh.add(body);
+        const lid = box3(26, 18, 6, lam(0xffd166)); lid.position.z = 6; mesh.add(lid);
+        const clasp = box3(6, 4, 8, lam(0xffe9a8)); clasp.position.set(0, -9, 1); mesh.add(clasp);
+      }
       adapter.addSceneMesh(mesh);
       _pickupMeshes.set(rec, mesh);
     }
