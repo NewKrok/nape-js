@@ -253,13 +253,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">84</strong> <span data-i18n="home.proof.demos">interactive demos</span>
+          <strong data-site-count="demos">85</strong> <span data-i18n="home.proof.demos">interactive demos</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">40</strong> <span data-i18n="home.proof.games">playable games</span>
+          <strong data-site-count="games">41</strong> <span data-i18n="home.proof.games">playable games</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">20</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
+          <strong data-site-count="showpieces">21</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">shipped titles</span>
@@ -418,6 +418,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/flipper-fray/?mode=3d&outline=0">
+            <img class="game-card-img" src="assets/posters/flipper-fray.webp" srcset="assets/posters/flipper-fray@320.webp 320w, assets/posters/flipper-fray@640.webp 640w, assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">A <b>six-player pinball brawl</b>: one round table, six pockets, a pair of flippers guarding each. Balls drift outward, bumpers and slingshots throw them around, and every ball that gets past your flippers costs you a life — <b>five lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>five AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="examples/swarm-night/?mode=3d&outline=0">
             <img class="game-card-img" src="assets/posters/swarm-night.webp" srcset="assets/posters/swarm-night@320.webp 320w, assets/posters/swarm-night@640.webp 640w, assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
           </a>
@@ -435,16 +445,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">A <b>lane-siege army builder</b> on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad of tin figurines that marches off on its own. You never steer a soldier — you choose <b>what</b> to field, <b>where</b> to drop it and <b>when</b>; hold a card and the road that squad would take is drawn on the ground, and the side of your gate you drop on picks its lane. Three roads run between the two keeps, a <b>watchtower</b> guards each centre road, and two <b>gold mines</b> sit on the flanks behind neutral camps. A captured mine pays gold and pushes your drop zone forward; a keep is <b>shielded until its own watchtower falls</b>. Ten cards, a free commander, and three difficulty levels for the opposing one. Physics: every figurine is a dynamic circle in a zero-gravity <code>Space</code>, so crowds shove and flow for free; shot is a <b>sensor body</b> delivered by <code>InteractionListener</code>s, with friendly fire ruled out by sensor groups and masks rather than an if-statement; kegs detonate with a real radial impulse, and flyers have their own collision group. In <b>3D</b> it is a grassy plateau floating in mist, with a jointed low-poly rig per troop type.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">Waypoints</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Groups">Groups</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="examples/blade-waltz/?mode=3d&outline=0">
-            <img class="game-card-img" src="assets/posters/blade-waltz.webp" srcset="assets/posters/blade-waltz@320.webp 320w, assets/posters/blade-waltz@640.webp 640w, assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">A <b>Tales-style action-battle gauntlet</b> on a round arena: ten waves of monsters, a party of four, and you control the swordsman only. Run freely, land <b>3-hit combos</b> (<b>J</b> / click), spend TP on <b>artes</b> (<b>K</b> — neutral for the Demon Fang ground wave, toward the target for the Sonic Thrust dash, away for the launching Tiger Blade), <b>guard</b> with <b>L</b>, and unleash the <b>Mystic Arte</b> with <b>SPACE</b> once the Overlimit gauge fills from dealing and taking hits. Normal hits refill TP; guards only cover your front; stone golems and bosses shrug off single hits. Your <b>AI party</b> plays its roles: the lancer brawls and chains thrusts, the archer kites and volleys, the sage heals, revives and casts fire and stone with <b>interruptible cast times</b>. The tenth wave is a <b>drake</b> with claws, a tail spin, fire breath, a roar and wisp summons. Every combatant is a dynamic puck inside a ring of static wall segments; melee is resolved from arcs, while arrows, bolts, fireballs and waves are <b>sensor bodies</b> delivered by <code>InteractionListener</code>s with side filtering done by sensor masks. In <b>3D</b> a side-on chase camera frames the player–target line over a stone arena in a meadow, with jointed low-poly rigs for every combatant.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

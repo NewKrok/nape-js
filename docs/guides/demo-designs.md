@@ -168,3 +168,131 @@ levelled once in five minutes. Fixes: whip auto-aim, contact damage lowered
 (5–8 → 3–6 on commons), spawn rate 1.3 + 1.7·min → 0.9 + 1.5·min, hero speed
 165 → 175, invulnerability 30 → 36 frames, XP curve softened. Not yet
 validated by real play.
+
+---
+
+## Flipper Fray
+
+`docs/demos/flipper-fray.js` · showpiece · added 2026-09-12
+
+### Premise
+
+A six-player pinball brawl on one round table. Six pockets sit around a
+star-shaped ring, a pair of flippers guards each of them, and the table is a
+shallow elliptical hill: balls drift outward from the centre, so every ball is
+eventually somebody's problem. A ball that gets past your flippers costs a
+life. Five lives each; the last pocket standing wins, or the most lives (then
+goals) when the three-minute clock runs out. You hold the bottom pocket, five
+AI keepers hold the rest. When a keeper is out their mouth is sealed with a
+kicker bar, so dead pockets throw balls back instead of collecting them.
+
+### Controls
+
+| Input                       | Action                                         |
+| --------------------------- | ---------------------------------------------- |
+| ← / A                       | Left flipper (hold to keep it up)              |
+| → / D                       | Right flipper                                  |
+| Space                       | Both flippers; start / return to the title     |
+| 1 / 2 / 3 on the title      | AI difficulty (Easy / Normal / Hard)           |
+| Hold left / right half      | Touch: that flipper; drag across to switch     |
+
+On the title the table runs an attract mode with all six pockets under AI.
+Once you are eliminated the rest of the match plays out in a ×4 time-lapse
+(the Space.step wrapper simply runs four ticks per slice).
+
+### Table
+
+| Element             | Numbers                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| Mouth ellipse       | rx 272, ry 178 around (450, 250); pocket mouths at 90° + k·60°, the player at the bottom     |
+| Ring walls          | Quadratic Bézier from pocket to pocket through a dip at 0.66 of the mid-angle radius, 10 straight segments each |
+| Pocket              | 118 wide, 54 deep; flipper pivots 6 in from the side walls                                 |
+| Flipper             | 42 long, rest −0.40 rad (drooping into the pocket), raised +0.66 rad, 22 rad/s; rest gap ≈ 29 px for a 14 px ball |
+| Slingshots          | Triangular kickers at each ring dip (base 60, bulge 15), +200 px/s along the inward normal |
+| Bumpers             | Six, r 15, on an elliptical ring (~97 × 77) between the lanes, +240 px/s away from the centre |
+| Cross               | Kinematic, arms 50, 1.1 rad/s, reverses every 20 s; new balls spawn between its arms so it launches them |
+| Drift / damping     | 38 px/s² along the ellipse gradient, 0.22 /s damping, 950 px/s cap                          |
+
+### Match schedule
+
+| Time      | Event                                                                                 |
+| --------- | ------------------------------------------------------------------------------------- |
+| 0:00      | 2 balls; target count grows to 3 at 0:30, 4 at 1:15, 5 at 2:10                        |
+| 0:30, 1:00, … | Bomb ball (r 9): 9 s fuse, −2 lives if it drains, otherwise a 150 px radial blast that adds up to 520 px/s to nearby balls |
+| 0:40, 1:35, 2:25 | Multiball: one extra ball at once and another 25 frames later                 |
+| 3:00      | Time out — rank by alive, lives, goals, then elimination time                          |
+
+A drained ball respawns after 70 frames only while the live count is below
+the target. A goal is credited to the last flipper that touched the ball
+within the previous 10 s, if it drains in someone else's pocket.
+
+### AI keepers
+
+For every ball heading at the mouth (local `vu < −25`) the keeper predicts
+the time to the flipper line and where along the mouth it will cross. Within
+the reaction window it schedules a press for the flipper on that side (both
+for `|lv| < 14`), delayed by a few frames, with a per-approach miss chance;
+slow balls crawling on a resting flipper (`lu < 34`, speed < 75) are cleared
+too. Presses are held 7 frames, then a 5-frame cooldown.
+
+| Level  | react (s) | jitter | miss | delay (frames) |
+| ------ | --------- | ------ | ---- | -------------- |
+| Easy   | 0.10      | 0.03   | 0.30 | 2 + 0..3       |
+| Normal | 0.075     | 0.02   | 0.15 | 2 + 0..2       |
+| Hard   | 0.05      | 0.01   | 0.05 | 1 + 0..1       |
+
+**Late is good.** A flipper that is already up when the ball arrives parks the
+ball against the pivot corner; when it drops, the ball rolls to the tip and
+falls through. Sweeping the reaction window with a no-miss keeper gave save
+rates of 93 % at 0.03 s, 89 % at 0.05 s, 86 % at 0.07 s and 80 % at 0.10 s
+(never flipping at all: 76 %, and the balls pile up on the flippers). The
+difficulty table is built around that curve; measured with the all-AI harness
+the levels save 88 / 90.5 / 92.5 % of approaches and a six-AI match lasts
+100–115 s with all five eliminations.
+
+### Physics
+
+- Flippers are kinematic bodies whose origin is the pivot; the polygon plus a
+  base and a tip circle make the paddle. Each physics step
+  `setVelocityFromTarget(pivot, base + side · ang, 1/60)` drives them, so the
+  angular speed is real and the contact solver passes it into the ball.
+- The whole game tick runs from a wrapper around `space.step` installed in
+  `setup()`, not from the per-frame `step()` hook. The runner steps the Space
+  in fixed 1/60 slices with a variable number per frame; a per-frame flipper
+  drive overshoots on slow displays and launched balls through walls in the
+  swiftshader screenshots.
+- Balls: `Circle(7)`, elasticity 0.86, low friction, rotation allowed (with
+  `allowRotation = false` and default-friction flippers a ball would stick on
+  a resting paddle), `isBullet = true`. Ring walls are 10 px thick.
+- Bumper, slingshot and flipper hits are `InteractionListener(BEGIN,
+  COLLISION)` callbacks on CbTypes; the flipper listener stamps `lastHit` for
+  goal credit and adds a 90 px/s inward boost when the paddle is moving up.
+- Drains are polled in pocket-local coordinates (`u < −18`), eliminations
+  add a static kicker bar across the mouth and drop the flipper bodies.
+
+### Renderers
+
+- Canvas2D and PixiJS use the shared body pass; `userData._color` carries the
+  keeper colours. The overlay (all modes) draws the timer, keeper cards, bomb
+  fuses, banners, floaters and the title / result screens; in 2D it also draws
+  bumper flashes, particles and the drain sink.
+- 3D: the star outline is extruded with a canvas texture on top (hex grid,
+  lane chevrons in each keeper's colour, centre medallion); ring walls are one
+  `InstancedMesh` with an emissive rubber strip on top; pockets are emissive
+  boxes with five life lamps and a seal panel that rises when the keeper is
+  out; bumpers flash and pop; balls are `MeshStandardMaterial` chrome under a
+  PMREM environment built from a canvas equirect (falls back to a less
+  metallic finish when the render target fails); particles are instanced
+  cubes. The camera is behind the player's pocket; on the title it orbits.
+  The camera orientation is written with `quaternion.setFromRotationMatrix(
+  lookAt(eye, target, +Z))` so the adapter's `camera.up` is untouched.
+
+### Balance notes
+
+- Drains per pocket are even (±5 %) once the drift follows the ellipse
+  gradient; with a radial drift the near top and bottom pockets took ~15 %
+  more.
+- Sealed pockets must kick. As plain walls they collected every ball the
+  drift pushed at them and the harness flagged dozens of stuck balls.
+- Bumper kicks are velocity adds, not impulses, so the bomb ball (heavier)
+  reacts like the others.

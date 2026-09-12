@@ -334,5 +334,9 @@
   "swarm-night": {
     "mode": "3d",
     "renderedAt": "2026-09-12"
+  },
+  "flipper-fray": {
+    "mode": "3d",
+    "renderedAt": "2026-09-12"
   }
 }

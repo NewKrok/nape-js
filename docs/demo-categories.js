@@ -62,6 +62,7 @@ export const GAME_DEMO_IDS = new Set([
   "blade-waltz",
   "tin-legion",
   "swarm-night",
+  "flipper-fray",
 ]);
 
 /**
@@ -69,6 +70,7 @@ export const GAME_DEMO_IDS = new Set([
  * rather than a single mechanic. Order here is the display order on /games/.
  */
 export const SHOWPIECE_DEMO_IDS = new Set([
+  "flipper-fray",
   "swarm-night",
   "tin-legion",
   "blade-waltz",

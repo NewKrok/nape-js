@@ -6901,6 +6901,84 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/swarm-night/" />
   </url>
   <url>
+    <loc>https://napejs.org/examples/flipper-fray/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/de/examples/flipper-fray/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/zh/examples/flipper-fray/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/hu/examples/flipper-fray/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/es/examples/flipper-fray/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/fr/examples/flipper-fray/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  </url>
+  <url>
     <loc>https://napejs.org/ai.html</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>monthly</changefreq>

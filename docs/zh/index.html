@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">84</strong> <span data-i18n="home.proof.demos">个交互演示</span>
+          <strong data-site-count="demos">85</strong> <span data-i18n="home.proof.demos">个交互演示</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">40</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
+          <strong data-site-count="games">41</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">20</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
+          <strong data-site-count="showpieces">21</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/flipper-fray/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/flipper-fray.webp" srcset="../assets/posters/flipper-fray@320.webp 320w, ../assets/posters/flipper-fray@640.webp 640w, ../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">一场<b>六人弹珠台混战</b>：一张圆桌、六个球袋，每个球袋由一对挡板守护。弹珠向外漂移，弹碰器和弹射器把它们抛来抛去，每一颗越过你挡板的球都要你付出一条命——<b>五条命</b>，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗<b>五名 AI 守门员</b>；<b>多球</b>按时间表投放额外弹珠，每半分钟还会滚出一颗<b>炸弹球</b>：掉进袋里扣两条命，没人吞下它就会爆炸。<b>← →</b> / <b>A D</b> 拨动挡板，<b>空格</b>同时拨动两侧；触屏按住屏幕左半或右半。物理：挡板是用 <code>setVelocityFromTarget</code> 驱动的<b>运动学刚体</b>，因此一击会把真实的角速度传给弹珠；弹珠是带<b>子弹标记</b>的圆形，不会穿过纤薄的环形墙；弹碰器和弹射器的冲击以及进球判定都经由 <code>InteractionListener</code> 送达。<b>3D</b> 模式是一座霓虹竞技场：镀铬弹珠、发光球袋和赛道灯光，从你自己的球袋后方观看。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">在一张大地图上进行的<b>三路攻城建军对战</b>：金币持续累积，屏幕下方是五张部队卡，每打出一张就会放下一队锡制小兵，它们自己出发行军。你从不操控单兵——你决定<b>投什么</b>、<b>投在哪</b>、<b>什么时候投</b>；拿着卡时，这支部队的路线会画在地面上，而你放在自家大门的哪一侧，决定了他们走哪条路。两座主堡之间有三条路，中路各由一座<b>哨塔</b>把守，两翼各有一座中立营地守着的<b>金矿</b>。占下金矿能带来收入并把部署区往前推；主堡<b>在自家哨塔未倒之前始终受护盾保护</b>。十张卡、一位免费统帅，外加三档敌方难度。物理：每个小兵都是零重力 <code>Space</code> 中的动态圆形，人群会自然推挤与绕流；射出的弹丸是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 传回，友军伤害由传感器分组与掩码排除，而不是靠一句 if 判断；火药桶引爆时施加真实的径向冲量，飞行单位有独立的碰撞分组。<b>3D</b> 模式下是一片浮在云雾中的草地高台，每种兵种都有独立的关节化低多边形模型。</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">路径点</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Groups">分组</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/blade-waltz.webp" srcset="../assets/posters/blade-waltz@320.webp 320w, ../assets/posters/blade-waltz@640.webp 640w, ../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc">圆形竞技场上的<b>《传说》系列风格动作战斗连战</b>：十波怪物、四人小队，而你只操控剑士。自由跑动，打出<b>三段连击</b>（<b>J</b> / 点击），消耗 TP 施放<b>秘技</b>（<b>K</b> —— 中立方向为地面冲击波 Demon Fang，朝向目标为冲刺突刺 Sonic Thrust，背向目标为挑飞斩 Tiger Blade），用 <b>L</b> <b>防御</b>，当 Overlimit 计量表因造成与承受伤害而充满时，按<b>空格</b>释放<b>秘奥义</b>。普通攻击回复 TP；防御只护住正面；石魔像与头目无视零散的单次攻击。你的<b>AI 队友</b>各司其职：枪兵近身缠斗并连续突刺，弓手拉开距离齐射，贤者治疗、复活并施放火与石魔法，且<b>施法时间可被打断</b>。第十波是一头<b>飞龙</b>，拥有利爪、回旋尾击、火焰吐息、咆哮和召唤鬼火。每个战斗者都是静态墙段环内的动态圆盘；近战由扇形范围判定，而箭矢、弩矢、火球和冲击波则是由 <code>InteractionListener</code> 处理的<b>传感器刚体</b>，阵营过滤全部通过传感器掩码完成。<b>3D</b> 模式下，侧向追踪摄像机取景玩家与目标之间的连线，俯瞰草原上的石制竞技场，所有战斗者都是带关节的低多边形模型。</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

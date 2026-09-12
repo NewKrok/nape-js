@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Flipper Fray",
+        "url": "https://napejs.org/examples/flipper-fray/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Swarm Night",
         "url": "https://napejs.org/examples/swarm-night/",
         "gamePlatform": "Web browser",
@@ -248,7 +255,7 @@
       <h1 data-i18n="games.heading">Juegos construidos sobre nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">De una sola mecánica a un título publicado: todos los juegos de abajo corren sobre el mismo motor de física 2D de código abierto. Juega en el navegador y luego abre el código.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">piezas de jugabilidad</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">títulos publicados</span></a>
       </nav>
@@ -261,6 +268,16 @@
       <h2 data-i18n="games.showpieces.heading">Demos de juego completas</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Juegos con varios sistemas en un solo archivo cada uno — oponentes con IA, oleadas, cámaras, puntuación y rigs 3D. Juega aquí o abre el código en CodePen y StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../es/examples/flipper-fray/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/flipper-fray.webp" srcset="../../assets/posters/flipper-fray@320.webp 320w, ../../assets/posters/flipper-fray@640.webp 640w, ../../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><a href="../../es/examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">Una <b>pelea de pinball para seis jugadores</b>: una mesa redonda, seis bolsillos y un par de flippers guardando cada uno. Las bolas derivan hacia fuera, los bumpers y las slingshots las lanzan de un lado a otro, y cada bola que pasa tus flippers te cuesta una vida — <b>cinco vidas</b>, gana el último bolsillo en pie, o el que más vidas tenga cuando se acaben los tres minutos. Defiendes el bolsillo inferior contra <b>cinco porteros IA</b>; el <b>multibola</b> suelta bolas extra según un calendario y cada medio minuto sale una <b>bola bomba</b>: dos vidas si entra, una explosión si nadie se la traga. <b>← →</b> / <b>A D</b> para los flippers, <b>ESPACIO</b> ambos; en táctil, mantén pulsada la mitad izquierda o derecha de la pantalla. Física: los flippers son <b>cuerpos cinemáticos</b> movidos con <code>setVelocityFromTarget</code>, así que un golpe transmite velocidad angular real a la bola; las bolas son círculos con <b>marca bullet</b>, así que nada atraviesa las finas paredes del anillo; los empujones de bumpers y slingshots y la anotación de goles llegan por <code>InteractionListener</code>. En <b>3D</b>, una arena de neón con bolas cromadas, bolsillos luminosos y luces de carril, vista desde detrás de tu propio bolsillo.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../es/examples/swarm-night/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/swarm-night.webp" srcset="../../assets/posters/swarm-night@320.webp 320w, ../../assets/posters/swarm-night@640.webp 640w, ../../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
