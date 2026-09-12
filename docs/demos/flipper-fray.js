@@ -2,6 +2,7 @@ import {
   Body, BodyType, Vec2, Circle, Polygon, Material,
   CbType, CbEvent, InteractionListener, InteractionType,
 } from "../nape-js.esm.js?v=3.42.1";
+import { drawBody, drawGrid, drawConstraints } from "../renderer.js?v=3.42.1";
 import { loadThree } from "../renderers/threejs-adapter.js?v=3.42.1";
 
 // ── Flipper Fray — a six-player pinball brawl ────────────────────────────
@@ -811,6 +812,7 @@ function tickGame() {
 }
 
 // ── Overlay (every render mode) ──────────────────────────────────────────
+const C_BG = "#0d1117";
 const HUD_FONT = "'Segoe UI', system-ui, sans-serif";
 const CARD_W = 140, CARD_H = 40;
 // Tuned by eye against the flat table: clear of the pockets, the clock and
@@ -1885,6 +1887,23 @@ export default {
 
   step() {
     // Visual bookkeeping only — see the Space.step wrapper in setup().
+  },
+
+  // Canvas2D — the shared body pass, but on an opaque ground. The examples
+  // grid keeps the poster image behind the canvas for the life of the card,
+  // and this demo's poster is a 3D shot of the same table, so a transparent
+  // clear let the 3D render ghost through the flat one.
+  render(ctx, space, W, H, showOutlines) {
+    _mode3d = false;
+    ctx.fillStyle = C_BG;
+    ctx.fillRect(0, 0, W, H);
+    drawGrid(ctx, W, H, 0, 0);
+    drawConstraints(ctx, space);
+    for (let i = 0; i < space.bodies.length; i++) {
+      const b = space.bodies.at(i);
+      if (b.userData?._hidden) continue;
+      drawBody(ctx, b, showOutlines);
+    }
   },
 
   render3d(renderer, scene, camera, space, W, H, camX = 0, camY = 0, adapter) {
