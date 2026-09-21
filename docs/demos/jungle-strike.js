@@ -2764,15 +2764,16 @@ export default {
     if (right) vx += MOVE_SPEED;
     if (_crouching && _grounded) vx *= 0.45;   // crouch-walk
 
-    // Writing a velocity that pushes into a static wall EVERY frame does not
-    // just fail to move the body — the contact resolution against that
-    // re-asserted push cancels the vertical component as well, so a jump taken
-    // while holding forward against a ledge dies at the second step and the
-    // player hangs frozen in mid-air. (Reproduced with a bare capsule and one
-    // static box: stop re-pushing and the same jump arcs perfectly.) So the
-    // into-wall push is simply dropped whenever the controller reports that
-    // wall — the player still climbs the ledge, because the jump is what gets
-    // them over it, and air control resumes the moment the face is cleared.
+    // Writing a velocity that pushes into a static wall EVERY frame used to do
+    // more than fail to move the body — material friction against that
+    // re-asserted push cancelled the vertical component as well, so a jump
+    // taken while holding forward against a ledge died at the second step and
+    // the player hung frozen in mid-air. The controller now zeroes friction on
+    // wall contacts (`wallFriction`, default 0), which is what fixed the hang
+    // on one-way platform edges this scan never covered (#238). The scan stays
+    // for feel: dropping the into-wall push keeps the player from grinding
+    // along a face — the jump is what gets them over the ledge, and air
+    // control resumes the moment the face is cleared.
     // Look ahead in the level geometry rather than trusting the controller's
     // wall flags: mid-jump against a pillar the controller reports no wall at
     // all, yet the contact is there and freezes the body just the same. This

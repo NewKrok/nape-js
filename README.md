@@ -172,7 +172,7 @@ Higher-level building blocks layered on top of the engine — opt-in modules.
 
 | Helper                                           | Description                                                                                                                                                                                                                                              |
 | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CharacterController`                            | Velocity-based 2D platformer controller — ground / slope / wall raycasts, coyote-time, one-way platforms, moving-platform inheritance, runtime-mutable `down` for radial-gravity worlds                                                                  |
+| `CharacterController`                            | Velocity-based 2D platformer controller — ground / slope / wall raycasts, coyote-time, one-way platforms, moving-platform inheritance, runtime-mutable `down` for radial-gravity worlds, frictionless walls by default (`wallFriction`) so a held direction key never pins the character to a wall                                                                  |
 | `RadialGravityField` / `RadialGravityFieldGroup` | Point-source gravity well — `inverse-square` / `inverse` / `constant` / custom falloff, `maxRadius` / `softening`, body filter, mass scaling. Replaces hand-rolled `body.force = ...` loops                                                              |
 | `ParticleEmitter` / `ParticleEmitterGroup`       | Physics-aware particle emitter — pooled bodies, continuous / periodic / manual spawning, configurable spawn / velocity patterns, deterministic RNG, lifecycle hooks (`onSpawn` / `onUpdate` / `onDeath` / `onCollide`), self-excluding filter generation |
 | `buildTilemapBody` / `meshTilemap`               | Greedy-meshed collision body from a 2D tile grid. 5–50× fewer shapes than one-polygon-per-cell. Includes `tiledLayerToGrid` and `ldtkLayerToGrid` parsers                                                                                                |
@@ -273,7 +273,7 @@ present, with automatic `postMessage` fallback otherwise.
 ```bash
 npm install
 npm run build      # tsup → packages/*/dist/ (ESM + CJS + DTS)
-npm test           # vitest — 6274 engine tests + 73 pixi-adapter tests
+npm test           # vitest — 6285 engine tests + 77 pixi-adapter tests
 npm run benchmark  # Performance benchmarks
 ```
 

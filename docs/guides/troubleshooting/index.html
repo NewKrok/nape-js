@@ -120,7 +120,7 @@
       </nav>
       <div class="guide-layout">
         <aside class="guide-side">
-          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#bodies-fall-through-walls--floors">Bodies fall through walls / floors</a></li><li><a href="#raycast-returns-null-even-though-bodies-exist">Raycast returns null even though bodies exist</a></li><li><a href="#applyforce-is-not-a-function">applyForce() is not a function</a></li><li><a href="#cannot-set-space-on-a-compound-member-body">Cannot set space on a compound member body</a></li><li><a href="#constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</a></li><li><a href="#material-constructor-order-is-confusing">Material constructor order is confusing</a></li><li><a href="#bodies-jitter-or-explode-on-startup">Bodies jitter or explode on startup</a></li><li><a href="#stacked-objects-are-unstable--wobble">Stacked objects are unstable / wobble</a></li><li><a href="#character-slides-on-slopes--doesnt-stop">Character slides on slopes / doesn't stop</a></li><li><a href="#web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</a></li><li><a href="#fluid-buoyancy-doesnt-work">Fluid buoyancy doesn't work</a></li><li><a href="#cannot-read-property-of-disposed-vec2">"Cannot read property of disposed Vec2"</a></li><li><a href="#simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</a></li><li><a href="#deterministic-mode-doesnt-produce-identical-results-across-browsers">Deterministic mode doesn't produce identical results across browsers</a></li></ul></nav>
+          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#bodies-fall-through-walls--floors">Bodies fall through walls / floors</a></li><li><a href="#raycast-returns-null-even-though-bodies-exist">Raycast returns null even though bodies exist</a></li><li><a href="#applyforce-is-not-a-function">applyForce() is not a function</a></li><li><a href="#cannot-set-space-on-a-compound-member-body">Cannot set space on a compound member body</a></li><li><a href="#constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</a></li><li><a href="#material-constructor-order-is-confusing">Material constructor order is confusing</a></li><li><a href="#bodies-jitter-or-explode-on-startup">Bodies jitter or explode on startup</a></li><li><a href="#stacked-objects-are-unstable--wobble">Stacked objects are unstable / wobble</a></li><li><a href="#character-slides-on-slopes--doesnt-stop">Character slides on slopes / doesn't stop</a></li><li><a href="#character-hangs-on-a-wall--ledge-edge-while-a-direction-key-is-held">Character hangs on a wall / ledge edge while a direction key is held</a></li><li><a href="#web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</a></li><li><a href="#fluid-buoyancy-doesnt-work">Fluid buoyancy doesn't work</a></li><li><a href="#cannot-read-property-of-disposed-vec2">"Cannot read property of disposed Vec2"</a></li><li><a href="#simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</a></li><li><a href="#deterministic-mode-doesnt-produce-identical-results-across-browsers">Deterministic mode doesn't produce identical results across browsers</a></li></ul></nav>
           <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../cookbook/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> nape-js Cookbook</a></li><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../multiplayer-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multiplayer Implementation Guide</a></li><li><a href="../replay-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg> Replay Guide — @newkrok/nape-js/replay</a></li></ul></nav>
           <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener">Edit on GitHub</a> &bull; verified v3.21.4</p>
         </aside>
@@ -265,6 +265,29 @@ movement.</p>
 const cc = new CharacterController(space, body, {
   maxSlopeAngle: Math.PI / 4, // 45° walkable
 });
+</code></pre>
+<hr>
+<h2 id="character-hangs-on-a-wall--ledge-edge-while-a-direction-key-is-held">Character hangs on a wall / ledge edge while a direction key is held</h2>
+<p><strong>Symptom:</strong> Holding left/right into a wall (or the side of a platform / one-way
+platform) while airborne freezes the character in place — it only falls once
+the key is released.</p>
+<p><strong>Cause:</strong> Material friction against a re-asserted push. A velocity-driven
+character writes e.g. <code>vx = 210</code> into the wall every frame; the contact solver
+cancels that with a large normal impulse, and friction turns it into a
+tangential impulse big enough to cancel gravity for the whole step.</p>
+<p><strong>Fix:</strong> <code>CharacterController</code> handles this since the <code>wallFriction</code> option
+exists — non-ground contacts (steeper than <code>maxSlopeAngle</code>) get friction <code>0</code>
+while floors and slopes keep material friction. If you passed
+<code>wallFriction: null</code>, or drive the body yourself, either drop the option or
+zero friction on wall contacts in a <code>PreListener</code>:</p>
+<pre><code class="language-typescript">new PreListener(InteractionType.COLLISION, playerTag, CbType.ANY_BODY, (cb) =&gt; {
+  const arb = cb.arbiter.collisionArbiter;
+  if (arb &amp;&amp; Math.abs(arb.normal.y) &lt; 0.7) {
+    arb.dynamicFriction = 0;
+    arb.staticFriction = 0;
+  }
+  return null; // leave accept / ignore to the engine
+}).space = space;
 </code></pre>
 <hr>
 <h2 id="web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</h2>

@@ -365,11 +365,8 @@ const TRAIL_LEN = 80;`,
     // Bodies — default rendering (uses _colorIdx from userData)
     for (const body of space.bodies) drawBody(ctx, body, showOutlines);
 
-    // Caption
-    ctx.font = "12px system-ui, sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.textAlign = "left";
-    ctx.fillText(PRESET_LABELS[_currentPreset] ?? "", 12, 22);
+    // Caption is drawn by render3dOverlay(), which the runner calls after this
+    // in every mode (canvas2d included) — drawing it here too double-struck it.
   },
 
   render3dOverlay(ctx, space, W, H) {
