@@ -4,10 +4,11 @@ import { Vec2 } from "../geom/Vec2";
 import { Ray } from "../geom/Ray";
 import type { Space } from "../space/Space";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
-import type { CbType } from "../callbacks/CbType";
+import { CbType } from "../callbacks/CbType";
 import { InteractionType } from "../callbacks/InteractionType";
 import { PreListener } from "../callbacks/PreListener";
 import { PreFlag } from "../callbacks/PreFlag";
+import type { CollisionArbiter } from "../dynamics/CollisionArbiter";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -75,6 +76,28 @@ export interface CharacterControllerOptions {
    * @default Vec2(0, 1)
    */
   down?: Vec2;
+
+  /**
+   * Friction coefficient the controller applies to contacts with surfaces it
+   * does **not** treat as ground — walls, ceilings and slopes steeper than
+   * `maxSlopeAngle`. Ground contacts keep the friction derived from the two
+   * shapes' materials.
+   *
+   * A velocity-driven character that is pushed into a wall every frame
+   * generates a large normal impulse there, and material friction turns that
+   * into a tangential impulse big enough to cancel gravity outright: the
+   * character hangs on the wall (or the side of a ledge) for as long as the
+   * key is held, instead of sliding down. Overriding wall friction to `0`
+   * removes the hang while leaving floors and slopes untouched, so wall-slide
+   * / wall-jump logic layered on top sees the real fall speed.
+   *
+   * Set a small positive value for a natural "scrape" against walls, or
+   * `null` to disable the override entirely and use material friction
+   * everywhere (the behaviour before this option existed).
+   *
+   * @default 0
+   */
+  wallFriction?: number | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,6 +119,8 @@ export interface CharacterControllerOptions {
  * - One-way platform support (auto-configured PreListener)
  * - Moving platform tracking
  * - Coyote time helper (`timeSinceGrounded`)
+ * - Frictionless walls by default (`wallFriction`), so pushing into a wall
+ *   never cancels gravity
  *
  * @example
  * ```ts
@@ -135,6 +160,11 @@ export class CharacterController {
   // One-way platform support
   private _oneWayListener: PreListener | null = null;
 
+  // Wall friction override
+  private _wallFriction: number | null;
+  private _wallListener: PreListener | null = null;
+  private _wallTag: CbType | null = null;
+
   // State
   private _grounded = false;
   private _groundNormal: Vec2 | null = null;
@@ -172,6 +202,12 @@ export class CharacterController {
     if (options.oneWayPlatformTag && options.characterTag) {
       this._setupOneWayPlatforms(options.oneWayPlatformTag, options.characterTag);
     }
+
+    // Auto-setup wall-friction PreListener (see `wallFriction` option).
+    this._wallFriction = options.wallFriction === undefined ? 0 : options.wallFriction;
+    if (this._wallFriction !== null) {
+      this._setupWallFriction(options.characterTag ?? null);
+    }
   }
 
   // -----------------------------------------------------------------------
@@ -201,6 +237,14 @@ export class CharacterController {
   set maxSlopeAngle(v: number) {
     this._maxSlopeAngle = v;
     this._maxSlopeCos = Math.cos(v);
+  }
+
+  /**
+   * Friction coefficient applied to wall / ceiling contacts, or `null` when
+   * the override is disabled. See {@link CharacterControllerOptions.wallFriction}.
+   */
+  get wallFriction(): number | null {
+    return this._wallFriction;
   }
 
   /**
@@ -296,6 +340,18 @@ export class CharacterController {
     if (this._oneWayListener) {
       this._oneWayListener.space = null;
       this._oneWayListener = null;
+    }
+    if (this._wallListener) {
+      this._wallListener.space = null;
+      this._wallListener = null;
+    }
+    if (this._wallTag) {
+      try {
+        this.body.cbTypes.remove(this._wallTag);
+      } catch {
+        // body may already be detached / disposed
+      }
+      this._wallTag = null;
     }
   }
 
@@ -403,6 +459,76 @@ export class CharacterController {
     );
     listener.space = this.space;
     this._oneWayListener = listener;
+  }
+
+  // -----------------------------------------------------------------------
+  // Private: wall friction
+  // -----------------------------------------------------------------------
+
+  private _setupWallFriction(characterTag: CbType | null): void {
+    // The one-way listener needs a user-supplied tag so it can tell platform
+    // from character. Here there is no such ambiguity — the listener only has
+    // to find the character — so fall back to a private tag on the body when
+    // the caller did not provide one.
+    let tag = characterTag;
+    if (!tag) {
+      tag = new CbType();
+      this.body.cbTypes.add(tag);
+      this._wallTag = tag;
+    }
+
+    const listener = new PreListener(
+      InteractionType.COLLISION,
+      tag,
+      CbType.ANY_BODY,
+      (cb) => {
+        try {
+          const colArb = cb.arbiter.collisionArbiter;
+          if (colArb) this._applyWallFriction(colArb);
+        } catch {
+          // Arbiter not mutable / not active — leave it alone.
+        }
+        // Never return a flag: accept / ignore stays with the engine default
+        // and with any other PreListener (e.g. the one-way platform one).
+        // Returning nothing also keeps the arbiter re-evaluated every step,
+        // which matters when the same contact rolls from a wall face onto the
+        // top of a ledge and has to get its ground friction back.
+        return null;
+      },
+      0,
+      false,
+    );
+    listener.space = this.space;
+    this._wallListener = listener;
+  }
+
+  private _applyWallFriction(colArb: CollisionArbiter): void {
+    const wallFriction = this._wallFriction;
+    if (wallFriction === null) return;
+
+    // `normal` points from shape1 toward shape2; flip it so it is always the
+    // other surface's outward normal, pointing at the character.
+    const n = colArb.normal;
+    let nx = n.x;
+    let ny = n.y;
+    if (colArb.body1 === this.body) {
+      nx = -nx;
+      ny = -ny;
+    }
+
+    const cosAngle = -(nx * this._downX + ny * this._downY);
+    if (cosAngle >= this._maxSlopeCos) {
+      // Ground-like surface: restore the material-derived coefficients. This
+      // is exactly what the engine computes on its own, but the arbiter may
+      // still carry the wall override from a previous step.
+      const m1 = colArb.shape1.material;
+      const m2 = colArb.shape2.material;
+      colArb.dynamicFriction = Math.sqrt(m1.dynamicFriction * m2.dynamicFriction);
+      colArb.staticFriction = Math.sqrt(m1.staticFriction * m2.staticFriction);
+    } else {
+      colArb.dynamicFriction = wallFriction;
+      colArb.staticFriction = wallFriction;
+    }
   }
 
   // -----------------------------------------------------------------------

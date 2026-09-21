@@ -1572,6 +1572,7 @@ const cc = new CharacterController(space, player, {
   characterTag: playerCbType,        // required if oneWayPlatformTag set
   filter: customFilter,              // raycast InteractionFilter (default: auto-excludes player shapes)
   down: new Vec2(0, 1),              // override "down" — see planet platformer
+  wallFriction: 0,                   // friction on wall / ceiling contacts (default 0; null = material friction)
 });
 
 // Each frame, AFTER space.step():
@@ -1593,6 +1594,7 @@ cc.setDown(downX, downY);
 - The controller does **not** set velocity itself — your code does (typical pattern: read input, compute target velocity, write `body.velocity`). The controller only provides raycast queries and the auto-PreListener for one-way platforms.
 - `oneWayPlatformTag` requires `characterTag` — without it the auto-listener can't tell which body is the character.
 - For radial-gravity / planet-platformer scenarios, set `down` to the unit vector from player to "ground" each frame; walls are detected perpendicular to it.
+- **Walls are frictionless by default.** A velocity-driven character pushed into a wall every frame produces a large normal impulse, and material friction turns it into a tangential impulse that cancels gravity — the character hangs on the wall (or the side of a ledge / one-way platform) as long as the key is held. The controller installs a second PreListener (character vs `CbType.ANY_BODY`) that sets `wallFriction` on every contact steeper than `maxSlopeAngle` and leaves ground contacts on material friction. Pass a small positive `wallFriction` for a scrape, or `null` to opt out. Without `characterTag` the controller adds a private `CbType` to `body.cbTypes` (removed in `destroy()`).
 
 ### RadialGravityField
 
