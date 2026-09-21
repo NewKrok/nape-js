@@ -659,7 +659,16 @@ function createCard(demo, { onTagClick } = {}) {
   let previewPromise = null;
   function ensurePreview() {
     if (previewReady || previewPromise) return previewPromise ?? Promise.resolve();
-    previewPromise = runner.renderPreviewAsync(demo).then(() => { previewReady = true; });
+    // The poster has to go as soon as a live canvas covers the card: a 2D
+    // canvas is transparent wherever nothing is drawn, and most posters are 3D
+    // stills, so leaving it in place shows a ghost 3D frame behind the running
+    // 2D scene. Done in `finally` rather than `then` — if the preview throws
+    // (a failed preload, say) the canvas is still on top, so the poster would
+    // otherwise stay behind it for the rest of the session.
+    previewPromise = runner
+      .renderPreviewAsync(demo)
+      .then(() => { previewReady = true; })
+      .finally(() => { renderWrap.classList.add("has-live-render"); });
     return previewPromise;
   }
 
