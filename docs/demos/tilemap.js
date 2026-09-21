@@ -620,17 +620,8 @@ export default {
 
     ctx.restore();
 
-    // ---- HUD (screen space) ----
-    const solidCount = countSolid(grid);
-    ctx.fillStyle = "rgba(13,17,23,0.7)";
-    ctx.fillRect(8, 8, 240, 64);
-    ctx.fillStyle = COLORS?.text ?? "#e6edf3";
-    ctx.font = "12px ui-monospace, monospace";
-    ctx.fillText(`Solid tiles: ${solidCount}`, 16, 26);
-    ctx.fillText(`Greedy rects: ${mapRects.length}` +
-      (solidCount > 0 ? `  (${(solidCount / mapRects.length).toFixed(1)}× fewer)` : ""), 16, 44);
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.fillText("[O] toggle greedy overlay", 16, 62);
+    // The HUD is drawn by render3dOverlay(), which the runner calls after this
+    // in every mode (canvas2d included) — drawing it here too double-struck it.
   },
 
   // ---- PixiJS render ----
