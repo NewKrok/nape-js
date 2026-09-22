@@ -5,6 +5,8 @@ import { Vec2 } from "../../src/geom/Vec2";
 import { Body } from "../../src/phys/Body";
 import { Circle } from "../../src/shape/Circle";
 import { Space } from "../../src/space/Space";
+import { ZPP_Vec2 } from "../../src/native/geom/ZPP_Vec2";
+import { Debug as DebugFromRoot } from "../../src/index";
 
 describe("Debug (P14 modernized)", () => {
   it("nape.util.Debug is the TS Debug class", () => {
@@ -55,5 +57,18 @@ describe("Debug (P14 modernized)", () => {
       Debug.clearObjectPools();
       Debug.clearObjectPools();
     }).not.toThrow();
+  });
+
+  it("is exported from the package root", () => {
+    expect(DebugFromRoot).toBe(Debug);
+  });
+
+  it("clearObjectPools() drains the ZPP_Vec2 pool", () => {
+    Vec2.get(1, 2).dispose();
+    expect(ZPP_Vec2.zpp_pool).not.toBeNull();
+
+    Debug.clearObjectPools();
+
+    expect(ZPP_Vec2.zpp_pool).toBeNull();
   });
 });
