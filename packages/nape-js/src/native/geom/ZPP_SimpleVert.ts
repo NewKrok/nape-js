@@ -3,8 +3,6 @@
  *
  * Vertex node with BST-based link set for tracking adjacency in sweep-line algorithms.
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 33750–33817.
  */
 
 import { ZPP_Set_ZPP_SimpleVert } from "../util/ZNPRegistry";

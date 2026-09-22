@@ -1,6 +1,5 @@
 /**
  * ZPP_Space -- Internal space implementation (core simulation loop).
- * Converted from nape-compiled.js lines 30236-43690.
  *
  * This is the largest and most complex class in the engine (~13,450 lines).
  * It handles integration, constraint solving, broadphase management,
@@ -98,8 +97,6 @@ function _growSortBuffers(n: number): void {
 }
 
 export class ZPP_Space {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _zpp: any = null;
   static _nape: any = null;

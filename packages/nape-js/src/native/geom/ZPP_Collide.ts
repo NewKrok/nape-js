@@ -3,8 +3,6 @@
  *
  * Handles containment testing, contact generation, and fluid collision
  * (polygon clipping) between shapes.
- *
- * Converted from nape-compiled.js lines 21113–24305.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";

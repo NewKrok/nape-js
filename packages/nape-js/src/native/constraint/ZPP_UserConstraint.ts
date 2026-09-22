@@ -6,8 +6,6 @@
  * factorises the effective-mass matrix via Cholesky (solve/transform) and
  * drives the constraint each step through warmStart / applyImpulseVel /
  * applyImpulsePos.
- *
- * Converted from nape-compiled.js lines 27368–28037.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";

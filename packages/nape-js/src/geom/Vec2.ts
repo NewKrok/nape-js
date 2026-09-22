@@ -8,12 +8,8 @@ import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
  *
  * Supports object pooling via `Vec2.get()` / `dispose()`, weak references
  * that auto-dispose after a single use, and immutability guards.
- *
- * Converted from nape-compiled.js lines 23448–27180.
  */
 export class Vec2 {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_Vec2 this wrapper owns. */
   zpp_inner: ZPP_Vec2;
 
@@ -965,7 +961,7 @@ ZPP_Vec2._wrapFn = (zpp: ZPP_Vec2): Vec2 => {
 };
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled Vec2)
+// Register this class in the nape namespace (replaces compiled Vec2)
 // ---------------------------------------------------------------------------
 const _napeVec2 = getNape();
 _napeVec2.geom.Vec2 = Vec2;

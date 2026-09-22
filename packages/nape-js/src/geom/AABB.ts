@@ -8,13 +8,9 @@ import type { NapeInner } from "./Vec2";
  * Axis-aligned bounding box defined by min/max corners or x/y/width/height.
  *
  * Internally wraps a ZPP_AABB and is registered as the public
- * `nape.geom.AABB` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 14950–15653.
+ * `nape.geom.AABB` class in the nape namespace.
  */
 export class AABB {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_AABB this wrapper owns. */
   zpp_inner: ZPP_AABB;
 

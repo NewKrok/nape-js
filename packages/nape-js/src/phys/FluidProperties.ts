@@ -9,13 +9,9 @@ import type { NapeInner } from "../geom/Vec2";
  *
  * Controls density, viscosity, and per-fluid gravity override.
  * Internally wraps a ZPP_FluidProperties and is registered as
- * the public `nape.phys.FluidProperties` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 37002–37511.
+ * the public `nape.phys.FluidProperties` class in the nape namespace.
  */
 export class FluidProperties {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_FluidProperties this wrapper owns. */
   zpp_inner: ZPP_FluidProperties;
 
@@ -504,7 +500,7 @@ ZPP_FluidProperties._wrapFn = (zpp: ZPP_FluidProperties): FluidProperties => {
 };
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled FluidProperties)
+// Register this class in the nape namespace (replaces compiled FluidProperties)
 // ---------------------------------------------------------------------------
 const _napeFluid = getNape();
 _napeFluid.phys.FluidProperties = FluidProperties;

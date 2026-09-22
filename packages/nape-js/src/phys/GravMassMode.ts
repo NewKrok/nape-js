@@ -7,8 +7,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `DEFAULT` — use computed mass for gravity
  * - `FIXED`   — use a fixed gravity mass value
  * - `SCALED`  — scale the computed gravity mass
- *
- * Converted from nape-compiled.js lines 26272–26342.
  */
 export class GravMassMode {
   constructor() {
@@ -53,7 +51,7 @@ export class GravMassMode {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.GravMassMode = GravMassMode;

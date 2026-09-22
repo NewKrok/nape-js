@@ -3,8 +3,6 @@
  *
  * Manages activation/deactivation, callback types, space integration,
  * and provides stubs for solver methods overridden by joint subclasses.
- *
- * Converted from nape-compiled.js lines 21424–21827.
  */
 
 import { ZPP_ID } from "../util/ZPP_ID";
@@ -12,10 +10,8 @@ import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
 import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_Constraint {
-  // --- Static: Haxe metadata ---
-
   /**
-   * Namespace references, set by the compiled module after import.
+   * Namespace references, assigned by ZPPRegistry.registerZPPClasses().
    * _nape = the `nape` public namespace (for CbTypeIterator in copyto)
    * _zpp = the `zpp_nape` internal namespace (for ZNPList_*, ZPP_CbSet, etc.)
    */

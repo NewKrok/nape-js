@@ -10,7 +10,6 @@ export default tseslint.config(
     ignores: [
       "**/dist/",
       "docs/",
-      "packages/nape-js/src/core/nape-compiled.js",
       "packages/*/examples/",
       "benchmarks/",
     ],

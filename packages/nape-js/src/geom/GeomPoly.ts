@@ -23,8 +23,6 @@ import "./Winding"; // Side-effect: register Winding in namespace before GeomPol
  * Supports construction from Array<Vec2>, Vec2List, or another GeomPoly.
  * Provides geometric queries (area, winding, containment, convexity)
  * and decomposition algorithms (simple, monotone, convex, triangular).
- *
- * Converted from nape-compiled.js lines 16271–19420.
  */
 export class GeomPoly {
   /** @internal */
@@ -237,7 +235,7 @@ export class GeomPoly {
       }
     } else {
       throw new Error(
-        "Error: Invalid type for polygon object, should be Array<Vec2>, Vec2List, GeomPoly or for flash10+ flash.Vector<Vec2>",
+        "Error: Invalid type for polygon object, should be Array<Vec2>, Vec2List or GeomPoly",
       );
     }
   }

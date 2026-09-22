@@ -172,7 +172,7 @@ export class Circle extends Shape {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 
 // Bind Circle._wrap into Shape so Shape._wrap can dispatch without circular import.

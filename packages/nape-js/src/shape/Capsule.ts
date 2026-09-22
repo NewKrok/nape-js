@@ -326,7 +326,7 @@ export class Capsule extends Shape {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 
 // Bind Capsule._wrap into Shape so Shape._wrap can dispatch without circular import.

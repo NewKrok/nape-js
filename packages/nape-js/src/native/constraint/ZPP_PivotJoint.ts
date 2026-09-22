@@ -4,8 +4,6 @@
  * Constrains two anchor points (a1 on b1, a2 on b2) to coincide.
  * Uses a 2×2 mass matrix (kMassa, kMassb, kMassc) for the symmetric
  * positive-semi-definite effective-mass inverse.
- *
- * Converted from nape-compiled.js lines 24611–25474.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";

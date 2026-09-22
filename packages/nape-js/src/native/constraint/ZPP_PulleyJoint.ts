@@ -4,8 +4,6 @@
  * Constrains (dist(b1,b2) + ratio * dist(b3,b4)) to [jointMin, jointMax].
  * Supports mechanical advantage ratio, slack detection, stiffness/damping,
  * and large-error pre-correction in applyImpulsePos.
- *
- * Converted from nape-compiled.js lines 25475–25367.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";

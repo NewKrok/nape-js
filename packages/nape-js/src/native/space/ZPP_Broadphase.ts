@@ -9,13 +9,9 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
  * (ZPP_DynAABBPhase) implementation. Contains helper methods for creating
  * temporary AABB/circle shapes for spatial queries, and inlined AABB/worldCOM
  * validation logic used during shape synchronization.
- *
- * Converted from nape-compiled.js lines 25280–26724.
  */
 
 export class ZPP_Broadphase {
-  // --- Static: Haxe metadata ---
-
   // --- Static: lazy namespace references ---
   static _zpp: any = null;
   static _nape: any = null;

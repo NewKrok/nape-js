@@ -1,6 +1,5 @@
 /**
  * ZPP_AABBTree — Internal dynamic AABB tree for broadphase.
- * Converted from nape-compiled.js lines 26732–27900.
  *
  * A self-balancing binary tree where each internal node stores the union AABB
  * of its children. Leaf nodes reference shapes. Used by ZPP_DynAABBPhase for
@@ -11,8 +10,6 @@ import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_AABBNode } from "./ZPP_AABBNode";
 
 export class ZPP_AABBTree {
-  // --- Static: Haxe metadata ---
-
   // --- Static: temporary AABB used during insert cost calculations ---
   static tmpaabb: ZPP_AABB | null = null;
 

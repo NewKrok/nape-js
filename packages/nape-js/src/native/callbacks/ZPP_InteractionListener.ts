@@ -4,8 +4,6 @@
  * Manages interaction event listeners (BEGIN/END/ONGOING/PRE) with dual handler
  * support (handleri for InteractionListener, handlerp for PreListener).
  * Contains complex set intersection logic for CbType/CbSet pair operations.
- *
- * Converted from nape-compiled.js lines 28138–30352, 112140–112151.
  */
 
 import { ZPP_Listener } from "./ZPP_Listener";

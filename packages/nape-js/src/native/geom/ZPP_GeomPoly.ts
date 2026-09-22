@@ -2,13 +2,9 @@
  * ZPP_GeomPoly — Internal polygon geometry holder for the nape physics engine.
  *
  * Simple data container linking a public GeomPoly wrapper to its vertex list.
- *
- * Converted from nape-compiled.js lines 69554–69563.
  */
 
 export class ZPP_GeomPoly {
-  // --- Static: Haxe metadata ---
-
   // --- Instance ---
   outer: object | null = null;
   vertices: any = null;

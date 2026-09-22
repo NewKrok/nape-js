@@ -10,8 +10,6 @@ import type { Interactor } from "../phys/Interactor";
  *
  * The handler should return a {@link PreFlag} to control the interaction.
  * Do not store this object beyond the handler scope — it is pooled and reused.
- *
- * Converted from nape-compiled.js lines 2590–2634.
  */
 export class PreCallback extends Callback {
   /** The arbiter representing the potential interaction. Use to inspect collision normal, etc. */
@@ -53,5 +51,5 @@ export class PreCallback extends Callback {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------

@@ -3,13 +3,9 @@
  *
  * Stores references to two AABB nodes (n1, n2), an arbiter reference,
  * and pair identification (id, di). Used by ZPP_DynAABBPhase.
- *
- * Converted from nape-compiled.js lines 27056–27081.
  */
 
 export class ZPP_AABBPair {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_AABBPair | null = null;
 

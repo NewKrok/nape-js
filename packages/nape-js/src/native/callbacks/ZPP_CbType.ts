@@ -4,8 +4,6 @@
  * Manages three types of listener lists (interaction, body, constraint)
  * with priority-ordered insertion. Tracks interactors and constraints
  * that use this callback type, and invalidates callback sets on change.
- *
- * Converted from nape-compiled.js lines 48256–48482.
  */
 
 import { ZPP_BodyListener } from "./ZPP_BodyListener";
@@ -24,8 +22,6 @@ import {
 } from "../util/ZNPRegistry";
 
 export class ZPP_CbType {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _zpp: any = null;
 

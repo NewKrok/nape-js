@@ -4,8 +4,6 @@
  * Constrains body2's anchor (a2) to slide along the line defined by
  * body1's anchor (a1) and direction vector (n). The distance along
  * the line is bounded by [jointMin, jointMax].
- *
- * Converted from nape-compiled.js lines 23205–23304.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";

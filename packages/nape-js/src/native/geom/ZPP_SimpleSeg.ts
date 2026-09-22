@@ -3,8 +3,6 @@
  *
  * Segment with left/right endpoints and BST-based vertex set.
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 33818–33878.
  */
 
 import { ZPP_Set_ZPP_SimpleVert } from "../util/ZNPRegistry";

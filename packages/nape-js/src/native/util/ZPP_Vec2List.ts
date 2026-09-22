@@ -3,8 +3,6 @@
  *
  * Stores iteration state, caching, validation/invalidation callbacks, and a
  * reference to the underlying ZNPList_ZPP_Vec2 linked list.
- *
- * Converted from nape-compiled.js lines 22490–22578.
  */
 
 import { getNape } from "../../core/engine";
@@ -12,8 +10,6 @@ import { ZNPList } from "./ZNPList";
 import { ZNPList_ZPP_Vec2 } from "./ZNPRegistry";
 
 export class ZPP_Vec2List {
-  // --- Static: Haxe metadata ---
-
   // --- Static: internal flag for iterator instantiation guard ---
   static internal = false;
 

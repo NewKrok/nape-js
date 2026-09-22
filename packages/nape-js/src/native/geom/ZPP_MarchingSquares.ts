@@ -3,8 +3,6 @@
  *
  * Implements the core marching squares isosurface extraction, including cell
  * processing, polygon combination across cells, and interpolation.
- *
- * Converted from nape-compiled.js lines 20938–24762.
  */
 
 import { ZPP_GeomVert, disposeGeomVertWrap } from "./ZPP_GeomVert";

@@ -6,8 +6,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `DYNAMIC_AABB_TREE` — dynamic AABB tree broadphase (default, general purpose)
  * - `SWEEP_AND_PRUNE`   — sweep-and-prune broadphase
  * - `SPATIAL_HASH`       — spatial hash grid broadphase (best for dense, uniform-size scenes)
- *
- * Converted from nape-compiled.js lines 30858–30909.
  */
 export class Broadphase {
   constructor() {

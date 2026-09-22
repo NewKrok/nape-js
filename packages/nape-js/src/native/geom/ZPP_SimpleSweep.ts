@@ -3,8 +3,6 @@
  *
  * Maintains a balanced BST of active segments during sweep-line processing.
  * Provides segment insertion, removal, intersection testing, and intersection point computation.
- *
- * Converted from nape-compiled.js lines 33937–34265.
  */
 
 import { ZPP_SimpleVert } from "./ZPP_SimpleVert";

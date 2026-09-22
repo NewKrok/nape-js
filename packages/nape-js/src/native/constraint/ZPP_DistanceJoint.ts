@@ -4,8 +4,6 @@
  * Constrains the distance between two anchor points (a1 on b1, a2 on b2)
  * to lie within [jointMin, jointMax]. Supports equal (exact) mode, slack
  * detection, soft (spring) and stiff modes, and position correction.
- *
- * Converted from nape-compiled.js lines 22329–23204.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";

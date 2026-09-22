@@ -5,8 +5,6 @@
  * Performs insertion sort on AABB minx for broadphase pair detection,
  * plus spatial queries (shapes/bodies under point, in AABB, in circle, in shape,
  * raycasting).
- *
- * Converted from nape-compiled.js lines 46298–47510.
  */
 
 import { ZPP_SweepData } from "./ZPP_SweepData";

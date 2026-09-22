@@ -5,8 +5,6 @@
  * Performs broadphase collision detection using tree overlap queries, plus
  * spatial queries (shapes/bodies under point, in AABB, in circle, in shape,
  * raycasting).
- *
- * Converted from nape-compiled.js lines 25298–30222.
  */
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";

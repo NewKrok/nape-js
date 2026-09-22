@@ -3,13 +3,9 @@
  *
  * Simple x, y, z data container with optional validation callback.
  * Used internally for constraint anchor points and similar 3-component values.
- *
- * Converted from nape-compiled.js lines 83412–83434.
  */
 
 export class ZPP_Vec3 {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _zpp: object | null = null;
 

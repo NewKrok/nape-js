@@ -213,7 +213,7 @@ export class Edge {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 
 // Register _wrapFn so ZPP_Edge.wrapper() creates TS Edge instances

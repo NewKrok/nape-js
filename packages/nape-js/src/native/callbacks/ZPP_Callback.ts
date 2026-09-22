@@ -3,13 +3,9 @@
  *
  * Stores callback event information (listener, event type, interactors, etc.)
  * and forms a doubly-linked list for callback queue management.
- *
- * Converted from nape-compiled.js lines 44587–44794, 133299–133300.
  */
 
 export class ZPP_Callback {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
   static _zpp: any = null;

@@ -4,17 +4,12 @@ import { ZNPList_ZPP_Shape } from "../util/ZNPRegistry";
  *
  * Stores collision/sensor/fluid group and mask bitmasks that determine
  * which shapes interact with each other.
- *
- * Converted from nape-compiled.js lines 63255–63366, 135329.
  */
 
 export class ZPP_InteractionFilter {
   // --- Static: object pool ---
   static zpp_pool: ZPP_InteractionFilter | null = null;
-
-  // --- Static: Haxe metadata ---
-
-  // --- Static: namespace references (set by compiled module) ---
+  // --- Static: namespace references (assigned by ZPPRegistry) ---
   static _nape: any = null;
   static _zpp: any = null;
 
@@ -45,9 +40,6 @@ export class ZPP_InteractionFilter {
 
   // --- Instance: pool linked list ---
   next: ZPP_InteractionFilter | null = null;
-
-  // --- Instance: Haxe class reference ---
-
   constructor() {
     this.shapes = new ZNPList_ZPP_Shape();
   }

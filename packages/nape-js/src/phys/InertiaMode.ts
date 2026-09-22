@@ -6,8 +6,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  *
  * - `DEFAULT` — use computed inertia from shapes
  * - `FIXED`   — use a fixed inertia value
- *
- * Converted from nape-compiled.js lines 26343–26390.
  */
 export class InertiaMode {
   constructor() {
@@ -42,7 +40,7 @@ export class InertiaMode {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.InertiaMode = InertiaMode;

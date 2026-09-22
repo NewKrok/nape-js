@@ -6,8 +6,6 @@
  * `contact.active && contact.arbiter.active` are visible.
  *
  * ContactIterator — Pooled iterator for ContactList.
- *
- * Converted from nape-compiled.js lines 6895–7691 (ContactIterator + ContactList).
  */
 
 import { getNape } from "../core/engine";

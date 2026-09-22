@@ -191,8 +191,6 @@ describe("CbType", () => {
     expect(CbType._wrap(0)).toBeNull();
   });
 
-  // --- __name__ ---
-
   // --- Namespace registration ---
 
   it("should be registered in the nape namespace", () => {

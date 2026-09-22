@@ -4,8 +4,6 @@
  * Base class for ZPP_Circle and ZPP_Polygon. Inherits from compiled
  * ZPP_Interactor. Manages AABB, COM, area/inertia, material, filter,
  * and broadphase data.
- *
- * Converted from nape-compiled.js lines 40515–41495.
  */
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";
@@ -15,8 +13,6 @@ import { ZPP_InteractionFilter } from "../dynamics/ZPP_InteractionFilter";
 import { ZNPList_ZPP_AABBPair } from "../util/ZNPRegistry";
 
 export class ZPP_Shape {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
   static _zpp: any = null;

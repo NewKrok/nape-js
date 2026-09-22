@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-// Side-effect imports: ensure TS modules execute to register in compiled namespace
+// Side-effect imports: ensure modules execute to register in the nape namespace
 import "../geom/Vec2";
 import "../geom/GeomPoly";
 import type { Vec2, NapeInner, Writable } from "../geom/Vec2";

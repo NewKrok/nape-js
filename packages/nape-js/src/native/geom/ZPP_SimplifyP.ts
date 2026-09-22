@@ -3,8 +3,6 @@
  *
  * Stores a min/max vertex range for the Ramer-Douglas-Peucker stack.
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 35644–35671.
  */
 
 import { ZPP_SimplifyV } from "./ZPP_SimplifyV";

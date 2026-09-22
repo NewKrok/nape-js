@@ -4,8 +4,6 @@
  *
  * Implements time-of-impact (TOI) sweep algorithms and shape distance calculations
  * for circle-circle, polygon-circle, and polygon-polygon pairs.
- *
- * Converted from nape-compiled.js lines 28290–31606.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";

@@ -20,8 +20,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - {@link ConstraintListener}: `WAKE`, `SLEEP`, `BREAK`
  * - {@link InteractionListener}: `BEGIN`, `ONGOING`, `END`
  * - {@link PreListener}: always `PRE` (set internally)
- *
- * Converted from nape-compiled.js lines 516–657.
  */
 export class CbEvent {
   constructor() {
@@ -109,7 +107,7 @@ export class CbEvent {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.CbEvent = CbEvent;

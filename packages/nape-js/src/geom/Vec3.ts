@@ -8,12 +8,8 @@ import type { NapeInner } from "./Vec2";
  * 3D vector used for constraint impulses and other 3-component values.
  *
  * Supports object pooling via `Vec3.get()` / `dispose()`.
- *
- * Converted from nape-compiled.js lines 24120–25040.
  */
 export class Vec3 {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_Vec3 this wrapper owns. */
   zpp_inner: ZPP_Vec3;
 

@@ -3,8 +3,6 @@
  *
  * Extends ZPP_Shape (type=1). Manages vertex rings (local/world),
  * edge lists, validation, and polygon-specific physics calculations.
- *
- * Converted from nape-compiled.js lines 42176–43786.
  */
 
 import { ZPP_Edge } from "./ZPP_Edge";
@@ -17,8 +15,6 @@ import { ZPP_MixVec2List } from "../util/ZPP_MixVec2List";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_Polygon {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
   static _zpp: any = null;

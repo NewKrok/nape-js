@@ -3,8 +3,6 @@
  *
  * Provides inner-angle test and diagonal removal optimization for
  * partitioned polygon decomposition.
- *
- * Converted from nape-compiled.js lines 24287–24365.
  */
 
 export class ZPP_Convex {

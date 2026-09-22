@@ -3,8 +3,6 @@
  *
  * Lazily creates Vec2 wrappers for each vertex on first access, binding
  * invalidation/validation callbacks to keep the wrapper in sync.
- *
- * Converted from nape-compiled.js lines 8382–8517.
  */
 
 import { getNape } from "../core/engine";

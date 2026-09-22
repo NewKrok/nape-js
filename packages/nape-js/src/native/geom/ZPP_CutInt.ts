@@ -3,16 +3,12 @@
  *
  * Stores intersection data for polygon cutting: time, paths, endpoints.
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 66681–66738.
  */
 
 import type { ZPP_CutVert } from "./ZPP_CutVert";
 import type { ZPP_GeomVert } from "./ZPP_GeomVert";
 
 export class ZPP_CutInt {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_CutInt | null = null;
 

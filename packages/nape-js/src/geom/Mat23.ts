@@ -6,8 +6,6 @@ import { Config } from "../Config";
 
 /**
  * 2x3 affine transformation matrix [a b tx; c d ty].
- *
- * Converted from nape-compiled.js lines 20507–21760.
  */
 export class Mat23 {
   /** @internal */

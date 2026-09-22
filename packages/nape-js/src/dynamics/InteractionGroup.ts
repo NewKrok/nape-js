@@ -8,13 +8,9 @@ import type { NapeInner } from "../geom/Vec2";
  * between sets of interactors.
  *
  * Internally wraps a ZPP_InteractionGroup and is registered as
- * the public `nape.dynamics.InteractionGroup` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 14641–14733.
+ * the public `nape.dynamics.InteractionGroup` class in the nape namespace.
  */
 export class InteractionGroup {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_InteractionGroup this wrapper owns. */
   zpp_inner: ZPP_InteractionGroup;
 

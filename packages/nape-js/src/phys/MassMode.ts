@@ -6,8 +6,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  *
  * - `DEFAULT` — use computed mass from shapes
  * - `FIXED`   — use a fixed mass value
- *
- * Converted from nape-compiled.js lines 26966–27013.
  */
 export class MassMode {
   constructor() {
@@ -42,7 +40,7 @@ export class MassMode {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.MassMode = MassMode;

@@ -4,8 +4,6 @@
  * Core physics body managing position, velocity, mass, inertia, shapes, and
  * CCD (continuous collision detection) sweep integration.
  * Extends ZPP_Interactor (still in compiled code — methods copied at init time).
- *
- * Converted from nape-compiled.js lines 52431–54547.
  */
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";
@@ -24,10 +22,8 @@ import {
 import { ZPP_Flags } from "../util/ZPP_Flags";
 
 export class ZPP_Body {
-  // --- Static: Haxe metadata ---
-
   /**
-   * Namespace references, set by the compiled module after import.
+   * Namespace references, assigned by ZPPRegistry.registerZPPClasses().
    * _nape = the `nape` public namespace
    * _zpp = the `zpp_nape` internal namespace
    */

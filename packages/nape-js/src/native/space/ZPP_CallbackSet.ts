@@ -5,13 +5,9 @@ import { ZNPList_ZPP_Arbiter, ZNPNode_ZPP_Arbiter } from "../util/ZNPRegistry";
  * Tracks interaction state (COLLISION, SENSOR, FLUID) between two interactors.
  * Maintains a list of arbiters and acts as an intrusive linked list node.
  * Used by ZPP_Space to manage callback state across simulation steps.
- *
- * Converted from nape-compiled.js lines 33586–34153.
  */
 
 export class ZPP_CallbackSet {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_CallbackSet | null = null;
 

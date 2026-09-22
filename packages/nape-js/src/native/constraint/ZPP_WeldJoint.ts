@@ -4,8 +4,6 @@
  * A 3-DOF constraint that locks relative position (x, y) and angle
  * between two bodies, with an optional phase (target angle offset).
  * Uses a 3×3 effective-mass matrix (stored as upper triangular a/b/c/d/e/f).
- *
- * Converted from nape-compiled.js lines 28055–29046.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";

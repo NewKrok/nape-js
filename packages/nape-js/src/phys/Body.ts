@@ -72,7 +72,6 @@ function _newVec2(x: number, y: number, weak: boolean): Vec2 {
 
 /**
  * Ensure a singleton enum flag is initialised. Returns the flag value.
- * This replaces the verbose repeated ZPP_Flags init pattern from compiled code.
  */
 function _ensureFlag<T>(flagName: keyof typeof ZPP_Flags, ctor: () => T): T {
   if ((ZPP_Flags as any)[flagName] == null) {
@@ -1790,7 +1789,7 @@ function _invalidateShapes(cur: ZPP_Body): void {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 const _napeBody = getNape();
 _napeBody.phys.Body = Body;

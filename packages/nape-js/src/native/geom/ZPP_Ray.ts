@@ -3,8 +3,6 @@
  *
  * Manages ray origin/direction with invalidation callbacks, plus ray-shape
  * intersection methods (AABB, circle, polygon).
- *
- * Converted from nape-compiled.js lines 31239–33172, 65896.
  */
 
 import { getNape } from "../../core/engine";
@@ -16,8 +14,6 @@ import { ZNPNode_RayResult } from "../util/ZNPRegistry";
 import { Config } from "../../Config";
 
 export class ZPP_Ray {
-  // --- Static: Haxe metadata ---
-
   // --- Static: internal flag ---
   static internal = false;
 

@@ -4,8 +4,6 @@
  * Cuts a polygon along a line defined by two endpoints, producing a list of
  * sub-polygons. Uses union-find for path tracking and merge-sort for
  * intersection ordering.
- *
- * Converted from nape-compiled.js lines 24303–26062.
  */
 
 import { ZPP_CutVert } from "./ZPP_CutVert";

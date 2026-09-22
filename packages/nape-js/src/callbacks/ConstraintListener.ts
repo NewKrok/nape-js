@@ -1,7 +1,5 @@
 /**
  * ConstraintListener — Listens for constraint events (WAKE/SLEEP/BREAK).
- *
- * Fully modernized from nape-compiled.js lines 546–649.
  */
 
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
@@ -32,8 +30,6 @@ import type { ConstraintCallback } from "./ConstraintCallback";
  * );
  * space.listeners.add(listener);
  * ```
- *
- * Fully modernized from nape-compiled.js lines 546–649.
  */
 export class ConstraintListener extends Listener {
   /** @internal */
@@ -110,4 +106,4 @@ export class ConstraintListener extends Listener {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace

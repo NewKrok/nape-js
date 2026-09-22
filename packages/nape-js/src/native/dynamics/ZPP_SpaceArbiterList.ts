@@ -4,13 +4,9 @@
  * Extends ArbiterList to provide a read-only view of all active arbiters
  * across four internal lists (c_arbiters_true, c_arbiters_false, f_arbiters,
  * s_arbiters). All mutation methods throw immutable errors.
- *
- * Converted from nape-compiled.js lines 20830–21107.
  */
 
 export class ZPP_SpaceArbiterList {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
   static _zpp: any = null;
@@ -31,9 +27,6 @@ export class ZPP_SpaceArbiterList {
   at_index_1 = 0;
   at_index_2 = 0;
   at_index_3 = 0;
-
-  // --- Instance: Haxe class reference ---
-
   constructor() {
     this.at_index_0 = 0;
     this.at_index_1 = 0;

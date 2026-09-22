@@ -4,13 +4,9 @@
  * Represents an interaction (collision, fluid, or sensor) between two shapes.
  * Manages body arbiter lists, pooled wrapper creation, and state tracking.
  * Subclassed by ZPP_ColArbiter, ZPP_FluidArbiter, and ZPP_SensorArbiter.
- *
- * Converted from nape-compiled.js lines 29044–29362, 80738–80766.
  */
 
 export class ZPP_Arbiter {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references (set during registration) ---
   static _nape: any = null;
   static _zpp: any = null;

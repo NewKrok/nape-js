@@ -164,7 +164,7 @@ export class Polygon extends Shape {
       }
     } else {
       throw new Error(
-        "Error: Invalid type for polygon object, should be Array<Vec2>, Vec2List, GeomPoly or for flash10+ flash.Vector<Vec2>",
+        "Error: Invalid type for polygon object, should be Array<Vec2>, Vec2List or GeomPoly",
       );
     }
 
@@ -356,7 +356,7 @@ export class Polygon extends Shape {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 
 // Bind Polygon._wrap into Shape so Shape._wrap can dispatch without circular import.

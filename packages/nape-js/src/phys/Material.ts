@@ -7,13 +7,9 @@ import type { NapeInner } from "../geom/Vec2";
  *
  * Controls elasticity (bounciness), friction coefficients, density, and
  * rolling friction.  Internally wraps a ZPP_Material and is registered as
- * the public `nape.phys.Material` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 38254–38573.
+ * the public `nape.phys.Material` class in the nape namespace.
  */
 export class Material {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_Material this wrapper owns. */
   zpp_inner: ZPP_Material;
 
@@ -45,7 +41,7 @@ export class Material {
     this.zpp_inner = zpp;
     zpp.outer = this;
 
-    // --- Validate and set each property (mirrors compiled constructor) ---
+    // --- Validate and set each property ---
 
     if (elasticity !== zpp.elasticity) {
       if (elasticity !== elasticity) {

@@ -4,8 +4,6 @@
  * Wraps a circular list of ZPP_PartitionVertex nodes. Supports extracting
  * sub-partitions (for monotone decomposition) and pulling vertex rings
  * (for triangulation output).
- *
- * Converted from nape-compiled.js lines 30688–31238.
  */
 
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
@@ -16,8 +14,6 @@ import { ZNPNode } from "../util/ZNPNode";
 import { Config } from "../../Config";
 
 export class ZPP_PartitionedPoly {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_PartitionedPoly | null = null;
 

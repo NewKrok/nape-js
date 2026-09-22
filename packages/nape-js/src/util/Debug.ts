@@ -11,8 +11,6 @@ function clearPool(holder: any, poolProp: string, nextProp: string): void {
 
 /**
  * Nape engine utilities.
- *
- * Extracted from nape-compiled.js Priority 14.
  */
 declare const __PACKAGE_VERSION__: string;
 

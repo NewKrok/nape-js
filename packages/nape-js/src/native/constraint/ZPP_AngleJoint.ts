@@ -3,8 +3,6 @@
  *
  * Constrains the relative angle between two bodies within min/max bounds.
  * Contains the complete solver logic (preStep, warmStart, impulse application).
- *
- * Converted from nape-compiled.js lines 21441–21912.
  */
 
 import { getNape } from "../../core/engine";

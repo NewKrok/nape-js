@@ -303,23 +303,3 @@ ZPP_Compound._wrapFn = (zpp: ZPP_Compound): Compound => {
     return c;
   });
 };
-
-// Also define the ES5-style property accessors that compiled code expects
-Object.defineProperty(Compound.prototype, "bodies", {
-  get: function (this: Compound) {
-    return this.zpp_inner.wrap_bodies;
-  },
-  configurable: true,
-});
-Object.defineProperty(Compound.prototype, "constraints", {
-  get: function (this: Compound) {
-    return this.zpp_inner.wrap_constraints;
-  },
-  configurable: true,
-});
-Object.defineProperty(Compound.prototype, "compounds", {
-  get: function (this: Compound) {
-    return this.zpp_inner.wrap_compounds;
-  },
-  configurable: true,
-});

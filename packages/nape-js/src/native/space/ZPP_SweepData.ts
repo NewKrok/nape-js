@@ -3,13 +3,9 @@
  *
  * Stores AABB + shape reference for sweep-and-prune broadphase ordering.
  * Doubly-linked list node with prev/next pointers.
- *
- * Converted from nape-compiled.js lines 47755–47781.
  */
 
 export class ZPP_SweepData {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_SweepData | null = null;
 

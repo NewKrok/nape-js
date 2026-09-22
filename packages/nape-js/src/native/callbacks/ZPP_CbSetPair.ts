@@ -5,13 +5,9 @@ import { ZNPList_ZPP_InteractionListener } from "../util/ZNPRegistry";
  *
  * Pairs two ZPP_CbSets and maintains a validated list of interaction listeners
  * compatible with both sets. Uses lazy validation.
- *
- * Converted from nape-compiled.js lines 45135–45319.
  */
 
 export class ZPP_CbSetPair {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _zpp: any = null;
 

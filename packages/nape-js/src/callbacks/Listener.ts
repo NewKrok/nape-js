@@ -3,8 +3,6 @@
  *
  * Provides common properties (type, event, precedence, space) and
  * toString() for all listener subclasses.
- *
- * Fully modernized from nape-compiled.js lines 231–433.
  */
 
 import { getOrCreate } from "../core/cache";
@@ -65,8 +63,6 @@ export function cbEventToNumber(event: CbEvent): number {
  *
  * Provides common properties (`type`, `event`, `precedence`, `space`) shared
  * by all listener types.
- *
- * Fully modernized from nape-compiled.js lines 231–433.
  */
 export class Listener {
   /** @internal */

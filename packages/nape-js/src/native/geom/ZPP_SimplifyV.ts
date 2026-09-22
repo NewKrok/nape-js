@@ -3,8 +3,6 @@
  *
  * Circular doubly-linked list node used by ZPP_Simplify (Ramer-Douglas-Peucker).
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 35611–35643.
  */
 
 export class ZPP_SimplifyV {

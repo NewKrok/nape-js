@@ -7,8 +7,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `COLLISION` — collision arbiter
  * - `SENSOR`    — sensor arbiter
  * - `FLUID`     — fluid arbiter
- *
- * Converted from nape-compiled.js lines 11653–11725.
  */
 export class ArbiterType {
   constructor() {
@@ -53,7 +51,7 @@ export class ArbiterType {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.dynamics.ArbiterType = ArbiterType;

@@ -6,8 +6,6 @@
  * ZPP_Vec2 objects, pooling the old wrapper's ZPP_Vec2 if needed.
  *
  * Vec2Iterator — Pooled iterator for Vec2List.
- *
- * Converted from nape-compiled.js lines 9416–10088 (Vec2Iterator + Vec2List).
  */
 
 import { getNape } from "../core/engine";

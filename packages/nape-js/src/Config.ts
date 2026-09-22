@@ -2,7 +2,7 @@
  * Physics engine configuration constants.
  *
  * These values tune the simulation's solver, collision detection, sleeping,
- * and CCD behaviour. Extracted from nape-compiled.js Priority 13.
+ * and CCD behaviour.
  */
 export const Config = {
   epsilon: 1e-8,

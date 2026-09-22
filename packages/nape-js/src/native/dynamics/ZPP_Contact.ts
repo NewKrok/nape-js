@@ -5,8 +5,6 @@
  * manages a lazy Vec2 position wrapper. Also acts as a linked list
  * node/container (Haxe ZNPList pattern). Each contact holds a reference to
  * a ZPP_IContact for impulse/mass data.
- *
- * Converted from nape-compiled.js lines 31853–32345, 81644–81645.
  */
 
 import { ZPP_IContact } from "./ZPP_IContact";
@@ -14,8 +12,6 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_Contact {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references (set during registration) ---
   static _nape: any = null;
   static _zpp: any = null;

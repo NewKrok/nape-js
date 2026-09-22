@@ -8,8 +8,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `DEGENERATE`         — shape is degenerate (e.g., zero area)
  * - `CONCAVE`            — shape is concave (must be convex)
  * - `SELF_INTERSECTING`  — shape edges self-intersect
- *
- * Converted from nape-compiled.js lines 30760–30856.
  */
 export class ValidationResult {
   constructor() {
@@ -64,7 +62,7 @@ export class ValidationResult {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.shape.ValidationResult = ValidationResult;

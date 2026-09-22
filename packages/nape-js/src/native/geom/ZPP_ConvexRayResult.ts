@@ -3,16 +3,12 @@
  *
  * Serves as the shared internal type for both RayResult and ConvexResult public wrappers.
  * Uses separate pools for ray results vs convex results.
- *
- * Converted from nape-compiled.js lines 38897–39076, 86860–86862.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_ConvexRayResult {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pools ---
   static rayPool: ZPP_ConvexRayResult | null = null;
   static convexPool: ZPP_ConvexRayResult | null = null;

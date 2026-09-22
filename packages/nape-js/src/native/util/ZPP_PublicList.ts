@@ -8,8 +8,6 @@ import { getNape } from "../../core/engine";
  * state. All 13 specializations are identical except for the ZNPList type they
  * create in their constructor and the public wrapper class they instantiate in
  * their static get() method.
- *
- * Extracted from nape-compiled.js Priority 15.
  */
 export class ZPP_PublicList {
   user_length: number = 0;

@@ -3,8 +3,6 @@
  *
  * All-static class that decomposes a simple polygon into y-monotone
  * sub-polygons using a sweep line algorithm with a BST edge set.
- *
- * Converted from nape-compiled.js lines 29958–30409.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
@@ -16,8 +14,6 @@ import { ZNPNode } from "../util/ZNPNode";
 import { ZPP_Set } from "../util/ZPP_Set";
 
 export class ZPP_Monotone {
-  // --- Static: Haxe metadata ---
-
   // --- Static fields ---
   static queue: ZNPList<ZPP_PartitionVertex> | null = null;
   static edges: ZPP_Set<ZPP_PartitionVertex> | null = null;

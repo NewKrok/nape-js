@@ -3,13 +3,9 @@
  *
  * Holds static references to pooled public-API objects (Vec2, Vec3, GeomPoly).
  * Each pool is a singly-linked free list with a "next" lookahead pointer.
- *
- * Converted from nape-compiled.js lines 127704–127707, 133961–133966.
  */
 
 export class ZPP_PubPool {
-  // --- Static: Haxe metadata ---
-
   // --- Static: pool heads and lookaheads ---
   // Typed as `any` to avoid circular imports; concrete type is always a public API class.
   static poolGeomPoly: any = null;

@@ -5,8 +5,6 @@ import type { NapeInner } from "./Vec2";
 
 /**
  * Variable-sized M×N matrix.
- *
- * Converted from nape-compiled.js lines 17261–17395.
  */
 export class MatMN {
   /** @internal */
@@ -197,7 +195,7 @@ export class MatMN {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled MatMN)
+// Register this class in the nape namespace (replaces compiled MatMN)
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.MatMN = MatMN;

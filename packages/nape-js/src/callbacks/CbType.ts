@@ -27,8 +27,6 @@ import type { OptionType } from "./OptionType";
  * );
  * space.listeners.add(listener);
  * ```
- *
- * Converted from nape-compiled.js lines 689–770.
  */
 export class CbType {
   /** @internal */
@@ -193,6 +191,6 @@ export class CbType {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 const _napeForCbType = getNape();
 _napeForCbType.callbacks.CbType = CbType;

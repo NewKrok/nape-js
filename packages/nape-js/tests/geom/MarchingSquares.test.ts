@@ -187,6 +187,4 @@ describe("MarchingSquares", () => {
     MarchingSquares.run(circleIso, bounds, cellsize);
     expect((cellsize as any).zpp_disp).toBe(false);
   });
-
-  // --- __name__ and __class__ ---
 });

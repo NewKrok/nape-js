@@ -277,8 +277,4 @@ describe("MatMN", () => {
     const second = MatMN._wrap(zpp);
     expect(first).toBe(second);
   });
-
-  // --- __name__ ---
-
-  // --- __class__ ---
 });

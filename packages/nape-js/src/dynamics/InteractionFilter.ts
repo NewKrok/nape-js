@@ -8,13 +8,9 @@ import type { NapeInner } from "../geom/Vec2";
  * collide, sense, or interact as fluids.
  *
  * Internally wraps a ZPP_InteractionFilter and is registered as
- * the public `nape.dynamics.InteractionFilter` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 14361–14640.
+ * the public `nape.dynamics.InteractionFilter` class in the nape namespace.
  */
 export class InteractionFilter {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_InteractionFilter this wrapper owns. */
   zpp_inner: ZPP_InteractionFilter;
 
@@ -55,7 +51,7 @@ export class InteractionFilter {
     this.zpp_inner = zpp;
     zpp.outer = this;
 
-    // --- Validate and set each property (mirrors compiled constructor) ---
+    // --- Validate and set each property ---
 
     if (zpp.collisionGroup != collisionGroup) {
       zpp.collisionGroup = collisionGroup;

@@ -2,8 +2,6 @@
  * ZPP_VecMath — Static vector math utilities for the nape physics engine.
  *
  * Provides distance calculations between 2D points.
- *
- * Converted from nape-compiled.js lines 40101–40118.
  */
 
 export class ZPP_VecMath {

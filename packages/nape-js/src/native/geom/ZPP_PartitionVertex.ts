@@ -3,15 +3,11 @@
  *
  * Used by the monotone decomposition and triangulation algorithms.
  * Doubly-linked circular list node with diagonal tracking and merge-sort.
- *
- * Converted from nape-compiled.js lines 30410–30687.
  */
 
 import { ZNPList_ZPP_PartitionVertex } from "../util/ZNPRegistry";
 
 export class ZPP_PartitionVertex {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_PartitionVertex | null = null;
 

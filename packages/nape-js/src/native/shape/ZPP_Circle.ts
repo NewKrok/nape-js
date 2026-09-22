@@ -7,13 +7,9 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
  *
  * Extends ZPP_Shape (type=0). Stores radius, provides AABB/area/inertia
  * calculations, and handles localCOM wrappers for circles.
- *
- * Converted from nape-compiled.js lines 41496–41827.
  */
 
 export class ZPP_Circle {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
   static _zpp: any = null;
