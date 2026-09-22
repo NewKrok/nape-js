@@ -709,13 +709,11 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   }
 
   override pair_exists(id: number, di: number): boolean {
-    if (
-      !(
-        (this.b1.id == id && (this.b2.id == di || this.b3.id == di || this.b4.id == di)) ||
-        (this.b2.id == id && (this.b3.id == di || this.b4.id == di || this.b1.id == di)) ||
-        (this.b3.id == id && (this.b4.id == di || this.b1.id == di || this.b2.id == di))
-      )
-    ) {
+    if (!(
+      (this.b1.id == id && (this.b2.id == di || this.b3.id == di || this.b4.id == di)) ||
+      (this.b2.id == id && (this.b3.id == di || this.b4.id == di || this.b1.id == di)) ||
+      (this.b3.id == id && (this.b4.id == di || this.b1.id == di || this.b2.id == di))
+    )) {
       if (this.b4.id == id) {
         if (!(this.b1.id == di || this.b2.id == di)) {
           return this.b3.id == di;

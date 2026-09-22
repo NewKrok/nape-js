@@ -15,10 +15,7 @@ import type { Space } from "../space/Space";
  * - `(distance) => number` — custom multiplier, applied as `F = strength * fn(d)`
  */
 export type GravityFalloff =
-  | "inverse-square"
-  | "inverse"
-  | "constant"
-  | ((distance: number) => number);
+  "inverse-square" | "inverse" | "constant" | ((distance: number) => number);
 
 /** Per-body filter — `false` skips the body. */
 export type BodyFilter = (body: Body) => boolean;

@@ -471,13 +471,7 @@ export function spaceFromBinary(data: Uint8Array): Space {
   // 4. Constraints
   // ------------------------------------------------------------------
   const constraints: (
-    | PivotJoint
-    | DistanceJoint
-    | AngleJoint
-    | MotorJoint
-    | LineJoint
-    | PulleyJoint
-    | WeldJoint
+    PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint
   )[] = new Array(constraintCount);
   for (let i = 0; i < constraintCount; i++) {
     constraints[i] = readConstraint(r, bodies);
