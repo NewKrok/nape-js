@@ -1,6 +1,5 @@
 import { getNape } from "../core/engine";
 import { Vec3 } from "../geom/Vec3";
-import type { NapeInner } from "../geom/Vec2";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 import { ArbiterType } from "./ArbiterType";
@@ -31,11 +30,6 @@ import type { PreFlag } from "../callbacks/PreFlag";
 export class Arbiter {
   /** @internal */
   zpp_inner: ZPP_Arbiter;
-
-  /** @internal Backward-compat: compiled code accesses `obj.zpp_inner`. */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor() {
     this.zpp_inner = null as any;

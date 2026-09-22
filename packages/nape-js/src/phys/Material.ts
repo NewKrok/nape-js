@@ -1,6 +1,5 @@
 import { getOrCreate } from "../core/cache";
 import { ZPP_Material } from "../native/phys/ZPP_Material";
-import type { NapeInner } from "../geom/Vec2";
 
 /**
  * Physical material properties applied to shapes.
@@ -12,15 +11,6 @@ import type { NapeInner } from "../geom/Vec2";
 export class Material {
   /** @internal The internal ZPP_Material this wrapper owns. */
   zpp_inner: ZPP_Material;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `material._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor(
     elasticity: number = 0.0,

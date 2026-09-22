@@ -486,11 +486,11 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
         }
       }
       if (b != null) {
-        ret.zpp_inner_zn[field] = b.zpp_inner;
+        ret.zpp_inner[field] = b.zpp_inner;
       } else {
         todo.push(
           ZPP_CopyHelper.todo(srcBody.id, function (body: any) {
-            ret.zpp_inner_zn[field] = body.zpp_inner;
+            ret.zpp_inner[field] = body.zpp_inner;
           }),
         );
       }

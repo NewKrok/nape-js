@@ -146,22 +146,14 @@ export class ZPP_SpringJoint extends ZPP_Constraint {
   }
 
   override copy(dict: any, todo: any): any {
-    const _this = this.outer_zn;
-    if (_this.zpp_inner_zn.wrap_a1 == null) {
-      _this.zpp_inner_zn.setup_a1();
+    if (this.wrap_a1 == null) {
+      this.setup_a1();
     }
-    const ret_a1 = _this.zpp_inner_zn.wrap_a1;
-    const _this1 = this.outer_zn;
-    if (_this1.zpp_inner_zn.wrap_a2 == null) {
-      _this1.zpp_inner_zn.setup_a2();
+    const ret_a1 = this.wrap_a1;
+    if (this.wrap_a2 == null) {
+      this.setup_a2();
     }
-    const ret = ZPP_SpringJoint._createFn!(
-      null,
-      null,
-      ret_a1,
-      _this1.zpp_inner_zn.wrap_a2,
-      this.restLength,
-    );
+    const ret = ZPP_SpringJoint._createFn!(null, null, ret_a1, this.wrap_a2, this.restLength);
     this.copyto(ret);
     ZPP_AngleJoint._copyBody(dict, todo, this.b1, ret, "b1");
     ZPP_AngleJoint._copyBody(dict, todo, this.b2, ret, "b2");

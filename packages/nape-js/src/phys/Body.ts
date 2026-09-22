@@ -1,12 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import {
-  Vec2,
-  type NapeInner,
-  type Writable,
-  disposeWeakVec2,
-  checkVec2Disposed,
-} from "../geom/Vec2";
+import { Vec2, type NapeInner, disposeWeakVec2, checkVec2Disposed } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { AABB } from "../geom/AABB";
 import { Space } from "../space/Space";
@@ -104,9 +98,6 @@ export class Body extends Interactor {
     zpp.outer_i = this;
     (this as any).zpp_inner_i = zpp;
 
-    // Override the Interactor's _inner to point at this object (backward compat).
-    (this as Writable<Body>)._inner = this as any;
-
     // Set position
     if (position != null) {
       checkVec2Disposed(position);
@@ -168,16 +159,14 @@ export class Body extends Interactor {
         zpp.outer = b;
         zpp.outer_i = b;
         (b as any).zpp_inner_i = zpp;
-        (b as Writable<Body>)._inner = b as any;
         b.debugDraw = true;
         return b;
       });
     }
     // Handle compiled objects with zpp_inner
     if (inner.zpp_inner) return Body._wrap(inner.zpp_inner);
-    return getOrCreate(inner, (raw: NapeInner) => {
+    return getOrCreate(inner, (_raw: NapeInner) => {
       const b = Object.create(Body.prototype) as Body;
-      (b as Writable<Body>)._inner = raw;
       return b;
     });
   }
@@ -632,7 +621,7 @@ export class Body extends Interactor {
     return Space._wrap(this.zpp_inner.space.outer);
   }
   set space(value: Space | null) {
-    const space = value != null ? ((value as any)._inner ?? value) : null;
+    const space = value ?? null;
     if (this.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set",

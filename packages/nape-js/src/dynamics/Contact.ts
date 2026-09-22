@@ -1,4 +1,4 @@
-import { Vec2, type NapeInner } from "../geom/Vec2";
+import { Vec2 } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_ColArbiter } from "../native/dynamics/ZPP_ColArbiter";
@@ -18,11 +18,6 @@ import type { CollisionArbiter } from "./CollisionArbiter";
 export class Contact {
   /** @internal Direct typed access to the extracted ZPP_Contact. */
   zpp_inner: ZPP_Contact;
-
-  /** @internal Backward-compat: compiled code accesses `obj.zpp_inner`. */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor() {
     this.zpp_inner = null as any;

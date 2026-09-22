@@ -13,11 +13,6 @@ describe("OptionType", () => {
     expect(ot.zpp_inner).toBeInstanceOf(ZPP_OptionType);
   });
 
-  it("should have _inner return this", () => {
-    const ot = new OptionType();
-    expect(ot._inner).toBe(ot);
-  });
-
   it("should link zpp_inner.outer back to the instance", () => {
     const ot = new OptionType();
     expect(ot.zpp_inner.outer).toBe(ot);

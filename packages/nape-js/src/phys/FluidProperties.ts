@@ -2,7 +2,6 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_FluidProperties } from "../native/phys/ZPP_FluidProperties";
 import { ZPP_ShapeList } from "../native/util/ZPP_PublicList";
-import type { NapeInner } from "../geom/Vec2";
 
 /**
  * Fluid properties for shapes that act as fluid regions.
@@ -14,15 +13,6 @@ import type { NapeInner } from "../geom/Vec2";
 export class FluidProperties {
   /** @internal The internal ZPP_FluidProperties this wrapper owns. */
   zpp_inner: ZPP_FluidProperties;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `fluidProps._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor(density: number = 1, viscosity: number = 1) {
     // Acquire a ZPP_FluidProperties from the pool or create a new one

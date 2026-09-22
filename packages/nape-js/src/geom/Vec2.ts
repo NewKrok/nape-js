@@ -20,15 +20,6 @@ export class Vec2 {
   zpp_disp: boolean = false;
 
   /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `vec._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
-
-  /**
    * Creates a Vec2 with the given components. Defaults to (0, 0).
    *
    * @param x - The x component (default 0).

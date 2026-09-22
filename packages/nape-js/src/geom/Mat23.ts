@@ -1,7 +1,6 @@
 import { getOrCreate } from "../core/cache";
 import { ZPP_Mat23 } from "../native/geom/ZPP_Mat23";
 import { Vec2 } from "./Vec2";
-import type { NapeInner } from "./Vec2";
 import { Config } from "../Config";
 
 /**
@@ -10,11 +9,6 @@ import { Config } from "../Config";
 export class Mat23 {
   /** @internal */
   zpp_inner: ZPP_Mat23;
-
-  /** @internal */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Create a Mat23 with the given components. Defaults to the identity matrix `[1 0 0; 0 1 0]`.

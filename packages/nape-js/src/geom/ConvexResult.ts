@@ -1,5 +1,5 @@
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner } from "./Vec2";
+import { Vec2 } from "./Vec2";
 import { ZPP_ConvexRayResult } from "../native/geom/ZPP_ConvexRayResult";
 import type { Shape } from "../shape/Shape";
 
@@ -12,11 +12,6 @@ import type { Shape } from "../shape/Shape";
 export class ConvexResult {
   /** @internal */
   zpp_inner: ZPP_ConvexRayResult;
-
-  /** @internal Backward-compat: compiled code accesses `obj.zpp_inner`. */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor() {
     this.zpp_inner = null!;

@@ -143,9 +143,9 @@ export class ZPP_Compound {
   }
 
   // --- Helper: resolve ZPP inner from public API wrapper ---
-  // Public API objects may be compiled (have .zpp_inner) or TS wrappers (have ._inner.zpp_inner)
+  // Public wrappers carry their ZPP object on zpp_inner; raw ZPP objects pass through.
   private static _zppOf(x: any): any {
-    return x.zpp_inner ?? x._inner?.zpp_inner ?? x._inner;
+    return x.zpp_inner ?? x;
   }
 
   // --- List adder/subber/modifiable callbacks ---

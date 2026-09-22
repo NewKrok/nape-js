@@ -2,7 +2,6 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_AABB } from "../native/geom/ZPP_AABB";
 import { Vec2 } from "./Vec2";
-import type { NapeInner } from "./Vec2";
 
 /**
  * Axis-aligned bounding box defined by min/max corners or x/y/width/height.
@@ -13,15 +12,6 @@ import type { NapeInner } from "./Vec2";
 export class AABB {
   /** @internal The internal ZPP_AABB this wrapper owns. */
   zpp_inner: ZPP_AABB;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `aabb._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Create an AABB at position (x, y) with the given width and height. All

@@ -197,17 +197,4 @@ export abstract class UserConstraint extends Constraint {
     }
     return newBody;
   }
-
-  // ---------------------------------------------------------------------------
-  // Backward-compat alias for zpp_inner
-  // ---------------------------------------------------------------------------
-
-  /** @internal */
-  get zpp_inner_zn(): ZPP_UserConstraint {
-    return this.zpp_inner;
-  }
-  /** @internal */
-  set zpp_inner_zn(v: ZPP_UserConstraint) {
-    this.zpp_inner = v;
-  }
 }

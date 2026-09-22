@@ -1,7 +1,6 @@
 import { ZPP_InteractorList, ZPP_InteractionGroupList } from "../native/util/ZPP_PublicList";
 import { getOrCreate } from "../core/cache";
 import { ZPP_InteractionGroup } from "../native/dynamics/ZPP_InteractionGroup";
-import type { NapeInner } from "../geom/Vec2";
 
 /**
  * Hierarchical interaction group for controlling interactions
@@ -13,15 +12,6 @@ import type { NapeInner } from "../geom/Vec2";
 export class InteractionGroup {
   /** @internal The internal ZPP_InteractionGroup this wrapper owns. */
   zpp_inner: ZPP_InteractionGroup;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `group._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor(ignore: boolean = false) {
     const zpp = new ZPP_InteractionGroup();

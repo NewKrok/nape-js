@@ -353,9 +353,4 @@ describe("Material", () => {
     const mat = new Material();
     expect(mat.zpp_inner).toBeInstanceOf(ZPP_Material);
   });
-
-  it("should have _inner returning this", () => {
-    const mat = new Material();
-    expect(mat._inner).toBe(mat);
-  });
 });

@@ -1,7 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_MatMN } from "../native/geom/ZPP_MatMN";
-import type { NapeInner } from "./Vec2";
 
 /**
  * Variable-sized M×N matrix.
@@ -9,11 +8,6 @@ import type { NapeInner } from "./Vec2";
 export class MatMN {
   /** @internal */
   zpp_inner: ZPP_MatMN;
-
-  /** @internal */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Create a zero-filled M×N matrix. Both dimensions must be ≥ 1.

@@ -1,7 +1,6 @@
 import { ZPP_ShapeList } from "../native/util/ZPP_PublicList";
 import { getOrCreate } from "../core/cache";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
-import type { NapeInner } from "../geom/Vec2";
 
 /**
  * Bit-mask based interaction filter for controlling which shapes
@@ -13,15 +12,6 @@ import type { NapeInner } from "../geom/Vec2";
 export class InteractionFilter {
   /** @internal The internal ZPP_InteractionFilter this wrapper owns. */
   zpp_inner: ZPP_InteractionFilter;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `filter._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * @param collisionGroup - Collision group bits (default 1).

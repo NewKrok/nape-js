@@ -2,7 +2,6 @@ import { getOrCreate } from "../core/cache";
 import { ZPP_Vec3 } from "../native/geom/ZPP_Vec3";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { Vec2 } from "./Vec2";
-import type { NapeInner } from "./Vec2";
 
 /**
  * 3D vector used for constraint impulses and other 3-component values.
@@ -18,15 +17,6 @@ export class Vec3 {
 
   /** @internal Whether this Vec3 has been disposed. */
   zpp_disp: boolean = false;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `v3._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Create a Vec3 with the given components. Defaults to (0, 0, 0).

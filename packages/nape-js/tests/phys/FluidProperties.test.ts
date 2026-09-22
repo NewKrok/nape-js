@@ -216,11 +216,6 @@ describe("FluidProperties", () => {
     expect(fp.zpp_inner).toBeInstanceOf(ZPP_FluidProperties);
   });
 
-  it("should have _inner returning this", () => {
-    const fp = new FluidProperties();
-    expect(fp._inner).toBe(fp);
-  });
-
   // --- _wrap ---
 
   it("should wrap ZPP_FluidProperties instance", () => {

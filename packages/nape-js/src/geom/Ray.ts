@@ -32,11 +32,6 @@ export class Ray {
   /** @internal */
   zpp_inner: ZPP_Ray;
 
-  /** @internal */
-  get _inner(): this {
-    return this;
-  }
-
   /**
    * Create a Ray from an origin point and a direction vector.
    * Both must be non-null, non-disposed Vec2s.

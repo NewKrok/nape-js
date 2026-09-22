@@ -231,11 +231,6 @@ describe("UserConstraint", () => {
     expect((bound as Any).zpp_inner._invalidate).toBeDefined();
   });
 
-  it("should get zpp_inner_zn as alias for zpp_inner", () => {
-    const c = new TestConstraint(new Body(BodyType.DYNAMIC, new Vec2(0, 0)));
-    expect(c.zpp_inner_zn).toBe(c.zpp_inner);
-  });
-
   it("should call __validate and __prepare during simulation", () => {
     const space = new Space(new Vec2(0, 0));
     const body = new Body(BodyType.DYNAMIC, new Vec2(0, 0));

@@ -96,11 +96,6 @@ describe("InteractionGroup", () => {
     expect(g.zpp_inner).toBeInstanceOf(ZPP_InteractionGroup);
   });
 
-  it("should have _inner returning this", () => {
-    const g = new InteractionGroup();
-    expect(g._inner).toBe(g);
-  });
-
   // --- _wrap ---
 
   it("should wrap ZPP_InteractionGroup instance", () => {

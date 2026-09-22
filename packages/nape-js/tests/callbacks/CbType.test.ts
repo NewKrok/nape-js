@@ -12,11 +12,6 @@ describe("CbType", () => {
     expect(ct.zpp_inner).toBeInstanceOf(ZPP_CbType);
   });
 
-  it("should have _inner return this", () => {
-    const ct = new CbType();
-    expect(ct._inner).toBe(ct);
-  });
-
   it("should link zpp_inner.outer back to the instance", () => {
     const ct = new CbType();
     expect(ct.zpp_inner.outer).toBe(ct);
@@ -33,7 +28,7 @@ describe("CbType", () => {
   it("should provide static ANY_BODY singleton", () => {
     const anyBody = CbType.ANY_BODY;
     expect(anyBody).toBeInstanceOf(CbType);
-    expect(anyBody._inner).toBeDefined();
+    expect(anyBody.zpp_inner).toBeDefined();
     expect(anyBody.zpp_inner).toBeInstanceOf(ZPP_CbType);
   });
 

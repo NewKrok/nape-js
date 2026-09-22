@@ -103,11 +103,6 @@ describe("DistanceJoint (modernized)", () => {
     expect(joint.zpp_inner.b1).toBe(b3.zpp_inner);
   });
 
-  it("should provide backward-compat zpp_inner_zn alias", () => {
-    const joint = new DistanceJoint(null, null, new Vec2(0, 0), new Vec2(0, 0), 0, 100);
-    expect(joint.zpp_inner_zn).toBe(joint.zpp_inner);
-  });
-
   it("should visitBodies correctly", () => {
     const b1 = new Body(BodyType.DYNAMIC);
     const b2 = new Body(BodyType.DYNAMIC);

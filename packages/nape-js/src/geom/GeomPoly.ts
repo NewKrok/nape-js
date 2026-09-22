@@ -32,11 +32,6 @@ export class GeomPoly {
   /** @internal */
   zpp_disp: boolean = false;
 
-  /** @internal */
-  get _inner(): any {
-    return this;
-  }
-
   constructor(vertices?: any) {
     this.zpp_inner = new ZPP_GeomPoly(this);
     if (vertices != null) {

@@ -381,15 +381,6 @@ export class LineJoint extends Constraint {
       lambda(b2outer);
     }
   }
-
-  /** @internal backward compat alias for zpp_inner */
-  get zpp_inner_zn(): ZPP_LineJoint {
-    return this.zpp_inner;
-  }
-  /** @internal */
-  set zpp_inner_zn(v: ZPP_LineJoint) {
-    this.zpp_inner = v;
-  }
 }
 
 // ---------------------------------------------------------------------------

@@ -176,11 +176,6 @@ describe("InteractionFilter", () => {
     expect(f.zpp_inner).toBeInstanceOf(ZPP_InteractionFilter);
   });
 
-  it("should have _inner returning this", () => {
-    const f = new InteractionFilter();
-    expect(f._inner).toBe(f);
-  });
-
   // --- _wrap ---
 
   it("should wrap ZPP_InteractionFilter instance", () => {

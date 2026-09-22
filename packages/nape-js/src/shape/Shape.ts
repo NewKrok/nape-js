@@ -3,7 +3,9 @@ import { getOrCreate } from "../core/cache";
 // Side-effect imports: ensure modules execute to register in the nape namespace
 import "../geom/Vec2";
 import "../geom/GeomPoly";
-import type { Vec2, NapeInner, Writable } from "../geom/Vec2";
+import type { Vec2, NapeInner } from "../geom/Vec2";
+import type { Mat23 } from "../geom/Mat23";
+import type { CbType } from "../callbacks/CbType";
 import { AABB } from "../geom/AABB";
 import { Body } from "../phys/Body";
 import { Material } from "../phys/Material";
@@ -78,7 +80,6 @@ export class Shape extends Interactor {
     // Fallback: generic Shape wrapper
     return getOrCreate(inner, (raw) => {
       const s = Object.create(Shape.prototype) as Shape;
-      (s as Writable<Shape>)._inner = raw;
       (s as any).zpp_inner = raw.zpp_inner ?? raw;
       (s as any).zpp_inner_i = raw.zpp_inner_i ?? raw;
       return s;
@@ -303,15 +304,14 @@ export class Shape extends Interactor {
     }
     const raw = this.zpp_inner_i.wrap_cbTypes;
     return {
-      _inner: raw,
-      add(cbType: { _inner: NapeInner }) {
-        raw.add(cbType._inner);
+      add(cbType: CbType) {
+        raw.add(cbType);
       },
-      remove(cbType: { _inner: NapeInner }) {
-        raw.remove(cbType._inner);
+      remove(cbType: CbType) {
+        raw.remove(cbType);
       },
-      has(cbType: { _inner: NapeInner }): boolean {
-        return raw.has(cbType._inner);
+      has(cbType: CbType): boolean {
+        return raw.has(cbType);
       },
       clear() {
         raw.clear();
@@ -469,7 +469,7 @@ export class Shape extends Interactor {
    * @param matrix - The transformation matrix (must be non-singular; Circles require equiorthogonal).
    * @returns `this` for chaining.
    */
-  transform(matrix: { _inner: NapeInner }): Shape {
+  transform(matrix: Mat23): Shape {
     const zpp = (this as any).zpp_inner;
     zpp.immutable_midstep("Shape::transform()");
     if (zpp.body != null && zpp.body.space != null && zpp.body.type === 1) {
@@ -480,7 +480,7 @@ export class Shape extends Interactor {
     if (matrix == null) {
       throw new Error("Cannot transform Shape by null matrix");
     }
-    const mat = matrix._inner ?? matrix;
+    const mat = matrix;
     if ((mat as any).singular()) {
       throw new Error("Cannot transform Shape by a singular matrix");
     }
@@ -596,10 +596,9 @@ export class Shape extends Interactor {
 
 /** Lightweight typed interface for the callback type set on a shape. */
 export interface CbTypeSet {
-  readonly _inner: NapeInner;
-  add(cbType: { _inner: NapeInner }): void;
-  remove(cbType: { _inner: NapeInner }): void;
-  has(cbType: { _inner: NapeInner }): boolean;
+  add(cbType: CbType): void;
+  remove(cbType: CbType): void;
+  has(cbType: CbType): boolean;
   clear(): void;
   readonly length: number;
 }

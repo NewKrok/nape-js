@@ -48,11 +48,6 @@ describe("MatMN", () => {
     expect(m.zpp_inner.outer).toBe(m);
   });
 
-  it("should return this from _inner getter", () => {
-    const m = new MatMN(2, 2);
-    expect((m as any)._inner).toBe(m);
-  });
-
   // --- rows / cols ---
 
   it("should return correct rows", () => {

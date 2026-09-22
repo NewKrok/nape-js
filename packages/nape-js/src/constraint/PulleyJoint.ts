@@ -568,15 +568,6 @@ export class PulleyJoint extends Constraint {
     if (b3 != null && b3 != b1 && b3 != b2) lambda(b3);
     if (b4 != null && b4 != b1 && b4 != b2 && b4 != b3) lambda(b4);
   }
-
-  /** @internal backward compat alias for zpp_inner */
-  get zpp_inner_zn(): ZPP_PulleyJoint {
-    return this.zpp_inner;
-  }
-  /** @internal */
-  set zpp_inner_zn(v: ZPP_PulleyJoint) {
-    this.zpp_inner = v;
-  }
 }
 
 // ---------------------------------------------------------------------------

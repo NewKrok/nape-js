@@ -17,9 +17,8 @@ import { createListClasses } from "./NapeListFactory";
 // ---------------------------------------------------------------------------
 
 const outerWrap = (elt: any) => elt.outer;
-// Handle both compiled objects (have .zpp_inner) and TS wrapper objects (have ._inner)
-const zppUnwrap = (obj: any) =>
-  obj.zpp_inner ?? (obj._inner ? (obj._inner.zpp_inner ?? obj._inner) : obj);
+// Public wrappers carry their ZPP object on zpp_inner; raw ZPP objects pass through.
+const zppUnwrap = (obj: any) => obj.zpp_inner ?? obj;
 
 // callbacks
 export const { List: CbTypeList, Iterator: CbTypeIterator } = createListClasses({

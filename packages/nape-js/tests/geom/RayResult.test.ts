@@ -95,15 +95,4 @@ describe("RayResult", () => {
       result.dispose();
     }
   });
-
-  it("should have _inner returning this for backward compat", () => {
-    const nape = getNape();
-    const zpp = nape.__zpp;
-    const Vec2C = nape.geom.Vec2;
-
-    const result = zpp.geom.ZPP_ConvexRayResult.getRay(new Vec2C(1, 0), 1.0, false, null);
-
-    expect(result._inner).toBe(result);
-    result.dispose();
-  });
 });

@@ -1,7 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
-import type { NapeInner } from "../geom/Vec2";
 import type { CbType } from "./CbType";
 
 /**
@@ -21,11 +20,6 @@ import type { CbType } from "./CbType";
 export class OptionType {
   /** @internal */
   zpp_inner: ZPP_OptionType;
-
-  /** @internal */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Creates an `OptionType` optionally seeded with initial include/exclude entries.

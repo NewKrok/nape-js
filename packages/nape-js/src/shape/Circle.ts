@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Shape, _bindCircleWrap } from "./Shape";
@@ -40,9 +40,6 @@ export class Circle extends Shape {
     zpp.outer = this;
     zpp.outer_zn = this;
     zpp.outer_i = this;
-
-    // _inner = this so Shape-level methods (via compiled prototype) work
-    (this as Writable<Circle>)._inner = this as any;
 
     // --- Validate and set radius ---
     if (radius !== zpp.radius) {
@@ -124,7 +121,6 @@ export class Circle extends Shape {
         zpp.outer = c;
         zpp.outer_zn = c;
         zpp.outer_i = c;
-        (c as Writable<Circle>)._inner = c as any;
         return c;
       });
     }
@@ -133,7 +129,6 @@ export class Circle extends Shape {
     // Fallback: wrap compiled inner directly
     return getOrCreate(inner, (raw) => {
       const c = Object.create(Circle.prototype) as Circle;
-      (c as Writable<Circle>)._inner = raw;
       c.zpp_inner_i = raw.zpp_inner_i;
       return c;
     });

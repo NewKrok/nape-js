@@ -8,12 +8,12 @@ import { ZPP_Collide } from "../native/geom/ZPP_Collide";
 
 /** Get the ZPP_Shape from a Shape (handles TS wrapper or compiled object). */
 function getZppShape(s: any): any {
-  return s?.zpp_inner ?? s?._inner?.zpp_inner;
+  return s?.zpp_inner;
 }
 
 /** Get the ZPP_Body from a Body (handles TS wrapper or compiled object). */
 function getZppBody(b: any): any {
-  return b?.zpp_inner ?? b?._inner?.zpp_inner;
+  return b?.zpp_inner;
 }
 
 /** Validate a Vec2 output parameter: not disposed, not immutable. */
