@@ -177,11 +177,10 @@ validated by real play.
 
 ### Premise
 
-A four-player pinball brawl on one round table. Four pockets sit at the
-compass points of a **circular** mouth ring, a pair of flippers guards each of
-them, and the table tilts: the low side walks around it once every fifteen
-seconds, so every ball is eventually somebody's problem and every pocket takes
-the same pressure. A ball that gets past your flippers costs a life. Four lives each;
+A four-player pinball brawl on one round table. The playfield is a **circle**
+with four mouths cut into it, a pair of flippers guards each mouth, and the
+table is a shallow dome: everything rolls outward from the centre, so every
+ball eventually becomes somebody's problem. A ball that gets past your flippers costs a life. Four lives each;
 the last pocket standing wins, or the most lives (then goals) when the
 three-minute clock runs out. You hold the bottom pocket, three AI keepers hold
 the rest. When a keeper is out their mouth is sealed with a kicker bar, so
@@ -205,41 +204,48 @@ Once you are eliminated the rest of the match plays out in a ×4 time-lapse
 
 | Element             | Numbers                                                                                     |
 | ------------------- | ------------------------------------------------------------------------------------------- |
-| Mouth ring          | Radius 180 around (450, 250); the player's pocket at the bottom                              |
-| Pocket placement    | Equal **arc length**, which on a circle is the four compass points                          |
-| Ring walls          | Quadratic Bézier from pocket to pocket through a bay at 1.28 × the radius (bulging **outward**), 12 straight segments each |
+| Playfield           | Circle of radius 194 around (450, 250); the player's mouth at the bottom                     |
+| Mouths              | Chords of that circle, 120 wide — a half-angle of asin(60/194) ≈ 18°, at 90° steps           |
+| Ring walls          | Nine straight segments per arc, all on the wall circle                                       |
 | Pocket              | 120 wide, 52 deep; flipper pivots 6 in from the side walls                                 |
 | Flipper             | 44 long, rest −0.40 rad (drooping into the pocket), raised +0.66 rad, 20 rad/s; rest gap ≈ 25 px for an 11 px ball |
-| Slingshots          | Triangular kickers at each bay (base 60, bulge 15), +155 px/s along the inward normal      |
-| Bumpers             | One per bay, r 12, on the centre→bay line at 0.54 × the radius, +185 px/s away from the centre |
-| Lane posts          | Two per lane, r 7, 62 px out from the mouth and ±36 px off its axis                         |
+| Bumpers             | Four, r 12, halfway between the mouths at 0.50 × the radius, +185 px/s away from the centre |
+| Slingshots          | On the wall halfway between two mouths, base 64 along the wall, tip 16 inward, +155 px/s    |
+| Lane posts          | Two per lane, r 7, 54 px in front of the mouth and ±36 px off its axis                      |
 | Cross               | Kinematic, arms 42, 0.85 rad/s, reverses every 20 s; new balls spawn between its arms so it launches them |
-| Tilt / damping      | 26 px/s² toward the low side (one lap per 15 s, random starting heading) + 22 px/s² outward, 0.26 /s damping, 740 px/s cap |
+| Field / damping     | 30 px/s² straight out from the centre + a rim funnel of up to 16 px/s² sideways, 0.26 /s damping, 740 px/s cap |
 
-**Equal gaps are not an equal table.** Three passes were needed here, and the
-first two only looked right on paper:
+**Four passes to get to "a circle".** Each of the first three looked right on
+paper and wrong on the table:
 
 1. Six pockets at 60° steps on a wide ellipse bunch together at the flat ends.
-   Equal **arc length** (a 3000-sample cumulative length table, built once in
-   `computeAngles()`) fixes the spacing; with four pockets the split lands on
+   Equal **arc length** fixes the spacing; with four pockets the split lands on
    the axes, so every gap is identical.
 2. Equal gaps on an *ellipse* still leave the pockets at different distances
    from the centre — 174 px for top and bottom, 325 px for left and right — so
    one keeper defends a short lane and the next a long corridor. It reads as a
-   stretched table, not a divided one, and a fixed outward slope then feeds the
-   near pockets far harder: the bottom pocket saw 720 approaches to the left
-   pocket's 511 and won 8 matches in 10. **The mouth ring has to be a circle.**
-   The table is then bounded by the 500 px viewport height, ~474 px across,
-   and the ~210 px margins left and right become the HUD gutters.
-3. The slope still favoured whichever pocket it pointed at, so it **rotates**:
-   one lap every 15 s from a random starting heading. Over 20 measured matches
-   the four pockets took 856 / 908 / 928 / 943 approaches and 75 / 67 / 70 / 64
-   drains, with save rates inside one percentage point of each other.
+   stretched table, and a fixed outward slope then feeds the near pockets far
+   harder: the bottom pocket saw 720 approaches to the left pocket's 511 and
+   won 8 matches in 10.
+3. A slope whose low side **rotated** equalised the pressure, but it made the
+   ball motion hard to read (why is everything leaning that way?) and needed a
+   chevron cue and a HUD compass to explain itself.
+4. The answer is the simple one: a **circular** playfield of constant radius
+   with the mouths as chords, and a plain radial field pushing outward. All
+   four quarters are congruent, so a constant push is fair by symmetry, and a
+   ball always travels the same distance to any mouth. The table is bounded by
+   the 500 px viewport height, ~482 px across, and the ~210 px margins left and
+   right become the HUD gutters.
 
-The bays between the pockets bulge outward rather than dipping in, which is
-also what puts each slingshot flush against its wall — on the old ellipse the
-bay midpoint and the wall tangent disagreed and the triangles sat at odd
-angles inside the ring.
+**A constant outward push needs a rim funnel.** On a closed circle a ball
+pressed against the wall between two mouths simply stays there: the wall
+cancels the push and damping kills what is left. So near the rim (scaled by
+(r/R)²) the field adds a sideways term proportional to `sin` of the angle to
+the nearest mouth. In the middle the field is purely radial; at the wall it
+walks the ball around to the nearest mouth. Measured over eight matches the
+four pockets took 340 / 351 / 344 / 358 approaches and 25 / 26 / 31 / 28
+drains, saves within 1.6 points of each other, and no ball was ever flagged
+stuck.
 
 ### Match schedule
 
@@ -275,8 +281,8 @@ falls through. Sweeping the reaction window with a no-miss keeper gave save
 rates of 93 % at 0.03 s, 89 % at 0.05, 86 % at 0.07 and 80 % at 0.10 s
 (never flipping at all: 76 %, and the balls pile up on the flippers). The
 difficulty table is built around that curve. On the circular four-pocket table an
-all-AI match runs about 125 s, saves ~92 % of approaches and ends with all
-three opponents out; no match in the last 20 reached the buzzer.
+all-AI match runs about 110 s, saves ~92 % of approaches and ends with all
+three opponents out; none of the measured matches reached the buzzer.
 
 ### Physics
 
@@ -305,13 +311,10 @@ three opponents out; no match in the last 20 reached the buzzer.
   matters: the examples grid keeps the 3D poster behind the card canvas for
   the card's whole life, so a transparent clear let the 3D render ghost
   through the flat one. PixiJS draws its own body pass on an opaque stage.
-- The overlay (all modes) draws the clock with its tilt compass, the keeper
-  cards (in the side gutters in 2D, beside each pocket in 3D), three tilt
-  chevrons on the table centre, bomb fuses, banners,
+- The overlay (all modes) draws the clock, the keeper cards (in the side
+  gutters in 2D, beside each pocket in 3D), bomb fuses, banners,
   floaters and the title / result screens; in 2D it also draws bumper flashes,
-  particles and the drain sink. The chevrons are the only explanation the
-  player gets for the slope, so they run in every mode, projected through the
-  3D camera when there is one.
+  particles and the drain sink.
 - 3D: the star outline is extruded with a canvas texture on top (hex grid,
   lane chevrons in each keeper's colour, centre medallion); ring walls are one
   `InstancedMesh` with an emissive rubber strip on top; pockets are emissive
@@ -331,6 +334,10 @@ three opponents out; no match in the last 20 reached the buzzer.
   halved the approach count on the far pockets and ran seven matches in eight
   into the clock. Two posts flanking the lane give the same scattering without
   closing it.
+- Every shape that is not part of the circle is a place for a ball to wedge.
+  The bays of the earlier rounded-square ring collected balls in their corners
+  and the slingshots sat at odd angles inside them, because a bay midpoint and
+  the wall tangent there do not agree.
 - Sealed pockets must kick. As plain walls they collected every ball the
   slope pushed at them and the harness flagged dozens of stuck balls.
 - Bumper kicks are velocity adds, not impulses, so the bomb ball (heavier)

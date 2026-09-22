@@ -44,16 +44,16 @@ const CY = VIEW_H / 2;
 // flat ends — which is what six evenly-stepped pockets did here. With four
 // the arc split lands on the axes and every gap is identical.
 const N_PLAYERS = 4;
-// The mouth ring is a CIRCLE, not a wide ellipse. Equal arc spacing gives
-// equal gaps, but on an ellipse the pockets still sit at different distances
-// from the centre and the table reads as stretched — one player defending a
-// long corridor, the next a short one. A circle makes the four quarters
-// identical, at the price of the side margins, which the HUD takes over.
-const RX = 180;                 // pocket mouth ring (RX === RY by design)
-const RY = 180;
-const MID_K = 1.28;             // bays bulge OUTWARD between the pockets
-const RING_SEGS = 12;           // straight segments per curved ring wall
-const PW = 120;                 // pocket mouth width
+// The playfield is a plain CIRCLE of radius R_WALL with four mouths cut into
+// it. Nothing else survives contact with a ball for three minutes: bays,
+// corners and any wall that is not a constant-radius arc give the ball a
+// place to wedge, and on an ellipse the pockets sit at different distances
+// from the centre, so one keeper defends a short lane and the next a long
+// corridor. A circle makes the four quarters congruent, at the price of the
+// side margins, which the HUD takes over.
+const R_WALL = 194;             // playfield radius, wall centreline
+const RING_SEGS = 9;            // straight segments per wall arc
+const PW = 120;                 // pocket mouth width (chord of the wall circle)
 const PD = 52;                  // pocket depth behind the flippers
 const WALL_T = 10;
 const FL = 44;                  // flipper length (rest gap ≈ 2.4 ball widths)
@@ -65,13 +65,13 @@ const FLIP_HOLD_AI = 7;         // frames an AI holds a flipper up
 const BALL_R = 5.5;
 const BOMB_R = 7.5;
 const MAX_SPEED = 740;
-// The table tilts, and the low side walks around it: every pocket takes the
-// same pressure over a lap, whatever its distance from the centre. A static
-// outward field cannot do that on a viewport this wide — the near pockets
-// (top and bottom) saw 40 % more traffic than the far ones.
-const TILT_ACC = 26;            // px/s² toward the low side
-const TILT_PERIOD = 15 * 60;    // frames per lap
-const OUT_ACC = 22;             // px/s² outward, so the centre never pools
+// The table is a shallow dome: the ball is pushed straight out from the
+// centre, the same everywhere, which is fair now that all four mouths are the
+// same distance away. Near the rim a gentle sideways nudge steers it toward
+// the nearest mouth, so a ball can never park itself against the wall between
+// two pockets — the one place a constant outward push would leave it.
+const OUT_ACC = 30;             // px/s² outward from the centre
+const FUNNEL_ACC = 16;          // px/s² sideways at the rim, toward the nearest mouth
 const DAMP = 0.26;              // linear damping, 1/s
 const BUMP_KICK = 185;
 const SLING_KICK = 155;
@@ -123,8 +123,7 @@ let _outline = [];              // table outline polygon (world coords)
 let _posts = [];
 let _cross = null;
 let _crossDir = 1;
-let _tilt = 0;                  // heading of the low side, radians
-let _tiltX = 0, _tiltY = 1;
+
 let _pendingSpawns = [];        // frames at which a ball respawns
 let _nextBombAt = 0;
 let _multiballIdx = 0;
@@ -158,6 +157,13 @@ function rnd() {
   return _seed / 4294967296;
 }
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+/** Signed shortest angle from b to a, in (-π, π]. */
+function angDiff(a, b) {
+  let d = a - b;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  return d;
+}
 const lerp = (a, b, t) => a + (b - a) * t;
 
 // ── Geometry ─────────────────────────────────────────────────────────────
@@ -165,47 +171,29 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // inward (toward the table centre) and `v` along the mouth. The bottom
 // pocket (i = 0) has u = (0, -1) and v = (1, 0), so the keeper's "left"
 // flipper is the one at negative v for every pocket.
-// Angles of the pocket mouths (index 0 = bottom) and of the points halfway
-// between them, both by arc length rather than by angle.
-let _pocketAngles = null;
-let _midAngles = null;
-
-function computeAngles() {
-  const N = 3000;
-  const th = [], cum = [0];
-  for (let i = 0; i <= N; i++) th.push(Math.PI / 2 + (Math.PI * 2 * i) / N);
-  for (let i = 0; i < N; i++) {
-    const ax = RX * Math.cos(th[i]), ay = RY * Math.sin(th[i]);
-    const bx = RX * Math.cos(th[i + 1]), by = RY * Math.sin(th[i + 1]);
-    cum.push(cum[i] + Math.hypot(bx - ax, by - ay));
-  }
-  const total = cum[N];
-  const at = (s) => {
-    let lo = 0, hi = N;
-    while (lo < hi) {
-      const mid = (lo + hi) >> 1;
-      if (cum[mid] < s) lo = mid + 1; else hi = mid;
-    }
-    return th[lo];
-  };
-  _pocketAngles = [];
-  _midAngles = [];
-  for (let k = 0; k < N_PLAYERS; k++) {
-    _pocketAngles.push(at((k * total) / N_PLAYERS));
-    _midAngles.push(at(((k + 0.5) * total) / N_PLAYERS));
-  }
+// Pocket mouth headings (index 0 = bottom) and the midpoints between them.
+// On a circle these are simply even steps; the mouth is a chord of the wall
+// circle, so its half-angle follows from the mouth width.
+const STEP = (Math.PI * 2) / N_PLAYERS;
+const MOUTH_HALF_ANGLE = Math.asin(PW / 2 / R_WALL);
+const _pocketAngles = [];
+const _midAngles = [];
+for (let k = 0; k < N_PLAYERS; k++) {
+  _pocketAngles.push(Math.PI / 2 + k * STEP);
+  _midAngles.push(Math.PI / 2 + (k + 0.5) * STEP);
 }
 
+// Local frame of a pocket: origin at the centre of its mouth chord, u toward
+// the table centre, v along the chord.
 function pocketFrame(i) {
-  if (!_pocketAngles) computeAngles();
   const a = _pocketAngles[i];
-  const mx = CX + RX * Math.cos(a);
-  const my = CY + RY * Math.sin(a);
-  let ux = CX - mx, uy = CY - my;
-  const l = Math.hypot(ux, uy);
-  ux /= l; uy /= l;
+  const rm = R_WALL * Math.cos(MOUTH_HALF_ANGLE);
+  const mx = CX + rm * Math.cos(a);
+  const my = CY + rm * Math.sin(a);
+  const ux = -Math.cos(a), uy = -Math.sin(a);
   return { i, a, mid: _midAngles[i], mx, my, ux, uy, vx: -uy, vy: ux };
 }
+
 function toWorld(f, lu, lv) {
   return { x: f.mx + f.ux * lu + f.vx * lv, y: f.my + f.uy * lu + f.vy * lv };
 }
@@ -237,46 +225,42 @@ function buildTable(space) {
   const frames = [];
   for (let i = 0; i < N_PLAYERS; i++) frames.push(pocketFrame(i));
 
-  // Ring walls: from pocket i's -v front corner, dipping inward, to pocket
-  // i+1's +v front corner. A quadratic Bézier through the dip point.
+  // Ring walls: a plain arc of the wall circle from the end of one mouth
+  // chord to the start of the next. Every wall point is the same distance
+  // from the centre, so the outward field never presses a ball into a corner.
   const ring = new Body(BodyType.STATIC);
   const ringMat = new Material(0.72, 0.1, 0.15, 1, 0.001);
-  const front = FLIP_INSET - 2;
   for (let i = 0; i < N_PLAYERS; i++) {
-    const f = frames[i], g = frames[(i + 1) % N_PLAYERS];
-    const A = toWorld(f, front, -PW / 2);
-    const B = toWorld(g, front, PW / 2);
-    const am = f.mid;
-    const px = CX + MID_K * RX * Math.cos(am), py = CY + MID_K * RY * Math.sin(am);
-    const qx = 2 * px - 0.5 * (A.x + B.x), qy = 2 * py - 0.5 * (A.y + B.y);
+    const a0 = _pocketAngles[i] + MOUTH_HALF_ANGLE;
+    const a1 = _pocketAngles[(i + 1) % N_PLAYERS] - MOUTH_HALF_ANGLE + (i === N_PLAYERS - 1 ? Math.PI * 2 : 0);
     const pts = [];
-    for (let s = 0; s <= RING_SEGS; s++) {
-      const t = s / RING_SEGS, it = 1 - t;
-      pts.push({ x: it * it * A.x + 2 * it * t * qx + t * t * B.x, y: it * it * A.y + 2 * it * t * qy + t * t * B.y });
+    for (let k = 0; k <= RING_SEGS; k++) {
+      const a = a0 + ((a1 - a0) * k) / RING_SEGS;
+      pts.push({ x: CX + R_WALL * Math.cos(a), y: CY + R_WALL * Math.sin(a) });
     }
-    for (let s = 0; s < RING_SEGS; s++) {
-      const p = pts[s], q = pts[s + 1];
+    for (let k = 0; k < RING_SEGS; k++) {
+      const p = pts[k], q = pts[k + 1];
       ring.shapes.add(new Polygon(segVerts(p.x, p.y, q.x, q.y, WALL_T, 1.5), ringMat));
       _ringWalls.push({ ax: p.x, ay: p.y, bx: q.x, by: q.y });
     }
-    f.ringPts = pts;
+    frames[i].ringPts = pts;
 
-    // Slingshot at the dip: a triangular kicker facing the centre.
-    const m = pts[RING_SEGS / 2];
-    let nx = CX - m.x, ny = CY - m.y;
-    const nl = Math.hypot(nx, ny);
-    nx /= nl; ny /= nl;
+    // Slingshot on the wall, halfway between two mouths: base along the wall,
+    // tip pointing at the centre.
+    const am = _midAngles[i];
+    const mx = CX + R_WALL * Math.cos(am), my = CY + R_WALL * Math.sin(am);
+    const nx = -Math.cos(am), ny = -Math.sin(am);
     const tx = -ny, ty = nx;
     const sling = new Body(BodyType.STATIC);
-    const half = 30, bulge = 15;
+    const half = 32, bulge = 16;
     sling.shapes.add(new Polygon([
-      new Vec2(m.x - tx * half - nx * 2, m.y - ty * half - ny * 2),
-      new Vec2(m.x + tx * half - nx * 2, m.y + ty * half - ny * 2),
-      new Vec2(m.x + nx * bulge, m.y + ny * bulge),
+      new Vec2(mx - tx * half, my - ty * half),
+      new Vec2(mx + tx * half, my + ty * half),
+      new Vec2(mx + nx * bulge, my + ny * bulge),
     ], new Material(0.9, 0, 0, 1, 0.001)));
     sling.shapes.at(0).cbTypes.add(_cbSling);
     sling.userData._color = { fill: "rgba(120,220,255,0.25)", stroke: "#7fdcff" };
-    const srec = { body: sling, x: m.x, y: m.y, nx, ny, tx, ty, half, bulge, flash: 0 };
+    const srec = { body: sling, x: mx, y: my, nx, ny, tx, ty, half, bulge, flash: 0 };
     sling.userData._sling = srec;
     sling.space = space;
     _slings.push(srec);
@@ -290,7 +274,7 @@ function buildTable(space) {
     const def = PLAYER_DEFS[i];
     const pocket = new Body(BodyType.STATIC);
     const pm = new Material(0.4, 0.08, 0.1, 1, 0.001);
-    const cFL = toWorld(f, front, -PW / 2), cFR = toWorld(f, front, PW / 2);
+    const cFL = toWorld(f, 0, -PW / 2), cFR = toWorld(f, 0, PW / 2);
     const cBL = toWorld(f, -PD, -PW / 2), cBR = toWorld(f, -PD, PW / 2);
     pocket.shapes.add(new Polygon(segVerts(cFL.x, cFL.y, cBL.x, cBL.y, WALL_T, WALL_T / 2), pm));
     pocket.shapes.add(new Polygon(segVerts(cFR.x, cFR.y, cBR.x, cBR.y, WALL_T, WALL_T / 2), pm));
@@ -315,12 +299,12 @@ function buildTable(space) {
   for (let i = 0; i < N_PLAYERS; i++) {
     const f = frames[i];
     const o = 12;
-    _outline.push(toWorld(f, front, PW / 2 + o));
+    _outline.push(toWorld(f, 0, PW / 2 + o));
     _outline.push(toWorld(f, -PD - o, PW / 2 + o));
     _outline.push(toWorld(f, -PD - o, -PW / 2 - o));
-    _outline.push(toWorld(f, front, -PW / 2 - o));
+    _outline.push(toWorld(f, 0, -PW / 2 - o));
     const pts = f.ringPts;
-    for (let s = 1; s < RING_SEGS; s++) {
+    for (let s = 0; s <= RING_SEGS; s++) {
       const p = pts[s];
       const dx = p.x - CX, dy = p.y - CY;
       const d = Math.hypot(dx, dy) || 1;
@@ -333,7 +317,7 @@ function buildTable(space) {
   const bumperMat = new Material(1.25, 0, 0, 1, 0.001);
   for (let i = 0; i < N_PLAYERS; i++) {
     const a = _midAngles[i];
-    const x = CX + Math.cos(a) * RX * 0.54, y = CY + Math.sin(a) * RY * 0.54;
+    const x = CX + Math.cos(a) * R_WALL * 0.50, y = CY + Math.sin(a) * R_WALL * 0.50;
     const b = new Body(BodyType.STATIC, new Vec2(x, y));
     b.shapes.add(new Circle(BUMPER_R, undefined, bumperMat));
     b.shapes.at(0).cbTypes.add(_cbBumper);
@@ -352,7 +336,7 @@ function buildTable(space) {
   for (let i = 0; i < N_PLAYERS; i++) {
     const f = frames[i];
     for (const lv of [-36, 36]) {
-      const p = toWorld(f, 62, lv);
+      const p = toWorld(f, 54, lv);
       const b = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
       b.shapes.add(new Circle(7, undefined, postMat));
       b.userData._color = { fill: "rgba(210,220,235,0.22)", stroke: "#c9d6e2" };
@@ -477,13 +461,23 @@ function tickBalls() {
     const b = rec.body;
     const p = b.position;
     let vx = b.velocity.x, vy = b.velocity.y;
-    // Tilt (the low side walks around the table) plus a weak outward push.
-    vx += _tiltX * TILT_ACC * DT;
-    vy += _tiltY * TILT_ACC * DT;
+    // Straight out from the centre, plus the rim funnel.
     const gx = p.x - CX, gy = p.y - CY;
     const gl = Math.hypot(gx, gy) || 1;
-    vx += (gx / gl) * OUT_ACC * DT;
-    vy += (gy / gl) * OUT_ACC * DT;
+    const ux = gx / gl, uy = gy / gl;
+    vx += ux * OUT_ACC * DT;
+    vy += uy * OUT_ACC * DT;
+    const k = Math.min(1, (gl / R_WALL) ** 2);
+    if (k > 0.05) {
+      const ang = Math.atan2(gy, gx);
+      let best = 0;
+      for (let i = 1; i < N_PLAYERS; i++) {
+        if (Math.abs(angDiff(_pocketAngles[i], ang)) < Math.abs(angDiff(_pocketAngles[best], ang))) best = i;
+      }
+      const d = angDiff(_pocketAngles[best], ang);
+      vx += -uy * Math.sin(d) * FUNNEL_ACC * k * DT;
+      vy += ux * Math.sin(d) * FUNNEL_ACC * k * DT;
+    }
     const damp = 1 - DAMP * DT;
     vx *= damp; vy *= damp;
     const sp = Math.hypot(vx, vy);
@@ -790,10 +784,6 @@ function resetMatch() {
     for (const fl of pl.flippers) { fl.pressed = false; fl.hold = 0; fl.cooldown = 0; }
   }
   _clock = 0;
-  // Random starting heading: a fixed one biases the opening minute toward
-  // whichever pocket the slope starts under.
-  _tilt = rnd() * Math.PI * 2;
-  _tiltX = Math.cos(_tilt); _tiltY = Math.sin(_tilt);
   _nextBombAt = BOMB_EVERY;
   _multiballIdx = 0;
   _result = null;
@@ -857,13 +847,6 @@ function tickSchedule() {
   }
 }
 
-function tickTilt() {
-  _tilt += (Math.PI * 2) / TILT_PERIOD;
-  if (_tilt > Math.PI * 2) _tilt -= Math.PI * 2;
-  _tiltX = Math.cos(_tilt);
-  _tiltY = Math.sin(_tilt);
-}
-
 function tickCross() {
   if (_frame % (20 * 60) === 0 && _frame > 0) _crossDir = -_crossDir;
   const target = CROSS_SPIN * _crossDir;
@@ -878,7 +861,6 @@ function primaryAction() {
 
 function tickGame() {
   _frame++;
-  if (_phase === "play" || _phase === "title") tickTilt();
   tickCross();
   for (const pl of _players) {
     if (!pl.alive) continue;
@@ -945,8 +927,6 @@ function roundRect(ctx, x, y, w, h, r) {
 const CARD_SLOTS_3D = [
   [640, 462], [80, 330], [310, 40], [820, 330],
 ];
-// Tilt chevrons sit on the ring between the launcher and the bumpers.
-const CUE_R0 = 58;
 function cardAnchor(pl) {
   const s = (_mode3d ? CARD_SLOTS_3D : CARD_SLOTS_2D)[pl.id];
   return { x: s[0], y: s[1] };
@@ -993,7 +973,7 @@ function drawCard(ctx, pl) {
 }
 
 function drawTimer(ctx) {
-  const x = 14, y = 12, w = 200, h = 46;
+  const x = 14, y = 12, w = 176, h = 46;
   ctx.save();
   roundRect(ctx, x, y, w, h, 6);
   ctx.fillStyle = "rgba(8,12,22,0.78)";
@@ -1015,53 +995,12 @@ function drawTimer(ctx) {
   ctx.fillStyle = "#c9d6e2";
   ctx.font = `bold 10px ${HUD_FONT}`;
   ctx.fillText(`${DIFFICULTIES[_difficulty].name.toUpperCase()} AI`, x + w - 10, y + 6);
-  ctx.fillText(`${liveBallCount()} BALL${liveBallCount() === 1 ? "" : "S"}`, x + w - 10, y + 19);
-  // Tilt compass, so the arrows on the table have a legend.
-  const cx = x + w - 17, cy = y + 36;
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(Math.atan2(_tiltY, _tiltX));
-  ctx.strokeStyle = "#9fe8ff";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(-7, 0); ctx.lineTo(5, 0);
-  ctx.moveTo(1, -4); ctx.lineTo(5, 0); ctx.lineTo(1, 4);
-  ctx.stroke();
-  ctx.restore();
-  ctx.fillStyle = "#8fb8c8";
-  ctx.fillText("TILT", x + w - 30, y + 32);
+  ctx.fillText(`${liveBallCount()} BALL${liveBallCount() === 1 ? "" : "S"}`, x + w - 10, y + 21);
 
-  ctx.restore();
-}
-
-// Three chevrons at the centre pointing down the slope. They are the only
-// explanation the player gets for why the balls all lean one way, so they run
-// in every render mode, projected through the 3D camera when there is one.
-function drawTiltCue(ctx) {
-  if (_phase !== "play" && _phase !== "title") return;
-  const px = -_tiltY, py = _tiltX;
-  ctx.save();
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  for (let i = 0; i < 3; i++) {
-    const d = CUE_R0 + i * 15;
-    const a = toScreen(CX + _tiltX * (d + 11), CY + _tiltY * (d + 11), 2);
-    const b = toScreen(CX + _tiltX * d + px * 10, CY + _tiltY * d + py * 10, 2);
-    const c = toScreen(CX + _tiltX * d - px * 10, CY + _tiltY * d - py * 10, 2);
-    ctx.globalAlpha = 0.42 - i * 0.10;
-    ctx.strokeStyle = "#9fe8ff";
-    ctx.lineWidth = 4 * a.s;
-    ctx.beginPath();
-    ctx.moveTo(b.x, b.y);
-    ctx.lineTo(a.x, a.y);
-    ctx.lineTo(c.x, c.y);
-    ctx.stroke();
-  }
   ctx.restore();
 }
 
 function drawWorldCues(ctx) {
-  drawTiltCue(ctx);
   ctx.save();
   // Bomb fuses.
   for (const rec of _balls) {
@@ -1200,7 +1139,7 @@ function drawTitle(ctx) {
   ctx.fillText("FLIPPER FRAY", CX, 150);
   ctx.font = `bold 16px ${HUD_FONT}`;
   ctx.fillStyle = "#c9d6e2";
-  ctx.fillText("Four pockets. Four lives each. The table tilts — every ball eventually becomes somebody's problem.", CX, 200);
+  ctx.fillText("Four pockets. Four lives each. The table rolls everything outward — every ball becomes somebody's problem.", CX, 200);
   ctx.fillStyle = "#8fb8c8";
   ctx.font = `13px ${HUD_FONT}`;
   ctx.fillText("Bomb balls cost two and detonate if nobody swallows them · multiball every so often · last pocket standing wins", CX, 226);
@@ -1468,18 +1407,17 @@ function ensureScene(adapter, scene, renderer) {
       grp.add(m);
       return m;
     };
-    const front = FLIP_INSET - 2;
-    const sideLen = PD + front + WALL_T;
-    mk((front - PD) / 2, -PW / 2, sideLen, "u", WALL_T);
-    mk((front - PD) / 2, PW / 2, sideLen, "u", WALL_T);
+    const sideLen = PD + WALL_T;
+    mk(-PD / 2, -PW / 2, sideLen, "u", WALL_T);
+    mk(-PD / 2, PW / 2, sideLen, "u", WALL_T);
     mk(-PD, 0, PW + WALL_T, "v", WALL_T);
     // Floor plate, slightly sunk and dark.
     const plateM = new T.MeshStandardMaterial({ color: 0x0c1018, emissive: hex, emissiveIntensity: 0.08, roughness: 0.7, metalness: 0.3 });
     const plate = new T.Mesh(box, plateM);
-    const pc = toWorld(f, -(PD - front) / 2 + front, 0);
+    const pc = toWorld(f, -PD / 2, 0);
     plate.position.set(pc.x, -pc.y, 0.6);
     plate.rotation.z = -Math.atan2(f.uy, f.ux);
-    plate.scale.set(PD - front, PW - WALL_T, 1.2);
+    plate.scale.set(PD, PW - WALL_T, 1.2);
     grp.add(plate);
     // Life lamps on the back wall.
     const lamps = [];
@@ -1808,7 +1746,7 @@ function makeTableTexture() {
   c.shadowBlur = 0;
   c.strokeStyle = "rgba(92,230,255,0.18)";
   c.lineWidth = 1.5;
-  c.beginPath(); c.ellipse(CX, CY, RX * 0.54, RY * 0.54, 0, 0, Math.PI * 2); c.stroke();
+  c.beginPath(); c.arc(CX, CY, R_WALL * 0.50, 0, Math.PI * 2); c.stroke();
   const tex = new T.CanvasTexture(cv);
   tex.colorSpace = T.SRGBColorSpace;
   tex.anisotropy = 4;
@@ -1949,7 +1887,7 @@ export default {
   label: "Flipper Fray",
   tags: ["Gameplay", "Pinball", "AI", "Kinematic", "CCD", "Listeners", "Mobile"],
   desc:
-    "A <b>four-player pinball brawl</b>: one round table, four pockets, a pair of flippers guarding each. The table <b>tilts</b>, and the low side walks around it, so every pocket takes the same pressure; bumpers, slingshots and lane posts throw the balls around, and every ball that gets past your flippers costs you a life — <b>four lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>three AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.",
+    "A <b>four-player pinball brawl</b>: one round table, four pockets, a pair of flippers guarding each. The playfield is a <b>dome</b>: everything rolls outward from the centre, so every ball becomes somebody's problem; bumpers, slingshots and lane posts throw the balls around, and every ball that gets past your flippers costs you a life — <b>four lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>three AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.",
   walls: false,
   workerCompatible: false,
   camera: null,
