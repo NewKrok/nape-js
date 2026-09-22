@@ -22,7 +22,11 @@ export function getOrCreate<T>(inner: any, create: (inner: any) => T): T {
   if (!inner) return null as unknown as T;
   let wrapper = cache.get(inner) as T | undefined;
   if (!wrapper) {
-    wrapper = create(inner);
+    // Every ZPP object points back at its public wrapper through `outer`.
+    // Wrappers built with `new` never pass through this cache, so honour an
+    // existing `outer` instead of minting a second wrapper for the same
+    // object (which would also hijack `outer` away from the original).
+    wrapper = (inner.outer as T | null | undefined) ?? create(inner);
     cache.set(inner, wrapper);
   }
   return wrapper;
