@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_Contact } from "../../../src/native/dynamics/ZPP_Contact";
 import { ZPP_IContact } from "../../../src/native/dynamics/ZPP_IContact";
-import { createMockZpp, createMockNape } from "../_mocks";
+import { createMockNape } from "../_mocks";
 
 describe("ZPP_Contact", () => {
   beforeEach(() => {
@@ -9,7 +9,6 @@ describe("ZPP_Contact", () => {
     ZPP_Contact.internal = false;
     ZPP_Contact._wrapFn = null;
     ZPP_Contact._nape = null;
-    ZPP_Contact._zpp = null;
   });
 
   describe("instance defaults", () => {
@@ -198,9 +197,7 @@ describe("ZPP_Contact", () => {
 
   describe("getposition", () => {
     it("should create a Vec2 wrapper and configure validation", () => {
-      const mockZpp = createMockZpp();
       const mockNape = createMockNape();
-      ZPP_Contact._zpp = mockZpp;
       ZPP_Contact._nape = mockNape;
 
       const c = new ZPP_Contact();
@@ -218,9 +215,7 @@ describe("ZPP_Contact", () => {
     });
 
     it("should set up _validate that updates position from px/py", () => {
-      const mockZpp = createMockZpp();
       const mockNape = createMockNape();
-      ZPP_Contact._zpp = mockZpp;
       ZPP_Contact._nape = mockNape;
 
       const c = new ZPP_Contact();

@@ -7,7 +7,6 @@
 
 export class ZPP_Callback {
   // --- Static: namespace references ---
-  static _nape: any = null;
   static _zpp: any = null;
 
   // --- Static: pool + internal flag ---

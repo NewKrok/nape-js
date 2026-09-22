@@ -14,15 +14,10 @@ import { ZPP_AABBTree } from "./ZPP_AABBTree";
 import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
-import {
-  ZNPList_ZPP_AABBNode,
-  ZNPNode_ZPP_AABBNode,
-  ZNPNode_ZPP_AABBPair,
-} from "../util/ZNPRegistry";
+import { ZNPList_ZPP_AABBNode, ZNPNode_ZPP_AABBNode } from "../util/ZNPRegistry";
 
 export class ZPP_DynAABBPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
-  static _zpp: any = null;
   static _nape: any = null;
 
   // --- Static: constants ---

@@ -127,10 +127,10 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     this.next = null;
     this.hpc2 = false;
     this.hc2 = false;
-    this.oc2 = null;
-    this.c2 = null;
-    this.oc1 = null;
-    this.c1 = null;
+    this.oc2 = null!;
+    this.c2 = null!;
+    this.oc1 = null!;
+    this.c1 = null!;
     this.__ref_vertex = 0;
     this.__ref_edge2 = null;
     this.__ref_edge1 = null;

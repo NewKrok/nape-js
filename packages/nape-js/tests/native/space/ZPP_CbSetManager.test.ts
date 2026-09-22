@@ -20,6 +20,7 @@
  * future regression surfaces immediately.
  */
 
+import { getNape } from "../../../src/core/engine";
 import { describe, it, expect, beforeEach } from "vitest";
 import "../../../src/core/engine";
 import { Space } from "../../../src/space/Space";
@@ -40,7 +41,7 @@ function newManager(): { space: Space; mgr: ZPP_CbSetManager } {
 
 /** Build a fresh ZNPList_ZPP_CbType populated with the given CbType ids. */
 function cbTypeList(...types: CbType[]): any {
-  const ZPP = (ZPP_CbSetManager as any)._zpp;
+  const ZPP = getNape().__zpp;
   const list = new ZPP.util.ZNPList_ZPP_CbType();
   for (const t of types) list.add(t.zpp_inner);
   return list;
@@ -61,7 +62,7 @@ describe("ZPP_CbSetManager — construction", () => {
 
   it("installs ZPP_CbSet.setlt as the tree's comparison function", () => {
     const { mgr } = newManager();
-    const setlt = (ZPP_CbSetManager as any)._zpp.callbacks.ZPP_CbSet.setlt;
+    const setlt = getNape().__zpp.callbacks.ZPP_CbSet.setlt;
 
     expect(mgr.cbsets.lt).toBe(setlt);
   });
@@ -119,7 +120,7 @@ describe("ZPP_CbSetManager.get()", () => {
   });
 
   it("the lookup probe is returned to the CbSet pool (no leak)", () => {
-    const ZPP_CbSet = (ZPP_CbSetManager as any)._zpp.callbacks.ZPP_CbSet;
+    const ZPP_CbSet = getNape().__zpp.callbacks.ZPP_CbSet;
     const tA = new CbType();
 
     // Prime once so the second call exercises the cache-hit branch (`res != null`).
@@ -183,7 +184,7 @@ describe("ZPP_CbSetManager.pair()", () => {
   });
 
   it("orders pair endpoints via ZPP_CbSet.setlt", () => {
-    const ZPP_CbSet = (ZPP_CbSetManager as any)._zpp.callbacks.ZPP_CbSet;
+    const ZPP_CbSet = getNape().__zpp.callbacks.ZPP_CbSet;
     const a = makeSet(new CbType());
     const b = makeSet(new CbType());
 
@@ -244,7 +245,7 @@ describe("ZPP_CbSetManager.remove()", () => {
   });
 
   it("drains the set's own cbpairs and recycles each pair to the pool", () => {
-    const ZPP_CbSetPair = (ZPP_CbSetManager as any)._zpp.callbacks.ZPP_CbSetPair;
+    const ZPP_CbSetPair = getNape().__zpp.callbacks.ZPP_CbSetPair;
 
     const a = mgr.get(cbTypeList(new CbType()))!;
     const b = mgr.get(cbTypeList(new CbType()))!;

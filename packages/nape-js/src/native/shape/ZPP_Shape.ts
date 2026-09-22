@@ -14,8 +14,6 @@ import { ZNPList_ZPP_AABBPair } from "../util/ZNPRegistry";
 
 export class ZPP_Shape {
   // --- Static: namespace references ---
-  static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: init guard ---
   static _initialized = false;
@@ -161,11 +159,6 @@ export class ZPP_Shape {
     return !!(this as any)._isCapsule;
   }
 
-  // --- Sweep radius ---
-  invalidate_sweepRadius(): void {
-    this.zip_sweepRadius = true;
-  }
-
   validate_sweepRadius(): void {
     if (this.zip_sweepRadius) {
       this.zip_sweepRadius = false;
@@ -197,14 +190,6 @@ export class ZPP_Shape {
           this.polygon.__validate_aabb();
         }
       }
-    }
-  }
-
-  force_validate_aabb(): void {
-    if (this.type === 0) {
-      this.circle._force_validate_aabb();
-    } else {
-      this.polygon._force_validate_aabb();
     }
   }
 

@@ -12,7 +12,6 @@ export class ZPP_CallbackSet {
   static zpp_pool: ZPP_CallbackSet | null = null;
 
   // --- Static: namespace references ---
-  static _zpp: any = null;
 
   // --- Instance: pair identification ---
   id = 0;

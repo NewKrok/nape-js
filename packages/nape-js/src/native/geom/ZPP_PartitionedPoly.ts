@@ -31,14 +31,6 @@ export class ZPP_PartitionedPoly {
 
   // --- Static methods ---
 
-  static getSharedPP(): ZNPList<ZPP_PartitionedPoly> {
-    if (ZPP_PartitionedPoly.sharedPPList == null) {
-      ZPP_PartitionedPoly.sharedPPList =
-        new ZNPList_ZPP_PartitionedPoly() as ZNPList<ZPP_PartitionedPoly>;
-    }
-    return ZPP_PartitionedPoly.sharedPPList;
-  }
-
   static getShared(): ZNPList<ZPP_GeomVert> {
     if (ZPP_PartitionedPoly.sharedGVList == null) {
       ZPP_PartitionedPoly.sharedGVList = new ZNPList_ZPP_GeomVert() as ZNPList<ZPP_GeomVert>;

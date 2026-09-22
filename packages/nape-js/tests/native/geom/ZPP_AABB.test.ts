@@ -7,7 +7,6 @@ describe("ZPP_AABB", () => {
   beforeEach(() => {
     ZPP_AABB.zpp_pool = null;
     ZPP_AABB._nape = null;
-    ZPP_AABB._zpp = null;
     // _makeVec2Wrapper now reads the real ZPP_PubPool / ZPP_Vec2 statics
     // directly (only _nape.geom.Vec2 construction still goes through the
     // namespace static) — reset them so tests stay isolated.
@@ -375,26 +374,6 @@ describe("ZPP_AABB", () => {
   describe("getmin / dom_min / mod_min", () => {
     it("should create min wrapper with validation and invalidation", () => {
       // Setup mock namespaces
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -412,26 +391,6 @@ describe("ZPP_AABB", () => {
     });
 
     it("should not recreate wrapper on second call", () => {
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -503,26 +462,6 @@ describe("ZPP_AABB", () => {
 
   describe("getmax / dom_max / mod_max", () => {
     it("should create max wrapper", () => {
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -540,26 +479,6 @@ describe("ZPP_AABB", () => {
     });
 
     it("should not recreate wrapper on second call", () => {
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -578,26 +497,6 @@ describe("ZPP_AABB", () => {
     });
 
     it("should mark immutable when AABB is immutable", () => {
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -664,26 +563,6 @@ describe("ZPP_AABB", () => {
 
   describe("getmin with immutable AABB", () => {
     it("should set _immutable on wrapper when AABB is immutable", () => {
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: class {
-            static zpp_pool: any = null;
-            x = 0;
-            y = 0;
-            weak = false;
-            _immutable = false;
-            _isimmutable: any = null;
-            _validate: any = null;
-            _invalidate: any = null;
-            _inuse = false;
-            outer: any = null;
-            next: any = null;
-          },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -703,14 +582,6 @@ describe("ZPP_AABB", () => {
 
   describe("_makeVec2Wrapper pool reuse paths", () => {
     it("should throw for NaN components", () => {
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: { zpp_pool: null },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -878,14 +749,6 @@ describe("ZPP_AABB", () => {
         _inuse: false,
         outer: null,
       };
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: { zpp_pool: null },
-        },
-      };
       ZPP_AABB._nape = {
         geom: {
           Vec2: class {
@@ -911,14 +774,6 @@ describe("ZPP_AABB", () => {
         _invalidate: null,
         _inuse: false,
         outer: null,
-      };
-      ZPP_AABB._zpp = {
-        util: {
-          ZPP_PubPool: { poolVec2: null, nextVec2: null },
-        },
-        geom: {
-          ZPP_Vec2: { zpp_pool: null },
-        },
       };
       ZPP_AABB._nape = {
         geom: {

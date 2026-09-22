@@ -16,7 +16,6 @@ export class ZPP_Edge {
 
   // --- Static: namespace references ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory ---
   static _wrapFn: ((zpp: ZPP_Edge) => any) | null = null;

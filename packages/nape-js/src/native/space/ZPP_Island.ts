@@ -14,7 +14,6 @@ export class ZPP_Island {
   static zpp_pool: ZPP_Island | null = null;
 
   // --- Static: namespace references ---
-  static _zpp: any = null;
 
   // --- Instance: linked list (ZNPList pattern for ZPP_Component) ---
   length = 0;

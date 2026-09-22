@@ -9,7 +9,6 @@ import { ZNPList_ZPP_InteractionListener } from "../util/ZNPRegistry";
 
 export class ZPP_CbSetPair {
   // --- Static: namespace references ---
-  static _zpp: any = null;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_CbSetPair | null = null;

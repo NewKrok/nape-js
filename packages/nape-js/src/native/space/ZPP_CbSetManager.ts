@@ -10,7 +10,6 @@ import { ZPP_Set_ZPP_CbSet } from "../util/ZNPRegistry";
 
 export class ZPP_CbSetManager {
   // --- Static: namespace references ---
-  static _zpp: any = null;
 
   // --- Instance fields ---
   cbsets: any = null; // ZPP_Set_ZPP_CbSet — dynamic class

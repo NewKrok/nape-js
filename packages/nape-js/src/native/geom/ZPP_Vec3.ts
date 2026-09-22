@@ -7,7 +7,6 @@
 
 export class ZPP_Vec3 {
   // --- Static: namespace references ---
-  static _zpp: object | null = null;
 
   // --- Static: wrapper factory callback (set by public Vec3 class) ---
   static _wrapFn: ((zpp: ZPP_Vec3) => any) | null = null;

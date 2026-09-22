@@ -13,7 +13,6 @@ export class ZPP_FluidProperties {
   static zpp_pool: ZPP_FluidProperties | null = null;
   // --- Static: namespace references (assigned by ZPPRegistry) ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by FluidProperties.ts) ---
   static _wrapFn: ((zpp: ZPP_FluidProperties) => any) | null = null;

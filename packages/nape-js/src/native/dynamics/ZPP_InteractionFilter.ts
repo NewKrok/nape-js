@@ -11,7 +11,6 @@ export class ZPP_InteractionFilter {
   static zpp_pool: ZPP_InteractionFilter | null = null;
   // --- Static: namespace references (assigned by ZPPRegistry) ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by InteractionFilter.ts) ---
   static _wrapFn: ((zpp: ZPP_InteractionFilter) => any) | null = null;

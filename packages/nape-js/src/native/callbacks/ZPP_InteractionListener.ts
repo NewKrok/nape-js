@@ -49,10 +49,6 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     this.allowSleepingCallbacks = false;
   }
 
-  setInteractionType(itype: number): void {
-    this.itype = itype;
-  }
-
   wake(): void {
     let ite1 = this.options1.includes.head;
     let ite2 = this.options2.includes.head;

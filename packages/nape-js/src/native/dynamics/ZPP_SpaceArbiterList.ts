@@ -8,8 +8,6 @@
 
 export class ZPP_SpaceArbiterList {
   // --- Static: namespace references ---
-  static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Instance fields (from ArbiterList parent) ---
   zpp_inner: any = null;

@@ -11,7 +11,6 @@ export class ZPP_InteractionGroup {
   static SHAPE = 1;
   static BODY = 2;
   // --- Static: namespace references (assigned by ZPPRegistry) ---
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by InteractionGroup.ts) ---
   static _wrapFn: ((zpp: ZPP_InteractionGroup) => any) | null = null;

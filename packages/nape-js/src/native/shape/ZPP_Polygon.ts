@@ -520,14 +520,6 @@ export class ZPP_Polygon {
     }
   }
 
-  // --- Collinear vertex removal ---
-  splice_collinear(): void {
-    if (this.zip_sanitation) {
-      this.zip_sanitation = false;
-      this.splice_collinear_real();
-    }
-  }
-
   splice_collinear_real(): void {
     if (this.lverts.next == null) return;
     if (this.lverts.next.next == null) return;

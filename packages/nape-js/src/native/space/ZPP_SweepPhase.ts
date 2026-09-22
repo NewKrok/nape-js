@@ -15,7 +15,6 @@ import { ZPP_Broadphase } from "./ZPP_Broadphase";
 
 export class ZPP_SweepPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
-  static _zpp: any = null;
   static _nape: any = null;
 
   // --- Instance fields ---
@@ -109,36 +108,6 @@ export class ZPP_SweepPhase extends ZPP_Broadphase {
         }
         a = n;
       }
-    }
-  }
-
-  sync_broadphase_fast(): void {
-    let a: ZPP_SweepData | null = this.list!.next;
-    while (a != null) {
-      const n = a.next;
-      let b: ZPP_SweepData | null = a.prev;
-      if (b != null && a.aabb.minx > b.aabb.minx) {
-        a = n;
-        continue;
-      }
-      while (b!.prev != null && b!.prev.aabb.minx > a.aabb.minx) b = b!.prev;
-      const prev = a.prev!;
-      prev.next = a.next;
-      if (a.next != null) {
-        a.next.prev = prev;
-      }
-      if (b!.prev == null) {
-        a.prev = null;
-        this.list = a;
-        a.next = b;
-        b!.prev = a;
-      } else {
-        a.prev = b!.prev;
-        b!.prev = a;
-        a.prev!.next = a;
-        a.next = b;
-      }
-      a = n;
     }
   }
 

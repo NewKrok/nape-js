@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_Callback } from "../../../src/native/callbacks/ZPP_Callback";
-import { createMockZpp, createMockNape } from "../_mocks";
+import { createMockZpp } from "../_mocks";
 
 describe("ZPP_Callback", () => {
   beforeEach(() => {
     ZPP_Callback.zpp_pool = null;
     ZPP_Callback.internal = false;
-    ZPP_Callback._nape = createMockNape();
     ZPP_Callback._zpp = createMockZpp();
   });
 

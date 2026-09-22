@@ -10,7 +10,6 @@ import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_ToiEvent } from "./ZPP_ToiEvent";
 import { ZPP_Body } from "../phys/ZPP_Body";
 import { ZPP_Shape } from "../shape/ZPP_Shape";
-import { getNape } from "../../core/engine";
 import { Config } from "../../Config";
 
 /** Check if shape is circle for CCD. */
@@ -400,7 +399,6 @@ export class ZPP_SweepDistance {
     const s1 = toi.s1!;
     const s2 = toi.s2!;
     const b1 = s1.body;
-    const b2 = s2.body;
     let deltax = 0.0;
     let deltay = 0.0;
     deltax = -b1.velx;
@@ -873,15 +871,12 @@ export class ZPP_SweepDistance {
             cx_ite3 = cx_ite3.next;
           }
           if (best1 < upperBound) {
-            let q1;
             let q2;
             let ax;
             if (besti == 1) {
-              q1 = p1;
               q2 = p2;
               ax = a1;
             } else {
-              q1 = p2;
               q2 = p1;
               ax = a2;
               const tmp1 = w1;

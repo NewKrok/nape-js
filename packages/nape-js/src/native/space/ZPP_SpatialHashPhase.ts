@@ -22,7 +22,6 @@ function recycleCell(this: any[][], cell: any[]): void {
 
 export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
-  static _zpp: any = null;
   static _nape: any = null;
 
   // --- Instance fields ---

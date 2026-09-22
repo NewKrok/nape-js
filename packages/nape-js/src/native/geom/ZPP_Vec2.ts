@@ -13,8 +13,6 @@ export class ZPP_Vec2 {
   // --- Static: object pool ---
   static zpp_pool: ZPP_Vec2 | null = null;
   // --- Static: namespace references ---
-  static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by public Vec2 class) ---
   static _wrapFn: ((zpp: ZPP_Vec2) => Vec2) | null = null;

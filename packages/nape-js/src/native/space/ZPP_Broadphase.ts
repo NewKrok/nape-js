@@ -113,7 +113,6 @@ export class ZPP_Broadphase {
   // ========== updateAABBShape ==========
 
   updateAABBShape(aabb: any): void {
-    const zpp = ZPP_Broadphase._zpp;
     const nape = ZPP_Broadphase._nape;
 
     if (this.aabbShape == null) {
@@ -224,7 +223,6 @@ export class ZPP_Broadphase {
   // ========== updateCircShape ==========
 
   updateCircShape(x: number, y: number, r: number): void {
-    const zpp = ZPP_Broadphase._zpp;
     const nape = ZPP_Broadphase._nape;
 
     if (this.circShape == null) {

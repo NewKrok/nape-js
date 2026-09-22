@@ -12,7 +12,6 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
 export class ZPP_Circle {
   // --- Static: namespace references ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: init guard ---
   static _initialized = false;

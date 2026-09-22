@@ -14,7 +14,6 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
 export class ZPP_Contact {
   // --- Static: namespace references (set during registration) ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: object pool ---
   static zpp_pool: ZPP_Contact | null = null;

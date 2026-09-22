@@ -12,7 +12,6 @@ export class ZPP_AABB {
   static zpp_pool: ZPP_AABB | null = null;
   // --- Static: namespace references ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by AABB.ts) ---
   static _wrapFn: ((zpp: ZPP_AABB) => any) | null = null;

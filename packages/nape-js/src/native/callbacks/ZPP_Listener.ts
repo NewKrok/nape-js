@@ -10,8 +10,6 @@ import { ZPP_ID } from "../util/ZPP_ID";
 
 export class ZPP_Listener {
   // --- Static: namespace references ---
-  static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: internal flag (prevents direct instantiation from public API) ---
   static internal = false;

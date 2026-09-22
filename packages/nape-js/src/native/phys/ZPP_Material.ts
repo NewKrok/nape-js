@@ -21,7 +21,6 @@ export class ZPP_Material {
    * _zpp   = the `zpp_nape` internal namespace (for ZNPList_ZPP_Shape)
    */
   static _nape: any = null;
-  static _zpp: any = null;
 
   /**
    * Wrapper factory callback, registered by the modernized Material class.
