@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">84</strong> <span data-i18n="home.proof.demos">interaktív demó</span>
+          <strong data-site-count="demos">85</strong> <span data-i18n="home.proof.demos">interaktív demó</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">40</strong> <span data-i18n="home.proof.games">játszható játék</span>
+          <strong data-site-count="games">41</strong> <span data-i18n="home.proof.games">játszható játék</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">20</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span>
+          <strong data-site-count="showpieces">21</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">kiadott játék</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/flipper-fray/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/flipper-fray.webp" srcset="../assets/posters/flipper-fray@320.webp 320w, ../assets/posters/flipper-fray@640.webp 640w, ../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc"><b>Négyszemélyes flipperbunyó</b>: egy kerek asztal, négy zseb, mindegyiket egy flipperpár őrzi. A pálya <b>domború</b>: minden a középtől kifelé gurul, így minden golyó valakinek a gondja lesz; a bumperek, a csúzlik és a sávoszlopok ide-oda dobálják a golyókat, és minden golyó, amely átjut a flippereiden, egy életedbe kerül — <b>öt élet</b>, az utolsó talpon maradt zseb nyer, vagy a legtöbb élet, ha lejár a három perc. Az alsó zsebet te véded <b>három AI-kapus</b> ellen; a <b>multiball</b> menetrend szerint plusz golyókat dob be, félpercenként pedig kigurul egy <b>bombagolyó</b> — két élet, ha beesik, robbanás, ha senki nem nyeli le. <b>← →</b> / <b>A D</b> flipperezés, <b>SPACE</b> mindkettő; érintőképernyőn tartsd nyomva a képernyő bal vagy jobb felét. Fizika: a flipperek <code>setVelocityFromTarget</code>-tel hajtott <b>kinematikus testek</b>, így az ütés valódi szögsebességet visz át a golyóba; a golyók <b>bullet-jelölt</b> körök, ezért semmi nem fúródik át a vékony gyűrűfalakon; a bumper- és csúzlilökések, valamint a gólok jóváírása <code>InteractionListener</code>-eken át érkezik. <b>3D</b>-ben neonaréna krómgolyókkal, világító zsebekkel és sávfényekkel, a saját zsebed mögül nézve.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc"><b>Sávos ostromra épülő seregépítő</b> egyetlen nagy csatatéren: az arany folyamatosan csordogál, a képernyő alján öt egységkártya vár, és minden kijátszott kártya egy raj ónkatonát tesz le, amely magától indul útnak. Egyetlen katonát sem irányítasz — azt döntöd el, <b>mit</b> állítasz ki, <b>hová</b> teszed le és <b>mikor</b>; ha kártyát tartasz, a pályára rajzolódik az az út, amelyen az a raj elindulna, a sávot pedig az dönti el, hogy a kapud melyik oldalára teszed le. Három út vezet a két vár között, a középső utat egy-egy <b>őrtorony</b> vigyázza, a szárnyakon pedig két <b>aranybánya</b> áll semleges táborok mögött. Az elfoglalt bánya aranyat hoz és előretolja a letevési zónádat; a vár <b>pajzs alatt áll, amíg a saját őrtornya áll</b>. Tíz kártya, egy ingyenes hadvezér és három nehézségi szint az ellenfélhez. Fizika: minden figura dinamikus kör egy gravitáció nélküli <code>Space</code>-ben, így a tömeg magától tolakszik és folyik szét; a lövedék <b>szenzortest</b>, amelynek találatait <code>InteractionListener</code>-ek kézbesítik, és a baráti tüzet nem egy if-ág, hanem a szenzorcsoportok és -maszkok zárják ki; a hordók valódi sugárirányú impulzussal robbannak, a repülőknek pedig saját ütközési csoportjuk van. <b>3D</b>-ben ködben lebegő füves fennsík, egységtípusonként saját ízelt low-poly bábuval.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Waypoints">Útpontok</span><span class="example-tag" data-i18n="tag.Sensors">Érzékelők</span><span class="example-tag" data-i18n="tag.Groups">Csoportok</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/blade-waltz/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/blade-waltz.webp" srcset="../assets/posters/blade-waltz@320.webp 320w, ../assets/posters/blade-waltz@640.webp 640w, ../assets/posters/blade-waltz.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Blade Waltz — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/blade-waltz/?mode=3d&outline=0" data-i18n="demo.blade-waltz.label">Blade Waltz</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.blade-waltz.desc"><b>Tales-stílusú akcióharc-gauntlet</b> kör alakú arénában: tíz szörnyhullám, négytagú csapat, és csak a kardforgatót irányítod. Fuss szabadon, vidd be a <b>3 ütéses kombót</b> (<b>J</b> / kattintás), költs TP-t <b>artékra</b> (<b>K</b> — semleges irányban a Demon Fang talajhullám, a cél felé tartva a Sonic Thrust roham, a céltól elfelé a levegőbe dobó Tiger Blade), <b>védekezz</b> az <b>L</b>-lel, és szabadítsd el a <b>Mystic Artét</b> a <b>SPACE</b>-szel, amikor az Overlimit-mérő megtelik a bevitt és elszenvedett találatoktól. A normál ütések TP-t töltenek vissza; a védés csak elölről véd; a kőgólemek és a bossok egy-egy ütést lerázzák. Az <b>AI-csapatod</b> a szerepét játssza: a lándzsás verekszik és szúrásokat fűz, az íjász távolságot tart és sorozatot lő, a bölcs gyógyít, feltámaszt, tüzet és követ varázsol <b>megszakítható varázslási idővel</b>. A tizedik hullám egy <b>sárkánygyík</b> karmokkal, farokpörgéssel, tűzlehelettel, ordítással és lidércidézéssel. Minden harcos egy dinamikus korong statikus falszegmensek gyűrűjében; a közelharcot ívekből oldjuk fel, a nyilak, lövedékek, tűzgolyók és hullámok viszont <b>szenzortestek</b>, amelyeket <code>InteractionListener</code>-ek kezelnek, az oldalszűrést pedig szenzormaszkok végzik. <b>3D</b>-ben egy oldalnézeti üldözőkamera keretezi a játékos–cél vonalat egy mezőn álló kőaréna fölött, minden harcoshoz ízületes low-poly figurával.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Sensors">Érzékelők</span><span class="example-tag" data-i18n="tag.Callbacks">Callbacks</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

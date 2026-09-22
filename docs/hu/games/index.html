@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Flipper Fray",
+        "url": "https://napejs.org/examples/flipper-fray/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Swarm Night",
         "url": "https://napejs.org/examples/swarm-night/",
         "gamePlatform": "Web browser",
@@ -191,7 +198,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="../../style.css?v=3.42.2" />
   <!-- i18n:hreflang:start -->
   <link rel="alternate" hreflang="en" href="https://napejs.org/games/" />
   <link rel="alternate" hreflang="de" href="https://napejs.org/de/games/" />
@@ -248,7 +255,7 @@
       <h1 data-i18n="games.heading">nape-js-re épülő játékok</h1>
       <p class="page-hero-intro" data-i18n="games.intro">Az egyetlen mechanikától a kiadott játékig: minden alábbi játék ugyanazon a nyílt forráskódú 2D fizikai motoron fut. Játssz a böngészőben, majd nyisd meg a forrást.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">játékmechanika-szelet</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">kiadott játék</span></a>
       </nav>
@@ -261,6 +268,16 @@
       <h2 data-i18n="games.showpieces.heading">Teljes játékdemók</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Többrendszerű játékok, mindegyik egy fájlban — AI ellenfelek, hullámok, kamerák, pontozás és 3D rigek. Játssz itt, vagy nyisd meg a forrást CodePenen és StackBlitzen.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../hu/examples/flipper-fray/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/flipper-fray.webp" srcset="../../assets/posters/flipper-fray@320.webp 320w, ../../assets/posters/flipper-fray@640.webp 640w, ../../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../../hu/examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc"><b>Négyszemélyes flipperbunyó</b>: egy kerek asztal, négy zseb, mindegyiket egy flipperpár őrzi. A pálya <b>domború</b>: minden a középtől kifelé gurul, így minden golyó valakinek a gondja lesz; a bumperek, a csúzlik és a sávoszlopok ide-oda dobálják a golyókat, és minden golyó, amely átjut a flippereiden, egy életedbe kerül — <b>öt élet</b>, az utolsó talpon maradt zseb nyer, vagy a legtöbb élet, ha lejár a három perc. Az alsó zsebet te véded <b>három AI-kapus</b> ellen; a <b>multiball</b> menetrend szerint plusz golyókat dob be, félpercenként pedig kigurul egy <b>bombagolyó</b> — két élet, ha beesik, robbanás, ha senki nem nyeli le. <b>← →</b> / <b>A D</b> flipperezés, <b>SPACE</b> mindkettő; érintőképernyőn tartsd nyomva a képernyő bal vagy jobb felét. Fizika: a flipperek <code>setVelocityFromTarget</code>-tel hajtott <b>kinematikus testek</b>, így az ütés valódi szögsebességet visz át a golyóba; a golyók <b>bullet-jelölt</b> körök, ezért semmi nem fúródik át a vékony gyűrűfalakon; a bumper- és csúzlilökések, valamint a gólok jóváírása <code>InteractionListener</code>-eken át érkezik. <b>3D</b>-ben neonaréna krómgolyókkal, világító zsebekkel és sávfényekkel, a saját zsebed mögül nézve.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../hu/examples/swarm-night/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/swarm-night.webp" srcset="../../assets/posters/swarm-night@320.webp 320w, ../../assets/posters/swarm-night@640.webp 640w, ../../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
@@ -751,12 +768,12 @@
     </div>
   </footer>
   <script type="module">
-    import { initI18n } from "../../i18n/i18n.js?v=3.42.1";
-    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.42.1";
+    import { initI18n } from "../../i18n/i18n.js?v=3.42.2";
+    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.42.2";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="../../site-header.js?v=3.42.1"></script>
-  <script type="module" src="../../games.js?v=3.42.1"></script>
+  <script type="module" src="../../site-header.js?v=3.42.2"></script>
+  <script type="module" src="../../games.js?v=3.42.2"></script>
 </body>
 </html>

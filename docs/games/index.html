@@ -28,6 +28,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Flipper Fray",
+        "url": "https://napejs.org/examples/flipper-fray/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Swarm Night",
         "url": "https://napejs.org/examples/swarm-night/",
         "gamePlatform": "Web browser",
@@ -190,7 +197,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="../style.css?v=3.42.2" />
   <!-- i18n:hreflang:start -->
   <link rel="alternate" hreflang="en" href="https://napejs.org/games/" />
   <link rel="alternate" hreflang="de" href="https://napejs.org/de/games/" />
@@ -247,7 +254,7 @@
       <h1 data-i18n="games.heading">Games built on nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">From a single mechanic to a shipped title: every game below runs on the same open-source 2D physics engine. Play in the browser, then open the source.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>20</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">gameplay slices</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">shipped titles</span></a>
       </nav>
@@ -260,6 +267,16 @@
       <h2 data-i18n="games.showpieces.heading">Complete game demos</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Multi-system games in one file each — AI opponents, waves, cameras, scoring and 3D rigs. Play them here or open the source on CodePen and StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/flipper-fray/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/flipper-fray.webp" srcset="../assets/posters/flipper-fray@320.webp 320w, ../assets/posters/flipper-fray@640.webp 640w, ../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="../examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">A <b>four-player pinball brawl</b>: one round table, four pockets, a pair of flippers guarding each. The playfield is a <b>dome</b>: everything rolls outward from the centre, so every ball becomes somebody's problem; bumpers, slingshots and lane posts throw the balls around, and every ball that gets past your flippers costs you a life — <b>five lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>three AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>
@@ -750,12 +767,12 @@
     </div>
   </footer>
   <script type="module">
-    import { initI18n } from "../i18n/i18n.js?v=3.42.1";
-    import { mountLangSwitcher } from "../i18n/lang-switcher.js?v=3.42.1";
+    import { initI18n } from "../i18n/i18n.js?v=3.42.2";
+    import { mountLangSwitcher } from "../i18n/lang-switcher.js?v=3.42.2";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="../site-header.js?v=3.42.1"></script>
-  <script type="module" src="../games.js?v=3.42.1"></script>
+  <script type="module" src="../site-header.js?v=3.42.2"></script>
+  <script type="module" src="../games.js?v=3.42.2"></script>
 </body>
 </html>
