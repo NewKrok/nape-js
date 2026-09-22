@@ -12,7 +12,7 @@
   "scripts": {
     "build": "npm run sync:readme && npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run build -w @newkrok/nape-js && npm run typecheck --workspaces --if-present",
     "test:watch": "npm run test:watch -w @newkrok/nape-js",
     "coverage": "npm run coverage --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",

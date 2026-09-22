@@ -66,7 +66,7 @@ npm run format:check # prettier across both workspaces
 1. `npm run format:check` — must pass (Prettier code style, both packages)
 2. `npm run lint` — must pass (ESLint, both packages)
 3. `npm test` — all tests must pass (6414 + 77)
-4. `npm run typecheck` — `tsc --noEmit` on both packages (catches errors the tsup DTS build tolerates)
+4. `npm run typecheck` — builds nape-js (nape-pixi resolves its types from `dist/`), then `tsc --noEmit` on both packages (catches errors the tsup DTS build tolerates)
 5. `npm run build` — DTS generation must succeed
 
 ## Release (per-package, auto)

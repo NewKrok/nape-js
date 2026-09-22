@@ -266,7 +266,7 @@ out to both nape-js and nape-pixi where applicable.
 | `npm run lint` | ESLint (both packages) |
 | `npm run format` | Prettier auto-fix (both packages) |
 | `npm run format:check` | Prettier verify (both packages) |
-| `npm run typecheck` | `tsc --noEmit` (both packages) |
+| `npm run typecheck` | builds nape-js, then `tsc --noEmit` on both packages (nape-pixi needs `nape-js/dist` for types) |
 | `npm run check:circular` | madge circular dep check (nape-js only; nape-pixi has none) |
 | `npm run benchmark` | Performance benchmark (uses `packages/nape-js/dist/`) |
 | `npm run benchmark:compare` | Compare vs baseline |
