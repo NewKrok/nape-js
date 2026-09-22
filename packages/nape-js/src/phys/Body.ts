@@ -12,7 +12,7 @@ import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { Compound } from "./Compound";
 import type { Arbiter } from "../dynamics/Arbiter";
-import type { BodyList, ShapeList } from "../util/listTypes";
+import type { ArbiterList, BodyList, ConstraintList, ShapeList } from "../util/listTypes";
 import type { Mat23 } from "../geom/Mat23";
 import type { Material } from "./Material";
 import type { FluidProperties } from "./FluidProperties";
@@ -613,6 +613,22 @@ export class Body extends Interactor {
   /** List of shapes attached to this body. */
   get shapes(): ShapeList {
     return this.zpp_inner.wrap_shapes;
+  }
+
+  /**
+   * Read-only list of the constraints currently attached to this body.
+   * Populated while the body and constraint share a Space.
+   */
+  get constraints(): ConstraintList {
+    return this._getConstraints();
+  }
+
+  /**
+   * Read-only list of the arbiters (contact, sensor and fluid interactions)
+   * this body is currently involved in.
+   */
+  get arbiters(): ArbiterList {
+    return this._getArbiters();
   }
 
   /** The Space this body belongs to. Setting adds/removes it from the space. */
