@@ -55,6 +55,7 @@ Claude acts as an **orchestrator** — delegates work to sub-agents to keep the 
 [ ] Run: npm run format:check ✓
 [ ] Run: npm run lint ✓
 [ ] Run: npm test ✓
+[ ] Run: npm run typecheck ✓
 [ ] Run: npm run build ✓
 [ ] Launch review agent → address feedback
 [ ] Commit with conventional message
@@ -149,6 +150,7 @@ Runs in parallel on Node 22:
 | Tests | `npm test` (all workspaces) |
 | Lint | `npm run lint` (all workspaces) |
 | Format | `npm run format:check` (all workspaces) |
+| Typecheck | `npm run typecheck` (all workspaces, `tsc --noEmit`) |
 | Circular deps | `npm run check:circular` (nape-js only, ≤27 allowed) |
 
 ### release.yml — Independent per-package auto-publish
@@ -182,8 +184,11 @@ Triggered once at the end of each release run.
 
 ### benchmark.yml — Performance budget
 
-On PRs: compares against master baseline, fails if >10% regression.
-On master: saves new baseline for future PRs.
+Manual trigger only (`workflow_dispatch`). Builds, runs the suite with
+`--expose-gc`, compares the result against the committed
+`benchmarks/baseline.json` (informational, `continue-on-error`) and uploads
+`benchmarks/current.json` as an artifact. `npm run benchmark:compare` does the
+same comparison locally.
 
 **Measuring locally.** Use `npm run benchmark` — it passes `--expose-gc`, which
 the harness needs to collect between trials rather than eating a major GC inside
@@ -261,6 +266,7 @@ out to both nape-js and nape-pixi where applicable.
 | `npm run lint` | ESLint (both packages) |
 | `npm run format` | Prettier auto-fix (both packages) |
 | `npm run format:check` | Prettier verify (both packages) |
+| `npm run typecheck` | `tsc --noEmit` (both packages) |
 | `npm run check:circular` | madge circular dep check (nape-js only; nape-pixi has none) |
 | `npm run benchmark` | Performance benchmark (uses `packages/nape-js/dist/`) |
 | `npm run benchmark:compare` | Compare vs baseline |

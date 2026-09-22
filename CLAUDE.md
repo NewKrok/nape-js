@@ -54,18 +54,20 @@ onboarding made it redundant) — recover from git history if ever needed.
 ```bash
 npm run build        # tsup → packages/*/dist/ (both packages)
 npm test             # vitest across both workspaces
+npm run typecheck    # tsc --noEmit across both workspaces
 npm run lint         # eslint across both workspaces
 npm run format:check # prettier across both workspaces
 ```
 
 ## Pre-push Checklist
 
-**Before every `git push`, always run all four:**
+**Before every `git push`, always run all five:**
 
 1. `npm run format:check` — must pass (Prettier code style, both packages)
 2. `npm run lint` — must pass (ESLint, both packages)
 3. `npm test` — all tests must pass (6285 + 77)
-4. `npm run build` — DTS generation must succeed (catches type errors vitest misses)
+4. `npm run typecheck` — `tsc --noEmit` on both packages (catches errors the tsup DTS build tolerates)
+5. `npm run build` — DTS generation must succeed
 
 ## Release (per-package, auto)
 
