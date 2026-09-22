@@ -195,32 +195,11 @@ export class Compound extends Interactor {
     let total = 0.0;
 
     this.visitBodies((b: Body) => {
-      const shapes = b.zpp_inner.wrap_shapes;
-      if (shapes.zpp_inner.inner.head != null) {
-        if (b.zpp_inner.world) {
-          throw new Error("Space::world has no worldCOM");
-        }
-        // Get worldCOM
-        if (b.zpp_inner.wrap_worldCOM == null) {
-          b.zpp_inner.getworldCOM();
-        }
-        const worldCOM = b.zpp_inner.wrap_worldCOM;
-
-        // Get mass
-        if (b.zpp_inner.world) {
-          throw new Error("Space::world has no mass");
-        }
-        b.zpp_inner.validate_mass();
-        if (b.zpp_inner.massMode == 0 && b.zpp_inner.shapes.head == null) {
-          throw new Error(
-            "Error: Given current mass mode, Body::mass only makes sense if it contains shapes",
-          );
-        }
-        const mass = b.zpp_inner.cmass;
-
-        ret.addeq(worldCOM.mul(mass, true));
-        total += mass;
-      }
+      // Shapeless bodies carry no mass and have no centre of mass.
+      if (b.zpp_inner.shapes.head == null) return;
+      const mass = b.mass;
+      ret.addeq(b.worldCOM.mul(mass, true));
+      total += mass;
     });
 
     if (total === 0.0) {
