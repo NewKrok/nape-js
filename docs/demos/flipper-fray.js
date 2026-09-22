@@ -65,13 +65,16 @@ const FLIP_HOLD_AI = 7;         // frames an AI holds a flipper up
 const BALL_R = 5.5;
 const BOMB_R = 7.5;
 const MAX_SPEED = 740;
-// The table is a shallow dome: the ball is pushed straight out from the
-// centre, the same everywhere, which is fair now that all four mouths are the
-// same distance away. Near the rim a gentle sideways nudge steers it toward
-// the nearest mouth, so a ball can never park itself against the wall between
-// two pockets — the one place a constant outward push would leave it.
-const OUT_ACC = 30;             // px/s² outward from the centre
-const FUNNEL_ACC = 16;          // px/s² sideways at the rim, toward the nearest mouth
+// The table is a dome, steepest at the top: the ball is pushed straight out
+// from the centre, hardest in the middle and easing off toward the rim. A
+// weak constant field left balls crawling for seconds around the centre
+// whenever they arrived with inward speed — the turnaround alone took eight
+// of them — while a strong constant one fired everything at the flippers.
+// Near the rim a sideways nudge steers the ball toward the nearest mouth, so
+// it can never park itself against the wall between two pockets.
+const OUT_ACC = 170;            // px/s² outward at the centre
+const OUT_FALLOFF = 0.58;       // fraction of that lost by the rim
+const FUNNEL_ACC = 80;          // px/s² sideways at the rim, toward the nearest mouth
 const DAMP = 0.26;              // linear damping, 1/s
 const BUMP_KICK = 185;
 const SLING_KICK = 155;
@@ -81,7 +84,7 @@ const CROSS_ARM = 42;
 const CROSS_SPIN = 0.85;        // rad/s
 
 // ── Match ────────────────────────────────────────────────────────────────
-const START_LIVES = 4;
+const START_LIVES = 5;
 const MATCH_FRAMES = 180 * 60;
 const RESPAWN_DELAY = 70;
 const BOMB_FUSE = 9 * 60;
@@ -465,9 +468,11 @@ function tickBalls() {
     const gx = p.x - CX, gy = p.y - CY;
     const gl = Math.hypot(gx, gy) || 1;
     const ux = gx / gl, uy = gy / gl;
-    vx += ux * OUT_ACC * DT;
-    vy += uy * OUT_ACC * DT;
-    const k = Math.min(1, (gl / R_WALL) ** 2);
+    const t = Math.min(1, gl / R_WALL);
+    const acc = OUT_ACC * (1 - OUT_FALLOFF * t);
+    vx += ux * acc * DT;
+    vy += uy * acc * DT;
+    const k = Math.min(1, t * t);
     if (k > 0.05) {
       const ang = Math.atan2(gy, gx);
       let best = 0;
@@ -1139,7 +1144,7 @@ function drawTitle(ctx) {
   ctx.fillText("FLIPPER FRAY", CX, 150);
   ctx.font = `bold 16px ${HUD_FONT}`;
   ctx.fillStyle = "#c9d6e2";
-  ctx.fillText("Four pockets. Four lives each. The table rolls everything outward — every ball becomes somebody's problem.", CX, 200);
+  ctx.fillText("Four pockets. Five lives each. The table rolls everything outward — every ball becomes somebody's problem.", CX, 200);
   ctx.fillStyle = "#8fb8c8";
   ctx.font = `13px ${HUD_FONT}`;
   ctx.fillText("Bomb balls cost two and detonate if nobody swallows them · multiball every so often · last pocket standing wins", CX, 226);
@@ -1887,7 +1892,7 @@ export default {
   label: "Flipper Fray",
   tags: ["Gameplay", "Pinball", "AI", "Kinematic", "CCD", "Listeners", "Mobile"],
   desc:
-    "A <b>four-player pinball brawl</b>: one round table, four pockets, a pair of flippers guarding each. The playfield is a <b>dome</b>: everything rolls outward from the centre, so every ball becomes somebody's problem; bumpers, slingshots and lane posts throw the balls around, and every ball that gets past your flippers costs you a life — <b>four lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>three AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.",
+    "A <b>four-player pinball brawl</b>: one round table, four pockets, a pair of flippers guarding each. The playfield is a <b>dome</b>: everything rolls outward from the centre, so every ball becomes somebody's problem; bumpers, slingshots and lane posts throw the balls around, and every ball that gets past your flippers costs you a life — <b>five lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>three AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.",
   walls: false,
   workerCompatible: false,
   camera: null,

@@ -180,7 +180,7 @@ validated by real play.
 A four-player pinball brawl on one round table. The playfield is a **circle**
 with four mouths cut into it, a pair of flippers guards each mouth, and the
 table is a shallow dome: everything rolls outward from the centre, so every
-ball eventually becomes somebody's problem. A ball that gets past your flippers costs a life. Four lives each;
+ball eventually becomes somebody's problem. A ball that gets past your flippers costs a life. Five lives each;
 the last pocket standing wins, or the most lives (then goals) when the
 three-minute clock runs out. You hold the bottom pocket, three AI keepers hold
 the rest. When a keeper is out their mouth is sealed with a kicker bar, so
@@ -213,7 +213,7 @@ Once you are eliminated the rest of the match plays out in a ×4 time-lapse
 | Slingshots          | On the wall halfway between two mouths, base 64 along the wall, tip 16 inward, +155 px/s    |
 | Lane posts          | Two per lane, r 7, 54 px in front of the mouth and ±36 px off its axis                      |
 | Cross               | Kinematic, arms 42, 0.85 rad/s, reverses every 20 s; new balls spawn between its arms so it launches them |
-| Field / damping     | 30 px/s² straight out from the centre + a rim funnel of up to 16 px/s² sideways, 0.26 /s damping, 740 px/s cap |
+| Field / damping     | 170 px/s² out from the centre, easing to 71 px/s² at the rim, + a rim funnel of up to 80 px/s² sideways, 0.26 /s damping, 740 px/s cap |
 
 **Four passes to get to "a circle".** Each of the first three looked right on
 paper and wrong on the table:
@@ -237,14 +237,27 @@ paper and wrong on the table:
    the 500 px viewport height, ~482 px across, and the ~210 px margins left and
    right become the HUD gutters.
 
-**A constant outward push needs a rim funnel.** On a closed circle a ball
-pressed against the wall between two mouths simply stays there: the wall
-cancels the push and damping kills what is left. So near the rim (scaled by
-(r/R)²) the field adds a sideways term proportional to `sin` of the angle to
-the nearest mouth. In the middle the field is purely radial; at the wall it
+**The dome is steepest at the top, and it has to be steep.** The first
+circular cut used 30 px/s² everywhere, which looks reasonable until a ball
+arrives at the middle with inward speed: the turnaround alone takes 2 × v / a,
+eight seconds at 120 px/s, and it reads as the ball stopping dead in the
+centre and refusing to roll out. A stall probe (speed < 45 px/s inside
+r < 110 for 0.75 s, logging what the ball touches) found eleven such crawls in
+a two-minute match, none of them touching anything. Raising the field to a
+flat 150 px/s² cures the crawl but fires everything at the flippers, so the
+profile now falls off linearly: 170 px/s² at the centre, 71 at the rim. Two
+slow events remain per match, both at r ≈ 108 just past a bumper, and over
+half the time a ball is under 200 px/s.
+
+**A radial push needs a rim funnel.** On a closed circle a ball pressed
+against the wall between two mouths simply stays there: the wall cancels the
+push and damping kills what is left. So near the rim (scaled by (r/R)²) the
+field adds a sideways term proportional to `sin` of the angle to the nearest
+mouth — and it has to scale with the outward field, or a stronger push just
+pins the ball harder. In the middle the field is purely radial; at the wall it
 walks the ball around to the nearest mouth. Measured over eight matches the
-four pockets took 340 / 351 / 344 / 358 approaches and 25 / 26 / 31 / 28
-drains, saves within 1.6 points of each other, and no ball was ever flagged
+four pockets took 422 / 450 / 446 / 387 approaches and 39 / 34 / 31 / 37
+drains, saves within 2.6 points of each other, and no ball was ever flagged
 stuck.
 
 ### Match schedule
