@@ -134,6 +134,45 @@ describe("Compound.copy() constraint remapping", () => {
     }
   });
 
+  it("resolves parent-compound bodies referenced from a child compound's constraints", () => {
+    // Child compounds are copied before the parent's bodies, so a joint that
+    // lives in the child but references a parent body cannot find the copied
+    // body in the dictionary yet and must register a deferred lookup.
+    const outer = new Compound();
+    const inner = new Compound();
+    const parentBody = body(0);
+    const childBody = body(50);
+    outer.bodies.add(parentBody);
+    inner.bodies.add(childBody);
+    inner.compound = outer;
+
+    const angle = new AngleJoint(parentBody, childBody, -1, 1);
+    const motor = new MotorJoint(parentBody, childBody, 1);
+    const pivot = new PivotJoint(parentBody, childBody, new Vec2(), new Vec2());
+    const spring = new SpringJoint(childBody, parentBody, new Vec2(), new Vec2(), 10);
+    for (const k of [angle, motor, pivot, spring]) inner.constraints.add(k);
+
+    const copy = outer.copy();
+    const copiedOuterBodies = list<Body>(copy.bodies);
+    const copiedInner = list<Compound>(copy.compounds)[0];
+    const copiedInnerBodies = list<Body>(copiedInner.bodies);
+    expect(copiedOuterBodies).toHaveLength(1);
+    expect(copiedInnerBodies).toHaveLength(1);
+
+    const copiedJoints = list<AngleJoint | MotorJoint | PivotJoint | SpringJoint>(
+      copiedInner.constraints,
+    );
+    expect(copiedJoints).toHaveLength(4);
+    for (const k of copiedJoints) {
+      expect(k.body1).not.toBeNull();
+      expect(k.body2).not.toBeNull();
+      expect([k.body1, k.body2]).toContain(copiedOuterBodies[0]);
+      expect([k.body1, k.body2]).toContain(copiedInnerBodies[0]);
+      expect([k.body1, k.body2]).not.toContain(parentBody);
+      expect([k.body1, k.body2]).not.toContain(childBody);
+    }
+  });
+
   it("the copy simulates independently of the original", () => {
     const { c } = buildCompound();
     const space = new Space(new Vec2(0, 100));
@@ -145,6 +184,17 @@ describe("Compound.copy() constraint remapping", () => {
     const originalStill = list<Body>(c.bodies).every((b) => b.position.y === 0);
     expect(moved).toBe(true);
     expect(originalStill).toBe(true);
+  });
+});
+
+describe("Compound._wrap fallbacks", () => {
+  it("unwraps an object carrying zpp_inner and wraps an unknown object generically", () => {
+    const c = new Compound();
+    expect(Compound._wrap({ zpp_inner: c.zpp_inner } as any)).toBe(c);
+    const foreign = {};
+    const wrapped = Compound._wrap(foreign as any);
+    expect(wrapped).toBeInstanceOf(Compound);
+    expect(Compound._wrap(foreign as any)).toBe(wrapped);
   });
 });
 

@@ -101,6 +101,9 @@ describe("Body.shapes mutation", () => {
     expect(() => b.shapes.copy(true)).toThrow(/copyable/);
     expect(b.shapes.toArray()).toHaveLength(2);
     expect(b.shapes.toString()).toMatch(/^\[.*\]$/);
+    const es = b.shapes[Symbol.iterator]();
+    expect(es[Symbol.iterator]()).toBe(es); // the ES iterator is its own iterable
+    expect(es.next().value).toBe(b.shapes.at(0));
     const it = b.shapes.iterator();
     let n = 0;
     while (it.hasNext()) {
