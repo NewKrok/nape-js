@@ -261,8 +261,6 @@
   "demo.newtons-cradle.desc": "Klassisches Newton-Pendel, das die Erhaltung von Impuls und Energie demonstriert.",
   "demo.one-way-platforms.label": "Einweg-Plattformen",
   "demo.one-way-platforms.desc": "Bodies passieren Plattformen von unten, ruhen aber von oben auf ihnen. Klicke &amp; ziehe einen Body, um ihn durch eine Plattform zu ziehen — lass los und beobachte, wie er landet. Klicke auf leeren Raum, um ein neues Shape zu erzeugen. Das untere Förderband schiebt Shapes seitwärts.",
-  "demo.performance-profiler.label": "Performance-Profiler",
-  "demo.performance-profiler.desc": "Echtzeit-Physik-Profiler-Overlay — zeigt Step-Timing pro Phase, Zähler für Bodies/Kontakte/Constraints und einen laufenden Zeitgraphen. <b>Klicke</b>, um Shapes zu erzeugen und die Metriken sich ändern zu sehen.",
   "demo.pinball.label": "Pinball",
   "demo.pinball.desc": "Pinball mit asymmetrischen Bumpern, Slingshots, Pins, einer Startbahn und einem oszillierenden Blocker. Links-/Rechts-Pfeile oder A/D für die Flipper. Klicke auf die linke/rechte Hälfte, um auf Mobilgeräten zu flippern. Klicke in den oberen Bereich, um Kugeln zu erzeugen.",
   "demo.planet-platformer.label": "Planeten-Platformer",

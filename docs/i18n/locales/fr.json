@@ -261,8 +261,6 @@
   "demo.newtons-cradle.desc": "Le classique pendule de Newton démontrant la conservation de la quantité de mouvement et de l'énergie.",
   "demo.one-way-platforms.label": "Plateformes à sens unique",
   "demo.one-way-platforms.desc": "Les corps traversent les plateformes par le bas mais s'y posent par le haut. Cliquez &amp; glissez un corps pour le tirer à travers une plateforme — relâchez pour le voir atterrir. Cliquez sur un espace vide pour faire apparaître une nouvelle forme. Le tapis roulant du bas pousse les formes latéralement.",
-  "demo.performance-profiler.label": "Profileur de performance",
-  "demo.performance-profiler.desc": "Surcouche de profileur physique en temps réel — affiche le temps de step par phase, les compteurs de corps/contacts/contraintes et un graphe temporel glissant. <b>Cliquez</b> pour faire apparaître des formes et observer l'évolution des métriques.",
   "demo.pinball.label": "Flipper",
   "demo.pinball.desc": "Flipper avec bumpers asymétriques, slingshots, quilles, une rampe de lancement et un bloqueur oscillant. Flèches gauche/droite ou A/D pour actionner les flippers. Cliquez sur la moitié gauche/droite pour actionner sur mobile. Cliquez dans la zone supérieure pour faire apparaître des balles.",
   "demo.planet-platformer.label": "Platformer planétaire",

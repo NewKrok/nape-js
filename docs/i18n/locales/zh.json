@@ -261,8 +261,6 @@
   "demo.newtons-cradle.desc": "经典牛顿摆，演示动量与能量守恒。",
   "demo.one-way-platforms.label": "单向平台",
   "demo.one-way-platforms.desc": "刚体可从下方穿过平台，但会停在平台上方。点击并拖动一个刚体，将它拉着穿过平台——松开后看它落下。点击空白处可生成新形状。底部的传送带将形状横向推送。",
-  "demo.performance-profiler.label": "性能分析器",
-  "demo.performance-profiler.desc": "实时物理性能分析器叠加层——显示各阶段的步进耗时、刚体/接触/约束计数，以及滚动时间图。<b>点击</b>可生成形状并观察指标变化。",
   "demo.pinball.label": "弹珠台",
   "demo.pinball.desc": "带有非对称保险杠、弹弓、挡钉、发射通道和一个来回摆动挡块的弹珠台。左/右方向键或 A/D 拨动挡板。移动端点击左/右半边拨动挡板。点击上部区域可生成球。",
   "demo.planet-platformer.label": "行星平台跳跃",

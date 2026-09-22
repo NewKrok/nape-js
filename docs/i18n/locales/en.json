@@ -261,8 +261,6 @@
   "demo.newtons-cradle.desc": "Classic Newton's Cradle demonstrating conservation of momentum and energy.",
   "demo.one-way-platforms.label": "One-Way Platforms",
   "demo.one-way-platforms.desc": "Bodies pass through platforms from below but rest on them from above. Click &amp; drag a body to pull it through a platform — release to watch it land. Click empty space to spawn a new shape. The bottom conveyor belt pushes shapes sideways.",
-  "demo.performance-profiler.label": "Performance Profiler",
-  "demo.performance-profiler.desc": "Real-time physics profiler overlay — shows per-phase step timing, body/contact/constraint counters, and a rolling time graph. <b>Click</b> to spawn shapes and watch metrics change.",
   "demo.pinball.label": "Pinball",
   "demo.pinball.desc": "Pinball with asymmetric bumpers, slingshots, pegs, a launch lane, and an oscillating blocker. Left/Right arrows or A/D to flip. Click left/right half to flip on mobile. Click upper area to spawn balls.",
   "demo.planet-platformer.label": "Planet Platformer",

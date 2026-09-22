@@ -261,8 +261,6 @@
   "demo.newtons-cradle.desc": "A klasszikus Newton-bölcső, amely az impulzus és az energia megmaradását demonstrálja.",
   "demo.one-way-platforms.label": "Egyirányú platformok",
   "demo.one-way-platforms.desc": "A testek alulról áthaladnak a platformokon, de felülről megpihennek rajtuk. Kattints &amp; húzz egy testet, hogy áthúzd egy platformon — engedd el, és nézd, ahogy leszáll. Kattints üres helyre új alakzat létrehozásához. Az alsó szállítószalag oldalra tolja az alakzatokat.",
-  "demo.performance-profiler.label": "Teljesítményprofilozó",
-  "demo.performance-profiler.desc": "Valós idejű fizikai profilozó réteg — megjeleníti a fázisonkénti lépésidőzítést, a test/érintkezés/kényszer számlálókat és egy gördülő időgrafikont. <b>Kattints</b> alakzatok létrehozásához, és figyeld, hogyan változnak a metrikák.",
   "demo.pinball.label": "Flipper",
   "demo.pinball.desc": "Flipper aszimmetrikus ütközőkkel, csúzlikkal, csapokkal, indítósávval és egy oszcilláló blokkolóval. Bal/jobb nyíl vagy A/D az ütőkhöz. Kattints a bal/jobb félre az ütéshez mobilon. Kattints a felső területre golyók létrehozásához.",
   "demo.planet-platformer.label": "Bolygós platformer",

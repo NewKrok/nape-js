@@ -22,3 +22,6 @@ docs/serialization/
 
 # Intermediate written by scripts/build-social-card.mjs when the rasteriser is absent
 docs/assets/social-card.resolved.svg
+
+# Local benchmark run output (compare against benchmarks/baseline.json)
+benchmarks/current.json
