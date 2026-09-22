@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { InteractionGroup } from "../../src/dynamics/InteractionGroup";
 import { ZPP_InteractionGroup } from "../../src/native/dynamics/ZPP_InteractionGroup";
+import { Body } from "../../src/phys/Body";
+import { Circle } from "../../src/shape/Circle";
+import { Space } from "../../src/space/Space";
+import "../../src/index";
 
 describe("InteractionGroup", () => {
   // --- Constructor ---
@@ -121,5 +125,51 @@ describe("InteractionGroup", () => {
   it("should return null for null/undefined input", () => {
     expect(InteractionGroup._wrap(null)).toBeNull();
     expect(InteractionGroup._wrap(undefined)).toBeNull();
+  });
+
+  // --- interactors / groups list getters ---
+  // Regression: these resolved the list classes through a `nape.zpp_nape`
+  // namespace that never existed and threw on first access.
+
+  describe("interactors list", () => {
+    it("should expose bodies assigned to the group once they are in a space", () => {
+      const space = new Space();
+      const g = new InteractionGroup();
+      const body = new Body();
+      body.shapes.add(new Circle(10));
+      body.group = g;
+      space.bodies.add(body);
+
+      const list = g.interactors;
+      expect(list.length).toBe(1);
+      expect(list.at(0)).toBe(body);
+      expect(g.interactors).toBe(list); // cached wrapper
+
+      space.bodies.remove(body);
+      expect(g.interactors.length).toBe(0);
+    });
+
+    it("should be empty and immutable for a fresh group", () => {
+      const g = new InteractionGroup();
+      expect(g.interactors.length).toBe(0);
+      expect(() => g.interactors.add(new Body())).toThrow();
+    });
+  });
+
+  describe("groups list", () => {
+    it("should expose child groups", () => {
+      const parent = new InteractionGroup();
+      const child = new InteractionGroup(true);
+      child.group = parent;
+
+      const list = parent.groups;
+      expect(list.length).toBe(1);
+      expect(list.at(0)).toBe(child);
+      expect(parent.groups).toBe(list); // cached wrapper
+    });
+
+    it("should be empty for a fresh group", () => {
+      expect(new InteractionGroup().groups.length).toBe(0);
+    });
   });
 });

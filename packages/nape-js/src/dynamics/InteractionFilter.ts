@@ -1,4 +1,4 @@
-import { getNape } from "../core/engine";
+import { ZPP_ShapeList } from "../native/util/ZPP_PublicList";
 import { getOrCreate } from "../core/cache";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
 import type { NapeInner } from "../geom/Vec2";
@@ -182,11 +182,7 @@ export class InteractionFilter {
   /** Read-only list of shapes currently using this filter. */
   get shapes(): any {
     if (this.zpp_inner.wrap_shapes == null) {
-      const nape = getNape();
-      this.zpp_inner.wrap_shapes = nape.zpp_nape.util.ZPP_ShapeList.get(
-        this.zpp_inner.shapes,
-        true,
-      );
+      this.zpp_inner.wrap_shapes = ZPP_ShapeList.get(this.zpp_inner.shapes, true);
     }
     return this.zpp_inner.wrap_shapes;
   }

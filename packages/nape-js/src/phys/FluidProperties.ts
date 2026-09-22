@@ -1,6 +1,7 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_FluidProperties } from "../native/phys/ZPP_FluidProperties";
+import { ZPP_ShapeList } from "../native/util/ZPP_PublicList";
 import type { NapeInner } from "../geom/Vec2";
 
 /**
@@ -292,8 +293,7 @@ export class FluidProperties {
 
   get shapes(): any {
     if (this.zpp_inner.wrap_shapes == null) {
-      const nape = getNape();
-      this.zpp_inner.wrap_shapes = nape.__zpp.util.ZPP_ShapeList.get(this.zpp_inner.shapes, true);
+      this.zpp_inner.wrap_shapes = ZPP_ShapeList.get(this.zpp_inner.shapes, true);
     }
     return this.zpp_inner.wrap_shapes;
   }

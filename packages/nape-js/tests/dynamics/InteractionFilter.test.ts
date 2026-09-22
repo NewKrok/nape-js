@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { InteractionFilter } from "../../src/dynamics/InteractionFilter";
 import { ZPP_InteractionFilter } from "../../src/native/dynamics/ZPP_InteractionFilter";
+import { Circle } from "../../src/shape/Circle";
+import { Body } from "../../src/phys/Body";
+import { Space } from "../../src/space/Space";
+import "../../src/index";
 
 describe("InteractionFilter", () => {
   // --- Constructor ---
@@ -201,5 +205,35 @@ describe("InteractionFilter", () => {
   it("should return null for null/undefined input", () => {
     expect(InteractionFilter._wrap(null)).toBeNull();
     expect(InteractionFilter._wrap(undefined)).toBeNull();
+  });
+
+  // --- shapes list getter ---
+  // Regression: resolved ZPP_ShapeList through a `nape.zpp_nape` namespace
+  // that never existed and threw on first access.
+
+  describe("shapes list", () => {
+    it("should expose shapes using this filter once they are in a space", () => {
+      const space = new Space();
+      const filter = new InteractionFilter();
+      const circle = new Circle(10);
+      circle.filter = filter;
+      const body = new Body();
+      body.shapes.add(circle);
+      space.bodies.add(body);
+
+      const list = filter.shapes;
+      expect(list.length).toBe(1);
+      expect(list.at(0)).toBe(circle);
+      expect(filter.shapes).toBe(list); // cached wrapper
+
+      space.bodies.remove(body);
+      expect(filter.shapes.length).toBe(0);
+    });
+
+    it("should be empty and immutable for an unused filter", () => {
+      const filter = new InteractionFilter();
+      expect(filter.shapes.length).toBe(0);
+      expect(() => filter.shapes.add(new Circle(5))).toThrow();
+    });
   });
 });
