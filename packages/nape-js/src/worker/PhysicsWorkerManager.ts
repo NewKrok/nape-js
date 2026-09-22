@@ -26,7 +26,14 @@
  * @module
  */
 
-import type { PhysicsWorkerOptions, ShapeDesc, BodyOptions, WorkerOutMessage } from "./types";
+import type {
+  PhysicsWorkerOptions,
+  ShapeDesc,
+  BodyOptions,
+  InitMessage,
+  WorkerInMessage,
+  WorkerOutMessage,
+} from "./types";
 import { FLOATS_PER_BODY, HEADER_FLOATS } from "./types";
 import { buildWorkerScript } from "./physics-worker-code";
 
@@ -140,7 +147,7 @@ export class PhysicsWorkerManager {
       };
       this.worker!.addEventListener("message", handler);
 
-      this.worker!.postMessage({
+      const init: InitMessage = {
         type: "init",
         maxBodies: this.maxBodies,
         timestep: this.timestep,
@@ -148,16 +155,19 @@ export class PhysicsWorkerManager {
         positionIterations: this.positionIterations,
         gravityX: this.gravityX,
         gravityY: this.gravityY,
-        buffer: this.useShared ? this.buffer : null,
-      });
+        buffer: this.useShared ? (this.buffer as SharedArrayBuffer) : null,
+      };
+      this.worker!.postMessage(init);
     });
   }
 
   /**
    * Start the fixed-timestep physics loop in the worker.
-   * Only meaningful when `autoStep` is `true` (default).
+   * A no-op when the manager was created with `autoStep: false`; drive the
+   * simulation with {@link step} instead.
    */
   start(): void {
+    if (!this.autoStep) return;
     this.post({ type: "start" });
   }
 
@@ -320,7 +330,7 @@ export class PhysicsWorkerManager {
 
   // ── Internals ──────────────────────────────────────────────────────────
 
-  private post(msg: unknown): void {
+  private post(msg: WorkerInMessage): void {
     this.worker?.postMessage(msg);
   }
 }
