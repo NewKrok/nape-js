@@ -9,6 +9,7 @@
  */
 
 import { getNape } from "../core/engine";
+import { installIterable } from "../util/iterable";
 import { ZPP_ContactList } from "../native/util/ZPP_ContactList";
 
 // ---------------------------------------------------------------------------
@@ -434,20 +435,7 @@ ContactListCtor.prototype.foreach = function (this: any, lambda: any): any {
 };
 
 // ES6 iterable protocol — enables for...of and spread on ContactList.
-(ContactListCtor.prototype as any)[Symbol.iterator] = function (this: any) {
-  const it = ContactIterator.get(this);
-  return {
-    next(): IteratorResult<any> {
-      if (it.hasNext()) {
-        return { value: it.next(), done: false };
-      }
-      return { value: undefined, done: true };
-    },
-    [Symbol.iterator]() {
-      return this;
-    },
-  };
-};
+installIterable(ContactListCtor.prototype, (list) => ContactIterator.get(list));
 
 ContactListCtor.prototype.filter = function (this: any, lambda: any): any {
   if (lambda == null) {

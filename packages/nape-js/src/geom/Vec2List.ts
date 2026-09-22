@@ -9,6 +9,7 @@
  */
 
 import { getNape } from "../core/engine";
+import { installIterable } from "../util/iterable";
 import { ZPP_Vec2List } from "../native/util/ZPP_Vec2List";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
@@ -455,20 +456,7 @@ Vec2ListCtor.prototype.foreach = function (this: any, lambda: any): any {
 };
 
 // ES6 iterable protocol — enables for...of and spread on Vec2List.
-(Vec2ListCtor.prototype as any)[Symbol.iterator] = function (this: any) {
-  const it = Vec2Iterator.get(this);
-  return {
-    next(): IteratorResult<any> {
-      if (it.hasNext()) {
-        return { value: it.next(), done: false };
-      }
-      return { value: undefined, done: true };
-    },
-    [Symbol.iterator]() {
-      return this;
-    },
-  };
-};
+installIterable(Vec2ListCtor.prototype, (list) => Vec2Iterator.get(list));
 
 Vec2ListCtor.prototype.filter = function (this: any, lambda: any): any {
   if (lambda == null) {
