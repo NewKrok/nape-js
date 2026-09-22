@@ -146,7 +146,7 @@ Higher-level building blocks layered on top of the engine — opt-in modules.
 
 ## Collections
 
-- [NapeList](https://napejs.org/api/classes/NapeList.html): Generic iterable list with `for...of` support, add/remove/push/pop
+- `BodyList`, `ShapeList`, `ConstraintList`, `ArbiterList`, `CbTypeList`, … — typed engine lists with `for...of`, `at(i)`, add/remove/push/pop (see `TypedListLike`)
 
 ## Web Worker (`@newkrok/nape-js/worker`)
 

@@ -1,1 +1,0 @@
-export { NapeList } from "./NapeList";

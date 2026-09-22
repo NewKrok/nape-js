@@ -60,7 +60,7 @@ packages/nape-js/tests/
 ├── serialization/         # JSON + binary save/load round-trips
 ├── shape/                 # Circle, Polygon, Edge shapes
 ├── space/                 # Space simulation & integration (12 files)
-└── util/                  # NapeList, Debug, iterators
+└── util/                  # Debug, list factory, iterators
 
 packages/nape-pixi/tests/
 ├── BodySpriteBinding.test.ts
