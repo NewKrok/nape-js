@@ -177,11 +177,11 @@ validated by real play.
 
 ### Premise
 
-A four-player pinball brawl on one round table. Four pockets sit around a
-rounded-square ring, a pair of flippers guards each of them, and the table
-tilts: the low side walks around the table once every fifteen seconds, so
-every ball is eventually somebody's problem and every pocket takes the same
-pressure. A ball that gets past your flippers costs a life. Four lives each;
+A four-player pinball brawl on one round table. Four pockets sit at the
+compass points of a **circular** mouth ring, a pair of flippers guards each of
+them, and the table tilts: the low side walks around it once every fifteen
+seconds, so every ball is eventually somebody's problem and every pocket takes
+the same pressure. A ball that gets past your flippers costs a life. Four lives each;
 the last pocket standing wins, or the most lives (then goals) when the
 three-minute clock runs out. You hold the bottom pocket, three AI keepers hold
 the rest. When a keeper is out their mouth is sealed with a kicker bar, so
@@ -205,27 +205,41 @@ Once you are eliminated the rest of the match plays out in a ×4 time-lapse
 
 | Element             | Numbers                                                                                     |
 | ------------------- | ------------------------------------------------------------------------------------------- |
-| Mouth ellipse       | rx 325, ry 174 around (450, 250); the player's pocket at the bottom                          |
-| Pocket placement    | Equal **arc length**, which for four pockets lands exactly on the axes                       |
-| Ring walls          | Quadratic Bézier from pocket to pocket through a bay at 0.72 of the arc-midpoint radius, 12 straight segments each |
+| Mouth ring          | Radius 180 around (450, 250); the player's pocket at the bottom                              |
+| Pocket placement    | Equal **arc length**, which on a circle is the four compass points                          |
+| Ring walls          | Quadratic Bézier from pocket to pocket through a bay at 1.28 × the radius (bulging **outward**), 12 straight segments each |
 | Pocket              | 120 wide, 52 deep; flipper pivots 6 in from the side walls                                 |
 | Flipper             | 44 long, rest −0.40 rad (drooping into the pocket), raised +0.66 rad, 20 rad/s; rest gap ≈ 25 px for an 11 px ball |
 | Slingshots          | Triangular kickers at each bay (base 60, bulge 15), +155 px/s along the inward normal      |
-| Bumpers             | One per bay, r 12, on the centre→bay line at (0.30·rx, 0.42·ry), +185 px/s away from the centre |
-| Lane posts          | Two per lane, r 7, 92 px out from the mouth and ±36 px off its axis                         |
+| Bumpers             | One per bay, r 12, on the centre→bay line at 0.54 × the radius, +185 px/s away from the centre |
+| Lane posts          | Two per lane, r 7, 62 px out from the mouth and ±36 px off its axis                         |
 | Cross               | Kinematic, arms 42, 0.85 rad/s, reverses every 20 s; new balls spawn between its arms so it launches them |
-| Tilt / damping      | 40 px/s² toward the low side (one lap per 15 s) + 13 px/s² outward, 0.26 /s damping, 740 px/s cap |
+| Tilt / damping      | 26 px/s² toward the low side (one lap per 15 s, random starting heading) + 22 px/s² outward, 0.26 /s damping, 740 px/s cap |
 
-**Equal angle looks lopsided; a static slope is unfair.** The first cut put six
-pockets at 60° steps on the ellipse, and they bunched together at the flat
-ends. Placing them at equal arc length (a 3000-sample cumulative length table,
-built once in `computeAngles()`) fixed the look, and with four pockets the
-split lands on the axes so every gap is identical. That exposed a second
-problem: a fixed outward slope on a 900×500 viewport feeds the near pockets
-much harder than the far ones — the bottom pocket saw 720 approaches to the
-left pocket's 511, and won 8 matches in 10. A tilt whose low side rotates
-fixes it by construction: approaches and drains now sit within ±8 %, and the
-save rate is the same at all four pockets.
+**Equal gaps are not an equal table.** Three passes were needed here, and the
+first two only looked right on paper:
+
+1. Six pockets at 60° steps on a wide ellipse bunch together at the flat ends.
+   Equal **arc length** (a 3000-sample cumulative length table, built once in
+   `computeAngles()`) fixes the spacing; with four pockets the split lands on
+   the axes, so every gap is identical.
+2. Equal gaps on an *ellipse* still leave the pockets at different distances
+   from the centre — 174 px for top and bottom, 325 px for left and right — so
+   one keeper defends a short lane and the next a long corridor. It reads as a
+   stretched table, not a divided one, and a fixed outward slope then feeds the
+   near pockets far harder: the bottom pocket saw 720 approaches to the left
+   pocket's 511 and won 8 matches in 10. **The mouth ring has to be a circle.**
+   The table is then bounded by the 500 px viewport height, ~474 px across,
+   and the ~210 px margins left and right become the HUD gutters.
+3. The slope still favoured whichever pocket it pointed at, so it **rotates**:
+   one lap every 15 s from a random starting heading. Over 20 measured matches
+   the four pockets took 856 / 908 / 928 / 943 approaches and 75 / 67 / 70 / 64
+   drains, with save rates inside one percentage point of each other.
+
+The bays between the pockets bulge outward rather than dipping in, which is
+also what puts each slingshot flush against its wall — on the old ellipse the
+bay midpoint and the wall tangent disagreed and the triangles sat at odd
+angles inside the ring.
 
 ### Match schedule
 
@@ -260,9 +274,9 @@ ball against the pivot corner; when it drops, the ball rolls to the tip and
 falls through. Sweeping the reaction window with a no-miss keeper gave save
 rates of 93 % at 0.03 s, 89 % at 0.05, 86 % at 0.07 and 80 % at 0.10 s
 (never flipping at all: 76 %, and the balls pile up on the flippers). The
-difficulty table is built around that curve. On the four-pocket table an
-all-AI match runs about 140 s, saves ~94 % of approaches and usually ends
-with all three opponents out; roughly one match in five reaches the buzzer.
+difficulty table is built around that curve. On the circular four-pocket table an
+all-AI match runs about 125 s, saves ~92 % of approaches and ends with all
+three opponents out; no match in the last 20 reached the buzzer.
 
 ### Physics
 
@@ -292,7 +306,8 @@ with all three opponents out; roughly one match in five reaches the buzzer.
   the card's whole life, so a transparent clear let the 3D render ghost
   through the flat one. PixiJS draws its own body pass on an opaque stage.
 - The overlay (all modes) draws the clock with its tilt compass, the keeper
-  cards, three tilt chevrons on the table centre, bomb fuses, banners,
+  cards (in the side gutters in 2D, beside each pocket in 3D), three tilt
+  chevrons on the table centre, bomb fuses, banners,
   floaters and the title / result screens; in 2D it also draws bumper flashes,
   particles and the drain sink. The chevrons are the only explanation the
   player gets for the slope, so they run in every mode, projected through the

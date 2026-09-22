@@ -44,9 +44,14 @@ const CY = VIEW_H / 2;
 // flat ends — which is what six evenly-stepped pockets did here. With four
 // the arc split lands on the axes and every gap is identical.
 const N_PLAYERS = 4;
-const RX = 325;                 // pocket mouth ellipse
-const RY = 174;
-const MID_K = 0.72;             // how far the ring dips inward between pockets
+// The mouth ring is a CIRCLE, not a wide ellipse. Equal arc spacing gives
+// equal gaps, but on an ellipse the pockets still sit at different distances
+// from the centre and the table reads as stretched — one player defending a
+// long corridor, the next a short one. A circle makes the four quarters
+// identical, at the price of the side margins, which the HUD takes over.
+const RX = 180;                 // pocket mouth ring (RX === RY by design)
+const RY = 180;
+const MID_K = 1.28;             // bays bulge OUTWARD between the pockets
 const RING_SEGS = 12;           // straight segments per curved ring wall
 const PW = 120;                 // pocket mouth width
 const PD = 52;                  // pocket depth behind the flippers
@@ -64,9 +69,9 @@ const MAX_SPEED = 740;
 // same pressure over a lap, whatever its distance from the centre. A static
 // outward field cannot do that on a viewport this wide — the near pockets
 // (top and bottom) saw 40 % more traffic than the far ones.
-const TILT_ACC = 40;            // px/s² toward the low side
+const TILT_ACC = 26;            // px/s² toward the low side
 const TILT_PERIOD = 15 * 60;    // frames per lap
-const OUT_ACC = 13;             // px/s² outward, so the centre never pools
+const OUT_ACC = 22;             // px/s² outward, so the centre never pools
 const DAMP = 0.26;              // linear damping, 1/s
 const BUMP_KICK = 185;
 const SLING_KICK = 155;
@@ -328,7 +333,7 @@ function buildTable(space) {
   const bumperMat = new Material(1.25, 0, 0, 1, 0.001);
   for (let i = 0; i < N_PLAYERS; i++) {
     const a = _midAngles[i];
-    const x = CX + Math.cos(a) * RX * 0.30, y = CY + Math.sin(a) * RY * 0.42;
+    const x = CX + Math.cos(a) * RX * 0.54, y = CY + Math.sin(a) * RY * 0.54;
     const b = new Body(BodyType.STATIC, new Vec2(x, y));
     b.shapes.add(new Circle(BUMPER_R, undefined, bumperMat));
     b.shapes.at(0).cbTypes.add(_cbBumper);
@@ -347,7 +352,7 @@ function buildTable(space) {
   for (let i = 0; i < N_PLAYERS; i++) {
     const f = frames[i];
     for (const lv of [-36, 36]) {
-      const p = toWorld(f, 92, lv);
+      const p = toWorld(f, 62, lv);
       const b = new Body(BodyType.STATIC, new Vec2(p.x, p.y));
       b.shapes.add(new Circle(7, undefined, postMat));
       b.userData._color = { fill: "rgba(210,220,235,0.22)", stroke: "#c9d6e2" };
@@ -785,8 +790,10 @@ function resetMatch() {
     for (const fl of pl.flippers) { fl.pressed = false; fl.hold = 0; fl.cooldown = 0; }
   }
   _clock = 0;
-  _tilt = Math.PI / 2;
-  _tiltX = 0; _tiltY = 1;
+  // Random starting heading: a fixed one biases the opening minute toward
+  // whichever pocket the slope starts under.
+  _tilt = rnd() * Math.PI * 2;
+  _tiltX = Math.cos(_tilt); _tiltY = Math.sin(_tilt);
   _nextBombAt = BOMB_EVERY;
   _multiballIdx = 0;
   _result = null;
@@ -897,8 +904,10 @@ const HUD_FONT = "'Segoe UI', system-ui, sans-serif";
 const CARD_W = 140, CARD_H = 40;
 // Tuned by eye against the flat table: clear of the pockets, the clock and
 // the renderer buttons the page draws over the canvas' top right corner.
+// The circular table leaves ~210 px of margin on each side; that is where the
+// keeper cards go, two to a side, with the clock in the top-left corner.
 const CARD_SLOTS_2D = [
-  [640, 462], [82, 380], [304, 40], [818, 380],
+  [92, 452], [92, 250], [808, 120], [808, 250],
 ];
 const DIFF_BTNS = [0, 1, 2].map((i) => ({ i, x: CX - 150 + i * 150, y: 326, w: 120, h: 30 }));
 
@@ -936,6 +945,8 @@ function roundRect(ctx, x, y, w, h, r) {
 const CARD_SLOTS_3D = [
   [640, 462], [80, 330], [310, 40], [820, 330],
 ];
+// Tilt chevrons sit on the ring between the launcher and the bumpers.
+const CUE_R0 = 58;
 function cardAnchor(pl) {
   const s = (_mode3d ? CARD_SLOTS_3D : CARD_SLOTS_2D)[pl.id];
   return { x: s[0], y: s[1] };
@@ -1033,7 +1044,7 @@ function drawTiltCue(ctx) {
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   for (let i = 0; i < 3; i++) {
-    const d = 74 + i * 16;
+    const d = CUE_R0 + i * 15;
     const a = toScreen(CX + _tiltX * (d + 11), CY + _tiltY * (d + 11), 2);
     const b = toScreen(CX + _tiltX * d + px * 10, CY + _tiltY * d + py * 10, 2);
     const c = toScreen(CX + _tiltX * d - px * 10, CY + _tiltY * d - py * 10, 2);
@@ -1797,7 +1808,7 @@ function makeTableTexture() {
   c.shadowBlur = 0;
   c.strokeStyle = "rgba(92,230,255,0.18)";
   c.lineWidth = 1.5;
-  c.beginPath(); c.ellipse(CX, CY, RX * 0.30, RY * 0.42, 0, 0, Math.PI * 2); c.stroke();
+  c.beginPath(); c.ellipse(CX, CY, RX * 0.54, RY * 0.54, 0, 0, Math.PI * 2); c.stroke();
   const tex = new T.CanvasTexture(cv);
   tex.colorSpace = T.SRGBColorSpace;
   tex.anisotropy = 4;
@@ -1910,13 +1921,13 @@ function placeCamera3d(cam) {
     // A slow sway around the player's side rather than a full orbit, so the
     // whole table is in frame at every moment (the poster is shot here).
     const a = -Math.PI / 2 + Math.sin(_frame * 0.004) * 0.17;
-    ex = CX + Math.cos(a) * 540;
-    ey = -CY + Math.sin(a) * 540;
-    ez = 480 + Math.sin(_frame * 0.0028) * 25;
+    ex = CX + Math.cos(a) * 440;
+    ey = -CY + Math.sin(a) * 440;
+    ez = 400 + Math.sin(_frame * 0.0028) * 22;
     tx = CX; ty = -CY; tz = 0;
   } else {
-    ex = CX; ey = -(CY + 452); ez = 424;
-    tx = CX; ty = -(CY - 24); tz = 0;
+    ex = CX; ey = -(CY + 408); ez = 392;
+    tx = CX; ty = -(CY + 4); tz = 0;
   }
   if (!_camPos) {
     _camPos = new T.Vector3(ex, ey, ez);
