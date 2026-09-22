@@ -5,7 +5,7 @@
   <meta name="nape-prerendered" content="de" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flipper Fray — Interaktive 2D-Physik-Demo | nape-js</title>
-  <meta name="description" content="Eine Flipper-Keilerei für fünf Spieler: ein runder Tisch, fünf Taschen, jede von einem Flipperpaar bewacht." />
+  <meta name="description" content="Eine Flipper-Keilerei für vier Spieler: ein runder Tisch, vier Taschen, jede von einem Flipperpaar bewacht." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
@@ -52,7 +52,7 @@
         "name": "Flipper Fray",
         "inLanguage": "de",
         "image": "https://napejs.org/assets/posters/flipper-fray.webp",
-        "description": "Eine Flipper-Keilerei für fünf Spieler: ein runder Tisch, fünf Taschen, jede von einem Flipperpaar bewacht. Die Kugeln driften nach außen, Bumper und Slingshots schleudern sie herum, und jede Kugel, die an deinen Flippern vorbeikommt, kostet ein Leben — fünf Leben, die letzte verbliebene Tasche…",
+        "description": "Eine Flipper-Keilerei für vier Spieler: ein runder Tisch, vier Taschen, jede von einem Flipperpaar bewacht. Der Tisch kippt, und die tiefe Seite wandert herum, sodass jede Tasche gleich viel Druck abbekommt; Bumper, Slingshots und Bahnpfosten schleudern die Kugeln herum, und jede Kugel, die an…",
         "url": "https://napejs.org/de/examples/flipper-fray/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
@@ -83,7 +83,7 @@
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Flipper Fray — Interaktive 2D-Physik-Demo | nape-js" />
-  <meta property="og:description" content="Eine Flipper-Keilerei für fünf Spieler: ein runder Tisch, fünf Taschen, jede von einem Flipperpaar bewacht." />
+  <meta property="og:description" content="Eine Flipper-Keilerei für vier Spieler: ein runder Tisch, vier Taschen, jede von einem Flipperpaar bewacht." />
   <meta property="og:url" content="https://napejs.org/de/examples/flipper-fray/" />
   <meta property="og:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <meta property="og:image:width" content="900" />
@@ -93,7 +93,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
   <meta name="twitter:title" content="Flipper Fray — Interaktive 2D-Physik-Demo | nape-js" />
-  <meta name="twitter:description" content="Eine Flipper-Keilerei für fünf Spieler: ein runder Tisch, fünf Taschen, jede von einem Flipperpaar bewacht." />
+  <meta name="twitter:description" content="Eine Flipper-Keilerei für vier Spieler: ein runder Tisch, vier Taschen, jede von einem Flipperpaar bewacht." />
   <meta name="twitter:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
@@ -102,7 +102,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="../../../style.css?v=3.42.2" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
@@ -110,8 +110,8 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
-  <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.1" />
-  <link rel="modulepreload" href="../../../demos/flipper-fray.js?v=3.42.1" />
+  <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.2" />
+  <link rel="modulepreload" href="../../../demos/flipper-fray.js?v=3.42.2" />
   <!-- i18n:hreflang:start -->
   <link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
   <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
@@ -172,7 +172,7 @@
         <span aria-current="page" data-i18n="demo.flipper-fray.label">Flipper Fray</span>
       </nav>
       <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">Eine <b>Flipper-Keilerei für fünf Spieler</b>: ein runder Tisch, fünf Taschen, jede von einem Flipperpaar bewacht. Die Kugeln driften nach außen, Bumper und Slingshots schleudern sie herum, und jede Kugel, die an deinen Flippern vorbeikommt, kostet ein Leben — <b>fünf Leben</b>, die letzte verbliebene Tasche gewinnt, oder die meisten Leben nach drei Minuten. Du hältst die untere Tasche gegen <b>vier KI-Keeper</b>; <b>Multiball</b> wirft nach Plan Extrakugeln ein, und jede halbe Minute rollt eine <b>Bombenkugel</b> heraus — zwei Leben, wenn sie fällt, eine Explosion, wenn sie niemand schluckt. <b>← →</b> / <b>A D</b> flippern, <b>LEERTASTE</b> beide; auf Touch die linke oder rechte Bildschirmhälfte gedrückt halten. Physik: die Flipper sind <b>kinematische Körper</b>, angetrieben über <code>setVelocityFromTarget</code>, sodass ein Schlag echte Winkelgeschwindigkeit in die Kugel überträgt; Kugeln sind <b>Bullet-markierte</b> Kreise, damit nichts durch die dünnen Ringwände tunnelt; Bumper- und Slingshot-Stöße sowie die Torgutschrift kommen über <code>InteractionListener</code>. In <b>3D</b> eine Neon-Arena mit Chromkugeln, leuchtenden Taschen und Bahnlichtern, gesehen von hinter deiner eigenen Tasche.</p>
+      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">Eine <b>Flipper-Keilerei für vier Spieler</b>: ein runder Tisch, vier Taschen, jede von einem Flipperpaar bewacht. Der Tisch <b>kippt</b>, und die tiefe Seite wandert herum, sodass jede Tasche gleich viel Druck abbekommt; Bumper, Slingshots und Bahnpfosten schleudern die Kugeln herum, und jede Kugel, die an deinen Flippern vorbeikommt, kostet ein Leben — <b>vier Leben</b>, die letzte verbliebene Tasche gewinnt, oder die meisten Leben nach drei Minuten. Du hältst die untere Tasche gegen <b>drei KI-Keeper</b>; <b>Multiball</b> wirft nach Plan Extrakugeln ein, und jede halbe Minute rollt eine <b>Bombenkugel</b> heraus — zwei Leben, wenn sie fällt, eine Explosion, wenn sie niemand schluckt. <b>← →</b> / <b>A D</b> flippern, <b>LEERTASTE</b> beide; auf Touch die linke oder rechte Bildschirmhälfte gedrückt halten. Physik: die Flipper sind <b>kinematische Körper</b>, angetrieben über <code>setVelocityFromTarget</code>, sodass ein Schlag echte Winkelgeschwindigkeit in die Kugel überträgt; Kugeln sind <b>Bullet-markierte</b> Kreise, damit nichts durch die dünnen Ringwände tunnelt; Bumper- und Slingshot-Stöße sowie die Torgutschrift kommen über <code>InteractionListener</code>. In <b>3D</b> eine Neon-Arena mit Chromkugeln, leuchtenden Taschen und Bahnlichtern, gesehen von hinter deiner eigenen Tasche.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
@@ -274,12 +274,12 @@
     </div>
   </footer>
   <script type="module">
-    import { initI18n } from "../../../i18n/i18n.js?v=3.42.1";
-    import { mountLangSwitcher } from "../../../i18n/lang-switcher.js?v=3.42.1";
+    import { initI18n } from "../../../i18n/i18n.js?v=3.42.2";
+    import { mountLangSwitcher } from "../../../i18n/lang-switcher.js?v=3.42.2";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="../../../site-header.js?v=3.42.1"></script>
-  <script type="module" src="../../../demo-page.js?v=3.42.1"></script>
+  <script type="module" src="../../../site-header.js?v=3.42.2"></script>
+  <script type="module" src="../../../demo-page.js?v=3.42.2"></script>
 </body>
 </html>

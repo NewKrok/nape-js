@@ -198,7 +198,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.42.1" />
+  <link rel="stylesheet" href="../../style.css?v=3.42.2" />
   <!-- i18n:hreflang:start -->
   <link rel="alternate" hreflang="en" href="https://napejs.org/games/" />
   <link rel="alternate" hreflang="de" href="https://napejs.org/de/games/" />
@@ -274,7 +274,7 @@
           </a>
           <div class="game-card-body">
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">一场<b>五人弹珠台混战</b>：一张圆桌、五个球袋，每个球袋由一对挡板守护。弹珠向外漂移，弹碰器和弹射器把它们抛来抛去，每一颗越过你挡板的球都要你付出一条命——<b>五条命</b>，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗<b>四名 AI 守门员</b>；<b>多球</b>按时间表投放额外弹珠，每半分钟还会滚出一颗<b>炸弹球</b>：掉进袋里扣两条命，没人吞下它就会爆炸。<b>← →</b> / <b>A D</b> 拨动挡板，<b>空格</b>同时拨动两侧；触屏按住屏幕左半或右半。物理：挡板是用 <code>setVelocityFromTarget</code> 驱动的<b>运动学刚体</b>，因此一击会把真实的角速度传给弹珠；弹珠是带<b>子弹标记</b>的圆形，不会穿过纤薄的环形墙；弹碰器和弹射器的冲击以及进球判定都经由 <code>InteractionListener</code> 送达。<b>3D</b> 模式是一座霓虹竞技场：镀铬弹珠、发光球袋和赛道灯光，从你自己的球袋后方观看。</p>
+            <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">一场<b>四人弹珠台混战</b>：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面会<b>倾斜</b>，而且低点绕着台面移动，因此每个球袋承受的压力相同；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——<b>四条命</b>，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗<b>三名 AI 守门员</b>；<b>多球</b>按时间表投放额外弹珠，每半分钟还会滚出一颗<b>炸弹球</b>：掉进袋里扣两条命，没人吞下它就会爆炸。<b>← →</b> / <b>A D</b> 拨动挡板，<b>空格</b>同时拨动两侧；触屏按住屏幕左半或右半。物理：挡板是用 <code>setVelocityFromTarget</code> 驱动的<b>运动学刚体</b>，因此一击会把真实的角速度传给弹珠；弹珠是带<b>子弹标记</b>的圆形，不会穿过纤薄的环形墙；弹碰器和弹射器的冲击以及进球判定都经由 <code>InteractionListener</code> 送达。<b>3D</b> 模式是一座霓虹竞技场：镀铬弹珠、发光球袋和赛道灯光，从你自己的球袋后方观看。</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
           </div>
         </article>
@@ -768,12 +768,12 @@
     </div>
   </footer>
   <script type="module">
-    import { initI18n } from "../../i18n/i18n.js?v=3.42.1";
-    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.42.1";
+    import { initI18n } from "../../i18n/i18n.js?v=3.42.2";
+    import { mountLangSwitcher } from "../../i18n/lang-switcher.js?v=3.42.2";
     await initI18n();
     mountLangSwitcher();
   </script>
-  <script type="module" src="../../site-header.js?v=3.42.1"></script>
-  <script type="module" src="../../games.js?v=3.42.1"></script>
+  <script type="module" src="../../site-header.js?v=3.42.2"></script>
+  <script type="module" src="../../games.js?v=3.42.2"></script>
 </body>
 </html>

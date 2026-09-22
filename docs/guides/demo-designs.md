@@ -177,14 +177,15 @@ validated by real play.
 
 ### Premise
 
-A five-player pinball brawl on one round table. Five pockets sit around a
-star-shaped ring, a pair of flippers guards each of them, and the table is a
-shallow elliptical hill: balls drift outward from the centre, so every ball is
-eventually somebody's problem. A ball that gets past your flippers costs a
-life. Five lives each; the last pocket standing wins, or the most lives (then
-goals) when the three-minute clock runs out. You hold the bottom pocket, four
-AI keepers hold the rest. When a keeper is out their mouth is sealed with a
-kicker bar, so dead pockets throw balls back instead of collecting them.
+A four-player pinball brawl on one round table. Four pockets sit around a
+rounded-square ring, a pair of flippers guards each of them, and the table
+tilts: the low side walks around the table once every fifteen seconds, so
+every ball is eventually somebody's problem and every pocket takes the same
+pressure. A ball that gets past your flippers costs a life. Four lives each;
+the last pocket standing wins, or the most lives (then goals) when the
+three-minute clock runs out. You hold the bottom pocket, three AI keepers hold
+the rest. When a keeper is out their mouth is sealed with a kicker bar, so
+dead pockets throw balls back instead of collecting them.
 
 ### Controls
 
@@ -196,7 +197,7 @@ kicker bar, so dead pockets throw balls back instead of collecting them.
 | 1 / 2 / 3 on the title      | AI difficulty (Easy / Normal / Hard)           |
 | Hold left / right half      | Touch: that flipper; drag across to switch     |
 
-On the title the table runs an attract mode with all five pockets under AI.
+On the title the table runs an attract mode with all four pockets under AI.
 Once you are eliminated the rest of the match plays out in a ×4 time-lapse
 (the Space.step wrapper simply runs four ticks per slice).
 
@@ -205,28 +206,32 @@ Once you are eliminated the rest of the match plays out in a ×4 time-lapse
 | Element             | Numbers                                                                                     |
 | ------------------- | ------------------------------------------------------------------------------------------- |
 | Mouth ellipse       | rx 325, ry 174 around (450, 250); the player's pocket at the bottom                          |
-| Pocket placement    | Equal **arc length**, not equal angle — see the note below                                   |
-| Ring walls          | Quadratic Bézier from pocket to pocket through a dip at 0.62 of the arc-midpoint radius, 12 straight segments each |
+| Pocket placement    | Equal **arc length**, which for four pockets lands exactly on the axes                       |
+| Ring walls          | Quadratic Bézier from pocket to pocket through a bay at 0.72 of the arc-midpoint radius, 12 straight segments each |
 | Pocket              | 120 wide, 52 deep; flipper pivots 6 in from the side walls                                 |
 | Flipper             | 44 long, rest −0.40 rad (drooping into the pocket), raised +0.66 rad, 20 rad/s; rest gap ≈ 25 px for an 11 px ball |
-| Slingshots          | Triangular kickers at each ring dip (base 60, bulge 15), +155 px/s along the inward normal |
-| Bumpers             | One per gap, r 12, on the centre→dip line at (0.30·rx, 0.42·ry), +185 px/s away from the centre |
+| Slingshots          | Triangular kickers at each bay (base 60, bulge 15), +155 px/s along the inward normal      |
+| Bumpers             | One per bay, r 12, on the centre→bay line at (0.30·rx, 0.42·ry), +185 px/s away from the centre |
+| Lane posts          | Two per lane, r 7, 92 px out from the mouth and ±36 px off its axis                         |
 | Cross               | Kinematic, arms 42, 0.85 rad/s, reverses every 20 s; new balls spawn between its arms so it launches them |
-| Drift / damping     | 30 px/s² along the ellipse gradient, 0.26 /s damping, 740 px/s cap                          |
+| Tilt / damping      | 40 px/s² toward the low side (one lap per 15 s) + 13 px/s² outward, 0.26 /s damping, 740 px/s cap |
 
-**Equal angle looks lopsided.** The first cut put six pockets at 60° steps on
-the ellipse, and they bunched together at the flat ends — the spacing reads as
-uneven even though the angles are not. Five pockets placed at equal arc length
-(a 3000-sample cumulative length table, built once in `computeAngles()`) sit
-evenly, and the wider gaps leave the middle of the table open. The ring dips,
-the slingshots and the bumpers all hang off the arc midpoints for the same
-reason.
+**Equal angle looks lopsided; a static slope is unfair.** The first cut put six
+pockets at 60° steps on the ellipse, and they bunched together at the flat
+ends. Placing them at equal arc length (a 3000-sample cumulative length table,
+built once in `computeAngles()`) fixed the look, and with four pockets the
+split lands on the axes so every gap is identical. That exposed a second
+problem: a fixed outward slope on a 900×500 viewport feeds the near pockets
+much harder than the far ones — the bottom pocket saw 720 approaches to the
+left pocket's 511, and won 8 matches in 10. A tilt whose low side rotates
+fixes it by construction: approaches and drains now sit within ±8 %, and the
+save rate is the same at all four pockets.
 
 ### Match schedule
 
 | Time      | Event                                                                                 |
 | --------- | ------------------------------------------------------------------------------------- |
-| 0:00      | 2 balls; target count grows to 3 at 0:35 and 4 at 1:30                                |
+| 0:00      | 3 balls; target count grows to 4 at 0:30 and 5 at 1:20                                |
 | 0:30, 1:00, … | Bomb ball (r 7.5): 9 s fuse, −2 lives if it drains, otherwise a 150 px radial blast that adds up to 520 px/s to nearby balls |
 | 0:40, 1:35, 2:25 | Multiball: one extra ball at once and another 25 frames later                 |
 | 3:00      | Time out — rank by alive, lives, goals, then elimination time                          |
@@ -255,9 +260,9 @@ ball against the pivot corner; when it drops, the ball rolls to the tip and
 falls through. Sweeping the reaction window with a no-miss keeper gave save
 rates of 93 % at 0.03 s, 89 % at 0.05, 86 % at 0.07 and 80 % at 0.10 s
 (never flipping at all: 76 %, and the balls pile up on the flippers). The
-difficulty table is built around that curve. Measured with the all-AI harness
-on the five-pocket table the levels save 89 / 92 / 94 % of approaches, a
-match runs 125–150 s and ends with 4.6 of 5 keepers out.
+difficulty table is built around that curve. On the four-pocket table an
+all-AI match runs about 140 s, saves ~94 % of approaches and usually ends
+with all three opponents out; roughly one match in five reaches the buzzer.
 
 ### Physics
 
@@ -286,14 +291,17 @@ match runs 125–150 s and ends with 4.6 of 5 keepers out.
   matters: the examples grid keeps the 3D poster behind the card canvas for
   the card's whole life, so a transparent clear let the 3D render ghost
   through the flat one. PixiJS draws its own body pass on an opaque stage.
-- The overlay (all modes) draws the clock, keeper cards, bomb fuses, banners,
+- The overlay (all modes) draws the clock with its tilt compass, the keeper
+  cards, three tilt chevrons on the table centre, bomb fuses, banners,
   floaters and the title / result screens; in 2D it also draws bumper flashes,
-  particles and the drain sink.
+  particles and the drain sink. The chevrons are the only explanation the
+  player gets for the slope, so they run in every mode, projected through the
+  3D camera when there is one.
 - 3D: the star outline is extruded with a canvas texture on top (hex grid,
   lane chevrons in each keeper's colour, centre medallion); ring walls are one
   `InstancedMesh` with an emissive rubber strip on top; pockets are emissive
-  boxes with five life lamps and a seal panel that rises when the keeper is
-  out; bumpers flash and pop; balls are `MeshStandardMaterial` chrome under a
+  boxes with life lamps and a seal panel that rises when the keeper is out;
+  bumpers flash and pop; balls are `MeshStandardMaterial` chrome under a
   PMREM environment built from a canvas equirect (falls back to a less
   metallic finish when the render target fails); particles are instanced
   cubes. The play camera sits behind the player's pocket; the title sways
@@ -304,15 +312,15 @@ match runs 125–150 s and ends with 4.6 of 5 keepers out.
 
 ### Balance notes
 
-- Drains per pocket are even (±8 %) once the drift follows the ellipse
-  gradient; with a radial drift the near top and bottom pockets took ~15 %
-  more.
+- A post **on** the lane axis is a trap: it blocks the funnel into the mouth,
+  halved the approach count on the far pockets and ran seven matches in eight
+  into the clock. Two posts flanking the lane give the same scattering without
+  closing it.
 - Sealed pockets must kick. As plain walls they collected every ball the
-  drift pushed at them and the harness flagged dozens of stuck balls.
+  slope pushed at them and the harness flagged dozens of stuck balls.
 - Bumper kicks are velocity adds, not impulses, so the bomb ball (heavier)
   reacts like the others.
-- The pass that slowed the table down (ball 7 → 5.5 px, cap 950 → 740,
-  drift 38 → 30) also made every save easier: drains fell from 15 to 6 per
-  minute and every match ran into the clock. Shortening the flippers by 2 px
-  and giving back a little speed and kick brought it to 9 per minute with
-  most matches ending on eliminations.
+- The pass that slowed the table down (ball 7 → 5.5 px, cap 950 → 740) also
+  made every save easier: drains fell from 15 to 6 per minute. Shortening the
+  flippers by 2 px, giving back some speed and kick, and raising the ball
+  count to 3/4/5 landed the match at ~140 s.
