@@ -1,7 +1,5 @@
 /**
  * BodyListener — Listens for body events (WAKE/SLEEP).
- *
- * Fully modernized from nape-compiled.js lines 434–515.
  */
 
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
@@ -29,8 +27,6 @@ import type { BodyCallback } from "./BodyCallback";
  * );
  * space.listeners.add(listener);
  * ```
- *
- * Fully modernized from nape-compiled.js lines 434–515.
  */
 export class BodyListener extends Listener {
   /** @internal */
@@ -99,4 +95,4 @@ export class BodyListener extends Listener {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace

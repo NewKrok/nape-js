@@ -5,13 +5,9 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
  *
  * Each edge stores local/world normal, projection values, and vertex references.
  * Edges are pooled and belong to a ZPP_Polygon.
- *
- * Converted from nape-compiled.js lines 41828–42175.
  */
 
 export class ZPP_Edge {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool (linked list via `next`) ---
   static zpp_pool: ZPP_Edge | null = null;
 
@@ -20,7 +16,6 @@ export class ZPP_Edge {
 
   // --- Static: namespace references ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory ---
   static _wrapFn: ((zpp: ZPP_Edge) => any) | null = null;

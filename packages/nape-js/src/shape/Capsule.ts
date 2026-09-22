@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Shape, _bindCapsuleWrap } from "./Shape";
@@ -123,9 +123,6 @@ export class Capsule extends Shape {
     zpp.outer_zn = this;
     zpp.outer_i = this;
 
-    // _inner = this so Shape-level methods work
-    (this as Writable<Capsule>)._inner = this as any;
-
     // Mark this polygon as a capsule for isCapsule() / castCapsule / debug draw
     (zpp as any)._isCapsule = true;
     (zpp as any)._capsuleRadius = radius;
@@ -205,7 +202,6 @@ export class Capsule extends Shape {
         zpp.outer = c;
         zpp.outer_zn = c;
         zpp.outer_i = c;
-        (c as Writable<Capsule>)._inner = c as any;
         return c;
       });
     }
@@ -214,7 +210,6 @@ export class Capsule extends Shape {
     // Fallback: wrap compiled inner directly
     return getOrCreate(inner, (raw) => {
       const c = Object.create(Capsule.prototype) as Capsule;
-      (c as Writable<Capsule>)._inner = raw;
       c.zpp_inner_i = raw.zpp_inner_i;
       c._radius = (raw as any)._capsuleRadius ?? 0;
       c._halfLength = (raw as any)._capsuleHalfLength ?? 0;
@@ -326,7 +321,7 @@ export class Capsule extends Shape {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 
 // Bind Capsule._wrap into Shape so Shape._wrap can dispatch without circular import.

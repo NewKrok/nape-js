@@ -4,21 +4,16 @@
  * Acts as both a container (with comps list of ZPP_Component) and
  * an intrusive linked list of ZPP_Component nodes (ZNPList pattern).
  * Used by the space to group connected bodies/constraints for sleep detection.
- *
- * Converted from nape-compiled.js lines 33175–33539.
  */
 
 import { ZPP_Component } from "./ZPP_Component";
 import { ZNPList_ZPP_Component } from "../util/ZNPRegistry";
 
 export class ZPP_Island {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_Island | null = null;
 
   // --- Static: namespace references ---
-  static _zpp: any = null;
 
   // --- Instance: linked list (ZNPList pattern for ZPP_Component) ---
   length = 0;

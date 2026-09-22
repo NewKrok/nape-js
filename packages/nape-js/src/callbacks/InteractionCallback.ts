@@ -6,8 +6,6 @@ import type { Interactor } from "../phys/Interactor";
  *
  * Provides both interactors and the list of active arbiters between them.
  * Do not store this object beyond the handler scope — it is pooled and reused.
- *
- * Converted from nape-compiled.js lines 1398–1445.
  */
 export class InteractionCallback extends Callback {
   /** The first interactor involved in the interaction. */
@@ -49,5 +47,5 @@ export class InteractionCallback extends Callback {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------

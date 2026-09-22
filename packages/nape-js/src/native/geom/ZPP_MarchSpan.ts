@@ -2,13 +2,9 @@
  * ZPP_MarchSpan — Internal marching squares span data for the nape physics engine.
  *
  * Union-find data structure node used by the marching squares algorithm.
- *
- * Converted from nape-compiled.js lines 69061–69081.
  */
 
 export class ZPP_MarchSpan {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_MarchSpan | null = null;
 

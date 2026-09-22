@@ -3,11 +3,10 @@
  *
  * Lazily creates Vec2 wrappers for each vertex on first access, binding
  * invalidation/validation callbacks to keep the wrapper in sync.
- *
- * Converted from nape-compiled.js lines 8382–8517.
  */
 
 import { getNape } from "../core/engine";
+import { installIterable } from "../util/iterable";
 import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
@@ -109,22 +108,9 @@ GeomVertexIteratorCtor.prototype.next = function (this: any): any {
   return result;
 };
 
-// ES6 iterable protocol — GeomVertexIterator is itself an iterator, so returning
-// `this` makes it work directly in for...of loops (e.g. Polygon.getVertexIterator()).
-(GeomVertexIteratorCtor.prototype as any)[Symbol.iterator] = function (this: any) {
-  return {
-    _it: this,
-    next(this: any): IteratorResult<any> {
-      if (this._it.hasNext()) {
-        return { value: this._it.next(), done: false };
-      }
-      return { value: undefined, done: true };
-    },
-    [Symbol.iterator]() {
-      return this;
-    },
-  };
-};
+// ES6 iterable protocol — GeomVertexIterator is itself an iterator, so it is
+// its own source (e.g. `for (const v of polygon.getVertexIterator())`).
+installIterable(GeomVertexIteratorCtor.prototype, (self) => self);
 
 // ---------------------------------------------------------------------------
 // Register in nape namespace

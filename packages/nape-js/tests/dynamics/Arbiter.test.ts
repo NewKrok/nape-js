@@ -10,7 +10,7 @@ import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
 import { Polygon } from "../../src/shape/Polygon";
 // Side-effect imports: ensure these TS modules are loaded so their classes
-// are registered in the compiled namespace before runtime usage.
+// are registered in the nape namespace before runtime usage.
 import "../../src/callbacks/PreFlag";
 import "../../src/dynamics/Contact";
 

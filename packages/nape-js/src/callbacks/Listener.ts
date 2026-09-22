@@ -3,8 +3,6 @@
  *
  * Provides common properties (type, event, precedence, space) and
  * toString() for all listener subclasses.
- *
- * Fully modernized from nape-compiled.js lines 231–433.
  */
 
 import { getOrCreate } from "../core/cache";
@@ -65,17 +63,10 @@ export function cbEventToNumber(event: CbEvent): number {
  *
  * Provides common properties (`type`, `event`, `precedence`, `space`) shared
  * by all listener types.
- *
- * Fully modernized from nape-compiled.js lines 231–433.
  */
 export class Listener {
   /** @internal */
   zpp_inner: ZPP_Listener;
-
-  /** @internal */
-  get _inner(): this {
-    return this;
-  }
 
   constructor() {
     if (!ZPP_Listener.internal) {
@@ -160,15 +151,14 @@ export class Listener {
   }
 
   set space(space: Space | null) {
-    // Unwrap TS Space wrapper if needed (TS Space has _inner, compiled Space has zpp_inner)
-    const compiledSpace = space != null ? ((space as any)._inner ?? space) : null;
-    const currentCompiledSpace = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
-    if (currentCompiledSpace != compiledSpace) {
+    const target = space ?? null;
+    const current = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
+    if (current != target) {
       if (this.zpp_inner.space != null) {
         this.zpp_inner.space.wrap_listeners.remove(this);
       }
-      if (compiledSpace != null) {
-        const _this = compiledSpace.zpp_inner.wrap_listeners;
+      if (target != null) {
+        const _this = target.zpp_inner.wrap_listeners;
         if (_this.zpp_inner.reverse_flag) {
           _this.push(this);
         } else {

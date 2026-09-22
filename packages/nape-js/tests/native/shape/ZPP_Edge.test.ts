@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_Edge } from "../../../src/native/shape/ZPP_Edge";
-import { createMockZpp, createMockNape } from "../_mocks";
+import { createMockNape } from "../_mocks";
 
 describe("ZPP_Edge", () => {
   beforeEach(() => {
@@ -8,7 +8,6 @@ describe("ZPP_Edge", () => {
     ZPP_Edge.internal = false;
     ZPP_Edge._wrapFn = null;
     ZPP_Edge._nape = createMockNape();
-    ZPP_Edge._zpp = createMockZpp();
   });
 
   describe("constructor", () => {
@@ -194,19 +193,6 @@ describe("ZPP_Edge", () => {
 
   describe("getlnorm", () => {
     it("should create wrap_lnorm Vec2 from pool", () => {
-      const innerVec = {
-        weak: false,
-        _immutable: false,
-        x: 0,
-        y: 0,
-        outer: null as any,
-        next: null,
-      };
-      ZPP_Edge._zpp = {
-        ...createMockZpp(),
-        util: { ...createMockZpp().util, ZPP_PubPool: { poolVec2: null, nextVec2: null } },
-        geom: { ZPP_Vec2: { zpp_pool: innerVec } },
-      };
       const outerVec = { zpp_inner: null as any, zpp_pool: null, zpp_disp: false };
       ZPP_Edge._nape = {
         geom: {

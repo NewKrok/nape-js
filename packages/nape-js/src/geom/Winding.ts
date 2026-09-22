@@ -7,8 +7,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `UNDEFINED`     — winding is not determined
  * - `CLOCKWISE`     — clockwise winding
  * - `ANTICLOCKWISE` — counter-clockwise winding
- *
- * Converted from nape-compiled.js lines 19050–19116.
  */
 export class Winding {
   constructor() {
@@ -53,7 +51,7 @@ export class Winding {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.geom.Winding = Winding;

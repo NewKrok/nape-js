@@ -2,8 +2,6 @@
  * PreListener — Listens for pre-interaction events.
  *
  * Allows the handler to accept/ignore interactions before collision resolution.
- *
- * Fully modernized from nape-compiled.js lines 1142–1338.
  */
 
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
@@ -47,8 +45,6 @@ import type { PreFlag } from "./PreFlag";
  * );
  * space.listeners.add(preListener);
  * ```
- *
- * Fully modernized from nape-compiled.js lines 1142–1338.
  */
 export class PreListener extends Listener {
   /** @internal */
@@ -170,4 +166,4 @@ export class PreListener extends Listener {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace

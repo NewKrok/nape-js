@@ -73,11 +73,6 @@ describe("PivotJoint (modernized)", () => {
     expect(visited).toContain(b2);
   });
 
-  it("should provide backward-compat zpp_inner_zn alias", () => {
-    const joint = new PivotJoint(null, null, new Vec2(0, 0), new Vec2(0, 0));
-    expect(joint.zpp_inner_zn).toBe(joint.zpp_inner);
-  });
-
   it("should work with _wrap from ZPP instance", () => {
     const zpp = new ZPP_PivotJoint();
     zpp.a1localx = 5;

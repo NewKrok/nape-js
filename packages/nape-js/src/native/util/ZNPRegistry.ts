@@ -5,7 +5,7 @@
  * were only reachable through the zpp_nape namespace object). They are now
  * plain exported classes so engine code imports them directly and the pool
  * statics live on named, monomorphic classes. registerZNPClasses() only
- * assigns them into the compiled-style namespace for compatibility.
+ * assigns them into the nape namespace for compatibility.
  *
  * Each subclass declares its own static pool slot — pools must not be
  * shared through the base class.
@@ -256,7 +256,7 @@ export class ZPP_Set_ZPP_CbSet extends ZPP_Set<any> {
 }
 
 // ---------------------------------------------------------------------------
-// Namespace registration — compatibility with the compiled-style namespace
+// Namespace registration — compatibility with the nape namespace
 // ---------------------------------------------------------------------------
 
 export function registerZNPClasses(zpp: any): void {

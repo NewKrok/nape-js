@@ -3,15 +3,11 @@
  *
  * Manages pooling and traversal state for circular doubly-linked vertex rings
  * used by GeomPoly.
- *
- * Converted from nape-compiled.js lines 20886–20932.
  */
 
 import { getNape } from "../../core/engine";
 
 export class ZPP_GeomVertexIterator {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_GeomVertexIterator | null = null;
 

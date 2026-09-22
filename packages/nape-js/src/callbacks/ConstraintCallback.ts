@@ -6,8 +6,6 @@ import type { Constraint } from "../constraint/Constraint";
  *
  * Provides the constraint that triggered the event. Do not store this object
  * beyond the handler scope — it is pooled and reused.
- *
- * Converted from nape-compiled.js lines 1262–1292.
  */
 export class ConstraintCallback extends Callback {
   /** The constraint that woke, fell asleep, or broke. */
@@ -28,5 +26,5 @@ export class ConstraintCallback extends Callback {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------

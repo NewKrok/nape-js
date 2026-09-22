@@ -22,7 +22,7 @@ describe("InteractionListener", () => {
       () => {},
     );
     expect(listener).toBeDefined();
-    expect(listener._inner).toBeDefined();
+    expect(listener.zpp_inner).toBeDefined();
   });
 
   it("should detect collision between two bodies", () => {

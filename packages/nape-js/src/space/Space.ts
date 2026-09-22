@@ -65,11 +65,6 @@ export class Space {
   }
 
   /** @internal */
-  get _inner(): this {
-    return this;
-  }
-
-  /** @internal */
   static _wrap(inner: NapeInner): Space {
     if (!inner) return null as unknown as Space;
     if (inner instanceof Space) return inner;

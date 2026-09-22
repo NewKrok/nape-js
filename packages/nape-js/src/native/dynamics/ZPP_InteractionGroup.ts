@@ -4,19 +4,13 @@ import { ZNPList_ZPP_InteractionGroup, ZNPList_ZPP_Interactor } from "../util/ZN
  *
  * Hierarchical groups that can override interaction filters. When two shapes
  * share a common group with `ignore = true`, their interaction is suppressed.
- *
- * Converted from nape-compiled.js lines 63367–63463, 135330–135331.
  */
 
 export class ZPP_InteractionGroup {
   // --- Static: type flags ---
   static SHAPE = 1;
   static BODY = 2;
-
-  // --- Static: Haxe metadata ---
-
-  // --- Static: namespace references (set by compiled module) ---
-  static _zpp: any = null;
+  // --- Static: namespace references (assigned by ZPPRegistry) ---
 
   // --- Static: wrapper factory callback (set by InteractionGroup.ts) ---
   static _wrapFn: ((zpp: ZPP_InteractionGroup) => any) | null = null;
@@ -40,9 +34,6 @@ export class ZPP_InteractionGroup {
 
   // --- Instance: depth in group hierarchy ---
   depth = 0;
-
-  // --- Instance: Haxe class reference ---
-
   constructor() {
     this.groups = new ZNPList_ZPP_InteractionGroup();
     this.interactors = new ZNPList_ZPP_Interactor();

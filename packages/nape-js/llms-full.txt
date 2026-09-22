@@ -76,7 +76,7 @@ All public classes are exported from the main entry point `@newkrok/nape-js`. Th
 
 ### Lists
 
-All collection properties (e.g., `body.shapes`, `space.bodies`) return `NapeList<T>` which supports ES6 iteration (`for...of`), indexed access (`.at(i)`), and standard mutation (`add()`, `remove()`, `push()`, `pop()`).
+All collection properties (e.g., `body.shapes`, `space.bodies`) return typed engine lists (`ShapeList`, `BodyList`, …) which support ES6 iteration (`for...of`), indexed access (`.at(i)`), and standard mutation (`add()`, `remove()`, `push()`, `pop()`).
 
 ### Simulation Loop
 
@@ -434,9 +434,9 @@ new Body(type?: BodyType, position?: Vec2)
 | `gravMassMode` | `GravMassMode` | R/W | DEFAULT, FIXED, or SCALED |
 | `gravMass` | `number` | R/W | Gravity mass (when gravMassMode is FIXED) |
 | `gravMassScale` | `number` | R/W | Gravity mass scale (when gravMassMode is SCALED) |
-| `shapes` | `NapeList<Shape>` | R | Attached shapes |
-| `constraints` | `NapeList<Constraint>` | R | Connected constraints |
-| `arbiters` | `NapeList<Arbiter>` | R | Active interaction arbiters |
+| `shapes` | `ShapeList` | R | Attached shapes |
+| `constraints` | `ConstraintList` | R | Connected constraints |
+| `arbiters` | `ArbiterList` | R | Active interaction arbiters |
 | `compound` | `Compound \| null` | R/W | Parent compound |
 | `space` | `Space \| null` | R/W | Parent space (set to add body to world) |
 | `isSleeping` | `boolean` | R | True if body is asleep |
@@ -448,7 +448,7 @@ new Body(type?: BodyType, position?: Vec2)
 | `kinematicVel` | `Vec2` | R/W | Kinematic velocity (live Vec2) |
 | `kinAngVel` | `number` | R/W | Kinematic angular velocity |
 | `surfaceVel` | `Vec2` | R/W | Surface velocity (for conveyor belt effects) |
-| `cbTypes` | `NapeList<CbType>` | R | Callback type tags |
+| `cbTypes` | `CbTypeList` | R | Callback type tags |
 | `group` | `InteractionGroup \| null` | R/W | Interaction group |
 | `userData` | `Record<string, unknown>` | R | User data object |
 | `allowMovement` | `boolean` | R/W | If false, body cannot translate |
@@ -543,7 +543,7 @@ new FluidProperties(density?: number, viscosity?: number)
 | `density` | `number` | Fluid density (buoyancy). Default: 2.0 |
 | `viscosity` | `number` | Fluid viscosity (drag). Default: 3.0 |
 | `gravity` | `Vec2` | Override gravity inside fluid (live Vec2) |
-| `shapes` | `NapeList<Shape>` | Shapes using these properties |
+| `shapes` | `ShapeList` | Shapes using these properties |
 | `userData` | `Record<string, unknown>` | User data |
 
 ---
@@ -558,12 +558,12 @@ new Compound()
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `bodies` | `NapeList<Body>` | Child bodies |
-| `constraints` | `NapeList<Constraint>` | Child constraints |
-| `compounds` | `NapeList<Compound>` | Child compounds |
+| `bodies` | `BodyList` | Child bodies |
+| `constraints` | `ConstraintList` | Child constraints |
+| `compounds` | `CompoundList` | Child compounds |
 | `compound` | `Compound \| null` | Parent compound |
 | `space` | `Space \| null` | Parent space |
-| `cbTypes` | `NapeList<CbType>` | Callback type tags |
+| `cbTypes` | `CbTypeList` | Callback type tags |
 | `userData` | `Record<string, unknown>` | User data |
 
 | Method | Returns | Description |
@@ -588,7 +588,7 @@ Base class for Body, Shape, Compound. Provides interaction tagging.
 | `id` | `number` | Unique identifier |
 | `userData` | `Record<string, unknown>` | User data |
 | `group` | `InteractionGroup \| null` | Interaction group |
-| `cbTypes` | `NapeList<CbType>` | Callback type tags |
+| `cbTypes` | `CbTypeList` | Callback type tags |
 
 | Method | Returns | Description |
 |--------|---------|-------------|
@@ -632,7 +632,7 @@ Base class for Circle and Polygon. Cannot be instantiated directly.
 | `fluidProperties` | `FluidProperties` | R/W | Fluid properties |
 | `fluidEnabled` | `boolean` | R/W | Enable fluid interaction |
 | `sensorEnabled` | `boolean` | R/W | Enable sensor mode (detects overlap without physical response) |
-| `cbTypes` | `NapeList<CbType>` | R | Callback type tags |
+| `cbTypes` | `CbTypeList` | R | Callback type tags |
 | `userData` | `Record<string, unknown>` | R | User data |
 
 | Method | Returns | Description |
@@ -775,7 +775,7 @@ Base class for all joints. Cannot be instantiated directly.
 | `isSleeping` | `boolean` | R | True if constraint is asleep |
 | `space` | `Space \| null` | R/W | Parent space (set to add to world) |
 | `compound` | `Compound \| null` | R/W | Parent compound |
-| `cbTypes` | `NapeList<CbType>` | R | Callback type tags |
+| `cbTypes` | `CbTypeList` | R | Callback type tags |
 | `userData` | `Record<string, unknown>` | R | User data |
 | `debugDraw` | `boolean` | R/W | Enable debug drawing |
 
@@ -1373,11 +1373,11 @@ new Space(gravity?: Vec2, broadphase?: Broadphase)
 | `deterministic` | `boolean` | R/W | Same-platform deterministic mode. Sorts all iteration lists by stable IDs. Implies `sortContacts = true`. ~1-5% overhead. Default: false. |
 | `worldLinearDrag` | `number` | R/W | Global linear drag coefficient |
 | `worldAngularDrag` | `number` | R/W | Global angular drag coefficient |
-| `bodies` | `NapeList<Body>` | R | All bodies |
-| `liveBodies` | `NapeList<Body>` | R | Awake bodies |
-| `compounds` | `NapeList<Compound>` | R | All compounds |
-| `constraints` | `NapeList<Constraint>` | R | All constraints |
-| `liveConstraints` | `NapeList<Constraint>` | R | Awake constraints |
+| `bodies` | `BodyList` | R | All bodies |
+| `liveBodies` | `BodyList` | R | Awake bodies |
+| `compounds` | `CompoundList` | R | All compounds |
+| `constraints` | `ConstraintList` | R | All constraints |
+| `liveConstraints` | `ConstraintList` | R | Awake constraints |
 | `world` | `Body` | R | Static world body (immovable anchor) |
 | `arbiters` | `ArbiterList` | R | Active arbiters |
 | `listeners` | `ListenerList` | R | Event listeners |
@@ -1463,9 +1463,9 @@ interactionType(shape1: Shape, shape2: Shape): InteractionType | null
 
 ## Collections
 
-### NapeList\<T\>
+### Typed lists (`BodyList`, `ShapeList`, `ConstraintList`, …)
 
-Generic iterable list wrapping internal Haxe lists. Supports ES6 iteration.
+Every collection property returns a typed engine list. All list types share the same interface (`TypedListLike<T>`) and support ES6 iteration.
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -1977,7 +1977,7 @@ import {
   fractureBody, computeVoronoi, generateFractureSites,
 
   // Utilities
-  NapeList, VERSION
+  VERSION
 } from "@newkrok/nape-js";
 ```
 

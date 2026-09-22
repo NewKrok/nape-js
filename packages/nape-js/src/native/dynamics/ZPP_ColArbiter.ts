@@ -4,8 +4,6 @@
  * The largest and most complex arbiter subclass. Handles collision contacts,
  * friction/restitution, contact point management, normal vector wrapping,
  * constraint mass matrices, warm-starting, velocity/position impulse solving.
- *
- * Converted from nape-compiled.js lines 30207–31854.
  */
 
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
@@ -15,8 +13,6 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_ColArbiter extends ZPP_Arbiter {
-  // --- Static: Haxe metadata ---
-
   // --- Static: face type constants ---
   static FACE1 = 0;
   static FACE2 = 1;
@@ -123,9 +119,6 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
   stat = false;
   mutable = false;
   pre_dt = 0.0;
-
-  // --- Instance: Haxe class reference ---
-
   constructor() {
     super();
     this.pre_dt = 0.0;
@@ -134,10 +127,10 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     this.next = null;
     this.hpc2 = false;
     this.hc2 = false;
-    this.oc2 = null;
-    this.c2 = null;
-    this.oc1 = null;
-    this.c1 = null;
+    this.oc2 = null!;
+    this.c2 = null!;
+    this.oc1 = null!;
+    this.c1 = null!;
     this.__ref_vertex = 0;
     this.__ref_edge2 = null;
     this.__ref_edge1 = null;

@@ -1,7 +1,7 @@
 name: Benchmark
 
-# Disabled on push/PR — manual trigger only.
-# Re-enable by restoring the `push` / `pull_request` triggers below.
+# Manual trigger only. Results are uploaded as an artifact and compared
+# against benchmarks/baseline.json (informational).
 on:
   workflow_dispatch:
 
@@ -23,45 +23,18 @@ jobs:
       - name: Build
         run: npm run build
 
-      # On PRs: try to restore the most recent master baseline from cache
-      - name: Restore master benchmark baseline
-        id: cache-baseline
-        if: github.event_name == 'pull_request'
-        uses: actions/cache/restore@v4
-        with:
-          path: benchmarks/baseline-ci.json
-          # Exact key never matches — restore-keys picks the most recent master entry
-          key: benchmark-master-never-exact
-          restore-keys: |
-            benchmark-master-
-
       # --expose-gc lets the harness collect between trials instead of eating a
       # major GC mid-measurement; it cut worst-case run-to-run spread from ~80%
       # to under 7%.
       - name: Run benchmarks
         run: node --expose-gc benchmarks/run.mjs --json > benchmarks/current.json
 
-      # On PRs with a cached baseline: compare and fail if >10% regression
-      - name: Compare against master baseline
-        if: github.event_name == 'pull_request' && steps.cache-baseline.outputs.cache-matched-key != ''
-        run: node benchmarks/compare.mjs benchmarks/baseline-ci.json benchmarks/current.json --threshold 10
-
-      # On PRs without a cached baseline: first run, skip comparison
-      - name: No master baseline yet — skipping comparison
-        if: github.event_name == 'pull_request' && steps.cache-baseline.outputs.cache-matched-key == ''
-        run: echo "No master baseline cached yet. Comparison will run after the first master push."
-
-      # On master push: save results as the new baseline for future PRs
-      - name: Prepare CI baseline
-        if: github.event_name == 'push'
-        run: cp benchmarks/current.json benchmarks/baseline-ci.json
-
-      - name: Save CI baseline to cache
-        if: github.event_name == 'push'
-        uses: actions/cache/save@v4
-        with:
-          path: benchmarks/baseline-ci.json
-          key: benchmark-master-${{ github.sha }}
+      # Compare against the committed baseline. Informational only: the
+      # committed numbers come from a developer machine, so a regression here
+      # is a prompt to re-run locally, not a hard gate.
+      - name: Compare against committed baseline
+        run: node benchmarks/compare.mjs benchmarks/baseline.json benchmarks/current.json --threshold 10 --normalize
+        continue-on-error: true
 
       - name: Upload benchmark results
         uses: actions/upload-artifact@v4

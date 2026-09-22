@@ -3,13 +3,9 @@
  *
  * Pure container for singleton flag objects used throughout the engine.
  * These are initialized lazily by the compiled code at runtime.
- *
- * Converted from nape-compiled.js lines 48483–48529.
  */
 
 export class ZPP_Flags {
-  // --- Static: Haxe metadata ---
-
   // --- Gravity mass mode ---
   static GravMassMode_DEFAULT: any = null;
   static GravMassMode_FIXED: any = null;

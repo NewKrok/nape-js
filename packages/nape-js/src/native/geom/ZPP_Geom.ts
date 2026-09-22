@@ -2,8 +2,6 @@
  * ZPP_Geom — Internal shape geometry validation for the nape physics engine.
  *
  * Validates and updates shape global axes, vertices, edges, AABBs, and world COMs.
- *
- * Converted from nape-compiled.js lines 26135–26462.
  */
 
 export class ZPP_Geom {

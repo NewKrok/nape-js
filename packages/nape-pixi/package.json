@@ -29,6 +29,7 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "dev": "vite",

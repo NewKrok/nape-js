@@ -1,6 +1,6 @@
 import { getOrCreate } from "../core/cache";
 import { InteractionGroup } from "../dynamics/InteractionGroup";
-import type { NapeInner, Writable } from "../geom/Vec2";
+import type { NapeInner } from "../geom/Vec2";
 
 // ---------------------------------------------------------------------------
 // Subclass wrap bindings — Body and Shape register their _wrap functions
@@ -46,16 +46,8 @@ export class Interactor {
    */
   zpp_inner_i: any;
 
-  /**
-   * @internal Backward-compatible accessor for compiled Shape/Circle/Polygon code.
-   * Thin wrappers set this to the compiled inner object; modernized subclasses set
-   * it to `this`. Shape-level methods still delegate through this.
-   */
-  readonly _inner: NapeInner;
-
   /** @internal – only subclasses may construct. */
   protected constructor() {
-    (this as Writable<Interactor>)._inner = undefined!;
     this.zpp_inner_i = null;
   }
 
@@ -72,7 +64,6 @@ export class Interactor {
     // Fallback: generic Interactor wrapper
     return getOrCreate(inner, (raw: NapeInner) => {
       const i = Object.create(Interactor.prototype) as Interactor;
-      (i as Writable<Interactor>)._inner = raw;
       i.zpp_inner_i = raw.zpp_inner_i ?? raw;
       return i;
     });

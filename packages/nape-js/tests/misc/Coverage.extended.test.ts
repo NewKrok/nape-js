@@ -108,10 +108,10 @@ describe("Edge — uncovered paths", () => {
 });
 
 // ---------------------------------------------------------------------------
-// NapeList tests (via Body.shapes which is a NapeList<Shape>)
+// Typed list tests (via Body.shapes, a ShapeList)
 // ---------------------------------------------------------------------------
 
-describe("NapeList — uncovered paths", () => {
+describe("Typed list — uncovered paths", () => {
   it("shift() removes and returns first element from shape list", () => {
     const body = new Body(BodyType.DYNAMIC, Vec2.weak(0, 0));
     const c1 = new Circle(10);

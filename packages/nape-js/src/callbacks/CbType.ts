@@ -2,7 +2,6 @@ import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_CbType } from "../native/callbacks/ZPP_CbType";
 import { ZPP_InteractorList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
-import type { NapeInner } from "../geom/Vec2";
 import type { OptionType } from "./OptionType";
 
 /**
@@ -27,17 +26,10 @@ import type { OptionType } from "./OptionType";
  * );
  * space.listeners.add(listener);
  * ```
- *
- * Converted from nape-compiled.js lines 689–770.
  */
 export class CbType {
   /** @internal */
   zpp_inner: ZPP_CbType;
-
-  /** @internal */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor() {
     this.zpp_inner = new ZPP_CbType();
@@ -193,6 +185,6 @@ export class CbType {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 const _napeForCbType = getNape();
 _napeForCbType.callbacks.CbType = CbType;

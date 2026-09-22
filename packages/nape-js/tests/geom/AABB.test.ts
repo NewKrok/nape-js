@@ -329,11 +329,6 @@ describe("AABB", () => {
     expect(box.zpp_inner).toBeInstanceOf(ZPP_AABB);
   });
 
-  it("should have _inner returning this", () => {
-    const box = new AABB();
-    expect(box._inner).toBe(box);
-  });
-
   it("should have outer reference from zpp_inner back to wrapper", () => {
     const box = new AABB();
     expect(box.zpp_inner.outer).toBe(box);

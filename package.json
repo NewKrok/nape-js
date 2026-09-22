@@ -12,6 +12,7 @@
   "scripts": {
     "build": "npm run sync:readme && npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run build -w @newkrok/nape-js && npm run typecheck --workspaces --if-present",
     "test:watch": "npm run test:watch -w @newkrok/nape-js",
     "coverage": "npm run coverage --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
@@ -20,7 +21,7 @@
     "check:circular": "npm run check:circular -w @newkrok/nape-js",
     "benchmark": "npm run build && node --expose-gc benchmarks/run.mjs",
     "benchmark:json": "npm run build && node --expose-gc benchmarks/run.mjs --json",
-    "benchmark:compare": "node benchmarks/compare.mjs",
+    "benchmark:compare": "npm run benchmark:json -- > benchmarks/current.json && node benchmarks/compare.mjs benchmarks/baseline.json benchmarks/current.json",
     "benchmark:update-baseline": "npm run benchmark:json -- > benchmarks/baseline.json && echo 'baseline.json updated'",
     "build:docs": "npm run build && cp packages/nape-js/dist/index.js docs/nape-js.esm.js && rm -f docs/chunk-*.js && cp packages/nape-js/dist/chunk-*.js docs/ && mkdir -p docs/serialization docs/replay && cp packages/nape-js/dist/serialization/index.js docs/serialization/index.js && cp packages/nape-js/dist/replay/index.js docs/replay/index.js && cp packages/nape-pixi/dist/index.js docs/nape-pixi.esm.js && cp packages/nape-js/llms.txt packages/nape-js/llms-full.txt docs/ && node scripts/stamp-docs.mjs && node scripts/build-image-variants.mjs && node scripts/build-site-pages.mjs && node scripts/prerender-i18n.mjs && npm run build:typedoc",
     "build:typedoc": "typedoc",

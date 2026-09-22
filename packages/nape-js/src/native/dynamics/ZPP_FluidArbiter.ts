@@ -3,8 +3,6 @@
  *
  * Handles fluid interaction physics: buoyancy forces, viscous drag,
  * angular damping. Manages a lazy Vec2 position wrapper for the centroid.
- *
- * Converted from nape-compiled.js lines 29522–30206.
  */
 
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
@@ -12,8 +10,6 @@ import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_FluidArbiter extends ZPP_Arbiter {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_FluidArbiter | null = null;
 
@@ -72,9 +68,6 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
 
   // --- Instance: previous dt for warm-starting ---
   pre_dt = 0.0;
-
-  // --- Instance: Haxe class reference ---
-
   constructor() {
     super();
     this.pre_dt = 0.0;

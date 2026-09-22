@@ -3,16 +3,12 @@
  *
  * Manages include/exclude lists of callback types with ordered insertion,
  * set intersection tests, and handler delegation for live changes.
- *
- * Converted from nape-compiled.js lines 51337–51655.
  */
 
 import { ZPP_CbType } from "./ZPP_CbType";
 import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_OptionType {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
   static _zpp: any = null;

@@ -24,11 +24,6 @@ describe("Ray", () => {
     expect(ray.zpp_inner).toBeDefined();
   });
 
-  it("should have _inner backward compat alias", () => {
-    const ray = new Ray(new Vec2(0, 0), new Vec2(1, 0));
-    expect(ray._inner).toBe(ray);
-  });
-
   it("should throw on null origin", () => {
     expect(() => new Ray(null!, new Vec2(1, 0))).toThrow("origin cannot be null");
   });

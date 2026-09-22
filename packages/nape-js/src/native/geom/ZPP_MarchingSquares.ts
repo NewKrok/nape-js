@@ -3,8 +3,6 @@
  *
  * Implements the core marching squares isosurface extraction, including cell
  * processing, polygon combination across cells, and interpolation.
- *
- * Converted from nape-compiled.js lines 20938–24762.
  */
 
 import { ZPP_GeomVert, disposeGeomVertWrap } from "./ZPP_GeomVert";
@@ -27,11 +25,9 @@ export class ZPP_MarchingSquares {
   static look_march: number[];
 
   // Namespace refs for compiled-only types (ZNPArray2_*)
-  static _zpp: any = null;
   static _nape: any = null;
 
-  static _init(zpp: any, nape: any): void {
-    ZPP_MarchingSquares._zpp = zpp;
+  static _init(nape: any): void {
     ZPP_MarchingSquares._nape = nape;
     // Initialize singleton + lookup table (was in compiled init block)
     ZPP_MarchingSquares.me = new ZPP_MarchingSquares();

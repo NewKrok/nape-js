@@ -130,17 +130,6 @@ describe("ZPP_Vec2", () => {
       mockInner.outer = mockOuter;
       mockOuter.zpp_inner = mockInner;
 
-      ZPP_Vec2._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any;
-            constructor() {
-              this.zpp_inner = mockInner;
-            }
-          },
-        },
-      };
-
       const v = new ZPP_Vec2();
       v.x = 10;
       v.y = 20;
@@ -149,7 +138,6 @@ describe("ZPP_Vec2", () => {
       expect(w.zpp_inner).toBe(v);
 
       // Clean up
-      ZPP_Vec2._nape = null;
     });
 
     it("should return existing outer when already set", () => {

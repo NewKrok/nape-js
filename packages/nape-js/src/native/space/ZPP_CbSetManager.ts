@@ -6,15 +6,10 @@ import { ZPP_Set_ZPP_CbSet } from "../util/ZNPRegistry";
  *
  * Manages a tree (ZPP_Set) of ZPP_CbSet instances, providing lookup and
  * pairing of callback sets for interactor pairs. Each space has one manager.
- *
- * Converted from nape-compiled.js lines 34154–34298.
  */
 
 export class ZPP_CbSetManager {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
-  static _zpp: any = null;
 
   // --- Instance fields ---
   cbsets: any = null; // ZPP_Set_ZPP_CbSet — dynamic class

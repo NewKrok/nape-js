@@ -8,8 +8,6 @@ import { getNape } from "../../core/engine";
  * state. All 13 specializations are identical except for the ZNPList type they
  * create in their constructor and the public wrapper class they instantiate in
  * their static get() method.
- *
- * Extracted from nape-compiled.js Priority 15.
  */
 export class ZPP_PublicList {
   user_length: number = 0;
@@ -115,40 +113,88 @@ function makeZPP_List(
 }
 
 // ---------------------------------------------------------------------------
-// Exported direct references — set by makeZPP_List calls below
+// The 13 ZPP_*List specialisations, exported by name so engine and wrapper
+// code can import them directly instead of resolving them through the
+// namespace object by string.
 // ---------------------------------------------------------------------------
 
 type ZPP_PublicListWithGet = typeof ZPP_PublicList & { get(list: any, imm?: boolean): any };
-export let ZPP_ConstraintList: ZPP_PublicListWithGet = null as any;
-export let ZPP_InteractorList: ZPP_PublicListWithGet = null as any;
-export let ZPP_ArbiterList: ZPP_PublicListWithGet = null as any;
 
-// Register all 13 ZPP_*List specialisations.
-ZPP_ConstraintList = makeZPP_List(
+export const ZPP_ConstraintList: ZPP_PublicListWithGet = makeZPP_List(
   "ZNPList_ZPP_Constraint",
   "constraint",
   "ConstraintList",
   "ZPP_ConstraintList",
 );
-makeZPP_List("ZNPList_ZPP_Body", "phys", "BodyList", "ZPP_BodyList");
-ZPP_InteractorList = makeZPP_List(
+export const ZPP_BodyList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_Body",
+  "phys",
+  "BodyList",
+  "ZPP_BodyList",
+);
+export const ZPP_InteractorList: ZPP_PublicListWithGet = makeZPP_List(
   "ZNPList_ZPP_Interactor",
   "phys",
   "InteractorList",
   "ZPP_InteractorList",
 );
-makeZPP_List("ZNPList_ZPP_Compound", "phys", "CompoundList", "ZPP_CompoundList");
-makeZPP_List("ZNPList_ZPP_Listener", "callbacks", "ListenerList", "ZPP_ListenerList");
-makeZPP_List("ZNPList_ZPP_CbType", "callbacks", "CbTypeList", "ZPP_CbTypeList");
-makeZPP_List("ZNPList_ZPP_GeomPoly", "geom", "GeomPolyList", "ZPP_GeomPolyList");
-makeZPP_List("ZNPList_RayResult", "geom", "RayResultList", "ZPP_RayResultList");
-makeZPP_List("ZNPList_ConvexResult", "geom", "ConvexResultList", "ZPP_ConvexResultList");
-makeZPP_List("ZNPList_ZPP_Edge", "shape", "EdgeList", "ZPP_EdgeList");
-makeZPP_List("ZNPList_ZPP_Shape", "shape", "ShapeList", "ZPP_ShapeList");
-makeZPP_List(
+export const ZPP_CompoundList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_Compound",
+  "phys",
+  "CompoundList",
+  "ZPP_CompoundList",
+);
+export const ZPP_ListenerList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_Listener",
+  "callbacks",
+  "ListenerList",
+  "ZPP_ListenerList",
+);
+export const ZPP_CbTypeList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_CbType",
+  "callbacks",
+  "CbTypeList",
+  "ZPP_CbTypeList",
+);
+export const ZPP_GeomPolyList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_GeomPoly",
+  "geom",
+  "GeomPolyList",
+  "ZPP_GeomPolyList",
+);
+export const ZPP_RayResultList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_RayResult",
+  "geom",
+  "RayResultList",
+  "ZPP_RayResultList",
+);
+export const ZPP_ConvexResultList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ConvexResult",
+  "geom",
+  "ConvexResultList",
+  "ZPP_ConvexResultList",
+);
+export const ZPP_EdgeList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_Edge",
+  "shape",
+  "EdgeList",
+  "ZPP_EdgeList",
+);
+export const ZPP_ShapeList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_Shape",
+  "shape",
+  "ShapeList",
+  "ZPP_ShapeList",
+);
+export const ZPP_InteractionGroupList: ZPP_PublicListWithGet = makeZPP_List(
   "ZNPList_ZPP_InteractionGroup",
   "dynamics",
   "InteractionGroupList",
   "ZPP_InteractionGroupList",
 );
-ZPP_ArbiterList = makeZPP_List("ZNPList_ZPP_Arbiter", "dynamics", "ArbiterList", "ZPP_ArbiterList");
+export const ZPP_ArbiterList: ZPP_PublicListWithGet = makeZPP_List(
+  "ZNPList_ZPP_Arbiter",
+  "dynamics",
+  "ArbiterList",
+  "ZPP_ArbiterList",
+);

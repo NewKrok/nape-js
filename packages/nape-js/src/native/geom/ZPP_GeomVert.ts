@@ -3,8 +3,6 @@
  *
  * Circular doubly-linked list node for polygon vertex rings.
  * Supports object pooling and lazy Vec2 wrapper creation.
- *
- * Converted from nape-compiled.js lines 26463–26646.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";

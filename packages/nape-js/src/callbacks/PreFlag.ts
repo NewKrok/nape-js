@@ -12,8 +12,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  *
  * Use `IGNORE`/`ACCEPT` for stateful decisions (e.g., one-way platforms).
  * Use `*_ONCE` variants for single-step overrides.
- *
- * Converted from nape-compiled.js lines 2504–2591.
  */
 export class PreFlag {
   constructor() {
@@ -71,7 +69,7 @@ export class PreFlag {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.PreFlag = PreFlag;

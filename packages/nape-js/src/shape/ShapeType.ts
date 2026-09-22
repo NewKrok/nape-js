@@ -6,8 +6,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  *
  * - `CIRCLE`  — circle shape
  * - `POLYGON` — polygon shape
- *
- * Converted from nape-compiled.js lines 30435–30482.
  */
 export class ShapeType {
   constructor() {
@@ -52,7 +50,7 @@ export class ShapeType {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.shape.ShapeType = ShapeType;

@@ -1,31 +1,17 @@
-import { getNape } from "../core/engine";
+import { ZPP_ShapeList } from "../native/util/ZPP_PublicList";
 import { getOrCreate } from "../core/cache";
 import { ZPP_InteractionFilter } from "../native/dynamics/ZPP_InteractionFilter";
-import type { NapeInner } from "../geom/Vec2";
 
 /**
  * Bit-mask based interaction filter for controlling which shapes
  * collide, sense, or interact as fluids.
  *
  * Internally wraps a ZPP_InteractionFilter and is registered as
- * the public `nape.dynamics.InteractionFilter` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 14361–14640.
+ * the public `nape.dynamics.InteractionFilter` class in the nape namespace.
  */
 export class InteractionFilter {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_InteractionFilter this wrapper owns. */
   zpp_inner: ZPP_InteractionFilter;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `filter._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * @param collisionGroup - Collision group bits (default 1).
@@ -55,7 +41,7 @@ export class InteractionFilter {
     this.zpp_inner = zpp;
     zpp.outer = this;
 
-    // --- Validate and set each property (mirrors compiled constructor) ---
+    // --- Validate and set each property ---
 
     if (zpp.collisionGroup != collisionGroup) {
       zpp.collisionGroup = collisionGroup;
@@ -182,11 +168,7 @@ export class InteractionFilter {
   /** Read-only list of shapes currently using this filter. */
   get shapes(): any {
     if (this.zpp_inner.wrap_shapes == null) {
-      const nape = getNape();
-      this.zpp_inner.wrap_shapes = nape.zpp_nape.util.ZPP_ShapeList.get(
-        this.zpp_inner.shapes,
-        true,
-      );
+      this.zpp_inner.wrap_shapes = ZPP_ShapeList.get(this.zpp_inner.shapes, true);
     }
     return this.zpp_inner.wrap_shapes;
   }

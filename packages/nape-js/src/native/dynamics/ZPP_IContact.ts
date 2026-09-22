@@ -4,13 +4,9 @@
  * Stores relative positions (r1, r2), mass matrices (nMass, tMass),
  * accumulated impulses (jnAcc, jtAcc), and friction/bounce coefficients.
  * Also acts as a linked list node/container (Haxe ZNPList pattern).
- *
- * Converted from nape-compiled.js lines 32346–32733.
  */
 
 export class ZPP_IContact {
-  // --- Static: Haxe metadata ---
-
   // --- Instance: linked list (ZNPList pattern) ---
   length = 0;
   pushmod = false;

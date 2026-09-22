@@ -3,8 +3,6 @@
  *
  * Stores vertex, type (start/end/intersection), and segment references.
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 33879–33936.
  */
 
 export class ZPP_SimpleEvent {

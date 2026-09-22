@@ -81,7 +81,6 @@ import { ZPP_SweepDistance } from "../geom/ZPP_SweepDistance";
 import { ZPP_Triangular } from "../geom/ZPP_Triangular";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_Vec3 } from "../geom/ZPP_Vec3";
-import { ZPP_VecMath } from "../geom/ZPP_VecMath";
 
 import { ZPP_Interactor } from "../phys/ZPP_Interactor";
 import { ZPP_Body } from "../phys/ZPP_Body";
@@ -131,14 +130,12 @@ export function registerZPPClasses(nape: any): any {
 
   // --- callbacks ---
   if (!zpp.callbacks) zpp.callbacks = {};
-  (ZPP_Callback as any)._nape = nape;
   (ZPP_Callback as any)._zpp = zpp;
   zpp.callbacks.ZPP_Callback = ZPP_Callback;
 
   (ZPP_CbSet as any)._zpp = zpp;
   zpp.callbacks.ZPP_CbSet = ZPP_CbSet;
 
-  (ZPP_CbSetPair as any)._zpp = zpp;
   zpp.callbacks.ZPP_CbSetPair = ZPP_CbSetPair;
 
   // ZNPNode/ZNPList/ZPP_Set classes must exist before CbType _initEnums.
@@ -150,8 +147,6 @@ export function registerZPPClasses(nape: any): any {
 
   zpp.util.ZPP_Flags = ZPP_Flags;
 
-  (ZPP_Listener as any)._nape = nape;
-  (ZPP_Listener as any)._zpp = zpp;
   zpp.callbacks.ZPP_Listener = ZPP_Listener;
 
   zpp.callbacks.ZPP_BodyListener = ZPP_BodyListener;
@@ -209,24 +204,18 @@ export function registerZPPClasses(nape: any): any {
   zpp.dynamics.ZPP_IContact = ZPP_IContact;
 
   (ZPP_Contact as any)._nape = nape;
-  (ZPP_Contact as any)._zpp = zpp;
   zpp.dynamics.ZPP_Contact = ZPP_Contact;
 
   (ZPP_InteractionFilter as any)._nape = nape;
-  (ZPP_InteractionFilter as any)._zpp = zpp;
   zpp.dynamics.ZPP_InteractionFilter = ZPP_InteractionFilter;
 
-  (ZPP_InteractionGroup as any)._zpp = zpp;
   zpp.dynamics.ZPP_InteractionGroup = ZPP_InteractionGroup;
 
-  (ZPP_SpaceArbiterList as any)._nape = nape;
-  (ZPP_SpaceArbiterList as any)._zpp = zpp;
   zpp.dynamics.ZPP_SpaceArbiterList = ZPP_SpaceArbiterList;
 
   // --- geom ---
   if (!zpp.geom) zpp.geom = {};
   (ZPP_AABB as any)._nape = nape;
-  (ZPP_AABB as any)._zpp = zpp;
   zpp.geom.ZPP_AABB = ZPP_AABB;
 
   zpp.geom.ZPP_Collide = ZPP_Collide;
@@ -254,7 +243,7 @@ export function registerZPPClasses(nape: any): any {
 
   zpp.geom.ZPP_MarchPair = ZPP_MarchPair;
 
-  (ZPP_MarchingSquares as any)._init(zpp, nape);
+  ZPP_MarchingSquares._init(nape);
   zpp.geom.ZPP_MarchingSquares = ZPP_MarchingSquares;
 
   (ZPP_Mat23 as any)._nape = nape;
@@ -296,10 +285,7 @@ export function registerZPPClasses(nape: any): any {
 
   zpp.geom.ZPP_Vec2 = ZPP_Vec2;
 
-  (ZPP_Vec3 as any)._zpp = zpp;
   zpp.geom.ZPP_Vec3 = ZPP_Vec3;
-
-  zpp.geom.ZPP_VecMath = ZPP_VecMath;
 
   // --- phys ---
   if (!zpp.phys) zpp.phys = {};
@@ -315,27 +301,21 @@ export function registerZPPClasses(nape: any): any {
   zpp.phys.ZPP_Compound = ZPP_Compound;
 
   (ZPP_FluidProperties as any)._nape = nape;
-  (ZPP_FluidProperties as any)._zpp = zpp;
   zpp.phys.ZPP_FluidProperties = ZPP_FluidProperties;
 
   (ZPP_Material as any)._nape = nape;
-  (ZPP_Material as any)._zpp = zpp;
   zpp.phys.ZPP_Material = ZPP_Material;
 
   // --- shape ---
   if (!zpp.shape) zpp.shape = {};
-  (ZPP_Shape as any)._nape = nape;
-  (ZPP_Shape as any)._zpp = zpp;
   (ZPP_Shape as any)._init();
   zpp.shape.ZPP_Shape = ZPP_Shape;
 
   (ZPP_Circle as any)._nape = nape;
-  (ZPP_Circle as any)._zpp = zpp;
   (ZPP_Circle as any)._init();
   zpp.shape.ZPP_Circle = ZPP_Circle;
 
   (ZPP_Edge as any)._nape = nape;
-  (ZPP_Edge as any)._zpp = zpp;
   zpp.shape.ZPP_Edge = ZPP_Edge;
 
   (ZPP_Polygon as any)._nape = nape;
@@ -355,19 +335,15 @@ export function registerZPPClasses(nape: any): any {
 
   zpp.space.ZPP_AABBTree = ZPP_AABBTree;
 
-  (ZPP_DynAABBPhase as any)._zpp = zpp;
   (ZPP_DynAABBPhase as any)._nape = nape;
   zpp.space.ZPP_DynAABBPhase = ZPP_DynAABBPhase;
 
-  (ZPP_Island as any)._zpp = zpp;
   zpp.space.ZPP_Island = ZPP_Island;
 
   zpp.space.ZPP_Component = ZPP_Component;
 
-  (ZPP_CallbackSet as any)._zpp = zpp;
   zpp.space.ZPP_CallbackSet = ZPP_CallbackSet;
 
-  (ZPP_CbSetManager as any)._zpp = zpp;
   zpp.space.ZPP_CbSetManager = ZPP_CbSetManager;
 
   (ZPP_Space as any)._zpp = zpp;
@@ -376,11 +352,9 @@ export function registerZPPClasses(nape: any): any {
 
   zpp.space.ZPP_SweepData = ZPP_SweepData;
 
-  (ZPP_SweepPhase as any)._zpp = zpp;
   (ZPP_SweepPhase as any)._nape = nape;
   zpp.space.ZPP_SweepPhase = ZPP_SweepPhase;
 
-  (ZPP_SpatialHashPhase as any)._zpp = zpp;
   (ZPP_SpatialHashPhase as any)._nape = nape;
   zpp.space.ZPP_SpatialHashPhase = ZPP_SpatialHashPhase;
 

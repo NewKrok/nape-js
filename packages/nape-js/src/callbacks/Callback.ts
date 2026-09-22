@@ -15,8 +15,6 @@ import { cbEventOf } from "./Listener";
  * - {@link ConstraintCallback} — passed to {@link ConstraintListener} handlers
  * - {@link InteractionCallback} — passed to {@link InteractionListener} handlers
  * - {@link PreCallback} — passed to {@link PreListener} handlers
- *
- * Converted from nape-compiled.js lines 212–238.
  */
 export class Callback {
   /** @internal */

@@ -3,8 +3,6 @@
  *
  * All-static class that triangulates monotone polygons using the standard
  * sweep-line stack algorithm, with optional Delaunay edge-flip optimisation.
- *
- * Converted from nape-compiled.js lines 39177–39514.
  */
 
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
@@ -13,8 +11,6 @@ import { ZPP_PartitionedPoly } from "./ZPP_PartitionedPoly";
 import { ZNPList_ZPP_PartitionVertex, ZPP_Set_ZPP_PartitionPair } from "../util/ZNPRegistry";
 
 export class ZPP_Triangular {
-  // --- Static: Haxe metadata ---
-
   // --- Static fields ---
   static queue: any = null;
   static stack: any = null;

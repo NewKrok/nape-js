@@ -298,15 +298,6 @@ export class AngleJoint extends Constraint {
       lambda(b2outer);
     }
   }
-
-  /** @internal backward compat alias for zpp_inner */
-  get zpp_inner_zn(): ZPP_AngleJoint {
-    return this.zpp_inner;
-  }
-  /** @internal */
-  set zpp_inner_zn(v: ZPP_AngleJoint) {
-    this.zpp_inner = v;
-  }
 }
 
 // ---------------------------------------------------------------------------

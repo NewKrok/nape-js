@@ -7,8 +7,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `STATIC`    — immovable, infinite mass (walls, floors)
  * - `DYNAMIC`   — fully simulated (default)
  * - `KINEMATIC` — moves only via velocity, not affected by forces
- *
- * Converted from nape-compiled.js lines 24640–24705.
  */
 export class BodyType {
   constructor() {
@@ -53,7 +51,7 @@ export class BodyType {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.phys.BodyType = BodyType;

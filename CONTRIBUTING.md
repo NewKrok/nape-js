@@ -17,7 +17,7 @@ walks through a structured review with Claude that covers:
   invariants and `immutable_midstep` guards are checked. Removing or weakening
   a guard is treated as a behaviour change, not a test fix, and needs an
   issue-level design discussion first.
-- **Pre-push checks** — `format:check`, `lint`, `test`, and `build` must all
+- **Pre-push checks** — `format:check`, `lint`, `test`, `typecheck`, and `build` must all
   pass on the rebased branch.
 - **Runtime smoke test** — for demos, the docs server is started and the demo
   is exercised in the relevant renderers; for engine changes, an adversarial
@@ -48,8 +48,9 @@ To save a round-trip, please:
    ```bash
    npm run format:check    # Prettier (auto-fix with `npm run format`)
    npm run lint            # ESLint
-   npm test                # Vitest (6169 + 73 tests baseline)
-   npm run build           # tsup — catches type errors that vitest doesn't
+   npm test                # Vitest (6416 + 77 tests baseline)
+   npm run typecheck       # tsc --noEmit — strict type check of both packages
+   npm run build           # tsup — DTS bundle
    ```
 
 5. **Don't touch the engine source for test-only PRs.** If a test needs the

@@ -3,8 +3,6 @@
  *
  * Applies angular velocity to rotate bodies relative to each other.
  * Velocity-only constraint (no position correction).
- *
- * Converted from nape-compiled.js lines 23892–24197.
  */
 
 import { getNape } from "../../core/engine";

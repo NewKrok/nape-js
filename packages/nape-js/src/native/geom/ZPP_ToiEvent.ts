@@ -3,8 +3,6 @@
  *
  * Simple pool object used by ZPP_SweepDistance and ZPP_Space to track
  * time-of-impact events during continuous collision detection sweeps.
- *
- * Converted from nape-compiled.js lines 24804–24843.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
@@ -12,8 +10,6 @@ import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
 
 export class ZPP_ToiEvent {
-  // --- Static: Haxe metadata ---
-
   // --- Static: pool ---
   static zpp_pool: ZPP_ToiEvent | null = null;
 

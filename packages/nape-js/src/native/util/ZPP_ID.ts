@@ -3,13 +3,9 @@
  *
  * Provides monotonically increasing IDs for various engine object types.
  * Each category has its own independent counter.
- *
- * Converted from nape-compiled.js lines 44578–44607, 133603–133611.
  */
 
 export class ZPP_ID {
-  // --- Static: Haxe metadata ---
-
   // --- Static: counters ---
   static _Constraint = 0;
   static _Interactor = 0;

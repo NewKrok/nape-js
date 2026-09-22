@@ -4,8 +4,6 @@
  * Constrains body2's anchor (a2) to slide along the line defined by
  * body1's anchor (a1) and direction vector (n). The distance along
  * the line is bounded by [jointMin, jointMax].
- *
- * Converted from nape-compiled.js lines 23205–23304.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
@@ -307,26 +305,23 @@ export class ZPP_LineJoint extends ZPP_Constraint {
   }
 
   override copy(dict: any, todo: any): any {
-    const _this = this.outer_zn;
-    if (_this.zpp_inner_zn.wrap_a1 == null) {
-      _this.zpp_inner_zn.setup_a1();
+    if (this.wrap_a1 == null) {
+      this.setup_a1();
     }
-    const ret = _this.zpp_inner_zn.wrap_a1;
-    const _this1 = this.outer_zn;
-    if (_this1.zpp_inner_zn.wrap_a2 == null) {
-      _this1.zpp_inner_zn.setup_a2();
+    const ret = this.wrap_a1;
+    if (this.wrap_a2 == null) {
+      this.setup_a2();
     }
-    const ret1 = _this1.zpp_inner_zn.wrap_a2;
-    const _this2 = this.outer_zn;
-    if (_this2.zpp_inner_zn.wrap_n == null) {
-      _this2.zpp_inner_zn.setup_n();
+    const ret1 = this.wrap_a2;
+    if (this.wrap_n == null) {
+      this.setup_n();
     }
     const ret2 = ZPP_LineJoint._createFn!(
       null,
       null,
       ret,
       ret1,
-      _this2.zpp_inner_zn.wrap_n,
+      this.wrap_n,
       this.jointMin,
       this.jointMax,
     );

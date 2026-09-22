@@ -1,31 +1,18 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_FluidProperties } from "../native/phys/ZPP_FluidProperties";
-import type { NapeInner } from "../geom/Vec2";
+import { ZPP_ShapeList } from "../native/util/ZPP_PublicList";
 
 /**
  * Fluid properties for shapes that act as fluid regions.
  *
  * Controls density, viscosity, and per-fluid gravity override.
  * Internally wraps a ZPP_FluidProperties and is registered as
- * the public `nape.phys.FluidProperties` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 37002–37511.
+ * the public `nape.phys.FluidProperties` class in the nape namespace.
  */
 export class FluidProperties {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_FluidProperties this wrapper owns. */
   zpp_inner: ZPP_FluidProperties;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `fluidProps._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor(density: number = 1, viscosity: number = 1) {
     // Acquire a ZPP_FluidProperties from the pool or create a new one
@@ -292,8 +279,7 @@ export class FluidProperties {
 
   get shapes(): any {
     if (this.zpp_inner.wrap_shapes == null) {
-      const nape = getNape();
-      this.zpp_inner.wrap_shapes = nape.__zpp.util.ZPP_ShapeList.get(this.zpp_inner.shapes, true);
+      this.zpp_inner.wrap_shapes = ZPP_ShapeList.get(this.zpp_inner.shapes, true);
     }
     return this.zpp_inner.wrap_shapes;
   }
@@ -504,7 +490,7 @@ ZPP_FluidProperties._wrapFn = (zpp: ZPP_FluidProperties): FluidProperties => {
 };
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace (replaces compiled FluidProperties)
+// Register this class in the nape namespace (replaces compiled FluidProperties)
 // ---------------------------------------------------------------------------
 const _napeFluid = getNape();
 _napeFluid.phys.FluidProperties = FluidProperties;

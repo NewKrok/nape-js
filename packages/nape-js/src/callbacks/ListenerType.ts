@@ -8,8 +8,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `CONSTRAINT`  — constraint event listener
  * - `INTERACTION` — interaction event listener
  * - `PRE`         — pre-interaction listener
- *
- * Converted from nape-compiled.js lines 2554–2646.
  */
 export class ListenerType {
   constructor() {
@@ -64,7 +62,7 @@ export class ListenerType {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.ListenerType = ListenerType;

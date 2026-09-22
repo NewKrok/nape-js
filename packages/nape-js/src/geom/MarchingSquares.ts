@@ -11,8 +11,6 @@ import "./GeomPoly";
  * Isosurface extraction using the marching squares algorithm.
  *
  * Static utility class — all functionality is in the `run()` method.
- *
- * Converted from nape-compiled.js lines 16879–17258.
  */
 export class MarchingSquares {
   /**

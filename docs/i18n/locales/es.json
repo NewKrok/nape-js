@@ -261,8 +261,6 @@
   "demo.newtons-cradle.desc": "Clásica cuna de Newton que demuestra la conservación del momento y la energía.",
   "demo.one-way-platforms.label": "Plataformas unidireccionales",
   "demo.one-way-platforms.desc": "Los cuerpos atraviesan las plataformas desde abajo pero reposan sobre ellas desde arriba. Haz clic &amp; arrastra un cuerpo para tirar de él a través de una plataforma — suéltalo para verlo aterrizar. Haz clic en un espacio vacío para generar una nueva forma. La cinta transportadora inferior empuja las formas de lado.",
-  "demo.performance-profiler.label": "Profiler de rendimiento",
-  "demo.performance-profiler.desc": "Superposición del profiler de física en tiempo real — muestra el tiempo por fase de cada paso, contadores de cuerpos/contactos/restricciones y un gráfico de tiempo continuo. <b>Haz clic</b> para generar formas y ver cómo cambian las métricas.",
   "demo.pinball.label": "Pinball",
   "demo.pinball.desc": "Pinball con bumpers asimétricos, slingshots, pines, un carril de lanzamiento y un bloqueador oscilante. Flechas izquierda/derecha o A/D para accionar las palancas. Haz clic en la mitad izquierda/derecha para accionarlas en móvil. Haz clic en la zona superior para generar bolas.",
   "demo.planet-platformer.label": "Plataformas planetario",

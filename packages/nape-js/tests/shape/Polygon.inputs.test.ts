@@ -90,7 +90,7 @@ describe("Polygon._wrap", () => {
     const holder = { zpp_inner_zn: (poly as any).zpp_inner_zn };
     const wrapped = Polygon._wrap(holder);
     expect(wrapped).toBeInstanceOf(Polygon);
-    expect((wrapped as any).zpp_inner_zn ?? (wrapped as any)._inner ?? wrapped).toBeDefined();
+    expect((wrapped as any).zpp_inner_zn ?? wrapped).toBeDefined();
   });
 
   it("falls back to a generic wrapper for unknown inner objects", () => {

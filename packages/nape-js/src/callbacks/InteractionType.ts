@@ -9,8 +9,6 @@ import { ZPP_Flags } from "../native/util/ZPP_Flags";
  * - `SENSOR`    — sensor (trigger) interactions where shapes overlap but don't resolve
  * - `FLUID`     — fluid buoyancy/drag interactions
  * - `ANY`       — all of the above
- *
- * Converted from nape-compiled.js lines 1785–1883.
  */
 export class InteractionType {
   constructor() {
@@ -68,7 +66,7 @@ export class InteractionType {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------
 const nape = getNape();
 nape.callbacks.InteractionType = InteractionType;

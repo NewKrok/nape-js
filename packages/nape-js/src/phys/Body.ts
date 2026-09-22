@@ -1,12 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import {
-  Vec2,
-  type NapeInner,
-  type Writable,
-  disposeWeakVec2,
-  checkVec2Disposed,
-} from "../geom/Vec2";
+import { Vec2, type NapeInner, disposeWeakVec2, checkVec2Disposed } from "../geom/Vec2";
 import { Vec3 } from "../geom/Vec3";
 import { AABB } from "../geom/AABB";
 import { Space } from "../space/Space";
@@ -18,7 +12,7 @@ import { ZPP_Arbiter } from "../native/dynamics/ZPP_Arbiter";
 import { ZPP_ArbiterList, ZPP_ConstraintList } from "../native/util/ZPP_PublicList";
 import type { Compound } from "./Compound";
 import type { Arbiter } from "../dynamics/Arbiter";
-import type { BodyList, ShapeList } from "../util/listTypes";
+import type { ArbiterList, BodyList, ConstraintList, ShapeList } from "../util/listTypes";
 import type { Mat23 } from "../geom/Mat23";
 import type { Material } from "./Material";
 import type { FluidProperties } from "./FluidProperties";
@@ -72,7 +66,6 @@ function _newVec2(x: number, y: number, weak: boolean): Vec2 {
 
 /**
  * Ensure a singleton enum flag is initialised. Returns the flag value.
- * This replaces the verbose repeated ZPP_Flags init pattern from compiled code.
  */
 function _ensureFlag<T>(flagName: keyof typeof ZPP_Flags, ctor: () => T): T {
   if ((ZPP_Flags as any)[flagName] == null) {
@@ -104,9 +97,6 @@ export class Body extends Interactor {
     zpp.outer = this;
     zpp.outer_i = this;
     (this as any).zpp_inner_i = zpp;
-
-    // Override the Interactor's _inner to point at this object (backward compat).
-    (this as Writable<Body>)._inner = this as any;
 
     // Set position
     if (position != null) {
@@ -169,16 +159,14 @@ export class Body extends Interactor {
         zpp.outer = b;
         zpp.outer_i = b;
         (b as any).zpp_inner_i = zpp;
-        (b as Writable<Body>)._inner = b as any;
         b.debugDraw = true;
         return b;
       });
     }
     // Handle compiled objects with zpp_inner
     if (inner.zpp_inner) return Body._wrap(inner.zpp_inner);
-    return getOrCreate(inner, (raw: NapeInner) => {
+    return getOrCreate(inner, (_raw: NapeInner) => {
       const b = Object.create(Body.prototype) as Body;
-      (b as Writable<Body>)._inner = raw;
       return b;
     });
   }
@@ -627,13 +615,29 @@ export class Body extends Interactor {
     return this.zpp_inner.wrap_shapes;
   }
 
+  /**
+   * Read-only list of the constraints currently attached to this body.
+   * Populated while the body and constraint share a Space.
+   */
+  get constraints(): ConstraintList {
+    return this._getConstraints();
+  }
+
+  /**
+   * Read-only list of the arbiters (contact, sensor and fluid interactions)
+   * this body is currently involved in.
+   */
+  get arbiters(): ArbiterList {
+    return this._getArbiters();
+  }
+
   /** The Space this body belongs to. Setting adds/removes it from the space. */
   get space(): Space {
     if (this.zpp_inner.space == null) return null as unknown as Space;
     return Space._wrap(this.zpp_inner.space.outer);
   }
   set space(value: Space | null) {
-    const space = value != null ? ((value as any)._inner ?? value) : null;
+    const space = value ?? null;
     if (this.zpp_inner.compound != null) {
       throw new Error(
         "Error: Cannot set the space of a Body belonging to a Compound, only the root Compound space can be set",
@@ -1790,7 +1794,7 @@ function _invalidateShapes(cur: ZPP_Body): void {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 const _napeBody = getNape();
 _napeBody.phys.Body = Body;

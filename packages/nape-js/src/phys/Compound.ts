@@ -1,5 +1,5 @@
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Body } from "./Body";
 import { Space } from "../space/Space";
 import { Interactor } from "./Interactor";
@@ -26,11 +26,6 @@ export class Compound extends Interactor {
     zpp.outer_i = this;
     (this as any).zpp_inner_i = zpp;
 
-    // Override the Interactor's _inner to point at this object (backward compat).
-    // _inner was set to undefined by Interactor's constructor as an instance property,
-    // so we can reassign it here.
-    (this as Writable<Compound>)._inner = this as any;
-
     // Register ANY_COMPOUND callback type
     zpp.insert_cbtype((CbType.ANY_COMPOUND as any).zpp_inner);
   }
@@ -47,15 +42,13 @@ export class Compound extends Interactor {
         zpp.outer = c;
         zpp.outer_i = c;
         (c as any).zpp_inner_i = zpp;
-        (c as Writable<Compound>)._inner = c as any;
         return c;
       });
     }
     // Handle compiled objects with zpp_inner
     if ((inner as any).zpp_inner) return Compound._wrap((inner as any).zpp_inner);
-    return getOrCreate(inner, (raw: NapeInner) => {
+    return getOrCreate(inner, (_raw: NapeInner) => {
       const c = Object.create(Compound.prototype) as Compound;
-      (c as Writable<Compound>)._inner = raw;
       return c;
     });
   }
@@ -119,12 +112,12 @@ export class Compound extends Interactor {
     }
     this.zpp_inner.immutable_midstep("Compound::space");
     const currentSpaceOuter = this.zpp_inner.space == null ? null : this.zpp_inner.space.outer;
-    if (currentSpaceOuter !== (value as any)?._inner) {
+    if (currentSpaceOuter !== (value ?? null)) {
       if (currentSpaceOuter != null) {
         currentSpaceOuter.zpp_inner.wrap_compounds.remove(this);
       }
       if (value != null) {
-        const wc = (value as any)._inner.zpp_inner.wrap_compounds;
+        const wc = value.zpp_inner.wrap_compounds;
         if (wc.zpp_inner.reverse_flag) {
           wc.push(this);
         } else {
@@ -202,32 +195,11 @@ export class Compound extends Interactor {
     let total = 0.0;
 
     this.visitBodies((b: Body) => {
-      const shapes = b.zpp_inner.wrap_shapes;
-      if (shapes.zpp_inner.inner.head != null) {
-        if (b.zpp_inner.world) {
-          throw new Error("Space::world has no worldCOM");
-        }
-        // Get worldCOM
-        if (b.zpp_inner.wrap_worldCOM == null) {
-          b.zpp_inner.getworldCOM();
-        }
-        const worldCOM = b.zpp_inner.wrap_worldCOM;
-
-        // Get mass
-        if (b.zpp_inner.world) {
-          throw new Error("Space::world has no mass");
-        }
-        b.zpp_inner.validate_mass();
-        if (b.zpp_inner.massMode == 0 && b.zpp_inner.shapes.head == null) {
-          throw new Error(
-            "Error: Given current mass mode, Body::mass only makes sense if it contains shapes",
-          );
-        }
-        const mass = b.zpp_inner.cmass;
-
-        ret.addeq(worldCOM.mul(mass, true));
-        total += mass;
-      }
+      // Shapeless bodies carry no mass and have no centre of mass.
+      if (b.zpp_inner.shapes.head == null) return;
+      const mass = b.mass;
+      ret.addeq(b.worldCOM.mul(mass, true));
+      total += mass;
     });
 
     if (total === 0.0) {
@@ -299,27 +271,6 @@ ZPP_Compound._wrapFn = (zpp: ZPP_Compound): Compound => {
     raw.outer = c;
     raw.outer_i = c;
     (c as any).zpp_inner_i = raw;
-    (c as Writable<Compound>)._inner = c as any;
     return c;
   });
 };
-
-// Also define the ES5-style property accessors that compiled code expects
-Object.defineProperty(Compound.prototype, "bodies", {
-  get: function (this: Compound) {
-    return this.zpp_inner.wrap_bodies;
-  },
-  configurable: true,
-});
-Object.defineProperty(Compound.prototype, "constraints", {
-  get: function (this: Compound) {
-    return this.zpp_inner.wrap_constraints;
-  },
-  configurable: true,
-});
-Object.defineProperty(Compound.prototype, "compounds", {
-  get: function (this: Compound) {
-    return this.zpp_inner.wrap_compounds;
-  },
-  configurable: true,
-});

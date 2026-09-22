@@ -1,31 +1,17 @@
-import { getNape } from "../core/engine";
+import { ZPP_InteractorList, ZPP_InteractionGroupList } from "../native/util/ZPP_PublicList";
 import { getOrCreate } from "../core/cache";
 import { ZPP_InteractionGroup } from "../native/dynamics/ZPP_InteractionGroup";
-import type { NapeInner } from "../geom/Vec2";
 
 /**
  * Hierarchical interaction group for controlling interactions
  * between sets of interactors.
  *
  * Internally wraps a ZPP_InteractionGroup and is registered as
- * the public `nape.dynamics.InteractionGroup` class in the compiled namespace.
- *
- * Converted from nape-compiled.js lines 14641–14733.
+ * the public `nape.dynamics.InteractionGroup` class in the nape namespace.
  */
 export class InteractionGroup {
-  // --- Haxe metadata (required by compiled engine) ---
-
   /** @internal The internal ZPP_InteractionGroup this wrapper owns. */
   zpp_inner: ZPP_InteractionGroup;
-
-  /**
-   * Backward-compatible accessor — returns `this` so that compiled engine
-   * code that receives `group._inner` can still access `zpp_inner`.
-   * @internal
-   */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   constructor(ignore: boolean = false) {
     const zpp = new ZPP_InteractionGroup();
@@ -85,22 +71,14 @@ export class InteractionGroup {
 
   get interactors(): any {
     if (this.zpp_inner.wrap_interactors == null) {
-      const nape = getNape();
-      this.zpp_inner.wrap_interactors = nape.zpp_nape.util.ZPP_InteractorList.get(
-        this.zpp_inner.interactors,
-        true,
-      );
+      this.zpp_inner.wrap_interactors = ZPP_InteractorList.get(this.zpp_inner.interactors, true);
     }
     return this.zpp_inner.wrap_interactors;
   }
 
   get groups(): any {
     if (this.zpp_inner.wrap_groups == null) {
-      const nape = getNape();
-      this.zpp_inner.wrap_groups = nape.zpp_nape.util.ZPP_InteractionGroupList.get(
-        this.zpp_inner.groups,
-        true,
-      );
+      this.zpp_inner.wrap_groups = ZPP_InteractionGroupList.get(this.zpp_inner.groups, true);
     }
     return this.zpp_inner.wrap_groups;
   }

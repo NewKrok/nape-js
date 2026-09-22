@@ -4,8 +4,6 @@ import { ZNPList_ZPP_Shape } from "../util/ZNPRegistry";
  *
  * Stores physical material properties (friction, elasticity, density) and
  * manages the list of shapes that reference this material for invalidation.
- *
- * Converted from nape-compiled.js lines 87523–87601, 135477–135481.
  */
 
 export class ZPP_Material {
@@ -17,16 +15,12 @@ export class ZPP_Material {
   static PROPS = 2;
   static ANGDRAG = 4;
   static ARBITERS = 8;
-
-  // --- Static: Haxe metadata ---
-
   /**
-   * Namespace references, set by the compiled module after import.
+   * Namespace references, assigned by ZPPRegistry.registerZPPClasses().
    * _nape  = the `nape` public namespace (for wrapper creation)
    * _zpp   = the `zpp_nape` internal namespace (for ZNPList_ZPP_Shape)
    */
   static _nape: any = null;
-  static _zpp: any = null;
 
   /**
    * Wrapper factory callback, registered by the modernized Material class.

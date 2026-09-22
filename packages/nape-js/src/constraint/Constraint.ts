@@ -34,20 +34,10 @@ export class Constraint {
   /** @internal */
   zpp_inner!: ZPP_Constraint;
 
-  /**
-   * Compiled joint reference for joint-specific methods (body1/body2/anchors etc.).
-   * Joint subclasses set this to the compiled joint instance until those joints
-   * are fully modernized. Also serves as backward compat for compiled code.
-   * @internal
-   */
-  _inner: any;
-
   debugDraw: boolean = true;
 
   /** @internal */
-  protected constructor() {
-    this._inner = this;
-  }
+  protected constructor() {}
 
   /** @internal */
   static _wrap(inner: any): Constraint {
@@ -61,7 +51,6 @@ export class Constraint {
     return getOrCreate(inner, (raw: any) => {
       const c = Object.create(Constraint.prototype) as Constraint;
       c.zpp_inner = raw.zpp_inner ?? raw;
-      c._inner = raw;
       c.zpp_inner.outer = c;
       c.debugDraw = raw.debugDraw ?? true;
       return c;
@@ -103,9 +92,7 @@ export class Constraint {
         this.zpp_inner.space.wrap_constraints.remove(this);
       }
       if (value != null) {
-        // Space may be a TS thin wrapper (_inner.zpp_inner) or compiled (zpp_inner)
-        const spaceZpp = (value as any)._inner?.zpp_inner ?? (value as any).zpp_inner;
-        const _this = spaceZpp.wrap_constraints;
+        const _this = value.zpp_inner.wrap_constraints;
         if (_this.zpp_inner.reverse_flag) {
           _this.push(this);
         } else {

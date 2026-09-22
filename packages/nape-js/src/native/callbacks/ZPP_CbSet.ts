@@ -4,8 +4,6 @@
  * Groups callback types together for efficient listener matching.
  * Maintains lazily-validated lists of interaction, body, and constraint listeners.
  * Tracks interactors and constraints that belong to this set.
- *
- * Converted from nape-compiled.js lines 44594–45134, 132797.
  */
 
 import { ZNPList } from "../util/ZNPList";
@@ -28,8 +26,6 @@ import {
 } from "../util/ZNPRegistry";
 
 export class ZPP_CbSet {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _zpp: any = null;
 

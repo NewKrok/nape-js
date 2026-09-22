@@ -1,6 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
-import { Vec2, type NapeInner, type Writable } from "../geom/Vec2";
+import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
 import { Shape, _bindPolygonWrap } from "./Shape";
@@ -72,7 +72,6 @@ export class Polygon extends Shape {
     zpp.outer = this;
     zpp.outer_zn = this;
     zpp.outer_i = this;
-    (this as Writable<Polygon>)._inner = this as any;
 
     // --- Process vertex inputs ---
     if (Array.isArray(localVerts)) {
@@ -164,7 +163,7 @@ export class Polygon extends Shape {
       }
     } else {
       throw new Error(
-        "Error: Invalid type for polygon object, should be Array<Vec2>, Vec2List, GeomPoly or for flash10+ flash.Vector<Vec2>",
+        "Error: Invalid type for polygon object, should be Array<Vec2>, Vec2List or GeomPoly",
       );
     }
 
@@ -230,14 +229,12 @@ export class Polygon extends Shape {
         zpp.outer = p;
         zpp.outer_zn = p;
         zpp.outer_i = p;
-        (p as Writable<Polygon>)._inner = p as any;
         return p;
       });
     }
     if (inner.zpp_inner_zn) return Polygon._wrap(inner.zpp_inner_zn);
     return getOrCreate(inner, (raw: any) => {
       const p = Object.create(Polygon.prototype) as Polygon;
-      (p as Writable<Polygon>)._inner = raw;
       p.zpp_inner_i = raw.zpp_inner_i;
       return p;
     });
@@ -356,7 +353,7 @@ export class Polygon extends Shape {
 }
 
 // ---------------------------------------------------------------------------
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 // ---------------------------------------------------------------------------
 
 // Bind Polygon._wrap into Shape so Shape._wrap can dispatch without circular import.

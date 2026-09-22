@@ -191,6 +191,16 @@ describe("PhysicsWorkerManager — start/stop/step", () => {
     mgr.destroy();
   });
 
+  it("start is a no-op when autoStep is false (manual stepping mode)", async () => {
+    const { mgr, worker } = await createAndInit({ autoStep: false });
+    const before = worker.posted.length;
+    mgr.start();
+    expect(worker.posted.length).toBe(before);
+    mgr.step();
+    expect(worker.posted[worker.posted.length - 1]).toEqual({ type: "step" });
+    mgr.destroy();
+  });
+
   it("stop sends 'stop' message", async () => {
     const { mgr, worker } = await createAndInit();
     mgr.stop();

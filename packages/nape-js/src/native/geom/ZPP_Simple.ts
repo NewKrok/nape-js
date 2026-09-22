@@ -4,8 +4,6 @@
  * Uses a sweep-line algorithm to detect self-intersections, split a
  * self-intersecting polygon into simple sub-polygons, and test whether
  * a polygon is simple (non-self-intersecting).
- *
- * Converted from nape-compiled.js lines 33689–35033.
  */
 
 import { ZPP_SimpleVert } from "./ZPP_SimpleVert";

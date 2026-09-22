@@ -3,8 +3,6 @@
  *
  * Manages constraint event listeners (WAKE/SLEEP/BREAK) with priority-ordered
  * insertion into CbType listener lists.
- *
- * Converted from nape-compiled.js lines 27498–27694.
  */
 
 import { ZPP_Listener } from "./ZPP_Listener";

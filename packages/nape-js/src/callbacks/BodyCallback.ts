@@ -6,8 +6,6 @@ import type { Body } from "../phys/Body";
  *
  * Provides the body that triggered the event. Do not store this object beyond
  * the handler scope — it is pooled and reused.
- *
- * Converted from nape-compiled.js lines 239–261.
  */
 export class BodyCallback extends Callback {
   /** The body that woke or fell asleep. */
@@ -28,5 +26,5 @@ export class BodyCallback extends Callback {
 }
 
 // ---------------------------------------------------------------------------
-// Register this class in the compiled namespace
+// Register this class in the nape namespace
 // ---------------------------------------------------------------------------

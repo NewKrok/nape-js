@@ -11,13 +11,13 @@ describe("BodyListener", () => {
   it("should construct with WAKE event", () => {
     const listener = new BodyListener(CbEvent.WAKE, CbType.ANY_BODY, () => {});
     expect(listener).toBeInstanceOf(BodyListener);
-    expect(listener._inner).toBeDefined();
+    expect(listener.zpp_inner).toBeDefined();
   });
 
   it("should construct with SLEEP event", () => {
     const listener = new BodyListener(CbEvent.SLEEP, CbType.ANY_BODY, () => {});
     expect(listener).toBeInstanceOf(BodyListener);
-    expect(listener._inner).toBeDefined();
+    expect(listener.zpp_inner).toBeDefined();
   });
 
   it("should be added to a space", () => {

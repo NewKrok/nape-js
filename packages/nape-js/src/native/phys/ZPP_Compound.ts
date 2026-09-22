@@ -3,8 +3,6 @@
  *
  * Hierarchical grouping of bodies, constraints, and other compounds.
  * Extends ZPP_Interactor (extracted to ZPP_Interactor.ts — methods copied at init time).
- *
- * Converted from nape-compiled.js lines 55195–55521.
  */
 
 import { ZPP_Interactor } from "./ZPP_Interactor";
@@ -15,10 +13,8 @@ import {
 } from "../util/ZNPRegistry";
 
 export class ZPP_Compound {
-  // --- Static: Haxe metadata ---
-
   /**
-   * Namespace references, set by the compiled module after import.
+   * Namespace references, assigned by ZPPRegistry.registerZPPClasses().
    * _nape = the `nape` public namespace (for wrapper creation in copy())
    * _zpp = the `zpp_nape` internal namespace (for ZNPList_*, ZPP_BodyList, etc.)
    */
@@ -147,9 +143,9 @@ export class ZPP_Compound {
   }
 
   // --- Helper: resolve ZPP inner from public API wrapper ---
-  // Public API objects may be compiled (have .zpp_inner) or TS wrappers (have ._inner.zpp_inner)
+  // Public wrappers carry their ZPP object on zpp_inner; raw ZPP objects pass through.
   private static _zppOf(x: any): any {
-    return x.zpp_inner ?? x._inner?.zpp_inner ?? x._inner;
+    return x.zpp_inner ?? x;
   }
 
   // --- List adder/subber/modifiable callbacks ---
@@ -381,7 +377,7 @@ export class ZPP_Compound {
 
   /**
    * Initialize prototype by copying ZPP_Interactor methods.
-   * Must be called after _zpp is set (during compiled module init).
+   * Called once from ZPPRegistry.registerZPPClasses().
    */
   static _init(): void {
     // Copy ZPP_Interactor prototype methods (only those not already on ZPP_Compound)

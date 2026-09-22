@@ -3,13 +3,9 @@
  *
  * Represents affine transforms with components [a, b, c, d, tx, ty].
  * Supports object pooling and lazy wrapper creation.
- *
- * Converted from nape-compiled.js lines 73495–73561, 133826.
  */
 
 export class ZPP_Mat23 {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
 

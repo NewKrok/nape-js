@@ -6,19 +6,13 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
  *
  * Stores density, viscosity, and per-fluid gravity override.
  * Manages the list of shapes that reference these properties for invalidation.
- *
- * Converted from nape-compiled.js lines 87335–87523, 135403.
  */
 
 export class ZPP_FluidProperties {
   // --- Static: object pool ---
   static zpp_pool: ZPP_FluidProperties | null = null;
-
-  // --- Static: Haxe metadata ---
-
-  // --- Static: namespace references (set by compiled module) ---
+  // --- Static: namespace references (assigned by ZPPRegistry) ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by FluidProperties.ts) ---
   static _wrapFn: ((zpp: ZPP_FluidProperties) => any) | null = null;

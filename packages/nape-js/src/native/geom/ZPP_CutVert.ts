@@ -3,13 +3,9 @@
  *
  * Vertex data structure with union-find support for polygon cutting operations.
  * Uses object pooling.
- *
- * Converted from nape-compiled.js lines 66636–66680.
  */
 
 export class ZPP_CutVert {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_CutVert | null = null;
 

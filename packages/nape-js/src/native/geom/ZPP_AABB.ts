@@ -5,19 +5,13 @@ import { ZPP_PubPool } from "../util/ZPP_PubPool";
  *
  * Stores min/max coordinates and provides intersection/combine/contain tests.
  * Lazily creates Vec2 wrappers for the min and max points.
- *
- * Converted from nape-compiled.js lines 63546–63965, 134951.
  */
 
 export class ZPP_AABB {
   // --- Static: object pool ---
   static zpp_pool: ZPP_AABB | null = null;
-
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: wrapper factory callback (set by AABB.ts) ---
   static _wrapFn: ((zpp: ZPP_AABB) => any) | null = null;
@@ -128,7 +122,7 @@ export class ZPP_AABB {
 
   // ========== Min/Max Vec2 wrappers (lazy creation) ==========
 
-  /** Helper: create a Vec2 wrapper from the compiled namespace pools. */
+  /** Helper: create a Vec2 wrapper from the engine pools. */
   private static _makeVec2Wrapper(x: number, y: number): object {
     const napeNs = ZPP_AABB._nape;
 

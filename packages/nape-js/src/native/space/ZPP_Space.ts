@@ -1,6 +1,5 @@
 /**
  * ZPP_Space -- Internal space implementation (core simulation loop).
- * Converted from nape-compiled.js lines 30236-43690.
  *
  * This is the largest and most complex class in the engine (~13,450 lines).
  * It handles integration, constraint solving, broadphase management,
@@ -17,16 +16,11 @@ import { ZPP_FluidArbiter } from "../dynamics/ZPP_FluidArbiter";
 import { ZPP_SensorArbiter } from "../dynamics/ZPP_SensorArbiter";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 import { ZPP_Body } from "../phys/ZPP_Body";
-import { ZPP_Compound } from "../phys/ZPP_Compound";
-import { ZPP_Constraint } from "../constraint/ZPP_Constraint";
 import { ZPP_Callback } from "../callbacks/ZPP_Callback";
 import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
 import { ZPP_CbSetPair } from "../callbacks/ZPP_CbSetPair";
-import { ZPP_Listener } from "../callbacks/ZPP_Listener";
-import { ZPP_InteractionListener } from "../callbacks/ZPP_InteractionListener";
 import { ZPP_Flags } from "../util/ZPP_Flags";
 import { ZPP_Island } from "./ZPP_Island";
-import { ZPP_Component } from "./ZPP_Component";
 import { ZPP_CallbackSet } from "./ZPP_CallbackSet";
 import { ZPP_CbSetManager } from "./ZPP_CbSetManager";
 import { PhysicsMetrics } from "../../profiler/PhysicsMetrics";
@@ -98,8 +92,6 @@ function _growSortBuffers(n: number): void {
 }
 
 export class ZPP_Space {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
   static _zpp: any = null;
   static _nape: any = null;
@@ -241,7 +233,6 @@ export class ZPP_Space {
       }
     }
     this.time = 0.0;
-    const me = this;
     if (gravity != null) {
       this.gravityx = gravity.x;
       this.gravityy = gravity.y;
@@ -460,7 +451,6 @@ export class ZPP_Space {
         const _this = arb.b1.arbiters;
         let pre = null;
         let cur = _this.head;
-        let ret = false;
         while (cur != null) {
           if (cur.elt == arb) {
             let old;
@@ -487,7 +477,6 @@ export class ZPP_Space {
             _this.modified = true;
             _this.length--;
             _this.pushmod = true;
-            ret = true;
             break;
           }
           pre = cur;
@@ -496,7 +485,6 @@ export class ZPP_Space {
         const _this1 = arb.b2.arbiters;
         let pre1 = null;
         let cur1 = _this1.head;
-        let ret2 = false;
         while (cur1 != null) {
           if (cur1.elt == arb) {
             let old1;
@@ -523,7 +511,6 @@ export class ZPP_Space {
             _this1.modified = true;
             _this1.length--;
             _this1.pushmod = true;
-            ret2 = true;
             break;
           }
           pre1 = cur1;
@@ -572,7 +559,6 @@ export class ZPP_Space {
         const _this4 = arb1.b1.arbiters;
         let pre2 = null;
         let cur2 = _this4.head;
-        let ret6 = false;
         while (cur2 != null) {
           if (cur2.elt == arb1) {
             let old2;
@@ -599,7 +585,6 @@ export class ZPP_Space {
             _this4.modified = true;
             _this4.length--;
             _this4.pushmod = true;
-            ret6 = true;
             break;
           }
           pre2 = cur2;
@@ -608,7 +593,6 @@ export class ZPP_Space {
         const _this5 = arb1.b2.arbiters;
         let pre3 = null;
         let cur3 = _this5.head;
-        let ret8 = false;
         while (cur3 != null) {
           if (cur3.elt == arb1) {
             let old3;
@@ -635,7 +619,6 @@ export class ZPP_Space {
             _this5.modified = true;
             _this5.length--;
             _this5.pushmod = true;
-            ret8 = true;
             break;
           }
           pre3 = cur3;
@@ -684,7 +667,6 @@ export class ZPP_Space {
         const _this8 = arb2.b1.arbiters;
         let pre4 = null;
         let cur4 = _this8.head;
-        let ret12 = false;
         while (cur4 != null) {
           if (cur4.elt == arb2) {
             let old4;
@@ -711,7 +693,6 @@ export class ZPP_Space {
             _this8.modified = true;
             _this8.length--;
             _this8.pushmod = true;
-            ret12 = true;
             break;
           }
           pre4 = cur4;
@@ -720,7 +701,6 @@ export class ZPP_Space {
         const _this9 = arb2.b2.arbiters;
         let pre5 = null;
         let cur5 = _this9.head;
-        let ret14 = false;
         while (cur5 != null) {
           if (cur5.elt == arb2) {
             let old5;
@@ -747,7 +727,6 @@ export class ZPP_Space {
             _this9.modified = true;
             _this9.length--;
             _this9.pushmod = true;
-            ret14 = true;
             break;
           }
           pre5 = cur5;
@@ -771,7 +750,6 @@ export class ZPP_Space {
         const _this10 = arb3.b1.arbiters;
         let pre6 = null;
         let cur6 = _this10.head;
-        let ret16 = false;
         while (cur6 != null) {
           if (cur6.elt == arb3) {
             let old6;
@@ -798,7 +776,6 @@ export class ZPP_Space {
             _this10.modified = true;
             _this10.length--;
             _this10.pushmod = true;
-            ret16 = true;
             break;
           }
           pre6 = cur6;
@@ -807,7 +784,6 @@ export class ZPP_Space {
         const _this11 = arb3.b2.arbiters;
         let pre7 = null;
         let cur7 = _this11.head;
-        let ret18 = false;
         while (cur7 != null) {
           if (cur7.elt == arb3) {
             let old7;
@@ -834,7 +810,6 @@ export class ZPP_Space {
             _this11.modified = true;
             _this11.length--;
             _this11.pushmod = true;
-            ret18 = true;
             break;
           }
           pre7 = cur7;
@@ -1069,18 +1044,12 @@ export class ZPP_Space {
     }
   }
 
-  revoke_listener(x: any) {}
-
-  unrevoke_listener(x: any) {}
-
   addListener(x: any) {
     x.space = this;
     x.addedToSpace();
-    const tmp = x.interaction != null;
   }
 
   remListener(x: any) {
-    const tmp = x.interaction != null;
     x.removedFromSpace();
     x.space = null;
   }
@@ -1130,7 +1099,6 @@ export class ZPP_Space {
     const _this = cb.int1.cbsets;
     let pre = null;
     let cur = _this.head;
-    let ret = false;
     while (cur != null) {
       if (cur.elt == cb) {
         let old;
@@ -1157,7 +1125,6 @@ export class ZPP_Space {
         _this.modified = true;
         _this.length--;
         _this.pushmod = true;
-        ret = true;
         break;
       }
       pre = cur;
@@ -1166,7 +1133,6 @@ export class ZPP_Space {
     const _this1 = cb.int2.cbsets;
     let pre1 = null;
     let cur1 = _this1.head;
-    let ret2 = false;
     while (cur1 != null) {
       if (cur1.elt == cb) {
         let old1;
@@ -1193,7 +1159,6 @@ export class ZPP_Space {
         _this1.modified = true;
         _this1.length--;
         _this1.pushmod = true;
-        ret2 = true;
         break;
       }
       pre1 = cur1;
@@ -1240,26 +1205,6 @@ export class ZPP_Space {
     }
   }
 
-  added_shape(s: any, dontwake: any) {
-    if (dontwake == null) {
-      dontwake = false;
-    }
-    if (!dontwake) {
-      const o = s.body;
-      if (!o.world) {
-        o.component.waket = this.stamp + (this.midstep ? 0 : 1);
-        if (o.type == 3) {
-          o.kinematicDelaySleep = true;
-        }
-        if (o.component.sleeping) {
-          this.really_wake(o, false);
-        }
-      }
-    }
-    this.bphase.insert(s);
-    s.addedToSpace();
-  }
-
   removed_shape(s: any, deleting: any) {
     if (deleting == null) {
       deleting = false;
@@ -1286,7 +1231,6 @@ export class ZPP_Space {
               const cb2 = i2.cbSet;
               cb1.validate();
               cb2.validate();
-              const _this = cb1.manager;
               let ret = null;
               const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite3 = pairs.head;
@@ -1332,7 +1276,6 @@ export class ZPP_Space {
               const callbackset = ZPP_Interactor.get(i1, i2);
               callbackset.remove_arb(xarb);
               xarb.present--;
-              const _this1 = cb1.manager;
               let ret2 = null;
               const pairs1 = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite4 = pairs1.head;
@@ -1444,7 +1387,6 @@ export class ZPP_Space {
           const _this4 = xarb.b1.arbiters;
           let pre1 = null;
           let cur = _this4.head;
-          let ret4 = false;
           while (cur != null) {
             if (cur.elt == xarb) {
               let old;
@@ -1471,7 +1413,6 @@ export class ZPP_Space {
               _this4.modified = true;
               _this4.length--;
               _this4.pushmod = true;
-              ret4 = true;
               break;
             }
             pre1 = cur;
@@ -1482,7 +1423,6 @@ export class ZPP_Space {
           const _this5 = xarb.b2.arbiters;
           let pre2 = null;
           let cur1 = _this5.head;
-          let ret6 = false;
           while (cur1 != null) {
             if (cur1.elt == xarb) {
               let old1;
@@ -1509,7 +1449,6 @@ export class ZPP_Space {
               _this5.modified = true;
               _this5.length--;
               _this5.pushmod = true;
-              ret6 = true;
               break;
             }
             pre2 = cur1;
@@ -2226,14 +2165,6 @@ export class ZPP_Space {
       return ZPP_ConvexRayResult.getConvex(ret, ret2, mint, mins);
     } else {
       return null;
-    }
-  }
-
-  prepareCast(s: any) {
-    if (s.type == 0) {
-      s.circle.validate_worldCOM();
-    } else {
-      s.polygon.validate_gaxi();
     }
   }
 
@@ -3070,7 +3001,6 @@ export class ZPP_Space {
       const sleeping = ret2;
       const a = set.int1.cbSet;
       const b1 = set.int2.cbSet;
-      const _this2 = a.manager;
       let ret3 = null;
       const pairs = a.cbpairs.length < b1.cbpairs.length ? a.cbpairs : b1.cbpairs;
       let cx_ite11 = pairs.head;
@@ -3444,7 +3374,6 @@ export class ZPP_Space {
           e3.tp1 = v3.y * e3.gnormx - v3.x * e3.gnormy;
         }
       }
-      const wasnull = minTOI.arbiter == null;
       const arb = this.narrowPhase(minTOI.s1, minTOI.s2, true, minTOI.arbiter, true);
       if (arb == null) {
         if (minTOI.arbiter != null && minTOI.arbiter.pair != null) {
@@ -4763,7 +4692,6 @@ export class ZPP_Space {
             const cb2 = i2.cbSet;
             cb1.validate();
             cb2.validate();
-            const _this = cb1.manager;
             let ret = null;
             const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
             let cx_ite5 = pairs.head;
@@ -5954,7 +5882,6 @@ export class ZPP_Space {
   }
 
   updateVel(dt: number) {
-    let pre = null;
     const linDrag = 1 - dt * this.global_lin_drag;
     const angDrag = 1 - dt * this.global_ang_drag;
     let cx_ite = this.live.head;
@@ -5973,7 +5900,6 @@ export class ZPP_Space {
         const torque = cur.torque + (this.gravityy * dpx - this.gravityx * dpy) * cur.gravMass;
         cur.angvel = angDrag * cur.angvel + torque * dt * cur.iinertia;
       }
-      pre = cx_ite;
       cx_ite = cx_ite.next;
     }
   }
@@ -6680,7 +6606,6 @@ export class ZPP_Space {
             const i2 = cx_ite1.elt;
             const cb1 = i1.cbSet;
             const cb2 = i2.cbSet;
-            const _this8 = cb1.manager;
             let ret8 = null;
             const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
             let cx_ite2 = pairs.head;
@@ -6729,7 +6654,6 @@ export class ZPP_Space {
                 callbackset = ZPP_CallbackSet.get(i1, i2);
                 this.add_callbackset(callbackset);
               }
-              const _this9 = cb1.manager;
               let ret10 = null;
               const pairs1 = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite3 = pairs1.head;
@@ -6842,7 +6766,6 @@ export class ZPP_Space {
             } else {
               arb.present--;
               callbackset.remove_arb(arb);
-              const _this13 = cb1.manager;
               let ret14 = null;
               const pairs2 = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
               let cx_ite6 = pairs2.head;
@@ -6939,7 +6862,6 @@ export class ZPP_Space {
           const _this17 = _this16.b1.arbiters;
           let pre = null;
           let cur = _this17.head;
-          let ret16 = false;
           while (cur != null) {
             if (cur.elt == _this16) {
               let old;
@@ -6966,7 +6888,6 @@ export class ZPP_Space {
               _this17.modified = true;
               _this17.length--;
               _this17.pushmod = true;
-              ret16 = true;
               break;
             }
             pre = cur;
@@ -6975,7 +6896,6 @@ export class ZPP_Space {
           const _this18 = _this16.b2.arbiters;
           let pre1 = null;
           let cur1 = _this18.head;
-          let ret18 = false;
           while (cur1 != null) {
             if (cur1.elt == _this16) {
               let old1;
@@ -7002,7 +6922,6 @@ export class ZPP_Space {
               _this18.modified = true;
               _this18.length--;
               _this18.pushmod = true;
-              ret18 = true;
               break;
             }
             pre1 = cur1;
@@ -7025,7 +6944,6 @@ export class ZPP_Space {
           const _this20 = _this19.b1.arbiters;
           let pre2 = null;
           let cur2 = _this20.head;
-          let ret20 = false;
           while (cur2 != null) {
             if (cur2.elt == _this19) {
               let old2;
@@ -7052,7 +6970,6 @@ export class ZPP_Space {
               _this20.modified = true;
               _this20.length--;
               _this20.pushmod = true;
-              ret20 = true;
               break;
             }
             pre2 = cur2;
@@ -7061,7 +6978,6 @@ export class ZPP_Space {
           const _this21 = _this19.b2.arbiters;
           let pre3 = null;
           let cur3 = _this21.head;
-          let ret22 = false;
           while (cur3 != null) {
             if (cur3.elt == _this19) {
               let old3;
@@ -7088,7 +7004,6 @@ export class ZPP_Space {
               _this21.modified = true;
               _this21.length--;
               _this21.pushmod = true;
-              ret22 = true;
               break;
             }
             pre3 = cur3;
@@ -7112,7 +7027,6 @@ export class ZPP_Space {
           const _this23 = _this22.b1.arbiters;
           let pre4 = null;
           let cur4 = _this23.head;
-          let ret24 = false;
           while (cur4 != null) {
             if (cur4.elt == _this22) {
               let old4;
@@ -7139,7 +7053,6 @@ export class ZPP_Space {
               _this23.modified = true;
               _this23.length--;
               _this23.pushmod = true;
-              ret24 = true;
               break;
             }
             pre4 = cur4;
@@ -7148,7 +7061,6 @@ export class ZPP_Space {
           const _this24 = _this22.b2.arbiters;
           let pre5 = null;
           let cur5 = _this24.head;
-          let ret26 = false;
           while (cur5 != null) {
             if (cur5.elt == _this22) {
               let old5;
@@ -7175,7 +7087,6 @@ export class ZPP_Space {
               _this24.modified = true;
               _this24.length--;
               _this24.pushmod = true;
-              ret26 = true;
               break;
             }
             pre5 = cur5;
@@ -7648,7 +7559,6 @@ export class ZPP_Space {
               const omega = 2 * Math.PI * tViscosity;
               _this30.agamma = 1 / (dt * omega * (2 + omega * dt));
               const ig = 1 / (1 + _this30.agamma);
-              const biasCoef = dt * omega * omega * _this30.agamma;
               _this30.agamma *= ig;
               _this30.wMass *= ig;
             } else {
@@ -7783,11 +7693,9 @@ export class ZPP_Space {
               _this30.vMassa = Ka;
               _this30.vMassb = Kb;
               _this30.vMassc = Kc;
-              let biasCoef1;
               const omega1 = 2 * Math.PI * tViscosity1;
               _this30.lgamma = 1 / (dt * omega1 * (2 + omega1 * dt));
               const ig1 = 1 / (1 + _this30.lgamma);
-              biasCoef1 = dt * omega1 * omega1 * _this30.lgamma;
               _this30.lgamma *= ig1;
               const X2 = ig1;
               _this30.vMassa *= X2;
@@ -8117,7 +8025,7 @@ export class ZPP_Space {
     let _g = 0;
     const _g1 = times;
     while (_g < _g1) {
-      const i = _g++;
+      _g++;
       let cx_ite = this.f_arbiters.head;
       while (cx_ite != null) {
         const arb = cx_ite.elt;
@@ -8385,7 +8293,7 @@ export class ZPP_Space {
     let _g = 0;
     const _g1 = times;
     while (_g < _g1) {
-      const i = _g++;
+      _g++;
       let pre = null;
       let cx_ite = this.live_constraints.head;
       while (cx_ite != null) {
@@ -8821,50 +8729,6 @@ export class ZPP_Space {
     }
   }
 
-  group_ignore(s1: any, s2: any) {
-    let cur = s1;
-    while (cur != null && cur.group == null)
-      if (cur.ishape != null) {
-        cur = cur.ishape.body;
-      } else if (cur.icompound != null) {
-        cur = cur.icompound.compound;
-      } else {
-        cur = cur.ibody.compound;
-      }
-    let g1 = cur == null ? null : cur.group;
-    if (g1 == null) {
-      return false;
-    } else {
-      let cur1 = s2;
-      while (cur1 != null && cur1.group == null)
-        if (cur1.ishape != null) {
-          cur1 = cur1.ishape.body;
-        } else if (cur1.icompound != null) {
-          cur1 = cur1.icompound.compound;
-        } else {
-          cur1 = cur1.ibody.compound;
-        }
-      let g2 = cur1 == null ? null : cur1.group;
-      if (g2 == null) {
-        return false;
-      } else {
-        let ret = false;
-        while (g1 != null && g2 != null) {
-          if (g1 == g2) {
-            ret = g1.ignore;
-            break;
-          }
-          if (g1.depth < g2.depth) {
-            g2 = g2.group;
-          } else {
-            g1 = g1.group;
-          }
-        }
-        return ret;
-      }
-    }
-  }
-
   interactionType(s1: any, s2: any, b1: any, b2: any) {
     let con_ignore;
     con_ignore = false;
@@ -9026,7 +8890,6 @@ export class ZPP_Space {
             const _this3 = xarb.b1.arbiters;
             let pre = null;
             let cur2 = _this3.head;
-            let ret3 = false;
             while (cur2 != null) {
               if (cur2.elt == xarb) {
                 let old;
@@ -9053,7 +8916,6 @@ export class ZPP_Space {
                 _this3.modified = true;
                 _this3.length--;
                 _this3.pushmod = true;
-                ret3 = true;
                 break;
               }
               pre = cur2;
@@ -9064,7 +8926,6 @@ export class ZPP_Space {
             const _this4 = xarb.b2.arbiters;
             let pre1 = null;
             let cur3 = _this4.head;
-            let ret5 = false;
             while (cur3 != null) {
               if (cur3.elt == xarb) {
                 let old1;
@@ -9091,7 +8952,6 @@ export class ZPP_Space {
                 _this4.modified = true;
                 _this4.length--;
                 _this4.pushmod = true;
-                ret5 = true;
                 break;
               }
               pre1 = cur3;
@@ -9349,7 +9209,6 @@ export class ZPP_Space {
                   const i2 = cx_ite3.elt;
                   const cb1 = i1.cbSet;
                   const cb2 = i2.cbSet;
-                  const _this16 = cb1.manager;
                   let ret18 = null;
                   const pairs = cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
                   let cx_ite4 = pairs.head;
@@ -9410,7 +9269,6 @@ export class ZPP_Space {
                   }
                   _this17.pushmod = true;
                   let lite = null;
-                  const _this18 = cb1.manager;
                   let ret21 = null;
                   const pairs1 =
                     cb1.cbpairs.length < cb2.cbpairs.length ? cb1.cbpairs : cb2.cbpairs;
@@ -9518,7 +9376,6 @@ export class ZPP_Space {
                     }
                     const pact = arb1.active;
                     arb1.active = true;
-                    const emptycontacts = false;
                     this.precb.zpp_inner.pre_arbiter = arb1;
                     this.precb.zpp_inner.set = callbackset;
                     let cx_ite8 = this.prelisteners.head;
@@ -9733,7 +9590,6 @@ export class ZPP_Space {
             const _this23 = xarb1.b1.arbiters;
             let pre2 = null;
             let cur4 = _this23.head;
-            let ret29 = false;
             while (cur4 != null) {
               if (cur4.elt == xarb1) {
                 let old2;
@@ -9760,7 +9616,6 @@ export class ZPP_Space {
                 _this23.modified = true;
                 _this23.length--;
                 _this23.pushmod = true;
-                ret29 = true;
                 break;
               }
               pre2 = cur4;
@@ -9771,7 +9626,6 @@ export class ZPP_Space {
             const _this24 = xarb1.b2.arbiters;
             let pre3 = null;
             let cur5 = _this24.head;
-            let ret31 = false;
             while (cur5 != null) {
               if (cur5.elt == xarb1) {
                 let old3;
@@ -9798,7 +9652,6 @@ export class ZPP_Space {
                 _this24.modified = true;
                 _this24.length--;
                 _this24.pushmod = true;
-                ret31 = true;
                 break;
               }
               pre3 = cur5;
@@ -10098,7 +9951,6 @@ export class ZPP_Space {
                   const i21 = cx_ite12.elt;
                   const cb11 = i11.cbSet;
                   const cb21 = i21.cbSet;
-                  const _this35 = cb11.manager;
                   let ret44 = null;
                   const pairs2 =
                     cb11.cbpairs.length < cb21.cbpairs.length ? cb11.cbpairs : cb21.cbpairs;
@@ -10160,7 +10012,6 @@ export class ZPP_Space {
                   }
                   _this36.pushmod = true;
                   let lite1 = null;
-                  const _this37 = cb11.manager;
                   let ret47 = null;
                   const pairs3 =
                     cb11.cbpairs.length < cb21.cbpairs.length ? cb11.cbpairs : cb21.cbpairs;
@@ -10271,7 +10122,6 @@ export class ZPP_Space {
                     }
                     const pact1 = arb3.active;
                     arb3.active = true;
-                    const emptycontacts1 = false;
                     let fst = true;
                     let pre4 = null;
                     let prei = null;
@@ -10594,7 +10444,6 @@ export class ZPP_Space {
             const _this43 = xarb2.b1.arbiters;
             let pre5 = null;
             let cur6 = _this43.head;
-            let ret57 = false;
             while (cur6 != null) {
               if (cur6.elt == xarb2) {
                 let old6;
@@ -10621,7 +10470,6 @@ export class ZPP_Space {
                 _this43.modified = true;
                 _this43.length--;
                 _this43.pushmod = true;
-                ret57 = true;
                 break;
               }
               pre5 = cur6;
@@ -10632,7 +10480,6 @@ export class ZPP_Space {
             const _this44 = xarb2.b2.arbiters;
             let pre6 = null;
             let cur7 = _this44.head;
-            let ret59 = false;
             while (cur7 != null) {
               if (cur7.elt == xarb2) {
                 let old7;
@@ -10659,7 +10506,6 @@ export class ZPP_Space {
                 _this44.modified = true;
                 _this44.length--;
                 _this44.pushmod = true;
-                ret59 = true;
                 break;
               }
               pre6 = cur7;
@@ -10912,7 +10758,6 @@ export class ZPP_Space {
                   const i22 = cx_ite22.elt;
                   const cb12 = i12.cbSet;
                   const cb22 = i22.cbSet;
-                  const _this56 = cb12.manager;
                   let ret72 = null;
                   const pairs4 =
                     cb12.cbpairs.length < cb22.cbpairs.length ? cb12.cbpairs : cb22.cbpairs;
@@ -10974,7 +10819,6 @@ export class ZPP_Space {
                   }
                   _this57.pushmod = true;
                   let lite2 = null;
-                  const _this58 = cb12.manager;
                   let ret75 = null;
                   const pairs5 =
                     cb12.cbpairs.length < cb22.cbpairs.length ? cb12.cbpairs : cb22.cbpairs;
@@ -11078,7 +10922,6 @@ export class ZPP_Space {
                     }
                     const pact3 = arb5.active;
                     arb5.active = true;
-                    const emptycontacts2 = false;
                     this.precb.zpp_inner.pre_arbiter = arb5;
                     this.precb.zpp_inner.set = callbackset2;
                     let cx_ite27 = this.prelisteners.head;

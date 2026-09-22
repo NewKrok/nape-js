@@ -3,16 +3,12 @@
  *
  * Stores iteration state, caching, validation/invalidation callbacks, and a
  * reference to the underlying ZPP_Contact linked list sentinel.
- *
- * Converted from nape-compiled.js lines 23231–23324.
  */
 
 import { getNape } from "../../core/engine";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
 
 export class ZPP_ContactList {
-  // --- Static: Haxe metadata ---
-
   // --- Static: internal flag for iterator instantiation guard ---
   static internal = false;
 

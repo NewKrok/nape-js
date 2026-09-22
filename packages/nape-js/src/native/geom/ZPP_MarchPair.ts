@@ -2,13 +2,9 @@
  * ZPP_MarchPair — Internal marching squares pair data for the nape physics engine.
  *
  * Stores pairs of points and spans for the marching squares algorithm.
- *
- * Converted from nape-compiled.js lines 69082–69119.
  */
 
 export class ZPP_MarchPair {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_MarchPair | null = null;
 

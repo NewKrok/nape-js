@@ -84,19 +84,19 @@ describe("ZNPArray2_ZPP_GeomVert", () => {
 });
 
 describe("namespace registration", () => {
-  it("should register ZNPArray2_Float in compiled namespace", async () => {
+  it("should register ZNPArray2_Float in the nape namespace", async () => {
     const { getNape } = await import("../../../src/core/engine");
     const nape = getNape();
     expect(nape.__zpp.util.ZNPArray2_Float).toBe(ZNPArray2_Float);
   });
 
-  it("should register ZNPArray2_ZPP_GeomVert in compiled namespace", async () => {
+  it("should register ZNPArray2_ZPP_GeomVert in the nape namespace", async () => {
     const { getNape } = await import("../../../src/core/engine");
     const nape = getNape();
     expect(nape.__zpp.util.ZNPArray2_ZPP_GeomVert).toBe(ZNPArray2_ZPP_GeomVert);
   });
 
-  it("should register ZNPArray2_ZPP_MarchPair in compiled namespace", async () => {
+  it("should register ZNPArray2_ZPP_MarchPair in the nape namespace", async () => {
     const { getNape } = await import("../../../src/core/engine");
     const nape = getNape();
     expect(nape.__zpp.util.ZNPArray2_ZPP_MarchPair).toBe(ZNPArray2_ZPP_MarchPair);

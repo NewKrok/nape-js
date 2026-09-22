@@ -4,8 +4,6 @@
  * Shared base for ZPP_Body, ZPP_Compound, and ZPP_Shape.
  * Manages callback types (cbTypes), callback sets (cbSet/cbsets),
  * interaction groups, and space add/remove lifecycle.
- *
- * Converted from nape-compiled.js lines 24862–25239.
  */
 
 import { ZPP_ID } from "../util/ZPP_ID";
@@ -17,10 +15,8 @@ import {
 } from "../util/ZNPRegistry";
 
 export class ZPP_Interactor {
-  // --- Static: Haxe metadata ---
-
   /**
-   * Namespace references, set by the compiled module after import.
+   * Namespace references, assigned by ZPPRegistry.registerZPPClasses().
    * _nape = the `nape` public namespace
    * _zpp = the `zpp_nape` internal namespace
    */

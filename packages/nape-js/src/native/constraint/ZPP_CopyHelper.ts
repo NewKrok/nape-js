@@ -5,8 +5,6 @@
  * Two static factories:
  *   - dict(id, bc) — maps a body ID to an already-copied Body
  *   - todo(id, cb) — maps a body ID to a callback to invoke once copied
- *
- * Converted from nape-compiled.js lines 22300–22328.
  */
 
 export class ZPP_CopyHelper {

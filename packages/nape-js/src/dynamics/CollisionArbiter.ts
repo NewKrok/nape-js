@@ -310,4 +310,4 @@ export class CollisionArbiter extends Arbiter {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace

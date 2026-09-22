@@ -4,13 +4,9 @@
  * Used by the physics engine to group connected bodies/constraints
  * into islands for sleeping/waking. Uses union-find (disjoint set)
  * with rank-based merging.
- *
- * Converted from nape-compiled.js lines 33540–33585.
  */
 
 export class ZPP_Component {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_Component | null = null;
 

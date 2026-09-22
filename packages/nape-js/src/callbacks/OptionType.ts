@@ -1,7 +1,6 @@
 import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
-import type { NapeInner } from "../geom/Vec2";
 import type { CbType } from "./CbType";
 
 /**
@@ -17,17 +16,10 @@ import type { CbType } from "./CbType";
  * const filter = new OptionType(enemyType).excluding(bossType);
  * const listener = new BodyListener(CbEvent.WAKE, filter, (cb) => { ... });
  * ```
- *
- * Converted from nape-compiled.js lines 2647–2698.
  */
 export class OptionType {
   /** @internal */
   zpp_inner: ZPP_OptionType;
-
-  /** @internal */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Creates an `OptionType` optionally seeded with initial include/exclude entries.
@@ -124,6 +116,6 @@ export class OptionType {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace
 const nape = getNape();
 nape.callbacks.OptionType = OptionType;

@@ -3,8 +3,6 @@
  *
  * Manages body event listeners (WAKE/SLEEP) with priority-ordered insertion
  * into CbType listener lists. Handles option changes and re-registration.
- *
- * Converted from nape-compiled.js lines 27305–27497.
  */
 
 import { ZPP_Listener } from "./ZPP_Listener";

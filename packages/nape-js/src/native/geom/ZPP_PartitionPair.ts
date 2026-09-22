@@ -3,13 +3,9 @@
  *
  * Doubles as a linked list node AND an edge pair (a, b) with sorted IDs.
  * Used by the Delaunay optimisation pass in ZPP_Triangular.
- *
- * Converted from nape-compiled.js lines 38764–39176.
  */
 
 export class ZPP_PartitionPair {
-  // --- Static: Haxe metadata ---
-
   // --- Static: object pool ---
   static zpp_pool: ZPP_PartitionPair | null = null;
 

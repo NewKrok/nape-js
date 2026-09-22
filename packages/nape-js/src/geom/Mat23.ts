@@ -1,22 +1,14 @@
 import { getOrCreate } from "../core/cache";
 import { ZPP_Mat23 } from "../native/geom/ZPP_Mat23";
 import { Vec2 } from "./Vec2";
-import type { NapeInner } from "./Vec2";
 import { Config } from "../Config";
 
 /**
  * 2x3 affine transformation matrix [a b tx; c d ty].
- *
- * Converted from nape-compiled.js lines 20507–21760.
  */
 export class Mat23 {
   /** @internal */
   zpp_inner: ZPP_Mat23;
-
-  /** @internal */
-  get _inner(): NapeInner {
-    return this;
-  }
 
   /**
    * Create a Mat23 with the given components. Defaults to the identity matrix `[1 0 0; 0 1 0]`.

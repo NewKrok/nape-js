@@ -2,8 +2,6 @@
  * ZPP_Simplify — Polygon simplification using Ramer-Douglas-Peucker algorithm.
  *
  * Reduces polygon vertex count while preserving shape within an epsilon tolerance.
- *
- * Converted from nape-compiled.js lines 35672–35983.
  */
 
 import { ZPP_SimplifyV } from "./ZPP_SimplifyV";

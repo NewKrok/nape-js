@@ -4,8 +4,6 @@
  * Core physics body managing position, velocity, mass, inertia, shapes, and
  * CCD (continuous collision detection) sweep integration.
  * Extends ZPP_Interactor (still in compiled code — methods copied at init time).
- *
- * Converted from nape-compiled.js lines 52431–54547.
  */
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";
@@ -24,10 +22,8 @@ import {
 import { ZPP_Flags } from "../util/ZPP_Flags";
 
 export class ZPP_Body {
-  // --- Static: Haxe metadata ---
-
   /**
-   * Namespace references, set by the compiled module after import.
+   * Namespace references, assigned by ZPPRegistry.registerZPPClasses().
    * _nape = the `nape` public namespace
    * _zpp = the `zpp_nape` internal namespace
    */
@@ -504,50 +500,6 @@ export class ZPP_Body {
     }
   }
 
-  sweepValidate(s: any): void {
-    if (s.type === 0) {
-      // Circle
-      s.worldCOMx = this.posx + (this.axisy * s.localCOMx - this.axisx * s.localCOMy);
-      s.worldCOMy = this.posy + (s.localCOMx * this.axisx + s.localCOMy * this.axisy);
-    } else {
-      // Polygon
-      const p = s.polygon;
-      let li = p.lverts.next;
-      let cx_ite = p.gverts.next;
-      while (cx_ite != null) {
-        const g = cx_ite;
-        const l = li;
-        li = li.next;
-        g.x = this.posx + (this.axisy * l.x - this.axisx * l.y);
-        g.y = this.posy + (l.x * this.axisx + l.y * this.axisy);
-        cx_ite = cx_ite.next;
-      }
-      let ite = p.edges.head;
-      let cx_ite2 = p.gverts.next;
-      let u = cx_ite2;
-      cx_ite2 = cx_ite2.next;
-      while (cx_ite2 != null) {
-        const v = cx_ite2;
-        const e = ite.elt;
-        ite = ite.next;
-        e.gnormx = this.axisy * e.lnormx - this.axisx * e.lnormy;
-        e.gnormy = e.lnormx * this.axisx + e.lnormy * this.axisy;
-        e.gprojection = this.posx * e.gnormx + this.posy * e.gnormy + e.lprojection;
-        e.tp0 = u.y * e.gnormx - u.x * e.gnormy;
-        e.tp1 = v.y * e.gnormx - v.x * e.gnormy;
-        u = v;
-        cx_ite2 = cx_ite2.next;
-      }
-      const v1 = p.gverts.next;
-      const e1 = ite.elt;
-      e1.gnormx = this.axisy * e1.lnormx - this.axisx * e1.lnormy;
-      e1.gnormy = e1.lnormx * this.axisx + e1.lnormy * this.axisy;
-      e1.gprojection = this.posx * e1.gnormx + this.posy * e1.gnormy + e1.lprojection;
-      e1.tp0 = u.y * e1.gnormx - u.x * e1.gnormy;
-      e1.tp1 = v1.y * e1.gnormx - v1.x * e1.gnormy;
-    }
-  }
-
   // ---- Position / velocity / force invalidation & validation ----
 
   invalidate_pos(): void {
@@ -949,10 +901,6 @@ export class ZPP_Body {
         this.invalidate_inertia();
       }
     }
-  }
-
-  invalidate_wake(): void {
-    this.wake();
   }
 
   // ---- AABB ----

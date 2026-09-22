@@ -4,8 +4,6 @@
  * Constrains (dist(b1,b2) + ratio * dist(b3,b4)) to [jointMin, jointMax].
  * Supports mechanical advantage ratio, slack detection, stiffness/damping,
  * and large-error pre-correction in applyImpulsePos.
- *
- * Converted from nape-compiled.js lines 25475–25367.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
@@ -616,24 +614,20 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
   }
 
   override copy(dict: any, todo: any): any {
-    const _this = this.outer_zn;
-    if (_this.zpp_inner_zn.wrap_a1 == null) {
-      _this.zpp_inner_zn.setup_a1();
+    if (this.wrap_a1 == null) {
+      this.setup_a1();
     }
-    const ret = _this.zpp_inner_zn.wrap_a1;
-    const _this1 = this.outer_zn;
-    if (_this1.zpp_inner_zn.wrap_a2 == null) {
-      _this1.zpp_inner_zn.setup_a2();
+    const ret = this.wrap_a1;
+    if (this.wrap_a2 == null) {
+      this.setup_a2();
     }
-    const ret1 = _this1.zpp_inner_zn.wrap_a2;
-    const _this2 = this.outer_zn;
-    if (_this2.zpp_inner_zn.wrap_a3 == null) {
-      _this2.zpp_inner_zn.setup_a3();
+    const ret1 = this.wrap_a2;
+    if (this.wrap_a3 == null) {
+      this.setup_a3();
     }
-    const ret2 = _this2.zpp_inner_zn.wrap_a3;
-    const _this3 = this.outer_zn;
-    if (_this3.zpp_inner_zn.wrap_a4 == null) {
-      _this3.zpp_inner_zn.setup_a4();
+    const ret2 = this.wrap_a3;
+    if (this.wrap_a4 == null) {
+      this.setup_a4();
     }
     const ret3 = ZPP_PulleyJoint._createFn!(
       null,
@@ -643,7 +637,7 @@ export class ZPP_PulleyJoint extends ZPP_Constraint {
       ret,
       ret1,
       ret2,
-      _this3.zpp_inner_zn.wrap_a4,
+      this.wrap_a4,
       this.jointMin,
       this.jointMax,
       this.ratio,

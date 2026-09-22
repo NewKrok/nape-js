@@ -4,8 +4,6 @@
  * Unlike the standard Vec2List which uses a ZNPList_ZPP_Vec2, this class wraps
  * a raw ZPP_Vec2 intrusive linked list (sentinel node pattern: `inner.next` is
  * the first element). Used by ZPP_Polygon for its localVerts / globalVerts lists.
- *
- * Converted from nape-compiled.js lines 1181–1527.
  */
 
 import { getNape } from "../../core/engine";

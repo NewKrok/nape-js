@@ -3,8 +3,6 @@
  *
  * Handles containment testing, contact generation, and fluid collision
  * (polygon clipping) between shapes.
- *
- * Converted from nape-compiled.js lines 21113–24305.
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
@@ -14,7 +12,6 @@ import { ZPP_Body } from "../phys/ZPP_Body";
 import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
 import { ZPP_FluidArbiter } from "../dynamics/ZPP_FluidArbiter";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
-import { getNape } from "../../core/engine";
 import { Config } from "../../Config";
 
 export class ZPP_Collide {
@@ -233,7 +230,6 @@ export class ZPP_Collide {
         }
         let cont = true;
         let max = -1e100;
-        const _maxmin = -1e100;
         let maxi = -1;
         let axis1 = null;
         let axis2 = null;
@@ -301,17 +297,14 @@ export class ZPP_Collide {
           if (!cont) {
             return false;
           } else {
-            let _q1;
             let q2;
             let ax2;
             let scale;
             if (maxi == 1) {
-              _q1 = s1.polygon;
               q2 = s2.polygon;
               ax2 = axis1;
               scale = 1.0;
             } else {
-              _q1 = s2.polygon;
               q2 = s1.polygon;
               ax2 = axis2;
               scale = -1.0;
@@ -442,7 +435,6 @@ export class ZPP_Collide {
           arb.__sep_owner = null;
         }
         let max1 = -1e100;
-        const _minmax = -1e100;
         let cont1 = true;
         let a0 = null;
         let vi = null;
@@ -735,7 +727,6 @@ export class ZPP_Collide {
     }
   }
   static testCollide_safe(s1: ZPP_Shape, s2: ZPP_Shape) {
-    const _napeNs = getNape();
     // Ensure s1.type <= s2.type for consistent dispatch
     if (s1.type > s2.type) {
       const t = s1;
@@ -745,7 +736,6 @@ export class ZPP_Collide {
     return ZPP_Collide.testCollide(s1, s2);
   }
   static testCollide(s1: ZPP_Shape, s2: ZPP_Shape) {
-    const _napeNs = getNape();
     if (s2.type == 1) {
       if (s1.type == 1) {
         let cont = true;

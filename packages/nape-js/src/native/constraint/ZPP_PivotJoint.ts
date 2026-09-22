@@ -4,8 +4,6 @@
  * Constrains two anchor points (a1 on b1, a2 on b2) to coincide.
  * Uses a 2×2 mass matrix (kMassa, kMassb, kMassc) for the symmetric
  * positive-semi-definite effective-mass inverse.
- *
- * Converted from nape-compiled.js lines 24611–25474.
  */
 
 import { ZPP_Constraint } from "./ZPP_Constraint";
@@ -306,16 +304,14 @@ export class ZPP_PivotJoint extends ZPP_Constraint {
   }
 
   override copy(dict: any, todo: any): any {
-    const _this = this.outer_zn;
-    if (_this.zpp_inner_zn.wrap_a1 == null) {
-      _this.zpp_inner_zn.setup_a1();
+    if (this.wrap_a1 == null) {
+      this.setup_a1();
     }
-    const ret = _this.zpp_inner_zn.wrap_a1;
-    const _this1 = this.outer_zn;
-    if (_this1.zpp_inner_zn.wrap_a2 == null) {
-      _this1.zpp_inner_zn.setup_a2();
+    const ret = this.wrap_a1;
+    if (this.wrap_a2 == null) {
+      this.setup_a2();
     }
-    const ret1 = ZPP_PivotJoint._createFn!(null, null, ret, _this1.zpp_inner_zn.wrap_a2);
+    const ret1 = ZPP_PivotJoint._createFn!(null, null, ret, this.wrap_a2);
     this.copyto(ret1);
     ZPP_AngleJoint._copyBody(dict, todo, this.b1, ret1, "b1");
     ZPP_AngleJoint._copyBody(dict, todo, this.b2, ret1, "b2");

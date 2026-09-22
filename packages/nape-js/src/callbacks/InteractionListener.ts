@@ -1,7 +1,5 @@
 /**
  * InteractionListener — Listens for interaction events (BEGIN/END/ONGOING).
- *
- * Fully modernized from nape-compiled.js lines 659–1091.
  */
 
 import { ZPP_Listener } from "../native/callbacks/ZPP_Listener";
@@ -58,8 +56,6 @@ export function numberToInteractionType(itype: number): InteractionType | null {
  * );
  * space.listeners.add(listener);
  * ```
- *
- * Fully modernized from nape-compiled.js lines 659–1091.
  */
 export class InteractionListener extends Listener {
   /** @internal */
@@ -187,4 +183,4 @@ export class InteractionListener extends Listener {
   }
 }
 
-// Self-register in the compiled namespace
+// Self-register in the nape namespace

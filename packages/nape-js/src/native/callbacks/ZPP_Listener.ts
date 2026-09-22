@@ -4,18 +4,12 @@
  * Base class for ZPP_BodyListener, ZPP_ConstraintListener, and
  * ZPP_InteractionListener. Holds common properties (space, precedence,
  * event type, listener type) and provides stub methods for subclass override.
- *
- * Converted from nape-compiled.js lines 27259–27304, 112053–112139.
  */
 
 import { ZPP_ID } from "../util/ZPP_ID";
 
 export class ZPP_Listener {
-  // --- Static: Haxe metadata ---
-
   // --- Static: namespace references ---
-  static _nape: any = null;
-  static _zpp: any = null;
 
   // --- Static: internal flag (prevents direct instantiation from public API) ---
   static internal = false;
