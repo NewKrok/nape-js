@@ -304,47 +304,9 @@ const demoDef = {
     for (const body of _spaceB.bodies) drawColoredBody(ctx, body);
     ctx.restore();
 
-    // --- Legend bar ---
-    ctx.save();
-    ctx.font = "bold 13px monospace";
-    ctx.textBaseline = "top";
-
-    ctx.fillStyle = "rgba(255,80,30,0.9)";
-    ctx.fillText("subSteps = 1", 12, 10);
-
-    ctx.fillStyle = "rgba(50,200,80,0.9)";
-    ctx.fillText("subSteps = 4", halfW + 12, 10);
-
-    // Awake counters
-    ctx.font = "11px monospace";
-
-    const awakeColorA = _awakeA > 0 ? "rgba(255,120,40,0.9)" : "rgba(50,200,80,0.8)";
-    ctx.fillStyle = awakeColorA;
-    ctx.fillText(`Awake: ${_awakeA} / ${_totalA}`, 12, 32);
-
-    const awakeColorB = _awakeB > 0 ? "rgba(255,120,40,0.9)" : "rgba(50,200,80,0.8)";
-    ctx.fillStyle = awakeColorB;
-    ctx.fillText(`Awake: ${_awakeB} / ${_totalB}`, halfW + 12, 32);
-
-    // Legend
-    ctx.fillStyle = "rgba(200,220,255,0.35)";
-    ctx.fillText("Solver: 1 vel / 1 pos iteration", 12, 50);
-
-    // Color legend
-    ctx.fillStyle = "rgba(255,120,40,0.7)";
-    ctx.fillRect(12, 66, 10, 10);
-    ctx.fillStyle = "rgba(200,220,255,0.5)";
-    ctx.fillText("= awake (jittering)", 26, 66);
-
-    ctx.fillStyle = "rgba(50,180,80,0.7)";
-    ctx.fillRect(12, 82, 10, 10);
-    ctx.fillStyle = "rgba(200,220,255,0.5)";
-    ctx.fillText("= sleeping (stable)", 26, 82);
-
-    ctx.fillStyle = "rgba(200,220,255,0.3)";
-    ctx.fillText("Click to drop more boxes", 12, H - 18);
-
-    ctx.restore();
+    // The legend bar is drawn by render3dOverlay(), which the runner calls
+    // after this in every mode (canvas2d included) — drawing it here too
+    // double-struck every line.
   },
 
   // -------------------------------------------------------------------------
@@ -520,6 +482,19 @@ const demoDef = {
 
     ctx.fillStyle = "rgba(200,220,255,0.35)";
     ctx.fillText("Solver: 1 vel / 1 pos iteration", 12, 50);
+
+    // Colour key — the swatches the 2D render used to draw on its own.
+    ctx.fillStyle = "rgba(255,120,40,0.7)";
+    ctx.fillRect(12, 66, 10, 10);
+    ctx.fillStyle = "rgba(200,220,255,0.5)";
+    ctx.fillText("= awake (jittering)", 26, 66);
+
+    ctx.fillStyle = "rgba(50,180,80,0.7)";
+    ctx.fillRect(12, 82, 10, 10);
+    ctx.fillStyle = "rgba(200,220,255,0.5)";
+    ctx.fillText("= sleeping (stable)", 26, 82);
+
+    ctx.fillStyle = "rgba(200,220,255,0.3)";
     ctx.fillText("Click to drop more boxes", 12, H - 18);
     ctx.restore();
   },

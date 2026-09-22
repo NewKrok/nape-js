@@ -380,6 +380,14 @@
       object-fit: cover;
       display: block;
     }
+    /* The poster is a still of the demo, captured in whichever mode that demo
+       renders best in — 3D for most of them. The live canvas sits on top of it
+       but a 2D canvas is transparent wherever nothing is drawn, so the poster
+       showed through behind the running scene and read as a leftover 3D frame.
+       Hide it as soon as the card has a live render (preview or running). */
+    .example-card-canvas.has-live-render .example-card-poster {
+      display: none;
+    }
     .example-card-canvas canvas,
     .example-card-canvas > div > canvas {
       position: absolute;

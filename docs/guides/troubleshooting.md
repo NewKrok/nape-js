@@ -209,6 +209,36 @@ const cc = new CharacterController(space, body, {
 
 ---
 
+## Character hangs on a wall / ledge edge while a direction key is held
+
+**Symptom:** Holding left/right into a wall (or the side of a platform / one-way
+platform) while airborne freezes the character in place — it only falls once
+the key is released.
+
+**Cause:** Material friction against a re-asserted push. A velocity-driven
+character writes e.g. `vx = 210` into the wall every frame; the contact solver
+cancels that with a large normal impulse, and friction turns it into a
+tangential impulse big enough to cancel gravity for the whole step.
+
+**Fix:** `CharacterController` handles this since the `wallFriction` option
+exists — non-ground contacts (steeper than `maxSlopeAngle`) get friction `0`
+while floors and slopes keep material friction. If you passed
+`wallFriction: null`, or drive the body yourself, either drop the option or
+zero friction on wall contacts in a `PreListener`:
+
+```typescript
+new PreListener(InteractionType.COLLISION, playerTag, CbType.ANY_BODY, (cb) => {
+  const arb = cb.arbiter.collisionArbiter;
+  if (arb && Math.abs(arb.normal.y) < 0.7) {
+    arb.dynamicFriction = 0;
+    arb.staticFriction = 0;
+  }
+  return null; // leave accept / ignore to the engine
+}).space = space;
+```
+
+---
+
 ## Web Worker physics is slower than main thread
 
 **Possible causes:**

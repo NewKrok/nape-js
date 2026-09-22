@@ -235,6 +235,7 @@ function update(dt: number, keys: { left: boolean; right: boolean; jump: boolean
 <li>Use <code>allowRotation = false</code> so the character doesn't tumble</li>
 <li><code>isBullet = true</code> enables CCD — prevents falling through thin platforms</li>
 <li><code>CharacterController</code> handles slopes, steps, and wall detection automatically</li>
+<li>Walls are frictionless by default (<code>wallFriction: 0</code>) — holding a direction key into a wall or the side of a ledge never cancels gravity, so wall-slide / wall-jump code sees the real fall speed. Pass a small value for a scrape, or <code>null</code> to keep material friction on walls</li>
 </ul>
 <hr>
 <h2 id="one-way-platforms">One-Way Platforms</h2>

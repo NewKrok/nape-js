@@ -121,6 +121,7 @@ function update(dt: number, keys: { left: boolean; right: boolean; jump: boolean
 - Use `allowRotation = false` so the character doesn't tumble
 - `isBullet = true` enables CCD — prevents falling through thin platforms
 - `CharacterController` handles slopes, steps, and wall detection automatically
+- Walls are frictionless by default (`wallFriction: 0`) — holding a direction key into a wall or the side of a ledge never cancels gravity, so wall-slide / wall-jump code sees the real fall speed. Pass a small value for a scrape, or `null` to keep material friction on walls
 
 ---
 

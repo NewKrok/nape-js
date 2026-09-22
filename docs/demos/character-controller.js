@@ -598,46 +598,9 @@ export default {
 
     ctx.restore();
 
-    // ---- HUD (screen space) ----
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    ctx.font = "12px monospace";
-    ctx.fillText("WASD / Arrow keys to move, Space to jump", 10, 20);
-
-    // Coin counter
-    ctx.fillStyle = "#d29922";
-    ctx.fillText(`\u25CF ${coinCount}`, W - 60, 20);
-
-    if (cc) {
-      const state = wallSliding ? "WALL-SLIDE" : cc.grounded ? "GROUNDED" : "AIRBORNE";
-      ctx.fillStyle = wallSliding ? "#a371f7" : cc.grounded ? "#3fb950" : "#f85149";
-      ctx.fillText(state, 10, 40);
-      if (cc.timeSinceGrounded > 0 && cc.timeSinceGrounded * 1000 < COYOTE_MS) {
-        ctx.fillStyle = "#d29922";
-        ctx.fillText("COYOTE", 100, 40);
-      }
-      if (wallJumpLockTimer > 0) {
-        ctx.fillStyle = "#a371f7";
-        ctx.fillText("WALL-JUMP", 100, 40);
-      }
-      if (onIce) {
-        ctx.fillStyle = "#8cd2ff";
-        ctx.fillText("ICE", 100, 40);
-      }
-    }
-
-    // Legend
-    const ly = H - 12;
-    ctx.font = "10px monospace";
-    ctx.fillStyle = "#a371f7";
-    ctx.fillText("\u25AC one-way (jump through)", 10, ly);
-    ctx.fillStyle = "#607888";
-    ctx.fillText("\u25AC solid", 200, ly);
-    ctx.fillStyle = "#f85149";
-    ctx.fillText("\u25AC bounce pad", 260, ly);
-    ctx.fillStyle = "#8cd2ff";
-    ctx.fillText("\u25AC ice (slippery)", 370, ly);
-    ctx.fillStyle = "#d29922";
-    ctx.fillText("\u25CF coin", 510, ly);
+    // HUD and legend are NOT drawn here: the runner calls render3dOverlay()
+    // after this in every mode, including canvas2d, and that already paints
+    // them in screen space. Drawing them here too double-struck every glyph.
   },
 
   // ---- PixiJS render ----

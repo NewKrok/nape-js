@@ -145,21 +145,17 @@ export default {
         ctx.strokeStyle = STROKES[i];
         ctx.lineWidth = 2;
 
-        let labelY = py; // y position for the counter label
-
         if (ud._zoneShape === "circle") {
           const r = ud._zoneR;
           ctx.beginPath();
           ctx.arc(px, py, r, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
-          labelY = py - r - 8;
         } else if (ud._zoneShape === "box") {
           const hw = ud._zoneW / 2;
           const hh = ud._zoneH / 2;
           ctx.fillRect(px - hw, py - hh, hw * 2, hh * 2);
           ctx.strokeRect(px - hw, py - hh, hw * 2, hh * 2);
-          labelY = py - hh - 8;
         } else if (ud._zoneShape === "hex") {
           const r = ud._zoneR;
           ctx.beginPath();
@@ -172,14 +168,11 @@ export default {
           ctx.closePath();
           ctx.fill();
           ctx.stroke();
-          labelY = py - r - 8;
         }
 
-        // Counter label above zone
-        ctx.fillStyle = "#e6edf3";
-        ctx.font = "bold 13px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText(`inside: ${z.count}  total: ${z.total}`, px, labelY);
+        // The counter label is drawn by render3dOverlay(), which the runner
+        // calls after this in every mode (canvas2d included) and which colours
+        // it per zone — drawing a white copy here too double-struck the text.
         ctx.restore();
       }
     }

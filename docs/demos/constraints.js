@@ -600,37 +600,9 @@ let _dragY = 0;`,
       }
     }
 
-    // ── Cell labels ──────────────────────────────────────────────────────
-    const LABELS = [
-      { col: 0, row: 0, name: '', desc: `Constraints softened with\nfrequency=20  damping=1` },
-      { col: 1, row: 0, name: 'PivotJoint', desc: 'shared pivot point' },
-      { col: 2, row: 0, name: 'WeldJoint', desc: 'rigid weld + 45\u00B0 phase' },
-      { col: 0, row: 1, name: 'DistanceJoint', desc: 'spring distance range' },
-      { col: 1, row: 1, name: 'LineJoint', desc: 'vertical rail slider' },
-      { col: 2, row: 1, name: 'PulleyJoint', desc: 'pulley with ratio 2.5' },
-      { col: 0, row: 2, name: 'AngleJoint', desc: 'linked rotation (ratio 2)' },
-      { col: 1, row: 2, name: 'MotorJoint', desc: 'driven spin (ratio 3)' },
-      { col: 2, row: 2, name: 'SpringJoint', desc: 'soft spring + damper' },
-    ];
-    for (const { col, row, name, desc } of LABELS) {
-      const c = cellOrigin(col, row, W, H);
-      const lx = c.left + 8, ly = c.top + 17;
-      if (name) {
-        ctx.fillStyle = '#58a6ffdd';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText(name, lx, ly);
-        ctx.fillStyle = '#8b949eaa';
-        ctx.font = '10px monospace';
-        ctx.fillText(desc, lx, ly + 14);
-      } else {
-        ctx.fillStyle = '#8b949ecc';
-        ctx.font = '11px monospace';
-        const lines = desc.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-          ctx.fillText(lines[i], c.left + 12, c.top + ch / 2 - 6 + i * 16);
-        }
-      }
-    }
+    // Cell labels are drawn by render3dOverlay(), which the runner calls after
+    // this in every mode (canvas2d included) — drawing the same table here too
+    // double-struck every label.
 
     ctx.restore();
   },
