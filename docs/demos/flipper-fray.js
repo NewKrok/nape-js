@@ -67,14 +67,16 @@ const BOMB_R = 7.5;
 const MAX_SPEED = 740;
 // The table is a dome, steepest at the top: the ball is pushed straight out
 // from the centre, hardest in the middle and easing off toward the rim. A
-// weak constant field left balls crawling for seconds around the centre
-// whenever they arrived with inward speed — the turnaround alone took eight
-// of them — while a strong constant one fired everything at the flippers.
-// Near the rim a sideways nudge steers the ball toward the nearest mouth, so
-// it can never park itself against the wall between two pockets.
-const OUT_ACC = 170;            // px/s² outward at the centre
-const OUT_FALLOFF = 0.58;       // fraction of that lost by the rim
-const FUNNEL_ACC = 80;          // px/s² sideways at the rim, toward the nearest mouth
+// weak field left balls crawling for seconds around the centre whenever they
+// arrived with inward speed — the turnaround alone took eight of them — so
+// the slope is strong enough that the middle always clears itself, while the
+// falloff keeps the rim, where the flippers work, playable. Near the rim a
+// sideways nudge steers the ball toward the nearest mouth, so it can never
+// park itself against the wall between two pockets; it has to scale with the
+// slope, or a stronger push just pins the ball harder.
+const OUT_ACC = 320;            // px/s² outward at the centre
+const OUT_FALLOFF = 0.52;       // fraction of that lost by the rim
+const FUNNEL_ACC = 140;         // px/s² sideways at the rim, toward the nearest mouth
 const DAMP = 0.26;              // linear damping, 1/s
 const BUMP_KICK = 185;
 const SLING_KICK = 155;

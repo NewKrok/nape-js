@@ -213,7 +213,7 @@ Once you are eliminated the rest of the match plays out in a ×4 time-lapse
 | Slingshots          | On the wall halfway between two mouths, base 64 along the wall, tip 16 inward, +155 px/s    |
 | Lane posts          | Two per lane, r 7, 54 px in front of the mouth and ±36 px off its axis                      |
 | Cross               | Kinematic, arms 42, 0.85 rad/s, reverses every 20 s; new balls spawn between its arms so it launches them |
-| Field / damping     | 170 px/s² out from the centre, easing to 71 px/s² at the rim, + a rim funnel of up to 80 px/s² sideways, 0.26 /s damping, 740 px/s cap |
+| Field / damping     | 320 px/s² out from the centre, easing to 154 px/s² at the rim, + a rim funnel of up to 140 px/s² sideways, 0.26 /s damping, 740 px/s cap |
 
 **Four passes to get to "a circle".** Each of the first three looked right on
 paper and wrong on the table:
@@ -243,11 +243,12 @@ arrives at the middle with inward speed: the turnaround alone takes 2 × v / a,
 eight seconds at 120 px/s, and it reads as the ball stopping dead in the
 centre and refusing to roll out. A stall probe (speed < 45 px/s inside
 r < 110 for 0.75 s, logging what the ball touches) found eleven such crawls in
-a two-minute match, none of them touching anything. Raising the field to a
-flat 150 px/s² cures the crawl but fires everything at the flippers, so the
-profile now falls off linearly: 170 px/s² at the centre, 71 at the rim. Two
-slow events remain per match, both at r ≈ 108 just past a bumper, and over
-half the time a ball is under 200 px/s.
+a two-minute match, none of them touching anything. A flat field cures the
+crawl but fires everything at the flippers, so the profile falls off linearly
+instead: 320 px/s² at the centre, 154 at the rim. The stall probe reports
+nothing at all at that strength, and the ball still spends 38 % of its time
+under 200 px/s. Past ~380 px/s² the keepers start losing the rim (save rate
+89 %) and matches drop under 85 s, which is the ceiling worth using.
 
 **A radial push needs a rim funnel.** On a closed circle a ball pressed
 against the wall between two mouths simply stays there: the wall cancels the
@@ -255,9 +256,9 @@ push and damping kills what is left. So near the rim (scaled by (r/R)²) the
 field adds a sideways term proportional to `sin` of the angle to the nearest
 mouth — and it has to scale with the outward field, or a stronger push just
 pins the ball harder. In the middle the field is purely radial; at the wall it
-walks the ball around to the nearest mouth. Measured over eight matches the
-four pockets took 422 / 450 / 446 / 387 approaches and 39 / 34 / 31 / 37
-drains, saves within 2.6 points of each other, and no ball was ever flagged
+walks the ball around to the nearest mouth. Measured over twelve matches the
+four pockets took 660 / 574 / 618 / 625 approaches and 55 / 54 / 56 / 53
+drains, saves within 1.1 points of each other, and no ball was ever flagged
 stuck.
 
 ### Match schedule
@@ -294,7 +295,7 @@ falls through. Sweeping the reaction window with a no-miss keeper gave save
 rates of 93 % at 0.03 s, 89 % at 0.05, 86 % at 0.07 and 80 % at 0.10 s
 (never flipping at all: 76 %, and the balls pile up on the flippers). The
 difficulty table is built around that curve. On the circular four-pocket table an
-all-AI match runs about 110 s, saves ~92 % of approaches and ends with all
+all-AI match runs about 96 s, saves ~91 % of approaches and ends with all
 three opponents out; none of the measured matches reached the buzzer.
 
 ### Physics
