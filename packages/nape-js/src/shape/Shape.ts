@@ -217,9 +217,10 @@ export class Shape extends Interactor {
         zpp.polygon.setupLocalCOM();
       }
     }
-    // Set via the wrapper (triggers _invalidate callback)
+    // Set via the wrapper (triggers _invalidate callback). Vec2.set() already
+    // consumes a weak argument, so only dispose one it left untouched.
     zpp.wrap_localCOM.set(value);
-    if ((value as any).zpp_inner.weak) {
+    if (!(value as any).zpp_disp && (value as any).zpp_inner.weak) {
       value.dispose();
     }
   }
