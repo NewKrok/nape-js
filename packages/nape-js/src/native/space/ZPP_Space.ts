@@ -1728,28 +1728,7 @@ export class ZPP_Space {
     const prey = body.posy;
     body.sweepTime = 0;
     body.sweep_angvel = body.angvel;
-    const delta = deltaTime - body.sweepTime;
-    if (delta != 0) {
-      body.sweepTime = deltaTime;
-      const t3 = delta;
-      body.posx += body.velx * t3;
-      body.posy += body.vely * t3;
-      if (body.angvel != 0) {
-        const dr = body.sweep_angvel * delta;
-        body.rot += dr;
-        if (dr * dr > 0.0001) {
-          body.axisx = Math.sin(body.rot);
-          body.axisy = Math.cos(body.rot);
-        } else {
-          const d2 = dr * dr;
-          const p = 1 - 0.5 * d2;
-          const m = 1 - (d2 * d2) / 8;
-          const nx = (p * body.axisx + dr * body.axisy) * m;
-          body.axisy = (p * body.axisy - dr * body.axisx) * m;
-          body.axisx = nx;
-        }
-      }
-    }
+    body.sweepIntegrate(deltaTime);
     const postx = body.posx;
     const posty = body.posy;
     shape.validate_sweepRadius();
@@ -1841,28 +1820,7 @@ export class ZPP_Space {
           (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner.sweepTime = 0;
           ZPP_SweepDistance.dynamicSweep(toi, deltaTime, 0, 0, true);
           const _this7 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
-          const delta1 = 0 - _this7.sweepTime;
-          if (delta1 != 0) {
-            _this7.sweepTime = 0;
-            const t4 = delta1;
-            _this7.posx += _this7.velx * t4;
-            _this7.posy += _this7.vely * t4;
-            if (_this7.angvel != 0) {
-              const dr1 = _this7.sweep_angvel * delta1;
-              _this7.rot += dr1;
-              if (dr1 * dr1 > 0.0001) {
-                _this7.axisx = Math.sin(_this7.rot);
-                _this7.axisy = Math.cos(_this7.rot);
-              } else {
-                const d21 = dr1 * dr1;
-                const p1 = 1 - 0.5 * d21;
-                const m1 = 1 - (d21 * d21) / 8;
-                const nx1 = (p1 * _this7.axisx + dr1 * _this7.axisy) * m1;
-                _this7.axisy = (p1 * _this7.axisy - dr1 * _this7.axisx) * m1;
-                _this7.axisx = nx1;
-              }
-            }
-          }
+          _this7.sweepIntegrate(0);
           const _this8 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
           const s1 = s.zpp_inner;
           if (s1.type == 0) {
@@ -1925,28 +1883,7 @@ export class ZPP_Space {
     const o1 = toi;
     o1.next = ZPP_ToiEvent.zpp_pool;
     ZPP_ToiEvent.zpp_pool = o1;
-    const delta2 = 0 - body.sweepTime;
-    if (delta2 != 0) {
-      body.sweepTime = 0;
-      const t5 = delta2;
-      body.posx += body.velx * t5;
-      body.posy += body.vely * t5;
-      if (body.angvel != 0) {
-        const dr2 = body.sweep_angvel * delta2;
-        body.rot += dr2;
-        if (dr2 * dr2 > 0.0001) {
-          body.axisx = Math.sin(body.rot);
-          body.axisy = Math.cos(body.rot);
-        } else {
-          const d22 = dr2 * dr2;
-          const p3 = 1 - 0.5 * d22;
-          const m2 = 1 - (d22 * d22) / 8;
-          const nx2 = (p3 * body.axisx + dr2 * body.axisy) * m2;
-          body.axisy = (p3 * body.axisy - dr2 * body.axisx) * m2;
-          body.axisx = nx2;
-        }
-      }
-    }
+    body.sweepIntegrate(0);
     if (shape.type == 0) {
       shape.worldCOMx = body.posx + (body.axisy * shape.localCOMx - body.axisx * shape.localCOMy);
       shape.worldCOMy = body.posy + (shape.localCOMx * body.axisx + shape.localCOMy * body.axisy);
@@ -2181,28 +2118,7 @@ export class ZPP_Space {
     const prey = body.posy;
     body.sweepTime = 0;
     body.sweep_angvel = body.angvel;
-    const delta = deltaTime - body.sweepTime;
-    if (delta != 0) {
-      body.sweepTime = deltaTime;
-      const t3 = delta;
-      body.posx += body.velx * t3;
-      body.posy += body.vely * t3;
-      if (body.angvel != 0) {
-        const dr = body.sweep_angvel * delta;
-        body.rot += dr;
-        if (dr * dr > 0.0001) {
-          body.axisx = Math.sin(body.rot);
-          body.axisy = Math.cos(body.rot);
-        } else {
-          const d2 = dr * dr;
-          const p = 1 - 0.5 * d2;
-          const m = 1 - (d2 * d2) / 8;
-          const nx = (p * body.axisx + dr * body.axisy) * m;
-          body.axisy = (p * body.axisy - dr * body.axisx) * m;
-          body.axisx = nx;
-        }
-      }
-    }
+    body.sweepIntegrate(deltaTime);
     const postx = body.posx;
     const posty = body.posy;
     shape.validate_sweepRadius();
@@ -2285,28 +2201,7 @@ export class ZPP_Space {
           (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner.sweepTime = 0;
           ZPP_SweepDistance.dynamicSweep(toi, deltaTime, 0, 0, true);
           const _this7 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
-          const delta1 = 0 - _this7.sweepTime;
-          if (delta1 != 0) {
-            _this7.sweepTime = 0;
-            const t4 = delta1;
-            _this7.posx += _this7.velx * t4;
-            _this7.posy += _this7.vely * t4;
-            if (_this7.angvel != 0) {
-              const dr1 = _this7.sweep_angvel * delta1;
-              _this7.rot += dr1;
-              if (dr1 * dr1 > 0.0001) {
-                _this7.axisx = Math.sin(_this7.rot);
-                _this7.axisy = Math.cos(_this7.rot);
-              } else {
-                const d21 = dr1 * dr1;
-                const p1 = 1 - 0.5 * d21;
-                const m1 = 1 - (d21 * d21) / 8;
-                const nx1 = (p1 * _this7.axisx + dr1 * _this7.axisy) * m1;
-                _this7.axisy = (p1 * _this7.axisy - dr1 * _this7.axisx) * m1;
-                _this7.axisx = nx1;
-              }
-            }
-          }
+          _this7.sweepIntegrate(0);
           const _this8 = (s.zpp_inner.body != null ? s.zpp_inner.body.outer : null).zpp_inner;
           const s1 = s.zpp_inner;
           if (s1.type == 0) {
@@ -2564,28 +2459,7 @@ export class ZPP_Space {
     const o1 = toi;
     o1.next = ZPP_ToiEvent.zpp_pool;
     ZPP_ToiEvent.zpp_pool = o1;
-    const delta2 = 0 - body.sweepTime;
-    if (delta2 != 0) {
-      body.sweepTime = 0;
-      const t5 = delta2;
-      body.posx += body.velx * t5;
-      body.posy += body.vely * t5;
-      if (body.angvel != 0) {
-        const dr2 = body.sweep_angvel * delta2;
-        body.rot += dr2;
-        if (dr2 * dr2 > 0.0001) {
-          body.axisx = Math.sin(body.rot);
-          body.axisy = Math.cos(body.rot);
-        } else {
-          const d22 = dr2 * dr2;
-          const p3 = 1 - 0.5 * d22;
-          const m2 = 1 - (d22 * d22) / 8;
-          const nx2 = (p3 * body.axisx + dr2 * body.axisy) * m2;
-          body.axisy = (p3 * body.axisy - dr2 * body.axisx) * m2;
-          body.axisx = nx2;
-        }
-      }
-    }
+    body.sweepIntegrate(0);
     if (shape.type == 0) {
       shape.worldCOMx = body.posx + (body.axisy * shape.localCOMx - body.axisx * shape.localCOMy);
       shape.worldCOMy = body.posy + (shape.localCOMx * body.axisx + shape.localCOMy * body.axisy);
@@ -3234,28 +3108,7 @@ export class ZPP_Space {
       const b21 = minTOI.s2.body;
       if (!b11.sweepFrozen) {
         const dt = curTimeAlpha * deltaTime;
-        const delta = dt - b11.sweepTime;
-        if (delta != 0) {
-          b11.sweepTime = dt;
-          const t = delta;
-          b11.posx += b11.velx * t;
-          b11.posy += b11.vely * t;
-          if (b11.angvel != 0) {
-            const dr = b11.sweep_angvel * delta;
-            b11.rot += dr;
-            if (dr * dr > 0.0001) {
-              b11.axisx = Math.sin(b11.rot);
-              b11.axisy = Math.cos(b11.rot);
-            } else {
-              const d2 = dr * dr;
-              const p = 1 - 0.5 * d2;
-              const m = 1 - (d2 * d2) / 8;
-              const nx = (p * b11.axisx + dr * b11.axisy) * m;
-              b11.axisy = (p * b11.axisy - dr * b11.axisx) * m;
-              b11.axisx = nx;
-            }
-          }
-        }
+        b11.sweepIntegrate(dt);
         const s = minTOI.s1;
         if (s.type == 0) {
           s.worldCOMx = b11.posx + (b11.axisy * s.localCOMx - b11.axisx * s.localCOMy);
@@ -3300,28 +3153,7 @@ export class ZPP_Space {
       }
       if (!b21.sweepFrozen) {
         const dt1 = curTimeAlpha * deltaTime;
-        const delta1 = dt1 - b21.sweepTime;
-        if (delta1 != 0) {
-          b21.sweepTime = dt1;
-          const t1 = delta1;
-          b21.posx += b21.velx * t1;
-          b21.posy += b21.vely * t1;
-          if (b21.angvel != 0) {
-            const dr1 = b21.sweep_angvel * delta1;
-            b21.rot += dr1;
-            if (dr1 * dr1 > 0.0001) {
-              b21.axisx = Math.sin(b21.rot);
-              b21.axisy = Math.cos(b21.rot);
-            } else {
-              const d21 = dr1 * dr1;
-              const p2 = 1 - 0.5 * d21;
-              const m1 = 1 - (d21 * d21) / 8;
-              const nx1 = (p2 * b21.axisx + dr1 * b21.axisy) * m1;
-              b21.axisy = (p2 * b21.axisy - dr1 * b21.axisx) * m1;
-              b21.axisx = nx1;
-            }
-          }
-        }
+        b21.sweepIntegrate(dt1);
         const s1 = minTOI.s2;
         if (s1.type == 0) {
           s1.worldCOMx = b21.posx + (b21.axisy * s1.localCOMx - b21.axisx * s1.localCOMy);
@@ -4156,28 +3988,7 @@ export class ZPP_Space {
     let cx_ite5 = this.kinematics.head;
     while (cx_ite5 != null) {
       const cur = cx_ite5.elt;
-      const delta2 = deltaTime - cur.sweepTime;
-      if (delta2 != 0) {
-        cur.sweepTime = deltaTime;
-        const t6 = delta2;
-        cur.posx += cur.velx * t6;
-        cur.posy += cur.vely * t6;
-        if (cur.angvel != 0) {
-          const dr2 = cur.sweep_angvel * delta2;
-          cur.rot += dr2;
-          if (dr2 * dr2 > 0.0001) {
-            cur.axisx = Math.sin(cur.rot);
-            cur.axisy = Math.cos(cur.rot);
-          } else {
-            const d22 = dr2 * dr2;
-            const p4 = 1 - 0.5 * d22;
-            const m2 = 1 - (d22 * d22) / 8;
-            const nx2 = (p4 * cur.axisx + dr2 * cur.axisy) * m2;
-            cur.axisy = (p4 * cur.axisy - dr2 * cur.axisx) * m2;
-            cur.axisx = nx2;
-          }
-        }
-      }
+      cur.sweepIntegrate(deltaTime);
       cur.sweepTime = 0;
       cx_ite5 = cx_ite5.next;
     }
@@ -4185,28 +3996,7 @@ export class ZPP_Space {
     while (cx_ite6 != null) {
       const cur1 = cx_ite6.elt;
       if (!cur1.sweepFrozen) {
-        const delta3 = deltaTime - cur1.sweepTime;
-        if (delta3 != 0) {
-          cur1.sweepTime = deltaTime;
-          const t7 = delta3;
-          cur1.posx += cur1.velx * t7;
-          cur1.posy += cur1.vely * t7;
-          if (cur1.angvel != 0) {
-            const dr3 = cur1.sweep_angvel * delta3;
-            cur1.rot += dr3;
-            if (dr3 * dr3 > 0.0001) {
-              cur1.axisx = Math.sin(cur1.rot);
-              cur1.axisy = Math.cos(cur1.rot);
-            } else {
-              const d23 = dr3 * dr3;
-              const p5 = 1 - 0.5 * d23;
-              const m3 = 1 - (d23 * d23) / 8;
-              const nx3 = (p5 * cur1.axisx + dr3 * cur1.axisy) * m3;
-              cur1.axisy = (p5 * cur1.axisy - dr3 * cur1.axisx) * m3;
-              cur1.axisx = nx3;
-            }
-          }
-        }
+        cur1.sweepIntegrate(deltaTime);
       }
       cur1.sweepTime = 0;
       cx_ite6 = cx_ite6.next;
@@ -5904,28 +5694,7 @@ export class ZPP_Space {
       cur.pre_rot = cur.rot;
       cur.sweepTime = 0;
       cur.sweep_angvel = cur.angvel % MAX_VEL;
-      const delta = dt - cur.sweepTime;
-      if (delta != 0) {
-        cur.sweepTime = dt;
-        const t = delta;
-        cur.posx += cur.velx * t;
-        cur.posy += cur.vely * t;
-        if (cur.angvel != 0) {
-          const dr = cur.sweep_angvel * delta;
-          cur.rot += dr;
-          if (dr * dr > 0.0001) {
-            cur.axisx = Math.sin(cur.rot);
-            cur.axisy = Math.cos(cur.rot);
-          } else {
-            const d2 = dr * dr;
-            const p = 1 - 0.5 * d2;
-            const m = 1 - (d2 * d2) / 8;
-            const nx = (p * cur.axisx + dr * cur.axisy) * m;
-            cur.axisy = (p * cur.axisy - dr * cur.axisx) * m;
-            cur.axisx = nx;
-          }
-        }
-      }
+      cur.sweepIntegrate(dt);
       if (!cur.disableCCD) {
         const linThreshold = Config.staticCCDLinearThreshold * cur.sweepRadius;
         const angThreshold = Config.staticCCDAngularThreshold;
@@ -5952,28 +5721,7 @@ export class ZPP_Space {
               count = 8;
             }
             const anginc = (angvel * dt) / count;
-            const delta1 = dt - cur.sweepTime;
-            if (delta1 != 0) {
-              cur.sweepTime = dt;
-              const t1 = delta1;
-              cur.posx += cur.velx * t1;
-              cur.posy += cur.vely * t1;
-              if (cur.angvel != 0) {
-                const dr1 = cur.sweep_angvel * delta1;
-                cur.rot += dr1;
-                if (dr1 * dr1 > 0.0001) {
-                  cur.axisx = Math.sin(cur.rot);
-                  cur.axisy = Math.cos(cur.rot);
-                } else {
-                  const d21 = dr1 * dr1;
-                  const p1 = 1 - 0.5 * d21;
-                  const m1 = 1 - (d21 * d21) / 8;
-                  const nx1 = (p1 * cur.axisx + dr1 * cur.axisy) * m1;
-                  cur.axisy = (p1 * cur.axisy - dr1 * cur.axisx) * m1;
-                  cur.axisx = nx1;
-                }
-              }
-            }
+            cur.sweepIntegrate(dt);
             if (s.type == 0) {
               const _this = s.circle;
               _this.worldCOMx =
@@ -6045,28 +5793,7 @@ export class ZPP_Space {
             while (_g < _g1) {
               const i = _g++;
               const dt1 = anginc * i * iangvel;
-              const delta2 = dt1 - cur.sweepTime;
-              if (delta2 != 0) {
-                cur.sweepTime = dt1;
-                const t2 = delta2;
-                cur.posx += cur.velx * t2;
-                cur.posy += cur.vely * t2;
-                if (cur.angvel != 0) {
-                  const dr2 = cur.sweep_angvel * delta2;
-                  cur.rot += dr2;
-                  if (dr2 * dr2 > 0.0001) {
-                    cur.axisx = Math.sin(cur.rot);
-                    cur.axisy = Math.cos(cur.rot);
-                  } else {
-                    const d22 = dr2 * dr2;
-                    const p3 = 1 - 0.5 * d22;
-                    const m2 = 1 - (d22 * d22) / 8;
-                    const nx2 = (p3 * cur.axisx + dr2 * cur.axisy) * m2;
-                    cur.axisy = (p3 * cur.axisy - dr2 * cur.axisx) * m2;
-                    cur.axisx = nx2;
-                  }
-                }
-              }
+              cur.sweepIntegrate(dt1);
               if (s.type == 0) {
                 const _this2 = s.circle;
                 _this2.worldCOMx =
@@ -6167,28 +5894,7 @@ export class ZPP_Space {
       cur1.pre_rot = cur1.rot;
       cur1.sweepTime = 0;
       cur1.sweep_angvel = cur1.angvel % MAX_VEL;
-      const delta3 = dt - cur1.sweepTime;
-      if (delta3 != 0) {
-        cur1.sweepTime = dt;
-        const t3 = delta3;
-        cur1.posx += cur1.velx * t3;
-        cur1.posy += cur1.vely * t3;
-        if (cur1.angvel != 0) {
-          const dr3 = cur1.sweep_angvel * delta3;
-          cur1.rot += dr3;
-          if (dr3 * dr3 > 0.0001) {
-            cur1.axisx = Math.sin(cur1.rot);
-            cur1.axisy = Math.cos(cur1.rot);
-          } else {
-            const d23 = dr3 * dr3;
-            const p5 = 1 - 0.5 * d23;
-            const m3 = 1 - (d23 * d23) / 8;
-            const nx3 = (p5 * cur1.axisx + dr3 * cur1.axisy) * m3;
-            cur1.axisy = (p5 * cur1.axisy - dr3 * cur1.axisx) * m3;
-            cur1.axisx = nx3;
-          }
-        }
-      }
+      cur1.sweepIntegrate(dt);
       if (!cur1.disableCCD) {
         const linThreshold1 = Config.staticCCDLinearThreshold * cur1.sweepRadius;
         const angThreshold1 = Config.staticCCDAngularThreshold;
@@ -6216,28 +5922,7 @@ export class ZPP_Space {
               count1 = 8;
             }
             const anginc1 = (angvel1 * dt) / count1;
-            const delta4 = dt - cur1.sweepTime;
-            if (delta4 != 0) {
-              cur1.sweepTime = dt;
-              const t4 = delta4;
-              cur1.posx += cur1.velx * t4;
-              cur1.posy += cur1.vely * t4;
-              if (cur1.angvel != 0) {
-                const dr4 = cur1.sweep_angvel * delta4;
-                cur1.rot += dr4;
-                if (dr4 * dr4 > 0.0001) {
-                  cur1.axisx = Math.sin(cur1.rot);
-                  cur1.axisy = Math.cos(cur1.rot);
-                } else {
-                  const d24 = dr4 * dr4;
-                  const p6 = 1 - 0.5 * d24;
-                  const m4 = 1 - (d24 * d24) / 8;
-                  const nx4 = (p6 * cur1.axisx + dr4 * cur1.axisy) * m4;
-                  cur1.axisy = (p6 * cur1.axisy - dr4 * cur1.axisx) * m4;
-                  cur1.axisx = nx4;
-                }
-              }
-            }
+            cur1.sweepIntegrate(dt);
             if (s1.type == 0) {
               const _this4 = s1.circle;
               _this4.worldCOMx =
@@ -6309,28 +5994,7 @@ export class ZPP_Space {
             while (_g2 < _g11) {
               const i1 = _g2++;
               const dt2 = anginc1 * i1 * iangvel1;
-              const delta5 = dt2 - cur1.sweepTime;
-              if (delta5 != 0) {
-                cur1.sweepTime = dt2;
-                const t5 = delta5;
-                cur1.posx += cur1.velx * t5;
-                cur1.posy += cur1.vely * t5;
-                if (cur1.angvel != 0) {
-                  const dr5 = cur1.sweep_angvel * delta5;
-                  cur1.rot += dr5;
-                  if (dr5 * dr5 > 0.0001) {
-                    cur1.axisx = Math.sin(cur1.rot);
-                    cur1.axisy = Math.cos(cur1.rot);
-                  } else {
-                    const d25 = dr5 * dr5;
-                    const p8 = 1 - 0.5 * d25;
-                    const m5 = 1 - (d25 * d25) / 8;
-                    const nx5 = (p8 * cur1.axisx + dr5 * cur1.axisy) * m5;
-                    cur1.axisy = (p8 * cur1.axisy - dr5 * cur1.axisx) * m5;
-                    cur1.axisx = nx5;
-                  }
-                }
-              }
+              cur1.sweepIntegrate(dt2);
               if (s1.type == 0) {
                 const _this6 = s1.circle;
                 _this6.worldCOMx =
