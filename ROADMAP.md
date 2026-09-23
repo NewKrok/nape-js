@@ -54,10 +54,50 @@ audience.
 
 ## Active Priorities
 
-| #   | Priority                  | Effort  | Impact          | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| --- | ------------------------- | ------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P91 | **Demo / example growth** | ongoing | :fire: adoption | The one channel with measured return. Social posts about showpiece demos draw real traffic (Flipper Fray: 13.7 k views); nothing else in the project has produced an attributable signal. Open demo tickets roll up here: #213 (cannon fortress duel), #212 (ten-pin bowling), #211 (basketball hoop shooter), #180 (rope-cut puzzle). Prefer demos that _teach an undocumented API_ — #199 (`createConcaveBody`) and #198 (`UserConstraint`) double as API docs and rank above pure game demos |
-| P29 | Test coverage → 80%       | L       | safety          | :white_check_mark: Reached — 80% statement coverage, 6527 tests (+79 pixi). Recent closes: #161, #163, #164, #165, #166, #168, #169, #170                                                                                                                                                                                                                                                                                                                                                       |
+| #   | Priority                  | Effort  | Impact          | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --- | ------------------------- | ------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P91 | **Demo / example growth** | ongoing | :fire: adoption | The one channel with measured return — see **Which demos travel** below for the post numbers and what they imply. Ordered by recognisability: #212 (ten-pin bowling), #211 (basketball hoop shooter), #213 (cannon fortress duel), then #180 (rope-cut puzzle — familiar form, but a puzzle reads slower). #199 (`createConcaveBody`) and #198 (`UserConstraint`) are tracked here too but judged on a different axis: they document an undocumented API, which is worth doing regardless of reach |
+| P29 | Test coverage → 80%       | L       | safety          | :white_check_mark: Reached — 80% statement coverage, 6527 tests (+79 pixi). Recent closes: #161, #163, #164, #165, #166, #168, #169, #170                                                                                                                                                                                                                                                                                                                                                          |
+
+### Which demos travel
+
+Post reach for the showpiece demos, as of 2026-09. Small sample, one author,
+one platform — treat as direction, not proof.
+
+| Demo              | Views      | Form                     |
+| ----------------- | ---------- | ------------------------ |
+| flipper-fray      | **13.7 k** | pinball                  |
+| dodgeball         | **5.5 k**  | dodgeball                |
+| kickoff (2D post) | **5.2 k**  | football                 |
+| kickoff (3D post) | 2.8 k      | football (repeat post)   |
+| jungle-strike     | 1.5 k      | run-and-gun              |
+| capture-the-flag  | 1.5 k      | capture the flag         |
+| escape-run        | 1.3 k      | escape                   |
+| swarm-night       | 224        | survival waves           |
+| pulse             | 170        | abstract                 |
+| shard-rush        | 153        | hero arena, kits         |
+| tin-legion        | 120        | lane siege, army builder |
+| blade-waltz       | 119        | LMBS arena               |
+
+The distribution is **bimodal**, not a tail: nothing lands between 1.3 k and 224. Algorithmic noise produces spread, not a 6× gap with a hole in it, so
+something real separates the two groups.
+
+**The split is recognisability, not production value.** The top group is
+pinball, dodgeball, football, capture-the-flag, escape, run-and-gun — forms a
+viewer can name from one frame. The bottom group is a lane-siege army builder,
+a Tales-style LMBS arena, a hero arena with kits: the demos that took the _most_
+work returned the least. A demo that needs a sentence of explanation has
+already lost the scroll.
+
+**Render dimension is not the variable.** The obvious reading of the kickoff
+pair (2D 5.2 k vs 3D 2.8 k) is that 3D underperforms — but flipper-fray, the
+single best result here, ships a full `render3d` rig. The kickoff gap is better
+explained by the two posts not being independent (a second post about the same
+demo reaches an audience that has already seen it). No render guidance is drawn
+from this data; if the form is recognisable, 3D appears to help rather than hurt.
+
+**So the lever is form, not fidelity.** Pick shapes a viewer already knows, then
+make them look as good as the budget allows.
 
 ---
 
@@ -78,8 +118,9 @@ Not blocking anything; revisit only when a concrete user request justifies the c
 
 1. **P91** — Demo / example growth. The only item with a measured return, and
    now the standing default: when nothing else is pressing, the next demo is
-   the work. Prefer the two API-teaching tickets (#199, #198) over pure game
-   demos when picking.
+   the work. Pick by recognisability (see _Which demos travel_): #212, #211,
+   #213, then #180. #199 and #198 are worth doing for the API coverage, not
+   for reach — don't judge them on views.
 2. **P29** — ✅ Done: 80 % statement coverage reached.
 3. (Defer **P73**, **P74**, **P59**, **P92** until a concrete user request appears.)
 
