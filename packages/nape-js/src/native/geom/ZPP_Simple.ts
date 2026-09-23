@@ -102,7 +102,9 @@ export class ZPP_Simple {
         } else {
           vert.node = ZPP_Simple.vertices!.insert(vert);
         }
-        if (pre != null) {
+        // A vertex coinciding with its predecessor resolves to the same set
+        // node; skip it rather than queue a zero-length self-segment.
+        if (pre != null && pre != vert) {
           let ret1: ZPP_SimpleEvent;
           if (ZPP_SimpleEvent.zpp_pool == null) {
             ret1 = new ZPP_SimpleEvent();
@@ -149,41 +151,44 @@ export class ZPP_Simple {
         }
       }
     }
-    let ret3: ZPP_SimpleEvent;
-    if (ZPP_SimpleEvent.zpp_pool == null) {
-      ret3 = new ZPP_SimpleEvent();
-    } else {
-      ret3 = ZPP_SimpleEvent.zpp_pool;
-      ZPP_SimpleEvent.zpp_pool = ret3.next;
-      ret3.next = null;
+    // Close the ring, unless the last vertex coincided with the first.
+    if (pre != fst) {
+      let ret3: ZPP_SimpleEvent;
+      if (ZPP_SimpleEvent.zpp_pool == null) {
+        ret3 = new ZPP_SimpleEvent();
+      } else {
+        ret3 = ZPP_SimpleEvent.zpp_pool;
+        ZPP_SimpleEvent.zpp_pool = ret3.next;
+        ret3.next = null;
+      }
+      ret3.vertex = pre;
+      const e11 = ret3;
+      let ret4: ZPP_SimpleEvent;
+      if (ZPP_SimpleEvent.zpp_pool == null) {
+        ret4 = new ZPP_SimpleEvent();
+      } else {
+        ret4 = ZPP_SimpleEvent.zpp_pool;
+        ZPP_SimpleEvent.zpp_pool = ret4.next;
+        ret4.next = null;
+      }
+      ret4.vertex = fst;
+      const e21 = ret4;
+      let seg1: ZPP_SimpleSeg;
+      if (ZPP_SimpleEvent.less_xy(e11, e21)) {
+        e11.type = 1;
+        e21.type = 2;
+        seg1 = ZPP_SimpleSeg.get(pre!, fst!);
+      } else {
+        e11.type = 2;
+        e21.type = 1;
+        seg1 = ZPP_SimpleSeg.get(fst!, pre!);
+      }
+      e11.segment = e21.segment = seg1;
+      ZPP_Simple.queue!.insert(e11);
+      ZPP_Simple.queue!.insert(e21);
+      pre!.links.insert(fst!);
+      fst!.links.insert(pre!);
     }
-    ret3.vertex = pre;
-    const e11 = ret3;
-    let ret4: ZPP_SimpleEvent;
-    if (ZPP_SimpleEvent.zpp_pool == null) {
-      ret4 = new ZPP_SimpleEvent();
-    } else {
-      ret4 = ZPP_SimpleEvent.zpp_pool;
-      ZPP_SimpleEvent.zpp_pool = ret4.next;
-      ret4.next = null;
-    }
-    ret4.vertex = fst;
-    const e21 = ret4;
-    let seg1: ZPP_SimpleSeg;
-    if (ZPP_SimpleEvent.less_xy(e11, e21)) {
-      e11.type = 1;
-      e21.type = 2;
-      seg1 = ZPP_SimpleSeg.get(pre!, fst!);
-    } else {
-      e11.type = 2;
-      e21.type = 1;
-      seg1 = ZPP_SimpleSeg.get(fst!, pre!);
-    }
-    e11.segment = e21.segment = seg1;
-    ZPP_Simple.queue!.insert(e11);
-    ZPP_Simple.queue!.insert(e21);
-    pre!.links.insert(fst!);
-    fst!.links.insert(pre!);
     if (ZPP_Simple.ints == null) {
       if (ZPP_Set_ZPP_SimpleEvent.zpp_pool == null) {
         ZPP_Simple.ints = new ZPP_Set_ZPP_SimpleEvent() as ZPP_Set<ZPP_SimpleEvent>;
@@ -1054,7 +1059,22 @@ export class ZPP_Simple {
     o3.forced = false;
     o3.next = ZPP_SimpleVert.zpp_pool;
     ZPP_SimpleVert.zpp_pool = o3;
-    rets.add(ret);
+    if (ret.next == ret || ret.next!.next == ret) {
+      // Fewer than 3 vertices: a zero-area sliver left by an edge traversed
+      // there and back (spike / collapsed ring). Recycle it instead of
+      // emitting a degenerate polygon.
+      let v: ZPP_GeomVert | null = ret;
+      const stop = ret.prev;
+      while (v != null) {
+        const nx: ZPP_GeomVert | null = v == stop ? null : v.next;
+        v.free();
+        v.next = ZPP_GeomVert.zpp_pool;
+        ZPP_GeomVert.zpp_pool = v;
+        v = nx;
+      }
+    } else {
+      rets.add(ret);
+    }
   }
 
   static isSimple(poly: ZPP_GeomVert | null): boolean {
