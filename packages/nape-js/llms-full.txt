@@ -375,7 +375,7 @@ new GeomPoly(vertices?: Array<Vec2> | Vec2List | GeomPoly)
 | `empty()` | `boolean` | True if no vertices |
 | `size()` | `number` | Vertex count |
 | `area()` | `number` | Signed area |
-| `winding()` | `Winding` | CLOCKWISE or COUNTER_CLOCKWISE |
+| `winding()` | `Winding` | `CLOCKWISE`, `ANTICLOCKWISE` or `UNDEFINED` |
 | `contains(point: Vec2)` | `boolean` | Point-in-polygon test |
 | `isClockwise()` | `boolean` | Clockwise winding |
 | `isConvex()` | `boolean` | Convexity test |
@@ -464,15 +464,12 @@ new Body(type?: BodyType, position?: Vec2)
 | `applyAngularImpulse(impulse: number)` | `void` | Apply an angular impulse |
 | `setVelocityFromTarget(target: Vec2, targetRotation: number, dt: number)` | `void` | Set velocity to reach target position/rotation in dt seconds |
 | `rotate(centre: Vec2, angle: number)` | `Body` | Rotate body around a world point |
-| `translate(displacement: Vec2)` | `Body` | Translate body by displacement |
 | `localPointToWorld(point: Vec2, weak?: boolean)` | `Vec2` | Convert local point to world coordinates |
 | `worldPointToLocal(point: Vec2, weak?: boolean)` | `Vec2` | Convert world point to local coordinates |
 | `localVectorToWorld(vector: Vec2, weak?: boolean)` | `Vec2` | Convert local vector to world coordinates |
 | `worldVectorToLocal(vector: Vec2, weak?: boolean)` | `Vec2` | Convert world vector to local coordinates |
 | `contains(point: Vec2)` | `boolean` | Test if any shape contains the point |
 | `copy()` | `Body` | Deep copy the body (shapes, constraints copied) |
-| `validateShapes()` | `void` | Validate all attached shapes |
-| `wake()` | `void` | Wake a sleeping body |
 
 ---
 
@@ -514,12 +511,12 @@ new Material(
 #### Static Presets
 
 ```typescript
-Material.wood()    // elasticity=0.4, dynamicFriction=0.2, staticFriction=0.4, density=0.5, rollingFriction=0.001
+Material.wood()    // elasticity=0.4, dynamicFriction=0.2, staticFriction=0.38, density=0.7, rollingFriction=0.005
 Material.steel()   // elasticity=0.2, dynamicFriction=0.57, staticFriction=0.74, density=7.8, rollingFriction=0.001
 Material.ice()     // elasticity=0.3, dynamicFriction=0.03, staticFriction=0.1, density=0.9, rollingFriction=0.0001
-Material.rubber()  // elasticity=0.8, dynamicFriction=1.0, staticFriction=1.0, density=1.5, rollingFriction=0.01
-Material.glass()   // elasticity=0.4, dynamicFriction=0.94, staticFriction=0.94, density=2.6, rollingFriction=0.002
-Material.sand()    // elasticity=0.05, dynamicFriction=0.6, staticFriction=0.8, density=1.6, rollingFriction=0.5
+Material.rubber()  // elasticity=0.8, dynamicFriction=1.0, staticFriction=1.4, density=1.5, rollingFriction=0.01
+Material.glass()   // elasticity=0.4, dynamicFriction=0.4, staticFriction=0.94, density=2.6, rollingFriction=0.002
+Material.sand()    // elasticity=-1.0, dynamicFriction=0.45, staticFriction=0.6, density=1.6, rollingFriction=16.0
 ```
 
 #### Methods
@@ -540,8 +537,8 @@ new FluidProperties(density?: number, viscosity?: number)
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `density` | `number` | Fluid density (buoyancy). Default: 2.0 |
-| `viscosity` | `number` | Fluid viscosity (drag). Default: 3.0 |
+| `density` | `number` | Fluid density (buoyancy). Default: 1 |
+| `viscosity` | `number` | Fluid viscosity (drag). Default: 1 |
 | `gravity` | `Vec2` | Override gravity inside fluid (live Vec2) |
 | `shapes` | `ShapeList` | Shapes using these properties |
 | `userData` | `Record<string, unknown>` | User data |
@@ -615,11 +612,11 @@ Base class for Body, Shape, Compound. Provides interaction tagging.
 
 ### Shape (Base Class)
 
-Base class for Circle and Polygon. Cannot be instantiated directly.
+Base class for Circle, Polygon and Capsule. Cannot be instantiated directly.
 
 | Property | Type | R/W | Description |
 |----------|------|-----|-------------|
-| `type` | `ShapeType` | R | CIRCLE or POLYGON |
+| `type` | `ShapeType` | R | CIRCLE, POLYGON or CAPSULE |
 | `body` | `Body \| null` | R/W | Parent body (set to attach) |
 | `worldCOM` | `Vec2` | R | World-space center of mass |
 | `localCOM` | `Vec2` | R/W | Local-space center of mass |
@@ -639,8 +636,10 @@ Base class for Circle and Polygon. Cannot be instantiated directly.
 |--------|---------|-------------|
 | `isCircle()` | `boolean` | Type check |
 | `isPolygon()` | `boolean` | Type check |
+| `isCapsule()` | `boolean` | Type check |
 | `castCircle` | `Circle \| null` | Cast to Circle |
 | `castPolygon` | `Polygon \| null` | Cast to Polygon |
+| `castCapsule` | `Capsule \| null` | Cast to Capsule |
 | `contains(point: Vec2)` | `boolean` | Point containment test |
 | `translate(displacement: Vec2)` | `Shape` | Translate localCOM |
 | `scale(sx: number, sy: number)` | `Shape` | Scale shape |
@@ -739,6 +738,7 @@ Polygon edge data. Obtained from `polygon.edges`.
 |-------|-------------|
 | `ShapeType.CIRCLE` | Circular shape |
 | `ShapeType.POLYGON` | Polygon shape |
+| `ShapeType.CAPSULE` | Capsule shape |
 
 ---
 
@@ -1368,7 +1368,7 @@ new Space(gravity?: Vec2, broadphase?: Broadphase)
 | Property | Type | R/W | Description |
 |----------|------|-----|-------------|
 | `gravity` | `Vec2` | R/W | World gravity (live Vec2). Default: (0, 0). |
-| `broadphase` | `Broadphase` | R | SWEEP_AND_PRUNE or DYNAMIC_AABB_TREE |
+| `broadphase` | `Broadphase` | R/W | `DYNAMIC_AABB_TREE` (default), `SWEEP_AND_PRUNE` or `SPATIAL_HASH` |
 | `sortContacts` | `boolean` | R/W | Sort contacts for determinism. Default: true. |
 | `deterministic` | `boolean` | R/W | Same-platform deterministic mode. Sorts all iteration lists by stable IDs. Implies `sortContacts = true`. ~1-5% overhead. Default: false. |
 | `worldLinearDrag` | `number` | R/W | Global linear drag coefficient |
@@ -1439,8 +1439,8 @@ rayMultiCast(ray: Ray, inner?: boolean, filter?: InteractionFilter): RayResultLi
 #### Convex Sweep
 
 ```typescript
-convexCast(shape: Shape, deltaTime: number, liveSweep?: boolean, filter?: InteractionFilter): RayResult | null
-convexMultiCast(shape: Shape, deltaTime: number, liveSweep?: boolean, filter?: InteractionFilter): RayResultList
+convexCast(shape: Shape, deltaTime: number, liveSweep?: boolean, filter?: InteractionFilter): ConvexResult | null
+convexMultiCast(shape: Shape, deltaTime: number, liveSweep?: boolean, filter?: InteractionFilter): ConvexResultList
 ```
 
 #### Interaction Type Query
@@ -1470,7 +1470,6 @@ Every collection property returns a typed engine list. All list types share the 
 | Property | Type | Description |
 |----------|------|-------------|
 | `length` | `number` | Number of elements |
-| `empty` | `boolean` | True if length is 0 |
 
 | Method | Returns | Description |
 |--------|---------|-------------|
@@ -1483,7 +1482,9 @@ Every collection property returns a typed engine list. All list types share the 
 | `remove(item: T)` | `boolean` | Remove item |
 | `has(item: T)` | `boolean` | Check if contains item |
 | `clear()` | `void` | Remove all items |
-| `forEach(fn: (item: T) => void)` | `void` | Iterate all items |
+| `foreach(fn: (item: T) => void)` | `void` | Iterate all items (all-lowercase) |
+| `empty()` | `boolean` | True if length is 0 (a METHOD, not a property) |
+| `filter(fn: (item: T) => boolean)` | `TypedList` | Items matching the predicate |
 | `toArray()` | `T[]` | Convert to JavaScript array |
 | `[Symbol.iterator]()` | `Iterator<T>` | ES6 iteration support |
 
@@ -1780,19 +1781,20 @@ group.update(1 / 60);   // runs every member
 
 ### TriggerZone
 
-Sensor-based zone with `onEnter` / `onExit` callbacks — wraps the BEGIN/END `InteractionListener` plumbing so you don't have to wire it up by hand.
+Sensor-based zone with `onEnter` / `onStay` / `onExit` callbacks — wraps the BEGIN/ONGOING/END `InteractionListener` plumbing so you don't have to wire it up by hand.
 
 ```typescript
 import { TriggerZone } from "@newkrok/nape-js";
 
 const zone = new TriggerZone(space, body, {
-  type: InteractionType.SENSOR,         // default — also accepts COLLISION
+  interactionType: InteractionType.SENSOR, // default — also accepts COLLISION
   onEnter: (interactor) => { /* ... */ },
+  onStay:  (interactor) => { /* ... */ },
   onExit:  (interactor) => { /* ... */ },
   filter: filterCbType,                 // optional CbType filter
 });
 
-zone.destroy();   // remove the listeners
+zone.dispose();   // remove the listeners
 ```
 
 ### createConcaveBody

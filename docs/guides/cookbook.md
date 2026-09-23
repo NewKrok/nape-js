@@ -1,6 +1,6 @@
 # nape-js Cookbook
 
-<!-- Last verified: v3.31.0 -->
+<!-- Last verified: v3.42.3 -->
 
 Practical, copy-paste-ready recipes for common game physics tasks.
 Each recipe shows the minimal working code and explains the "why" behind key decisions.
@@ -110,7 +110,7 @@ function update(dt: number, keys: { left: boolean; right: boolean; jump: boolean
   cc.setVelocity(dx * speed, player.velocity.y);
   space.step(dt);
 
-  const result = cc.moveResult;
+  const result = cc.update(); // returns the MoveResult
   if (keys.jump && result.grounded) {
     player.velocity.y = -400; // jump impulse
   }
@@ -335,9 +335,10 @@ const result = space.rayCast(ray, false); // false = outer surfaces only
 
 if (result) {
   console.log("Hit body:", result.shape.body);
-  console.log("Hit point:", result.point);
   console.log("Distance:", result.distance);
   console.log("Normal:", result.normal);
+  // RayResult has no `point` — derive it from the distance along the ray:
+  console.log("Hit point:", ray.at(result.distance));
 }
 ```
 
@@ -734,12 +735,15 @@ const beltShape = new Polygon(Polygon.box(200, 10));
 belt.shapes.add(beltShape);
 belt.space = space;
 
-// Set surface velocity — pushes objects rightward at 100 px/s
+// Friction is per-shape...
 for (const s of belt.shapes) {
   s.material.dynamicFriction = 2;
   s.material.staticFriction = 2;
-  s.surfaceVel.setXY(100, 0);
 }
+
+// ...but surface velocity lives on the BODY, not the shape.
+// Note the all-lowercase `setxy`.
+belt.surfaceVel.setxy(100, 0); // pushes objects rightward at 100 px/s
 ```
 
 ---
@@ -997,31 +1001,35 @@ if (!ok) console.warn("Replay may drift:", warnings);
 Run physics simulation on a background thread to keep the UI at 60 fps.
 
 ```typescript
-import {
-  PhysicsWorkerManager,
-  buildWorkerScript,
-} from "@newkrok/nape-js/worker";
+import "@newkrok/nape-js"; // engine bootstrap
+import { PhysicsWorkerManager } from "@newkrok/nape-js/worker";
 
-const manager = new PhysicsWorkerManager();
+const mgr = new PhysicsWorkerManager({ gravityY: 600, maxBodies: 256 });
 
-// Initialize worker with engine URL
-await manager.init(buildWorkerScript("/node_modules/@newkrok/nape-js/dist/index.js"));
+// Optional: override the bundle the worker imports (defaults to the jsDelivr CDN).
+// mgr.napeUrl = "/node_modules/@newkrok/nape-js/dist/index.js";
 
-// Add bodies (mirrored in the worker)
-manager.addBody({ id: "ball", type: "dynamic", x: 400, y: 100, shape: "circle", radius: 20 });
-manager.addBody({ id: "floor", type: "static", x: 400, y: 550, shape: "box", width: 800, height: 20 });
+await mgr.init(); // takes no arguments
 
-// Start simulation
-manager.start();
+// addBody(bodyType, x, y, shapes, options?) → numeric id
+const ballId = mgr.addBody("dynamic", 400, 100, [{ type: "circle", radius: 20 }]);
+const floorId = mgr.addBody("static", 400, 550, [
+  { type: "box", width: 800, height: 20 },
+]);
+
+mgr.start();
 
 // Read transforms for rendering (zero-copy with SharedArrayBuffer)
 function render() {
-  const transforms = manager.getTransforms();
-  for (const [id, { x, y, rotation }] of transforms) {
-    // Update your rendering objects
-  }
+  const t = mgr.getTransform(ballId); // single body
+  if (t) drawCircle(t.x, t.y, t.rotation);
+
+  // …or read every body at once into a Map you own:
+  // mgr.readAllTransforms(myMap);
+
   requestAnimationFrame(render);
 }
+render();
 ```
 
 ---
@@ -1126,7 +1134,7 @@ Visualise per-step timing and entity counts with the built-in performance overla
 ### Quick overlay (Canvas)
 
 ```typescript
-import { PerformanceOverlay } from "nape-js/profiler";
+import { PerformanceOverlay } from "@newkrok/nape-js/profiler";
 
 // Attaches a canvas overlay to the page (auto-creates canvas if omitted)
 const overlay = new PerformanceOverlay(space, {
