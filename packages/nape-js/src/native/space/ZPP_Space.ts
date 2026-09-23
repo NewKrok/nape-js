@@ -1705,6 +1705,70 @@ export class ZPP_Space {
     );
   }
 
+  /**
+   * liveSweep candidates: the broadphase query only finds shapes whose
+   * *current* AABB meets the caster's swept `aabb`. A moving body can enter
+   * the caster's path from outside it, so also add every shape of an awake,
+   * moving body whose own swept bounds over `deltaTime` reach `aabb`. The
+   * exact sweep that follows decides whether they actually hit.
+   */
+  addLiveSweepCandidates(aabb: any, deltaTime: number, filter: any, caster: any, list: any) {
+    const zfilter = filter == null ? null : filter.zpp_inner;
+    let found: Set<any> | null = null;
+    for (const bodies of [this.live, this.kinematics]) {
+      let cx_ite = bodies.head;
+      while (cx_ite != null) {
+        const b = cx_ite.elt;
+        cx_ite = cx_ite.next;
+        if (b == caster || (b.velx == 0 && b.vely == 0 && b.angvel == 0)) {
+          continue;
+        }
+        const dx = b.velx * deltaTime;
+        const dy = b.vely * deltaTime;
+        let sh = b.shapes.head;
+        while (sh != null) {
+          const s = sh.elt;
+          sh = sh.next;
+          if (zfilter != null && !s.filter.shouldCollide(zfilter)) {
+            continue;
+          }
+          let minx;
+          let miny;
+          let maxx;
+          let maxy;
+          if (b.angvel != 0) {
+            // A rotating shape stays within sweepRadius of the body origin.
+            s.validate_sweepRadius();
+            const r = s.sweepRadius;
+            minx = Math.min(b.posx, b.posx + dx) - r;
+            miny = Math.min(b.posy, b.posy + dy) - r;
+            maxx = Math.max(b.posx, b.posx + dx) + r;
+            maxy = Math.max(b.posy, b.posy + dy) + r;
+          } else {
+            s.validate_aabb();
+            const sa = s.aabb;
+            minx = Math.min(sa.minx, sa.minx + dx);
+            miny = Math.min(sa.miny, sa.miny + dy);
+            maxx = Math.max(sa.maxx, sa.maxx + dx);
+            maxy = Math.max(sa.maxy, sa.maxy + dy);
+          }
+          if (minx > aabb.maxx || maxx < aabb.minx || miny > aabb.maxy || maxy < aabb.miny) {
+            continue;
+          }
+          if (found == null) {
+            found = new Set();
+            const n = list.length;
+            for (let i = 0; i < n; i++) found.add(list.at(i).zpp_inner);
+          }
+          if (!found.has(s)) {
+            found.add(s);
+            list.push(s.outer);
+          }
+        }
+      }
+    }
+  }
+
   convexCast(shape: any, deltaTime: any, filter: any, dynamics: any) {
     let toi;
     if (ZPP_ToiEvent.zpp_pool == null) {
@@ -1760,6 +1824,9 @@ export class ZPP_Space {
       filter == null ? null : filter.zpp_inner,
       this.convexShapeList,
     ));
+    if (dynamics) {
+      this.addLiveSweepCandidates(aabb, deltaTime, filter, body, list);
+    }
     const o = aabb;
     if (o.outer != null) {
       o.outer.zpp_inner = null;
@@ -2150,6 +2217,9 @@ export class ZPP_Space {
       filter == null ? null : filter.zpp_inner,
       this.convexShapeList,
     ));
+    if (dynamics) {
+      this.addLiveSweepCandidates(aabb, deltaTime, filter, body, list);
+    }
     const o = aabb;
     if (o.outer != null) {
       o.outer.zpp_inner = null;

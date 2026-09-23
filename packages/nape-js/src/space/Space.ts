@@ -1001,8 +1001,6 @@ export class Space {
    * @param shape - The shape to sweep; must belong to a Body.
    * @param deltaTime - Duration of the sweep; must be non-negative.
    * @param liveSweep - If true, other body velocities are considered during the sweep.
-   *   Candidates are still the shapes whose *current* AABB overlaps the caster's swept
-   *   AABB, so a body that starts outside it is missed even if it moves into the path.
    * @param filter - Optional interaction filter to restrict results.
    * @returns The first RayResult hit, or null if nothing was struck.
    * @throws If `shape` is null, not attached to a Body, or `deltaTime` is negative/NaN.
@@ -1031,8 +1029,6 @@ export class Space {
    * @param shape - The shape to sweep; must belong to a Body.
    * @param deltaTime - Duration of the sweep; must be non-negative.
    * @param liveSweep - If true, other body velocities are considered during the sweep.
-   *   Candidates are still the shapes whose *current* AABB overlaps the caster's swept
-   *   AABB, so a body that starts outside it is missed even if it moves into the path.
    * @param filter - Optional interaction filter to restrict results.
    * @param output - Optional existing RayResultList to accumulate results into.
    * @returns A RayResultList of all hits encountered during the sweep.

@@ -184,7 +184,7 @@ describe("convexCast — liveSweep against moving targets", () => {
     };
     const T = 4;
     let checked = 0;
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 40; i++) {
       const space = new Space(new Vec2(0, 0));
       const r1 = 3 + rnd() * 10;
       const r2 = 3 + rnd() * 10;
@@ -194,11 +194,6 @@ describe("convexCast — liveSweep against moving targets", () => {
       const tvy = (rnd() - 0.5) * 60;
       const cvx = 40 + rnd() * 60;
       const cvy = (rnd() - 0.5) * 20;
-      // Candidates are the shapes whose current AABB meets the caster's
-      // swept AABB (see the limitation test below); keep only those.
-      const sweptMinY = Math.min(0, cvy * T) - r1;
-      const sweptMaxY = Math.max(0, cvy * T) + r1;
-      if (ty + r2 < sweptMinY || ty - r2 > sweptMaxY) continue;
       body(space, BodyType.DYNAMIC, tx, ty, new Circle(r2), tvx, tvy);
       const caster = body(space, BodyType.DYNAMIC, 0, 0, new Circle(r1), cvx, cvy);
       const want = circleToi(tx, ty, tvx - cvx, tvy - cvy, r1 + r2);
@@ -211,20 +206,40 @@ describe("convexCast — liveSweep against moving targets", () => {
         expect(Math.abs(got!.toi - want)).toBeLessThan(TOI_TOL);
       }
     }
-    expect(checked).toBeGreaterThan(15);
+    expect(checked).toBe(40);
   });
 
-  it("only targets whose AABB meets the caster's swept AABB are considered", () => {
-    // Limitation (inherited from Nape): candidates come from a broadphase
-    // query with the caster's swept AABB against the targets' *current*
-    // AABBs. With liveSweep, a target that starts outside that box is never
-    // tested, even when its own motion carries it into the caster's path.
+  it("finds a target that moves into the path from outside the caster's swept AABB", () => {
+    // Regression: candidates used to come only from a broadphase query with
+    // the caster's swept AABB against the targets' *current* AABBs, so with
+    // liveSweep a body entering the path from outside was never tested.
     const space = new Space(new Vec2(0, 0));
-    // Caster sweeps x ∈ [-5, 105] along y = 0; the target starts at y = 60 and
-    // falls through the path (it would be hit at t = 0.5 if considered).
-    body(space, BodyType.DYNAMIC, 50, 60, new Circle(5), 0, -100);
+    const faller = body(space, BodyType.DYNAMIC, 50, 60, new Circle(5), 0, -100);
+    const caster = body(space, BodyType.DYNAMIC, 0, 0, new Circle(5), 100, 0);
+    const got = space.convexCast(caster.shape, 1, true)!;
+    expect(got).not.toBeNull();
+    expect(got.shape).toBe(faller.shape);
+    expect(Math.abs(got.toi - circleToi(50, 60, -100, -100, 10)!)).toBeLessThan(TOI_TOL);
+    // Without liveSweep the target is frozen off the path.
+    expect(space.convexCast(caster.shape, 1, false)).toBeNull();
+  });
+
+  it("an out-of-path target moving away is still not hit", () => {
+    const space = new Space(new Vec2(0, 0));
+    body(space, BodyType.DYNAMIC, 50, 60, new Circle(5), 0, 100);
     const caster = body(space, BodyType.DYNAMIC, 0, 0, new Circle(5), 100, 0);
     expect(space.convexCast(caster.shape, 1, true)).toBeNull();
+  });
+
+  it("the extra candidates honour the InteractionFilter", () => {
+    const space = new Space(new Vec2(0, 0));
+    const faller = body(space, BodyType.DYNAMIC, 50, 60, new Circle(5), 0, -100);
+    faller.shape.filter.collisionGroup = 2;
+    const caster = body(space, BodyType.DYNAMIC, 0, 0, new Circle(5), 100, 0);
+    expect(space.convexCast(caster.shape, 1, true, new InteractionFilter(1, ~2))).toBeNull();
+    expect(space.convexMultiCast(caster.shape, 1, true, new InteractionFilter(1, ~2)).length).toBe(
+      0,
+    );
   });
 
   it("liveSweep drops a target that moves out of the path in time", () => {
@@ -261,6 +276,18 @@ describe("convexCast — liveSweep against moving targets", () => {
     expect(got.shape).toBe(bar.shape);
     expect(Math.abs(got.toi - (theta - Math.PI / 4) / 3)).toBeLessThan(TOI_TOL);
     expect(space.convexCast(caster.shape, 1, false)).toBeNull();
+  });
+
+  it("a rotating bar reaches a post outside its current AABB", () => {
+    const space = new Space(new Vec2(0, 0));
+    // A horizontal 40×4 bar spinning at 3 rad/s; the radius-2 post 20 units
+    // above its centre is first touched when 20·cosθ − 2 = 2 → θ = acos(0.2).
+    const bar = body(space, BodyType.DYNAMIC, 0, 0, new Polygon(Polygon.box(40, 4)), 0, 0, 3);
+    const caster = body(space, BodyType.KINEMATIC, 0, 20, new Circle(2));
+    const got = space.convexCast(caster.shape, 1, true)!;
+    expect(got).not.toBeNull();
+    expect(got.shape).toBe(bar.shape);
+    expect(Math.abs(got.toi - Math.acos(0.2) / 3)).toBeLessThan(TOI_TOL);
   });
 
   it("a rotating caster against a static post", () => {
@@ -365,7 +392,7 @@ describe("convexMultiCast", () => {
       0.5,
     );
     const results = space.convexMultiCast(caster.shape, 3, true);
-    expect(results.length).toBeGreaterThan(0);
+    expect(results.length).toBe(2);
     for (let i = 0; i < results.length; i++) {
       const r = results.at(i);
       expect(r.toi).toBeGreaterThan(0);
