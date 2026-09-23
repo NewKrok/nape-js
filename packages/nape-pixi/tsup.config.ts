@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import pkg from "./package.json";
 
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -11,4 +12,7 @@ export default defineConfig({
   treeshake: true,
   target: "es2020",
   external: ["pixi.js", "@newkrok/nape-js"],
+  define: {
+    __PACKAGE_VERSION__: JSON.stringify(pkg.version),
+  },
 });

@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-<!-- Last verified: v3.21.4 -->
+<!-- Last verified: v3.42.3 -->
 
 Common problems, their causes, and solutions. If your issue isn't listed here,
 check the [API Reference](https://napejs.org/api/) or
@@ -300,7 +300,7 @@ v.dispose(); // return to pool when done
 Use the built-in performance profiler to identify which phase is eating time.
 
 ```typescript
-import { PerformanceOverlay } from "nape-js/profiler";
+import { PerformanceOverlay } from "@newkrok/nape-js/profiler";
 
 // Quick visual overlay
 const overlay = new PerformanceOverlay(space, { position: "top-right" });

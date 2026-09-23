@@ -1,6 +1,6 @@
 # Anti-Patterns
 
-<!-- Last verified: v3.31.0 -->
+<!-- Last verified: v3.42.3 -->
 
 Common mistakes that cause bugs, poor performance, or confusion in nape-js.
 Each section shows the wrong approach, explains why it's a problem, and gives

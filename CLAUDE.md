@@ -21,7 +21,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
   `dist/` always get the full engine; the _source_ module graph is tree-shakeable
   (engine.ts no longer imports the class registry — importing a single class from
   `src/` costs only its own subgraph). TSDoc documented, 6527 engine tests +
-  77 pixi-adapter tests
+  79 pixi-adapter tests
 
 ## Repo Layout (npm workspaces)
 
@@ -61,13 +61,31 @@ npm run format:check # prettier across both workspaces
 
 ## Pre-push Checklist
 
-**Before every `git push`, always run all five:**
+**Before every `git push`, always run all six:**
 
 1. `npm run format:check` — must pass (Prettier code style, both packages)
 2. `npm run lint` — must pass (ESLint, both packages)
-3. `npm test` — all tests must pass (6527 + 77)
+3. `npm test` — all tests must pass (6527 + 79)
 4. `npm run typecheck` — builds nape-js (nape-pixi resolves its types from `dist/`), then `tsc --noEmit` on both packages (catches errors the tsup DTS build tolerates)
 5. `npm run build` — DTS generation must succeed
+6. `/docs-check` — the only one of the six that CI cannot run for you (see below)
+
+## End of Task: Docs Check
+
+**Before pushing or opening a PR, run `/docs-check`** (the `docs-check` skill).
+
+Nothing in CI catches a doc that describes an API which no longer exists — the
+README documented `Capsule.create()`, a method that has never existed in the
+TypeScript engine, while format/lint/test/typecheck/build all stayed green.
+
+The skill decides whether the work needs a docs update, maps it to the
+Documentation Update Matrix in `docs/guides/workflow.md`, and — the part that
+matters — **verifies the affected claims by running them**, not by reading the
+prose. It also covers the GitHub wiki, which lives in a separate repo that no
+CI job touches.
+
+Skip it only for test-only changes, pure internal refactors with no behaviour
+change, or CI/formatting commits.
 
 ## Release (per-package, auto)
 
@@ -90,7 +108,7 @@ Use `node scripts/ci/release.mjs --dry-run` to preview what would publish.
 ```
 Public API wrappers (packages/nape-js/src/{phys,shape,constraint,callbacks,dynamics,geom,space}/)
         ↕
-Internal ZPP_* classes (packages/nape-js/src/native/)  — 85 classes
+Internal ZPP_* classes (packages/nape-js/src/native/)  — 102 classes
         ↕
 Engine bootstrap (packages/nape-js/src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 ```
@@ -106,3 +124,4 @@ Engine bootstrap (packages/nape-js/src/core/engine.ts → ZPPRegistry.ts + boots
 | Multiplayer  | `docs/guides/multiplayer-guide.md` | Server-authoritative architecture, binary protocol, prediction, deployment            |
 | Replay       | `docs/guides/replay-guide.md`      | `Recorder` / `Player` / `encodeReplay`, determinism contract, scrub, sizing           |
 | Demo designs | `docs/guides/demo-designs.md`      | Full showpiece write-ups (weapons, rosters, schedules, balance); `desc` stays a teaser |
+| Wiki         | [github.com/NewKrok/nape-js/wiki](https://github.com/NewKrok/nape-js/wiki) | Orientation layer (separate git repo, not in CI): Getting Started, Migration from Haxe Nape, Engine Comparison, FAQ, Known Issues & Gotchas, Glossary, Contributing |

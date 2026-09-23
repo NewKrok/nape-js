@@ -48,4 +48,6 @@ export {
 } from "./workerProtocol.js";
 export type { TransformsBuffer } from "./workerProtocol.js";
 
-export const VERSION = "0.1.0";
+// Version injected from package.json at build time via tsup define
+declare const __PACKAGE_VERSION__: string;
+export const VERSION: string = __PACKAGE_VERSION__;

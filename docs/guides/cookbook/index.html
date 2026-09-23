@@ -122,7 +122,7 @@
         <aside class="guide-side">
           <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#table-of-contents">Table of Contents</a></li><li><a href="#basic-setup">Basic Setup</a></li><li><a href="#platformer-character">Platformer Character</a></li><li><a href="#one-way-platforms">One-Way Platforms</a></li><li><a href="#ragdoll">Ragdoll</a></li><li><a href="#rope--chain">Rope / Chain</a></li><li><a href="#vehicle-top-down">Vehicle (Top-Down)</a></li><li><a href="#fluid--water-pool">Fluid / Water Pool</a></li><li><a href="#raycasting">Raycasting</a></li><li><a href="#convex-cast-swept-shape-queries">Convex Cast (Swept-Shape Queries)</a></li><li><a href="#sensor--trigger-zone">Sensor / Trigger Zone</a></li><li><a href="#collision-filtering">Collision Filtering</a></li><li><a href="#explosion-impulse">Explosion Impulse</a></li><li><a href="#voronoi-fracture-destruction">Voronoi Fracture (Destruction)</a></li><li><a href="#particle-emitter-bullets-sparks-debris">Particle Emitter (Bullets, Sparks, Debris)</a></li><li><a href="#conveyor-belt">Conveyor Belt</a></li><li><a href="#breakable-constraint">Breakable Constraint</a></li><li><a href="#soft-constraint-spring-like">Soft Constraint (Spring-Like)</a></li><li><a href="#constraint-reference--which-joint-to-use">Constraint Reference — Which Joint to Use</a></li><li><a href="#serialization-save--load">Serialization (Save / Load)</a></li><li><a href="#binary-snapshot-multiplayer">Binary Snapshot (Multiplayer)</a></li><li><a href="#replay--recording-deterministic-playback">Replay &amp; Recording (Deterministic Playback)</a></li><li><a href="#web-worker-off-thread-physics">Web Worker Off-Thread Physics</a></li><li><a href="#ccd-bullet-bodies">CCD (Bullet Bodies)</a></li><li><a href="#sub-stepping-for-stability">Sub-Stepping for Stability</a></li><li><a href="#kinematic-moving-platform">Kinematic Moving Platform</a></li><li><a href="#custom-material-presets">Custom Material Presets</a></li><li><a href="#performance-profiling">Performance Profiling</a></li><li><a href="#wave-spawner-timer-driven-cadence">Wave Spawner (Timer-Driven Cadence)</a></li><li><a href="#viewport-bounded-auto-aim">Viewport-Bounded Auto-Aim</a></li><li><a href="#homing-missile-steered-projectile">Homing Missile (Steered Projectile)</a></li></ul></nav>
           <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../troubleshooting/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg> Troubleshooting Guide</a></li><li><a href="../multiplayer-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multiplayer Implementation Guide</a></li><li><a href="../replay-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg> Replay Guide — @newkrok/nape-js/replay</a></li></ul></nav>
-          <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener">Edit on GitHub</a> &bull; verified v3.31.0</p>
+          <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/cookbook.md" target="_blank" rel="noopener">Edit on GitHub</a> &bull; verified v3.42.3</p>
         </aside>
         <article class="guide-content">
           <h1><span class="guide-h1-icon"><svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>nape-js Cookbook</h1>
@@ -224,7 +224,7 @@ function update(dt: number, keys: { left: boolean; right: boolean; jump: boolean
   cc.setVelocity(dx * speed, player.velocity.y);
   space.step(dt);
 
-  const result = cc.moveResult;
+  const result = cc.update(); // returns the MoveResult
   if (keys.jump &amp;&amp; result.grounded) {
     player.velocity.y = -400; // jump impulse
   }
@@ -420,9 +420,10 @@ const result = space.rayCast(ray, false); // false = outer surfaces only
 
 if (result) {
   console.log(&quot;Hit body:&quot;, result.shape.body);
-  console.log(&quot;Hit point:&quot;, result.point);
   console.log(&quot;Distance:&quot;, result.distance);
   console.log(&quot;Normal:&quot;, result.normal);
+  // RayResult has no `point` — derive it from the distance along the ray:
+  console.log(&quot;Hit point:&quot;, ray.at(result.distance));
 }
 </code></pre>
 <p><strong>Gotcha:</strong> <code>space.rayCast()</code> on static bodies may return null if you haven't called <code>space.step()</code> at least once — the broadphase needs a step to index the shapes.</p>
@@ -793,12 +794,15 @@ const beltShape = new Polygon(Polygon.box(200, 10));
 belt.shapes.add(beltShape);
 belt.space = space;
 
-// Set surface velocity — pushes objects rightward at 100 px/s
+// Friction is per-shape...
 for (const s of belt.shapes) {
   s.material.dynamicFriction = 2;
   s.material.staticFriction = 2;
-  s.surfaceVel.setXY(100, 0);
 }
+
+// ...but surface velocity lives on the BODY, not the shape.
+// Note the all-lowercase `setxy`.
+belt.surfaceVel.setxy(100, 0); // pushes objects rightward at 100 px/s
 </code></pre>
 <hr>
 <h2 id="breakable-constraint">Breakable Constraint</h2>
@@ -1065,31 +1069,35 @@ if (!ok) console.warn(&quot;Replay may drift:&quot;, warnings);
 <hr>
 <h2 id="web-worker-off-thread-physics">Web Worker Off-Thread Physics</h2>
 <p>Run physics simulation on a background thread to keep the UI at 60 fps.</p>
-<pre><code class="language-typescript">import {
-  PhysicsWorkerManager,
-  buildWorkerScript,
-} from &quot;@newkrok/nape-js/worker&quot;;
+<pre><code class="language-typescript">import &quot;@newkrok/nape-js&quot;; // engine bootstrap
+import { PhysicsWorkerManager } from &quot;@newkrok/nape-js/worker&quot;;
 
-const manager = new PhysicsWorkerManager();
+const mgr = new PhysicsWorkerManager({ gravityY: 600, maxBodies: 256 });
 
-// Initialize worker with engine URL
-await manager.init(buildWorkerScript(&quot;/node_modules/@newkrok/nape-js/dist/index.js&quot;));
+// Optional: override the bundle the worker imports (defaults to the jsDelivr CDN).
+// mgr.napeUrl = &quot;/node_modules/@newkrok/nape-js/dist/index.js&quot;;
 
-// Add bodies (mirrored in the worker)
-manager.addBody({ id: &quot;ball&quot;, type: &quot;dynamic&quot;, x: 400, y: 100, shape: &quot;circle&quot;, radius: 20 });
-manager.addBody({ id: &quot;floor&quot;, type: &quot;static&quot;, x: 400, y: 550, shape: &quot;box&quot;, width: 800, height: 20 });
+await mgr.init(); // takes no arguments
 
-// Start simulation
-manager.start();
+// addBody(bodyType, x, y, shapes, options?) → numeric id
+const ballId = mgr.addBody(&quot;dynamic&quot;, 400, 100, [{ type: &quot;circle&quot;, radius: 20 }]);
+const floorId = mgr.addBody(&quot;static&quot;, 400, 550, [
+  { type: &quot;box&quot;, width: 800, height: 20 },
+]);
+
+mgr.start();
 
 // Read transforms for rendering (zero-copy with SharedArrayBuffer)
 function render() {
-  const transforms = manager.getTransforms();
-  for (const [id, { x, y, rotation }] of transforms) {
-    // Update your rendering objects
-  }
+  const t = mgr.getTransform(ballId); // single body
+  if (t) drawCircle(t.x, t.y, t.rotation);
+
+  // …or read every body at once into a Map you own:
+  // mgr.readAllTransforms(myMap);
+
   requestAnimationFrame(render);
 }
+render();
 </code></pre>
 <hr>
 <h2 id="ccd-bullet-bodies">CCD (Bullet Bodies)</h2>
@@ -1168,7 +1176,7 @@ for (const s of body.shapes) {
 <h2 id="performance-profiling">Performance Profiling</h2>
 <p>Visualise per-step timing and entity counts with the built-in performance overlay.</p>
 <h3 id="quick-overlay-canvas">Quick overlay (Canvas)</h3>
-<pre><code class="language-typescript">import { PerformanceOverlay } from &quot;nape-js/profiler&quot;;
+<pre><code class="language-typescript">import { PerformanceOverlay } from &quot;@newkrok/nape-js/profiler&quot;;
 
 // Attaches a canvas overlay to the page (auto-creates canvas if omitted)
 const overlay = new PerformanceOverlay(space, {

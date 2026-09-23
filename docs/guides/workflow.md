@@ -42,7 +42,9 @@ Claude acts as an **orchestrator** — delegates work to sub-agents to keep the 
 3. **Verify** — Run lint/test/build in main session
 4. **Review** — Launch review agent checking: code quality, type safety, test coverage, performance, security
 5. **Commit** — Conventional message + `Co-Authored-By: Claude <noreply@anthropic.com>`
-6. **Docs** — Update per Documentation Update Matrix below
+6. **Docs** — Run `/docs-check` (the `docs-check` skill): decide whether docs need
+   updating, then **verify the affected docs against the code by running it**, not
+   by reading it. Update per the Documentation Update Matrix below
 7. **Push** — Verify CI passes
 
 ### Workflow Checklist
@@ -59,7 +61,8 @@ Claude acts as an **orchestrator** — delegates work to sub-agents to keep the 
 [ ] Run: npm run build ✓
 [ ] Launch review agent → address feedback
 [ ] Commit with conventional message
-[ ] Update docs (CLAUDE.md, README, ROADMAP.md, llms.txt/llms-full.txt)
+[ ] Run /docs-check → update docs per the matrix (CLAUDE.md, README,
+    ROADMAP.md, llms.txt/llms-full.txt, guides, wiki)
 [ ] Push and verify CI
 ```
 
@@ -232,7 +235,13 @@ Breaking changes: use `feat!:` or add `BREAKING CHANGE` footer.
 
 ## Documentation Update Matrix
 
-When a PR changes features, APIs, priorities, or versions:
+When a PR changes features, APIs, priorities, or versions.
+
+> **Run `/docs-check` at the end of every task** rather than consulting this
+> table from memory. Nothing in CI catches a doc that describes an API which no
+> longer exists — `README.md` documented the non-existent `Capsule.create()` for
+> a long time while every check stayed green. The skill maps the change to the
+> rows below **and verifies the claims by running them**.
 
 | File | What to update | When |
 |------|----------------|------|
@@ -250,6 +259,7 @@ When a PR changes features, APIs, priorities, or versions:
 | `packages/nape-js/llms.txt` | Class list, links, quick start | nape-js public API additions/removals |
 | `packages/nape-js/llms-full.txt` | Complete API reference, gotchas (the header version line is stamped automatically by `release.mjs`) | Any nape-js public API change |
 | `packages/<pkg>/package.json` | `version` field (CI does this automatically) | Releases |
+| [GitHub wiki](https://github.com/NewKrok/nape-js/wiki) (separate repo — `git@github.com:NewKrok/nape-js.wiki.git`) | Getting Started, FAQ, Known Issues & Gotchas, Engine Comparison, Migration, Glossary, Contributing | Public API changes, new gotchas, capability changes, contribution-process changes |
 
 ---
 

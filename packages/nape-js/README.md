@@ -81,11 +81,11 @@ function update() {
 | ------- | ----------------------------------------------------------------------------------------- |
 | `Space` | Physics world — add bodies, step simulation, `deterministic` mode for rollback/prediction |
 | `Body`  | Rigid body with position, velocity, mass                                                  |
-| `Vec2`  | 2D vector — pooling, `clone()`, `equals()`, `lerp()`, `fromAngle()`                       |
+| `Vec2`  | 2D vector — pooling, `clone()`, `equals()`; statics `Vec2.get()`, `Vec2.weak()`, `Vec2.lerp()`, `Vec2.fromAngle()` |
 | `Vec3`  | 3D vector for constraint impulses — `clone()`, `equals()`                                 |
-| `AABB`  | Axis-aligned bounding box — `clone()`, `equals()`, `fromPoints()`                         |
+| `AABB`  | Axis-aligned bounding box — `clone()`, `equals()`; static `AABB.fromPoints()`              |
 | `Mat23` | 2×3 affine matrix — `clone()`, `equals()`, transform, inverse                             |
-| `Ray`   | Raycasting — `clone()`, `fromSegment()`, spatial queries                                  |
+| `Ray`   | Raycasting — `clone()`, `at(distance)`; static `Ray.fromSegment()`                         |
 
 ### Shapes
 
@@ -93,7 +93,7 @@ function update() {
 | --------- | ---------------------------------------------------------------------------- |
 | `Circle`  | Circular shape                                                               |
 | `Polygon` | Convex polygon (with `Polygon.box()`, `Polygon.rect()`, `Polygon.regular()`) |
-| `Capsule` | Capsule shape (`Capsule.create()`, `Capsule.createVertical()`)               |
+| `Capsule` | Capsule shape — `new Capsule(width, height)`, **total** dims tip-to-tip, `width >= height` |
 | `Shape`   | Base class with material, filter, sensor support                             |
 
 ### Physics Properties

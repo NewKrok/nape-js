@@ -10,8 +10,8 @@ Internal ZPP_* classes (packages/nape-js/src/native/)
 Engine bootstrap (packages/nape-js/src/core/engine.ts → ZPPRegistry.ts + bootstrap.ts)
 ```
 
-- **85 ZPP\_\* internal classes** in `packages/nape-js/src/native/`
-- **68 public API classes** in `packages/nape-js/src/` with direct `zpp_inner` access
+- **102 ZPP\_\* internal classes** in `packages/nape-js/src/native/`
+- **80 public API classes** in `packages/nape-js/src/` with direct `zpp_inner` access
 
 ---
 

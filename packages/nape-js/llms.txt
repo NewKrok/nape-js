@@ -45,10 +45,10 @@ These are the places nape-js differs from Box2D/Matter.js, where models most oft
 
 - **No `space.add()`** — a body joins the world by assignment: `body.space = space`. Shapes attach with `body.shapes.add(shape)`.
 - **No `body.applyForce()`** — assign `body.force = new Vec2(x, y)`. The value **persists across `space.step()`**, so clear it each frame unless you want accumulation. `body.applyImpulse(vec)` is a real method and is usually the right one.
-- **Dynamic `Polygon` + explicit `Material` can tunnel** through static polygon floors; `isBullet` does not help. Omit the material argument (`new Polygon(Polygon.box(w, h))`) or use `Circle`/`Capsule`, which are unaffected. Most likely in vehicle demos where chassis and walls are both polygons.
+- **Fast bodies can tunnel** through thin static geometry. Fixes, in order: step with a fixed `dt`, set `body.isBullet = true`, raise `space.subSteps`, and keep a small non-zero friction (exactly 0 can slip through floors). A historical bug where a `Polygon` with an explicit `Material` tunnelled regardless of `isBullet` no longer reproduces as of 3.42.3.
 - **`shape.rotation` does not rotate collision geometry** — rotate the body: `body.rotation = angle`.
 - **`Material` density of 0 throws** — the signature is `new Material(elasticity, dynamicFriction, staticFriction, density)`; a dynamic body with density 0 has zero mass and errors.
-- **`space.arbiters.at(0)` throws when empty**, and `.length` is `undefined`. Use `space.arbiters.zpp_gl()` for the count. A sleeping body reports zero arbiters, so use `body.isSleeping` as a ground-check fallback.
+- **`space.arbiters.at(0)` throws when empty** — check `space.arbiters.length` first (engine lists expose a real `length` getter; `zpp_gl()` is the internal equivalent and should not be needed). A sleeping body reports zero arbiters, so use `body.isSleeping` as a ground-check fallback.
 - **`AngleJoint` with `jointMin < jointMax` applies no force inside the range** — it is a pure limit. For a spring toward a target angle set `jointMin === jointMax`.
 - **Rigid joints jitter against floor contact** — soften with `stiff = false`, frequency ≈ 12, damping 1.
 - **`buildTilemapBody` returns a detached body** — the caller must set `tm.space = space`; the `space:` option is ignored.
@@ -68,6 +68,7 @@ Full prompt collection with per-genre starters: https://napejs.org/ai.html
 
 - [Circle](https://napejs.org/api/classes/Circle.html): Circular collision shape with radius
 - [Polygon](https://napejs.org/api/classes/Polygon.html): Convex polygon with factories: `Polygon.box()`, `Polygon.rect()`, `Polygon.regular()`
+- [Capsule](https://napejs.org/api/classes/Capsule.html): Capsule shape — `new Capsule(width, height)` takes TOTAL dims tip-to-tip, `width >= height`
 - [Shape](https://napejs.org/api/classes/Shape.html): Base class — material, filter, sensor support, cbTypes
 - [Edge](https://napejs.org/api/classes/Edge.html): Read-only polygon edge with normal and projection data
 
@@ -128,13 +129,13 @@ Higher-level building blocks layered on top of the engine — opt-in modules.
 - [RadialGravityField](https://napejs.org/api/classes/RadialGravityField.html) / [RadialGravityFieldGroup](https://napejs.org/api/classes/RadialGravityFieldGroup.html): Point-source gravity field with `inverse-square` / `inverse` / `constant` / custom falloff, `maxRadius` / `softening` / `minRadius`, body filter, mass scaling — replaces hand-rolled `body.force = ...` loops for orbital, planet, and multi-body scenarios
 - [ParticleEmitter](https://napejs.org/api/classes/ParticleEmitter.html) / [ParticleEmitterGroup](https://napejs.org/api/classes/ParticleEmitterGroup.html): Physics-aware particle emitter — pooled `Body` swarm with continuous (`rate`) / periodic (`burstCount` + `burstInterval`) / manual (`emit(n)`) spawning, configurable spawn (`point` / `rect` / `circle` / `arc` / custom) and velocity (`fixed` / `cone` / `radial` / custom) patterns, deterministic RNG, world-space `bounds`, `selfCollision` toggle, lifecycle hooks (`onSpawn` / `onUpdate` / `onDeath` / `onCollide` with `requestKill`)
 - `buildTilemapBody` / `meshTilemap` / `tiledLayerToGrid` / `ldtkLayerToGrid`: Greedy-meshed collision body from a 2D tile grid (5–50× fewer shapes vs one-polygon-per-cell), with built-in parsers for Tiled JSON tile layers and LDtk IntGrid layers
-- [TriggerZone](https://napejs.org/api/classes/TriggerZone.html): Sensor zone with `onEnter` / `onExit` callbacks — wraps the BEGIN/END `InteractionListener` plumbing
+- [TriggerZone](https://napejs.org/api/classes/TriggerZone.html): Sensor zone with `onEnter` / `onStay` / `onExit` callbacks — wraps the BEGIN/ONGOING/END `InteractionListener` plumbing
 - [createConcaveBody](https://napejs.org/api/functions/createConcaveBody.html): Decomposes a concave outline into convex polygons and packs them into a single body
 
 ## Enums
 
 - [BodyType](https://napejs.org/api/classes/BodyType.html): STATIC, DYNAMIC, KINEMATIC
-- [ShapeType](https://napejs.org/api/classes/ShapeType.html): CIRCLE, POLYGON
+- [ShapeType](https://napejs.org/api/classes/ShapeType.html): CIRCLE, POLYGON, CAPSULE
 - [Broadphase](https://napejs.org/api/classes/Broadphase.html): DYNAMIC_AABB_TREE (default), SWEEP_AND_PRUNE, SPATIAL_HASH
 - [InteractionType](https://napejs.org/api/classes/InteractionType.html): COLLISION, SENSOR, FLUID, ANY
 - [ArbiterType](https://napejs.org/api/classes/ArbiterType.html): COLLISION, SENSOR, FLUID

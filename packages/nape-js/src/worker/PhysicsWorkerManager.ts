@@ -16,8 +16,8 @@
  * mgr.start();
  *
  * function render() {
- *   const t = mgr.getTransforms();
- *   // t[id] = { x, y, rotation }
+ *   const t = mgr.getTransform(id);
+ *   // t = { x, y, rotation } | null
  *   requestAnimationFrame(render);
  * }
  * render();
