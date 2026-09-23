@@ -21,7 +21,7 @@ A fully typed TypeScript 2D physics engine — modernized rewrite of the origina
   `dist/` always get the full engine; the _source_ module graph is tree-shakeable
   (engine.ts no longer imports the class registry — importing a single class from
   `src/` costs only its own subgraph). TSDoc documented, 6527 engine tests +
-  77 pixi-adapter tests
+  79 pixi-adapter tests
 
 ## Repo Layout (npm workspaces)
 
@@ -65,7 +65,7 @@ npm run format:check # prettier across both workspaces
 
 1. `npm run format:check` — must pass (Prettier code style, both packages)
 2. `npm run lint` — must pass (ESLint, both packages)
-3. `npm test` — all tests must pass (6527 + 77)
+3. `npm test` — all tests must pass (6527 + 79)
 4. `npm run typecheck` — builds nape-js (nape-pixi resolves its types from `dist/`), then `tsc --noEmit` on both packages (catches errors the tsup DTS build tolerates)
 5. `npm run build` — DTS generation must succeed
 6. `/docs-check` — the only one of the six that CI cannot run for you (see below)

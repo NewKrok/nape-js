@@ -165,15 +165,26 @@ done
 
 ## Step 7: Regenerate what is generated
 
-Docs pages under `docs/examples/<id>/`, `docs/games/`, `docs/showcase/` and
-`docs/guides/` are **generated**. Edit the source, never the generated page:
+**If you edited any `.md` under `docs/guides/`, or any demo, you must run this
+before pushing:**
 
 ```bash
 npm run build:site-pages
+git status --short docs/   # expect the matching index.html files + sitemap.xml
 ```
 
-CI has a `Docs pages fresh` job that regenerates and fails on drift, so skipping
-this turns into a red build rather than a silent problem.
+Pages under `docs/guides/<name>/`, `docs/examples/<id>/`, `docs/games/` and
+`docs/showcase/` are **generated from** the markdown and the demo registry. Edit
+the source, never the generated page.
+
+CI's `Docs pages fresh` job regenerates and fails on any drift. This is the one
+step in this skill that CI *does* catch — so forgetting it costs a red build and
+a round trip rather than shipping a silent error.
+
+> This has already happened once: a batch of cookbook/troubleshooting
+> corrections was pushed without regenerating, and CI failed on
+> `docs/guides/{cookbook,troubleshooting,anti-patterns}/index.html`. Editing a
+> guide's markdown is exactly the case that triggers it.
 
 ## Output
 

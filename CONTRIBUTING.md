@@ -43,12 +43,12 @@ To save a round-trip, please:
    PR title/description to reflect the actual scope so the table doesn't read
    as "missing".
 
-4. **Run the pre-push checklist locally.** All four must pass:
+4. **Run the pre-push checklist locally.** All five must pass:
 
    ```bash
    npm run format:check    # Prettier (auto-fix with `npm run format`)
    npm run lint            # ESLint
-   npm test                # Vitest (6527 + 77 tests baseline)
+   npm test                # Vitest (6527 + 79 tests baseline)
    npm run typecheck       # tsc --noEmit — strict type check of both packages
    npm run build           # tsup — DTS bundle
    ```
