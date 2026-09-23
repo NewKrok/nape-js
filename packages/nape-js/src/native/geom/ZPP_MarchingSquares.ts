@@ -582,49 +582,6 @@ export class ZPP_MarchingSquares {
   }
 
   // ---------------------------------------------------------------------------
-  // Instance method: linkright
-  // ---------------------------------------------------------------------------
-  linkright(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
-    const kind = key & 7;
-    if (kind == 0) {
-      return poly;
-    } else if (kind == 3) {
-      return poly!.next!.next;
-    } else {
-      return poly!.next;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkleft
-  // ---------------------------------------------------------------------------
-  linkleft(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
-    if ((key & 1) == 0) {
-      return poly!.prev;
-    } else {
-      return poly;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkdown
-  // ---------------------------------------------------------------------------
-  linkdown(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
-    if ((key & 128) == 0) {
-      return poly!.prev;
-    } else {
-      return poly!.prev!.prev;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkup
-  // ---------------------------------------------------------------------------
-  linkup(poly: ZPP_GeomVert | null, _key: number): ZPP_GeomVert | null {
-    return poly;
-  }
-
-  // ---------------------------------------------------------------------------
   // Instance method: combLR — combine left-right adjacent cells
   // ---------------------------------------------------------------------------
   combLR(a: ZPP_MarchPair, b: ZPP_MarchPair): void {
@@ -694,65 +651,6 @@ export class ZPP_MarchingSquares {
     const ap2 = ap.prev;
     const bp2 = bp.next;
     ap.forced = bp.forced = ap2.forced = bp2.forced = true;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combLeft
-  // ---------------------------------------------------------------------------
-  combLeft(key: number): boolean {
-    const flag = (key & 1) | ((key & 192) >> 5);
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combRight
-  // ---------------------------------------------------------------------------
-  combRight(key: number): boolean {
-    const flag = (key & 28) >> 2;
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combUp
-  // ---------------------------------------------------------------------------
-  combUp(key: number): boolean {
-    const flag = key & 7;
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combDown
-  // ---------------------------------------------------------------------------
-  combDown(key: number): boolean {
-    const flag = (key & 112) >> 4;
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: comb
-  // ---------------------------------------------------------------------------
-  comb(flag: number): boolean {
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
   }
 
   // ---------------------------------------------------------------------------
@@ -1429,26 +1327,6 @@ export class ZPP_MarchingSquares {
     }
 
     return { val };
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: lerp — basic linear interpolation
-  // ---------------------------------------------------------------------------
-  lerp(x0: number, x1: number, v0: number, v1: number): number {
-    if (v0 == 0) {
-      return x0;
-    } else if (v1 == 0) {
-      return x1;
-    } else {
-      const dv = v0 - v1;
-      let t = dv * dv < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv;
-      if (t < 0) {
-        t = 0;
-      } else if (t > 1) {
-        t = 1;
-      }
-      return x0 + t * (x1 - x0);
-    }
   }
 
   // ---------------------------------------------------------------------------
