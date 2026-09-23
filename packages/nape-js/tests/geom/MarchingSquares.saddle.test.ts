@@ -171,13 +171,14 @@ describe("MarchingSquares — single saddle cell", () => {
       const flip = (x: number) => (sign > 0 ? x : 10 - x);
       const bump = (x: number, y: number) => 3 * Math.max(0, 1 - ((x - 5) ** 2 + (y - 5) ** 2) / 4);
 
-      // Centre inside → the joined ring degenerates to the whole cell.
-      // Crossings coincide with the zero corners, so the ring carries
-      // zero-length edges (repeated consecutive vertices) and is only weakly
-      // simple — pinned here as current behaviour.
+      // Centre inside → the joined ring is the whole cell. Every crossing
+      // coincides with a zero corner and used to be emitted once per
+      // adjoining edge (zero-length edges, isSimple() false); the repeats are
+      // now dropped, leaving the plain square.
       const joined = cell((x, y) => bil(flip(x), y));
       expect(joined.length).toBe(1);
-      expectWellFormed(joined, false);
+      expectWellFormed(joined);
+      expect(joined.at(0).size()).toBe(4);
       expect(Math.abs(joined.at(0).area())).toBeCloseTo(100, 6);
 
       // Centre outside → two half-cell triangles meeting on the diagonal.

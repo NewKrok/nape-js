@@ -532,8 +532,38 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: output — emit a polygon to the result list
   // ---------------------------------------------------------------------------
+  /**
+   * A crossing that lands exactly on a cell corner (iso value 0 there) is
+   * emitted once per adjoining edge, leaving zero-length edges in the ring.
+   * Unlink the repeats, keeping `forced` on the survivor. Runs after
+   * combining, whose linking relies on the fixed per-cell ring layout. The
+   * removed vertices are not pooled: the first copy of a crossing is shared
+   * with the per-run intersection cache.
+   */
+  static _dropRepeatedVertices(poly: ZPP_GeomVert | null): ZPP_GeomVert | null {
+    if (poly == null) return null;
+    let cur: ZPP_GeomVert = poly;
+    while (cur.next != cur) {
+      const nx: ZPP_GeomVert = cur.next!;
+      const dx = nx.x - cur.x;
+      const dy = nx.y - cur.y;
+      if (dx * dx + dy * dy < Config.epsilon * Config.epsilon) {
+        if (nx.forced) cur.forced = true;
+        cur.next = nx.next;
+        nx.next!.prev = cur;
+        nx.next = nx.prev = null;
+        if (nx == poly) poly = cur;
+      } else {
+        cur = nx;
+        if (cur == poly) break;
+      }
+    }
+    return poly;
+  }
+
   output(ret: ZNPList<ZPP_GeomVert>, poly: ZPP_GeomVert | null): void {
     const nape = ZPP_MarchingSquares._nape;
+    poly = ZPP_MarchingSquares._dropRepeatedVertices(poly);
     let tmp: boolean;
     if (poly == null || poly.next == poly || poly.next == poly.prev) {
       tmp = true;
