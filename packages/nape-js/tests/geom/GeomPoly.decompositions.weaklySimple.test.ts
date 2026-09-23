@@ -88,6 +88,19 @@ function checkDecomposition(input: Pt[], kind: Kind, delaunay = false, samples =
   }
   expect(overlap, "pieces overlap").toBe(0);
   expect(wrong, "pieces differ from the input region").toBe(0);
+  // Sampling can miss thin slivers; the areas must also add up exactly.
+  const total = pieces.reduce((a, p) => a + Math.abs(shoelace(p)), 0);
+  expect(total).toBeCloseTo(Math.abs(shoelace(input)), 6);
+}
+
+function shoelace(p: Pt[]): number {
+  let a = 0;
+  for (let i = 0; i < p.length; i++) {
+    const [ax, ay] = p[i];
+    const [bx, by] = p[(i + 1) % p.length];
+    a += ax * by - bx * ay;
+  }
+  return a / 2;
 }
 
 const keyhole: Pt[] = [
@@ -178,6 +191,19 @@ describe("decompositions of MarchingSquares combined output", () => {
   }
 
   for (const cells of [2, 3]) {
+    it(`triangular decomposition of a small ${cells}×${cells} saddle lattice`, () => {
+      const pts = latticeRing(cells);
+      checkDecomposition(pts, "triangular");
+      checkDecomposition(pts, "triangular", true);
+    });
+  }
+
+  // Regression: on the 6×6 lattice the triangulator used to leave 8–12
+  // vertex pieces and overlapping output (triangle area 7375 vs 4353). Cause:
+  // MarchingSquares' symmetric output makes monotone pieces with three
+  // exactly collinear vertices, and a rounding error of the wrong sign in the
+  // same-chain visibility test added a diagonal through the middle one.
+  for (const cells of [4, 6, 8]) {
     it(`triangular decomposition of a ${cells}×${cells} saddle lattice`, () => {
       const pts = latticeRing(cells);
       checkDecomposition(pts, "triangular");
@@ -185,13 +211,18 @@ describe("decompositions of MarchingSquares combined output", () => {
     });
   }
 
-  // Known bug: on the 6×6 lattice (116 vertices, 8 bridged holes) the
-  // triangulator leaves several 8–12 vertex pieces untriangulated and the
-  // pieces overlap. Triangulating each monotone piece on its own works, so
-  // the fault is in triangulating partitions that still share the ring's
-  // duplicated seam vertices. Flip to `it` once fixed.
-  it.fails("triangular decomposition of a 6×6 saddle lattice", () => {
-    checkDecomposition(latticeRing(6), "triangular");
+  it("a monotone pentagon with three collinear vertices triangulates cleanly", () => {
+    // Minimal case shrunk from the 6×6 lattice: (0.2, 31.4) lies on the line
+    // from (-6.3, 24.9) to (6.3, 37.5) to ~1e-15.
+    const pentagon: Pt[] = [
+      [0.20008344301300984, 31.41592653589793],
+      [6.283185307179586, 37.49902840006451],
+      [-6.283185307179586, 37.89919528609053],
+      [-6.283185307179586, 24.932657785705334],
+      [-0.20008344301300984, 18.84955592153876],
+    ];
+    checkDecomposition(pentagon, "triangular");
+    checkDecomposition([...pentagon].reverse(), "triangular");
   });
 
   it("triangulating each monotone piece separately is exact on the 6×6 lattice", () => {
