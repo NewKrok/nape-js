@@ -5,6 +5,7 @@
  * sweep-line stack algorithm, with optional Delaunay edge-flip optimisation.
  */
 
+import { Config } from "../../Config";
 import { ZPP_PartitionVertex } from "./ZPP_PartitionVertex";
 import { ZPP_PartitionPair } from "./ZPP_PartitionPair";
 import { ZPP_PartitionedPoly } from "./ZPP_PartitionedPoly";
@@ -310,7 +311,14 @@ export class ZPP_Triangular {
           const vx = q.x - s1.x;
           const vy = q.y - s1.y;
           const right = vy * ux - vx * uy;
-          if ((p1.rightchain && right >= 0) || (!p1.rightchain && right <= 0)) {
+          // s1, q and p1 collinear (up to rounding) means the diagonal s1-p1
+          // would pass through q and cut off a zero-area triangle; a rounding
+          // error with the wrong sign used to add it inverted. Treat it as
+          // not visible, like an exact zero.
+          const collinear =
+            right * right <=
+            Config.epsilon * Config.epsilon * (ux * ux + uy * uy) * (vx * vx + vy * vy);
+          if (collinear || (p1.rightchain && right >= 0) || (!p1.rightchain && right <= 0)) {
             break;
           }
           P.add_diagonal(s1, p1);

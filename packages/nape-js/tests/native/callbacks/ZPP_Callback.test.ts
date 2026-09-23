@@ -374,13 +374,6 @@ describe("ZPP_Callback", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const cb = new ZPP_Callback();
-      expect(() => cb.alloc()).not.toThrow();
-    });
-  });
-
   describe("genarbs", () => {
     it("should create wrap_arbiters when null", () => {
       const cb = new ZPP_Callback();

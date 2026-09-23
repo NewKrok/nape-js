@@ -190,8 +190,6 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
 
   // ========== Pool callbacks ==========
 
-  alloc(): void {}
-
   free(): void {
     this.userdef_dyn_fric = false;
     this.userdef_stat_fric = false;
@@ -309,7 +307,8 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
     }
   }
 
-  private _calcFrictionRestitution(): void {
+  /** Recompute combined restitution / friction from both shapes' materials (skips user overrides). */
+  _calcFrictionRestitution(): void {
     if (!this.userdef_restitution) {
       if (this.s1.material.elasticity <= -Infinity || this.s2.material.elasticity <= -Infinity) {
         this.restitution = 0;

@@ -46,10 +46,6 @@ export class ZPP_PartitionedPoly {
     return dx * dx + dy * dy < Config.epsilon * Config.epsilon;
   }
 
-  alloc(): void {}
-
-  free(): void {}
-
   init(P?: ZPP_PartitionVertex | null): void {
     if (P == null) {
       return;

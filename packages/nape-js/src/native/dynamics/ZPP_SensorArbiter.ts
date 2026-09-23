@@ -19,9 +19,4 @@ export class ZPP_SensorArbiter extends ZPP_Arbiter {
     this.type = ZPP_Arbiter.SENSOR;
     this.sensorarb = this;
   }
-
-  // ========== Pool callbacks ==========
-
-  alloc(): void {}
-  free(): void {}
 }

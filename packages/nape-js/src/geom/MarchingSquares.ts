@@ -22,7 +22,10 @@ export class MarchingSquares {
    * @param cellsize - Vec2 defining cell dimensions. Auto-disposed if weak.
    * @param quality - Interpolation quality (default 2). Must be >= 0.
    * @param subgrid - Optional Vec2 for sub-grid partitioning. Auto-disposed if weak.
-   * @param combine - Whether to combine adjacent polygons (default true).
+   * @param combine - Whether to combine adjacent polygons (default true). A combined
+   *                  region that encloses holes is emitted as one *weakly* simple
+   *                  polygon: each hole is bridged to the outer boundary through
+   *                  repeated vertices, so `isSimple()` reports `false` for it.
    * @param output - Optional GeomPolyList to populate. If null, a new one is created.
    * @returns The populated GeomPolyList.
    */

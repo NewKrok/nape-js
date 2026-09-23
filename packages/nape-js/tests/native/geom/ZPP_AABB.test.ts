@@ -122,13 +122,6 @@ describe("ZPP_AABB", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const a = new ZPP_AABB();
-      expect(() => a.alloc()).not.toThrow();
-    });
-  });
-
   describe("free", () => {
     it("should null out outer and wrappers", () => {
       const a = new ZPP_AABB();

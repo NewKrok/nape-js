@@ -22,12 +22,6 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
     this.options = options.zpp_inner;
   }
 
-  immutable_options(): void {
-    if (this.space != null && this.space.midstep) {
-      throw new Error("Cannot change listener type options during space.step()");
-    }
-  }
-
   addedToSpace(): void {
     this.options.handler = (cb: any, included: boolean, added: boolean) =>
       this.cbtype_change(cb, included, added);

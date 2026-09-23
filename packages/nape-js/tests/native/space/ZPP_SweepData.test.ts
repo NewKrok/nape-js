@@ -26,11 +26,6 @@ describe("ZPP_SweepData", () => {
     expect(sd.prev).toBeNull();
   });
 
-  it("alloc should be callable (no-op)", () => {
-    const sd = new ZPP_SweepData();
-    expect(() => sd.alloc()).not.toThrow();
-  });
-
   it("gt should compare by aabb.minx", () => {
     const a = new ZPP_SweepData();
     const b = new ZPP_SweepData();

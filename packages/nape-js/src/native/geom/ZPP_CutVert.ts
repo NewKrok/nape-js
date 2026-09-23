@@ -38,8 +38,6 @@ export class ZPP_CutVert {
     return ret;
   }
 
-  alloc(): void {}
-
   free(): void {
     this.vert = null;
     this.parent = null;

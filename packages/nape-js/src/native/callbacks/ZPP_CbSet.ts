@@ -501,6 +501,4 @@ export class ZPP_CbSet {
       cb.cbsets.remove(this);
     }
   }
-
-  alloc(): void {}
 }

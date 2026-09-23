@@ -54,6 +54,4 @@ export class ZPP_GeomVertexIterator {
     this.outer.zpp_inner = null;
     this.ptr = this.start = null;
   }
-
-  alloc(): void {}
 }

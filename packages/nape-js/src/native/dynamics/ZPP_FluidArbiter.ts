@@ -103,11 +103,6 @@ export class ZPP_FluidArbiter extends ZPP_Arbiter {
     this.pre_dt = -1.0;
   }
 
-  // ========== Pool callbacks ==========
-
-  alloc(): void {}
-  free(): void {}
-
   // ========== Position handling ==========
 
   position_validate(): void {

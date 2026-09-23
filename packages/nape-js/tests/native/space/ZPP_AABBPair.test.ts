@@ -5,14 +5,12 @@
  * - Default field state matches the engine's "fresh from `new`" expectations
  *   (no nodes attached, sleeping = false, ids zeroed, doubly-linked list
  *   pointers null, arbiter null).
- * - `alloc()` is intentionally a no-op (pool callback contract) and must not
- *   touch instance state when called on an already-populated pair.
  * - `free()` drops node references and `gprev`, clears the `sleeping` flag,
  *   but deliberately leaves `id` / `di` / `arb` / `first` / `next` untouched
  *   — the broadphase relies on this so it can re-link the pair into the
  *   global list and inspect the previous arbiter before discarding.
  *
- * Pool-callback semantics (`alloc()` no-op, partial `free()`) are easy to
+ * The partial `free()` semantics are easy to
  * regress during refactors; pinning them here protects the broadphase's
  * recycle path.
  */
@@ -44,44 +42,6 @@ describe("ZPP_AABBPair — construction defaults", () => {
     const p = new ZPP_AABBPair();
     expect(p.next).toBeNull();
     expect(p.gprev).toBeNull();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// alloc()
-// ---------------------------------------------------------------------------
-
-describe("ZPP_AABBPair.alloc()", () => {
-  it("is a no-op (pool callback contract — does not touch fields)", () => {
-    const p = new ZPP_AABBPair();
-    // Populate every field to a non-default sentinel.
-    const sentinelN1 = { tag: "n1" };
-    const sentinelN2 = { tag: "n2" };
-    const sentinelArb = { tag: "arb" };
-    const sentinelNext = new ZPP_AABBPair();
-    const sentinelPrev = new ZPP_AABBPair();
-    p.n1 = sentinelN1;
-    p.n2 = sentinelN2;
-    p.arb = sentinelArb;
-    p.first = true;
-    p.sleeping = true;
-    p.id = 42;
-    p.di = 99;
-    p.next = sentinelNext;
-    p.gprev = sentinelPrev;
-
-    expect(() => p.alloc()).not.toThrow();
-
-    // Every field is left exactly as it was set.
-    expect(p.n1).toBe(sentinelN1);
-    expect(p.n2).toBe(sentinelN2);
-    expect(p.arb).toBe(sentinelArb);
-    expect(p.first).toBe(true);
-    expect(p.sleeping).toBe(true);
-    expect(p.id).toBe(42);
-    expect(p.di).toBe(99);
-    expect(p.next).toBe(sentinelNext);
-    expect(p.gprev).toBe(sentinelPrev);
   });
 });
 

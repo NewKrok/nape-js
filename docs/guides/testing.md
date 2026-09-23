@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6416 engine tests across 302 files, plus 77 pixi-adapter tests across 5 files.**
+**6527 engine tests across 309 files, plus 77 pixi-adapter tests across 5 files.**
 
 ---
 
@@ -81,12 +81,12 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~83% | ≥80% ✅ |
-| Branches | ~73% | — |
-| Functions | ~91% | — |
+| Statements | ~88% | ≥80% ✅ |
+| Branches | ~78% | — |
+| Functions | ~95% | — |
 
-**High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (97%), `packages/nape-js/src/serialization/` (93%)
-**Low coverage modules:** `packages/nape-js/src/native/space/` (81%), `packages/nape-js/src/native/geom/` (77%)
+**High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/serialization/` (93%)
+**Low coverage modules:** `packages/nape-js/src/native/space/` (85%), `packages/nape-js/src/native/constraint/` (85%)
 
 Note: the arbiter classes' dead solver-method duplicates (the live solver is
 inlined inside `ZPP_Space.step`) were removed, and the Haxe-inline-expansion
@@ -96,6 +96,31 @@ polygon branches inside circle-only paths and vice versa) was deduplicated
 into the canonical `ZPP_Shape.validate_*` / `ZPP_Body.validate_*` /
 `ZPP_Polygon.validate_gaxi` helpers (issue #229) — statement coverage rose
 ~80% → ~83% for free as those unreachable lines disappeared.
+
+A later audit classified every never-executed function by its call sites
+(not by coverage alone — several "uncovered" methods were reachable test
+gaps): zero-caller no-op pool stubs and helpers were removed, and inlined
+copies of `ZPP_ColArbiter.free()` / `validate_props()`,
+`ZPP_Body.sweepIntegrate()` and the broadphase `__sync` were replaced by
+calls to the canonical methods.
+
+### Oracle-based geometry tests
+
+The geometry and query suites added alongside that audit check results
+against an independent computation instead of counts or "does not throw":
+
+| Suite | Oracle |
+|-------|--------|
+| `geom/GeomPoly.simpleDecomposition` | pieces disjoint and covering exactly the even-odd region (point sampling) |
+| `geom/GeomPoly.decompositions.weaklySimple` | monotone / convex / triangular pieces cover the input region, each of the promised shape |
+| `geom/GeomPoly.simplify.forced` | Ramer–Douglas–Peucker contract; forced vertices survive |
+| `geom/MarchingSquares.saddle` | ambiguous-cell topology, sampled iso area; weak simplicity of combined output |
+| `geom/ZPP_Collide.flowOverlap` | fluid overlap / centroid vs Sutherland–Hodgman, lens and strip closed forms |
+| `space/Space.convexCast.oracle` | time of impact vs closed-form moving circles, bisection, spinning-bar angle |
+
+Prefer this pattern for new geometry tests: the oracles found six real
+bugs that count-based tests had missed. Sampling alone can miss thin
+slivers, so pair it with an exact check (e.g. total area) where one exists.
 
 ---
 

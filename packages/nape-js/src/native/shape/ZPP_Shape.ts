@@ -86,12 +86,6 @@ export class ZPP_Shape {
   __iremovedFromSpace!: () => void;
   userData: any = null;
 
-  constructor(type?: number) {
-    if (type !== undefined) {
-      this._initShape(type);
-    }
-  }
-
   /**
    * Initialize shape state. Separated from constructor so that compiled
    * subclass constructors can call `ZPP_Shape.call(this, type)` which
@@ -155,10 +149,6 @@ export class ZPP_Shape {
     return this.type === 1;
   }
 
-  isCapsule(): boolean {
-    return !!(this as any)._isCapsule;
-  }
-
   validate_sweepRadius(): void {
     if (this.zip_sweepRadius) {
       this.zip_sweepRadius = false;
@@ -167,15 +157,6 @@ export class ZPP_Shape {
       } else {
         this.polygon.__validate_sweepRadius();
       }
-    }
-  }
-
-  // --- Clear ---
-  clear(): void {
-    if (this.type === 0) {
-      this.circle.__clear();
-    } else {
-      this.polygon.__clear();
     }
   }
 
@@ -190,13 +171,6 @@ export class ZPP_Shape {
           this.polygon.__validate_aabb();
         }
       }
-    }
-  }
-
-  invalidate_aabb(): void {
-    this.zip_aabb = true;
-    if (this.body != null) {
-      this.body.zip_aabb = true;
     }
   }
 

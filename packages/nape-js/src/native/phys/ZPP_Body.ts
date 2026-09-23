@@ -905,10 +905,6 @@ export class ZPP_Body {
 
   // ---- AABB ----
 
-  invalidate_aabb(): void {
-    this.zip_aabb = true;
-  }
-
   validate_aabb(): void {
     if (this.shapes.head == null) {
       throw new Error("Body bounds only makes sense if it contains shapes");

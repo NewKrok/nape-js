@@ -79,14 +79,6 @@ describe("Hashable2_Boolfalse", () => {
     });
   });
 
-  describe("free / alloc", () => {
-    it("should have no-op free and alloc methods", () => {
-      const h = new Hashable2_Boolfalse();
-      expect(() => h.free()).not.toThrow();
-      expect(() => h.alloc()).not.toThrow();
-    });
-  });
-
   describe("namespace registration", () => {
     it("should be registered in the nape namespace", async () => {
       const { getNape } = await import("../../../src/core/engine");

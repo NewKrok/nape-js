@@ -128,8 +128,6 @@ export class ZPP_PartitionVertex {
 
   // --- Instance methods ---
 
-  alloc(): void {}
-
   free(): void {
     this.helper = null;
   }

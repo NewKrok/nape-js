@@ -622,6 +622,19 @@ export class GeomPoly {
     return ret;
   }
 
+  /**
+   * Decompose a (possibly self-intersecting) polygon into simple pieces.
+   *
+   * The pieces are disjoint and together cover the polygon's even-odd
+   * region: a point is inside when a ray from it crosses the outline an odd
+   * number of times. Where that region touches itself at a single vertex, or
+   * where the outline runs back over one of its own edges, a piece may be
+   * only *weakly* simple (it revisits a vertex, so `isSimple()` is `false`).
+   * Zero-area slivers are dropped.
+   *
+   * @param output - Optional GeomPolyList to append to. If omitted, a new one is created.
+   * @returns The list of pieces.
+   */
   simpleDecomposition(output?: any): any {
     this._checkDisposed();
     if (this._isDegenRing()) {

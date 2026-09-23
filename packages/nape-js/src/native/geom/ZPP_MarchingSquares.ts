@@ -532,8 +532,38 @@ export class ZPP_MarchingSquares {
   // ---------------------------------------------------------------------------
   // Instance method: output — emit a polygon to the result list
   // ---------------------------------------------------------------------------
+  /**
+   * A crossing that lands exactly on a cell corner (iso value 0 there) is
+   * emitted once per adjoining edge, leaving zero-length edges in the ring.
+   * Unlink the repeats, keeping `forced` on the survivor. Runs after
+   * combining, whose linking relies on the fixed per-cell ring layout. The
+   * removed vertices are not pooled: the first copy of a crossing is shared
+   * with the per-run intersection cache.
+   */
+  static _dropRepeatedVertices(poly: ZPP_GeomVert | null): ZPP_GeomVert | null {
+    if (poly == null) return null;
+    let cur: ZPP_GeomVert = poly;
+    while (cur.next != cur) {
+      const nx: ZPP_GeomVert = cur.next!;
+      const dx = nx.x - cur.x;
+      const dy = nx.y - cur.y;
+      if (dx * dx + dy * dy < Config.epsilon * Config.epsilon) {
+        if (nx.forced) cur.forced = true;
+        cur.next = nx.next;
+        nx.next!.prev = cur;
+        nx.next = nx.prev = null;
+        if (nx == poly) poly = cur;
+      } else {
+        cur = nx;
+        if (cur == poly) break;
+      }
+    }
+    return poly;
+  }
+
   output(ret: ZNPList<ZPP_GeomVert>, poly: ZPP_GeomVert | null): void {
     const nape = ZPP_MarchingSquares._nape;
+    poly = ZPP_MarchingSquares._dropRepeatedVertices(poly);
     let tmp: boolean;
     if (poly == null || poly.next == poly || poly.next == poly.prev) {
       tmp = true;
@@ -579,49 +609,6 @@ export class ZPP_MarchingSquares {
     } else {
       retAny.unshift(gp);
     }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkright
-  // ---------------------------------------------------------------------------
-  linkright(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
-    const kind = key & 7;
-    if (kind == 0) {
-      return poly;
-    } else if (kind == 3) {
-      return poly!.next!.next;
-    } else {
-      return poly!.next;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkleft
-  // ---------------------------------------------------------------------------
-  linkleft(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
-    if ((key & 1) == 0) {
-      return poly!.prev;
-    } else {
-      return poly;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkdown
-  // ---------------------------------------------------------------------------
-  linkdown(poly: ZPP_GeomVert | null, key: number): ZPP_GeomVert | null {
-    if ((key & 128) == 0) {
-      return poly!.prev;
-    } else {
-      return poly!.prev!.prev;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: linkup
-  // ---------------------------------------------------------------------------
-  linkup(poly: ZPP_GeomVert | null, _key: number): ZPP_GeomVert | null {
-    return poly;
   }
 
   // ---------------------------------------------------------------------------
@@ -694,65 +681,6 @@ export class ZPP_MarchingSquares {
     const ap2 = ap.prev;
     const bp2 = bp.next;
     ap.forced = bp.forced = ap2.forced = bp2.forced = true;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combLeft
-  // ---------------------------------------------------------------------------
-  combLeft(key: number): boolean {
-    const flag = (key & 1) | ((key & 192) >> 5);
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combRight
-  // ---------------------------------------------------------------------------
-  combRight(key: number): boolean {
-    const flag = (key & 28) >> 2;
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combUp
-  // ---------------------------------------------------------------------------
-  combUp(key: number): boolean {
-    const flag = key & 7;
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: combDown
-  // ---------------------------------------------------------------------------
-  combDown(key: number): boolean {
-    const flag = (key & 112) >> 4;
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: comb
-  // ---------------------------------------------------------------------------
-  comb(flag: number): boolean {
-    let cnt = 0;
-    if ((flag & 1) != 0) ++cnt;
-    if ((flag & 2) != 0) ++cnt;
-    if ((flag & 4) != 0) ++cnt;
-    return cnt >= 2;
   }
 
   // ---------------------------------------------------------------------------
@@ -1429,26 +1357,6 @@ export class ZPP_MarchingSquares {
     }
 
     return { val };
-  }
-
-  // ---------------------------------------------------------------------------
-  // Instance method: lerp — basic linear interpolation
-  // ---------------------------------------------------------------------------
-  lerp(x0: number, x1: number, v0: number, v1: number): number {
-    if (v0 == 0) {
-      return x0;
-    } else if (v1 == 0) {
-      return x1;
-    } else {
-      const dv = v0 - v1;
-      let t = dv * dv < Config.epsilon * Config.epsilon ? 0.5 : v0 / dv;
-      if (t < 0) {
-        t = 0;
-      } else if (t > 1) {
-        t = 1;
-      }
-      return x0 + t * (x1 - x0);
-    }
   }
 
   // ---------------------------------------------------------------------------

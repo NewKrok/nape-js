@@ -70,8 +70,6 @@ export class ZPP_Edge {
     this.polygon = null;
   }
 
-  alloc(): void {}
-
   wrapper(): any {
     if (this.outer == null) {
       if (ZPP_Edge._wrapFn) {

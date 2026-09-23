@@ -50,8 +50,6 @@ export class ZPP_CutInt {
     return ret;
   }
 
-  alloc(): void {}
-
   free(): void {
     this.end = this.start = null;
     this.path0 = this.path1 = null;

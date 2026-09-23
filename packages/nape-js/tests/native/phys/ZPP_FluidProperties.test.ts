@@ -66,13 +66,6 @@ describe("ZPP_FluidProperties", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const fp = new ZPP_FluidProperties();
-      expect(() => fp.alloc()).not.toThrow();
-    });
-  });
-
   describe("feature_cons", () => {
     it("should reinitialize shapes list", () => {
       const fp = new ZPP_FluidProperties();

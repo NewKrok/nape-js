@@ -23,8 +23,6 @@ export class ZPP_SweepData {
     this.aabb = null;
   }
 
-  alloc(): void {}
-
   // ========== Comparison ==========
 
   gt(x: ZPP_SweepData): boolean {

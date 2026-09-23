@@ -32,6 +32,4 @@ export class ZPP_SimplifyP {
     this.min = null;
     this.max = null;
   }
-
-  alloc(): void {}
 }

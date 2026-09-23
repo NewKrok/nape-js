@@ -62,8 +62,6 @@ export class ZPP_FluidProperties {
     this.outer = null;
   }
 
-  alloc(): void {}
-
   feature_cons(): void {
     this.shapes = new ZNPList_ZPP_Shape();
   }

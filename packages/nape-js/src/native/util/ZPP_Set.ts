@@ -51,8 +51,6 @@ export class ZPP_Set<T> {
     this.swapped = null;
   }
 
-  alloc(): void {}
-
   empty(): boolean {
     return this.parent == null;
   }
@@ -60,26 +58,6 @@ export class ZPP_Set<T> {
   singular(): boolean {
     if (this.parent != null && this.parent.prev == null) return this.parent.next == null;
     return false;
-  }
-
-  size(): number {
-    let ret = 0;
-    if (!this.empty()) {
-      let set_ite: ZPP_Set<T> | null = this.parent;
-      while (set_ite!.prev != null) set_ite = set_ite!.prev;
-      while (set_ite != null) {
-        ++ret;
-        if (set_ite.next != null) {
-          set_ite = set_ite.next;
-          while (set_ite!.prev != null) set_ite = set_ite!.prev;
-        } else {
-          while (set_ite!.parent != null && set_ite == set_ite!.parent!.next)
-            set_ite = set_ite!.parent;
-          set_ite = set_ite!.parent;
-        }
-      }
-    }
-    return ret;
   }
 
   has(obj: T): boolean {

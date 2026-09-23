@@ -201,8 +201,6 @@ export class ZPP_Callback {
     this.set = null;
   }
 
-  alloc(): void {}
-
   genarbs(): void {
     const zpp = ZPP_Callback._zpp;
     if (this.wrap_arbiters == null) {

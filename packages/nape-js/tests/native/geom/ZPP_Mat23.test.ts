@@ -134,12 +134,4 @@ describe("ZPP_Mat23", () => {
       expect(m.ty).toBe(6);
     });
   });
-
-  describe("free / alloc", () => {
-    it("should be callable (no-ops)", () => {
-      const m = new ZPP_Mat23();
-      expect(() => m.free()).not.toThrow();
-      expect(() => m.alloc()).not.toThrow();
-    });
-  });
 });

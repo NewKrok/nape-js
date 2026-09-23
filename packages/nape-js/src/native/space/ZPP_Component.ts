@@ -40,8 +40,6 @@ export class ZPP_Component {
     this.constraint = null;
   }
 
-  alloc(): void {}
-
   // ========== Reset ==========
 
   reset(): void {

@@ -221,6 +221,4 @@ export class ZPP_PartitionPair {
     this.a = this.b = null;
     this.node = null;
   }
-
-  alloc(): void {}
 }

@@ -465,10 +465,6 @@ describe("ZPP_Island", () => {
     expect(island.waket).toBe(0);
   });
 
-  it("free is a no-op", () => {
-    expect(() => island.free()).not.toThrow();
-  });
-
   // --- Static pool ---
   it("static zpp_pool starts as null", () => {
     // Pool may have been used, but the field should exist

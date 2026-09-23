@@ -9,8 +9,6 @@ export class ZNPNode<T> {
   elt: T | null = null;
   next: ZNPNode<T> | null = null;
 
-  alloc(): void {}
-
   free(): void {
     this.elt = null;
   }

@@ -22,11 +22,6 @@ describe("ZNPNode", () => {
     expect(node.elt).toBeNull();
   });
 
-  it("alloc() should be a no-op", () => {
-    const node = new ZNPNode<number>();
-    expect(() => node.alloc()).not.toThrow();
-  });
-
   describe("namespace registration", () => {
     it("compiled factories should create subclasses of ZNPNode", async () => {
       const { getNape } = await import("../../../src/core/engine");

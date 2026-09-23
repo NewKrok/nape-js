@@ -467,13 +467,6 @@ describe("ZPP_Body", () => {
       expect(() => body.aabb_validate()).toThrow(/bounds only makes sense/);
     });
 
-    it("invalidate_aabb sets zip_aabb", () => {
-      const body = new ZPP_Body();
-      body.zip_aabb = false;
-      body.invalidate_aabb();
-      expect(body.zip_aabb).toBe(true);
-    });
-
     it("invalidate_localCOM cascades to worldCOM", () => {
       const body = new ZPP_Body();
       body.zip_localCOM = false;
