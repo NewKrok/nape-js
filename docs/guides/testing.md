@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6521 engine tests across 309 files (one an `it.fails` pinning a known bug), plus 77 pixi-adapter tests across 5 files.**
+**6527 engine tests across 309 files, plus 77 pixi-adapter tests across 5 files.**
 
 ---
 
@@ -118,10 +118,9 @@ against an independent computation instead of counts or "does not throw":
 | `geom/ZPP_Collide.flowOverlap` | fluid overlap / centroid vs Sutherland–Hodgman, lens and strip closed forms |
 | `space/Space.convexCast.oracle` | time of impact vs closed-form moving circles, bisection, spinning-bar angle |
 
-Prefer this pattern for new geometry tests: the oracles found three real
-bugs that count-based tests had missed. A fourth known bug is pinned with
-`it.fails` (triangulating MarchingSquares' weakly simple output) — flip it
-to `it` once fixed.
+Prefer this pattern for new geometry tests: the oracles found six real
+bugs that count-based tests had missed. Sampling alone can miss thin
+slivers, so pair it with an exact check (e.g. total area) where one exists.
 
 ---
 
