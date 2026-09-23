@@ -49,13 +49,6 @@ describe("ZPP_MarchPair", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const pair = new ZPP_MarchPair();
-      expect(() => pair.alloc()).not.toThrow();
-    });
-  });
-
   describe("static pool", () => {
     it("should initialize pool to null", () => {
       expect(ZPP_MarchPair.zpp_pool).toBeNull();

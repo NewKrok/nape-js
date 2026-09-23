@@ -61,13 +61,6 @@ describe("ZPP_InteractionFilter", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const f = new ZPP_InteractionFilter();
-      expect(() => f.alloc()).not.toThrow();
-    });
-  });
-
   describe("feature_cons", () => {
     it("should reinitialize shapes list", () => {
       const f = new ZPP_InteractionFilter();

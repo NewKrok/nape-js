@@ -53,6 +53,4 @@ export class ZPP_SimpleEvent {
     this.segment = this.segment2 = null;
     this.node = null;
   }
-
-  alloc(): void {}
 }

@@ -65,11 +65,4 @@ describe("ZPP_SimplifyP", () => {
       expect(p.max).toBeNull();
     });
   });
-
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const p = new ZPP_SimplifyP();
-      expect(() => p.alloc()).not.toThrow();
-    });
-  });
 });

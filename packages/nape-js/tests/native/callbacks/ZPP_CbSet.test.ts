@@ -289,13 +289,6 @@ describe("ZPP_CbSet", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const s = new ZPP_CbSet();
-      expect(() => s.alloc()).not.toThrow();
-    });
-  });
-
   describe("realvalidate_listeners", () => {
     it("should merge listeners from cbTypes into set listeners", () => {
       const s = new ZPP_CbSet();

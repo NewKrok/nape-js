@@ -406,10 +406,5 @@ describe("ZPP_PartitionPair", () => {
       expect(pair.b).toBeNull();
       expect(pair.node).toBeNull();
     });
-
-    it("alloc() is a no-op", () => {
-      const pair = new ZPP_PartitionPair();
-      expect(() => pair.alloc()).not.toThrow();
-    });
   });
 });

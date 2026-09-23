@@ -89,12 +89,6 @@ export class ZPP_ConvexRayResult {
   // Instance: disposed check
   // ---------------------------------------------------------------------------
 
-  disposed(): void {
-    if (this.next != null) {
-      throw new Error("This object has been disposed of and cannot be used");
-    }
-  }
-
   // ---------------------------------------------------------------------------
   // Instance: free — release Vec2 wrappers and return to pool
   // ---------------------------------------------------------------------------

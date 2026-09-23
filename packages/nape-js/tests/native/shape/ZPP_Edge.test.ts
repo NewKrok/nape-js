@@ -80,13 +80,6 @@ describe("ZPP_Edge", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const e = new ZPP_Edge();
-      expect(() => e.alloc()).not.toThrow();
-    });
-  });
-
   // --- wrapper ---
 
   describe("wrapper", () => {

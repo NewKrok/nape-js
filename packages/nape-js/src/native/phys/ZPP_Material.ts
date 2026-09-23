@@ -74,9 +74,6 @@ export class ZPP_Material {
     this.outer = null;
   }
 
-  /** Called when this object is taken from the pool. */
-  alloc(): void {}
-
   /** Initialize the shapes list (called during feature construction). */
   feature_cons(): void {
     this.shapes = new ZNPList_ZPP_Shape();

@@ -62,35 +62,9 @@ export class ZPP_Broadphase {
 
   sync(shape: any): void {
     if (this.is_sweep) {
-      if (!this.sweep.space.continuous) {
-        shape.validate_aabb();
-      }
+      this.sweep.__sync(shape);
     } else {
-      const _this5 = this.dynab;
-      const node = shape.node;
-      if (!node.synced) {
-        if (!_this5.space.continuous) {
-          shape.validate_aabb();
-        }
-        let sync: boolean;
-        if (node.dyn == (shape.body.type == 1 ? false : !shape.body.component.sleeping)) {
-          const _this11 = node.aabb;
-          const x = shape.aabb;
-          sync = !(
-            x.minx >= _this11.minx &&
-            x.miny >= _this11.miny &&
-            x.maxx <= _this11.maxx &&
-            x.maxy <= _this11.maxy
-          );
-        } else {
-          sync = true;
-        }
-        if (sync) {
-          node.synced = true;
-          node.snext = _this5.syncs;
-          _this5.syncs = node;
-        }
-      }
+      this.dynab.__sync(shape);
     }
   }
 

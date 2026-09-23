@@ -92,19 +92,6 @@ describe("ZPP_ToiEvent", () => {
     });
   });
 
-  describe("free()", () => {
-    it("is a no-op (does not throw and leaves state untouched)", () => {
-      const e = new ZPP_ToiEvent();
-      e.toi = 0.5;
-      e.failed = true;
-      e.s1 = { tag: "x" } as any;
-      e.free();
-      expect(e.toi).toBe(0.5);
-      expect(e.failed).toBe(true);
-      expect(e.s1).not.toBe(null);
-    });
-  });
-
   describe("static pool", () => {
     it("starts as null and accepts assignment of an event for pool reuse", () => {
       // We don't reset the pool at end-of-test because nothing else reads it

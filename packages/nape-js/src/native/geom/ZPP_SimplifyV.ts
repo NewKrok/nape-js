@@ -29,7 +29,4 @@ export class ZPP_SimplifyV {
     ret.flag = false;
     return ret;
   }
-
-  free(): void {}
-  alloc(): void {}
 }

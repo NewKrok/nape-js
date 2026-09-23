@@ -42,6 +42,4 @@ export class ZPP_ToiEvent {
     this.s1 = this.s2 = null;
     this.arbiter = null;
   }
-
-  free(): void {}
 }

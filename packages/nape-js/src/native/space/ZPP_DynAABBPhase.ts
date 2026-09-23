@@ -213,7 +213,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
         shape.validate_aabb();
       }
       let sync;
-      if (node.dyn == (shape.body.type == 1 ? false : !shape.body.component.sleeping)) {
+      if (node.dyn == this.dyn(shape)) {
         const _this5 = node.aabb;
         const x = shape.aabb;
         sync = !(
@@ -287,9 +287,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     aabb.miny = tight.miny - ZPP_DynAABBPhase.FATTEN;
     aabb.maxx = tight.maxx + ZPP_DynAABBPhase.FATTEN;
     aabb.maxy = tight.maxy + ZPP_DynAABBPhase.FATTEN;
-    const tree = (node.dyn = shape.body.type == 1 ? false : !shape.body.component.sleeping)
-      ? this.dtree
-      : this.stree;
+    const tree = (node.dyn = this.dyn(shape)) ? this.dtree : this.stree;
     tree.insertLeaf(node);
   }
 

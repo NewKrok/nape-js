@@ -23,8 +23,6 @@ export class ZPP_AABBPair {
 
   // ========== Pool callbacks ==========
 
-  alloc(): void {}
-
   free(): void {
     this.n1 = this.n2 = null;
     this.sleeping = false;

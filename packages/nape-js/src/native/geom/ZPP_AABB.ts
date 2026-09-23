@@ -88,8 +88,6 @@ export class ZPP_AABB {
     return this.outer;
   }
 
-  alloc(): void {}
-
   free(): void {
     if (this.outer != null) {
       this.outer.zpp_inner = null;

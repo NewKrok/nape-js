@@ -83,8 +83,6 @@ export class ZPP_Circle {
     }
   }
 
-  __clear(): void {}
-
   invalidate_radius(): void {
     this.invalidate_area_inertia();
     this.invalidate_angDrag();
@@ -173,16 +171,6 @@ export class ZPP_Circle {
     this.aabb.miny = this.worldCOMy - ry;
     this.aabb.maxx = this.worldCOMx + rx;
     this.aabb.maxy = this.worldCOMy + ry;
-  }
-
-  _force_validate_aabb(): void {
-    const body = this.body;
-    this.worldCOMx = body.posx + (body.axisy * this.localCOMx - body.axisx * this.localCOMy);
-    this.worldCOMy = body.posy + (this.localCOMx * body.axisx + this.localCOMy * body.axisy);
-    this.aabb.minx = this.worldCOMx - this.radius;
-    this.aabb.miny = this.worldCOMy - this.radius;
-    this.aabb.maxx = this.worldCOMx + this.radius;
-    this.aabb.maxy = this.worldCOMy + this.radius;
   }
 
   __validate_sweepRadius(): void {

@@ -128,7 +128,6 @@ export class ZPP_Polygon {
   }
 
   // --- No-op clear ---
-  __clear(): void {}
 
   // --- Vertex list callbacks ---
 
@@ -789,33 +788,6 @@ export class ZPP_Polygon {
     let cx_ite = this.gverts.next.next;
     while (cx_ite != null) {
       const p = cx_ite;
-      if (p.x < this.aabb.minx) this.aabb.minx = p.x;
-      if (p.x > this.aabb.maxx) this.aabb.maxx = p.x;
-      if (p.y < this.aabb.miny) this.aabb.miny = p.y;
-      if (p.y > this.aabb.maxy) this.aabb.maxy = p.y;
-      cx_ite = cx_ite.next;
-    }
-  }
-
-  _force_validate_aabb(): void {
-    const body = this.body;
-    let li = this.lverts.next;
-    const p0 = this.gverts.next;
-    const l = li;
-    li = li.next;
-    p0.x = body.posx + (body.axisy * l.x - body.axisx * l.y);
-    p0.y = body.posy + (l.x * body.axisx + l.y * body.axisy);
-    this.aabb.minx = p0.x;
-    this.aabb.miny = p0.y;
-    this.aabb.maxx = p0.x;
-    this.aabb.maxy = p0.y;
-    let cx_ite = this.gverts.next.next;
-    while (cx_ite != null) {
-      const p = cx_ite;
-      const l1 = li;
-      li = li.next;
-      p.x = body.posx + (body.axisy * l1.x - body.axisx * l1.y);
-      p.y = body.posy + (l1.x * body.axisx + l1.y * body.axisy);
       if (p.x < this.aabb.minx) this.aabb.minx = p.x;
       if (p.x > this.aabb.maxx) this.aabb.maxx = p.x;
       if (p.y < this.aabb.miny) this.aabb.miny = p.y;

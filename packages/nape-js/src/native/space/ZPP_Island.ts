@@ -188,8 +188,6 @@ export class ZPP_Island {
 
   // ========== Pool callbacks ==========
 
-  free(): void {}
-
   alloc(): void {
     this.waket = 0;
   }

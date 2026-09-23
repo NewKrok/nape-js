@@ -109,11 +109,4 @@ describe("ZPP_SimpleEvent", () => {
       expect(e.node).toBeNull();
     });
   });
-
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const e = new ZPP_SimpleEvent();
-      expect(() => e.alloc()).not.toThrow();
-    });
-  });
 });

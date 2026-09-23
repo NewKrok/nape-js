@@ -80,7 +80,4 @@ export class ZPP_Mat23 {
     this.c = c;
     this.d = d;
   }
-
-  free(): void {}
-  alloc(): void {}
 }

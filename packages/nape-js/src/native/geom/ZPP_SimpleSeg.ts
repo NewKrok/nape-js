@@ -56,8 +56,6 @@ export class ZPP_SimpleSeg {
     this.vertices!.clear();
   }
 
-  alloc(): void {}
-
   /** Instance comparator: sort vertices by x then y. */
   less_xy(a: ZPP_SimpleVert, b: ZPP_SimpleVert): boolean {
     if (!(a.x < b.x)) {

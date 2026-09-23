@@ -59,13 +59,6 @@ describe("ZPP_CutVert", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const v = new ZPP_CutVert();
-      expect(() => v.alloc()).not.toThrow();
-    });
-  });
-
   describe("free", () => {
     it("should null out vert and parent", () => {
       const v = new ZPP_CutVert();

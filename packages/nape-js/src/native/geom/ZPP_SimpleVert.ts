@@ -68,6 +68,4 @@ export class ZPP_SimpleVert {
     this.node = null;
     this.forced = false;
   }
-
-  alloc(): void {}
 }

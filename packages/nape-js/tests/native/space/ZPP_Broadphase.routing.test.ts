@@ -30,6 +30,8 @@ import "../../../src/core/engine";
 import { ZPP_Broadphase } from "../../../src/native/space/ZPP_Broadphase";
 import { ZPP_AABB } from "../../../src/native/geom/ZPP_AABB";
 import { ZPP_Shape } from "../../../src/native/shape/ZPP_Shape";
+import { ZPP_DynAABBPhase } from "../../../src/native/space/ZPP_DynAABBPhase";
+import { ZPP_SweepPhase } from "../../../src/native/space/ZPP_SweepPhase";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -183,43 +185,54 @@ describe("ZPP_Broadphase — insert/remove routing via is_sweep flag", () => {
 });
 
 // ---------------------------------------------------------------------------
-// sync() — short-circuit path for already-validated shapes
+// sync() — routing + the per-phase __sync short-circuits it delegates to
 // ---------------------------------------------------------------------------
 
-describe("ZPP_Broadphase.sync() — short-circuit branches", () => {
-  it("short-circuits the dynab path when shape.node.synced is true", () => {
-    // The dynab branch first reads `shape.node.synced` — if the node already
-    // claims it's synced, sync() returns immediately without touching any
-    // downstream state (zip_aabb stays whatever it was).
+describe("ZPP_Broadphase.sync()", () => {
+  it("routes to sweep.__sync when is_sweep is true", () => {
     const bp = new ZPP_Broadphase();
+    const sweep = phaseStub();
     const dynab = phaseStub();
+    bp.sweep = sweep;
     bp.dynab = dynab;
-    bp.is_sweep = false;
+    bp.is_sweep = true;
 
-    const shape = {
-      zip_aabb: true, // would normally trigger validation, but node.synced wins
-      body: null,
-      type: 0,
-      circle: null,
-      polygon: null,
-      node: { synced: true },
-    };
-
-    expect(() => bp.sync(shape)).not.toThrow();
-    // The early-exit must leave zip_aabb untouched (no validation work done).
-    expect(shape.zip_aabb).toBe(true);
+    const shape = { tag: "s" };
+    bp.sync(shape);
+    expect(sweep.syncs).toEqual([shape]);
     expect(dynab.syncs).toHaveLength(0);
   });
 
-  it("returns without inspecting shape state when shape.body is null (sweep path)", () => {
+  it("routes to dynab.__sync when is_sweep is false", () => {
     const bp = new ZPP_Broadphase();
     const sweep = phaseStub();
+    const dynab = phaseStub();
     bp.sweep = sweep;
-    bp.is_sweep = true;
-    sweep.space.continuous = false;
+    bp.dynab = dynab;
+    bp.is_sweep = false;
 
-    // sync() delegates to ZPP_Shape.validate_aabb, whose body-null guard must
+    const shape = { tag: "d" };
+    bp.sync(shape);
+    expect(dynab.syncs).toEqual([shape]);
+    expect(sweep.syncs).toHaveLength(0);
+  });
+
+  it("DynAABBPhase.__sync short-circuits when shape.node.synced is true", () => {
+    // The dynab path first reads `shape.node.synced` — if the node already
+    // claims it's synced, __sync() returns immediately without touching any
+    // downstream state (zip_aabb stays whatever it was).
+    const phase = { space: { continuous: false }, syncs: null };
+    const shape = { zip_aabb: true, body: null, node: { synced: true } };
+
+    expect(() => ZPP_DynAABBPhase.prototype.__sync.call(phase, shape)).not.toThrow();
+    expect(shape.zip_aabb).toBe(true);
+    expect(phase.syncs).toBeNull();
+  });
+
+  it("SweepPhase.__sync leaves a body-less shape untouched", () => {
+    // __sync() delegates to ZPP_Shape.validate_aabb, whose body-null guard must
     // leave the shape untouched (zip_aabb stays pending).
+    const phase = { space: { continuous: false } };
     const shape = {
       zip_aabb: true,
       body: null,
@@ -228,24 +241,20 @@ describe("ZPP_Broadphase.sync() — short-circuit branches", () => {
       polygon: null,
       validate_aabb: ZPP_Shape.prototype.validate_aabb,
     };
-    expect(() => bp.sync(shape)).not.toThrow();
+    expect(() => ZPP_SweepPhase.prototype.__sync.call(phase, shape)).not.toThrow();
     expect(shape.zip_aabb).toBe(true);
-    expect(sweep.syncs).toHaveLength(0);
   });
 
-  it("sync() with continuous=true on sweep path is a no-op (handled elsewhere)", () => {
-    const bp = new ZPP_Broadphase();
-    const sweep = phaseStub();
-    bp.sweep = sweep;
-    bp.is_sweep = true;
-    sweep.space.continuous = true;
-
-    // Continuous-mode sync is handled by the CCD path; the discrete sync()
-    // body must skip the entire validation block. Any shape state goes in.
-    expect(() =>
-      bp.sync({ zip_aabb: true, body: { tag: "any" }, type: 0, circle: null, polygon: null }),
-    ).not.toThrow();
-    expect(sweep.syncs).toHaveLength(0);
+  it("SweepPhase.__sync with continuous=true skips validation (handled by CCD)", () => {
+    const phase = { space: { continuous: true } };
+    let validated = false;
+    const shape = {
+      validate_aabb() {
+        validated = true;
+      },
+    };
+    ZPP_SweepPhase.prototype.__sync.call(phase, shape);
+    expect(validated).toBe(false);
   });
 });
 

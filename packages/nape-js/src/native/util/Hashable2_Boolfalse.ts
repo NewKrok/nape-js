@@ -61,7 +61,4 @@ export class Hashable2_Boolfalse {
       return ret;
     }
   }
-
-  free(): void {}
-  alloc(): void {}
 }

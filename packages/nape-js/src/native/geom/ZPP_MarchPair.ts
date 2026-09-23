@@ -28,6 +28,4 @@ export class ZPP_MarchPair {
     this.p1 = this.p2 = this.pr = this.pd = null;
     this.span1 = this.span2 = this.spanr = null;
   }
-
-  alloc(): void {}
 }

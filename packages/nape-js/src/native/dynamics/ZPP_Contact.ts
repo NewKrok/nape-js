@@ -187,13 +187,7 @@ export class ZPP_Contact {
     this.arbiter = null;
   }
 
-  alloc(): void {}
-
   // ========== Linked list methods (ZNPList pattern) ==========
-
-  begin(): ZPP_Contact | null {
-    return this.next;
-  }
 
   add(o: ZPP_Contact): ZPP_Contact {
     o._inuse = true;

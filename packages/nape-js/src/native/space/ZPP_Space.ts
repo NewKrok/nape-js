@@ -543,12 +543,7 @@ export class ZPP_Space {
         _this3.length--;
       }
       const o4 = arb;
-      o4.userdef_dyn_fric = false;
-      o4.userdef_stat_fric = false;
-      o4.userdef_restitution = false;
-      o4.userdef_rfric = false;
-      o4.__ref_edge1 = o4.__ref_edge2 = null;
-      o4.__sep_edge = o4.__sep_owner = null;
+      o4.free();
       o4.next = ZPP_ColArbiter.zpp_pool;
       ZPP_ColArbiter.zpp_pool = o4;
       arb.pre_dt = -1.0;
@@ -651,12 +646,7 @@ export class ZPP_Space {
         _this7.length--;
       }
       const o8 = arb1;
-      o8.userdef_dyn_fric = false;
-      o8.userdef_stat_fric = false;
-      o8.userdef_restitution = false;
-      o8.userdef_rfric = false;
-      o8.__ref_edge1 = o8.__ref_edge2 = null;
-      o8.__sep_edge = o8.__sep_owner = null;
+      o8.free();
       o8.next = ZPP_ColArbiter.zpp_pool;
       ZPP_ColArbiter.zpp_pool = o8;
       arb1.pre_dt = -1.0;
@@ -7119,12 +7109,7 @@ export class ZPP_Space {
           _this26.length--;
         }
         const o15 = _this22;
-        o15.userdef_dyn_fric = false;
-        o15.userdef_stat_fric = false;
-        o15.userdef_restitution = false;
-        o15.userdef_rfric = false;
-        o15.__ref_edge1 = o15.__ref_edge2 = null;
-        o15.__sep_edge = o15.__sep_owner = null;
+        o15.free();
         o15.next = ZPP_ColArbiter.zpp_pool;
         ZPP_ColArbiter.zpp_pool = o15;
         _this22.pre_dt = -1.0;
@@ -7137,46 +7122,7 @@ export class ZPP_Space {
       if (arb.active && arb.type != ZPP_Arbiter.SENSOR) {
         if (arb.colarb != null) {
           const _this27 = arb.colarb;
-          if (_this27.invalidated) {
-            _this27.invalidated = false;
-            if (!_this27.userdef_restitution) {
-              if (
-                _this27.s1.material.elasticity <= -Infinity ||
-                _this27.s2.material.elasticity <= -Infinity
-              ) {
-                _this27.restitution = 0;
-              } else if (
-                _this27.s1.material.elasticity >= Infinity ||
-                _this27.s2.material.elasticity >= Infinity
-              ) {
-                _this27.restitution = 1;
-              } else {
-                _this27.restitution =
-                  (_this27.s1.material.elasticity + _this27.s2.material.elasticity) / 2;
-              }
-              if (_this27.restitution < 0) {
-                _this27.restitution = 0;
-              }
-              if (_this27.restitution > 1) {
-                _this27.restitution = 1;
-              }
-            }
-            if (!_this27.userdef_dyn_fric) {
-              _this27.dyn_fric = Math.sqrt(
-                _this27.s1.material.dynamicFriction * _this27.s2.material.dynamicFriction,
-              );
-            }
-            if (!_this27.userdef_stat_fric) {
-              _this27.stat_fric = Math.sqrt(
-                _this27.s1.material.staticFriction * _this27.s2.material.staticFriction,
-              );
-            }
-            if (!_this27.userdef_rfric) {
-              _this27.rfric = Math.sqrt(
-                _this27.s1.material.rollingFriction * _this27.s2.material.rollingFriction,
-              );
-            }
-          }
+          _this27.validate_props();
           if (_this27.pre_dt == -1.0) {
             _this27.pre_dt = dt;
           }
@@ -9736,43 +9682,7 @@ export class ZPP_Space {
               arb3.presentable = false;
               arb3.s1 = s1;
               arb3.s2 = s2;
-              if (!arb3.userdef_restitution) {
-                if (
-                  arb3.s1.material.elasticity <= -Infinity ||
-                  arb3.s2.material.elasticity <= -Infinity
-                ) {
-                  arb3.restitution = 0;
-                } else if (
-                  arb3.s1.material.elasticity >= Infinity ||
-                  arb3.s2.material.elasticity >= Infinity
-                ) {
-                  arb3.restitution = 1;
-                } else {
-                  arb3.restitution =
-                    (arb3.s1.material.elasticity + arb3.s2.material.elasticity) / 2;
-                }
-                if (arb3.restitution < 0) {
-                  arb3.restitution = 0;
-                }
-                if (arb3.restitution > 1) {
-                  arb3.restitution = 1;
-                }
-              }
-              if (!arb3.userdef_dyn_fric) {
-                arb3.dyn_fric = Math.sqrt(
-                  arb3.s1.material.dynamicFriction * arb3.s2.material.dynamicFriction,
-                );
-              }
-              if (!arb3.userdef_stat_fric) {
-                arb3.stat_fric = Math.sqrt(
-                  arb3.s1.material.staticFriction * arb3.s2.material.staticFriction,
-                );
-              }
-              if (!arb3.userdef_rfric) {
-                arb3.rfric = Math.sqrt(
-                  arb3.s1.material.rollingFriction * arb3.s2.material.rollingFriction,
-                );
-              }
+              arb3._calcFrictionRestitution();
               let ret35;
               if (ZNPNode_ZPP_ColArbiter.zpp_pool == null) {
                 ret35 = new ZNPNode_ZPP_ColArbiter();
@@ -10393,12 +10303,7 @@ export class ZPP_Space {
             ret = arb3;
           } else if (first1) {
             const o27 = arb3;
-            o27.userdef_dyn_fric = false;
-            o27.userdef_stat_fric = false;
-            o27.userdef_restitution = false;
-            o27.userdef_rfric = false;
-            o27.__ref_edge1 = o27.__ref_edge2 = null;
-            o27.__sep_edge = o27.__sep_owner = null;
+            o27.free();
             o27.next = ZPP_ColArbiter.zpp_pool;
             ZPP_ColArbiter.zpp_pool = o27;
             ret = null;

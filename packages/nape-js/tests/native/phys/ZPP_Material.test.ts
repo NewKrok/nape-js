@@ -70,13 +70,6 @@ describe("ZPP_Material", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const m = new ZPP_Material();
-      expect(() => m.alloc()).not.toThrow();
-    });
-  });
-
   describe("feature_cons", () => {
     it("should reinitialize shapes list", () => {
       const m = new ZPP_Material();

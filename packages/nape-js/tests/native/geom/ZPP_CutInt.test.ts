@@ -63,13 +63,6 @@ describe("ZPP_CutInt", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const ci = new ZPP_CutInt();
-      expect(() => ci.alloc()).not.toThrow();
-    });
-  });
-
   describe("free", () => {
     it("should null out end, start, path0, path1", () => {
       const ci = new ZPP_CutInt();

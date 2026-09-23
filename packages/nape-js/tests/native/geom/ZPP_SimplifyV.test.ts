@@ -52,18 +52,4 @@ describe("ZPP_SimplifyV", () => {
       expect(ZPP_SimplifyV.zpp_pool).toBe(p2);
     });
   });
-
-  describe("free", () => {
-    it("should be callable (no-op)", () => {
-      const v = new ZPP_SimplifyV();
-      expect(() => v.free()).not.toThrow();
-    });
-  });
-
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const v = new ZPP_SimplifyV();
-      expect(() => v.alloc()).not.toThrow();
-    });
-  });
 });
