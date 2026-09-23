@@ -1692,6 +1692,9 @@ export class ZPP_Collide {
                 ZPP_Collide.flowsegs.clear();
                 let fst_vert1 = null;
                 let state = 1;
+                // No polygon vertex inside the circle: the walk only records
+                // edge/circle crossings, starting from the first entry point.
+                const startedOutside = vi1 == null;
                 if (vi1 == null) {
                   vi1 = s2.polygon.gverts.next;
                   state = 2;
@@ -2057,6 +2060,13 @@ export class ZPP_Collide {
                     COMx1 += pCOMx * t22;
                     COMy1 += pCOMy * t22;
                     area4 -= parea;
+                    if (startedOutside) {
+                      // The walk records the arc between consecutive crossings
+                      // but never the closing one, from the last exit back to
+                      // the first entry — add that circular segment too.
+                      ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
+                      ZPP_Collide.flowsegs.add(fst_vert1);
+                    }
                   } else {
                     ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
                     ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.next.elt);
