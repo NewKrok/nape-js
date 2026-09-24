@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="nape-prerendered" content="fr" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Swarm Night — Démo interactive de physique 2D | nape-js</title>
-  <meta name="description" content="Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule." />
+  <title>Hitch &amp; Park — Démo interactive de physique 2D | nape-js</title>
+  <meta name="description" content="Un jeu de stationnement avec remorque vu de dessus : cinq sites — supermarché, parking à étages, cale de mise à l'eau, rue commerçante, camping —, chacun…" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
   <meta name="nape-i18n-title" content="demopage.meta.title" />
-  <meta name="nape-i18n-title-vars" content="label=demo.swarm-night.label" />
+  <meta name="nape-i18n-title-vars" content="label=demo.hitch-park.label" />
   <meta name="nape-i18n-description" content="" />
-  <link rel="canonical" href="https://napejs.org/fr/examples/swarm-night/" />
+  <link rel="canonical" href="https://napejs.org/fr/examples/hitch-park/" />
   <link rel="icon" type="image/svg+xml" href="../../../logo.svg" />
   <script type="application/ld+json">
   {
@@ -42,23 +42,23 @@
           {
             "@type": "ListItem",
             "position": 4,
-            "name": "Swarm Night",
-            "item": "https://napejs.org/fr/examples/swarm-night/"
+            "name": "Hitch & Park",
+            "item": "https://napejs.org/fr/examples/hitch-park/"
           }
         ]
       },
       {
         "@type": "VideoGame",
-        "name": "Swarm Night",
+        "name": "Hitch & Park",
         "inLanguage": "fr",
-        "image": "https://napejs.org/assets/posters/swarm-night.webp",
-        "description": "Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule.",
-        "url": "https://napejs.org/fr/examples/swarm-night/",
+        "image": "https://napejs.org/assets/posters/hitch-park.webp",
+        "description": "Un jeu de stationnement avec remorque vu de dessus : cinq sites — supermarché, parking à étages, cale de mise à l'eau, rue commerçante, camping —, chacun avec une place marquée où la remorque doit finir nez vers l'extérieur, droite et à l'arrêt.",
+        "url": "https://napejs.org/fr/examples/hitch-park/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
         "operatingSystem": "Any",
         "playMode": "SinglePlayer",
-        "keywords": "Gameplay, Roguelite, AI, Camera, Sensors, Performance, Mobile",
+        "keywords": "Gameplay, Vehicle, Joints, Top-down, Listeners, Mobile",
         "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
@@ -82,19 +82,19 @@
   </script>
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Swarm Night — Démo interactive de physique 2D | nape-js" />
-  <meta property="og:description" content="Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule." />
-  <meta property="og:url" content="https://napejs.org/fr/examples/swarm-night/" />
-  <meta property="og:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
+  <meta property="og:title" content="Hitch &amp; Park — Démo interactive de physique 2D | nape-js" />
+  <meta property="og:description" content="Un jeu de stationnement avec remorque vu de dessus : cinq sites — supermarché, parking à étages, cale de mise à l'eau, rue commerçante, camping —, chacun…" />
+  <meta property="og:url" content="https://napejs.org/fr/examples/hitch-park/" />
+  <meta property="og:image" content="https://napejs.org/assets/posters/hitch-park.webp" />
   <meta property="og:image:width" content="900" />
   <meta property="og:image:height" content="500" />
-  <meta property="og:image:alt" content="Swarm Night — nape-js demo screenshot" />
+  <meta property="og:image:alt" content="Hitch &amp; Park — nape-js demo screenshot" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
-  <meta name="twitter:title" content="Swarm Night — Démo interactive de physique 2D | nape-js" />
-  <meta name="twitter:description" content="Un roguelite de survie façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que vous déplacer — chaque arme tire toute seule." />
-  <meta name="twitter:image" content="https://napejs.org/assets/posters/swarm-night.webp" />
+  <meta name="twitter:title" content="Hitch &amp; Park — Démo interactive de physique 2D | nape-js" />
+  <meta name="twitter:description" content="Un jeu de stationnement avec remorque vu de dessus : cinq sites — supermarché, parking à étages, cale de mise à l'eau, rue commerçante, camping —, chacun…" />
+  <meta name="twitter:image" content="https://napejs.org/assets/posters/hitch-park.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -111,18 +111,18 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
   <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.3" />
-  <link rel="modulepreload" href="../../../demos/swarm-night.js?v=3.42.3" />
+  <link rel="modulepreload" href="../../../demos/hitch-park.js?v=3.42.3" />
   <!-- i18n:hreflang:start -->
-  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/swarm-night/" />
-  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/swarm-night/" />
-  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/swarm-night/" />
-  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/swarm-night/" />
-  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/swarm-night/" />
-  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/swarm-night/" />
-  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/swarm-night/" />
+  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
   <!-- i18n:hreflang:end -->
 </head>
-<body data-demo-id="swarm-night">
+<body data-demo-id="hitch-park">
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="../../../fr/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
@@ -169,10 +169,10 @@
         <a href="../../../fr/">nape-js</a> <span aria-hidden="true">›</span>
         <a href="../../../fr/examples/" data-i18n="nav.examples">Exemples</a> <span aria-hidden="true">›</span>
         <a href="../../../fr/examples/?cat=game" data-i18n="cat.game.label">Jeu</a> <span aria-hidden="true">›</span>
-        <span aria-current="page" data-i18n="demo.swarm-night.label">Swarm Night</span>
+        <span aria-current="page" data-i18n="demo.hitch-park.label">Hitch & Park</span>
       </nav>
-      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.swarm-night.desc">Un <b>roguelite de survie</b> façon Vampire Survivors : cinq minutes dans un cimetière clôturé, et vous ne faites que <b>vous déplacer</b> — chaque arme tire toute seule. Les victimes lâchent des <b>gemmes d'XP</b> ; une barre pleine met la nuit en pause et propose <b>trois cartes d'amélioration</b> parmi six armes (fouet, baguette, couteaux, cercle, orbes, foudre) et huit passifs. Six types de monstres arrivent selon un calendrier, plus des <b>chevaliers du tombeau</b> qui chargent avec un trésor et un <b>colosse d'os</b> à 4:00 dont le coup au sol projette toute la foule. L'aube à 5:00 est la victoire. <b>WASD</b> / flèches pour bouger, <b>1 / 2 / 3</b> ou clic pour choisir une carte ; sur tactile, <b>maintenez n'importe où</b> pour diriger. Physique : jusqu'à <b>420 monstres</b> sont des cercles dynamiques dans un <code>Space</code> sans gravité, la horde se presse et s'écoule entre les pierres sans code de nuée ; le recul est une impulsion proportionnelle à la masse, et projectiles, couteaux, crachats et orbes sont des <b>corps capteurs</b> livrés par des <code>InteractionListener</code> avec filtrage des camps par masques. En <b>3D</b>, un cimetière au clair de lune où chaque monstre est un rig low-poly instancié.</p>
+      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.hitch-park.label">Hitch & Park</span></h1>
+      <p class="demo-page-desc" data-i18n-html="demo.hitch-park.desc">Un <b>jeu de stationnement avec remorque</b> vu de dessus : cinq sites — supermarché, parking à étages, cale de mise à l'eau, rue commerçante, camping —, chacun avec une place marquée où la remorque doit finir <b>nez vers l'extérieur, droite et à l'arrêt</b>. Les voitures garées se laissent pousser (leurs feux de détresse vous dénoncent), les cônes tombent, piliers, haies et arbres ne bougent pas ; chaque accrochage coûte des points et le chrono court contre un temps de référence. <b>↑ ↓</b> avancer / reculer, <b>← →</b> braquer, <b>ESPACE</b> freiner, <b>G</b> guide de trajectoire ; en tactile, maintenez et faites glisser. Physique : la voiture est un châssis plus <b>quatre corps de roue</b> — les arrière sur des <code>WeldJoint</code>, les avant sur des <code>PivotJoint</code> braqués par des <code>AngleJoint</code> aux angles d'Ackermann —, et seules les <b>roues avant sont motrices</b> : ce sont bien les roues braquées qui tirent la voiture ; la remorque pend à un <code>PivotJoint</code> sur la boule d'attelage et se met en portefeuille si vous reculez mal. En <b>3D</b> : sites ombrés, roues qui tournent et braquent, feux stop et de recul, incrustation de caméra de recul.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
@@ -209,7 +209,7 @@
 
       <div class="demo-page-actions">
         <button class="btn btn-secondary" id="codeToggleBtn" aria-expanded="false" aria-controls="codePanel" data-i18n="demopage.openSource">Ouvrir le code</button>
-        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/swarm-night.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'swarm-night'})">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/hitch-park.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'hitch-park'})">GitHub</a>
       </div>
       <div class="code-panel" id="codePanel" hidden>
         <div class="code-panel-header">
@@ -226,14 +226,13 @@
       <div class="demo-page-grid">
         <section class="demo-page-block">
           <h2 data-i18n="demopage.features">Fonctions du moteur utilisées</h2>
-          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Camera">Caméra</span><span class="example-tag" data-i18n="tag.Sensors">Capteurs</span><span class="example-tag" data-i18n="tag.Performance">Performance</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Vehicle">Véhicule</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
         </section>
         <section class="demo-page-block">
           <h2 data-i18n="demopage.related">Guides associés</h2>
           <ul class="demo-page-links">
-            <li><a href="../../../guides/cookbook/#sensor--trigger-zone">Sensor / trigger zone</a></li>
-            <li><a href="../../../guides/cookbook/#performance-profiling">Performance profiling</a></li>
-            <li><a href="../../../guides/cookbook/#wave-spawner-timer-driven-cadence">Wave spawner</a></li>
+            <li><a href="../../../guides/cookbook/#vehicle-top-down">Vehicle (top-down)</a></li>
+            <li><a href="../../../guides/cookbook/#constraint-reference--which-joint-to-use">Which joint to use</a></li>
             <li><a href="../../../guides/cookbook/">Cookbook</a></li>
           </ul>
         </section>
@@ -242,10 +241,10 @@
       <section class="demo-page-block">
         <h2 data-i18n="demopage.more">Plus de démos</h2>
         <div class="more-demos">
-          <a class="more-demo" href="../../../fr/examples/tin-legion/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/tin-legion.webp" srcset="../../../assets/posters/tin-legion@320.webp 320w, ../../../assets/posters/tin-legion@640.webp 640w, ../../../assets/posters/tin-legion.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></span></a>
           <a class="more-demo" href="../../../fr/examples/flipper-fray/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/flipper-fray.webp" srcset="../../../assets/posters/flipper-fray@320.webp 320w, ../../../assets/posters/flipper-fray@640.webp 640w, ../../../assets/posters/flipper-fray.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/swarm-night/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/swarm-night.webp" srcset="../../../assets/posters/swarm-night@320.webp 320w, ../../../assets/posters/swarm-night@640.webp 640w, ../../../assets/posters/swarm-night.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></span></a>
+          <a class="more-demo" href="../../../fr/examples/tin-legion/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/tin-legion.webp" srcset="../../../assets/posters/tin-legion@320.webp 320w, ../../../assets/posters/tin-legion@640.webp 640w, ../../../assets/posters/tin-legion.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></span></a>
           <a class="more-demo" href="../../../fr/examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/blade-waltz.webp" srcset="../../../assets/posters/blade-waltz@320.webp 320w, ../../../assets/posters/blade-waltz@640.webp 640w, ../../../assets/posters/blade-waltz.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.blade-waltz.label">Blade Waltz</span></span></a>
-          <a class="more-demo" href="../../../fr/examples/hitch-park/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/hitch-park.webp" srcset="../../../assets/posters/hitch-park@320.webp 320w, ../../../assets/posters/hitch-park@640.webp 640w, ../../../assets/posters/hitch-park.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.hitch-park.label">Hitch & Park</span></span></a>
           <a class="more-demo" href="../../../fr/examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/shard-rush.webp" srcset="../../../assets/posters/shard-rush@320.webp 320w, ../../../assets/posters/shard-rush@640.webp 640w, ../../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>
           <a class="more-demo" href="../../../fr/examples/jungle-strike/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/jungle-strike.webp" srcset="../../../assets/posters/jungle-strike@320.webp 320w, ../../../assets/posters/jungle-strike@640.webp 640w, ../../../assets/posters/jungle-strike.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><span data-i18n="demo.jungle-strike.label">Jungle Strike</span></span></a>
         </div>

@@ -28,7 +28,7 @@ Reference docs for shipped features (don't duplicate here):
 
 ## Strategy
 
-The engine is feature-rich (85 demos, fluid sim, replay, character controller,
+The engine is feature-rich (86 demos, fluid sim, replay, character controller,
 helpers — beyond what the leading JS competitors ship). External adoption
 signal is still weak: 0 issues / PRs from non-maintainers, ~3 trivial public
 references via GitHub code search. The npm download counter (1–4 k/month,

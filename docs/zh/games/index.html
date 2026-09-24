@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Hitch & Park",
+        "url": "https://napejs.org/examples/hitch-park/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Flipper Fray",
         "url": "https://napejs.org/examples/flipper-fray/",
         "gamePlatform": "Web browser",
@@ -255,7 +262,7 @@
       <h1 data-i18n="games.heading">基于 nape-js 构建的游戏</h1>
       <p class="page-hero-intro" data-i18n="games.intro">从单一机制到已发布作品：下面的每个游戏都运行在同一个开源 2D 物理引擎上。在浏览器中试玩，然后打开源码。</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">个玩法切片</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span></a>
       </nav>
@@ -268,6 +275,16 @@
       <h2 data-i18n="games.showpieces.heading">完整游戏演示</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">每个都是单文件的多系统游戏——AI 对手、波次、摄像机、计分和 3D 骨架。在这里试玩，或在 CodePen 和 StackBlitz 上打开源码。</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/hitch-park.webp" srcset="../../assets/posters/hitch-park@320.webp 320w, ../../assets/posters/hitch-park@640.webp 640w, ../../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch & Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc">一款<b>俯视视角的拖车停车游戏</b>：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，<b>车头朝外、摆正、停稳</b>。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。<b>↑ ↓</b> 前进 / 倒车，<b>← →</b> 转向，<b>空格</b> 刹车，<b>G</b> 轨迹辅助；触屏上按住并拖动。物理：汽车由车身加<b>四个独立的车轮刚体</b>组成——后轮用 <code>WeldJoint</code> 固定，前轮挂在 <code>PivotJoint</code> 上，并由按阿克曼角度设置的 <code>AngleJoint</code> 转向——而且只有<b>前轮驱动</b>，所以真的是转向的前轮把车拉着转弯；拖车通过拖球处的 <code>PivotJoint</code> 挂接，倒车方向不对就会折叠。<b>3D</b> 模式下有带阴影的场景、会转动和转向的车轮、刹车灯与倒车灯，以及倒车影像小窗。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Vehicle">载具</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../zh/examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/flipper-fray.webp" srcset="../../assets/posters/flipper-fray@320.webp 320w, ../../assets/posters/flipper-fray@640.webp 640w, ../../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
