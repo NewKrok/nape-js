@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">85</strong> <span data-i18n="home.proof.demos">个交互演示</span>
+          <strong data-site-count="demos">86</strong> <span data-i18n="home.proof.demos">个交互演示</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">41</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
+          <strong data-site-count="games">42</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">21</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
+          <strong data-site-count="showpieces">22</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/hitch-park.webp" srcset="../assets/posters/hitch-park@320.webp 320w, ../assets/posters/hitch-park@640.webp 640w, ../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch & Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc">一款<b>俯视视角的拖车停车游戏</b>：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，<b>车头朝外、摆正、停稳</b>。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。<b>↑ ↓</b> 前进 / 倒车，<b>← →</b> 转向，<b>空格</b> 刹车，<b>G</b> 轨迹辅助；触屏上按住并拖动。物理：汽车由车身加<b>四个独立的车轮刚体</b>组成——后轮用 <code>WeldJoint</code> 固定，前轮挂在 <code>PivotJoint</code> 上，并由按阿克曼角度设置的 <code>AngleJoint</code> 转向——而且只有<b>前轮驱动</b>，所以真的是转向的前轮把车拉着转弯；拖车通过拖球处的 <code>PivotJoint</code> 挂接，倒车方向不对就会折叠。<b>3D</b> 模式下有带阴影的场景、会转动和转向的车轮、刹车灯与倒车灯，以及倒车影像小窗。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Vehicle">载具</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/flipper-fray.webp" srcset="../assets/posters/flipper-fray@320.webp 320w, ../assets/posters/flipper-fray@640.webp 640w, ../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">一款吸血鬼幸存者风格的<b>幸存者类 roguelite</b>：在围栏墓园里熬过五分钟，你只需<b>移动</b>——所有武器自动开火。击杀掉落<b>经验宝石</b>；经验条满时夜晚暂停，从六种武器（鞭、杖、飞刀、蒜环、灵珠、闪电）和八种被动中提供<b>三张升级卡</b>。六种怪物按时间表登场，另有携带宝藏的冲锋<b>墓骑士</b>和 4:00 登场的<b>骨巨像</b>，其震地一击能掀飞整群怪物。5:00 黎明即为胜利。<b>WASD</b> / 方向键移动，<b>1 / 2 / 3</b> 或点击选卡；触屏上<b>按住任意位置</b>操控。物理：最多 <b>420 只怪物</b>都是零重力 <code>Space</code> 中的动态圆形，怪群无需群集代码即可挤压流动；击退是按质量缩放的冲量，法球、飞刀、唾液与灵珠都是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 与传感器掩码阵营过滤送达。<b>3D</b> 模式是月光墓园，每只怪物都是实例化的低多边形模型。</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Roguelite">类肉鸽</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Performance">性能</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">在一张大地图上进行的<b>三路攻城建军对战</b>：金币持续累积，屏幕下方是五张部队卡，每打出一张就会放下一队锡制小兵，它们自己出发行军。你从不操控单兵——你决定<b>投什么</b>、<b>投在哪</b>、<b>什么时候投</b>；拿着卡时，这支部队的路线会画在地面上，而你放在自家大门的哪一侧，决定了他们走哪条路。两座主堡之间有三条路，中路各由一座<b>哨塔</b>把守，两翼各有一座中立营地守着的<b>金矿</b>。占下金矿能带来收入并把部署区往前推；主堡<b>在自家哨塔未倒之前始终受护盾保护</b>。十张卡、一位免费统帅，外加三档敌方难度。物理：每个小兵都是零重力 <code>Space</code> 中的动态圆形，人群会自然推挤与绕流；射出的弹丸是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 传回，友军伤害由传感器分组与掩码排除，而不是靠一句 if 判断；火药桶引爆时施加真实的径向冲量，飞行单位有独立的碰撞分组。<b>3D</b> 模式下是一片浮在云雾中的草地高台，每种兵种都有独立的关节化低多边形模型。</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">路径点</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Groups">分组</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

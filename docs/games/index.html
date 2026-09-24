@@ -28,6 +28,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Hitch & Park",
+        "url": "https://napejs.org/examples/hitch-park/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Flipper Fray",
         "url": "https://napejs.org/examples/flipper-fray/",
         "gamePlatform": "Web browser",
@@ -254,7 +261,7 @@
       <h1 data-i18n="games.heading">Games built on nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">From a single mechanic to a shipped title: every game below runs on the same open-source 2D physics engine. Play in the browser, then open the source.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">gameplay slices</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">shipped titles</span></a>
       </nav>
@@ -267,6 +274,16 @@
       <h2 data-i18n="games.showpieces.heading">Complete game demos</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Multi-system games in one file each — AI opponents, waves, cameras, scoring and 3D rigs. Play them here or open the source on CodePen and StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/hitch-park.webp" srcset="../assets/posters/hitch-park@320.webp 320w, ../assets/posters/hitch-park@640.webp 640w, ../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="../examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch & Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc">A <b>trailer-parking game</b> seen from above: five sites — supermarket, parking deck, marina slipway, high street, campsite — each with one bay the trailer must end up in, <b>nose out, square and stopped</b>. Parked cars can be shoved (their hazard lights tell on you), cones topple, pillars, hedges and trees don't budge; every bump costs points against a par time. <b>↑ ↓</b> drive / reverse, <b>← →</b> steer, <b>SPACE</b> brake, <b>G</b> path guide; on touch, hold and drag. Physics: the car is a chassis plus <b>four wheel bodies</b> — rear ones on <code>WeldJoint</code>s, front ones on <code>PivotJoint</code>s steered by Ackermann <code>AngleJoint</code>s — and only the <b>front wheels drive</b>, so the steered wheels pull the car round; the trailer hangs on a <code>PivotJoint</code> at the tow ball and folds if you reverse it wrong. In <b>3D</b>: shadowed sites, spinning and steering wheels, brake and reversing lights, a reversing-camera inset.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Vehicle">Vehicle</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/flipper-fray.webp" srcset="../assets/posters/flipper-fray@320.webp 320w, ../assets/posters/flipper-fray@640.webp 640w, ../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>

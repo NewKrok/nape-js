@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://napejs.org/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
@@ -15,7 +15,7 @@
   </url>
   <url>
     <loc>https://napejs.org/de/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
@@ -28,7 +28,7 @@
   </url>
   <url>
     <loc>https://napejs.org/zh/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
@@ -41,7 +41,7 @@
   </url>
   <url>
     <loc>https://napejs.org/hu/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
@@ -54,7 +54,7 @@
   </url>
   <url>
     <loc>https://napejs.org/es/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
@@ -67,7 +67,7 @@
   </url>
   <url>
     <loc>https://napejs.org/fr/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/" />
@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://napejs.org/examples/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
@@ -93,7 +93,7 @@
   </url>
   <url>
     <loc>https://napejs.org/de/examples/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
@@ -106,7 +106,7 @@
   </url>
   <url>
     <loc>https://napejs.org/zh/examples/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
@@ -119,7 +119,7 @@
   </url>
   <url>
     <loc>https://napejs.org/hu/examples/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
@@ -132,7 +132,7 @@
   </url>
   <url>
     <loc>https://napejs.org/es/examples/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
@@ -145,7 +145,7 @@
   </url>
   <url>
     <loc>https://napejs.org/fr/examples/</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/" />
@@ -338,13 +338,13 @@
   </url>
   <url>
     <loc>https://napejs.org/guides/multiplayer-guide/</loc>
-    <lastmod>2026-03-29</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://napejs.org/guides/replay-guide/</loc>
-    <lastmod>2026-05-02</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -6979,26 +6979,104 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
   </url>
   <url>
+    <loc>https://napejs.org/examples/hitch-park/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/de/examples/hitch-park/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/zh/examples/hitch-park/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/hu/examples/hitch-park/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/es/examples/hitch-park/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
+  </url>
+  <url>
+    <loc>https://napejs.org/fr/examples/hitch-park/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
+  </url>
+  <url>
     <loc>https://napejs.org/ai.html</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://napejs.org/benchmark.html</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://napejs.org/multiplayer.html</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://napejs.org/api/index.html</loc>
-    <lastmod>2026-09-23</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

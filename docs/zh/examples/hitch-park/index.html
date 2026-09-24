@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="nape-prerendered" content="zh" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flipper Fray — 交互式 2D 物理演示 | nape-js</title>
-  <meta name="description" content="一场四人弹珠台混战：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面是一个穹顶：一切都从中心向外滚，因此每颗球最终都会成为某个人的麻烦；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——五条命，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗三名 AI…" />
+  <title>Hitch &amp; Park — 交互式 2D 物理演示 | nape-js</title>
+  <meta name="description" content="一款俯视视角的拖车停车游戏：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，车头朝外、摆正、停稳。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。↑ ↓ 前进 / 倒车，← →…" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
   <meta name="nape-i18n-title" content="demopage.meta.title" />
-  <meta name="nape-i18n-title-vars" content="label=demo.flipper-fray.label" />
+  <meta name="nape-i18n-title-vars" content="label=demo.hitch-park.label" />
   <meta name="nape-i18n-description" content="" />
-  <link rel="canonical" href="https://napejs.org/zh/examples/flipper-fray/" />
+  <link rel="canonical" href="https://napejs.org/zh/examples/hitch-park/" />
   <link rel="icon" type="image/svg+xml" href="../../../logo.svg" />
   <script type="application/ld+json">
   {
@@ -42,23 +42,23 @@
           {
             "@type": "ListItem",
             "position": 4,
-            "name": "Flipper Fray",
-            "item": "https://napejs.org/zh/examples/flipper-fray/"
+            "name": "Hitch & Park",
+            "item": "https://napejs.org/zh/examples/hitch-park/"
           }
         ]
       },
       {
         "@type": "VideoGame",
-        "name": "Flipper Fray",
+        "name": "Hitch & Park",
         "inLanguage": "zh",
-        "image": "https://napejs.org/assets/posters/flipper-fray.webp",
-        "description": "一场四人弹珠台混战：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面是一个穹顶：一切都从中心向外滚，因此每颗球最终都会成为某个人的麻烦；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——五条命，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗三名 AI 守门员；多球按时间表投放额外弹珠，每半分钟还会滚出一颗炸弹球：掉进袋里扣两条命，没人吞下它就会爆炸。← → / A D 拨动挡板，空格同时拨动两侧；触屏按住屏幕左半或右半。物理：挡板是用 setVelocityFromTarget…",
-        "url": "https://napejs.org/zh/examples/flipper-fray/",
+        "image": "https://napejs.org/assets/posters/hitch-park.webp",
+        "description": "一款俯视视角的拖车停车游戏：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，车头朝外、摆正、停稳。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。↑ ↓ 前进 / 倒车，← → 转向，空格 刹车，G 轨迹辅助；触屏上按住并拖动。物理：汽车由车身加四个独立的车轮刚体组成——后轮用 WeldJoint 固定，前轮挂在 PivotJoint 上，并由按阿克曼角度设置的 AngleJoint 转向——而且只有前轮驱动，所以真的是转向的前轮把车拉着转弯；拖车通过拖球处的…",
+        "url": "https://napejs.org/zh/examples/hitch-park/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
         "operatingSystem": "Any",
         "playMode": "SinglePlayer",
-        "keywords": "Gameplay, Pinball, AI, Kinematic, CCD, Listeners, Mobile",
+        "keywords": "Gameplay, Vehicle, Joints, Top-down, Listeners, Mobile",
         "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
@@ -82,19 +82,19 @@
   </script>
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Flipper Fray — 交互式 2D 物理演示 | nape-js" />
-  <meta property="og:description" content="一场四人弹珠台混战：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面是一个穹顶：一切都从中心向外滚，因此每颗球最终都会成为某个人的麻烦；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——五条命，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗三名 AI…" />
-  <meta property="og:url" content="https://napejs.org/zh/examples/flipper-fray/" />
-  <meta property="og:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
+  <meta property="og:title" content="Hitch &amp; Park — 交互式 2D 物理演示 | nape-js" />
+  <meta property="og:description" content="一款俯视视角的拖车停车游戏：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，车头朝外、摆正、停稳。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。↑ ↓ 前进 / 倒车，← →…" />
+  <meta property="og:url" content="https://napejs.org/zh/examples/hitch-park/" />
+  <meta property="og:image" content="https://napejs.org/assets/posters/hitch-park.webp" />
   <meta property="og:image:width" content="900" />
   <meta property="og:image:height" content="500" />
-  <meta property="og:image:alt" content="Flipper Fray — nape-js demo screenshot" />
+  <meta property="og:image:alt" content="Hitch &amp; Park — nape-js demo screenshot" />
   <meta property="og:locale" content="zh_CN" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
-  <meta name="twitter:title" content="Flipper Fray — 交互式 2D 物理演示 | nape-js" />
-  <meta name="twitter:description" content="一场四人弹珠台混战：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面是一个穹顶：一切都从中心向外滚，因此每颗球最终都会成为某个人的麻烦；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——五条命，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗三名 AI…" />
-  <meta name="twitter:image" content="https://napejs.org/assets/posters/flipper-fray.webp" />
+  <meta name="twitter:title" content="Hitch &amp; Park — 交互式 2D 物理演示 | nape-js" />
+  <meta name="twitter:description" content="一款俯视视角的拖车停车游戏：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，车头朝外、摆正、停稳。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。↑ ↓ 前进 / 倒车，← →…" />
+  <meta name="twitter:image" content="https://napejs.org/assets/posters/hitch-park.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -111,18 +111,18 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
   <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.3" />
-  <link rel="modulepreload" href="../../../demos/flipper-fray.js?v=3.42.3" />
+  <link rel="modulepreload" href="../../../demos/hitch-park.js?v=3.42.3" />
   <!-- i18n:hreflang:start -->
-  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/flipper-fray/" />
-  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/flipper-fray/" />
-  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/flipper-fray/" />
-  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/flipper-fray/" />
-  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/flipper-fray/" />
-  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/flipper-fray/" />
-  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/flipper-fray/" />
+  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
   <!-- i18n:hreflang:end -->
 </head>
-<body data-demo-id="flipper-fray">
+<body data-demo-id="hitch-park">
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="../../../zh/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
@@ -169,10 +169,10 @@
         <a href="../../../zh/">nape-js</a> <span aria-hidden="true">›</span>
         <a href="../../../zh/examples/" data-i18n="nav.examples">示例</a> <span aria-hidden="true">›</span>
         <a href="../../../zh/examples/?cat=game" data-i18n="cat.game.label">游戏</a> <span aria-hidden="true">›</span>
-        <span aria-current="page" data-i18n="demo.flipper-fray.label">Flipper Fray</span>
+        <span aria-current="page" data-i18n="demo.hitch-park.label">Hitch & Park</span>
       </nav>
-      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.flipper-fray.desc">一场<b>四人弹珠台混战</b>：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面是一个<b>穹顶</b>：一切都从中心向外滚，因此每颗球最终都会成为某个人的麻烦；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——<b>五条命</b>，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗<b>三名 AI 守门员</b>；<b>多球</b>按时间表投放额外弹珠，每半分钟还会滚出一颗<b>炸弹球</b>：掉进袋里扣两条命，没人吞下它就会爆炸。<b>← →</b> / <b>A D</b> 拨动挡板，<b>空格</b>同时拨动两侧；触屏按住屏幕左半或右半。物理：挡板是用 <code>setVelocityFromTarget</code> 驱动的<b>运动学刚体</b>，因此一击会把真实的角速度传给弹珠；弹珠是带<b>子弹标记</b>的圆形，不会穿过纤薄的环形墙；弹碰器和弹射器的冲击以及进球判定都经由 <code>InteractionListener</code> 送达。<b>3D</b> 模式是一座霓虹竞技场：镀铬弹珠、发光球袋和赛道灯光，从你自己的球袋后方观看。</p>
+      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.hitch-park.label">Hitch & Park</span></h1>
+      <p class="demo-page-desc" data-i18n-html="demo.hitch-park.desc">一款<b>俯视视角的拖车停车游戏</b>：五个场景——超市停车场、立体停车楼、码头下水坡道、商业街、露营地——每处都有一个标记车位，拖车必须停进去，<b>车头朝外、摆正、停稳</b>。停着的车可以被顶开（它们的双闪会出卖你），锥桶会被撞倒，柱子、树篱和树木纹丝不动；每次碰撞都会扣分，计时器与标准时间赛跑。<b>↑ ↓</b> 前进 / 倒车，<b>← →</b> 转向，<b>空格</b> 刹车，<b>G</b> 轨迹辅助；触屏上按住并拖动。物理：汽车由车身加<b>四个独立的车轮刚体</b>组成——后轮用 <code>WeldJoint</code> 固定，前轮挂在 <code>PivotJoint</code> 上，并由按阿克曼角度设置的 <code>AngleJoint</code> 转向——而且只有<b>前轮驱动</b>，所以真的是转向的前轮把车拉着转弯；拖车通过拖球处的 <code>PivotJoint</code> 挂接，倒车方向不对就会折叠。<b>3D</b> 模式下有带阴影的场景、会转动和转向的车轮、刹车灯与倒车灯，以及倒车影像小窗。</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
@@ -209,7 +209,7 @@
 
       <div class="demo-page-actions">
         <button class="btn btn-secondary" id="codeToggleBtn" aria-expanded="false" aria-controls="codePanel" data-i18n="demopage.openSource">打开源码</button>
-        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/flipper-fray.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'flipper-fray'})">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/hitch-park.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'hitch-park'})">GitHub</a>
       </div>
       <div class="code-panel" id="codePanel" hidden>
         <div class="code-panel-header">
@@ -226,14 +226,13 @@
       <div class="demo-page-grid">
         <section class="demo-page-block">
           <h2 data-i18n="demopage.features">使用的引擎特性</h2>
-          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Vehicle">载具</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
         </section>
         <section class="demo-page-block">
           <h2 data-i18n="demopage.related">相关指南</h2>
           <ul class="demo-page-links">
-            <li><a href="../../../guides/cookbook/#ccd-bullet-bodies">CCD (bullet bodies)</a></li>
-            <li><a href="../../../guides/cookbook/#kinematic-moving-platform">Kinematic moving platform</a></li>
-            <li><a href="../../../guides/cookbook/#wave-spawner-timer-driven-cadence">Wave spawner</a></li>
+            <li><a href="../../../guides/cookbook/#vehicle-top-down">Vehicle (top-down)</a></li>
+            <li><a href="../../../guides/cookbook/#constraint-reference--which-joint-to-use">Which joint to use</a></li>
             <li><a href="../../../guides/cookbook/">Cookbook</a></li>
           </ul>
         </section>
@@ -242,8 +241,8 @@
       <section class="demo-page-block">
         <h2 data-i18n="demopage.more">更多演示</h2>
         <div class="more-demos">
+          <a class="more-demo" href="../../../zh/examples/flipper-fray/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/flipper-fray.webp" srcset="../../../assets/posters/flipper-fray@320.webp 320w, ../../../assets/posters/flipper-fray@640.webp 640w, ../../../assets/posters/flipper-fray.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></span></a>
           <a class="more-demo" href="../../../zh/examples/swarm-night/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/swarm-night.webp" srcset="../../../assets/posters/swarm-night@320.webp 320w, ../../../assets/posters/swarm-night@640.webp 640w, ../../../assets/posters/swarm-night.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></span></a>
-          <a class="more-demo" href="../../../zh/examples/hitch-park/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/hitch-park.webp" srcset="../../../assets/posters/hitch-park@320.webp 320w, ../../../assets/posters/hitch-park@640.webp 640w, ../../../assets/posters/hitch-park.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.hitch-park.label">Hitch & Park</span></span></a>
           <a class="more-demo" href="../../../zh/examples/tin-legion/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/tin-legion.webp" srcset="../../../assets/posters/tin-legion@320.webp 320w, ../../../assets/posters/tin-legion@640.webp 640w, ../../../assets/posters/tin-legion.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></span></a>
           <a class="more-demo" href="../../../zh/examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/blade-waltz.webp" srcset="../../../assets/posters/blade-waltz@320.webp 320w, ../../../assets/posters/blade-waltz@640.webp 640w, ../../../assets/posters/blade-waltz.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.blade-waltz.label">Blade Waltz</span></span></a>
           <a class="more-demo" href="../../../zh/examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/shard-rush.webp" srcset="../../../assets/posters/shard-rush@320.webp 320w, ../../../assets/posters/shard-rush@640.webp 640w, ../../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>

@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Hitch & Park",
+        "url": "https://napejs.org/examples/hitch-park/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Flipper Fray",
         "url": "https://napejs.org/examples/flipper-fray/",
         "gamePlatform": "Web browser",
@@ -255,7 +262,7 @@
       <h1 data-i18n="games.heading">Jeux construits sur nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">D'une simple mécanique à un titre publié : chaque jeu ci-dessous tourne sur le même moteur physique 2D open source. Jouez dans le navigateur, puis ouvrez le code.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">démos de jeu complètes</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">démos de jeu complètes</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">briques de gameplay</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">titres publiés</span></a>
       </nav>
@@ -268,6 +275,16 @@
       <h2 data-i18n="games.showpieces.heading">Démos de jeu complètes</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Des jeux multi-systèmes dans un seul fichier chacun — adversaires IA, vagues, caméras, score et rigs 3D. Jouez ici ou ouvrez le code sur CodePen et StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../fr/examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/hitch-park.webp" srcset="../../assets/posters/hitch-park@320.webp 320w, ../../assets/posters/hitch-park@640.webp 640w, ../../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Jeu complet</span><a href="../../fr/examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch & Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc">Un <b>jeu de stationnement avec remorque</b> vu de dessus : cinq sites — supermarché, parking à étages, cale de mise à l'eau, rue commerçante, camping —, chacun avec une place marquée où la remorque doit finir <b>nez vers l'extérieur, droite et à l'arrêt</b>. Les voitures garées se laissent pousser (leurs feux de détresse vous dénoncent), les cônes tombent, piliers, haies et arbres ne bougent pas ; chaque accrochage coûte des points et le chrono court contre un temps de référence. <b>↑ ↓</b> avancer / reculer, <b>← →</b> braquer, <b>ESPACE</b> freiner, <b>G</b> guide de trajectoire ; en tactile, maintenez et faites glisser. Physique : la voiture est un châssis plus <b>quatre corps de roue</b> — les arrière sur des <code>WeldJoint</code>, les avant sur des <code>PivotJoint</code> braqués par des <code>AngleJoint</code> aux angles d'Ackermann —, et seules les <b>roues avant sont motrices</b> : ce sont bien les roues braquées qui tirent la voiture ; la remorque pend à un <code>PivotJoint</code> sur la boule d'attelage et se met en portefeuille si vous reculez mal. En <b>3D</b> : sites ombrés, roues qui tournent et braquent, feux stop et de recul, incrustation de caméra de recul.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Vehicle">Véhicule</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../fr/examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/flipper-fray.webp" srcset="../../assets/posters/flipper-fray@320.webp 320w, ../../assets/posters/flipper-fray@640.webp 640w, ../../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jouer →</span>

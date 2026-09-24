@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">85</strong> <span data-i18n="home.proof.demos">demos interactivas</span>
+          <strong data-site-count="demos">86</strong> <span data-i18n="home.proof.demos">demos interactivas</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">41</strong> <span data-i18n="home.proof.games">juegos jugables</span>
+          <strong data-site-count="games">42</strong> <span data-i18n="home.proof.games">juegos jugables</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">21</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span>
+          <strong data-site-count="showpieces">22</strong> <span data-i18n="home.proof.showpieces">demos de juego completas</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">títulos publicados</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/hitch-park.webp" srcset="../assets/posters/hitch-park@320.webp 320w, ../assets/posters/hitch-park@640.webp 640w, ../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><a href="../examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch & Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc">Un <b>juego de aparcar con remolque</b> visto desde arriba: cinco lugares — supermercado, aparcamiento de varias plantas, rampa del puerto, calle céntrica, camping —, cada uno con una plaza marcada donde debe acabar el remolque, <b>con el morro hacia fuera, recto y parado</b>. Los coches aparcados se pueden empujar (sus luces de emergencia te delatan), los conos se caen y los pilares, setos y árboles no se mueven; cada golpe resta puntos y el reloj corre contra un tiempo de referencia. <b>↑ ↓</b> avanzar / marcha atrás, <b>← →</b> girar, <b>ESPACIO</b> frenar, <b>G</b> guía de trayectoria; en táctil, mantén pulsado y arrastra. Física: el coche es un chasis más <b>cuatro cuerpos de rueda</b> — las traseras con <code>WeldJoint</code>, las delanteras con <code>PivotJoint</code> y dirigidas por <code>AngleJoint</code> con ángulos de Ackermann —, y solo las <b>ruedas delanteras traccionan</b>, así que son las ruedas giradas las que tiran del coche; el remolque cuelga de un <code>PivotJoint</code> en la bola y se cruza si das marcha atrás mal. En <b>3D</b>: escenarios con sombras, ruedas que giran y se orientan, luces de freno y de marcha atrás, y una ventana de cámara trasera.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.Vehicle">Vehículo</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/flipper-fray.webp" srcset="../assets/posters/flipper-fray@320.webp 320w, ../assets/posters/flipper-fray@640.webp 640w, ../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><a href="../examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">Un <b>roguelite de supervivencia</b> al estilo Vampire Survivors: cinco minutos en un cementerio vallado, y tú solo <b>te mueves</b>: cada arma dispara por sí sola. Las muertes sueltan <b>gemas de XP</b>; una barra llena detiene la noche y ofrece <b>tres cartas de mejora</b> entre seis armas (látigo, varita, cuchillos, escudo, orbes, rayo) y ocho pasivas. Seis tipos de monstruo llegan según un horario, más <b>caballeros sepulcrales</b> que embisten con tesoro y un <b>coloso de hueso</b> a las 4:00 cuyo golpe lanza a toda la multitud. El amanecer a las 5:00 es la victoria. <b>WASD</b> / flechas para moverte, <b>1 / 2 / 3</b> o clic para elegir carta; en táctil, <b>mantén pulsado</b> para dirigir. Física: hasta <b>420 monstruos</b> son círculos dinámicos en un <code>Space</code> sin gravedad, así que la horda se apiña y fluye entre las lápidas sin código de bandada; el retroceso es un impulso escalado por masa, y proyectiles, cuchillos, escupitajos y orbes son <b>cuerpos sensores</b> entregados mediante <code>InteractionListener</code> con filtrado de bandos por máscaras. En <b>3D</b>, un cementerio a la luz de la luna donde cada monstruo es un rig low-poly instanciado.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Camera">Cámara</span><span class="example-tag" data-i18n="tag.Sensors">Sensores</span><span class="example-tag" data-i18n="tag.Performance">Rendimiento</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/tin-legion/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/tin-legion.webp" srcset="../assets/posters/tin-legion@320.webp 320w, ../assets/posters/tin-legion@640.webp 640w, ../assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Jugar →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><a href="../examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">Un <b>constructor de ejércitos de asedio por caminos</b> en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que juegas suelta un escuadrón de figuritas de estaño que marcha por su cuenta. Nunca diriges a un soldado: decides <b>qué</b> despliegas, <b>dónde</b> lo sueltas y <b>cuándo</b>; si mantienes una carta, el camino de ese escuadrón se dibuja en el suelo, y el lado de tu puerta elige su ruta. Tres caminos unen las dos fortalezas, una <b>atalaya</b> guarda cada camino central y en los flancos hay dos <b>minas de oro</b> tras campamentos neutrales. Una mina capturada paga oro y adelanta tu zona de despliegue; una fortaleza está <b>protegida mientras siga en pie su propia atalaya</b>. Diez cartas, un comandante gratuito y tres niveles de dificultad para el rival. Física: cada figurita es un círculo dinámico en un <code>Space</code> sin gravedad, así que las multitudes se empujan solas; los disparos son <b>cuerpos sensores</b> cuyos impactos llegan por <code>InteractionListener</code>, y el fuego amigo lo descartan los grupos y máscaras de sensor, no un if; los barriles detonan con un impulso radial real y los voladores tienen su propio grupo de colisión. En <b>3D</b> es una meseta de hierba flotando en la niebla, con un aparejo low-poly articulado por tipo de tropa.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Waypoints">Puntos de ruta</span><span class="example-tag" data-i18n="tag.Sensors">Sensores</span><span class="example-tag" data-i18n="tag.Groups">Grupos</span><span class="example-tag" data-i18n="tag.Camera">Cámara</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

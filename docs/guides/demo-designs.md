@@ -360,3 +360,154 @@ three opponents out; none of the measured matches reached the buzzer.
   made every save easier: drains fell from 15 to 6 per minute. Shortening the
   flippers by 2 px, giving back some speed and kick, and raising the ball
   count to 3/4/5 landed the match at ~140 s.
+
+---
+
+## Hitch & Park
+
+`docs/demos/hitch-park.js` · showpiece · added 2026-09-24
+
+### Premise
+
+A top-down trailer-parking game. Each of five sites has one marked bay, and
+the level is won when the trailer's load bed is **entirely inside** it, its
+nose points out of the bay (within 0.2 rad of the bay heading) and both the
+car and the trailer are **stopped** (< 4 px/s) for 1.1 s. There is no fail
+state: bumps, crashes and toppled cones only cost points, and the clock runs
+against a par time. The view is a fixed 900 × 500 px lot (75 × 42 m at
+12 px/m), so the whole site is visible while you plan the manoeuvre.
+
+### Controls
+
+| Input                   | Action                                                        |
+| ----------------------- | ------------------------------------------------------------- |
+| ↑ / W                   | Drive forward (brakes first if rolling backwards)             |
+| ↓ / S                   | Reverse (brakes first if rolling forwards)                    |
+| ← → / A D               | Steer — rate-limited rack, self-centres when released         |
+| Space                   | Brake                                                         |
+| R / Esc                 | Restart the site / back to the site list                      |
+| G / F                   | Path guide (predicted trailer track in reverse) / tyre forces |
+| C / V / wheel           | 3D: camera (follow, chase, overview) / reversing camera / zoom |
+| Hold and drag           | Touch joystick: up / down drives, left / right steers         |
+| 1–5, ← →, Enter         | Site select on the title screen                               |
+
+### Sites
+
+| # | Site          | Trailer  | Task                                                                 | Par  |
+| - | ------------- | -------- | -------------------------------------------------------------------- | ---- |
+| 1 | Supermarket   | Box      | Straight back into a nose-out bay, start slightly off-line and angled | 0:35 |
+| 2 | Parking deck  | Box      | 90° reverse into a row of parked cars with pillars on the bay line    | 1:00 |
+| 3 | Marina        | Boat     | Swing round and back up the slipway between two jetty walls           | 1:10 |
+| 4 | High street   | Box      | Parallel-park the trailer at the kerb behind a parked wagon           | 1:15 |
+| 5 | Campsite      | Caravan  | Tour to the lower lane, then reverse into a hedged pitch              | 1:50 |
+
+Levels are plain data (`buildLevels()`): start pose, target bay, painted
+bays (`bayRow()` + `parkIn()` fill them from a seeded LCG, so a site is
+identical every time), static obstacles by kind, cones, decor.
+
+### Vehicle
+
+| Part            | Numbers                                                                               |
+| --------------- | ------------------------------------------------------------------------------------- |
+| Car body        | 4.4 × 1.8 m chamfered polygon; wheelbase 2.62 m, track 1.64 m                          |
+| Wheels          | Four dynamic bodies, 0.66 × 0.24 m, density 6, collision-less filter                   |
+| Rear wheels     | `WeldJoint` to the chassis at the hub                                                 |
+| Front wheels    | `PivotJoint` at the hub + `AngleJoint` whose min = max is rewritten every step          |
+| Steering        | 0.62 rad at the centre, 1.9 rad/s rack, 1.1 rad/s self-centring; Ackermann per wheel   |
+| Drive           | Front wheels only: 4.2 m/s² at standstill, falling off as 1 − (v/vmax)²               |
+| Speeds          | 9 m/s forward, 4.2 m/s reverse                                                        |
+| Brakes / losses | 7.5 m/s² braking, 0.35 m/s² rolling, 1.4 m/s² engine braking on the driven wheels     |
+| Tyre grip       | μ = 1 friction circle per wheel: lateral + longitudinal impulse capped at μ·N·dt       |
+| Tow ball        | 0.42 m behind the rear bumper; trailer on a `PivotJoint`, `AngleJoint` limit ±1.32 rad |
+
+| Trailer | Bed          | Drawbar | Axle (from bed centre) | Density |
+| ------- | ------------ | ------- | ---------------------- | ------- |
+| Box     | 2.7 × 1.62 m | 1.35 m  | −0.12 m                | 0.75    |
+| Boat    | 4.9 × 1.9 m  | 1.15 m  | −0.55 m                | 0.45    |
+| Caravan | 5.3 × 2.24 m | 1.2 m   | −0.2 m                 | 0.4     |
+
+### Physics
+
+- **Tyres live on the wheel bodies.** Each fixed step, every wheel measures its
+  own velocity along and across its heading. The lateral impulse is
+  `−v_lat · m_share · 0.85` (m_share = the rig's mass over its wheel count),
+  the longitudinal one is drive, brake or rolling loss, and the pair is
+  clipped to the friction circle `μ · m_share · g · dt`. The impulse is
+  applied to the wheel body; the joints carry it into the chassis. Because
+  only the front wheels get drive and they are the ones turned by the
+  `AngleJoint`s, the car is pulled round by its steered wheels and the
+  turning circle (≈ 44 px rear-axle radius at full lock, i.e. L / tan δ)
+  falls out of the geometry — no yaw torque anywhere.
+- **Hold.** With no pedal and |v| < 3 px/s the wheels brake to a stop, so the
+  rig does not creep and still resists a shove up to its grip.
+- **Trailer.** Its wheels are welded to the bed and use the same tyre model
+  with no drive. Reversing it is the textbook unstable case: the trailer
+  angle grows unless the driver counter-steers, and at ±1.32 rad the
+  `AngleJoint` limit stops the fold (the HUD's hitch gauge goes red from
+  0.9 rad).
+- **Parked cars and cones** are dynamic bodies with a Coulomb handbrake
+  applied per step (velocity reduced by μ·g·dt, μ 0.55 for cars, 0.35 for
+  cones), so a slow push barely moves a car while a hit at speed shoves it
+  a few metres.
+- **Scoring from listeners.** `InteractionListener`s on collision BEGIN
+  between the rig's `CbType` and obstacles / cones read the *pre-step*
+  relative velocity stored on the bodies (the callback fires after the
+  solver): < 9 px/s is a free touch, < 45 px/s a bump (−60), faster a crash
+  (−150); a 0.7 s cooldown per obstacle stops one scrape from counting
+  twenty times. Shoved cars switch on their hazard lights for 4.5 s.
+- **Game tick on the physics clock.** Like Flipper Fray, the tick runs from a
+  wrapper around `Space.step`, so steering and tyre forces match the fixed
+  1/60 s timestep on any display rate.
+- **Path guide.** A kinematic car-and-trailer model (bicycle model plus the
+  hitch-offset trailer equation) is integrated 3 s ahead in the current gear
+  and drawn as dots with a ghost of the trailer's future footprint.
+
+### Scoring
+
+`500 + 10 × (par − time) + 3 × accuracy − 60 × bumps − 150 × crashes − 25 × cones`,
+floored at 0. Accuracy (0–100 %) combines the trailer's lateral offset from
+the bay centre line (45 %) and its heading error (55 %). Stars: one for
+parking, one for zero bumps, one for beating par. The best stars and score
+per site persist in `localStorage` (`hitch-park.best`), guarded for private
+mode.
+
+### Renderers
+
+- **Canvas2D / PixiJS** share one scene description. The ground (asphalt,
+  paint, water, grass, gravel) is baked per level into a canvas, the static
+  obstacles into a second one and the overhead layer (tree canopies, lamp
+  heads, shelter roofs) into a third; Canvas2D draws them as images, PixiJS
+  as sprites. The moving things are drawn every frame through a small
+  painter interface with a Canvas2D and a PixiJS `Graphics` implementation,
+  so both modes draw the same cars from the same code — including the tyres
+  taken straight from the wheel bodies, so the steering is visible.
+- **3D** takes over the adapter's lights with one shadow-casting sun (2048²
+  PCF soft) and a hemisphere light, per-site sky, fog and sun angle (noon,
+  overcast deck, marina, dusk street with lit windows, lamp pools and
+  headlight beams, golden-hour campsite). The ground is the same baked
+  canvas at 3× resolution. Cars are modelled from an extruded body shell, a
+  tapered glass cabin, roof, bumpers, lamps, mirrors and plates; parked cars
+  are merged per material and all plain-coloured parts share one
+  vertex-coloured material, so a car is about four draw calls. The player's
+  wheels are separate groups whose steer angle and spin come from the wheel
+  bodies. The trailers are modelled (tarp-covered box, boat with outboard,
+  caravan with an extruded side profile). The marina has a lowered, normal-
+  mapped sea, a tilted slipway (the rig pitches down it) and bobbing
+  moored boats; the deck is a rooftop above a city; the street has building
+  rows; the campsite a forest of instanced low-poly trees.
+- **Reversing camera.** In reverse a second camera at the trailer's tail is
+  rendered into a scissored viewport (placed with the same letterbox maths
+  as the overlay canvas) and the overlay draws the distance bands, bent by
+  the current steering.
+
+### Balance notes
+
+- Wheel density 6 gives the wheels a real share of the mass (chassis ≈ 2 ×
+  the four wheels), so the joints never carry tyre impulses that are many
+  times a wheel's own mass; measured hub and tow-ball joint error stays
+  under 0.1 px through full-lock turns and jack-knifes.
+- The lateral factor is 0.85 rather than 1 because all four wheels cancel
+  their slip in the same step; a full cancel per wheel would overshoot.
+- A straight start makes site 1 trivial (a perfectly straight reverse stays
+  straight in a deterministic engine), so it starts 22 px off-line and 3.4°
+  off-axis.

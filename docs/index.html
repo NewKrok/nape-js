@@ -253,13 +253,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">85</strong> <span data-i18n="home.proof.demos">interactive demos</span>
+          <strong data-site-count="demos">86</strong> <span data-i18n="home.proof.demos">interactive demos</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">41</strong> <span data-i18n="home.proof.games">playable games</span>
+          <strong data-site-count="games">42</strong> <span data-i18n="home.proof.games">playable games</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">21</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
+          <strong data-site-count="showpieces">22</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">shipped titles</span>
@@ -418,6 +418,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="assets/posters/hitch-park.webp" srcset="assets/posters/hitch-park@320.webp 320w, assets/posters/hitch-park@640.webp 640w, assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch &amp; Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc">A <b>trailer-parking game</b> seen from above: five sites — supermarket, parking deck, marina slipway, high street, campsite — each with one bay the trailer must end up in, <b>nose out, square and stopped</b>. Parked cars can be shoved (their hazard lights tell on you), cones topple, pillars, hedges and trees don't budge; every bump costs points against a par time. <b>↑ ↓</b> drive / reverse, <b>← →</b> steer, <b>SPACE</b> brake, <b>G</b> path guide; on touch, hold and drag. Physics: the car is a chassis plus <b>four wheel bodies</b> — rear ones on <code>WeldJoint</code>s, front ones on <code>PivotJoint</code>s steered by Ackermann <code>AngleJoint</code>s — and only the <b>front wheels drive</b>, so the steered wheels pull the car round; the trailer hangs on a <code>PivotJoint</code> at the tow ball and folds if you reverse it wrong. In <b>3D</b>: shadowed sites, spinning and steering wheels, brake and reversing lights, a reversing-camera inset.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Vehicle">Vehicle</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="assets/posters/flipper-fray.webp" srcset="assets/posters/flipper-fray@320.webp 320w, assets/posters/flipper-fray@640.webp 640w, assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
           </a>
@@ -435,16 +445,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">A <b>survivor roguelite</b> in the Vampire Survivors mould: five minutes in a walled graveyard, and you only <b>steer</b> — every weapon fires on its own. Kills drop <b>XP gems</b>; a full bar pauses the night for <b>three upgrade cards</b> drawn from six weapons (whip, wand, knives, ward, orbs, lightning) and eight passives. Six monster types arrive on a schedule, plus charging <b>grave knights</b> that carry treasure and a <b>bone colossus</b> at 4:00 whose slam throws the whole crowd. Dawn at 5:00 is the win. <b>WASD</b> / arrows to move, <b>1 / 2 / 3</b> or click to pick a card; on touch, <b>hold anywhere</b> to steer. Physics: up to <b>420 monsters</b> are dynamic circles in a zero-gravity <code>Space</code>, so the horde crowds and streams around the stones with no flocking code; knockback is a mass-scaled impulse, and bolts, knives, spit and orbs are <b>sensor bodies</b> delivered through <code>InteractionListener</code>s with sensor-mask side filtering. In <b>3D</b> a moonlit graveyard where every monster is an instanced low-poly rig.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Performance">Performance</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="examples/tin-legion/?mode=3d&outline=0">
-            <img class="game-card-img" src="assets/posters/tin-legion.webp" srcset="assets/posters/tin-legion@320.webp 320w, assets/posters/tin-legion@640.webp 640w, assets/posters/tin-legion.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Tin Legion — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/tin-legion/?mode=3d&outline=0" data-i18n="demo.tin-legion.label">Tin Legion</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.tin-legion.desc">A <b>lane-siege army builder</b> on one large battlefield: gold trickles in, five troop cards wait at the bottom of the screen, and each one you play drops a squad of tin figurines that marches off on its own. You never steer a soldier — you choose <b>what</b> to field, <b>where</b> to drop it and <b>when</b>; hold a card and the road that squad would take is drawn on the ground, and the side of your gate you drop on picks its lane. Three roads run between the two keeps, a <b>watchtower</b> guards each centre road, and two <b>gold mines</b> sit on the flanks behind neutral camps. A captured mine pays gold and pushes your drop zone forward; a keep is <b>shielded until its own watchtower falls</b>. Ten cards, a free commander, and three difficulty levels for the opposing one. Physics: every figurine is a dynamic circle in a zero-gravity <code>Space</code>, so crowds shove and flow for free; shot is a <b>sensor body</b> delivered by <code>InteractionListener</code>s, with friendly fire ruled out by sensor groups and masks rather than an if-statement; kegs detonate with a real radial impulse, and flyers have their own collision group. In <b>3D</b> it is a grassy plateau floating in mist, with a jointed low-poly rig per troop type.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Waypoints">Waypoints</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Groups">Groups</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

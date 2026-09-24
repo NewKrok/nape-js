@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="nape-prerendered" content="es" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tin Legion — Demo interactiva de física 2D | nape-js</title>
-  <meta name="description" content="Un constructor de ejércitos de asedio por caminos en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que…" />
+  <title>Hitch &amp; Park — Demo interactiva de física 2D | nape-js</title>
+  <meta name="description" content="Un juego de aparcar con remolque visto desde arriba: cinco lugares — supermercado, aparcamiento de varias plantas, rampa del puerto, calle céntrica, camping…" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="theme-color" content="#0d1117" />
   <meta name="generator" content="nape-js build-site-pages" />
   <meta name="nape-i18n-title" content="demopage.meta.title" />
-  <meta name="nape-i18n-title-vars" content="label=demo.tin-legion.label" />
+  <meta name="nape-i18n-title-vars" content="label=demo.hitch-park.label" />
   <meta name="nape-i18n-description" content="" />
-  <link rel="canonical" href="https://napejs.org/es/examples/tin-legion/" />
+  <link rel="canonical" href="https://napejs.org/es/examples/hitch-park/" />
   <link rel="icon" type="image/svg+xml" href="../../../logo.svg" />
   <script type="application/ld+json">
   {
@@ -42,23 +42,23 @@
           {
             "@type": "ListItem",
             "position": 4,
-            "name": "Tin Legion",
-            "item": "https://napejs.org/es/examples/tin-legion/"
+            "name": "Hitch & Park",
+            "item": "https://napejs.org/es/examples/hitch-park/"
           }
         ]
       },
       {
         "@type": "VideoGame",
-        "name": "Tin Legion",
+        "name": "Hitch & Park",
         "inLanguage": "es",
-        "image": "https://napejs.org/assets/posters/tin-legion.webp",
-        "description": "Un constructor de ejércitos de asedio por caminos en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que juegas suelta un escuadrón de figuritas de estaño que marcha por su cuenta.",
-        "url": "https://napejs.org/es/examples/tin-legion/",
+        "image": "https://napejs.org/assets/posters/hitch-park.webp",
+        "description": "Un juego de aparcar con remolque visto desde arriba: cinco lugares — supermercado, aparcamiento de varias plantas, rampa del puerto, calle céntrica, camping —, cada uno con una plaza marcada donde debe acabar el remolque, con el morro hacia fuera, recto y parado.",
+        "url": "https://napejs.org/es/examples/hitch-park/",
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
         "operatingSystem": "Any",
         "playMode": "SinglePlayer",
-        "keywords": "Gameplay, AI, Waypoints, Sensors, Groups, Camera, Mobile",
+        "keywords": "Gameplay, Vehicle, Joints, Top-down, Listeners, Mobile",
         "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
@@ -82,19 +82,19 @@
   </script>
   <meta property="og:site_name" content="nape-js" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Tin Legion — Demo interactiva de física 2D | nape-js" />
-  <meta property="og:description" content="Un constructor de ejércitos de asedio por caminos en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que…" />
-  <meta property="og:url" content="https://napejs.org/es/examples/tin-legion/" />
-  <meta property="og:image" content="https://napejs.org/assets/posters/tin-legion.webp" />
+  <meta property="og:title" content="Hitch &amp; Park — Demo interactiva de física 2D | nape-js" />
+  <meta property="og:description" content="Un juego de aparcar con remolque visto desde arriba: cinco lugares — supermercado, aparcamiento de varias plantas, rampa del puerto, calle céntrica, camping…" />
+  <meta property="og:url" content="https://napejs.org/es/examples/hitch-park/" />
+  <meta property="og:image" content="https://napejs.org/assets/posters/hitch-park.webp" />
   <meta property="og:image:width" content="900" />
   <meta property="og:image:height" content="500" />
-  <meta property="og:image:alt" content="Tin Legion — nape-js demo screenshot" />
+  <meta property="og:image:alt" content="Hitch &amp; Park — nape-js demo screenshot" />
   <meta property="og:locale" content="es_ES" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@KSomoracz" />
-  <meta name="twitter:title" content="Tin Legion — Demo interactiva de física 2D | nape-js" />
-  <meta name="twitter:description" content="Un constructor de ejércitos de asedio por caminos en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que…" />
-  <meta name="twitter:image" content="https://napejs.org/assets/posters/tin-legion.webp" />
+  <meta name="twitter:title" content="Hitch &amp; Park — Demo interactiva de física 2D | nape-js" />
+  <meta name="twitter:description" content="Un juego de aparcar con remolque visto desde arriba: cinco lugares — supermercado, aparcamiento de varias plantas, rampa del puerto, calle céntrica, camping…" />
+  <meta name="twitter:image" content="https://napejs.org/assets/posters/hitch-park.webp" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF84DLZ4X8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -111,18 +111,18 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
   <link rel="modulepreload" href="../../../nape-js.esm.js?v=3.42.3" />
-  <link rel="modulepreload" href="../../../demos/tin-legion.js?v=3.42.3" />
+  <link rel="modulepreload" href="../../../demos/hitch-park.js?v=3.42.3" />
   <!-- i18n:hreflang:start -->
-  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/tin-legion/" />
-  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/tin-legion/" />
-  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/tin-legion/" />
-  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/tin-legion/" />
-  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/tin-legion/" />
-  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/tin-legion/" />
-  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/tin-legion/" />
+  <link rel="alternate" hreflang="en" href="https://napejs.org/examples/hitch-park/" />
+  <link rel="alternate" hreflang="de" href="https://napejs.org/de/examples/hitch-park/" />
+  <link rel="alternate" hreflang="zh" href="https://napejs.org/zh/examples/hitch-park/" />
+  <link rel="alternate" hreflang="hu" href="https://napejs.org/hu/examples/hitch-park/" />
+  <link rel="alternate" hreflang="es" href="https://napejs.org/es/examples/hitch-park/" />
+  <link rel="alternate" hreflang="fr" href="https://napejs.org/fr/examples/hitch-park/" />
+  <link rel="alternate" hreflang="x-default" href="https://napejs.org/examples/hitch-park/" />
   <!-- i18n:hreflang:end -->
 </head>
-<body data-demo-id="tin-legion">
+<body data-demo-id="hitch-park">
   <div class="site-header" id="siteHeader">
     <div class="container site-header-inner">
       <a class="site-brand" href="../../../es/" onclick="gtag('event','navigation',{event_category:'header',event_label:'brand'})">
@@ -169,10 +169,10 @@
         <a href="../../../es/">nape-js</a> <span aria-hidden="true">›</span>
         <a href="../../../es/examples/" data-i18n="nav.examples">Ejemplos</a> <span aria-hidden="true">›</span>
         <a href="../../../es/examples/?cat=game" data-i18n="cat.game.label">Juego</a> <span aria-hidden="true">›</span>
-        <span aria-current="page" data-i18n="demo.tin-legion.label">Tin Legion</span>
+        <span aria-current="page" data-i18n="demo.hitch-park.label">Hitch & Park</span>
       </nav>
-      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></h1>
-      <p class="demo-page-desc" data-i18n-html="demo.tin-legion.desc">Un <b>constructor de ejércitos de asedio por caminos</b> en un gran campo de batalla: el oro gotea sin parar, abajo esperan cinco cartas de tropa, y cada una que juegas suelta un escuadrón de figuritas de estaño que marcha por su cuenta. Nunca diriges a un soldado: decides <b>qué</b> despliegas, <b>dónde</b> lo sueltas y <b>cuándo</b>; si mantienes una carta, el camino de ese escuadrón se dibuja en el suelo, y el lado de tu puerta elige su ruta. Tres caminos unen las dos fortalezas, una <b>atalaya</b> guarda cada camino central y en los flancos hay dos <b>minas de oro</b> tras campamentos neutrales. Una mina capturada paga oro y adelanta tu zona de despliegue; una fortaleza está <b>protegida mientras siga en pie su propia atalaya</b>. Diez cartas, un comandante gratuito y tres niveles de dificultad para el rival. Física: cada figurita es un círculo dinámico en un <code>Space</code> sin gravedad, así que las multitudes se empujan solas; los disparos son <b>cuerpos sensores</b> cuyos impactos llegan por <code>InteractionListener</code>, y el fuego amigo lo descartan los grupos y máscaras de sensor, no un if; los barriles detonan con un impulso radial real y los voladores tienen su propio grupo de colisión. En <b>3D</b> es una meseta de hierba flotando en la niebla, con un aparejo low-poly articulado por tipo de tropa.</p>
+      <h1 class="demo-page-title"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.hitch-park.label">Hitch & Park</span></h1>
+      <p class="demo-page-desc" data-i18n-html="demo.hitch-park.desc">Un <b>juego de aparcar con remolque</b> visto desde arriba: cinco lugares — supermercado, aparcamiento de varias plantas, rampa del puerto, calle céntrica, camping —, cada uno con una plaza marcada donde debe acabar el remolque, <b>con el morro hacia fuera, recto y parado</b>. Los coches aparcados se pueden empujar (sus luces de emergencia te delatan), los conos se caen y los pilares, setos y árboles no se mueven; cada golpe resta puntos y el reloj corre contra un tiempo de referencia. <b>↑ ↓</b> avanzar / marcha atrás, <b>← →</b> girar, <b>ESPACIO</b> frenar, <b>G</b> guía de trayectoria; en táctil, mantén pulsado y arrastra. Física: el coche es un chasis más <b>cuatro cuerpos de rueda</b> — las traseras con <code>WeldJoint</code>, las delanteras con <code>PivotJoint</code> y dirigidas por <code>AngleJoint</code> con ángulos de Ackermann —, y solo las <b>ruedas delanteras traccionan</b>, así que son las ruedas giradas las que tiran del coche; el remolque cuelga de un <code>PivotJoint</code> en la bola y se cruza si das marcha atrás mal. En <b>3D</b>: escenarios con sombras, ruedas que giran y se orientan, luces de freno y de marcha atrás, y una ventana de cámara trasera.</p>
 
       <div class="canvas-wrap" id="canvasWrap">
         <canvas id="demoCanvas" width="900" height="500"></canvas>
@@ -209,7 +209,7 @@
 
       <div class="demo-page-actions">
         <button class="btn btn-secondary" id="codeToggleBtn" aria-expanded="false" aria-controls="codePanel" data-i18n="demopage.openSource">Abrir el código</button>
-        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/tin-legion.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'tin-legion'})">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/NewKrok/nape-js/blob/master/docs/demos/hitch-park.js" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'code_action',event_label:'github_source',demo:'hitch-park'})">GitHub</a>
       </div>
       <div class="code-panel" id="codePanel" hidden>
         <div class="code-panel-header">
@@ -226,13 +226,13 @@
       <div class="demo-page-grid">
         <section class="demo-page-block">
           <h2 data-i18n="demopage.features">Funciones del motor utilizadas</h2>
-          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.AI">IA</span><span class="example-tag" data-i18n="tag.Waypoints">Puntos de ruta</span><span class="example-tag" data-i18n="tag.Sensors">Sensores</span><span class="example-tag" data-i18n="tag.Groups">Grupos</span><span class="example-tag" data-i18n="tag.Camera">Cámara</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
+          <div class="demo-page-tags"><span class="example-tag" data-i18n="tag.Gameplay">Jugabilidad</span><span class="example-tag" data-i18n="tag.Vehicle">Vehículo</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Móvil</span></div>
         </section>
         <section class="demo-page-block">
           <h2 data-i18n="demopage.related">Guías relacionadas</h2>
           <ul class="demo-page-links">
-            <li><a href="../../../guides/cookbook/#sensor--trigger-zone">Sensor / trigger zone</a></li>
-            <li><a href="../../../guides/cookbook/#wave-spawner-timer-driven-cadence">Wave spawner</a></li>
+            <li><a href="../../../guides/cookbook/#vehicle-top-down">Vehicle (top-down)</a></li>
+            <li><a href="../../../guides/cookbook/#constraint-reference--which-joint-to-use">Which joint to use</a></li>
             <li><a href="../../../guides/cookbook/">Cookbook</a></li>
           </ul>
         </section>
@@ -241,12 +241,12 @@
       <section class="demo-page-block">
         <h2 data-i18n="demopage.more">Más demos</h2>
         <div class="more-demos">
-          <a class="more-demo" href="../../../es/examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/blade-waltz.webp" srcset="../../../assets/posters/blade-waltz@320.webp 320w, ../../../assets/posters/blade-waltz@640.webp 640w, ../../../assets/posters/blade-waltz.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.blade-waltz.label">Blade Waltz</span></span></a>
-          <a class="more-demo" href="../../../es/examples/swarm-night/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/swarm-night.webp" srcset="../../../assets/posters/swarm-night@320.webp 320w, ../../../assets/posters/swarm-night@640.webp 640w, ../../../assets/posters/swarm-night.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></span></a>
-          <a class="more-demo" href="../../../es/examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/shard-rush.webp" srcset="../../../assets/posters/shard-rush@320.webp 320w, ../../../assets/posters/shard-rush@640.webp 640w, ../../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>
           <a class="more-demo" href="../../../es/examples/flipper-fray/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/flipper-fray.webp" srcset="../../../assets/posters/flipper-fray@320.webp 320w, ../../../assets/posters/flipper-fray@640.webp 640w, ../../../assets/posters/flipper-fray.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.flipper-fray.label">Flipper Fray</span></span></a>
+          <a class="more-demo" href="../../../es/examples/swarm-night/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/swarm-night.webp" srcset="../../../assets/posters/swarm-night@320.webp 320w, ../../../assets/posters/swarm-night@640.webp 640w, ../../../assets/posters/swarm-night.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.swarm-night.label">Swarm Night</span></span></a>
+          <a class="more-demo" href="../../../es/examples/tin-legion/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/tin-legion.webp" srcset="../../../assets/posters/tin-legion@320.webp 320w, ../../../assets/posters/tin-legion@640.webp 640w, ../../../assets/posters/tin-legion.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.tin-legion.label">Tin Legion</span></span></a>
+          <a class="more-demo" href="../../../es/examples/blade-waltz/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/blade-waltz.webp" srcset="../../../assets/posters/blade-waltz@320.webp 320w, ../../../assets/posters/blade-waltz@640.webp 640w, ../../../assets/posters/blade-waltz.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.blade-waltz.label">Blade Waltz</span></span></a>
+          <a class="more-demo" href="../../../es/examples/shard-rush/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/shard-rush.webp" srcset="../../../assets/posters/shard-rush@320.webp 320w, ../../../assets/posters/shard-rush@640.webp 640w, ../../../assets/posters/shard-rush.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.shard-rush.label">Shard Rush</span></span></a>
           <a class="more-demo" href="../../../es/examples/jungle-strike/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/jungle-strike.webp" srcset="../../../assets/posters/jungle-strike@320.webp 320w, ../../../assets/posters/jungle-strike@640.webp 640w, ../../../assets/posters/jungle-strike.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.jungle-strike.label">Jungle Strike</span></span></a>
-          <a class="more-demo" href="../../../es/examples/hitch-park/?mode=3d&outline=0"><img class="more-demo-thumb" src="../../../assets/posters/hitch-park.webp" srcset="../../../assets/posters/hitch-park@320.webp 320w, ../../../assets/posters/hitch-park@640.webp 640w, ../../../assets/posters/hitch-park.webp 900w" sizes="(max-width: 400px) calc(100vw - 48px), 220px" width="900" height="500" loading="lazy" decoding="async" alt="" /><span class="more-demo-text"><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Juego completo</span><span data-i18n="demo.hitch-park.label">Hitch & Park</span></span></a>
         </div>
         <p class="demo-page-all"><a href="../../../es/examples/?cat=game" data-i18n="demopage.allInCategory" data-i18n-vars="cat=cat.game.label">Todas las demos de Juego →</a></p>
       </section>

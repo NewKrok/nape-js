@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Hitch & Park",
+        "url": "https://napejs.org/examples/hitch-park/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Flipper Fray",
         "url": "https://napejs.org/examples/flipper-fray/",
         "gamePlatform": "Web browser",
@@ -255,7 +262,7 @@
       <h1 data-i18n="games.heading">nape-js-re épülő játékok</h1>
       <p class="page-hero-intro" data-i18n="games.intro">Az egyetlen mechanikától a kiadott játékig: minden alábbi játék ugyanazon a nyílt forráskódú 2D fizikai motoron fut. Játssz a böngészőben, majd nyisd meg a forrást.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>21</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">játékmechanika-szelet</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">kiadott játék</span></a>
       </nav>
@@ -268,6 +275,16 @@
       <h2 data-i18n="games.showpieces.heading">Teljes játékdemók</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Többrendszerű játékok, mindegyik egy fájlban — AI ellenfelek, hullámok, kamerák, pontozás és 3D rigek. Játssz itt, vagy nyisd meg a forrást CodePenen és StackBlitzen.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../hu/examples/hitch-park/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/hitch-park.webp" srcset="../../assets/posters/hitch-park@320.webp 320w, ../../assets/posters/hitch-park@640.webp 640w, ../../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../../hu/examples/hitch-park/?mode=3d&outline=0" data-i18n="demo.hitch-park.label">Hitch & Park</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.hitch-park.desc"><b>Utánfutós parkolós játék</b> felülnézetből: öt helyszín — szupermarket, parkolóház, kikötői sólya, belvárosi utca, kemping —, mindegyiken egy kijelölt hely, ahová az utánfutónak be kell kerülnie <b>orral kifelé, egyenesen, megállva</b>. A parkoló autókat el lehet tolni (a vészvillogójuk beárul), a bóják feldőlnek, az oszlopok, sövények és fák nem mozdulnak; minden koccanás pontlevonás, az óra a szintidő ellen ketyeg. <b>↑ ↓</b> előre / tolatás, <b>← →</b> kormányzás, <b>SPACE</b> fék, <b>G</b> nyomvonal-segéd; érintőképernyőn nyomva tartás és húzás. Fizika: az autó egy karosszéria plusz <b>négy külön kerék-test</b> — a hátsók <code>WeldJoint</code>-tal, az elsők <code>PivotJoint</code>-tal rögzülnek, és Ackermann-szögű <code>AngleJoint</code>-ok kormányozzák őket —, és csak az <b>első kerekek hajtanak</b>, így tényleg a kormányzott kerekek húzzák körbe az autót; az utánfutó <code>PivotJoint</code>-tal lóg a vonóhorgon, és rossz tolatásnál bebicsaklik. <b>3D</b>-ben árnyékos helyszínek, forgó és kormányzott kerekek, fék- és tolatólámpák, tolatókamera-betét.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Vehicle">Jármű</span><span class="example-tag" data-i18n="tag.Joints">Joints</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../hu/examples/flipper-fray/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/flipper-fray.webp" srcset="../../assets/posters/flipper-fray@320.webp 320w, ../../assets/posters/flipper-fray@640.webp 640w, ../../assets/posters/flipper-fray.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Flipper Fray — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
