@@ -518,9 +518,9 @@ mode.
 
 ### Premise
 
-A top-down autumn yard-cleaning game in the mould of *Leaf it Alone*: you
-start with bare hands and a 25-leaf sack, empty the sack into the compost
-bin for money, and spend it on better tools. The yard is five zones behind
+A top-down autumn yard-cleaning game in the mould of the cosy leaf-clearing
+sims: you start with bare hands and a 25-leaf sack, empty the sack into the
+compost bin for money, and spend it on better tools. The yard is five zones behind
 garden gates; a zone at 100 % pays a reward of your choice and opens the next
 gate. The seven trees keep dropping leaves while their zone is open and a
 gust every 48–72 s (first one at 1:10) blows loose leaves around, so the
@@ -529,7 +529,7 @@ no leaf is left anywhere. The clock runs up; the best time persists in
 `localStorage` (`leaf-sweep.best`), guarded for private mode. The view is a
 fixed 900 × 500 px yard in 2D; the 3D camera follows the gardener.
 
-What was taken from *Leaf it Alone* and what was changed:
+What was taken from the genre and what was changed:
 
 - **Kept:** the tool ladder (hand → rake → blower → wall chutes), a per-zone
   completion meter, a reward for every zone at 100 %, sack capacity that
