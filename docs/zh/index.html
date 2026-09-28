@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">86</strong> <span data-i18n="home.proof.demos">个交互演示</span>
+          <strong data-site-count="demos">87</strong> <span data-i18n="home.proof.demos">个交互演示</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">42</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
+          <strong data-site-count="games">43</strong> <span data-i18n="home.proof.games">个可玩游戏</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">22</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
+          <strong data-site-count="showpieces">23</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/leaf-sweep/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/leaf-sweep.webp" srcset="../assets/posters/leaf-sweep@320.webp 320w, ../assets/posters/leaf-sweep@640.webp 640w, ../assets/posters/leaf-sweep.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Leaf Sweep — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/leaf-sweep/?mode=3d&outline=0" data-i18n="demo.leaf-sweep.label">Leaf Sweep</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.leaf-sweep.desc">一款<b>俯视视角的秋日庭院清扫游戏</b>，风格类似 <i>Leaf it Alone</i>：花园门后的五个区域、七棵仍在落叶的树，还有不时吹散你落叶堆的阵风。你从徒手和一个小袋子开始，把袋子倒进堆肥箱，然后购买<b>耙子</b>、<b>吹叶机</b>、更大的袋子和<b>吸叶口</b>；每个区域清理到 100 % 都会给出一项可选奖励，并打开下一道门。<b>WASD</b> 行走，<b>鼠标 + 按住</b>使用工具，<b>1 2 3</b> 切换，<b>SHIFT</b> 轻吹，<b>B</b> 商店；触屏上按住想要工作的位置。物理：每片叶子都是一个<b>摩擦力随地面而变</b>的刚体（草地抓得住、柏油路会滑、覆盖物粘住）；耙子是真正推动落叶堆的<b>运动学</b>刚体；吹得太猛，叶子就会飞起，切换到只与高墙碰撞的 <code>InteractionFilter</code>；泳池是叶子能漂浮其上的<b>流体</b>形状。<b>3D</b> 中：金色夕照下的花园、逐渐稀疏的树冠、层层堆叠的落叶和缓缓打开的门。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Filtering">Filtering</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/hitch-park/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/hitch-park.webp" srcset="../assets/posters/hitch-park@320.webp 320w, ../assets/posters/hitch-park@640.webp 640w, ../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">一场<b>四人弹珠台混战</b>：一张圆桌、四个球袋，每个球袋由一对挡板守护。台面是一个<b>穹顶</b>：一切都从中心向外滚，因此每颗球最终都会成为某个人的麻烦；弹碰器、弹射器和赛道立柱把弹珠抛来抛去，每一颗越过你挡板的球都要你付出一条命——<b>五条命</b>，坚持到最后的球袋获胜，三分钟到时则比剩余命数。你守住底部球袋，对抗<b>三名 AI 守门员</b>；<b>多球</b>按时间表投放额外弹珠，每半分钟还会滚出一颗<b>炸弹球</b>：掉进袋里扣两条命，没人吞下它就会爆炸。<b>← →</b> / <b>A D</b> 拨动挡板，<b>空格</b>同时拨动两侧；触屏按住屏幕左半或右半。物理：挡板是用 <code>setVelocityFromTarget</code> 驱动的<b>运动学刚体</b>，因此一击会把真实的角速度传给弹珠；弹珠是带<b>子弹标记</b>的圆形，不会穿过纤薄的环形墙；弹碰器和弹射器的冲击以及进球判定都经由 <code>InteractionListener</code> 送达。<b>3D</b> 模式是一座霓虹竞技场：镀铬弹珠、发光球袋和赛道灯光，从你自己的球袋后方观看。</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">一款吸血鬼幸存者风格的<b>幸存者类 roguelite</b>：在围栏墓园里熬过五分钟，你只需<b>移动</b>——所有武器自动开火。击杀掉落<b>经验宝石</b>；经验条满时夜晚暂停，从六种武器（鞭、杖、飞刀、蒜环、灵珠、闪电）和八种被动中提供<b>三张升级卡</b>。六种怪物按时间表登场，另有携带宝藏的冲锋<b>墓骑士</b>和 4:00 登场的<b>骨巨像</b>，其震地一击能掀飞整群怪物。5:00 黎明即为胜利。<b>WASD</b> / 方向键移动，<b>1 / 2 / 3</b> 或点击选卡；触屏上<b>按住任意位置</b>操控。物理：最多 <b>420 只怪物</b>都是零重力 <code>Space</code> 中的动态圆形，怪群无需群集代码即可挤压流动；击退是按质量缩放的冲量，法球、飞刀、唾液与灵珠都是<b>传感器刚体</b>，命中通过 <code>InteractionListener</code> 与传感器掩码阵营过滤送达。<b>3D</b> 模式是月光墓园，每只怪物都是实例化的低多边形模型。</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Roguelite">类肉鸽</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">摄像机</span><span class="example-tag" data-i18n="tag.Sensors">传感器</span><span class="example-tag" data-i18n="tag.Performance">性能</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

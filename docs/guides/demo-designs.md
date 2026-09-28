@@ -511,3 +511,178 @@ mode.
 - A straight start makes site 1 trivial (a perfectly straight reverse stays
   straight in a deterministic engine), so it starts 22 px off-line and 3.4°
   off-axis.
+
+## Leaf Sweep
+
+`docs/demos/leaf-sweep.js` · showpiece · added 2026-09-28
+
+### Premise
+
+A top-down autumn yard-cleaning game in the mould of *Leaf it Alone*: you
+start with bare hands and a 25-leaf sack, empty the sack into the compost
+bin for money, and spend it on better tools. The yard is five zones behind
+garden gates; a zone at 100 % pays a reward of your choice and opens the next
+gate. The seven trees keep dropping leaves while their zone is open and a
+gust every 48–72 s (first one at 1:10) blows loose leaves around, so the
+game is won only when the last zone has been cleared, every tree is bare and
+no leaf is left anywhere. The clock runs up; the best time persists in
+`localStorage` (`leaf-sweep.best`), guarded for private mode. The view is a
+fixed 900 × 500 px yard in 2D; the 3D camera follows the gardener.
+
+What was taken from *Leaf it Alone* and what was changed:
+
+- **Kept:** the tool ladder (hand → rake → blower → wall chutes), a per-zone
+  completion meter, a reward for every zone at 100 %, sack capacity that
+  forces trips to the bin, and tools with distinct jobs (rake for corners
+  and mulch, blower for open ground).
+- **Fixed:** the late-game "hunt for the last leaf behind a bush" — once a
+  zone is down to 8 leaves (or the whole open yard to 12) the remaining
+  leaves get pulsing markers, clamped to the screen edge in 3D.
+- **Added from the physics:** leaves that really pile up, lift off, float and
+  slide depending on the surface, instead of being collected from a count.
+
+### Controls
+
+| Input                       | Action                                                      |
+| --------------------------- | ----------------------------------------------------------- |
+| W A S D / arrows            | Walk                                                        |
+| Mouse (aim) + hold click / Space | Use the tool                                           |
+| 1 / 2 / 3, Q / E            | Hand · rake · blower (owned ones)                           |
+| Shift (hold) or G (toggle)  | Gentle blowing — 68 % power, 85 % range, no lift-off        |
+| B                           | Garden shop (freezes the yard)                              |
+| 1 / 2 / 3 on a reward card  | Pick the zone reward                                        |
+| Esc                         | Pause menu (resume / restart / title)                       |
+| C / wheel                   | 3D: camera (follow, overview, low) / zoom                   |
+| Touch: hold on the ground   | Walk there and work the tool towards that point             |
+
+Pointer-walk is on whenever no movement key was held for 2.5 s: the
+gardener walks towards the held point and stops at the tool's working
+distance (28 px hand, 26 px rake, 105 px blower).
+
+### Yard
+
+| # | Zone          | Base surface | Leaves down | Trees (stock)                 | Chute cost |
+| - | ------------- | ------------ | ----------- | ----------------------------- | ---------- |
+| 1 | Front lawn    | grass        | 96          | Oak (86), Maple (66)          | $160       |
+| 2 | Driveway      | asphalt      | 54          | Linden (52)                   | $180       |
+| 3 | Flower garden | grass + beds | 72          | Birch (52), Rowan (38)        | $200       |
+| 4 | Patio         | tiles        | 64          | Chestnut (84)                 | $220       |
+| 5 | Pool deck     | stone + pool | 62          | Red maple (70)                | $240       |
+
+348 leaves are down at the start, 448 more are in the trees. A tree drops at
+`stock₀ / 150` leaves per second (± 30 % over time) while its zone is open,
+and a gust shakes 12 % of its remaining stock loose at once. Gates stop only
+the gardener — leaves slip under them. Every static prop sits flush against a
+wall or leaves at least the gardener's 14 px width free; a grid flood-fill
+check confirms every point a leaf can reach is within 30 px of a point the
+gardener can stand on.
+
+Leaf kinds and values (paid × the value multiplier): oak, birch, linden $1;
+chestnut, maple $2; red maple $3; golden $12 (1.8 % of spawns, any tree).
+
+### Tools and shop
+
+| Item            | Cost             | Effect                                                              |
+| --------------- | ---------------- | ------------------------------------------------------------------- |
+| Hand            | —                | Picks 5 leaves/s within 11 px of a point ≤ 28 px away; nearby leaves drift in |
+| Rake            | $40              | Kinematic head 17 px ahead; scoops 20 leaves/s within 14 px; shoves piles |
+| Leaf blower     | $150             | Cone field (0.4 rad half-angle), 125 px / 1000 px/s² at tier 0       |
+| Bigger sack     | $60 / $200 / $450 | 25 → 60 → 120 → 250 leaves                                         |
+| Wide rake       | $180             | Head 26 → 39 px, scoop 14 → 20 px, 32 leaves/s                       |
+| Blower power    | $300 / $650      | 155 px / 1300 and 190 px / 1650                                     |
+| Trainers        | $90 / $280       | +20 % walking speed per tier (base 96 px/s)                         |
+| Chutes (×5)     | $160 – $240      | Wall vent per zone: pulls leaves within 42 px, collects at 9 px      |
+| Pool pump       | $140             | Skimmer current + intake in the pool corner                          |
+
+Zone rewards (pick one): +25 % leaf value, cash ($90, $160, $230, $300, $370
+for zones 1–5), and
+alternately +15 % walking speed (zones 1, 3, 5) or +30 % hand and rake reach
+(zones 2, 4).
+
+### Physics
+
+- **Zero-gravity yard, one body per leaf.** Leaves are `Circle`s (r 3.3 px,
+  density 0.35) in a `Space` with no gravity. Ground friction is applied per
+  step as a Coulomb deceleration that depends on the surface under the leaf:
+  grass 360, asphalt 125, tiles 165, stone 190, gravel 270, mulch 720 px/s².
+  Resting leaves are left alone, so nape puts them to sleep — a yard full of
+  settled leaves costs ~0.15 ms a step.
+- **Blower.** Every leaf inside the cone gets
+  `a = P · (1 − d/R)^0.75 · (1 − 0.55 u²)` along the axis (u = lateral offset
+  over the cone half-width), spread outwards and randomised a little. Above
+  640 px/s² the excess charges a lift counter; at 8 the leaf takes off.
+- **Airborne leaves** carry their own height and vertical speed (gravity 150
+  px/s², terminal fall 34 px/s, horizontal drag 0.9 /s, a side-to-side
+  flutter while falling). While in the air the leaf's shape uses an
+  `InteractionFilter` whose mask holds only the tall-wall bit, so it sails
+  over fences, hedges, furniture and the pile; on landing it swaps back.
+  Falling leaves from the trees use the same path.
+- **Collision bits.** Tall (house, outer fence, shed, bin, car, trunks) stop
+  everything; low (zone fences, hedge, furniture) stop the gardener and
+  grounded leaves; the gate bit and the pool-rim bit stop only the gardener;
+  the rake bit meets only grounded leaves.
+- **Rake.** A `KINEMATIC` body (a bar and two angled wings) that follows the
+  gardener's facing at up to 9 rad/s and is driven with
+  `setVelocityFromTarget`, so the solver sees it moving and pushes leaves
+  with it. Leaves in the cup (up to 22 px ahead) are blended towards the
+  head's velocity and pulled towards its axis — the tines holding them. In a
+  test run on grass the narrow head carries 19 of a 40-leaf pile over 250 px,
+  the wide head 32.
+- **Pool.** One static body holds a fluid-enabled box (`FluidProperties`
+  density 1.1, viscosity 3.2, collision group 0) and a rim box that only the
+  gardener collides with. Grounded leaves that end up in it are dragged by
+  the fluid, follow a slow circulation current and, once the pump runs, a
+  26 px/s pull to the skimmer; the gardener's filter has no fluid bits.
+- **Intakes.** The compost bin (always on), the chutes and the pump pull
+  leaves within their radius towards the centre and collect them there.
+  Standing within 40 px of the bin empties the sack at 60 leaves/s.
+- **Gusts** push every leaf along one direction with a travelling wave
+  envelope (peak 430 px/s² — enough to slide leaves on asphalt, barely on
+  grass) and lift a few into the air.
+- **Game tick on the physics clock.** As in Flipper Fray and Hitch & Park,
+  the tick runs from a wrapper around `Space.step`; the shop, the reward
+  cards and the pause menu skip the wrapped step, freezing the yard.
+
+### Renderers
+
+- **Canvas2D / PixiJS** share one scene. The ground (grass with mower
+  stripes, asphalt, tiles, flagstones, pool, beds with flowers, gravel) and
+  the static props are baked into two canvases; the roof is a third layer
+  drawn above the leaves. Leaves are drawn from pre-rendered sprites per
+  kind and side plus a shadow silhouette — `drawImage` with a composed
+  transform in Canvas2D, a pooled `Sprite` layer in PixiJS. That replaced a
+  per-leaf polygon path and took the headless software renderer from 3 to
+  14 fps. The rest (gardener, tools, gates, canopies, cues) goes through a
+  small painter with a Canvas2D and a PixiJS `Graphics` implementation.
+  Airborne leaves are lifted, scaled with height, tumble (their width
+  follows a cosine) and throw an offset shadow. HUD panels fade when the
+  gardener or a held pointer is underneath them.
+- **3D:** a golden-hour sun (2048² PCF soft shadows) and hemisphere light,
+  gradient sky and warm fog. The house has sided walls with lit windows, a
+  hipped shingle roof, gutters, a brick chimney with drifting smoke, a porch
+  with a lamp; the yard has plank and picket fences (instanced), a hedge,
+  gates that swing open on their hinges, a slatted compost crate whose leaf
+  mound grows, a parked car, a shed, flower beds with instanced blooms,
+  pumpkins, a closed parasol, loungers and a normal-mapped pool. Beyond the
+  fence: a street with lamps, nine neighbouring houses and a ring of
+  instanced autumn trees. Every leaf is an instance of a gently cupped leaf
+  geometry per outline; grounded leaves stack by 5 px cell, so a pile has
+  real height; airborne ones flutter. Tree canopies are instanced blobs that
+  disappear as the tree empties, sway in a gust, shiver when a leaf lets go,
+  and shrink out of the way when they sit between the camera and the
+  gardener. The gardener is a low-poly figure in a flannel shirt and beanie
+  with walking legs, a sack that swells with its contents and the current
+  tool; the blower emits additive air streaks, gusts draw wind streaks.
+
+### Balance notes
+
+- Hand pick-up was 8 leaves/s in the first pass; a scripted player cleared
+  the lawn in one minute with it and the rake felt optional, so it is 5.
+- Gentle blowing started at 50 % power and did not move leaves on grass at
+  all; at 68 % it moves a pile on grass (spread σ ≈ 28 px) and on asphalt,
+  while full power throws the same 40-leaf pile ~140 px with σ ≈ 70 px and
+  lifts a third of it — the "go in too hard and you scatter everything"
+  trade-off.
+- A scripted player that only rakes, empties the sack and buys in a fixed
+  order opens all five zones in about six minutes of game time; players
+  who mix the blower and chutes in are faster, careful ones slower.

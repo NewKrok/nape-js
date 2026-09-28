@@ -249,13 +249,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">86</strong> <span data-i18n="home.proof.demos">interaktív demó</span>
+          <strong data-site-count="demos">87</strong> <span data-i18n="home.proof.demos">interaktív demó</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">42</strong> <span data-i18n="home.proof.games">játszható játék</span>
+          <strong data-site-count="games">43</strong> <span data-i18n="home.proof.games">játszható játék</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">22</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span>
+          <strong data-site-count="showpieces">23</strong> <span data-i18n="home.proof.showpieces">teljes játékdemó</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">kiadott játék</span>
@@ -414,6 +414,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/leaf-sweep/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/leaf-sweep.webp" srcset="../assets/posters/leaf-sweep@320.webp 320w, ../assets/posters/leaf-sweep@640.webp 640w, ../assets/posters/leaf-sweep.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Leaf Sweep — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/leaf-sweep/?mode=3d&outline=0" data-i18n="demo.leaf-sweep.label">Leaf Sweep</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.leaf-sweep.desc"><b>Őszi kerttakarítós játék</b> felülnézetből, a <i>Leaf it Alone</i> nyomdokain: öt zóna kertkapuk mögött, hét fa, amely még hullatja a levelét, és időnként egy széllökés, amely szétfújja a kupacaidat. Puszta kézzel és egy kis zsákkal kezdesz, a komposztládába ürítesz, aztán <b>gereblyét</b>, <b>lombfúvót</b>, nagyobb zsákokat és <b>szívócsatornákat</b> veszel; minden 100 %-os zóna választható jutalmat ad, és kinyitja a következő kaput. <b>WASD</b> séta, <b>egér + nyomva tartás</b> az eszköz használata, <b>1 2 3</b> váltás, <b>SHIFT</b> halk fújás, <b>B</b> bolt; érintőképernyőn tarts nyomva ott, ahol dolgozni akarsz. Fizika: minden levél egy test <b>felülettől függő súrlódással</b> (a fű megfogja, az aszfalton csúszik, a mulcsban beragad); a gereblye <b>kinematikus</b> test, amely valódi kupacokat tol; ha túl erősen fújod, a levél felszáll egy <code>InteractionFilter</code>-re, amely csak a magas falakkal ütközik; a medence <b>fluid</b> shape, amelyen a levelek úsznak. <b>3D</b>-ben aranyló délutáni kert, ritkuló lombkoronák, egymásra halmozódó levélkupacok és kinyíló kapuk.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Filtering">Filtering</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/hitch-park/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/hitch-park.webp" srcset="../assets/posters/hitch-park@320.webp 320w, ../assets/posters/hitch-park@640.webp 640w, ../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
           </a>
@@ -431,16 +441,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc"><b>Négyszemélyes flipperbunyó</b>: egy kerek asztal, négy zseb, mindegyiket egy flipperpár őrzi. A pálya <b>domború</b>: minden a középtől kifelé gurul, így minden golyó valakinek a gondja lesz; a bumperek, a csúzlik és a sávoszlopok ide-oda dobálják a golyókat, és minden golyó, amely átjut a flippereiden, egy életedbe kerül — <b>öt élet</b>, az utolsó talpon maradt zseb nyer, vagy a legtöbb élet, ha lejár a három perc. Az alsó zsebet te véded <b>három AI-kapus</b> ellen; a <b>multiball</b> menetrend szerint plusz golyókat dob be, félpercenként pedig kigurul egy <b>bombagolyó</b> — két élet, ha beesik, robbanás, ha senki nem nyeli le. <b>← →</b> / <b>A D</b> flipperezés, <b>SPACE</b> mindkettő; érintőképernyőn tartsd nyomva a képernyő bal vagy jobb felét. Fizika: a flipperek <code>setVelocityFromTarget</code>-tel hajtott <b>kinematikus testek</b>, így az ütés valódi szögsebességet visz át a golyóba; a golyók <b>bullet-jelölt</b> körök, ezért semmi nem fúródik át a vékony gyűrűfalakon; a bumper- és csúzlilökések, valamint a gólok jóváírása <code>InteractionListener</code>-eken át érkezik. <b>3D</b>-ben neonaréna krómgolyókkal, világító zsebekkel és sávfényekkel, a saját zsebed mögül nézve.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="../examples/swarm-night/?mode=3d&outline=0">
-            <img class="game-card-img" src="../assets/posters/swarm-night.webp" srcset="../assets/posters/swarm-night@320.webp 320w, ../assets/posters/swarm-night@640.webp 640w, ../assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Játék →</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Teljes játék</span><a href="../examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc"><b>Survivor-roguelite</b> Vampire Survivors-stílusban: öt perc egy körbekerített temetőben, és te csak <b>irányítasz</b> — minden fegyver magától tüzel. A megölt szörnyek <b>XP-gyémántokat</b> ejtenek; a betelt sáv megállítja az éjszakát, és <b>három fejlesztéskártyát</b> kínál hat fegyverből (ostor, pálca, kések, pajzs, gömbök, villám) és nyolc passzívból. Hat szörnytípus érkezik menetrend szerint, plusz rohamozó, kincset hordó <b>sírlovagok</b> és 4:00-nál a <b>csontkolosszus</b>, amelynek földcsapása az egész tömeget szétrepíti. A hajnal 5:00-kor a győzelem. Mozgás <b>WASD</b>-vel / nyilakkal, kártya az <b>1 / 2 / 3</b>-mal vagy kattintással; érintőképernyőn <b>tarts nyomva bárhol</b> az irányításhoz. Fizika: akár <b>420 szörny</b> dinamikus kör egy zéró gravitációs <code>Space</code>-ben, így a horda rajzás-kód nélkül tolakodik és áramlik a kövek között; a hátralökés tömeggel skálázott impulzus, a lövedékek, kések, köpetek és gömbök pedig <b>szenzortestek</b>, amelyek találatai <code>InteractionListener</code>-eken át érkeznek, szenzormaszkos oldalszűréssel. <b>3D</b>-ben holdfényes temető, ahol minden szörny instance-olt low-poly rig.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Játékmenet</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">MI</span><span class="example-tag" data-i18n="tag.Camera">Kamera</span><span class="example-tag" data-i18n="tag.Sensors">Érzékelők</span><span class="example-tag" data-i18n="tag.Performance">Teljesítmény</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

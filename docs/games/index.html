@@ -28,6 +28,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Leaf Sweep",
+        "url": "https://napejs.org/examples/leaf-sweep/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Hitch & Park",
         "url": "https://napejs.org/examples/hitch-park/",
         "gamePlatform": "Web browser",
@@ -261,7 +268,7 @@
       <h1 data-i18n="games.heading">Games built on nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">From a single mechanic to a shipped title: every game below runs on the same open-source 2D physics engine. Play in the browser, then open the source.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>23</strong> <span data-i18n="home.proof.showpieces">complete game demos</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">gameplay slices</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">shipped titles</span></a>
       </nav>
@@ -274,6 +281,16 @@
       <h2 data-i18n="games.showpieces.heading">Complete game demos</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Multi-system games in one file each — AI opponents, waves, cameras, scoring and 3D rigs. Play them here or open the source on CodePen and StackBlitz.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../examples/leaf-sweep/?mode=3d&outline=0">
+            <img class="game-card-img" src="../assets/posters/leaf-sweep.webp" srcset="../assets/posters/leaf-sweep@320.webp 320w, ../assets/posters/leaf-sweep@640.webp 640w, ../assets/posters/leaf-sweep.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Leaf Sweep — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="../examples/leaf-sweep/?mode=3d&outline=0" data-i18n="demo.leaf-sweep.label">Leaf Sweep</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.leaf-sweep.desc">An <b>autumn yard-cleaning game</b> seen from above, in the <i>Leaf it Alone</i> mould: five zones behind garden gates, seven trees still dropping leaves and a gust now and then that scatters your piles. Start with bare hands and a small sack, empty it into the compost bin, then buy a <b>rake</b>, a <b>leaf blower</b>, bigger sacks and <b>vacuum chutes</b>; each zone at 100 % pays a reward of your choice and opens the next gate. <b>WASD</b> walk, <b>mouse + hold</b> use the tool, <b>1 2 3</b> switch, <b>SHIFT</b> gentle blow, <b>B</b> shop; on touch, hold where you want to work. Physics: every leaf is a body with <b>surface-dependent friction</b> (grass holds, asphalt slides, mulch sticks); the rake is a <b>kinematic</b> body that shoves real piles; blow too hard and a leaf lifts onto an <code>InteractionFilter</code> that only meets tall walls; the pool is a <b>fluid</b> shape leaves float on. In <b>3D</b>: a golden-hour garden, thinning canopies and stacked leaf piles.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Filtering">Filtering</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../examples/hitch-park/?mode=3d&outline=0">
             <img class="game-card-img" src="../assets/posters/hitch-park.webp" srcset="../assets/posters/hitch-park@320.webp 320w, ../assets/posters/hitch-park@640.webp 640w, ../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play →</span>

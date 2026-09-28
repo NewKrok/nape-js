@@ -342,5 +342,9 @@
   "hitch-park": {
     "mode": "3d",
     "renderedAt": "2026-09-24"
+  },
+  "leaf-sweep": {
+    "mode": "3d",
+    "renderedAt": "2026-09-28"
   }
 }

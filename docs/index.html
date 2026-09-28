@@ -253,13 +253,13 @@
            registry (data-site-count), so they never go stale by hand. -->
       <nav class="proof-strip" aria-label="Site sections">
         <a class="proof-item" href="examples/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'demos'})">
-          <strong data-site-count="demos">86</strong> <span data-i18n="home.proof.demos">interactive demos</span>
+          <strong data-site-count="demos">87</strong> <span data-i18n="home.proof.demos">interactive demos</span>
         </a>
         <a class="proof-item" href="examples/?cat=game" onclick="gtag('event','navigation',{event_category:'proof',event_label:'games'})">
-          <strong data-site-count="games">42</strong> <span data-i18n="home.proof.games">playable games</span>
+          <strong data-site-count="games">43</strong> <span data-i18n="home.proof.games">playable games</span>
         </a>
         <a class="proof-item proof-item-showpiece" href="games/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'showpieces'})">
-          <strong data-site-count="showpieces">22</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
+          <strong data-site-count="showpieces">23</strong> <span data-i18n="home.proof.showpieces">complete game demos</span>
         </a>
         <a class="proof-item" href="showcase/" onclick="gtag('event','navigation',{event_category:'proof',event_label:'shipped'})">
           <strong data-site-count="shipped">3</strong> <span data-i18n="home.proof.shipped">shipped titles</span>
@@ -418,6 +418,16 @@
       <div class="game-grid game-grid-large game-grid-3">
         <!-- featured-games:start -->
         <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="examples/leaf-sweep/?mode=3d&outline=0">
+            <img class="game-card-img" src="assets/posters/leaf-sweep.webp" srcset="assets/posters/leaf-sweep@320.webp 320w, assets/posters/leaf-sweep@640.webp 640w, assets/posters/leaf-sweep.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Leaf Sweep — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/leaf-sweep/?mode=3d&outline=0" data-i18n="demo.leaf-sweep.label">Leaf Sweep</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.leaf-sweep.desc">An <b>autumn yard-cleaning game</b> seen from above, in the <i>Leaf it Alone</i> mould: five zones behind garden gates, seven trees still dropping leaves and a gust now and then that scatters your piles. Start with bare hands and a small sack, empty it into the compost bin, then buy a <b>rake</b>, a <b>leaf blower</b>, bigger sacks and <b>vacuum chutes</b>; each zone at 100 % pays a reward of your choice and opens the next gate. <b>WASD</b> walk, <b>mouse + hold</b> use the tool, <b>1 2 3</b> switch, <b>SHIFT</b> gentle blow, <b>B</b> shop; on touch, hold where you want to work. Physics: every leaf is a body with <b>surface-dependent friction</b> (grass holds, asphalt slides, mulch sticks); the rake is a <b>kinematic</b> body that shoves real piles; blow too hard and a leaf lifts onto an <code>InteractionFilter</code> that only meets tall walls; the pool is a <b>fluid</b> shape leaves float on. In <b>3D</b>: a golden-hour garden, thinning canopies and stacked leaf piles.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Filtering">Filtering</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
+          </div>
+        </article>
+        <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="examples/hitch-park/?mode=3d&outline=0">
             <img class="game-card-img" src="assets/posters/hitch-park.webp" srcset="assets/posters/hitch-park@320.webp 320w, assets/posters/hitch-park@640.webp 640w, assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
           </a>
@@ -435,16 +445,6 @@
             <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/flipper-fray/?mode=3d&outline=0" data-i18n="demo.flipper-fray.label">Flipper Fray</a></h3>
             <p class="game-card-desc" data-i18n-html="demo.flipper-fray.desc">A <b>four-player pinball brawl</b>: one round table, four pockets, a pair of flippers guarding each. The playfield is a <b>dome</b>: everything rolls outward from the centre, so every ball becomes somebody's problem; bumpers, slingshots and lane posts throw the balls around, and every ball that gets past your flippers costs you a life — <b>five lives</b>, last pocket standing wins, or the most lives when three minutes run out. You hold the bottom pocket against <b>three AI keepers</b>; <b>multiball</b> drops extra balls on a schedule and a <b>bomb ball</b> rolls out every half minute — two lives if it drains, a blast if nobody swallows it. <b>← →</b> / <b>A D</b> flip, <b>SPACE</b> both; on touch, hold the left or right half of the screen. Physics: the flippers are <b>kinematic bodies</b> driven with <code>setVelocityFromTarget</code>, so a slap carries real angular speed into the ball; balls are <b>bullet-flagged</b> circles, so nothing tunnels through the thin ring walls; bumper and slingshot kicks and goal credit come through <code>InteractionListener</code>s. In <b>3D</b> a neon arena with chrome balls, glowing pockets and lane lights, seen from behind your own pocket.</p>
             <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Pinball">Pinball</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.CCD">CCD</span><span class="example-tag" data-i18n="tag.Listeners">Listeners</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
-          </div>
-        </article>
-        <article class="game-card game-card-large">
-          <a class="game-card-canvas has-poster" href="examples/swarm-night/?mode=3d&outline=0">
-            <img class="game-card-img" src="assets/posters/swarm-night.webp" srcset="assets/posters/swarm-night@320.webp 320w, assets/posters/swarm-night@640.webp 640w, assets/posters/swarm-night.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Swarm Night — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Play &rarr;</span>
-          </a>
-          <div class="game-card-body">
-            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Complete game</span><a href="examples/swarm-night/?mode=3d&outline=0" data-i18n="demo.swarm-night.label">Swarm Night</a></h3>
-            <p class="game-card-desc" data-i18n-html="demo.swarm-night.desc">A <b>survivor roguelite</b> in the Vampire Survivors mould: five minutes in a walled graveyard, and you only <b>steer</b> — every weapon fires on its own. Kills drop <b>XP gems</b>; a full bar pauses the night for <b>three upgrade cards</b> drawn from six weapons (whip, wand, knives, ward, orbs, lightning) and eight passives. Six monster types arrive on a schedule, plus charging <b>grave knights</b> that carry treasure and a <b>bone colossus</b> at 4:00 whose slam throws the whole crowd. Dawn at 5:00 is the win. <b>WASD</b> / arrows to move, <b>1 / 2 / 3</b> or click to pick a card; on touch, <b>hold anywhere</b> to steer. Physics: up to <b>420 monsters</b> are dynamic circles in a zero-gravity <code>Space</code>, so the horde crowds and streams around the stones with no flocking code; knockback is a mass-scaled impulse, and bolts, knives, spit and orbs are <b>sensor bodies</b> delivered through <code>InteractionListener</code>s with sensor-mask side filtering. In <b>3D</b> a moonlit graveyard where every monster is an instanced low-poly rig.</p>
-            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Roguelite">Roguelite</span><span class="example-tag" data-i18n="tag.AI">AI</span><span class="example-tag" data-i18n="tag.Camera">Camera</span><span class="example-tag" data-i18n="tag.Sensors">Sensors</span><span class="example-tag" data-i18n="tag.Performance">Performance</span><span class="example-tag" data-i18n="tag.Mobile">Mobile</span></div>
           </div>
         </article>
         <!-- featured-games:end -->

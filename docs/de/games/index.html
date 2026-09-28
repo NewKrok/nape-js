@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Leaf Sweep",
+        "url": "https://napejs.org/examples/leaf-sweep/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Hitch & Park",
         "url": "https://napejs.org/examples/hitch-park/",
         "gamePlatform": "Web browser",
@@ -262,7 +269,7 @@
       <h1 data-i18n="games.heading">Spiele auf Basis von nape-js</h1>
       <p class="page-hero-intro" data-i18n="games.intro">Von der einzelnen Mechanik bis zum veröffentlichten Titel: Jedes Spiel hier läuft auf derselben Open-Source-2D-Physik-Engine. Im Browser spielen, dann den Quellcode öffnen.</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">komplette Spiele-Demos</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>23</strong> <span data-i18n="home.proof.showpieces">komplette Spiele-Demos</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">Gameplay-Bausteine</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">veröffentlichte Titel</span></a>
       </nav>
@@ -275,6 +282,16 @@
       <h2 data-i18n="games.showpieces.heading">Komplette Spiele-Demos</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">Spiele mit mehreren Systemen in je einer Datei — KI-Gegner, Wellen, Kameras, Punktestand und 3D-Rigs. Hier spielen oder den Quellcode auf CodePen und StackBlitz öffnen.</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../de/examples/leaf-sweep/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/leaf-sweep.webp" srcset="../../assets/posters/leaf-sweep@320.webp 320w, ../../assets/posters/leaf-sweep@640.webp 640w, ../../assets/posters/leaf-sweep.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Leaf Sweep — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Spielen →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">Komplettes Spiel</span><a href="../../de/examples/leaf-sweep/?mode=3d&outline=0" data-i18n="demo.leaf-sweep.label">Leaf Sweep</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.leaf-sweep.desc">Ein <b>herbstliches Gartenaufräumspiel</b> von oben, nach dem Vorbild von <i>Leaf it Alone</i>: fünf Zonen hinter Gartentoren, sieben Bäume, die noch Laub abwerfen, und ab und zu eine Böe, die deine Haufen verweht. Du beginnst mit bloßen Händen und einem kleinen Sack, leerst ihn in den Komposter und kaufst dann einen <b>Rechen</b>, einen <b>Laubbläser</b>, größere Säcke und <b>Saugschächte</b>; jede Zone bei 100 % bringt eine Belohnung nach Wahl und öffnet das nächste Tor. <b>WASD</b> gehen, <b>Maus + Halten</b> Werkzeug benutzen, <b>1 2 3</b> wechseln, <b>SHIFT</b> sanft blasen, <b>B</b> Laden; auf Touch dort halten, wo du arbeiten willst. Physik: Jedes Blatt ist ein Körper mit <b>untergrundabhängiger Reibung</b> (Gras hält, Asphalt lässt rutschen, Mulch klebt); der Rechen ist ein <b>kinematischer</b> Körper, der echte Haufen schiebt; bläst du zu stark, hebt ein Blatt ab und wechselt auf einen <code>InteractionFilter</code>, der nur hohe Wände trifft; der Pool ist eine <b>Fluid</b>-Form, auf der Blätter treiben. In <b>3D</b>: ein Garten im goldenen Abendlicht, lichter werdende Kronen, gestapelte Laubhaufen und aufschwingende Tore.</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">Gameplay</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Filtering">Filtering</span><span class="example-tag" data-i18n="tag.Mobile">Mobil</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../de/examples/hitch-park/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/hitch-park.webp" srcset="../../assets/posters/hitch-park@320.webp 320w, ../../assets/posters/hitch-park@640.webp 640w, ../../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">Spielen →</span>

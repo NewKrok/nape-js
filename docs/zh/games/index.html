@@ -29,6 +29,13 @@
     "hasPart": [
       {
         "@type": "VideoGame",
+        "name": "Leaf Sweep",
+        "url": "https://napejs.org/examples/leaf-sweep/",
+        "gamePlatform": "Web browser",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "VideoGame",
         "name": "Hitch & Park",
         "url": "https://napejs.org/examples/hitch-park/",
         "gamePlatform": "Web browser",
@@ -262,7 +269,7 @@
       <h1 data-i18n="games.heading">基于 nape-js 构建的游戏</h1>
       <p class="page-hero-intro" data-i18n="games.intro">从单一机制到已发布作品：下面的每个游戏都运行在同一个开源 2D 物理引擎上。在浏览器中试玩，然后打开源码。</p>
       <nav class="proof-strip" aria-label="Game tiers">
-        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>22</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
+        <a class="proof-item proof-item-showpiece" href="#showpieces"><strong>23</strong> <span data-i18n="home.proof.showpieces">个完整游戏演示</span></a>
         <a class="proof-item" href="#slices"><strong>20</strong> <span data-i18n="home.proof.slices">个玩法切片</span></a>
         <a class="proof-item" href="#shipped"><strong>3</strong> <span data-i18n="home.proof.shipped">个已发布作品</span></a>
       </nav>
@@ -275,6 +282,16 @@
       <h2 data-i18n="games.showpieces.heading">完整游戏演示</h2>
       <p class="section-desc" data-i18n="games.showpieces.desc">每个都是单文件的多系统游戏——AI 对手、波次、摄像机、计分和 3D 骨架。在这里试玩，或在 CodePen 和 StackBlitz 上打开源码。</p>
       <div class="game-grid game-grid-large">
+        <article class="game-card game-card-large">
+          <a class="game-card-canvas has-poster" href="../../zh/examples/leaf-sweep/?mode=3d&outline=0">
+            <img class="game-card-img" src="../../assets/posters/leaf-sweep.webp" srcset="../../assets/posters/leaf-sweep@320.webp 320w, ../../assets/posters/leaf-sweep@640.webp 640w, ../../assets/posters/leaf-sweep.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Leaf Sweep — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
+          </a>
+          <div class="game-card-body">
+            <h3><span class="tier-badge tier-badge-showpiece" data-i18n="games.tier.showpiece">完整游戏</span><a href="../../zh/examples/leaf-sweep/?mode=3d&outline=0" data-i18n="demo.leaf-sweep.label">Leaf Sweep</a></h3>
+            <p class="game-card-desc" data-i18n-html="demo.leaf-sweep.desc">一款<b>俯视视角的秋日庭院清扫游戏</b>，风格类似 <i>Leaf it Alone</i>：花园门后的五个区域、七棵仍在落叶的树，还有不时吹散你落叶堆的阵风。你从徒手和一个小袋子开始，把袋子倒进堆肥箱，然后购买<b>耙子</b>、<b>吹叶机</b>、更大的袋子和<b>吸叶口</b>；每个区域清理到 100 % 都会给出一项可选奖励，并打开下一道门。<b>WASD</b> 行走，<b>鼠标 + 按住</b>使用工具，<b>1 2 3</b> 切换，<b>SHIFT</b> 轻吹，<b>B</b> 商店；触屏上按住想要工作的位置。物理：每片叶子都是一个<b>摩擦力随地面而变</b>的刚体（草地抓得住、柏油路会滑、覆盖物粘住）；耙子是真正推动落叶堆的<b>运动学</b>刚体；吹得太猛，叶子就会飞起，切换到只与高墙碰撞的 <code>InteractionFilter</code>；泳池是叶子能漂浮其上的<b>流体</b>形状。<b>3D</b> 中：金色夕照下的花园、逐渐稀疏的树冠、层层堆叠的落叶和缓缓打开的门。</p>
+            <div class="game-card-tags"><span class="example-tag" data-i18n="tag.Gameplay">玩法</span><span class="example-tag" data-i18n="tag.Top-down">Top-down</span><span class="example-tag" data-i18n="tag.Fluid">Fluid</span><span class="example-tag" data-i18n="tag.Kinematic">Kinematic</span><span class="example-tag" data-i18n="tag.Filtering">Filtering</span><span class="example-tag" data-i18n="tag.Mobile">移动端</span></div>
+          </div>
+        </article>
         <article class="game-card game-card-large">
           <a class="game-card-canvas has-poster" href="../../zh/examples/hitch-park/?mode=3d&outline=0">
             <img class="game-card-img" src="../../assets/posters/hitch-park.webp" srcset="../../assets/posters/hitch-park@320.webp 320w, ../../assets/posters/hitch-park@640.webp 640w, ../../assets/posters/hitch-park.webp 900w" sizes="(min-width: 900px) 290px, calc(100vw - 48px)" width="900" height="500" loading="lazy" decoding="async" alt="Hitch &amp; Park — gameplay screenshot" /><span class="game-card-play" data-i18n="games.play">开始 →</span>
