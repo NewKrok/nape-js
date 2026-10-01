@@ -29,9 +29,14 @@ import type { PreFlag } from "./PreFlag";
  *
  * The event is always {@link CbEvent.PRE} and cannot be changed.
  *
- * **Pure mode**: when `pure` is `true` the engine caches the handler result and
- * does not re-invoke it until the result is reset. This is an optimisation — only
- * use `pure` when the handler will always return the same flag for a given pair.
+ * **Caching** comes from the returned flag: `ACCEPT` / `IGNORE` are remembered
+ * and the handler is not called again until the next `BEGIN`; the `_ONCE`
+ * variants re-run it every step.
+ *
+ * **Pure mode**: `pure = true` promises the handler's result depends only on the
+ * pair, so the bodies may fall asleep while it returns a `_ONCE` flag. A
+ * non-pure listener (the default) keeps both bodies awake so it keeps running.
+ * Only use `pure` when the handler will always return the same flag for a given pair.
  *
  * @example
  * ```ts
@@ -56,7 +61,7 @@ export class PreListener extends Listener {
    * @param options2 - Filter for the second interactor, or `null` to match any.
    * @param handler - Called each step; return a {@link PreFlag} to control the interaction.
    * @param precedence - Execution order relative to other listeners (higher = first). Default `0`.
-   * @param pure - Enable caching of the handler result. Default `false`.
+   * @param pure - Result depends only on the pair, so the bodies may sleep. Default `false`.
    */
   constructor(
     interactionType: InteractionType,

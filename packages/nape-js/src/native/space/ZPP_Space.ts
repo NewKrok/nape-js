@@ -9162,7 +9162,7 @@ export class ZPP_Space {
                     }
                   }
                 }
-                if (arb1.b1.type == 2) {
+                if (arb1.b2.type == 2) {
                   const o8 = arb1.b2;
                   if (!o8.world) {
                     o8.component.waket = this.stamp + (this.midstep ? 0 : 1);
@@ -9977,7 +9977,7 @@ export class ZPP_Space {
                     }
                   }
                 }
-                if (arb3.b1.type == 2) {
+                if (arb3.b2.type == 2) {
                   const o24 = arb3.b2;
                   if (!o24.world) {
                     o24.component.waket = this.stamp + (this.midstep ? 0 : 1);

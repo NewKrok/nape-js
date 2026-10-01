@@ -1136,11 +1136,11 @@ new PreListener(
   options2: CbType | OptionType,
   handler: (cb: PreCallback) => PreFlag | null,
   precedence?: number,
-  pure?: boolean   // If true, result is cached (default false)
+  pure?: boolean   // true = result depends only on the pair; lets the bodies sleep (default false)
 )
 ```
 
-Return `PreFlag.ACCEPT`, `PreFlag.IGNORE`, `PreFlag.ACCEPT_ONCE`, or `PreFlag.IGNORE_ONCE` to control collision response.
+Return `PreFlag.ACCEPT`, `PreFlag.IGNORE`, `PreFlag.ACCEPT_ONCE`, or `PreFlag.IGNORE_ONCE` to control collision response. `ACCEPT` / `IGNORE` are cached (the handler is not called again until the next `BEGIN`); the `_ONCE` variants re-run the handler every step. A non-pure listener returning a `_ONCE` flag keeps both bodies awake so it keeps being called. IGNORE drops only the physical response: BEGIN / ONGOING / END interaction events are still reported.
 
 ---
 

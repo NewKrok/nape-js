@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6527 engine tests across 309 files, plus 79 pixi-adapter tests across 6 files.**
+**6555 engine tests across 312 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -82,7 +82,7 @@ set yet.
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
 | Statements | ~88% | ≥80% ✅ |
-| Branches | ~78% | — |
+| Branches | ~79% | — |
 | Functions | ~95% | — |
 
 **High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/serialization/` (93%)
@@ -103,6 +103,17 @@ gaps): zero-caller no-op pool stubs and helpers were removed, and inlined
 copies of `ZPP_ColArbiter.free()` / `validate_props()`,
 `ZPP_Body.sweepIntegrate()` and the broadphase `__sync` were replaced by
 calls to the canonical methods.
+
+### Interaction-type and pre-listener paths
+
+`ZPP_Space.narrowPhase` has three near-identical inlined blocks (fluid,
+collision, sensor). A fix or test that covers one block says nothing about
+the other two, so tests for this area run the same scenario across all
+three types. A fix found this way: an impure `PreListener` did not keep a
+resting body awake when the arbiter's `b1` was the static body, in the
+fluid and collision blocks only (`callbacks/PreListener.impureWake`).
+`dynamics/InteractionTypeSwitch` covers switching
+`sensorEnabled` / `fluidEnabled` while two shapes are in contact.
 
 ### Oracle-based geometry tests
 
