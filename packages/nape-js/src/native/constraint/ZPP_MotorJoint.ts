@@ -273,7 +273,13 @@ export class ZPP_MotorJoint extends ZPP_Constraint {
     this.pre_dt = dt;
     this.stepped = true;
     this.kMass = this.b1.sinertia + this.ratio * this.ratio * this.b2.sinertia;
-    this.kMass = 1.0 / this.kMass;
+    // Neither body can rotate: no impulse can act (as in AngleJoint). 1/0
+    // here made every impulse Infinity * 0 = NaN, poisoning both bodies.
+    if (this.kMass != 0) {
+      this.kMass = 1.0 / this.kMass;
+    } else {
+      this.jAcc = 0;
+    }
     this.jAcc *= dtratio;
     this.jMax = this.maxForce * dt;
     return false;
