@@ -27,6 +27,7 @@ export abstract class UserConstraint extends Constraint {
     this.zpp_inner = zpp;
     zpp.outer = this;
     zpp.outer_zn = this;
+    this._tagAnyConstraint();
   }
 
   /** @internal */

@@ -762,7 +762,7 @@ joint.removeOnBreak = true; // auto-remove from space
 
 // Listen for the break event
 const jointTag = new CbType();
-joint.cbTypes.add(jointTag); // IMPORTANT: must add a custom CbType
+joint.cbTypes.add(jointTag); // only this joint (CbType.ANY_CONSTRAINT matches all)
 
 space.listeners.add(
   new ConstraintListener(CbEvent.BREAK, jointTag, (cb) => {
@@ -774,7 +774,7 @@ space.listeners.add(
 joint.space = space;
 ```
 
-**Gotcha:** `CbType.ANY_CONSTRAINT` does **not** work for BREAK/SLEEP events. You must create and assign a dedicated `CbType` to the joint's `cbTypes`.
+**Gotcha:** breaking is opt-in — without `breakUnderForce` (or `breakUnderError` + `maxError`) the joint is only clamped and BREAK never fires. On nape-js ≤ 3.42.3, listeners on `CbType.ANY_CONSTRAINT` matched nothing, so tag the joint with a dedicated `CbType` there.
 
 ---
 

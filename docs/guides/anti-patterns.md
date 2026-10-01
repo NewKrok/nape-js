@@ -146,24 +146,22 @@ player.allowRotation = false;
 
 ## Constraints
 
-### Using `CbType.ANY_CONSTRAINT` for BREAK events
+### Expecting a joint to break without enabling it
 
-This is a known gotcha — `ANY_CONSTRAINT` only works for generic
-constraint queries, not for BREAK or SLEEP event listeners.
+`maxForce` / `maxError` alone only **clamp** a joint — it never breaks, and a
+BREAK listener never fires, until you opt in.
 
 ```typescript
-// BAD — listener never fires
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, handler),
-);
+// BAD — joint is clamped at 5000, never breaks
+joint.maxForce = 5000;
 
-// GOOD — create a dedicated CbType
-const breakableTag = new CbType();
-joint.cbTypes.add(breakableTag);
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, breakableTag, handler),
-);
+// GOOD — over-limit now breaks it (and removes it, see removeOnBreak)
+joint.maxForce = 5000;
+joint.breakUnderForce = true; // or breakUnderError with maxError
 ```
+
+(On nape-js ≤ 3.42.3, `CbType.ANY_CONSTRAINT` listeners also matched nothing
+— tag the joints with a custom `CbType` there.)
 
 ### Making every constraint stiff
 

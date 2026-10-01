@@ -73,6 +73,7 @@ export class WeldJoint extends Constraint {
     this.zpp_inner = zpp;
     zpp.outer = this;
     zpp.outer_zn = this;
+    this._tagAnyConstraint();
 
     // Set bodies
     this._setBody1(body1);

@@ -200,20 +200,24 @@ compound.space = space;
 </code></pre>
 <hr>
 <h2 id="constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</h2>
-<p><strong>Cause:</strong> <code>CbType.ANY_CONSTRAINT</code> does <strong>not</strong> work for BREAK or SLEEP events.
-You must create a dedicated <code>CbType</code> and assign it to the constraint.</p>
-<pre><code class="language-typescript">// WRONG — listener never fires
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, handler),
-);
+<p><strong>Cause 1:</strong> the joint never breaks. Breaking is opt-in — <code>breakUnderForce</code>
+and <code>breakUnderError</code> are both <code>false</code> by default, so a joint over its
+<code>maxForce</code> / <code>maxError</code> is just clamped.</p>
+<pre><code class="language-typescript">joint.maxForce = 5000;
+joint.breakUnderForce = true; // without this, BREAK never fires
 
-// CORRECT — create and assign a custom tag
-const breakableTag = new CbType();
+space.listeners.add(
+  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, (cb) =&gt; {
+    // cb.constraint broke; with removeOnBreak (default) it has left the space
+  }),
+);
+</code></pre>
+<p><strong>Cause 2 (nape-js ≤ 3.42.3):</strong> <code>CbType.ANY_CONSTRAINT</code> was never attached to
+constraints, so listeners on it matched nothing. Upgrade, or tag the joints
+with your own type:</p>
+<pre><code class="language-typescript">const breakableTag = new CbType();
 joint.cbTypes.add(breakableTag);
-
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, breakableTag, handler),
-);
+space.listeners.add(new ConstraintListener(CbEvent.BREAK, breakableTag, handler));
 </code></pre>
 <hr>
 <h2 id="material-constructor-order-is-confusing">Material constructor order is confusing</h2>

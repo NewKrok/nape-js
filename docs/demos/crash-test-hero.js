@@ -337,8 +337,8 @@ let _seesaw = null;                  // { plank, joint }
 
 // Breakable-joint registry: pivot → { angle, label, part }. The BREAK
 // listener only queues; step() drains (never mutate the space mid-callback).
-// Constraints do NOT automatically carry ANY_CONSTRAINT in this engine —
-// breakable joints get a shared custom CbType so the listener matches.
+// Breakable joints get a shared custom CbType so the listener only sees
+// them (ANY_CONSTRAINT would also match the non-breakable ones).
 let _cbBreakable = null;
 let _breakables = new Map();
 const _pendingBreaks = [];

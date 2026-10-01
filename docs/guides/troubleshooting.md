@@ -113,22 +113,29 @@ compound.space = space;
 
 ## ConstraintListener doesn't fire for BREAK events
 
-**Cause:** `CbType.ANY_CONSTRAINT` does **not** work for BREAK or SLEEP events.
-You must create a dedicated `CbType` and assign it to the constraint.
+**Cause 1:** the joint never breaks. Breaking is opt-in — `breakUnderForce`
+and `breakUnderError` are both `false` by default, so a joint over its
+`maxForce` / `maxError` is just clamped.
 
 ```typescript
-// WRONG — listener never fires
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, handler),
-);
+joint.maxForce = 5000;
+joint.breakUnderForce = true; // without this, BREAK never fires
 
-// CORRECT — create and assign a custom tag
+space.listeners.add(
+  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, (cb) => {
+    // cb.constraint broke; with removeOnBreak (default) it has left the space
+  }),
+);
+```
+
+**Cause 2 (nape-js ≤ 3.42.3):** `CbType.ANY_CONSTRAINT` was never attached to
+constraints, so listeners on it matched nothing. Upgrade, or tag the joints
+with your own type:
+
+```typescript
 const breakableTag = new CbType();
 joint.cbTypes.add(breakableTag);
-
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, breakableTag, handler),
-);
+space.listeners.add(new ConstraintListener(CbEvent.BREAK, breakableTag, handler));
 ```
 
 ---

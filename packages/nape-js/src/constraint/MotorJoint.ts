@@ -44,6 +44,7 @@ export class MotorJoint extends Constraint {
     this.zpp_inner = zpp;
     zpp.outer = this;
     zpp.outer_zn = this;
+    this._tagAnyConstraint();
 
     // Set bodies (full constraint-space integration logic)
     this._setBody1(body1);

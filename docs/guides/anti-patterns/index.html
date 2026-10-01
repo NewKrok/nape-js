@@ -235,21 +235,18 @@ player.allowRotation = false;
 </code></pre>
 <hr>
 <h2 id="constraints">Constraints</h2>
-<h3 id="using-cbtypeanyconstraint-for-break-events">Using <code>CbType.ANY_CONSTRAINT</code> for BREAK events</h3>
-<p>This is a known gotcha — <code>ANY_CONSTRAINT</code> only works for generic
-constraint queries, not for BREAK or SLEEP event listeners.</p>
-<pre><code class="language-typescript">// BAD — listener never fires
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, CbType.ANY_CONSTRAINT, handler),
-);
+<h3 id="expecting-a-joint-to-break-without-enabling-it">Expecting a joint to break without enabling it</h3>
+<p><code>maxForce</code> / <code>maxError</code> alone only <strong>clamp</strong> a joint — it never breaks, and a
+BREAK listener never fires, until you opt in.</p>
+<pre><code class="language-typescript">// BAD — joint is clamped at 5000, never breaks
+joint.maxForce = 5000;
 
-// GOOD — create a dedicated CbType
-const breakableTag = new CbType();
-joint.cbTypes.add(breakableTag);
-space.listeners.add(
-  new ConstraintListener(CbEvent.BREAK, breakableTag, handler),
-);
+// GOOD — over-limit now breaks it (and removes it, see removeOnBreak)
+joint.maxForce = 5000;
+joint.breakUnderForce = true; // or breakUnderError with maxError
 </code></pre>
+<p>(On nape-js ≤ 3.42.3, <code>CbType.ANY_CONSTRAINT</code> listeners also matched nothing
+— tag the joints with a custom <code>CbType</code> there.)</p>
 <h3 id="making-every-constraint-stiff">Making every constraint stiff</h3>
 <p>Stiff constraints (the default) create rigid connections. For natural-looking
 physics (ragdolls, ropes, vehicles), soft constraints are almost always better.</p>

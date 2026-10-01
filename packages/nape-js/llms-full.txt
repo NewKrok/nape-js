@@ -21,7 +21,7 @@
 2. **Material constructor order** — `Material(elasticity, dynamicFriction, staticFriction, density, rollingFriction)` — elasticity is first
 3. **Raycast needs a step first** — call `space.step(1/60)` before `space.rayCast()` so broadphase indexes shapes
 4. **CCD is per-body** — `body.isBullet = true`, no global space setting
-5. **ConstraintListener BREAK events** — must use custom `CbType`, not `CbType.ANY_CONSTRAINT`
+5. **Joints only break when asked** — set `breakUnderForce` / `breakUnderError` (both off by default) or a BREAK listener never fires. (`CbType.ANY_CONSTRAINT` matches every constraint; nape-js ≤ 3.42.3 never attached it, so BREAK/SLEEP listeners needed a custom `CbType`.)
 6. **Compound members** — set `compound.space = space`, not `memberBody.space = space`
 7. **Vec2.weak()** — auto-disposed after first use; use `Vec2.get()` if you need the value later
 8. **Gravity is in pixels/s²** — typical value is 600, not 9.8
@@ -1006,7 +1006,7 @@ new CbType()
 | `CbType.ANY_BODY` | Matches all bodies |
 | `CbType.ANY_SHAPE` | Matches all shapes |
 | `CbType.ANY_COMPOUND` | Matches all compounds |
-| `CbType.ANY_CONSTRAINT` | Matches all constraints (must be manually added to constraints) |
+| `CbType.ANY_CONSTRAINT` | Matches all constraints (nape-js ≤ 3.42.3: never attached — use a custom `CbType`) |
 
 #### Properties
 

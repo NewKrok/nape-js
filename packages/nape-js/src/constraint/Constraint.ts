@@ -5,6 +5,7 @@ import { Compound } from "../phys/Compound";
 import { MatMN } from "../geom/MatMN";
 import { Vec3 } from "../geom/Vec3";
 import { ZPP_Constraint } from "../native/constraint/ZPP_Constraint";
+import { CbType } from "../callbacks/CbType";
 
 /** @internal Shared error message for impulse evaluation on a null body. */
 export const IMPULSE_ERROR_NULL_BODY = "Cannot evaluate impulse on null body";
@@ -38,6 +39,16 @@ export class Constraint {
 
   /** @internal */
   protected constructor() {}
+
+  /**
+   * @internal Tags a freshly constructed constraint with
+   * {@link CbType.ANY_CONSTRAINT}, as bodies, shapes and compounds are tagged
+   * with their ANY_* type. Called by each concrete constructor once
+   * `zpp_inner` exists.
+   */
+  protected _tagAnyConstraint(): void {
+    this.zpp_inner.insert_cbtype((CbType.ANY_CONSTRAINT as any).zpp_inner);
+  }
 
   /** @internal */
   static _wrap(inner: any): Constraint {

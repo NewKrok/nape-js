@@ -816,7 +816,7 @@ joint.removeOnBreak = true; // auto-remove from space
 
 // Listen for the break event
 const jointTag = new CbType();
-joint.cbTypes.add(jointTag); // IMPORTANT: must add a custom CbType
+joint.cbTypes.add(jointTag); // only this joint (CbType.ANY_CONSTRAINT matches all)
 
 space.listeners.add(
   new ConstraintListener(CbEvent.BREAK, jointTag, (cb) =&gt; {
@@ -827,7 +827,7 @@ space.listeners.add(
 
 joint.space = space;
 </code></pre>
-<p><strong>Gotcha:</strong> <code>CbType.ANY_CONSTRAINT</code> does <strong>not</strong> work for BREAK/SLEEP events. You must create and assign a dedicated <code>CbType</code> to the joint's <code>cbTypes</code>.</p>
+<p><strong>Gotcha:</strong> breaking is opt-in — without <code>breakUnderForce</code> (or <code>breakUnderError</code> + <code>maxError</code>) the joint is only clamped and BREAK never fires. On nape-js ≤ 3.42.3, listeners on <code>CbType.ANY_CONSTRAINT</code> matched nothing, so tag the joint with a dedicated <code>CbType</code> there.</p>
 <hr>
 <h2 id="soft-constraint-spring-like">Soft Constraint (Spring-Like)</h2>
 <p>Any constraint can be made soft by setting <code>stiff = false</code> with frequency and damping.</p>
