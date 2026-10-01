@@ -295,6 +295,33 @@ v.dispose(); // return to pool when done
 
 ---
 
+## `GeomPoly.cut()` returns a piece that is not simple
+
+**Cause:** the cut line passes through a single *reflex* vertex that only
+touches the line — both of its neighbours are on the same side, and the
+polygon continues on the other side. The two lobes on the touching side come
+back as one piece pinched at that vertex. Areas still add up; only the split
+is missing. (Lines that cross vertices, or run along an edge, are handled.)
+
+```typescript
+// Notch from the top at (10, 10): y = 10 should give a rectangle + 2 triangles
+const notch = new GeomPoly([
+  new Vec2(0, 0), new Vec2(20, 0), new Vec2(20, 20), new Vec2(10, 10), new Vec2(0, 20),
+]);
+const pieces = notch.cut(new Vec2(-5, 10), new Vec2(25, 10));
+// pieces: rectangle (simple) + both triangles as ONE pinched piece (not simple)
+
+// Workaround: split any non-simple piece
+for (let i = 0; i < pieces.length; i++) {
+  const p = pieces.at(i);
+  if (!p.isSimple()) {
+    const parts = p.simpleDecomposition(); // → the two triangles
+  }
+}
+```
+
+---
+
 ## Simulation is slow / how to find the bottleneck
 
 Use the built-in performance profiler to identify which phase is eating time.

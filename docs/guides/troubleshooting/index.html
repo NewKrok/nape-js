@@ -120,7 +120,7 @@
       </nav>
       <div class="guide-layout">
         <aside class="guide-side">
-          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#bodies-fall-through-walls--floors">Bodies fall through walls / floors</a></li><li><a href="#raycast-returns-null-even-though-bodies-exist">Raycast returns null even though bodies exist</a></li><li><a href="#applyforce-is-not-a-function">applyForce() is not a function</a></li><li><a href="#cannot-set-space-on-a-compound-member-body">Cannot set space on a compound member body</a></li><li><a href="#constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</a></li><li><a href="#material-constructor-order-is-confusing">Material constructor order is confusing</a></li><li><a href="#bodies-jitter-or-explode-on-startup">Bodies jitter or explode on startup</a></li><li><a href="#stacked-objects-are-unstable--wobble">Stacked objects are unstable / wobble</a></li><li><a href="#character-slides-on-slopes--doesnt-stop">Character slides on slopes / doesn't stop</a></li><li><a href="#character-hangs-on-a-wall--ledge-edge-while-a-direction-key-is-held">Character hangs on a wall / ledge edge while a direction key is held</a></li><li><a href="#web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</a></li><li><a href="#fluid-buoyancy-doesnt-work">Fluid buoyancy doesn't work</a></li><li><a href="#cannot-read-property-of-disposed-vec2">"Cannot read property of disposed Vec2"</a></li><li><a href="#simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</a></li><li><a href="#deterministic-mode-doesnt-produce-identical-results-across-browsers">Deterministic mode doesn't produce identical results across browsers</a></li></ul></nav>
+          <nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#bodies-fall-through-walls--floors">Bodies fall through walls / floors</a></li><li><a href="#raycast-returns-null-even-though-bodies-exist">Raycast returns null even though bodies exist</a></li><li><a href="#applyforce-is-not-a-function">applyForce() is not a function</a></li><li><a href="#cannot-set-space-on-a-compound-member-body">Cannot set space on a compound member body</a></li><li><a href="#constraintlistener-doesnt-fire-for-break-events">ConstraintListener doesn't fire for BREAK events</a></li><li><a href="#material-constructor-order-is-confusing">Material constructor order is confusing</a></li><li><a href="#bodies-jitter-or-explode-on-startup">Bodies jitter or explode on startup</a></li><li><a href="#stacked-objects-are-unstable--wobble">Stacked objects are unstable / wobble</a></li><li><a href="#character-slides-on-slopes--doesnt-stop">Character slides on slopes / doesn't stop</a></li><li><a href="#character-hangs-on-a-wall--ledge-edge-while-a-direction-key-is-held">Character hangs on a wall / ledge edge while a direction key is held</a></li><li><a href="#web-worker-physics-is-slower-than-main-thread">Web Worker physics is slower than main thread</a></li><li><a href="#fluid-buoyancy-doesnt-work">Fluid buoyancy doesn't work</a></li><li><a href="#cannot-read-property-of-disposed-vec2">"Cannot read property of disposed Vec2"</a></li><li><a href="#geompolycut-returns-a-piece-that-is-not-simple">GeomPoly.cut() returns a piece that is not simple</a></li><li><a href="#simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</a></li><li><a href="#deterministic-mode-doesnt-produce-identical-results-across-browsers">Deterministic mode doesn't produce identical results across browsers</a></li></ul></nav>
           <nav class="guide-others" aria-label="Other guides"><h2>Other guides</h2><ul><li><a href="../cookbook/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> nape-js Cookbook</a></li><li><a href="../anti-patterns/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg> Anti-Patterns</a></li><li><a href="../multiplayer-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multiplayer Implementation Guide</a></li><li><a href="../replay-guide/"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg> Replay Guide — @newkrok/nape-js/replay</a></li></ul></nav>
           <p class="guide-edit"><a href="https://github.com/NewKrok/nape-js/blob/master/docs/guides/troubleshooting.md" target="_blank" rel="noopener">Edit on GitHub</a> &bull; verified v3.42.3</p>
         </aside>
@@ -335,6 +335,28 @@ const v = Vec2.get(10, 0);
 body.applyImpulse(v);
 console.log(v.x); // OK
 v.dispose(); // return to pool when done
+</code></pre>
+<hr>
+<h2 id="geompolycut-returns-a-piece-that-is-not-simple"><code>GeomPoly.cut()</code> returns a piece that is not simple</h2>
+<p><strong>Cause:</strong> the cut line passes through a single <em>reflex</em> vertex that only
+touches the line — both of its neighbours are on the same side, and the
+polygon continues on the other side. The two lobes on the touching side come
+back as one piece pinched at that vertex. Areas still add up; only the split
+is missing. (Lines that cross vertices, or run along an edge, are handled.)</p>
+<pre><code class="language-typescript">// Notch from the top at (10, 10): y = 10 should give a rectangle + 2 triangles
+const notch = new GeomPoly([
+  new Vec2(0, 0), new Vec2(20, 0), new Vec2(20, 20), new Vec2(10, 10), new Vec2(0, 20),
+]);
+const pieces = notch.cut(new Vec2(-5, 10), new Vec2(25, 10));
+// pieces: rectangle (simple) + both triangles as ONE pinched piece (not simple)
+
+// Workaround: split any non-simple piece
+for (let i = 0; i &lt; pieces.length; i++) {
+  const p = pieces.at(i);
+  if (!p.isSimple()) {
+    const parts = p.simpleDecomposition(); // → the two triangles
+  }
+}
 </code></pre>
 <hr>
 <h2 id="simulation-is-slow--how-to-find-the-bottleneck">Simulation is slow / how to find the bottleneck</h2>

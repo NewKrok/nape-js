@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6555 engine tests across 312 files, plus 79 pixi-adapter tests across 6 files.**
+**6564 engine tests across 313 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -81,7 +81,7 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~88% | ≥80% ✅ |
+| Statements | ~89% | ≥80% ✅ |
 | Branches | ~79% | — |
 | Functions | ~95% | — |
 
@@ -106,14 +106,15 @@ calls to the canonical methods.
 
 ### Interaction-type and pre-listener paths
 
-`ZPP_Space.narrowPhase` has three near-identical inlined blocks (fluid,
-collision, sensor). A fix or test that covers one block says nothing about
-the other two, so tests for this area run the same scenario across all
-three types. A fix found this way: an impure `PreListener` did not keep a
-resting body awake when the arbiter's `b1` was the static body, in the
-fluid and collision blocks only (`callbacks/PreListener.impureWake`).
-`dynamics/InteractionTypeSwitch` covers switching
-`sensorEnabled` / `fluidEnabled` while two shapes are in contact.
+`ZPP_Space.narrowPhase` used to carry three near-identical inlined blocks
+(fluid, collision, sensor), and a fix or test covering one said nothing about
+the others: an impure `PreListener` did not keep a resting body awake when the
+arbiter's `b1` was the static body, in the fluid and collision copies only
+(`callbacks/PreListener.impureWake`). The shared logic now lives in
+`runPreListeners` / `retireArbiter` / `ZPP_ColArbiter.cleanupContacts`, but
+tests for this area still run each scenario across all three interaction
+types. `dynamics/InteractionTypeSwitch` covers switching `sensorEnabled` /
+`fluidEnabled` while two shapes are in contact.
 
 ### Oracle-based geometry tests
 
@@ -128,10 +129,14 @@ against an independent computation instead of counts or "does not throw":
 | `geom/MarchingSquares.saddle` | ambiguous-cell topology, sampled iso area; weak simplicity of combined output |
 | `geom/ZPP_Collide.flowOverlap` | fluid overlap / centroid vs Sutherland–Hodgman, lens and strip closed forms |
 | `space/Space.convexCast.oracle` | time of impact vs closed-form moving circles, bisection, spinning-bar angle |
+| `geom/GeomPoly.cut.oracle` | area sum, disjoint cover, one side of the line; exact degeneracies via integer grids |
 
 Prefer this pattern for new geometry tests: the oracles found six real
-bugs that count-based tests had missed. Sampling alone can miss thin
-slivers, so pair it with an exact check (e.g. total area) where one exists.
+bugs that count-based tests had missed, and the cut oracle three more once it
+used exact degeneracies (vertices on the line, edges along it). Random
+floating-point inputs almost never hit those — build them on an integer grid.
+Sampling alone can miss thin slivers, so pair it with an exact check (e.g.
+total area) where one exists.
 
 ---
 
