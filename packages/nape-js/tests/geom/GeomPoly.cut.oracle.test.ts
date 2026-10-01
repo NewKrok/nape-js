@@ -1,0 +1,219 @@
+/**
+ * GeomPoly.cut — property tests for ZPP_Cutter against an independent oracle.
+ *
+ * Inputs are seeded random simple polygons with many crossings per cut line
+ * (concave star polygons and combs), cut by random lines and segments. Each
+ * result is checked without trusting the cutter:
+ *
+ *   - the pieces' areas sum to the input area (exact)
+ *   - the pieces are pairwise disjoint and together cover the input
+ *     (point sampling)
+ *   - every piece is simple and keeps the input's winding
+ *   - unbounded line: every piece lies entirely on one side of the line
+ *   - bounded segment with both ends outside the polygon: no point of the
+ *     segment lies strictly inside a piece (the polygon is cut all the way
+ *     through wherever the segment crosses it)
+ */
+
+import { describe, it, expect } from "vitest";
+import "../../src/core/engine";
+import { GeomPoly } from "../../src/geom/GeomPoly";
+import { Vec2 } from "../../src/geom/Vec2";
+
+type Pt = [number, number];
+
+const poly = (pts: Pt[]) => new GeomPoly(pts.map(([x, y]) => new Vec2(x, y)));
+
+function ring(p: any): Pt[] {
+  const out: Pt[] = [];
+  const it = p.iterator();
+  while (it.hasNext()) {
+    const v = it.next();
+    out.push([v.x, v.y]);
+  }
+  return out;
+}
+
+function pieces(list: any): Pt[][] {
+  const out: Pt[][] = [];
+  for (let i = 0; i < list.length; i++) out.push(ring(list.at(i)));
+  return out;
+}
+
+function signedArea(pts: Pt[]): number {
+  let a = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const [ax, ay] = pts[i];
+    const [bx, by] = pts[(i + 1) % pts.length];
+    a += ax * by - bx * ay;
+  }
+  return a / 2;
+}
+
+/** Even-odd containment, with points within `eps` of an edge reported as "boundary". */
+function classify(pts: Pt[], x: number, y: number, eps = 1e-7): "in" | "out" | "edge" {
+  let inside = false;
+  for (let i = 0; i < pts.length; i++) {
+    const [ax, ay] = pts[i];
+    const [bx, by] = pts[(i + 1) % pts.length];
+    const ex = bx - ax;
+    const ey = by - ay;
+    const len2 = ex * ex + ey * ey;
+    const t = len2 > 0 ? Math.max(0, Math.min(1, ((x - ax) * ex + (y - ay) * ey) / len2)) : 0;
+    if (Math.hypot(ax + ex * t - x, ay + ey * t - y) <= eps) return "edge";
+    if (ay > y !== by > y && x < ax + ((y - ay) * ex) / ey) inside = !inside;
+  }
+  return inside ? "in" : "out";
+}
+
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Star-shaped around the origin, so always simple; strongly concave. */
+function star(rnd: () => number, n: number): Pt[] {
+  const pts: Pt[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const r = 20 + rnd() * 80;
+    pts.push([Math.cos(a) * r, Math.sin(a) * r]);
+  }
+  return pts;
+}
+
+/** A bar along y = -60..-40 with `teeth` downward teeth of random depth. */
+function comb(rnd: () => number, teeth: number): Pt[] {
+  const w = 200 / (teeth * 2 - 1);
+  const pts: Pt[] = [
+    [-100, -60],
+    [100, -60],
+  ];
+  for (let i = teeth - 1; i >= 0; i--) {
+    const x0 = -100 + i * 2 * w;
+    const depth = 20 + rnd() * 70;
+    if (i < teeth - 1) pts.push([x0 + w, -40]);
+    pts.push([x0 + w, -40 + depth], [x0, -40 + depth]);
+    if (i > 0) pts.push([x0, -40]);
+  }
+  return pts;
+}
+
+let cutPieces = 0;
+
+function check(input: Pt[], start: Pt, end: Pt, bs: boolean, be: boolean, rnd: () => number) {
+  const P = poly(input);
+  expect(P.isSimple()).toBe(true);
+  const out = pieces(P.cut(new Vec2(...start), new Vec2(...end), bs, be));
+  const inputArea = signedArea(input);
+  expect(out.length).toBeGreaterThan(0);
+  cutPieces += out.length;
+
+  // Exact: areas add up, every piece simple and wound like the input.
+  let sum = 0;
+  for (const piece of out) {
+    const a = signedArea(piece);
+    expect(Math.sign(a)).toBe(Math.sign(inputArea));
+    expect(poly(piece).isSimple()).toBe(true);
+    sum += a;
+  }
+  expect(sum).toBeCloseTo(inputArea, 6);
+
+  // Sampled: pieces disjoint and covering the input.
+  let xs = Infinity,
+    xe = -Infinity,
+    ys = Infinity,
+    ye = -Infinity;
+  for (const [x, y] of input) {
+    xs = Math.min(xs, x);
+    xe = Math.max(xe, x);
+    ys = Math.min(ys, y);
+    ye = Math.max(ye, y);
+  }
+  for (let k = 0; k < 400; k++) {
+    const x = xs + rnd() * (xe - xs);
+    const y = ys + rnd() * (ye - ys);
+    const where = classify(input, x, y);
+    const hits = out.map((p) => classify(p, x, y));
+    if (hits.includes("edge") || where === "edge") continue;
+    const n = hits.filter((h) => h === "in").length;
+    expect(n).toBe(where === "in" ? 1 : 0);
+  }
+
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+  if (!bs && !be) {
+    // Unbounded: each piece entirely on one side of the line.
+    const scale = Math.hypot(dx, dy);
+    for (const piece of out) {
+      let lo = 0,
+        hi = 0;
+      for (const [x, y] of piece) {
+        const side = (dx * (y - start[1]) - dy * (x - start[0])) / scale;
+        lo = Math.min(lo, side);
+        hi = Math.max(hi, side);
+      }
+      expect(Math.min(-lo, hi)).toBeLessThan(1e-6);
+    }
+  } else if (bs && be) {
+    // Segment with both ends outside: no point of it strictly inside a piece.
+    if (classify(input, ...start) !== "out" || classify(input, ...end) !== "out") return;
+    for (let k = 1; k < 200; k++) {
+      const t = k / 200;
+      const x = start[0] + dx * t;
+      const y = start[1] + dy * t;
+      for (const piece of out) expect(classify(piece, x, y, 1e-6)).not.toBe("in");
+    }
+  }
+}
+
+function randomLine(rnd: () => number): [Pt, Pt] {
+  const a = rnd() * Math.PI;
+  const off = (rnd() - 0.5) * 120;
+  const nx = -Math.sin(a);
+  const ny = Math.cos(a);
+  const c: Pt = [nx * off, ny * off];
+  return [
+    [c[0] - Math.cos(a) * 150, c[1] - Math.sin(a) * 150],
+    [c[0] + Math.cos(a) * 150, c[1] + Math.sin(a) * 150],
+  ];
+}
+
+describe("GeomPoly.cut — oracle", () => {
+  for (const shape of ["star", "comb"] as const) {
+    for (const mode of ["line", "ray", "segment"] as const) {
+      it(`${shape} cut by random ${mode}s`, () => {
+        const rnd = mulberry32(shape === "star" ? 11 : 23);
+        cutPieces = 0;
+        for (let trial = 0; trial < 40; trial++) {
+          const input =
+            shape === "star"
+              ? star(rnd, 7 + Math.floor(rnd() * 20))
+              : comb(rnd, 3 + Math.floor(rnd() * 6));
+          const [s, e] = randomLine(rnd);
+          if (mode === "line") check(input, s, e, false, false, rnd);
+          else if (mode === "ray") check(input, s, e, true, false, rnd);
+          else check(input, s, e, true, true, rnd);
+        }
+        // Guard against a vacuous pass: the lines really do split the inputs.
+        expect(cutPieces).toBeGreaterThan(40 * 2);
+      });
+    }
+  }
+
+  it("segment ending inside the polygon only cuts between full crossings", () => {
+    const rnd = mulberry32(5);
+    for (let trial = 0; trial < 40; trial++) {
+      const input = star(rnd, 9 + Math.floor(rnd() * 12));
+      // From outside to the centre: no full crossing pair → nothing to cut,
+      // unless the segment leaves and re-enters on the way.
+      const a = rnd() * Math.PI * 2;
+      check(input, [Math.cos(a) * 150, Math.sin(a) * 150], [0, 0], true, true, rnd);
+    }
+  });
+});
