@@ -172,7 +172,7 @@ which handles every public workspace:
    - `fix:` / `perf:` / `refactor:` → **patch**
    - `docs:` / `chore:` / `style:` / `test:` / `build:` / `ci:` → **no release** (even when files under `packages/<name>/` are touched)
    - No commits touching the package → **skip** (no no-op release)
-5. **Bump, commit, tag, push, publish**, then create a GitHub Release.
+5. **Bump, rebuild, commit, tag, push, publish**, then create a GitHub Release. The rebuild matters: tsup inlines the package version (`VERSION`, `Debug.version()`), and the workflow's own build runs before the bump.
 
 Run `node scripts/ci/release.mjs --dry-run` to preview locally.
 

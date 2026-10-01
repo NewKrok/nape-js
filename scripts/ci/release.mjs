@@ -194,6 +194,11 @@ function releasePackage(pkg, isFirstRelease, bump) {
   } else {
     console.error(`# ${pkg.fullName}: bumping ${bump} from v${pkg.version}`);
     newVersion = bumpVersion(pkg, bump);
+    // tsup inlines package.json's version (__PACKAGE_VERSION__ → VERSION,
+    // Debug.version(), the duplicate-instance warning). The workflow builds
+    // before this bump, so without a rebuild every release shipped the
+    // previous version's string (npm 3.42.4 reported "nape-js 3.42.3").
+    run(`npm run build -w ${pkg.fullName}`);
   }
   const newTag = `${pkg.tagPrefix}${newVersion}`;
 
