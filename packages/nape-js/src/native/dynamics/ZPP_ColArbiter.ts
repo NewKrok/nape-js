@@ -6,6 +6,7 @@
  * constraint mass matrices, warm-starting, velocity/position impulse solving.
  */
 
+import { Config } from "../../Config";
 import { ZPP_Arbiter } from "./ZPP_Arbiter";
 import { ZPP_Contact } from "./ZPP_Contact";
 import { ZPP_IContact } from "./ZPP_IContact";
@@ -362,6 +363,114 @@ export class ZPP_ColArbiter extends ZPP_Arbiter {
       prei = cx_itei;
       cx_itei = cx_itei!.next;
       cx_ite = cx_ite.next;
+    }
+  }
+
+  /**
+   * Drops contacts that have not been refreshed within
+   * `Config.arbiterExpirationDelay` steps, recomputes each remaining contact's
+   * `active` flag and re-picks the primary/secondary contact (`c1`/`c2`),
+   * preferring a non-position-only contact as `c1`.
+   */
+  cleanupContacts(): void {
+    let fst = true;
+    let pre: any = null;
+    let prei: any = null;
+    let cx_itei: any = this.innards.next;
+    this.hc2 = false;
+    let cx_ite = this.contacts.next;
+    while (cx_ite != null) {
+      const c = cx_ite;
+      if (c.stamp + Config.arbiterExpirationDelay < this.stamp) {
+        const contacts = this.contacts;
+        let old: any;
+        let ret: any;
+        if (pre == null) {
+          old = contacts.next;
+          ret = old.next;
+          contacts.next = ret;
+          if (contacts.next == null) {
+            contacts.pushmod = true;
+          }
+        } else {
+          old = pre.next;
+          ret = old.next;
+          pre.next = ret;
+          if (ret == null) {
+            contacts.pushmod = true;
+          }
+        }
+        old._inuse = false;
+        contacts.modified = true;
+        contacts.length--;
+        contacts.pushmod = true;
+        cx_ite = ret;
+        const innards = this.innards;
+        let oldi: any;
+        let reti: any;
+        if (prei == null) {
+          oldi = innards.next;
+          reti = oldi.next;
+          innards.next = reti;
+          if (innards.next == null) {
+            innards.pushmod = true;
+          }
+        } else {
+          oldi = prei.next;
+          reti = oldi.next;
+          prei.next = reti;
+          if (reti == null) {
+            innards.pushmod = true;
+          }
+        }
+        oldi._inuse = false;
+        innards.modified = true;
+        innards.length--;
+        innards.pushmod = true;
+        cx_itei = reti;
+        const o = c;
+        o.arbiter = null;
+        o.next = ZPP_Contact.zpp_pool;
+        ZPP_Contact.zpp_pool = o;
+        continue;
+      }
+      const ci = c.inner;
+      const pact = c.active;
+      c.active = c.stamp == this.stamp;
+      if (c.active) {
+        if (fst) {
+          fst = false;
+          this.c1 = ci;
+          this.oc1 = c;
+        } else {
+          this.hc2 = true;
+          this.c2 = ci;
+          this.oc2 = c;
+        }
+      }
+      if (pact != c.active) {
+        this.contacts.modified = true;
+      }
+      pre = cx_ite;
+      prei = cx_itei;
+      cx_itei = cx_itei.next;
+      cx_ite = cx_ite.next;
+    }
+    if (this.hc2) {
+      this.hpc2 = true;
+      if (this.oc1.posOnly) {
+        const tmp = this.c1;
+        this.c1 = this.c2;
+        this.c2 = tmp;
+        const tmp2 = this.oc1;
+        this.oc1 = this.oc2;
+        this.oc2 = tmp2;
+        this.hc2 = false;
+      } else if (this.oc2.posOnly) {
+        this.hc2 = false;
+      }
+    } else {
+      this.hpc2 = false;
     }
   }
 
