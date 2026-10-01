@@ -10,6 +10,62 @@ import { ZPP_CutVert } from "./ZPP_CutVert";
 import { ZPP_CutInt } from "./ZPP_CutInt";
 import { ZPP_GeomVert, disposeGeomVertWrap } from "./ZPP_GeomVert";
 import { getNape } from "../../core/engine";
+import { Config } from "../../Config";
+
+/**
+ * Side for a run of on-line vertices (starting at `a`) whose neighbours are
+ * both on side `side`: `side`, unless the run contains an edge lying on the
+ * line and the polygon interior also lies just across the line from that edge
+ * (unit normal `nx, ny` points to the positive side) — then the cut runs
+ * along the edge and the run is assigned the opposite side, so its two ends
+ * become vertex crossings that split the lobes on `side`.
+ *
+ * A single touching vertex is left on `side`: flipping it would put two
+ * crossings on one vertex, which the path splitting below cannot represent.
+ */
+function touchSide(
+  P: ZPP_GeomVert | null,
+  a: ZPP_CutVert,
+  side: boolean,
+  nx: number,
+  ny: number,
+): boolean {
+  const b = a.next!;
+  if (b.value != 0) return side;
+  const x = (a.posx + b.posx) * 0.5;
+  const y = (a.posy + b.posy) * 0.5;
+  const off = side ? -1e-8 : 1e-8;
+  return insidePoly(P, x + nx * off, y + ny * off) ? !side : side;
+}
+
+/** Absolute area of a GeomVert ring. */
+function ringArea(P: ZPP_GeomVert): number {
+  let a = 0;
+  let p = P;
+  do {
+    const q = p.next!;
+    a += p.x * q.y - q.x * p.y;
+    p = q;
+  } while (p != P);
+  return Math.abs(a) * 0.5;
+}
+
+/** Even-odd point-in-polygon on a GeomVert ring. */
+function insidePoly(P: ZPP_GeomVert | null, x: number, y: number): boolean {
+  let ret = false;
+  if (P == null) return ret;
+  let p = P;
+  do {
+    const q = p.prev!;
+    if (((p.y < y && q.y >= y) || (q.y < y && p.y >= y)) && (p.x <= x || q.x <= x)) {
+      if (p.x + ((y - p.y) / (q.y - p.y)) * (q.x - p.x) < x) {
+        ret = !ret;
+      }
+    }
+    p = p.next!;
+  } while (p != P);
+  return ret;
+}
 
 export class ZPP_Cutter {
   /** Internal list of intersections (ZNPList_ZPP_CutInt), lazily created. */
@@ -164,7 +220,10 @@ export class ZPP_Cutter {
         const a = pre!.next;
         let positive: boolean;
         if (prod > 0) {
-          positive = pre!.positive;
+          // Touching run: both neighbours on one side. If the polygon also
+          // lies just across the line from it (a reflex touch), the cut
+          // passes through the run, which must then split that side.
+          positive = touchSide(P, a!, pre!.positive, nx, ny);
         } else {
           const b = a!.next;
           let midx: number;
@@ -230,7 +289,10 @@ export class ZPP_Cutter {
         const a1 = pre!.next;
         let positive1: boolean;
         if (prod1 > 0) {
-          positive1 = pre!.positive;
+          // Touching run: both neighbours on one side. If the polygon also
+          // lies just across the line from it (a reflex touch), the cut
+          // passes through the run, which must then split that side.
+          positive1 = touchSide(P, a1!, pre!.positive, nx, ny);
         } else {
           const b1 = a1!.next;
           let midx1: number;
@@ -743,6 +805,17 @@ export class ZPP_Cutter {
     while (ZPP_Cutter.ints.head != null) {
       const i1 = ZPP_Cutter.ints.pop_unsafe();
       const j1 = ZPP_Cutter.ints.pop_unsafe();
+      // A crossing exactly at an on-line vertex is flagged virtual, like one
+      // outside the cut's bounds, but unlike those it has already split the
+      // path (start != null). Paired with a real crossing it bounds a chord
+      // through the polygon, so it must be stitched as a real crossing rather
+      // than have the real one undone.
+      if (i1.virtualint != j1.virtualint) {
+        const v = i1.virtualint ? i1 : j1;
+        if (v.start != null) {
+          v.virtualint = false;
+        }
+      }
       if (!i1.virtualint && !j1.virtualint) {
         i1.end.next.prev = j1.start.prev;
         j1.start.prev.next = i1.end.next;
@@ -1162,6 +1235,20 @@ export class ZPP_Cutter {
         } else {
           p6 = p6.next;
         }
+      }
+      if (poly.vert != null && ringArea(poly.vert) < Config.epsilon) {
+        // No area: the leftover of a cut running along a boundary edge
+        // between two on-line vertices. Release it instead of emitting it.
+        let v = poly.vert;
+        do {
+          const nx = v.next;
+          v.next = v.prev = null;
+          disposeGeomVertWrap(v);
+          v.next = ZPP_GeomVert.zpp_pool;
+          ZPP_GeomVert.zpp_pool = v;
+          v = nx;
+        } while (v != poly.vert && v != null);
+        poly.vert = null;
       }
       if (poly.vert != null) {
         const gp = napeNs.geom.GeomPoly.get();
