@@ -28,6 +28,9 @@ import { MotorJoint } from "../constraint/MotorJoint";
 import { LineJoint } from "../constraint/LineJoint";
 import { PulleyJoint } from "../constraint/PulleyJoint";
 import { WeldJoint } from "../constraint/WeldJoint";
+import { SpringJoint } from "../constraint/SpringJoint";
+import type { Constraint } from "../constraint/Constraint";
+import { codecForType, type SerializationOptions } from "./constraints";
 import { Compound } from "../phys/Compound";
 import { BinaryReader } from "./binary-reader";
 import { BINARY_SNAPSHOT_VERSION } from "./serialize-binary";
@@ -42,6 +45,8 @@ const CONSTRAINT_MOTOR = 3;
 const CONSTRAINT_LINE = 4;
 const CONSTRAINT_PULLEY = 5;
 const CONSTRAINT_WELD = 6;
+const CONSTRAINT_SPRING = 7;
+const CONSTRAINT_USER = 8;
 
 // Body type mapping (ZPP internal codes)
 const BODY_TYPE_MAP: Record<number, BodyType> = {
@@ -285,7 +290,8 @@ function applyBase(
 function readConstraint(
   r: BinaryReader,
   bodies: Body[],
-): PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint {
+  options: SerializationOptions | undefined,
+): Constraint {
   const typeTag = r.readUint8();
   const base = readConstraintBase(r);
   const b1 = base.body1Id >= 0 ? (bodies[base.body1Id] ?? null) : null;
@@ -386,6 +392,29 @@ function readConstraint(
       applyBase(c, base);
       return c;
     }
+    case CONSTRAINT_SPRING: {
+      const a1x = r.readFloat64(),
+        a1y = r.readFloat64();
+      const a2x = r.readFloat64(),
+        a2y = r.readFloat64();
+      const restLength = r.readFloat64();
+      const c = new SpringJoint(b1, b2, Vec2.weak(a1x, a1y), Vec2.weak(a2x, a2y), restLength);
+      applyBase(c, base);
+      return c;
+    }
+    case CONSTRAINT_USER: {
+      const codec = codecForType(r.readString(), options);
+      const count = r.readUint16();
+      const linked: (Body | null)[] = [];
+      for (let i = 0; i < count; i++) {
+        const id = r.readInt32();
+        linked.push(id >= 0 ? (bodies[id] ?? null) : null);
+      }
+      const data = JSON.parse(r.readString()) as Record<string, unknown>;
+      const c = codec.load(data, linked);
+      applyBase(c, base);
+      return c;
+    }
     default:
       throw new Error(`nape-js binary: unknown constraint type tag ${typeTag}`);
   }
@@ -405,7 +434,9 @@ function readConstraint(
  * **Note:** `userData` is NOT restored — binary snapshots do not include it.
  * Use `spaceFromJSON` if you need userData.
  *
- * @throws If the magic bytes or version are invalid.
+ * @param options - `userConstraints`: the codecs the snapshot was saved with.
+ * @throws If the magic bytes or version are invalid, or the snapshot holds a
+ *   UserConstraint whose codec is missing from `options.userConstraints`.
  *
  * @example
  * ```ts
@@ -416,7 +447,7 @@ function readConstraint(
  * restored.step(1 / 60);
  * ```
  */
-export function spaceFromBinary(data: Uint8Array): Space {
+export function spaceFromBinary(data: Uint8Array, options?: SerializationOptions): Space {
   const r = new BinaryReader(data);
 
   // ------------------------------------------------------------------
@@ -470,11 +501,9 @@ export function spaceFromBinary(data: Uint8Array): Space {
   // ------------------------------------------------------------------
   // 4. Constraints
   // ------------------------------------------------------------------
-  const constraints: (
-    PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint
-  )[] = new Array(constraintCount);
+  const constraints: Constraint[] = new Array(constraintCount);
   for (let i = 0; i < constraintCount; i++) {
-    constraints[i] = readConstraint(r, bodies);
+    constraints[i] = readConstraint(r, bodies, options);
   }
 
   // ------------------------------------------------------------------

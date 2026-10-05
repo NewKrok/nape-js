@@ -5,7 +5,9 @@
  * same physics state as spaceToJSON but skips userData (arbitrary JSON cannot be
  * efficiently binary-encoded; use spaceToJSON for userData).
  *
- * UserConstraint instances are skipped (not serializable).
+ * UserConstraint instances are saved through the codecs passed in
+ * `options.userConstraints` (their state as a JSON string) and skipped when no
+ * codec matches.
  *
  * Binary layout (little-endian):
  *   Header: magic "NAPE" (4B), version u16, bodyCount u32, constraintCount u32, compoundCount u32
@@ -29,6 +31,14 @@ import type { MotorJoint } from "../constraint/MotorJoint";
 import type { LineJoint } from "../constraint/LineJoint";
 import type { PulleyJoint } from "../constraint/PulleyJoint";
 import type { WeldJoint } from "../constraint/WeldJoint";
+import type { SpringJoint } from "../constraint/SpringJoint";
+import {
+  builtinConstraintType,
+  findUserConstraintCodec,
+  checkedUserData,
+  type BuiltinConstraintType,
+  type SerializationOptions,
+} from "./constraints";
 import type { Compound } from "../phys/Compound";
 import type { Material } from "../phys/Material";
 import type { FluidProperties } from "../phys/FluidProperties";
@@ -49,6 +59,8 @@ const CONSTRAINT_MOTOR = 3;
 const CONSTRAINT_LINE = 4;
 const CONSTRAINT_PULLEY = 5;
 const CONSTRAINT_WELD = 6;
+const CONSTRAINT_SPRING = 7;
+const CONSTRAINT_USER = 8;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -185,7 +197,7 @@ function writeBody(w: BinaryWriter, body: Body): void {
   }
 }
 
-const CONSTRAINT_TYPE_MAP: Record<string, number | undefined> = {
+const CONSTRAINT_TYPE_MAP: Record<BuiltinConstraintType, number> = {
   PivotJoint: CONSTRAINT_PIVOT,
   DistanceJoint: CONSTRAINT_DISTANCE,
   AngleJoint: CONSTRAINT_ANGLE,
@@ -193,7 +205,13 @@ const CONSTRAINT_TYPE_MAP: Record<string, number | undefined> = {
   LineJoint: CONSTRAINT_LINE,
   PulleyJoint: CONSTRAINT_PULLEY,
   WeldJoint: CONSTRAINT_WELD,
+  SpringJoint: CONSTRAINT_SPRING,
 };
+
+/** Whether `c` will be written: a built-in joint, or a UserConstraint with a codec. */
+function isSerializable(c: Constraint, options: SerializationOptions | undefined): boolean {
+  return builtinConstraintType(c) != null || findUserConstraintCodec(c, options) != null;
+}
 
 function writeConstraintBase(
   w: BinaryWriter,
@@ -225,17 +243,39 @@ function writeConstraintBase(
   w.writeFloat64(zpp.maxError);
 }
 
-/** Write constraint. Returns true if written, false if skipped (UserConstraint). */
+/** Write a UserConstraint through its codec. */
+function writeUserConstraint(
+  w: BinaryWriter,
+  c: Constraint,
+  zppBodyIdToIndex: Map<number, number>,
+  options: SerializationOptions | undefined,
+): boolean {
+  const codec = findUserConstraintCodec(c, options);
+  if (codec == null) return false;
+  const linked = codec.bodies(c);
+  const data = JSON.stringify(checkedUserData(codec, codec.save(c)));
+  w.writeUint8(CONSTRAINT_USER);
+  writeConstraintBase(w, c, zppBodyIdToIndex, linked[0] ?? null, linked[1] ?? null);
+  w.writeString(codec.type);
+  w.writeUint16(linked.length);
+  for (const b of linked) {
+    w.writeInt32(b != null ? (zppBodyIdToIndex.get(b.zpp_inner.id) ?? -1) : -1);
+  }
+  w.writeString(data);
+  return true;
+}
+
+/** Write constraint. Returns true if written, false if skipped (UserConstraint without codec). */
 function writeConstraint(
   w: BinaryWriter,
   c: Constraint,
   zppBodyIdToIndex: Map<number, number>,
+  options: SerializationOptions | undefined,
 ): boolean {
-  const typeName = (c as any).constructor?.name ?? "";
-  const typeTag = CONSTRAINT_TYPE_MAP[typeName];
-  if (typeTag === undefined) return false; // UserConstraint or unknown
+  const typeName = builtinConstraintType(c);
+  if (typeName == null) return writeUserConstraint(w, c, zppBodyIdToIndex, options);
 
-  w.writeUint8(typeTag);
+  w.writeUint8(CONSTRAINT_TYPE_MAP[typeName]);
 
   switch (typeName) {
     case "PivotJoint": {
@@ -312,6 +352,16 @@ function writeConstraint(
       w.writeFloat64(j.phase);
       break;
     }
+    case "SpringJoint": {
+      const j = c as SpringJoint;
+      writeConstraintBase(w, c, zppBodyIdToIndex, j.body1, j.body2);
+      w.writeFloat64(j.anchor1.x);
+      w.writeFloat64(j.anchor1.y);
+      w.writeFloat64(j.anchor2.x);
+      w.writeFloat64(j.anchor2.y);
+      w.writeFloat64(j.restLength);
+      break;
+    }
   }
 
   return true;
@@ -331,7 +381,11 @@ function writeConstraint(
  * **Differences from spaceToJSON:**
  * - `userData` is NOT included (arbitrary JSON cannot be efficiently binary-encoded).
  *   Use `spaceToJSON` if you need userData.
- * - UserConstraint instances are skipped (same as JSON).
+ * - UserConstraint instances are saved through `options.userConstraints`
+ *   codecs, same as JSON (their state is stored as a JSON string).
+ *
+ * @param options - `userConstraints`: codecs for the UserConstraint subclasses
+ *   to save (see {@link UserConstraintCodec}). Pass the same codecs to `spaceFromBinary`.
  *
  * @example
  * ```ts
@@ -344,7 +398,7 @@ function writeConstraint(
  * restored.step(1 / 60);
  * ```
  */
-export function spaceToBinary(space: Space): Uint8Array {
+export function spaceToBinary(space: Space, options?: SerializationOptions): Uint8Array {
   const w = new BinaryWriter();
 
   // ------------------------------------------------------------------
@@ -388,8 +442,7 @@ export function spaceToBinary(space: Space): Uint8Array {
 
   function collectConstraint(c: Constraint): void {
     if (constraintIndexMap.has(c)) return;
-    const typeName = (c as any).constructor?.name ?? "";
-    if (CONSTRAINT_TYPE_MAP[typeName] === undefined) return;
+    if (!isSerializable(c, options)) return;
     constraintIndexMap.set(c, allConstraints.length);
     allConstraints.push(c);
   }
@@ -441,7 +494,7 @@ export function spaceToBinary(space: Space): Uint8Array {
   // 6. Constraints
   // ------------------------------------------------------------------
   for (let i = 0; i < allConstraints.length; i++) {
-    writeConstraint(w, allConstraints[i], zppBodyIdToIndex);
+    writeConstraint(w, allConstraints[i], zppBodyIdToIndex, options);
   }
 
   // ------------------------------------------------------------------

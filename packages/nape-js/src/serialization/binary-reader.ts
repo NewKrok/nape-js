@@ -45,4 +45,15 @@ export class BinaryReader {
   readBool(): boolean {
     return this.readUint8() !== 0;
   }
+
+  /** UTF-8 string written by BinaryWriter.writeString. */
+  readString(): string {
+    const len = this.readUint32();
+    if (this.pos + len > this.view.byteLength) {
+      throw new Error("nape-js binary: string runs past the end of the snapshot");
+    }
+    const bytes = new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, len);
+    this.pos += len;
+    return new TextDecoder().decode(bytes);
+  }
 }

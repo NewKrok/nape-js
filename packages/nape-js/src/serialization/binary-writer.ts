@@ -63,6 +63,15 @@ export class BinaryWriter {
     this.writeUint8(v ? 1 : 0);
   }
 
+  /** UTF-8 string, prefixed with its byte length as u32. */
+  writeString(v: string): void {
+    const bytes = new TextEncoder().encode(v);
+    this.writeUint32(bytes.length);
+    this.ensure(bytes.length);
+    new Uint8Array(this.buf, this.pos, bytes.length).set(bytes);
+    this.pos += bytes.length;
+  }
+
   /** Return a trimmed Uint8Array (no excess capacity). */
   finish(): Uint8Array {
     return new Uint8Array(this.buf, 0, this.pos);

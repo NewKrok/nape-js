@@ -1,6 +1,7 @@
 import type { Space } from "../space/Space";
 import { spaceFromBinary } from "../serialization/deserialize-binary";
-import type { Replay, ReplayInputApplier } from "./types";
+import type { SerializationOptions } from "../serialization/constraints";
+import type { PlayerOptions, Replay, ReplayInputApplier } from "./types";
 
 /**
  * Plays back a {@link Replay} produced by {@link Recorder}.
@@ -24,6 +25,7 @@ export class Player<T = unknown> {
   private _velocityIterations: number;
   private _positionIterations: number;
   private _dt: number;
+  private readonly _serialization: SerializationOptions;
 
   /**
    * @param replay - Replay to play.
@@ -32,11 +34,12 @@ export class Player<T = unknown> {
    *   only physics state (no user input) can pass `null`.
    * @param options - Playback config matching the recorder's step parameters.
    *   Defaults: `dt = 1/60`, `velocityIterations = 8`, `positionIterations = 3`.
+   *   `userConstraints`: the codecs the replay was recorded with.
    */
   constructor(
     replay: Replay<T>,
     applyInput: ReplayInputApplier<T> | null = null,
-    options: { dt?: number; velocityIterations?: number; positionIterations?: number } = {},
+    options: PlayerOptions = {},
   ) {
     if (replay == null) {
       throw new Error("Player: replay is required");
@@ -46,6 +49,7 @@ export class Player<T = unknown> {
     this._dt = options.dt ?? 1 / 60;
     this._velocityIterations = options.velocityIterations ?? 8;
     this._positionIterations = options.positionIterations ?? 3;
+    this._serialization = { userConstraints: options.userConstraints };
   }
 
   /**
@@ -53,7 +57,7 @@ export class Player<T = unknown> {
    * {@link stepTo}. Re-calling rewinds to frame 0 (useful for looping).
    */
   restore(): Space {
-    this._space = spaceFromBinary(this._replay.initialSnapshot);
+    this._space = spaceFromBinary(this._replay.initialSnapshot, this._serialization);
     this._frame = 0;
     return this._space;
   }
@@ -137,7 +141,7 @@ export class Player<T = unknown> {
       // Backward — restore from keyframe (or initial if none earlier).
       const kf = findKeyframeAtOrBefore(this._replay.keyframes, target);
       if (kf != null) {
-        this._space = spaceFromBinary(kf.snapshot);
+        this._space = spaceFromBinary(kf.snapshot, this._serialization);
         this._frame = kf.frame;
       } else {
         this.restore();

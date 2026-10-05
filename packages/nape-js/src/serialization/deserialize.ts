@@ -26,6 +26,9 @@ import { MotorJoint } from "../constraint/MotorJoint";
 import { LineJoint } from "../constraint/LineJoint";
 import { PulleyJoint } from "../constraint/PulleyJoint";
 import { WeldJoint } from "../constraint/WeldJoint";
+import { SpringJoint } from "../constraint/SpringJoint";
+import type { Constraint } from "../constraint/Constraint";
+import { codecForType, type SerializationOptions } from "./constraints";
 import { Compound } from "../phys/Compound";
 import {
   SNAPSHOT_VERSION,
@@ -192,8 +195,9 @@ function applyConstraintBase(
   c.stiff = d.stiff;
   c.frequency = d.frequency;
   c.damping = d.damping;
-  c.maxForce = d.maxForce;
-  c.maxError = d.maxError;
+  // null = unlimited; also what JSON.stringify made of Infinity in older snapshots.
+  c.maxForce = d.maxForce ?? Infinity;
+  c.maxError = d.maxError ?? Infinity;
   c.breakUnderForce = d.breakUnderForce;
   c.breakUnderError = d.breakUnderError;
   c.removeOnBreak = d.removeOnBreak;
@@ -205,7 +209,8 @@ function applyConstraintBase(
 function buildConstraint(
   d: ConstraintData,
   bodies: Body[],
-): PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint {
+  options: SerializationOptions | undefined,
+): Constraint {
   const b1 = d.body1Id != null ? (bodies[d.body1Id] ?? null) : null;
   const b2 = d.body2Id != null ? (bodies[d.body2Id] ?? null) : null;
 
@@ -272,6 +277,22 @@ function buildConstraint(
       applyConstraintBase(c, d);
       return c;
     }
+    case "SpringJoint": {
+      const c = new SpringJoint(b1, b2, toVec2Weak(d.anchor1), toVec2Weak(d.anchor2), d.restLength);
+      applyConstraintBase(c, d);
+      return c;
+    }
+    case "UserConstraint": {
+      const codec = codecForType(d.userType, options);
+      const linked = d.bodyIds.map((id) => (id != null ? (bodies[id] ?? null) : null));
+      const c = codec.load(d.data, linked);
+      applyConstraintBase(c, d);
+      return c;
+    }
+    default:
+      throw new Error(
+        `nape-js serialization: unknown constraint type "${(d as { type: string }).type}"`,
+      );
   }
 }
 
@@ -286,7 +307,9 @@ function buildConstraint(
  * compounds are all added and ready for simulation. Call `space.step(dt)` to
  * start simulating.
  *
- * @throws If the snapshot version is incompatible.
+ * @param options - `userConstraints`: the codecs the snapshot was saved with.
+ * @throws If the snapshot version is incompatible, or it holds a UserConstraint
+ *   whose codec is missing from `options.userConstraints`.
  *
  * @example
  * ```ts
@@ -299,7 +322,7 @@ function buildConstraint(
  * restored.step(1 / 60);
  * ```
  */
-export function spaceFromJSON(snapshot: SpaceSnapshot): Space {
+export function spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOptions): Space {
   if (snapshot.version !== SNAPSHOT_VERSION) {
     throw new Error(
       `nape-js serialization: unsupported snapshot version ${snapshot.version} (expected ${SNAPSHOT_VERSION})`,
@@ -329,7 +352,7 @@ export function spaceFromJSON(snapshot: SpaceSnapshot): Space {
   // ------------------------------------------------------------------
   // 3. Build all constraints (not added to space yet)
   // ------------------------------------------------------------------
-  const constraints = snapshot.constraints.map((cd) => buildConstraint(cd, bodies));
+  const constraints = snapshot.constraints.map((cd) => buildConstraint(cd, bodies, options));
 
   // ------------------------------------------------------------------
   // 4. Build compounds — bodies/constraints inside a compound are owned
