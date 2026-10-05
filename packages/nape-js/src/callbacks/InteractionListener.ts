@@ -131,7 +131,7 @@ export class InteractionListener extends Listener {
   }
 
   set options1(options1: OptionType | CbType) {
-    this.zpp_inner_zn.options1.set((options1 as any).zpp_inner);
+    this.zpp_inner_zn.options1.set(ZPP_OptionType.argument(options1).zpp_inner);
   }
 
   /** Filter for the second interactor. Order between `options1`/`options2` does not matter. */
@@ -140,7 +140,7 @@ export class InteractionListener extends Listener {
   }
 
   set options2(options2: OptionType | CbType) {
-    this.zpp_inner_zn.options2.set((options2 as any).zpp_inner);
+    this.zpp_inner_zn.options2.set(ZPP_OptionType.argument(options2).zpp_inner);
   }
 
   /** The callback function invoked when the event fires. Cannot be set to null. */

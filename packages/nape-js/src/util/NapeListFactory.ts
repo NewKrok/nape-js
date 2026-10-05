@@ -71,6 +71,13 @@ export interface ListSpec {
   /** Extract the internal element from a public API object.
    *  Standard: `obj => obj.zpp_inner`, direct: `obj => obj` */
   unwrapElement: (obj: Any) => Any;
+  /**
+   * Hide internal elements that fail this test (Haxe nape's list `admit`):
+   * length, `at()` and iteration only see admitted elements. Evaluated on
+   * every access, because an element's state can change without the list
+   * itself changing (e.g. an arbiter going inactive).
+   */
+  admit?: (elt: Any) => boolean;
 }
 
 /**
@@ -83,7 +90,7 @@ export function createListClasses(spec: ListSpec): {
   Iterator: Any;
   List: Any;
 } {
-  const { typeName, namespaceParts, zppListClass, wrapElement, unwrapElement } = spec;
+  const { typeName, namespaceParts, zppListClass, wrapElement, unwrapElement, admit } = spec;
 
   const nape = getNape();
   const zpp = nape.__zpp;
@@ -139,14 +146,7 @@ export function createListClasses(spec: ListSpec): {
   TypedIterator.prototype.zpp_next = null;
 
   TypedIterator.prototype.hasNext = function (this: Any): boolean {
-    this.zpp_inner.zpp_inner.valmod();
-    const _this = this.zpp_inner;
-    _this.zpp_inner.valmod();
-    if (_this.zpp_inner.zip_length) {
-      _this.zpp_inner.zip_length = false;
-      _this.zpp_inner.user_length = _this.zpp_inner.inner.length;
-    }
-    const length = _this.zpp_inner.user_length;
+    const length = _getLength(this.zpp_inner);
     this.zpp_critical = true;
     if (this.zpp_i < length) {
       return true;
@@ -189,17 +189,19 @@ export function createListClasses(spec: ListSpec): {
   // zpp_gl() — internal length accessor used by manual iterator loops in Body.ts
   // Matches the compiled Haxe pattern: iter.zpp_inner.zpp_gl()
   TypedList.prototype.zpp_gl = function (this: Any): number {
-    this.zpp_inner.valmod();
-    if (this.zpp_inner.zip_length) {
-      this.zpp_inner.zip_length = false;
-      this.zpp_inner.user_length = this.zpp_inner.inner.length;
-    }
-    return this.zpp_inner.user_length;
+    return _getLength(this);
   };
 
   // Internal length helper (not exposed on the prototype as get_length)
   function _getLength(list: Any): number {
     list.zpp_inner.valmod();
+    if (admit != null) {
+      let n = 0;
+      for (let cx = list.zpp_inner.inner.head; cx != null; cx = cx.next) {
+        if (admit(cx.elt)) n++;
+      }
+      return n;
+    }
     if (list.zpp_inner.zip_length) {
       list.zpp_inner.zip_length = false;
       list.zpp_inner.user_length = list.zpp_inner.inner.length;
@@ -225,6 +227,13 @@ export function createListClasses(spec: ListSpec): {
     }
     if (this.zpp_inner.reverse_flag) {
       index = _getLength(this) - 1 - index;
+    }
+    if (admit != null) {
+      // Admitted elements only; no cursor cache (admission can change).
+      let cx = this.zpp_inner.inner.head;
+      for (let i = 0; ; cx = cx.next) {
+        if (admit(cx.elt) && i++ === index) return wrapElement(cx.elt);
+      }
     }
     if (index < this.zpp_inner.at_index || this.zpp_inner.at_ite == null) {
       this.zpp_inner.at_index = index;

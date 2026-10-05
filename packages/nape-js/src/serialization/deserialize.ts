@@ -26,6 +26,9 @@ import { MotorJoint } from "../constraint/MotorJoint";
 import { LineJoint } from "../constraint/LineJoint";
 import { PulleyJoint } from "../constraint/PulleyJoint";
 import { WeldJoint } from "../constraint/WeldJoint";
+import { SpringJoint } from "../constraint/SpringJoint";
+import type { Constraint } from "../constraint/Constraint";
+import { codecForType, type SerializationOptions } from "./constraints";
 import { Compound } from "../phys/Compound";
 import {
   SNAPSHOT_VERSION,
@@ -192,8 +195,9 @@ function applyConstraintBase(
   c.stiff = d.stiff;
   c.frequency = d.frequency;
   c.damping = d.damping;
-  c.maxForce = d.maxForce;
-  c.maxError = d.maxError;
+  // null = unlimited; also what JSON.stringify made of Infinity in older snapshots.
+  c.maxForce = d.maxForce ?? Infinity;
+  c.maxError = d.maxError ?? Infinity;
   c.breakUnderForce = d.breakUnderForce;
   c.breakUnderError = d.breakUnderError;
   c.removeOnBreak = d.removeOnBreak;
@@ -205,7 +209,8 @@ function applyConstraintBase(
 function buildConstraint(
   d: ConstraintData,
   bodies: Body[],
-): PivotJoint | DistanceJoint | AngleJoint | MotorJoint | LineJoint | PulleyJoint | WeldJoint {
+  options: SerializationOptions | undefined,
+): Constraint {
   const b1 = d.body1Id != null ? (bodies[d.body1Id] ?? null) : null;
   const b2 = d.body2Id != null ? (bodies[d.body2Id] ?? null) : null;
 
@@ -254,8 +259,8 @@ function buildConstraint(
       const c = new PulleyJoint(
         b1,
         b2,
-        null,
-        null,
+        d.body3Id != null ? (bodies[d.body3Id] ?? null) : null,
+        d.body4Id != null ? (bodies[d.body4Id] ?? null) : null,
         toVec2Weak(d.anchor1),
         toVec2Weak(d.anchor2),
         toVec2Weak(d.anchor3),
@@ -272,6 +277,22 @@ function buildConstraint(
       applyConstraintBase(c, d);
       return c;
     }
+    case "SpringJoint": {
+      const c = new SpringJoint(b1, b2, toVec2Weak(d.anchor1), toVec2Weak(d.anchor2), d.restLength);
+      applyConstraintBase(c, d);
+      return c;
+    }
+    case "UserConstraint": {
+      const codec = codecForType(d.userType, options);
+      const linked = d.bodyIds.map((id) => (id != null ? (bodies[id] ?? null) : null));
+      const c = codec.load(d.data, linked);
+      applyConstraintBase(c, d);
+      return c;
+    }
+    default:
+      throw new Error(
+        `nape-js serialization: unknown constraint type "${(d as { type: string }).type}"`,
+      );
   }
 }
 
@@ -286,7 +307,9 @@ function buildConstraint(
  * compounds are all added and ready for simulation. Call `space.step(dt)` to
  * start simulating.
  *
- * @throws If the snapshot version is incompatible.
+ * @param options - `userConstraints`: the codecs the snapshot was saved with.
+ * @throws If the snapshot version is incompatible, or it holds a UserConstraint
+ *   whose codec is missing from `options.userConstraints`.
  *
  * @example
  * ```ts
@@ -299,7 +322,7 @@ function buildConstraint(
  * restored.step(1 / 60);
  * ```
  */
-export function spaceFromJSON(snapshot: SpaceSnapshot): Space {
+export function spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOptions): Space {
   if (snapshot.version !== SNAPSHOT_VERSION) {
     throw new Error(
       `nape-js serialization: unsupported snapshot version ${snapshot.version} (expected ${SNAPSHOT_VERSION})`,
@@ -329,7 +352,7 @@ export function spaceFromJSON(snapshot: SpaceSnapshot): Space {
   // ------------------------------------------------------------------
   // 3. Build all constraints (not added to space yet)
   // ------------------------------------------------------------------
-  const constraints = snapshot.constraints.map((cd) => buildConstraint(cd, bodies));
+  const constraints = snapshot.constraints.map((cd) => buildConstraint(cd, bodies, options));
 
   // ------------------------------------------------------------------
   // 4. Build compounds — bodies/constraints inside a compound are owned
@@ -338,13 +361,19 @@ export function spaceFromJSON(snapshot: SpaceSnapshot): Space {
   const compoundBodySet = new Set<number>();
   const compoundConstraintSet = new Set<number>();
 
-  for (const cd of snapshot.compounds) {
+  // Engine lists insert at the head, so everything is added in reverse: the
+  // restored space then iterates bodies and constraints in the original
+  // order, and the (order-dependent) solver reproduces the original steps.
+  for (let k = snapshot.compounds.length - 1; k >= 0; k--) {
+    const cd = snapshot.compounds[k];
     const compound = new Compound();
-    for (const bodyId of cd.bodyIds) {
+    for (let j = cd.bodyIds.length - 1; j >= 0; j--) {
+      const bodyId = cd.bodyIds[j];
       bodies[bodyId].compound = compound;
       compoundBodySet.add(bodyId);
     }
-    for (const ci of cd.constraintIndices) {
+    for (let j = cd.constraintIndices.length - 1; j >= 0; j--) {
+      const ci = cd.constraintIndices[j];
       constraints[ci].compound = compound;
       compoundConstraintSet.add(ci);
     }
@@ -354,13 +383,13 @@ export function spaceFromJSON(snapshot: SpaceSnapshot): Space {
   // ------------------------------------------------------------------
   // 5. Add remaining (non-compound) bodies and constraints to space
   // ------------------------------------------------------------------
-  for (let i = 0; i < bodies.length; i++) {
+  for (let i = bodies.length - 1; i >= 0; i--) {
     if (!compoundBodySet.has(i)) {
       bodies[i].space = space;
     }
   }
 
-  for (let i = 0; i < constraints.length; i++) {
+  for (let i = constraints.length - 1; i >= 0; i--) {
     if (!compoundConstraintSet.has(i)) {
       constraints[i].space = space;
     }

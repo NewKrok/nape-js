@@ -55,5 +55,6 @@ export type {
   ReplayKeyframe,
   ReplayInputApplier,
   RecorderOptions,
+  PlayerOptions,
   DeterminismValidation,
 } from "./types";

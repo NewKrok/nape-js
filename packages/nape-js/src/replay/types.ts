@@ -1,4 +1,5 @@
 import type { Space } from "../space/Space";
+import type { UserConstraintCodec } from "../serialization/constraints";
 
 /**
  * Per-frame callback that translates a user-defined input payload into engine
@@ -28,6 +29,24 @@ export interface RecorderOptions {
    * @default `60` (one keyframe per second at 60 fps)
    */
   keyframeEvery?: number;
+  /**
+   * Codecs for the `UserConstraint` subclasses in the space, so snapshots
+   * capture them (see `UserConstraintCodec` in `/serialization`). Pass the
+   * same codecs to {@link PlayerOptions.userConstraints}.
+   */
+  userConstraints?: readonly UserConstraintCodec<any>[];
+}
+
+/** Configuration options for {@link Player}. */
+export interface PlayerOptions {
+  /** @default `1/60` */
+  dt?: number;
+  /** @default `8` */
+  velocityIterations?: number;
+  /** @default `3` */
+  positionIterations?: number;
+  /** The `UserConstraint` codecs the replay was recorded with. */
+  userConstraints?: readonly UserConstraintCodec<any>[];
 }
 
 /**

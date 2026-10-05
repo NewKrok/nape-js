@@ -8,6 +8,8 @@
  * - **JSON** (`spaceToJSON` / `spaceFromJSON`): human-readable, includes userData.
  * - **Binary** (`spaceToBinary` / `spaceFromBinary`): compact Uint8Array,
  *   sub-millisecond for rollback netcode. Does NOT include userData.
+ * - **UserConstraint** subclasses are saved by both formats through a
+ *   {@link UserConstraintCodec} passed in `options.userConstraints`.
  *
  * Tree-shakeable: importing from this entry point does NOT pull in
  * the full nape-js engine bootstrap. You must import nape-js separately.
@@ -34,6 +36,7 @@ export { spaceFromJSON } from "./deserialize";
 export { spaceToBinary, BINARY_SNAPSHOT_VERSION } from "./serialize-binary";
 export { spaceFromBinary } from "./deserialize-binary";
 export { SNAPSHOT_VERSION } from "./types";
+export type { UserConstraintCodec, SerializationOptions } from "./constraints";
 export type {
   SpaceSnapshot,
   BodyData,
@@ -49,6 +52,8 @@ export type {
   LineJointData,
   PulleyJointData,
   WeldJointData,
+  SpringJointData,
+  UserConstraintData,
   CompoundData,
   Vec2Data,
   MaterialData,

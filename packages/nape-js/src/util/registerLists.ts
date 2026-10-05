@@ -102,6 +102,10 @@ export const { List: ArbiterList, Iterator: ArbiterIterator } = createListClasse
   zppListClass: "ZPP_ArbiterList",
   wrapElement: (elt: any) => elt.wrapper(),
   unwrapElement: zppUnwrap,
+  // As in Haxe nape: a body keeps an expiring arbiter for a few steps after
+  // its shapes separate (Config.arbiterExpirationDelay); it is not in use and
+  // must not be listed — impulse queries on it throw.
+  admit: (elt: any) => elt.active,
 });
 
 export const { List: EdgeList, Iterator: EdgeIterator } = createListClasses({

@@ -140,6 +140,185 @@ space.listeners.add(new ConstraintListener(CbEvent.BREAK, breakableTag, handler)
 
 ---
 
+## `listener.options = cbType` throws "Cannot read properties of undefined"
+
+**Cause (nape-js ≤ 3.42.4):** the `options` setter of `BodyListener` /
+`ConstraintListener` and the `options1` / `options2` setters of
+`InteractionListener` / `PreListener` are typed `OptionType | CbType`, but
+only an `OptionType` worked. Fixed in 3.43.0 — a bare `CbType` is accepted, as
+it always was in the constructors. On older versions wrap it:
+
+```typescript
+listener.options = new OptionType(cbType); // works on every version
+```
+
+---
+
+## Listener `precedence` seems to run backwards
+
+**Cause:** the direction depends on the listener type (inherited from Haxe
+nape):
+
+| Listener | Runs first | Tie (same precedence) |
+| --- | --- | --- |
+| `BodyListener`, `ConstraintListener` | higher `precedence` | added last |
+| `InteractionListener`, `PreListener` | **lower** `precedence` | added first |
+
+When several `PreListener`s return a flag for the same pair, the **last** one
+called wins — so the highest-precedence PreListener has the final say. Give
+the listener whose flag must win the highest precedence.
+
+---
+
+## "Shape::sensorEnabled cannot be set during a space step()"
+
+**Cause:** the flag was changed while `space.step()` was running — in
+practice, from inside a `PreListener` handler, which runs mid-step. Toggling a
+sensor rewrites broadphase and arbiter state that the step is iterating, so
+the engine forbids it (as upstream nape does). The same rule applies to every
+setter that throws "cannot be set during a space step()".
+
+**Fix:** record the change in the handler, apply it after the step:
+
+```typescript
+let turnGhostIntoSensor = false;
+space.listeners.add(
+  new PreListener(InteractionType.COLLISION, playerTag, ghostTag, () => {
+    // ghostShape.sensorEnabled = true;  ← throws here
+    turnGhostIntoSensor = true; // record only
+    return PreFlag.IGNORE;
+  }),
+);
+
+space.step(1 / 60);
+if (turnGhostIntoSensor) {
+  ghostShape.sensorEnabled = true; // safe: the step is over
+  turnGhostIntoSensor = false;
+}
+```
+
+`BodyListener`, `InteractionListener` and `ConstraintListener` callbacks are
+delivered after the step, so they may change the flag directly.
+
+---
+
+## Joints go limp after loading a JSON save
+
+**Cause (nape-js ≤ 3.42.4):** `maxForce` / `maxError` default to `Infinity`,
+which `JSON.stringify` writes as `null`. `spaceFromJSON` then set the limit to
+`null` — effectively zero — and every joint stopped holding. Binary snapshots
+and in-memory snapshots that were never stringified were not affected.
+
+Fixed in 3.43.0: the snapshot stores unlimited as `null` itself and the loader
+reads `null` back as `Infinity`, so saves written by older versions load
+correctly too. On older versions, restore the limit after loading:
+
+```typescript
+const restored = spaceFromJSON(JSON.parse(json));
+for (const c of restored.constraints) {
+  if (!c.maxForce) c.maxForce = Infinity;
+  if (!c.maxError) c.maxError = Infinity;
+}
+```
+
+---
+
+## A restored space drifts away from the original
+
+**Cause (nape-js ≤ 3.42.4):** engine lists insert at the head, so restoring a
+snapshot added bodies and constraints in reverse order. The solver is
+order-dependent, so with several joints or a pile of contacts the restored
+space and the original stepped differently. Fixed in 3.43.0: a restored space
+keeps the original iteration order and steps identically (same platform, and
+`space.deterministic = true` for contact-heavy scenes — see the
+[multiplayer guide](./multiplayer-guide.md)).
+
+Also check that both sides use the same `Config` values — they are not part of
+the snapshot.
+
+---
+
+## Constraints missing after `spaceFromJSON` / `spaceFromBinary`
+
+- **`UserConstraint`:** it is only saved through a `UserConstraintCodec` passed
+  as `options.userConstraints` — to the save **and** the load call. See the
+  [cookbook](./cookbook.md#saving-a-userconstraint).
+- **`SpringJoint` (nape-js ≤ 3.42.4):** not saved by either format. Fixed in
+  3.43.0.
+- **`PulleyJoint` throws "cannot be simulated with null bodies" after loading
+  (nape-js ≤ 3.42.4):** only `body1` / `body2` were saved, so `body3` / `body4`
+  came back `null`. Fixed in 3.43.0; reassign `body3` / `body4` yourself on
+  older versions.
+- **Every joint, from the published package (nape-js ≤ 3.42.4):** the
+  serializer told joint types apart by class name, which the minified `dist/`
+  bundle renames — so `spaceToJSON` / `spaceToBinary` saved no constraints at
+  all outside the repo's own tests. Fixed in 3.43.0; upgrade.
+
+---
+
+## "Arbiter not currently in use" from `normalImpulse()` / `crushFactor()`
+
+**Cause (nape-js ≤ 3.42.4):** after two bodies separate their arbiter lingers
+for `Config.arbiterExpirationDelay` steps, inactive. `body.arbiters` still
+listed it, so every Body impulse query (`normalImpulse`, `tangentImpulse`,
+`totalImpulse`, `rollingImpulse`, `crushFactor`) threw right after a
+separation. Fixed in 3.43.0: `body.arbiters` only lists active arbiters, as
+in Haxe nape. On older versions, wrap the query in try/catch for a few steps
+after separation.
+
+---
+
+## `body.interactingBodies()` returns nothing (or every partner)
+
+**Cause (nape-js ≤ 3.42.4):** with no type it always returned an empty list,
+with `InteractionType.FLUID` it returned every partner, and `depth` was
+ignored. Fixed in 3.43.0 — it follows interaction chains up to `depth` hops
+(`-1` = unlimited, `1` = direct partners), filtered by type.
+
+---
+
+## `shapesInAABB` / `bodiesInAABB` miss shapes that are clearly inside
+
+**Cause (nape-js ≤ 3.42.4):** the broadphase reuses one query rectangle and
+rescaled it from the previous query. After a tiny query far from the origin
+the next query searched the wrong region. Separately, `DYNAMIC_AABB_TREE`
+`bodiesInAABB(…, containment = true)` could report a body whose other shape
+sticks out. Both fixed in 3.43.0 (both inherited from Haxe nape).
+
+---
+
+## A `WeldJoint` makes a rotation-only body spin faster and faster
+
+**Cause (nape-js ≤ 3.42.4):** when neither welded body can translate (e.g.
+`allowMovement = false` against a static body) the solver inverted a singular
+matrix; with an anchor away from the body's centre the spin grew without
+bound. Fixed in 3.43.0. On older versions use `PivotJoint` + `AngleJoint`.
+
+---
+
+## `for (const v of polygon.localVerts)` throws "is not iterable"
+
+**Cause (nape-js ≤ 3.42.4):** `localVerts` / `worldVerts` were not real
+`Vec2List`s — not iterable, and `new Polygon(other.localVerts)` was rejected.
+Fixed in 3.43.0. On older versions use `for (let i = 0; i < l.length; i++) l.at(i)`.
+
+---
+
+## Known limitations
+
+- **`GeomPoly.simpleDecomposition()` on degenerate input:** three edges
+  crossing at one point, a vertex visited twice (spikes, keyholes) can throw;
+  rarely a piece has zero area or self-crosses; `isSimple()` can miss a
+  crossing on a vertical edge. After a throw, call `simpleDecomposition()`
+  only on fresh engine state (static sweep state is left behind). Clean up
+  input (`simplify`, remove duplicate points) first. Inherited from Haxe nape.
+- **`MarchingSquares.run` with bounds that are not a whole number of cells**
+  samples the last column/row past the bound; with `combine = true` a tiny
+  negative value (e.g. `-1e-20` float noise) next to a notch can crash. Use
+  bounds that are a multiple of the cell size, and clamp near-zero values.
+
+---
+
 ## Material constructor order is confusing
 
 The parameter order is:
@@ -302,30 +481,32 @@ v.dispose(); // return to pool when done
 
 ---
 
-## `GeomPoly.cut()` returns a piece that is not simple
+## `GeomPoly.cut()` returns a piece that is not simple, or throws a `TypeError`
 
-**Cause:** the cut line passes through a single *reflex* vertex that only
+Both are fixed in **3.43.0**; upgrade. On 3.42.4 and earlier:
+
+**Not simple:** the cut line passes through a single *reflex* vertex that only
 touches the line — both of its neighbours are on the same side, and the
-polygon continues on the other side. The two lobes on the touching side come
-back as one piece pinched at that vertex. Areas still add up; only the split
-is missing. (Lines that cross vertices, or run along an edge, are handled.)
+polygon continues on the other side. The two lobes on the touching side came
+back as one piece pinched at that vertex. Split such pieces yourself:
 
 ```typescript
-// Notch from the top at (10, 10): y = 10 should give a rectangle + 2 triangles
+// Notch from the top at (10, 10): y = 10 gives a rectangle + 2 triangles
 const notch = new GeomPoly([
   new Vec2(0, 0), new Vec2(20, 0), new Vec2(20, 20), new Vec2(10, 10), new Vec2(0, 20),
 ]);
 const pieces = notch.cut(new Vec2(-5, 10), new Vec2(25, 10));
-// pieces: rectangle (simple) + both triangles as ONE pinched piece (not simple)
-
-// Workaround: split any non-simple piece
+// 3.43.0+: three simple pieces. ≤ 3.42.4: rectangle + one pinched piece.
 for (let i = 0; i < pieces.length; i++) {
   const p = pieces.at(i);
-  if (!p.isSimple()) {
-    const parts = p.simpleDecomposition(); // → the two triangles
-  }
+  if (!p.isSimple()) p.simpleDecomposition(); // → the two triangles
 }
 ```
+
+**`TypeError: Cannot read properties of null`:** the start and end of the cut
+line were the same point (a click without a drag). Since 3.43.0 a zero-length
+line cuts nothing and returns one uncut copy, like a line that misses the
+polygon. On older versions, skip the cut when `start` equals `end`.
 
 ---
 

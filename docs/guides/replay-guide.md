@@ -146,8 +146,11 @@ player.restore();   // idempotent — rewinds to frame 0
   use `spaceToJSON` directly (and accept the size cost).
 - **Sleeping state** — bodies wake fresh on snapshot restore. The simulation
   re-resolves sleep on the next step.
-- **`UserConstraint` instances** — not serialisable; recordings using them
-  fail to restore correctly.
+- **`UserConstraint` instances** — only with a codec. Pass
+  `userConstraints: [codec]` to both `new Recorder(space, { … })` and
+  `new Player(replay, apply, { … })` (see the
+  [cookbook](./cookbook.md#saving-a-userconstraint)); without one they are
+  left out of every snapshot and the playback diverges.
 - **Listeners / callbacks** — not part of the snapshot. If your replay relies
   on `InteractionListener` callbacks, attach them BEFORE you restore (e.g. in
   the same code that creates the listener types).

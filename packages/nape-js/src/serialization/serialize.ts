@@ -1,7 +1,8 @@
 /**
  * spaceToJSON — converts a live Space into a plain JSON-serializable SpaceSnapshot.
  *
- * UserConstraint instances are skipped (not serializable).
+ * UserConstraint instances are saved through the codecs passed in
+ * `options.userConstraints` and skipped when no codec matches.
  * userData values are included only when JSON.stringify can round-trip them.
  */
 
@@ -19,6 +20,13 @@ import type { MotorJoint } from "../constraint/MotorJoint";
 import type { LineJoint } from "../constraint/LineJoint";
 import type { PulleyJoint } from "../constraint/PulleyJoint";
 import type { WeldJoint } from "../constraint/WeldJoint";
+import type { SpringJoint } from "../constraint/SpringJoint";
+import {
+  builtinConstraintType,
+  findUserConstraintCodec,
+  checkedUserData,
+  type SerializationOptions,
+} from "./constraints";
 import type { Compound } from "../phys/Compound";
 import type { Material } from "../phys/Material";
 import type { FluidProperties } from "../phys/FluidProperties";
@@ -196,6 +204,11 @@ function serializeBody(body: Body, id: number): BodyData {
   };
 }
 
+/** JSON has no Infinity: store unlimited as null (see ConstraintBaseData.maxForce). */
+function finiteOrNull(v: number): number | null {
+  return v === Infinity ? null : v;
+}
+
 function serializeConstraintBase(
   c: Constraint,
   zppBodyIdToIndex: Map<number, number>,
@@ -213,8 +226,8 @@ function serializeConstraintBase(
     stiff: zpp.stiff,
     frequency: zpp.frequency,
     damping: zpp.damping,
-    maxForce: zpp.maxForce,
-    maxError: zpp.maxError,
+    maxForce: finiteOrNull(zpp.maxForce),
+    maxError: finiteOrNull(zpp.maxError),
     breakUnderForce: zpp.breakUnderForce,
     breakUnderError: zpp.breakUnderError,
     removeOnBreak: zpp.removeOnBreak,
@@ -225,8 +238,11 @@ function serializeConstraintBase(
 function serializeConstraint(
   c: Constraint,
   zppBodyIdToIndex: Map<number, number>,
+  options: SerializationOptions | undefined,
 ): ConstraintData | null {
-  const typeName = (c as any).constructor?.name ?? "";
+  const typeName = builtinConstraintType(c);
+  const bodyId = (b: Body | null): number | null =>
+    b != null ? (zppBodyIdToIndex.get(b.zpp_inner.id) ?? null) : null;
 
   switch (typeName) {
     case "PivotJoint": {
@@ -281,6 +297,8 @@ function serializeConstraint(
       return {
         ...base,
         type: "PulleyJoint",
+        body3Id: bodyId(j.body3),
+        body4Id: bodyId(j.body4),
         anchor1: vec2(j.anchor1),
         anchor2: vec2(j.anchor2),
         anchor3: vec2(j.anchor3),
@@ -301,10 +319,31 @@ function serializeConstraint(
         phase: j.phase,
       };
     }
-    default:
-      // UserConstraint or unknown — skip
-      return null;
+    case "SpringJoint": {
+      const j = c as SpringJoint;
+      const base = serializeConstraintBase(c, zppBodyIdToIndex, j.body1, j.body2);
+      return {
+        ...base,
+        type: "SpringJoint",
+        anchor1: vec2(j.anchor1),
+        anchor2: vec2(j.anchor2),
+        restLength: j.restLength,
+      };
+    }
   }
+
+  // UserConstraint: needs a codec, otherwise skipped.
+  const codec = findUserConstraintCodec(c, options);
+  if (codec == null) return null;
+  const linked = codec.bodies(c);
+  const base = serializeConstraintBase(c, zppBodyIdToIndex, linked[0] ?? null, linked[1] ?? null);
+  return {
+    ...base,
+    type: "UserConstraint",
+    userType: codec.type,
+    bodyIds: linked.map((b) => (b != null ? (zppBodyIdToIndex.get(b.zpp_inner.id) ?? null) : null)),
+    data: JSON.parse(JSON.stringify(checkedUserData(codec, codec.save(c)))),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -315,11 +354,15 @@ function serializeConstraint(
  * Serialize the complete state of a Space into a plain JSON-serializable object.
  *
  * - Bodies (position, velocity, shapes, mass, etc.) are fully captured.
- * - Constraints are captured except for UserConstraint (not serializable).
+ * - Built-in constraints are captured; a UserConstraint is captured when
+ *   `options.userConstraints` has a codec for its subclass, skipped otherwise.
  * - Compounds are captured as groupings of body IDs and constraint indices.
  * - Arbiters (collision contacts) are NOT captured — they are reconstructed
  *   by the engine on the next simulation step.
  * - userData is included only for fields that survive a JSON round-trip.
+ *
+ * @param options - `userConstraints`: codecs for the UserConstraint subclasses
+ *   to save (see {@link UserConstraintCodec}). Pass the same codecs to `spaceFromJSON`.
  *
  * @example
  * ```ts
@@ -331,7 +374,7 @@ function serializeConstraint(
  * const restored = spaceFromJSON(JSON.parse(json));
  * ```
  */
-export function spaceToJSON(space: Space): SpaceSnapshot {
+export function spaceToJSON(space: Space, options?: SerializationOptions): SpaceSnapshot {
   // ------------------------------------------------------------------
   // 1. Collect all bodies (including those inside compounds) and assign IDs.
   //    Bodies at the top level of the space AND inside compounds are all
@@ -380,7 +423,7 @@ export function spaceToJSON(space: Space): SpaceSnapshot {
 
   function collectConstraint(c: Constraint): void {
     if (constraintIndexMap.has(c)) return;
-    const data = serializeConstraint(c, zppBodyIdToIndex);
+    const data = serializeConstraint(c, zppBodyIdToIndex, options);
     if (data != null) {
       constraintIndexMap.set(c, constraints.length);
       constraints.push(data);

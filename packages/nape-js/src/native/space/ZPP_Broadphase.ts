@@ -106,67 +106,15 @@ export class ZPP_Broadphase {
         _this.unshift(obj);
       }
     } else {
-      const ab = this.aabbShape.zpp_inner.aabb;
-      const sx = (aabb.maxx - aabb.minx) / (ab.maxx - ab.minx);
-      const sy = (aabb.maxy - aabb.miny) / (ab.maxy - ab.miny);
-      if (this.matrix == null) {
-        this.matrix = new nape.geom.Mat23();
-      }
-      const _this1 = this.matrix;
-      if (sx !== sx) {
-        throw new Error("Mat23::a cannot be NaN");
-      }
-      _this1.zpp_inner.a = sx;
-      const _this2 = _this1.zpp_inner;
-      if (_this2._invalidate != null) {
-        _this2._invalidate();
-      }
-      const _this3 = this.matrix;
-      const _this4 = this.matrix;
-      _this4.zpp_inner.c = 0;
-      const _this5 = _this4.zpp_inner;
-      if (_this5._invalidate != null) {
-        _this5._invalidate();
-      }
-      const b = _this4.zpp_inner.c;
-      if (b !== b) {
-        throw new Error("Mat23::b cannot be NaN");
-      }
-      _this3.zpp_inner.b = b;
-      const _this6 = _this3.zpp_inner;
-      if (_this6._invalidate != null) {
-        _this6._invalidate();
-      }
-      const _this7 = this.matrix;
-      if (sy !== sy) {
-        throw new Error("Mat23::d cannot be NaN");
-      }
-      _this7.zpp_inner.d = sy;
-      const _this8 = _this7.zpp_inner;
-      if (_this8._invalidate != null) {
-        _this8._invalidate();
-      }
-      const _this9 = this.matrix;
-      const tx = aabb.minx - sx * ab.minx;
-      if (tx !== tx) {
-        throw new Error("Mat23::tx cannot be NaN");
-      }
-      _this9.zpp_inner.tx = tx;
-      const _this10 = _this9.zpp_inner;
-      if (_this10._invalidate != null) {
-        _this10._invalidate();
-      }
-      const _this11 = this.matrix;
-      const ty = aabb.miny - sy * ab.miny;
-      if (ty !== ty) {
-        throw new Error("Mat23::ty cannot be NaN");
-      }
-      _this11.zpp_inner.ty = ty;
-      const _this12 = _this11.zpp_inner;
-      if (_this12._invalidate != null) {
-        _this12._invalidate();
-      }
-      this.aabbShape.transform(this.matrix);
+      // Set the corners directly. Upstream rescaled the previous rectangle
+      // with a Mat23 (tx = minx - sx * oldMinx); after a tiny query far from
+      // the origin sx * oldMinx is ~1e16 and the subtraction loses the next
+      // query's position, so its result depended on the previous query.
+      const verts = this.aabbShape.localVerts;
+      verts.at(0).setxy(aabb.minx, aabb.miny);
+      verts.at(1).setxy(aabb.maxx, aabb.miny);
+      verts.at(2).setxy(aabb.maxx, aabb.maxy);
+      verts.at(3).setxy(aabb.minx, aabb.maxy);
     }
     this.aabbShape.zpp_inner.validate_aabb();
     this.aabbShape.zpp_inner.polygon.validate_gaxi();

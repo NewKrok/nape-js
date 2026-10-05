@@ -344,7 +344,14 @@ export class Shape extends Interactor {
     zpp.wake();
   }
 
-  /** If true, this shape acts as a sensor (no physical response, only callbacks). */
+  /**
+   * If true, this shape acts as a sensor (no physical response, only callbacks).
+   *
+   * Cannot be changed during `space.step()`, which includes `PreListener`
+   * handlers (they run mid-step). Record the desired state in the handler and
+   * apply it after `step()` returns. Body / interaction / constraint listener
+   * callbacks are delivered after the step and may change it directly.
+   */
   get sensorEnabled(): boolean {
     return (this as any).zpp_inner.sensorEnabled;
   }

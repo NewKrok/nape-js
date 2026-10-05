@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**6642 engine tests across 314 files, plus 79 pixi-adapter tests across 6 files.**
+**7418 engine tests across 348 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -81,12 +81,12 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~89% | ≥80% ✅ |
-| Branches | ~79% | — |
-| Functions | ~95% | — |
+| Statements | ~93% | ≥80% ✅ |
+| Branches | ~86% | — |
+| Functions | ~98% | — |
 
-**High coverage modules:** `packages/nape-js/src/replay/` (98%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/serialization/` (93%)
-**Low coverage modules:** `packages/nape-js/src/native/space/` (85%), `packages/nape-js/src/native/constraint/` (85%)
+**High coverage modules:** `packages/nape-js/src/native/callbacks/` (100%), `packages/nape-js/src/native/util/` (99%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/callbacks/` (99%), `packages/nape-js/src/replay/` (98%)
+**Low coverage modules:** `packages/nape-js/src/profiler/` (85%), `packages/nape-js/src/native/shape/` (90%), `packages/nape-js/src/native/geom/` (91%), `packages/nape-js/src/native/space/` (91%)
 
 Note: the arbiter classes' dead solver-method duplicates (the live solver is
 inlined inside `ZPP_Space.step`) were removed, and the Haxe-inline-expansion
@@ -175,8 +175,12 @@ it("applies gravity over multiple steps", () => {
 
 ### Coverage-focused test — targeting uncovered paths
 
-Files suffixed `*.coverage.test.ts` or `*.extended.test.ts` explicitly exercise
-edge cases to push statement coverage up.
+Files suffixed `*.coverage.test.ts`, `*.extended.test.ts` or `*.cov.test.ts`
+explicitly exercise edge cases to push coverage up. The `*.cov.test.ts` files
+check results against an independent oracle (brute-force queries, analytic
+ray hits, exact areas, array models of the lists) rather than just executing
+lines. Known engine limitations they found are pinned with `it.fails` and a
+comment explaining the expected behaviour — flip one to `it` when fixing it.
 
 ### Helper class test — setup/teardown
 

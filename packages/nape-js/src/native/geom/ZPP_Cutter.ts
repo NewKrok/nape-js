@@ -50,6 +50,100 @@ function ringArea(P: ZPP_GeomVert): number {
   return Math.abs(a) * 0.5;
 }
 
+function allocGeomVert(x: number, y: number): ZPP_GeomVert {
+  let ret: ZPP_GeomVert;
+  if (ZPP_GeomVert.zpp_pool == null) {
+    ret = new ZPP_GeomVert();
+  } else {
+    ret = ZPP_GeomVert.zpp_pool;
+    ZPP_GeomVert.zpp_pool = ret.next;
+    ret.next = null;
+  }
+  ret.forced = false;
+  ret.x = x;
+  ret.y = y;
+  return ret;
+}
+
+/**
+ * Find a pinch in a ring: a vertex `v` that shares its position with another,
+ * non-adjacent vertex `u`. A vertex lying inside a non-incident edge is turned
+ * into such a pair by inserting a copy of it into that edge. Returns `[u, v]`,
+ * or null when the ring has no pinch (always the case for a simple ring).
+ * Only vertices on the cut line (`onLine`) can be pinch points.
+ */
+function findPinch(
+  P: ZPP_GeomVert,
+  onLine: (x: number, y: number) => boolean,
+): [ZPP_GeomVert, ZPP_GeomVert] | null {
+  let v = P;
+  do {
+    if (!onLine(v.x, v.y)) {
+      v = v.next!;
+      continue;
+    }
+    let a = v.next!;
+    while (a != v.prev) {
+      const b = a.next!;
+      if (a.x == v.x && a.y == v.y) return [a, v];
+      const ex = b.x - a.x;
+      const ey = b.y - a.y;
+      const len2 = ex * ex + ey * ey;
+      const wx = v.x - a.x;
+      const wy = v.y - a.y;
+      const dot = wx * ex + wy * ey;
+      if (
+        dot > 0 &&
+        dot < len2 &&
+        Math.abs(wx * ey - wy * ex) <= Config.epsilon * Math.sqrt(len2) &&
+        !(b.x == v.x && b.y == v.y)
+      ) {
+        const u = allocGeomVert(v.x, v.y);
+        u.prev = a;
+        u.next = b;
+        a.next = u;
+        b.prev = u;
+        return [u, v];
+      }
+      a = b;
+    }
+    v = v.next!;
+  } while (v != P);
+  return null;
+}
+
+/**
+ * Split a ring at every pinch into rings that touch nowhere. The cut leaves a
+ * pinch when the line only touches a reflex vertex: the lobes on that side
+ * come back as one ring that meets itself at the vertex.
+ */
+function splitPinches(P: ZPP_GeomVert, onLine: (x: number, y: number) => boolean): ZPP_GeomVert[] {
+  const todo = [P];
+  const done: ZPP_GeomVert[] = [];
+  while (todo.length > 0) {
+    const R = todo.pop()!;
+    if (R.next == R || R.next!.next == R) {
+      done.push(R);
+      continue;
+    }
+    const pinch = findPinch(R, onLine);
+    if (pinch == null) {
+      done.push(R);
+      continue;
+    }
+    // Swapping the successors of u and v closes off the run between them.
+    const [u, v] = pinch;
+    const a = u.next!;
+    const c = v.next!;
+    u.next = c;
+    c.prev = u;
+    v.next = a;
+    a.prev = v;
+    todo.push(u, v);
+  }
+  return done;
+}
+
 /** Even-odd point-in-polygon on a GeomVert ring. */
 function insidePoly(P: ZPP_GeomVert | null, x: number, y: number): boolean {
   let ret = false;
@@ -1186,6 +1280,8 @@ export class ZPP_Cutter {
       ZPP_CutInt.zpp_pool = o37;
     }
     const ret16 = output == null ? new napeNs.geom.GeomPolyList() : output;
+    const lineTol = Config.epsilon * Math.sqrt(dx * dx + dy * dy);
+    const onLine = (x: number, y: number) => Math.abs(y * dx - x * dy + crx) <= lineTol;
     let cx_ite = ZPP_Cutter.paths.head;
     while (cx_ite != null) {
       const p5 = cx_ite.elt;
@@ -1236,29 +1332,31 @@ export class ZPP_Cutter {
           p6 = p6.next;
         }
       }
-      if (poly.vert != null && ringArea(poly.vert) < Config.epsilon) {
-        // No area: the leftover of a cut running along a boundary edge
-        // between two on-line vertices. Release it instead of emitting it.
-        let v = poly.vert;
-        do {
-          const nx = v.next;
-          v.next = v.prev = null;
-          disposeGeomVertWrap(v);
-          v.next = ZPP_GeomVert.zpp_pool;
-          ZPP_GeomVert.zpp_pool = v;
-          v = nx;
-        } while (v != poly.vert && v != null);
-        poly.vert = null;
-      }
-      if (poly.vert != null) {
+      const rings = poly.vert != null ? splitPinches(poly.vert, onLine) : [];
+      for (const R of rings) {
+        if (ringArea(R) < Config.epsilon) {
+          // No area: the leftover of a cut running along a boundary edge
+          // between two on-line vertices. Release it instead of emitting it.
+          let v: ZPP_GeomVert | null = R;
+          do {
+            const nx: ZPP_GeomVert | null = v!.next;
+            v!.next = v!.prev = null;
+            disposeGeomVertWrap(v!);
+            v!.next = ZPP_GeomVert.zpp_pool;
+            ZPP_GeomVert.zpp_pool = v!;
+            v = nx;
+          } while (v != R && v != null);
+          continue;
+        }
         const gp = napeNs.geom.GeomPoly.get();
-        gp.zpp_inner.vertices = poly.vert;
+        gp.zpp_inner.vertices = R;
         if (ret16.zpp_inner.reverse_flag) {
           ret16.push(gp);
         } else {
           ret16.unshift(gp);
         }
       }
+      poly.vert = null;
       cx_ite = cx_ite.next;
     }
     while (ZPP_Cutter.paths.head != null) {

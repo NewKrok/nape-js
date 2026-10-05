@@ -342,7 +342,9 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
     let ind = 0;
     for (let j = 0; j < this.dim; j++) {
       let sum = 0.0;
-      for (let k = 0; k < j - 1; k++) {
+      // Sum over every k < j. Haxe nape stopped at j - 1, dropping the last
+      // term, so 2+ DOF constraints converged slower than they should.
+      for (let k = 0; k < j; k++) {
         sum += this.L[j * this.dim + k] * this.L[j * this.dim + k];
       }
       let rec = Math.sqrt(m[ind++] - sum);
@@ -351,7 +353,7 @@ export class ZPP_UserConstraint extends ZPP_Constraint {
         rec = 1.0 / rec;
         for (let i = j + 1; i < this.dim; i++) {
           let sum1 = 0.0;
-          for (let k1 = 0; k1 < j - 1; k1++) {
+          for (let k1 = 0; k1 < j; k1++) {
             sum1 += this.L[i * this.dim + k1] * this.L[j * this.dim + k1];
           }
           this.L[i * this.dim + j] = rec * (m[ind++] - sum1);

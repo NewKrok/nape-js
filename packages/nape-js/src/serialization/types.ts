@@ -135,8 +135,14 @@ export interface ConstraintBaseData {
   stiff: boolean;
   frequency: number;
   damping: number;
-  maxForce: number;
-  maxError: number;
+  /**
+   * `null` = unlimited (`Infinity`, the default). JSON has no Infinity —
+   * `JSON.stringify` would turn it into `null` anyway, so the snapshot stores
+   * `null` itself and stays identical across a stringify / parse round trip.
+   */
+  maxForce: number | null;
+  /** `null` = unlimited (`Infinity`, the default); see `maxForce`. */
+  maxError: number | null;
   breakUnderForce: boolean;
   breakUnderError: boolean;
   removeOnBreak: boolean;
@@ -181,6 +187,10 @@ export interface LineJointData extends ConstraintBaseData {
 
 export interface PulleyJointData extends ConstraintBaseData {
   type: "PulleyJoint";
+  /** Index into SpaceSnapshot.bodies, or null for a static world anchor. Absent in older snapshots. */
+  body3Id?: number | null;
+  /** Index into SpaceSnapshot.bodies, or null for a static world anchor. Absent in older snapshots. */
+  body4Id?: number | null;
   anchor1: Vec2Data;
   anchor2: Vec2Data;
   anchor3: Vec2Data;
@@ -197,6 +207,27 @@ export interface WeldJointData extends ConstraintBaseData {
   phase: number;
 }
 
+export interface SpringJointData extends ConstraintBaseData {
+  type: "SpringJoint";
+  anchor1: Vec2Data;
+  anchor2: Vec2Data;
+  restLength: number;
+}
+
+/**
+ * A `UserConstraint` saved through a {@link UserConstraintCodec}.
+ * `body1Id` / `body2Id` mirror the first two entries of `bodyIds`.
+ */
+export interface UserConstraintData extends ConstraintBaseData {
+  type: "UserConstraint";
+  /** The codec's `type`. */
+  userType: string;
+  /** Indices into SpaceSnapshot.bodies (null = no body), in the codec's `bodies()` order. */
+  bodyIds: (number | null)[];
+  /** The codec's `save()` output. */
+  data: Record<string, unknown>;
+}
+
 export type ConstraintData =
   | PivotJointData
   | DistanceJointData
@@ -204,7 +235,9 @@ export type ConstraintData =
   | MotorJointData
   | LineJointData
   | PulleyJointData
-  | WeldJointData;
+  | WeldJointData
+  | SpringJointData
+  | UserConstraintData;
 
 // ---------------------------------------------------------------------------
 // Compound

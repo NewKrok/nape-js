@@ -374,7 +374,10 @@ export class ZPP_Shape {
   // --- Midstep guard ---
   __immutable_midstep(name: string): void {
     if (this.body != null && this.body.space != null && this.body.space.midstep) {
-      throw new Error(`${name} cannot be set during a space step()`);
+      throw new Error(
+        `${name} cannot be set during a space step() (e.g. from a PreListener). ` +
+          "Record the change there and apply it after step() returns.",
+      );
     }
   }
 

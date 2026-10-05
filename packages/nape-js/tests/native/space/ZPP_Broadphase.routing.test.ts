@@ -305,15 +305,18 @@ describe("ZPP_Broadphase.updateAABBShape()", () => {
     expect(a.maxy).toBeCloseTo(80, 6);
   });
 
-  it("materializes the transform matrix lazily on the second call only", () => {
-    expect(bp.matrix).toBeNull();
+  it("reuses the probe on later calls and sets its corners exactly", () => {
     bp.updateAABBShape(aabb(0, 0, 100, 50));
-    // First call constructs the probe via Polygon.rect — no transform needed.
-    expect(bp.matrix).toBeNull();
-
+    const probe = bp.aabbShape;
+    // A tiny rectangle far from the origin, then a normal one: the probe must
+    // land exactly on each rectangle (no drift from rescaling the previous one).
+    bp.updateAABBShape(aabb(1e12, 1e12, 1e12 + 1e-3, 1e12 + 1e-3));
     bp.updateAABBShape(aabb(10, 20, 60, 80));
-    // Second call applies a transform via the (now-allocated) matrix.
-    expect(bp.matrix).not.toBeNull();
+    expect(bp.aabbShape).toBe(probe);
+    const a = probe.zpp_inner.aabb;
+    expect([a.minx, a.miny, a.maxx, a.maxy]).toEqual([10, 20, 60, 80]);
+    // AABB probes no longer need the transform matrix.
+    expect(bp.matrix).toBeNull();
   });
 });
 

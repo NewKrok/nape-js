@@ -61,7 +61,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.42.3" />
+  <link rel="stylesheet" href="../../style.css?v=3.42.4" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
@@ -544,6 +544,10 @@ space.listeners.add(
   }),
 );
 </code></pre>
+<p>To switch a shape into (or out of) sensor mode at runtime, set
+<code>sensorEnabled</code> outside <code>space.step()</code>. Inside a <code>PreListener</code> handler — which
+runs mid-step — it throws; record the change there and apply it after the step
+(<a href="../troubleshooting/#shapesensorenabled-cannot-be-set-during-a-space-step">troubleshooting</a>).</p>
 <hr>
 <h2 id="collision-filtering">Collision Filtering</h2>
 <p>Control which bodies collide using <code>InteractionFilter</code> bit masks.</p>
@@ -979,6 +983,29 @@ if (saved) {
 }
 </code></pre>
 <p><strong>Key point:</strong> JSON serialization preserves <code>userData</code> on bodies. Binary does not.</p>
+<h3 id="saving-a-userconstraint">Saving a <code>UserConstraint</code></h3>
+<p>Built-in joints are saved automatically. A <code>UserConstraint</code> subclass needs a
+codec — its state lives in fields only the subclass knows. Pass the same
+codecs when saving and loading (JSON, binary, <code>Recorder</code> and <code>Player</code> all take
+the same <code>userConstraints</code> option):</p>
+<pre><code class="language-typescript">import { spaceToJSON, spaceFromJSON, type UserConstraintCodec } from &quot;@newkrok/nape-js/serialization&quot;;
+
+const ropeCodec: UserConstraintCodec&lt;Rope&gt; = {
+  type: &quot;my-game/Rope&quot;,                 // stable id in the snapshot; never the class name
+  ctor: Rope,                           // instances matched with instanceof
+  bodies: (c) =&gt; [c.body1, c.body2],    // linked bodies, in the order load() receives them
+  save: (c) =&gt; ({ length: c.length }),  // the subclass's own state, JSON-safe
+  load: (data, [b1, b2]) =&gt; new Rope(b1, b2, data.length as number),
+};
+
+const options = { userConstraints: [ropeCodec] };
+const json = JSON.stringify(spaceToJSON(space, options));
+const restored = spaceFromJSON(JSON.parse(json), options);
+</code></pre>
+<p><code>stiff</code>, <code>frequency</code>, <code>damping</code>, <code>maxForce</code>, the break flags and <code>userData</code> are
+restored by the serializer — the codec only handles what the subclass adds.
+Without a codec the constraint is left out of the snapshot; loading a snapshot
+that contains one whose codec is missing throws.</p>
 <hr>
 <h2 id="binary-snapshot-multiplayer">Binary Snapshot (Multiplayer)</h2>
 <p>Compact binary format for network sync.</p>
@@ -1380,7 +1407,7 @@ function steerMissile(space, body) {
       <p data-i18n="footer.license">MIT License</p>
     </div>
   </footer>
-  <script type="module" src="../../site-header.js?v=3.42.3"></script>
+  <script type="module" src="../../site-header.js?v=3.42.4"></script>
   <script>
     // Prism arrives deferred; highlight once it is here.
     window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });

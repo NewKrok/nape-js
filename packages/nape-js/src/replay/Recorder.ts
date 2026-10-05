@@ -1,5 +1,6 @@
 import type { Space } from "../space/Space";
 import { spaceToBinary } from "../serialization/serialize-binary";
+import type { SerializationOptions } from "../serialization/constraints";
 import type { RecorderOptions, Replay, ReplayFrameInput, ReplayKeyframe } from "./types";
 
 /**
@@ -34,6 +35,7 @@ export class Recorder<T = unknown> {
   private readonly _inputs: ReplayFrameInput<T>[] = [];
   private readonly _keyframes: ReplayKeyframe[] = [];
   private readonly _keyframeEvery: number;
+  private readonly _serialization: SerializationOptions;
   private _frame: number = 0;
   private _finished: boolean = false;
   private readonly _space: Space;
@@ -53,7 +55,8 @@ export class Recorder<T = unknown> {
     }
     this._space = space;
     this._keyframeEvery = ke ?? 60;
-    this._initialSnapshot = spaceToBinary(space);
+    this._serialization = { userConstraints: options.userConstraints };
+    this._initialSnapshot = spaceToBinary(space, this._serialization);
   }
 
   /** Number of frames recorded so far. */
@@ -87,7 +90,7 @@ export class Recorder<T = unknown> {
     if (this._keyframeEvery > 0 && this._frame > 0 && this._frame % this._keyframeEvery === 0) {
       this._keyframes.push({
         frame: this._frame,
-        snapshot: spaceToBinary(this._space),
+        snapshot: spaceToBinary(this._space, this._serialization),
       });
     }
     if (input != null) {
