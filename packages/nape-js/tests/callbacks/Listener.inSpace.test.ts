@@ -215,3 +215,103 @@ describe("Listener.toString / event mapping", () => {
     expect(Listener._wrap(ongoing.zpp_inner)).toBe(ongoing);
   });
 });
+
+describe("options setters accept a bare CbType, as their type declares", () => {
+  it("BodyListener.options = cbType re-targets a live listener", () => {
+    const space = new Space();
+    const tagA = new CbType();
+    const tagB = new CbType();
+    let count = 0;
+    const listener = new BodyListener(CbEvent.SLEEP, tagA, () => count++);
+    space.listeners.add(listener);
+    const b = sleeper(space, tagB);
+    settle(space);
+    expect(count).toBe(0);
+
+    listener.options = tagB;
+    expect(listener.options.includes.has(tagB)).toBe(true);
+    expect(listener.options.includes.has(tagA)).toBe(false);
+    b.velocity = new Vec2(1, 0);
+    b.velocity = new Vec2(0, 0);
+    settle(space);
+    expect(count).toBe(1);
+  });
+
+  it("ConstraintListener.options = cbType re-targets a live listener", () => {
+    const space = new Space();
+    const tag = new CbType();
+    const a = sleeper(space);
+    const b = sleeper(space);
+    b.position = new Vec2(30, 0);
+    const joint = new PivotJoint(a, b, new Vec2(15, 0), new Vec2(-15, 0));
+    joint.cbTypes.add(tag);
+    space.constraints.add(joint);
+    let count = 0;
+    const listener = new ConstraintListener(CbEvent.SLEEP, new CbType(), () => count++);
+    space.listeners.add(listener);
+    settle(space);
+    expect(count).toBe(0);
+
+    listener.options = tag;
+    a.velocity = new Vec2(5, 0);
+    space.step(1 / 60);
+    a.velocity = new Vec2(0, 0);
+    b.velocity = new Vec2(0, 0);
+    settle(space);
+    expect(count).toBe(1);
+  });
+
+  /** Two circles that overlap on the first step. */
+  function overlapping(tag: CbType) {
+    const space = new Space();
+    for (const x of [0, 15]) {
+      const body = new Body(BodyType.DYNAMIC, new Vec2(x, 0));
+      body.shapes.add(new Circle(10));
+      body.cbTypes.add(tag);
+      space.bodies.add(body);
+    }
+    return space;
+  }
+
+  it("InteractionListener.options1/options2 = cbType", () => {
+    const tag = new CbType();
+    const space = overlapping(tag);
+    let count = 0;
+    const listener = new InteractionListener(
+      CbEvent.BEGIN,
+      InteractionType.COLLISION,
+      new CbType(),
+      new CbType(),
+      () => count++,
+    );
+    listener.options1 = tag;
+    listener.options2 = tag;
+    space.listeners.add(listener);
+    space.step(1 / 60);
+    expect(count).toBe(1);
+  });
+
+  it("PreListener.options1/options2 = cbType", () => {
+    const tag = new CbType();
+    const space = overlapping(tag);
+    let count = 0;
+    const listener = new PreListener(InteractionType.COLLISION, new CbType(), new CbType(), () => {
+      count++;
+      return PreFlag.ACCEPT;
+    });
+    listener.options1 = tag;
+    listener.options2 = tag;
+    space.listeners.add(listener);
+    space.step(1 / 60);
+    expect(count).toBeGreaterThan(0);
+  });
+
+  it("an OptionType is still copied, not aliased", () => {
+    const tag = new CbType();
+    const opt = new OptionType(tag);
+    const listener = new BodyListener(CbEvent.SLEEP, new CbType(), () => {});
+    listener.options = opt;
+    expect(listener.options).not.toBe(opt);
+    expect(listener.options.includes.has(tag)).toBe(true);
+  });
+});

@@ -90,7 +90,7 @@ export class ConstraintListener extends Listener {
   }
 
   set options(options: OptionType | CbType) {
-    this.zpp_inner_zn.options.set((options as any).zpp_inner);
+    this.zpp_inner_zn.options.set(ZPP_OptionType.argument(options).zpp_inner);
   }
 
   /** The callback function invoked when the event fires. Cannot be set to null. */
