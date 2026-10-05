@@ -57,10 +57,12 @@ const CONSTRAINT_DISTANCE = 1;
 const CONSTRAINT_ANGLE = 2;
 const CONSTRAINT_MOTOR = 3;
 const CONSTRAINT_LINE = 4;
-const CONSTRAINT_PULLEY = 5;
+// 5 was PulleyJoint without body3 / body4 — still read by spaceFromBinary.
 const CONSTRAINT_WELD = 6;
 const CONSTRAINT_SPRING = 7;
 const CONSTRAINT_USER = 8;
+/** PulleyJoint with body3 / body4 ids. CONSTRAINT_PULLEY (no body3/4) is only read, for older snapshots. */
+const CONSTRAINT_PULLEY4 = 9;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -203,7 +205,7 @@ const CONSTRAINT_TYPE_MAP: Record<BuiltinConstraintType, number> = {
   AngleJoint: CONSTRAINT_ANGLE,
   MotorJoint: CONSTRAINT_MOTOR,
   LineJoint: CONSTRAINT_LINE,
-  PulleyJoint: CONSTRAINT_PULLEY,
+  PulleyJoint: CONSTRAINT_PULLEY4,
   WeldJoint: CONSTRAINT_WELD,
   SpringJoint: CONSTRAINT_SPRING,
 };
@@ -329,6 +331,9 @@ function writeConstraint(
     case "PulleyJoint": {
       const j = c as PulleyJoint;
       writeConstraintBase(w, c, zppBodyIdToIndex, j.body1, j.body2);
+      for (const b of [j.body3, j.body4]) {
+        w.writeInt32(b != null ? (zppBodyIdToIndex.get(b.zpp_inner.id) ?? -1) : -1);
+      }
       w.writeFloat64(j.anchor1.x);
       w.writeFloat64(j.anchor1.y);
       w.writeFloat64(j.anchor2.x);

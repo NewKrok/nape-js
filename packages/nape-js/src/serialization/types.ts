@@ -187,6 +187,10 @@ export interface LineJointData extends ConstraintBaseData {
 
 export interface PulleyJointData extends ConstraintBaseData {
   type: "PulleyJoint";
+  /** Index into SpaceSnapshot.bodies, or null for a static world anchor. Absent in older snapshots. */
+  body3Id?: number | null;
+  /** Index into SpaceSnapshot.bodies, or null for a static world anchor. Absent in older snapshots. */
+  body4Id?: number | null;
   anchor1: Vec2Data;
   anchor2: Vec2Data;
   anchor3: Vec2Data;

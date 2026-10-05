@@ -158,7 +158,8 @@ describe("Serialization integration — JSON constraints", () => {
     expect(restored.constraints.length).toBe(1);
     step(restored, 30);
     // Should continue swinging
-    expect(restored.bodies.at(1).position.y).toBeGreaterThan(0);
+    const restoredPendulum = [...restored.bodies].find((b) => b.type === BodyType.DYNAMIC)!;
+    expect(restoredPendulum.position.y).toBeGreaterThan(0);
   });
 });
 

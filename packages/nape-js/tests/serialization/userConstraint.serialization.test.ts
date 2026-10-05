@@ -9,6 +9,7 @@ import { Body } from "../../src/phys/Body";
 import { BodyType } from "../../src/phys/BodyType";
 import { Vec2 } from "../../src/geom/Vec2";
 import { Circle } from "../../src/shape/Circle";
+import { Polygon } from "../../src/shape/Polygon";
 import { Compound } from "../../src/phys/Compound";
 import { UserConstraint } from "../../src/constraint/UserConstraint";
 import { PivotJoint } from "../../src/constraint/PivotJoint";
@@ -558,5 +559,200 @@ describe("UserConstraint in a replay", () => {
     expect(player.space!.constraints.length).toBe(0);
     player.stepTo(90);
     expect(positions(player.space!)).not.toBe(positions(space));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Every built-in joint, through both formats
+// ---------------------------------------------------------------------------
+
+describe("every built-in joint round-trips through JSON and binary", () => {
+  /** A chain of distinct bodies with one of each joint, all with non-default settings. */
+  function jointZoo() {
+    const space = new Space(new Vec2(0, 200));
+    const ground = new Body(BodyType.STATIC, new Vec2(0, 0));
+    ground.shapes.add(new Circle(3));
+    ground.space = space;
+    const bs = [1, 2, 3, 4, 5, 6].map((i) => ball(space, i * 40, 0));
+    const [b1, b2, b3, b4, b5, b6] = bs;
+    const pivot = new PivotJoint(ground, b1, new Vec2(40, 0), new Vec2(0, 0));
+    const dist = new DistanceJoint(b1, b2, new Vec2(1, 0), new Vec2(-1, 0), 30, 45);
+    const angle = new AngleJoint(b2, b3, -0.5, 0.75, 2);
+    const motor = new MotorJoint(b3, b4, 1.5, 0.5);
+    const line = new LineJoint(
+      ground,
+      b4,
+      new Vec2(160, 0),
+      new Vec2(0, 0),
+      new Vec2(0, 1),
+      -20,
+      20,
+    );
+    const pulley = new PulleyJoint(
+      b4,
+      b5,
+      b5,
+      b6,
+      new Vec2(0, 1),
+      new Vec2(0, -1),
+      new Vec2(1, 0),
+      new Vec2(-1, 0),
+      40,
+      120,
+      1.5,
+    );
+    const weld = new WeldJoint(b5, b6, new Vec2(20, 0), new Vec2(-20, 0), 0.25);
+    const spring = new SpringJoint(ground, b6, new Vec2(0, 0), new Vec2(0, 0), 200);
+    const all = [pivot, dist, angle, motor, line, pulley, weld, spring];
+    all.forEach((c, i) => {
+      c.stiff = i % 2 === 0;
+      c.frequency = 3 + i;
+      c.damping = 0.1 * (i + 1);
+      c.maxForce = i === 3 ? Infinity : 1e5 + i;
+      c.maxError = i === 4 ? Infinity : 50 + i;
+      c.breakUnderForce = i === 5;
+      c.breakUnderError = i === 6;
+      c.removeOnBreak = i !== 7;
+      c.space = space;
+    });
+    return space;
+  }
+
+  /** Every saved field, read back from the live constraints, keyed by type. */
+  function describeJoints(space: Space): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    for (let i = 0; i < space.constraints.length; i++) {
+      const c = space.constraints.at(i) as Any;
+      const v = (p: Vec2) => [p.x, p.y];
+      const fields: Record<string, unknown> = {
+        stiff: c.stiff,
+        frequency: c.frequency,
+        damping: c.damping,
+        maxForce: c.maxForce,
+        maxError: c.maxError,
+        breakUnderForce: c.breakUnderForce,
+        breakUnderError: c.breakUnderError,
+        removeOnBreak: c.removeOnBreak,
+      };
+      for (const k of ["jointMin", "jointMax", "ratio", "rate", "phase", "restLength"]) {
+        if (typeof c[k] === "number") fields[k] = c[k];
+      }
+      for (const k of ["anchor1", "anchor2", "anchor3", "anchor4", "direction"]) {
+        if (c[k] instanceof Vec2) fields[k] = v(c[k]);
+      }
+      const name = classes.find((k) => c instanceof k)!;
+      out[name.prototype.constructor === name ? typeName(name) : "?"] = fields;
+    }
+    return out;
+  }
+
+  const classes = [
+    PivotJoint,
+    DistanceJoint,
+    AngleJoint,
+    MotorJoint,
+    LineJoint,
+    PulleyJoint,
+    WeldJoint,
+    SpringJoint,
+  ];
+  const typeName = (k: unknown) =>
+    ["Pivot", "Distance", "Angle", "Motor", "Line", "Pulley", "Weld", "Spring"][
+      classes.indexOf(k as (typeof classes)[number])
+    ];
+
+  for (const [name, roundTrip] of [
+    ["JSON", (s: Space) => spaceFromJSON(JSON.parse(JSON.stringify(spaceToJSON(s))))],
+    ["binary", (s: Space) => spaceFromBinary(spaceToBinary(s))],
+  ] as const) {
+    it(`${name}: same joints, same settings, same simulation`, () => {
+      const space = jointZoo();
+      const restored = roundTrip(space);
+      expect(restored.constraints.length).toBe(8);
+      expect(describeJoints(restored)).toEqual(describeJoints(space));
+      for (let i = 0; i < 60; i++) {
+        space.step(1 / 60);
+        restored.step(1 / 60);
+      }
+      expect(positions(restored)).toBe(positions(space));
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Restore order: the solver is order-dependent, so a restored space must
+// iterate bodies and constraints in the original order to reproduce it.
+// ---------------------------------------------------------------------------
+
+describe("a restored space keeps the original iteration order", () => {
+  function tagged(space: Space) {
+    for (let i = 0; i < 5; i++) {
+      const b = ball(space, i * 12, 0);
+      b.userData.i = i;
+    }
+    const compound = new Compound();
+    for (let i = 5; i < 8; i++) {
+      const b = ball(null, i * 12, 40);
+      b.userData.i = i;
+      b.compound = compound;
+    }
+    compound.space = space;
+    const bs = [...space.bodies];
+    for (let i = 0; i < 4; i++) {
+      const j = new PivotJoint(bs[i], bs[i + 1], new Vec2(6, 0), new Vec2(-6, 0));
+      j.userData.i = i;
+      j.space = space;
+    }
+  }
+  const order = (list: Iterable<{ userData: Record<string, unknown> }>) =>
+    [...list].map((x) => x.userData.i);
+
+  for (const [name, roundTrip] of [
+    ["JSON", (s: Space) => spaceFromJSON(JSON.parse(JSON.stringify(spaceToJSON(s))))],
+    ["binary", (s: Space) => spaceFromBinary(spaceToBinary(s))],
+  ] as const) {
+    it(`${name}: bodies, constraints and compound members in the same order`, () => {
+      const space = new Space();
+      tagged(space);
+      const restored = roundTrip(space);
+      if (name === "JSON") {
+        expect(order(restored.bodies)).toEqual(order(space.bodies));
+        expect(order(restored.constraints)).toEqual(order(space.constraints));
+        expect(order(restored.compounds.at(0).bodies)).toEqual(order(space.compounds.at(0).bodies));
+      } else {
+        // Binary carries no userData; compare positions in list order instead.
+        const xs = (l: Iterable<Body>) => [...l].map((b) => b.position.x);
+        expect(xs(restored.bodies)).toEqual(xs(space.bodies));
+        expect(xs(restored.compounds.at(0).bodies)).toEqual(xs(space.compounds.at(0).bodies));
+      }
+    });
+  }
+
+  it("a stack restored mid-simulation continues bit-identically (rollback)", () => {
+    const space = new Space(new Vec2(0, 600));
+    space.deterministic = true;
+    const floor = new Body(BodyType.STATIC, new Vec2(200, 410));
+    floor.shapes.add(new Polygon(Polygon.box(400, 20)));
+    floor.space = space;
+    for (let row = 0; row < 6; row++) {
+      for (let col = 0; col < 4 - (row % 2); col++) {
+        const b = ball(space, 160 + col * 21 + (row % 2) * 10, 380 - row * 21);
+        b.shapes.at(0).material.dynamicFriction = 0.8;
+      }
+    }
+    for (let i = 0; i < 30; i++) space.step(1 / 60);
+    expect(space.arbiters.length).toBeGreaterThan(10); // a real contact pile
+    const json = spaceFromJSON(JSON.parse(JSON.stringify(spaceToJSON(space))));
+    const bin = spaceFromBinary(spaceToBinary(space));
+    json.deterministic = bin.deterministic = true;
+    for (let i = 0; i < 90; i++) {
+      space.step(1 / 60);
+      json.step(1 / 60);
+      bin.step(1 / 60);
+    }
+    const exact = (s: Space) =>
+      [...s.bodies].map((b) => `${b.position.x},${b.position.y}`).join(";");
+    expect(exact(json)).toBe(exact(space));
+    expect(exact(bin)).toBe(exact(space));
   });
 });

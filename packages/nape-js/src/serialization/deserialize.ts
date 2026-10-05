@@ -259,8 +259,8 @@ function buildConstraint(
       const c = new PulleyJoint(
         b1,
         b2,
-        null,
-        null,
+        d.body3Id != null ? (bodies[d.body3Id] ?? null) : null,
+        d.body4Id != null ? (bodies[d.body4Id] ?? null) : null,
         toVec2Weak(d.anchor1),
         toVec2Weak(d.anchor2),
         toVec2Weak(d.anchor3),
@@ -361,13 +361,19 @@ export function spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOp
   const compoundBodySet = new Set<number>();
   const compoundConstraintSet = new Set<number>();
 
-  for (const cd of snapshot.compounds) {
+  // Engine lists insert at the head, so everything is added in reverse: the
+  // restored space then iterates bodies and constraints in the original
+  // order, and the (order-dependent) solver reproduces the original steps.
+  for (let k = snapshot.compounds.length - 1; k >= 0; k--) {
+    const cd = snapshot.compounds[k];
     const compound = new Compound();
-    for (const bodyId of cd.bodyIds) {
+    for (let j = cd.bodyIds.length - 1; j >= 0; j--) {
+      const bodyId = cd.bodyIds[j];
       bodies[bodyId].compound = compound;
       compoundBodySet.add(bodyId);
     }
-    for (const ci of cd.constraintIndices) {
+    for (let j = cd.constraintIndices.length - 1; j >= 0; j--) {
+      const ci = cd.constraintIndices[j];
       constraints[ci].compound = compound;
       compoundConstraintSet.add(ci);
     }
@@ -377,13 +383,13 @@ export function spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOp
   // ------------------------------------------------------------------
   // 5. Add remaining (non-compound) bodies and constraints to space
   // ------------------------------------------------------------------
-  for (let i = 0; i < bodies.length; i++) {
+  for (let i = bodies.length - 1; i >= 0; i--) {
     if (!compoundBodySet.has(i)) {
       bodies[i].space = space;
     }
   }
 
-  for (let i = 0; i < constraints.length; i++) {
+  for (let i = constraints.length - 1; i >= 0; i--) {
     if (!compoundConstraintSet.has(i)) {
       constraints[i].space = space;
     }

@@ -241,6 +241,8 @@ function serializeConstraint(
   options: SerializationOptions | undefined,
 ): ConstraintData | null {
   const typeName = builtinConstraintType(c);
+  const bodyId = (b: Body | null): number | null =>
+    b != null ? (zppBodyIdToIndex.get(b.zpp_inner.id) ?? null) : null;
 
   switch (typeName) {
     case "PivotJoint": {
@@ -295,6 +297,8 @@ function serializeConstraint(
       return {
         ...base,
         type: "PulleyJoint",
+        body3Id: bodyId(j.body3),
+        body4Id: bodyId(j.body4),
         anchor1: vec2(j.anchor1),
         anchor2: vec2(j.anchor2),
         anchor3: vec2(j.anchor3),

@@ -47,6 +47,7 @@ const CONSTRAINT_PULLEY = 5;
 const CONSTRAINT_WELD = 6;
 const CONSTRAINT_SPRING = 7;
 const CONSTRAINT_USER = 8;
+const CONSTRAINT_PULLEY4 = 9;
 
 // Body type mapping (ZPP internal codes)
 const BODY_TYPE_MAP: Record<number, BodyType> = {
@@ -354,7 +355,17 @@ function readConstraint(
       applyBase(c, base);
       return c;
     }
-    case CONSTRAINT_PULLEY: {
+    case CONSTRAINT_PULLEY:
+    case CONSTRAINT_PULLEY4: {
+      // Older snapshots (tag 5) did not store body3 / body4.
+      let b3: Body | null = null;
+      let b4: Body | null = null;
+      if (typeTag === CONSTRAINT_PULLEY4) {
+        const b3Id = r.readInt32();
+        const b4Id = r.readInt32();
+        b3 = b3Id >= 0 ? (bodies[b3Id] ?? null) : null;
+        b4 = b4Id >= 0 ? (bodies[b4Id] ?? null) : null;
+      }
       const a1x = r.readFloat64(),
         a1y = r.readFloat64();
       const a2x = r.readFloat64(),
@@ -369,8 +380,8 @@ function readConstraint(
       const c = new PulleyJoint(
         b1,
         b2,
-        null,
-        null,
+        b3,
+        b4,
         Vec2.weak(a1x, a1y),
         Vec2.weak(a2x, a2y),
         Vec2.weak(a3x, a3y),
@@ -512,42 +523,51 @@ export function spaceFromBinary(data: Uint8Array, options?: SerializationOptions
   const compoundBodySet = new Set<number>();
   const compoundConstraintSet = new Set<number>();
 
+  const compoundRecords: { bodyIdxs: number[]; constraintIdxs: number[] }[] = [];
   for (let ci = 0; ci < compoundCount; ci++) {
-    const compound = new Compound();
-
+    const bodyIdxs: number[] = [];
     const cBodyCount = r.readUint16();
-    for (let bi = 0; bi < cBodyCount; bi++) {
-      const bodyIdx = r.readUint32();
-      bodies[bodyIdx].compound = compound;
-      compoundBodySet.add(bodyIdx);
-    }
+    for (let bi = 0; bi < cBodyCount; bi++) bodyIdxs.push(r.readUint32());
 
+    const constraintIdxs: number[] = [];
     const cConstraintCount = r.readUint16();
-    for (let i = 0; i < cConstraintCount; i++) {
-      const cIdx = r.readUint32();
-      constraints[cIdx].compound = compound;
-      compoundConstraintSet.add(cIdx);
-    }
+    for (let i = 0; i < cConstraintCount; i++) constraintIdxs.push(r.readUint32());
 
     // Child compounds (read and discard for now)
     const childCount = r.readUint16();
     for (let i = 0; i < childCount; i++) {
       r.readUint32();
     }
+    compoundRecords.push({ bodyIdxs, constraintIdxs });
+  }
 
+  // Engine lists insert at the head, so everything is added in reverse: the
+  // restored space then iterates bodies and constraints in the original
+  // order, and the (order-dependent) solver reproduces the original steps.
+  for (let ci = compoundRecords.length - 1; ci >= 0; ci--) {
+    const { bodyIdxs, constraintIdxs } = compoundRecords[ci];
+    const compound = new Compound();
+    for (let j = bodyIdxs.length - 1; j >= 0; j--) {
+      bodies[bodyIdxs[j]].compound = compound;
+      compoundBodySet.add(bodyIdxs[j]);
+    }
+    for (let j = constraintIdxs.length - 1; j >= 0; j--) {
+      constraints[constraintIdxs[j]].compound = compound;
+      compoundConstraintSet.add(constraintIdxs[j]);
+    }
     compound.space = space;
   }
 
   // ------------------------------------------------------------------
   // 6. Add remaining (non-compound) bodies and constraints to space
   // ------------------------------------------------------------------
-  for (let i = 0; i < bodyCount; i++) {
+  for (let i = bodyCount - 1; i >= 0; i--) {
     if (!compoundBodySet.has(i)) {
       bodies[i].space = space;
     }
   }
 
-  for (let i = 0; i < constraintCount; i++) {
+  for (let i = constraintCount - 1; i >= 0; i--) {
     if (!compoundConstraintSet.has(i)) {
       constraints[i].space = space;
     }
