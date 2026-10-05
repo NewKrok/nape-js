@@ -942,11 +942,14 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
       while (this.treeStack.head != null) {
         const node = this.treeStack.pop_unsafe();
         const x = node.aabb;
+        // Fast path: the node lies fully inside the query. Under containment a
+        // body already rejected (another of its shapes sticks out) must stay
+        // out — upstream skipped that check here, unlike the other phases.
         if (x.minx >= ab.minx && x.miny >= ab.miny && x.maxx <= ab.maxx && x.maxy <= ab.maxy) {
           if (node.child1 == null) {
             if (filter == null || node.shape.filter.shouldCollide(filter)) {
               const body = node.shape.body.outer;
-              if (!ret.has(body)) {
+              if (!ret.has(body) && !(containment && this.failed.has(body))) {
                 ret.push(body);
               }
             }
@@ -960,7 +963,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
               if (node1.child1 == null) {
                 if (filter == null || node1.shape.filter.shouldCollide(filter)) {
                   const body1 = node1.shape.body.outer;
-                  if (!ret.has(body1)) {
+                  if (!ret.has(body1) && !(containment && this.failed.has(body1))) {
                     ret.push(body1);
                   }
                 }
@@ -1058,7 +1061,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
           if (node2.child1 == null) {
             if (filter == null || node2.shape.filter.shouldCollide(filter)) {
               const body3 = node2.shape.body.outer;
-              if (!ret.has(body3)) {
+              if (!ret.has(body3) && !(containment && this.failed.has(body3))) {
                 ret.push(body3);
               }
             }
@@ -1072,7 +1075,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
               if (node3.child1 == null) {
                 if (filter == null || node3.shape.filter.shouldCollide(filter)) {
                   const body4 = node3.shape.body.outer;
-                  if (!ret.has(body4)) {
+                  if (!ret.has(body4) && !(containment && this.failed.has(body4))) {
                     ret.push(body4);
                   }
                 }
