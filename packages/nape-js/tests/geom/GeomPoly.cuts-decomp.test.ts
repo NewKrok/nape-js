@@ -227,9 +227,34 @@ describe("GeomPoly.cut — error handling", () => {
 
   it("throws on disposed Vec2", () => {
     const sq = makeSquare(20);
+    // Take `end` before disposing `v`, or the pool hands `v` straight back.
+    const end = Vec2.get(10, 10);
     const v = Vec2.get(0, 0);
     v.dispose();
-    expect(() => sq.cut(v, Vec2.get(10, 10))).toThrow();
+    expect(() => sq.cut(v, end)).toThrow("disposed");
+    expect(() => sq.cut(end, v)).toThrow("disposed");
+  });
+
+  it("zero-length cut line returns the polygon uncut", () => {
+    const sq = makeSquare(20);
+    const pieces = sq.cut(new Vec2(5, 5), new Vec2(5, 5));
+    expect(pieces.length).toBe(1);
+    expect(Math.abs(pieces.at(0).area())).toBeCloseTo(Math.abs(sq.area()), 10);
+    expect(pieces.at(0)).not.toBe(sq);
+    // Same result as a line that misses the polygon entirely.
+    expect(sq.cut(new Vec2(100, -5), new Vec2(100, 5)).length).toBe(1);
+  });
+
+  it("zero-length cut appends to a supplied output list and disposes weak Vec2s", () => {
+    const sq = makeSquare(20);
+    const out = sq.cut(new Vec2(-50, 0), new Vec2(50, 0));
+    expect(out.length).toBe(2);
+    const a = Vec2.weak(3, 3);
+    const b = Vec2.weak(3, 3);
+    expect(sq.cut(a, b, true, true, out)).toBe(out);
+    expect(out.length).toBe(3);
+    expect(a.zpp_disp).toBe(true);
+    expect(b.zpp_disp).toBe(true);
   });
 });
 

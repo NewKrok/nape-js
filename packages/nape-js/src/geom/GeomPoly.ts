@@ -844,14 +844,20 @@ export class GeomPoly {
       throw new Error("Vec2 has been disposed and cannot be used!");
     }
 
-    const ret = ZPP_Cutter.run(
-      this.zpp_inner.vertices,
-      start,
-      end,
-      boundedStart,
-      boundedEnd,
-      output,
-    );
+    let ret: any;
+    if (start.x == end.x && start.y == end.y) {
+      // A zero-length line has no direction, so it cuts nothing — the same
+      // result as a line that misses the polygon (a click without a drag).
+      ret = output == null ? new (getNape().geom.GeomPolyList)() : output;
+      const piece = this.copy();
+      if (ret.zpp_inner.reverse_flag) {
+        ret.push(piece);
+      } else {
+        ret.unshift(piece);
+      }
+    } else {
+      ret = ZPP_Cutter.run(this.zpp_inner.vertices, start, end, boundedStart, boundedEnd, output);
+    }
 
     if (start.zpp_inner.weak) {
       start.dispose();

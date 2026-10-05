@@ -273,16 +273,6 @@ describe("GeomPoly.cut — oracle", () => {
       if (j === i) j = (i + 1) % input.length;
       const [a, b] = [input[i], input[j]];
       const d: Pt = [b[0] - a[0], b[1] - a[1]];
-      // Touching vertices (both neighbours on one side) are the known
-      // limitation pinned by the it.fails below; exact with integer input.
-      const side = ([x, y]: Pt) => Math.sign(d[0] * (y - a[1]) - d[1] * (x - a[0]));
-      const touches = input.some(
-        (p, k) =>
-          side(p) === 0 &&
-          side(input[(k + input.length - 1) % input.length]) ===
-            side(input[(k + 1) % input.length]),
-      );
-      if (touches) continue;
       tested++;
       // Unbounded, and bounded with both ends pushed well outside.
       check(input, a, b, false, false);
@@ -297,24 +287,39 @@ describe("GeomPoly.cut — oracle", () => {
     expect(tested).toBeGreaterThan(40);
   });
 
-  // Known limitation: when the cut runs through a single *reflex* vertex
-  // that touches the line (both neighbours on one side, polygon interior on
-  // the other), the two lobes on the touching side come back as one piece
-  // pinched at that vertex instead of two pieces. Areas still add up.
-  it.fails("single reflex vertex touching the line splits the lobes (known limitation)", () => {
-    // Notch from the top at (10, 10); y = 10 should give a rectangle and two triangles.
-    check(
-      [
-        [0, 0],
-        [20, 0],
-        [20, 20],
-        [10, 10],
-        [0, 20],
-      ],
-      [-5, 10],
-      [25, 10],
-      false,
-      false,
-    );
+  // The cut only touches a *reflex* vertex (both neighbours on one side, the
+  // polygon interior on the other): the two lobes on the touching side meet
+  // at that vertex and must come back as two pieces, not one pinched piece.
+  it("single reflex vertex touching the line splits the lobes", () => {
+    // Notch from the top at (10, 10); y = 10 gives a rectangle and two triangles.
+    const input: Pt[] = [
+      [0, 0],
+      [20, 0],
+      [20, 20],
+      [10, 10],
+      [0, 20],
+    ];
+    check(input, [-5, 10], [25, 10], false, false);
+    const areas = pieces(poly(input).cut(new Vec2(-5, 10), new Vec2(25, 10)))
+      .map((p) => Math.abs(signedArea(p)))
+      .sort((a, b) => a - b);
+    expect(areas).toEqual([50, 50, 200]);
+  });
+
+  it("several reflex vertices touching the line split every lobe", () => {
+    // Three notches from the top, all reaching y = 10.
+    const input: Pt[] = [
+      [0, 0],
+      [40, 0],
+      [40, 20],
+      [35, 10],
+      [30, 20],
+      [20, 10],
+      [10, 20],
+      [5, 10],
+      [0, 20],
+    ];
+    check(input, [-5, 10], [45, 10], false, false);
+    expect(poly(input).cut(new Vec2(-5, 10), new Vec2(45, 10)).length).toBe(5);
   });
 });
