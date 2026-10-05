@@ -256,6 +256,69 @@ the snapshot.
 
 ---
 
+## "Arbiter not currently in use" from `normalImpulse()` / `crushFactor()`
+
+**Cause (nape-js ≤ 3.42.4):** after two bodies separate their arbiter lingers
+for `Config.arbiterExpirationDelay` steps, inactive. `body.arbiters` still
+listed it, so every Body impulse query (`normalImpulse`, `tangentImpulse`,
+`totalImpulse`, `rollingImpulse`, `crushFactor`) threw right after a
+separation. Fixed in 3.43.0: `body.arbiters` only lists active arbiters, as
+in Haxe nape. On older versions, wrap the query in try/catch for a few steps
+after separation.
+
+---
+
+## `body.interactingBodies()` returns nothing (or every partner)
+
+**Cause (nape-js ≤ 3.42.4):** with no type it always returned an empty list,
+with `InteractionType.FLUID` it returned every partner, and `depth` was
+ignored. Fixed in 3.43.0 — it follows interaction chains up to `depth` hops
+(`-1` = unlimited, `1` = direct partners), filtered by type.
+
+---
+
+## `shapesInAABB` / `bodiesInAABB` miss shapes that are clearly inside
+
+**Cause (nape-js ≤ 3.42.4):** the broadphase reuses one query rectangle and
+rescaled it from the previous query. After a tiny query far from the origin
+the next query searched the wrong region. Separately, `DYNAMIC_AABB_TREE`
+`bodiesInAABB(…, containment = true)` could report a body whose other shape
+sticks out. Both fixed in 3.43.0 (both inherited from Haxe nape).
+
+---
+
+## A `WeldJoint` makes a rotation-only body spin faster and faster
+
+**Cause (nape-js ≤ 3.42.4):** when neither welded body can translate (e.g.
+`allowMovement = false` against a static body) the solver inverted a singular
+matrix; with an anchor away from the body's centre the spin grew without
+bound. Fixed in 3.43.0. On older versions use `PivotJoint` + `AngleJoint`.
+
+---
+
+## `for (const v of polygon.localVerts)` throws "is not iterable"
+
+**Cause (nape-js ≤ 3.42.4):** `localVerts` / `worldVerts` were not real
+`Vec2List`s — not iterable, and `new Polygon(other.localVerts)` was rejected.
+Fixed in 3.43.0. On older versions use `for (let i = 0; i < l.length; i++) l.at(i)`.
+
+---
+
+## Known limitations
+
+- **`GeomPoly.simpleDecomposition()` on degenerate input:** three edges
+  crossing at one point, a vertex visited twice (spikes, keyholes) can throw;
+  rarely a piece has zero area or self-crosses; `isSimple()` can miss a
+  crossing on a vertical edge. After a throw, call `simpleDecomposition()`
+  only on fresh engine state (static sweep state is left behind). Clean up
+  input (`simplify`, remove duplicate points) first. Inherited from Haxe nape.
+- **`MarchingSquares.run` with bounds that are not a whole number of cells**
+  samples the last column/row past the bound; with `combine = true` a tiny
+  negative value (e.g. `-1e-20` float noise) next to a notch can crash. Use
+  bounds that are a multiple of the cell size, and clamp near-zero values.
+
+---
+
 ## Material constructor order is confusing
 
 The parameter order is:
