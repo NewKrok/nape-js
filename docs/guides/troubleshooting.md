@@ -140,6 +140,52 @@ space.listeners.add(new ConstraintListener(CbEvent.BREAK, breakableTag, handler)
 
 ---
 
+## `listener.options = cbType` throws "Cannot read properties of undefined"
+
+**Cause (nape-js ≤ 3.42.4):** the `options` setter of `BodyListener` /
+`ConstraintListener` and the `options1` / `options2` setters of
+`InteractionListener` / `PreListener` are typed `OptionType | CbType`, but
+only an `OptionType` worked. Fixed in 3.42.5 — a bare `CbType` is accepted, as
+it always was in the constructors. On older versions wrap it:
+
+```typescript
+listener.options = new OptionType(cbType); // works on every version
+```
+
+---
+
+## "Shape::sensorEnabled cannot be set during a space step()"
+
+**Cause:** the flag was changed while `space.step()` was running — in
+practice, from inside a `PreListener` handler, which runs mid-step. Toggling a
+sensor rewrites broadphase and arbiter state that the step is iterating, so
+the engine forbids it (as upstream nape does). The same rule applies to every
+setter that throws "cannot be set during a space step()".
+
+**Fix:** record the change in the handler, apply it after the step:
+
+```typescript
+let turnGhostIntoSensor = false;
+space.listeners.add(
+  new PreListener(InteractionType.COLLISION, playerTag, ghostTag, () => {
+    // ghostShape.sensorEnabled = true;  ← throws here
+    turnGhostIntoSensor = true; // record only
+    return PreFlag.IGNORE;
+  }),
+);
+
+space.step(1 / 60);
+if (turnGhostIntoSensor) {
+  ghostShape.sensorEnabled = true; // safe: the step is over
+  turnGhostIntoSensor = false;
+}
+```
+
+`BodyListener`, `InteractionListener` and `ConstraintListener` callbacks are
+delivered after the step, so they may change the flag directly.
+
+---
+
 ## Material constructor order is confusing
 
 The parameter order is:
@@ -302,30 +348,32 @@ v.dispose(); // return to pool when done
 
 ---
 
-## `GeomPoly.cut()` returns a piece that is not simple
+## `GeomPoly.cut()` returns a piece that is not simple, or throws a `TypeError`
 
-**Cause:** the cut line passes through a single *reflex* vertex that only
+Both are fixed in **3.42.5**; upgrade. On 3.42.4 and earlier:
+
+**Not simple:** the cut line passes through a single *reflex* vertex that only
 touches the line — both of its neighbours are on the same side, and the
-polygon continues on the other side. The two lobes on the touching side come
-back as one piece pinched at that vertex. Areas still add up; only the split
-is missing. (Lines that cross vertices, or run along an edge, are handled.)
+polygon continues on the other side. The two lobes on the touching side came
+back as one piece pinched at that vertex. Split such pieces yourself:
 
 ```typescript
-// Notch from the top at (10, 10): y = 10 should give a rectangle + 2 triangles
+// Notch from the top at (10, 10): y = 10 gives a rectangle + 2 triangles
 const notch = new GeomPoly([
   new Vec2(0, 0), new Vec2(20, 0), new Vec2(20, 20), new Vec2(10, 10), new Vec2(0, 20),
 ]);
 const pieces = notch.cut(new Vec2(-5, 10), new Vec2(25, 10));
-// pieces: rectangle (simple) + both triangles as ONE pinched piece (not simple)
-
-// Workaround: split any non-simple piece
+// 3.42.5+: three simple pieces. ≤ 3.42.4: rectangle + one pinched piece.
 for (let i = 0; i < pieces.length; i++) {
   const p = pieces.at(i);
-  if (!p.isSimple()) {
-    const parts = p.simpleDecomposition(); // → the two triangles
-  }
+  if (!p.isSimple()) p.simpleDecomposition(); // → the two triangles
 }
 ```
+
+**`TypeError: Cannot read properties of null`:** the start and end of the cut
+line were the same point (a click without a drag). Since 3.42.5 a zero-length
+line cuts nothing and returns one uncut copy, like a line that misses the
+polygon. On older versions, skip the cut when `start` equals `end`.
 
 ---
 

@@ -628,7 +628,7 @@ Base class for Circle, Polygon and Capsule. Cannot be instantiated directly.
 | `filter` | `InteractionFilter` | R/W | Collision/sensor/fluid filter |
 | `fluidProperties` | `FluidProperties` | R/W | Fluid properties |
 | `fluidEnabled` | `boolean` | R/W | Enable fluid interaction |
-| `sensorEnabled` | `boolean` | R/W | Enable sensor mode (detects overlap without physical response) |
+| `sensorEnabled` | `boolean` | R/W | Enable sensor mode (detects overlap without physical response). Not settable during `space.step()` (e.g. inside a `PreListener`) — apply after the step |
 | `cbTypes` | `CbTypeList` | R | Callback type tags |
 | `userData` | `Record<string, unknown>` | R | User data |
 

@@ -447,6 +447,11 @@ space.listeners.add(
 );
 ```
 
+To switch a shape into (or out of) sensor mode at runtime, set
+`sensorEnabled` outside `space.step()`. Inside a `PreListener` handler — which
+runs mid-step — it throws; record the change there and apply it after the step
+([troubleshooting](./troubleshooting.md#shapesensorenabled-cannot-be-set-during-a-space-step)).
+
 ---
 
 ## Collision Filtering
