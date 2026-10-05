@@ -165,14 +165,29 @@ describe("joints attached to bodies with no effective mass", () => {
     expect(a.position.y).toBe(0);
   });
 
-  // LIMITATION (faithful to Haxe nape's mat3_invert): for a singular 3x3 Keff
-  // the solver falls back to inverting the diagonal only. For a body that can
-  // only rotate, the y-row (i*rx^2) and the angular row (i) both respond to the
-  // same angular velocity, so each iteration over-corrects by 2x and flips the
-  // sign of angularVel; after an even number of iterations the spin survives.
-  it.fails("WeldJoint on a rotation-only body stops the spin", () => {
+  // When neither body can translate, Keff is rank 1. Haxe nape inverted it
+  // anyway (rounding leaves det tiny but non-zero for an offset anchor) or fell
+  // back to a diagonal inverse that over-corrects 2x; with an offset anchor the
+  // spin grew without bound. nape-js solves only the angular row there.
+  it("WeldJoint on a rotation-only body stops the spin", () => {
     const a = spinningWeld();
     expect(Math.abs(a.angularVel)).toBeLessThan(1e-3);
+  });
+
+  it("WeldJoint on a rotation-only body with an offset anchor stays bounded over time", () => {
+    for (const off of [0, 10, 37]) {
+      const space = new Space(new Vec2(0, 0));
+      const s = stat(0, 0);
+      const a = dyn(0, 0);
+      a.allowMovement = false;
+      s.space = space;
+      a.space = space;
+      new WeldJoint(s, a, new Vec2(off, 0), new Vec2(off, 0)).space = space;
+      a.angularVel = 3;
+      for (let i = 0; i < 120; i++) space.step(DT);
+      expect(Math.abs(a.angularVel)).toBeLessThan(1e-6);
+      expect(Math.abs(a.rotation)).toBeLessThan(1e-3);
+    }
   });
 
   it("PivotJoint on a rotation-only body with a large error rotates towards the target", () => {

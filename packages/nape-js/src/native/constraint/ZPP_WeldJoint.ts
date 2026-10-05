@@ -436,7 +436,17 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
       this.kMassb * (this.kMassc * this.kMasse - this.kMassb * this.kMassf) +
       this.kMassc * (this.kMassb * this.kMasse - this.kMassc * this.kMassd);
     let flag: number;
-    if (det != det) {
+    if (m == 0) {
+      // Neither body can translate, so only the angle is free. K is then
+      // rank 1 (i * v vᵀ); rounding makes det tiny but non-zero for an offset
+      // anchor, and inverting it blew the spin up (Haxe nape did the same).
+      // With coincident anchors, holding the angle also holds the anchors:
+      // solve the angular row only.
+      const f = this.kMassf;
+      this.kMassa = this.kMassb = this.kMassc = this.kMassd = this.kMasse = 0;
+      this.kMassf = f != 0 ? 1 / f : 0;
+      flag = 3 | (f != 0 ? 0 : 4);
+    } else if (det != det) {
       // NaN — zero out entire matrix
       this.kMassa = 0;
       this.kMassb = 0;
@@ -746,7 +756,12 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
 
     // Solve K * J = rhs
     const det = Ka * (Kd * Kf - Ke * Ke) + Kb * (Kc * Ke - Kb * Kf) + Kc * (Kb * Ke - Kc * Kd);
-    if (det != det) {
+    if (m == 0) {
+      // No translation possible: correct the angle only (see preStep).
+      Jx = 0;
+      Jy = 0;
+      Jz = Kf != 0 ? Jz / Kf : 0;
+    } else if (det != det) {
       // NaN
       Jz = 0;
       Jy = Jz;
