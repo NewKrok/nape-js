@@ -13,12 +13,16 @@ export function installIterable(
   getIterator: (self: any) => { hasNext(): boolean; next(): any },
 ): void {
   proto[Symbol.iterator] = function (this: any) {
-    const it = getIterator(this);
+    // An engine iterator returns itself to its pool once hasNext() reports
+    // false; keep no reference past that point, or a later next() call on
+    // this finished wrapper would drive whichever iteration reused it.
+    let it: { hasNext(): boolean; next(): any } | null = getIterator(this);
     return {
       next(): IteratorResult<any> {
-        if (it.hasNext()) {
+        if (it != null && it.hasNext()) {
           return { value: it.next(), done: false };
         }
+        it = null;
         return { value: undefined, done: true };
       },
       [Symbol.iterator]() {

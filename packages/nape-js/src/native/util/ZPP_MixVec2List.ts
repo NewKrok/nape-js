@@ -52,17 +52,13 @@ function ZPP_MixVec2ListCtor(this: any): void {
   this._length = 0;
 }
 
-// Inherit all Vec2List prototype methods (enumerable only — for...in misses
-// non-enumerable properties like the `length` getter defined via Object.defineProperty)
-for (const k in (Vec2ListCtor as any).prototype) {
-  (ZPP_MixVec2ListCtor as any).prototype[k] = (Vec2ListCtor as any).prototype[k];
-}
-// Re-apply the non-enumerable `length` getter so it is available on this subclass.
-Object.defineProperty((ZPP_MixVec2ListCtor as any).prototype, "length", {
-  get: function (this: any) {
-    return this.zpp_gl();
-  },
-  configurable: true,
+// Inherit from Vec2List (as Haxe nape's ZPP_MixVec2List extends Vec2List), so
+// a polygon's localVerts / worldVerts pass `instanceof Vec2List` and pick up
+// everything on its prototype — including the non-enumerable `length` getter
+// and `Symbol.iterator`, which an earlier for...in copy missed (the lists
+// were not iterable). The overrides below shadow the inherited methods.
+(ZPP_MixVec2ListCtor as any).prototype = Object.create((Vec2ListCtor as any).prototype, {
+  constructor: { value: ZPP_MixVec2ListCtor, writable: true, configurable: true },
 });
 
 // ---------------------------------------------------------------------------
