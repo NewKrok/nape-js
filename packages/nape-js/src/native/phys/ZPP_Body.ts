@@ -372,7 +372,11 @@ export class ZPP_Body {
     return ret;
   }
 
-  interactingBodies(type: number, output: any): any {
+  /**
+   * Bodies reachable through arbiters whose type matches the `arbiter_type`
+   * bit mask, up to `depth` arbiter hops (-1 = unlimited) — as Haxe nape.
+   */
+  interactingBodies(arbiter_type: number, depth: number, output: any): any {
     const nape = ZPP_Body._nape;
 
     if (ZPP_Body.bodyset == null) {
@@ -380,22 +384,22 @@ export class ZPP_Body {
     }
 
     const ret = output == null ? new nape.phys.BodyList() : output;
-
-    let cx_ite = this.arbiters.head;
-    while (cx_ite != null) {
-      const a = cx_ite.elt;
-      if (!a.sleeping && (type === 4 || a.type === type)) {
-        const other = a.b1 === this ? a.b2 : a.b1;
-        if (ZPP_Body.bodyset.try_insert_bool(other)) {
-          const obj = other.outer;
-          if (ret.zpp_inner.reverse_flag) {
-            ret.push(obj);
-          } else {
-            ret.unshift(obj);
+    ZPP_Body.bodyset.insert(this);
+    ZPP_Body.bodystack.add(this);
+    this.graph_depth = 0;
+    while (ZPP_Body.bodystack.head != null) {
+      const cur = ZPP_Body.bodystack.pop_unsafe();
+      if (cur.graph_depth === depth) continue;
+      for (let cx_ite = cur.arbiters.head; cx_ite != null; cx_ite = cx_ite.next) {
+        const a = cx_ite.elt;
+        if ((a.type & arbiter_type) !== 0) {
+          const other = a.b1 === cur ? a.b2 : a.b1;
+          if (ZPP_Body.bodyset.try_insert_bool(other)) {
+            ZPP_Body.bodystack.add(other);
+            other.graph_depth = cur.graph_depth + 1;
           }
         }
       }
-      cx_ite = cx_ite.next;
     }
 
     // Clear the bodyset
@@ -408,6 +412,15 @@ export class ZPP_Body {
         } else if (cur.next != null) {
           cur = cur.next;
         } else {
+          const b = cur.data;
+          if (b !== this) {
+            const obj = b.outer;
+            if (ret.zpp_inner.reverse_flag) {
+              ret.push(obj);
+            } else {
+              ret.unshift(obj);
+            }
+          }
           const ret1 = cur.parent;
           if (ret1 != null) {
             if (cur === ret1.prev) {

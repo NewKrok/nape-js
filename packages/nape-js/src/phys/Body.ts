@@ -1400,15 +1400,16 @@ export class Body extends Interactor {
   }
 
   /**
-   * Return the set of bodies currently interacting with this body via arbiters.
+   * Return the bodies interacting with this body through arbiters, following
+   * chains of interactions (A touches B touches C) up to `depth` hops.
    * @param type - Filter by interaction type (COLLISION, FLUID, SENSOR), or null for all.
-   * @param _depth - Unused; reserved for future use.
+   * @param depth - Maximum number of arbiter hops to follow (`-1` = unlimited, `1` = direct partners only).
    * @param output - Optional existing list to accumulate results into.
    * @returns A BodyList of interacting bodies.
    */
   interactingBodies(
     type: InteractionType | null = null,
-    _depth: number = -1,
+    depth: number = -1,
     output: BodyList | null = null,
   ): BodyList {
     let arbiter_type: number;
@@ -1430,7 +1431,7 @@ export class Body extends Interactor {
         arbiter_type = type === sensor ? ZPP_Arbiter.SENSOR : ZPP_Arbiter.FLUID;
       }
     }
-    return this.zpp_inner.interactingBodies(arbiter_type, output);
+    return this.zpp_inner.interactingBodies(arbiter_type, depth, output);
   }
 
   // ---------------------------------------------------------------------------
