@@ -154,6 +154,22 @@ listener.options = new OptionType(cbType); // works on every version
 
 ---
 
+## Listener `precedence` seems to run backwards
+
+**Cause:** the direction depends on the listener type (inherited from Haxe
+nape):
+
+| Listener | Runs first | Tie (same precedence) |
+| --- | --- | --- |
+| `BodyListener`, `ConstraintListener` | higher `precedence` | added last |
+| `InteractionListener`, `PreListener` | **lower** `precedence` | added first |
+
+When several `PreListener`s return a flag for the same pair, the **last** one
+called wins — so the highest-precedence PreListener has the final say. Give
+the listener whose flag must win the highest precedence.
+
+---
+
 ## "Shape::sensorEnabled cannot be set during a space step()"
 
 **Cause:** the flag was changed while `space.step()` was running — in
@@ -207,6 +223,21 @@ for (const c of restored.constraints) {
 
 ---
 
+## A restored space drifts away from the original
+
+**Cause (nape-js ≤ 3.42.4):** engine lists insert at the head, so restoring a
+snapshot added bodies and constraints in reverse order. The solver is
+order-dependent, so with several joints or a pile of contacts the restored
+space and the original stepped differently. Fixed in 3.43.0: a restored space
+keeps the original iteration order and steps identically (same platform, and
+`space.deterministic = true` for contact-heavy scenes — see the
+[multiplayer guide](./multiplayer-guide.md)).
+
+Also check that both sides use the same `Config` values — they are not part of
+the snapshot.
+
+---
+
 ## Constraints missing after `spaceFromJSON` / `spaceFromBinary`
 
 - **`UserConstraint`:** it is only saved through a `UserConstraintCodec` passed
@@ -214,6 +245,10 @@ for (const c of restored.constraints) {
   [cookbook](./cookbook.md#saving-a-userconstraint).
 - **`SpringJoint` (nape-js ≤ 3.42.4):** not saved by either format. Fixed in
   3.43.0.
+- **`PulleyJoint` throws "cannot be simulated with null bodies" after loading
+  (nape-js ≤ 3.42.4):** only `body1` / `body2` were saved, so `body3` / `body4`
+  came back `null`. Fixed in 3.43.0; reassign `body3` / `body4` yourself on
+  older versions.
 - **Every joint, from the published package (nape-js ≤ 3.42.4):** the
   serializer told joint types apart by class name, which the minified `dist/`
   bundle renames — so `spaceToJSON` / `spaceToBinary` saved no constraints at

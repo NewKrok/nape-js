@@ -118,7 +118,15 @@ export class Listener {
 
   /**
    * Execution priority of this listener relative to other listeners for the
-   * same event. Higher values execute first.
+   * same event and objects. The direction depends on the listener type
+   * (inherited from Haxe nape):
+   *
+   * - `BodyListener` / `ConstraintListener`: **higher** values run first;
+   *   on a tie the listener added last runs first.
+   * - `InteractionListener` / `PreListener`: **lower** values run first; on a
+   *   tie the listener added first runs first. When several PreListeners
+   *   return a flag for the same pair the last one called wins — so the
+   *   **highest** precedence has the final say.
    *
    * @defaultValue `0`
    */

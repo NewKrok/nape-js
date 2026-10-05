@@ -50,11 +50,9 @@ export class CbType {
   }
 
   /**
-   * Built-in type automatically assigned to every {@link Constraint}.
-   *
-   * **Note:** Constraints do NOT automatically carry `ANY_CONSTRAINT` in their
-   * `cbTypes` list — you must add a custom CbType manually if you want to filter
-   * constraint events.
+   * Built-in type automatically assigned to every {@link Constraint}, so a
+   * `ConstraintListener` on it matches every constraint. (nape-js ≤ 3.42.3
+   * never attached it.)
    */
   static get ANY_CONSTRAINT(): CbType {
     if (ZPP_CbType.ANY_CONSTRAINT == null) ZPP_CbType.ANY_CONSTRAINT = new CbType() as any;
