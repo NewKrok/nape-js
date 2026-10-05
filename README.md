@@ -165,6 +165,7 @@ function update() {
 | `BodyList`, `ShapeList`, … | Typed engine lists — `for...of`, `at()`, `add()`, `remove()`, `push()`, `pop()` |
 | `MatMN`       | Variable-sized M×N matrix — `clone()`, `equals()`, multiply, transpose |
 | `VERSION`     | Engine version string; also queryable from the console as `__NAPE_JS__` after any import (three.js-style) |
+| `Config`      | Global tuning constants (sleep thresholds, collision slop, CCD thresholds, …) — the same fields and defaults as Haxe nape's `nape.Config`. Live: assigning a field affects every `Space` |
 
 ### Helpers
 
@@ -201,8 +202,27 @@ restored.step(1 / 60);
 The `/serialization` entry point is a separate export, but it still loads the engine
 (measured ~145 KB gzip bundled on its own) — the snapshot format is defined in terms
 of engine types. The snapshot captures bodies, shapes, materials, interaction
-filters, fluid properties, all constraint types (except `UserConstraint`), and compounds.
+filters, fluid properties, every built-in constraint type, and compounds.
 Arbiters and broadphase tree state are reconstructed automatically on the first step.
+
+A `UserConstraint` subclass keeps its state in fields only it knows about, so it
+is saved through a `UserConstraintCodec` you pass to both calls (otherwise it is
+skipped). The same `options` work for `spaceToBinary` / `spaceFromBinary` and for
+the replay `Recorder` / `Player`:
+
+```typescript
+import type { UserConstraintCodec } from "@newkrok/nape-js/serialization";
+
+const ropeCodec: UserConstraintCodec<Rope> = {
+  type: "my-game/Rope", // stable id stored in the snapshot — not the class name
+  ctor: Rope,
+  bodies: (c) => [c.body1, c.body2],
+  save: (c) => ({ length: c.length }),
+  load: (data, [b1, b2]) => new Rope(b1, b2, data.length as number),
+};
+const options = { userConstraints: [ropeCodec] };
+const restored = spaceFromJSON(spaceToJSON(space, options), options);
+```
 
 ### Replay (Recorder + Player)
 
@@ -273,7 +293,7 @@ present, with automatic `postMessage` fallback otherwise.
 ```bash
 npm install
 npm run build      # tsup → packages/*/dist/ (ESM + CJS + DTS)
-npm test           # vitest — 6655 engine tests + 79 pixi-adapter tests
+npm test           # vitest — 6686 engine tests + 79 pixi-adapter tests
 npm run benchmark  # Performance benchmarks
 ```
 

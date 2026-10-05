@@ -27,6 +27,7 @@
 8. **Gravity is in pixels/s²** — typical value is 600, not 9.8
 9. **Kinematic bodies** — set `velocity`, don't set `position` directly (solver needs velocity to push contacts)
 10. **Binary serialization** — does not preserve `userData`; use JSON serialization if you need it
+11. **UserConstraint serialization** — needs a `UserConstraintCodec` in `options.userConstraints`, passed to both the save and the load call (and to `Recorder` / `Player`); without one the constraint is skipped
 
 ---
 
@@ -1979,9 +1980,67 @@ import {
   fractureBody, computeVoronoi, generateFractureSites,
 
   // Utilities
-  VERSION
+  Config, Debug, VERSION
 } from "@newkrok/nape-js";
 ```
+
+### Config
+
+Global tuning constants with Haxe nape's `nape.Config` fields and defaults. The
+engine reads them on every use, so assigning a field affects every `Space` at
+once — set them at startup. Not stored in snapshots; replays and determinism
+tests need the same values on both sides.
+
+```typescript
+import { Config } from "@newkrok/nape-js";
+Config.sleepDelay = 30;            // default 60 steps
+Config.linearSleepThreshold = 0.5; // default 0.2
+```
+
+Fields: `epsilon`, `collisionSlop`, `collisionSlopCCD`, `distanceThresholdCCD`,
+`staticCCDLinearThreshold`, `staticCCDAngularThreshold`,
+`bulletCCDLinearThreshold`, `bulletCCDAngularThreshold`,
+`dynamicSweepLinearThreshold`, `dynamicSweepAngularThreshold`,
+`angularCCDSlipScale`, `arbiterExpirationDelay`, `staticFrictionThreshold`,
+`elasticThreshold`, `sleepDelay`, `linearSleepThreshold`,
+`angularSleepThreshold`, `contactBiasCoef`, `contactStaticBiasCoef`,
+`contactContinuousBiasCoef`, `contactContinuousStaticBiasCoef`,
+`constraintLinearSlop`, `constraintAngularSlop`, `illConditionedThreshold`,
+`fluidLinearDrag`, `fluidAngularDrag`, `fluidAngularDragFriction`,
+`fluidVacuumDrag`.
+
+---
+
+## Serialization Sub-Package (`@newkrok/nape-js/serialization`)
+
+Import the package root first (`import "@newkrok/nape-js"`).
+
+```typescript
+spaceToJSON(space: Space, options?: SerializationOptions): SpaceSnapshot
+spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOptions): Space
+spaceToBinary(space: Space, options?: SerializationOptions): Uint8Array
+spaceFromBinary(data: Uint8Array, options?: SerializationOptions): Space
+
+interface SerializationOptions {
+  userConstraints?: readonly UserConstraintCodec[];
+}
+
+interface UserConstraintCodec<T extends UserConstraint> {
+  type: string;                                   // stable id stored in the snapshot
+  ctor: abstract new (...args: any[]) => T;       // matched with instanceof
+  bodies(c: T): (Body | null)[];                  // linked bodies, in load() order
+  save(c: T): Record<string, unknown>;            // subclass state, JSON-safe
+  load(data: Record<string, unknown>, bodies: (Body | null)[]): T;
+}
+```
+
+- Captures bodies, shapes, materials, filters, fluid properties, compounds and
+  every built-in joint (Pivot, Distance, Angle, Motor, Line, Pulley, Weld, Spring).
+- `UserConstraint`: saved only through a codec; loading a snapshot that holds one
+  without its codec throws. Base properties (`stiff`, `frequency`, `maxForce`, …)
+  are restored by the serializer, the codec handles the subclass's own state.
+- JSON keeps `userData`; binary does not. Unlimited `maxForce` / `maxError` are
+  stored as `null` (JSON has no `Infinity`) and restored as `Infinity`.
 
 ---
 
@@ -2125,7 +2184,7 @@ import { Recorder, Player, encodeReplay, decodeReplay } from "@newkrok/nape-js/r
 ### Recorder
 
 ```typescript
-new Recorder<T>(space: Space, options?: { keyframeEvery?: number })
+new Recorder<T>(space: Space, options?: { keyframeEvery?: number; userConstraints?: UserConstraintCodec[] })
 ```
 
 Captures the initial snapshot at construction and stores user-supplied input
@@ -2146,7 +2205,7 @@ captures intermediate snapshots for fast scrub.
 ### Player
 
 ```typescript
-new Player<T>(replay: Replay<T>, applyInput?: ((input: T, space: Space, frame: number) => void) | null, options?: { dt?: number; velocityIterations?: number; positionIterations?: number })
+new Player<T>(replay: Replay<T>, applyInput?: ((input: T, space: Space, frame: number) => void) | null, options?: { dt?: number; velocityIterations?: number; positionIterations?: number; userConstraints?: UserConstraintCodec[] })
 ```
 
 Plays a recorded `Replay`. Owns its own `Space` deserialised from the initial

@@ -983,6 +983,29 @@ if (saved) {
 }
 </code></pre>
 <p><strong>Key point:</strong> JSON serialization preserves <code>userData</code> on bodies. Binary does not.</p>
+<h3 id="saving-a-userconstraint">Saving a <code>UserConstraint</code></h3>
+<p>Built-in joints are saved automatically. A <code>UserConstraint</code> subclass needs a
+codec — its state lives in fields only the subclass knows. Pass the same
+codecs when saving and loading (JSON, binary, <code>Recorder</code> and <code>Player</code> all take
+the same <code>userConstraints</code> option):</p>
+<pre><code class="language-typescript">import { spaceToJSON, spaceFromJSON, type UserConstraintCodec } from &quot;@newkrok/nape-js/serialization&quot;;
+
+const ropeCodec: UserConstraintCodec&lt;Rope&gt; = {
+  type: &quot;my-game/Rope&quot;,                 // stable id in the snapshot; never the class name
+  ctor: Rope,                           // instances matched with instanceof
+  bodies: (c) =&gt; [c.body1, c.body2],    // linked bodies, in the order load() receives them
+  save: (c) =&gt; ({ length: c.length }),  // the subclass's own state, JSON-safe
+  load: (data, [b1, b2]) =&gt; new Rope(b1, b2, data.length as number),
+};
+
+const options = { userConstraints: [ropeCodec] };
+const json = JSON.stringify(spaceToJSON(space, options));
+const restored = spaceFromJSON(JSON.parse(json), options);
+</code></pre>
+<p><code>stiff</code>, <code>frequency</code>, <code>damping</code>, <code>maxForce</code>, the break flags and <code>userData</code> are
+restored by the serializer — the codec only handles what the subclass adds.
+Without a codec the constraint is left out of the snapshot; loading a snapshot
+that contains one whose codec is missing throws.</p>
 <hr>
 <h2 id="binary-snapshot-multiplayer">Binary Snapshot (Multiplayer)</h2>
 <p>Compact binary format for network sync.</p>

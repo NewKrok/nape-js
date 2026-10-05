@@ -149,6 +149,15 @@ Higher-level building blocks layered on top of the engine — opt-in modules.
 
 - `BodyList`, `ShapeList`, `ConstraintList`, `ArbiterList`, `CbTypeList`, … — typed engine lists with `for...of`, `at(i)`, add/remove/push/pop (see `TypedListLike`)
 
+## Configuration
+
+- `Config`: Global tuning constants (`sleepDelay`, `linearSleepThreshold`, `collisionSlop`, CCD thresholds, …) — Haxe nape's `nape.Config` fields and defaults. Live and process-wide: assigning a field affects every `Space`
+
+## Serialization (`@newkrok/nape-js/serialization`)
+
+- `spaceToJSON` / `spaceFromJSON`, `spaceToBinary` / `spaceFromBinary`: Full state snapshot/restore — bodies, shapes, compounds, every built-in joint. JSON keeps `userData`, binary does not
+- `UserConstraintCodec`: `{ type, ctor, bodies, save, load }` — pass as `options.userConstraints` to both the save and the load call (and `Recorder` / `Player`) to serialize `UserConstraint` subclasses; without one they are skipped
+
 ## Web Worker (`@newkrok/nape-js/worker`)
 
 - `PhysicsWorkerManager`: Run physics off the main thread — SharedArrayBuffer zero-copy or postMessage fallback

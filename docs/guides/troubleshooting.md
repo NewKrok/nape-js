@@ -145,7 +145,7 @@ space.listeners.add(new ConstraintListener(CbEvent.BREAK, breakableTag, handler)
 **Cause (nape-js ≤ 3.42.4):** the `options` setter of `BodyListener` /
 `ConstraintListener` and the `options1` / `options2` setters of
 `InteractionListener` / `PreListener` are typed `OptionType | CbType`, but
-only an `OptionType` worked. Fixed in 3.42.5 — a bare `CbType` is accepted, as
+only an `OptionType` worked. Fixed in 3.43.0 — a bare `CbType` is accepted, as
 it always was in the constructors. On older versions wrap it:
 
 ```typescript
@@ -183,6 +183,41 @@ if (turnGhostIntoSensor) {
 
 `BodyListener`, `InteractionListener` and `ConstraintListener` callbacks are
 delivered after the step, so they may change the flag directly.
+
+---
+
+## Joints go limp after loading a JSON save
+
+**Cause (nape-js ≤ 3.42.4):** `maxForce` / `maxError` default to `Infinity`,
+which `JSON.stringify` writes as `null`. `spaceFromJSON` then set the limit to
+`null` — effectively zero — and every joint stopped holding. Binary snapshots
+and in-memory snapshots that were never stringified were not affected.
+
+Fixed in 3.43.0: the snapshot stores unlimited as `null` itself and the loader
+reads `null` back as `Infinity`, so saves written by older versions load
+correctly too. On older versions, restore the limit after loading:
+
+```typescript
+const restored = spaceFromJSON(JSON.parse(json));
+for (const c of restored.constraints) {
+  if (!c.maxForce) c.maxForce = Infinity;
+  if (!c.maxError) c.maxError = Infinity;
+}
+```
+
+---
+
+## Constraints missing after `spaceFromJSON` / `spaceFromBinary`
+
+- **`UserConstraint`:** it is only saved through a `UserConstraintCodec` passed
+  as `options.userConstraints` — to the save **and** the load call. See the
+  [cookbook](./cookbook.md#saving-a-userconstraint).
+- **`SpringJoint` (nape-js ≤ 3.42.4):** not saved by either format. Fixed in
+  3.43.0.
+- **Every joint, from the published package (nape-js ≤ 3.42.4):** the
+  serializer told joint types apart by class name, which the minified `dist/`
+  bundle renames — so `spaceToJSON` / `spaceToBinary` saved no constraints at
+  all outside the repo's own tests. Fixed in 3.43.0; upgrade.
 
 ---
 
@@ -350,7 +385,7 @@ v.dispose(); // return to pool when done
 
 ## `GeomPoly.cut()` returns a piece that is not simple, or throws a `TypeError`
 
-Both are fixed in **3.42.5**; upgrade. On 3.42.4 and earlier:
+Both are fixed in **3.43.0**; upgrade. On 3.42.4 and earlier:
 
 **Not simple:** the cut line passes through a single *reflex* vertex that only
 touches the line — both of its neighbours are on the same side, and the
@@ -363,7 +398,7 @@ const notch = new GeomPoly([
   new Vec2(0, 0), new Vec2(20, 0), new Vec2(20, 20), new Vec2(10, 10), new Vec2(0, 20),
 ]);
 const pieces = notch.cut(new Vec2(-5, 10), new Vec2(25, 10));
-// 3.42.5+: three simple pieces. ≤ 3.42.4: rectangle + one pinched piece.
+// 3.43.0+: three simple pieces. ≤ 3.42.4: rectangle + one pinched piece.
 for (let i = 0; i < pieces.length; i++) {
   const p = pieces.at(i);
   if (!p.isSimple()) p.simpleDecomposition(); // → the two triangles
@@ -371,7 +406,7 @@ for (let i = 0; i < pieces.length; i++) {
 ```
 
 **`TypeError: Cannot read properties of null`:** the start and end of the cut
-line were the same point (a click without a drag). Since 3.42.5 a zero-length
+line were the same point (a click without a drag). Since 3.43.0 a zero-length
 line cuts nothing and returns one uncut copy, like a line that misses the
 polygon. On older versions, skip the cut when `start` equals `end`.
 

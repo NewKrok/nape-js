@@ -246,8 +246,11 @@ If you need to round-trip userData, encode it into your input payload, or
 use <code>spaceToJSON</code> directly (and accept the size cost).</li>
 <li><strong>Sleeping state</strong> — bodies wake fresh on snapshot restore. The simulation
 re-resolves sleep on the next step.</li>
-<li><strong><code>UserConstraint</code> instances</strong> — not serialisable; recordings using them
-fail to restore correctly.</li>
+<li><strong><code>UserConstraint</code> instances</strong> — only with a codec. Pass
+<code>userConstraints: [codec]</code> to both <code>new Recorder(space, { … })</code> and
+<code>new Player(replay, apply, { … })</code> (see the
+<a href="../cookbook/#saving-a-userconstraint">cookbook</a>); without one they are
+left out of every snapshot and the playback diverges.</li>
 <li><strong>Listeners / callbacks</strong> — not part of the snapshot. If your replay relies
 on <code>InteractionListener</code> callbacks, attach them BEFORE you restore (e.g. in
 the same code that creates the listener types).</li>
