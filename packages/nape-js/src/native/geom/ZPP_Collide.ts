@@ -841,18 +841,98 @@ export class ZPP_Collide {
       return distSqr2 <= minDist2 * minDist2;
     }
   }
+  /** Scratch vertex rings (x, y interleaved) for {@link ZPP_Collide._flowPolyPoly}. */
+  static _clipA: number[] = [];
+  static _clipB: number[] = [];
+
+  /**
+   * Fluid overlap of two convex polygons that partially overlap, from their
+   * valid world vertices and edges: Sutherland–Hodgman clip of `p2` against
+   * every edge half-plane of `p1` (a point on an edge counts as inside), then
+   * the area and centroid of the clipped ring. Returns false when the overlap
+   * has no area.
+   */
+  static _flowPolyPoly(p1: any, p2: any, arb: ZPP_FluidArbiter): boolean {
+    let src = ZPP_Collide._clipA;
+    let dst = ZPP_Collide._clipB;
+    let n = 0;
+    let vite = p2.gverts.next;
+    while (vite != null) {
+      src[n++] = vite.x;
+      src[n++] = vite.y;
+      vite = vite.next;
+    }
+    let eite = p1.edges.head;
+    while (eite != null && n >= 6) {
+      const ax = eite.elt;
+      const nx = ax.gnormx;
+      const ny = ax.gnormy;
+      const proj = ax.gprojection;
+      let m = 0;
+      let px = src[n - 2];
+      let py = src[n - 1];
+      let dp = nx * px + ny * py - proj;
+      for (let i = 0; i < n; i += 2) {
+        const qx = src[i];
+        const qy = src[i + 1];
+        const dq = nx * qx + ny * qy - proj;
+        if (dp <= 0 != dq <= 0) {
+          const t = dp / (dp - dq);
+          dst[m++] = px + (qx - px) * t;
+          dst[m++] = py + (qy - py) * t;
+        }
+        if (dq <= 0) {
+          dst[m++] = qx;
+          dst[m++] = qy;
+        }
+        px = qx;
+        py = qy;
+        dp = dq;
+      }
+      const tmp = src;
+      src = dst;
+      dst = tmp;
+      n = m;
+      eite = eite.next;
+    }
+    if (n < 6) {
+      return false;
+    }
+    let area = 0.0;
+    let comx = 0.0;
+    let comy = 0.0;
+    let ux = src[n - 2];
+    let uy = src[n - 1];
+    for (let i = 0; i < n; i += 2) {
+      const vx = src[i];
+      const vy = src[i + 1];
+      const cf = ux * vy - vx * uy;
+      area += cf;
+      comx += (ux + vx) * cf;
+      comy += (uy + vy) * cf;
+      ux = vx;
+      uy = vy;
+    }
+    area *= 0.5;
+    if (!(area * area > Config.epsilon * Config.epsilon)) {
+      return false;
+    }
+    const ia = 1 / (6 * area);
+    arb.overlap = area < 0 ? -area : area;
+    arb.centroidx = comx * ia;
+    arb.centroidy = comy * ia;
+    return true;
+  }
+
   static flowCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_FluidArbiter) {
     if (s2.type == 1) {
       if (s1.type == 1) {
-        const out1 = [];
-        const out2 = [];
         let cont = true;
         let total = true;
         let cx_ite = s1.polygon.edges.head;
         while (cx_ite != null) {
           const ax = cx_ite.elt;
           let min = 1e100;
-          let ind = 0;
           let cx_ite1 = s2.polygon.gverts.next;
           while (cx_ite1 != null) {
             const v = cx_ite1;
@@ -861,10 +941,8 @@ export class ZPP_Collide {
               min = k;
             }
             if (k >= ax.gprojection + Config.epsilon) {
-              out2[ind] = true;
               total = false;
             }
-            ++ind;
             cx_ite1 = cx_ite1.next;
           }
           min -= ax.gprojection;
@@ -886,7 +964,6 @@ export class ZPP_Collide {
           while (cx_ite3 != null) {
             const ax1 = cx_ite3.elt;
             let min1 = 1e100;
-            let ind1 = 0;
             let cx_ite4 = s1.polygon.gverts.next;
             while (cx_ite4 != null) {
               const v2 = cx_ite4;
@@ -895,10 +972,8 @@ export class ZPP_Collide {
                 min1 = k1;
               }
               if (k1 >= ax1.gprojection + Config.epsilon) {
-                out1[ind1] = true;
                 total = false;
               }
-              ++ind1;
               cx_ite4 = cx_ite4.next;
             }
             min1 -= ax1.gprojection;
@@ -915,675 +990,7 @@ export class ZPP_Collide {
             arb.centroidy = s1.polygon.worldCOMy;
             return true;
           } else if (cont) {
-            while (ZPP_Collide.flowpoly.head != null) {
-              const p = ZPP_Collide.flowpoly.pop_unsafe();
-              if (!p._inuse) {
-                const o = p;
-                if (o.outer != null) {
-                  o.outer.zpp_inner = null;
-                  o.outer = null;
-                }
-                o._isimmutable = null;
-                o._validate = null;
-                o._invalidate = null;
-                o.next = ZPP_Vec2.zpp_pool;
-                ZPP_Vec2.zpp_pool = o;
-              }
-            }
-            let fst_vert = null;
-            let poly1 = false;
-            let ite1 = s1.polygon.gverts.next;
-            let ind11 = 0;
-            let ite2 = s2.polygon.gverts.next;
-            let ind2 = 0;
-            let _g = 0;
-            const _g1 = s2.polygon.edgeCnt;
-            while (_g < _g1) {
-              const i = _g++;
-              if (!out2[i]) {
-                ind2 = i;
-                break;
-              } else {
-                ite2 = ite2.next;
-              }
-            }
-            if (ite2 == null) {
-              ite2 = s2.polygon.gverts.next;
-              poly1 = true;
-              let _g2 = 0;
-              const _g3 = s1.polygon.edgeCnt;
-              while (_g2 < _g3) {
-                const i1 = _g2++;
-                if (!out1[i1]) {
-                  ind11 = i1;
-                  break;
-                } else {
-                  ite1 = ite1.next;
-                }
-              }
-              if (ite1 == null) {
-                ite1 = s1.polygon.gverts.next;
-              } else {
-                ZPP_Collide.flowpoly.add(ite1);
-                fst_vert = ZPP_Collide.flowpoly.head.elt;
-              }
-            } else {
-              ZPP_Collide.flowpoly.add(ite2);
-              fst_vert = ZPP_Collide.flowpoly.head.elt;
-            }
-            let cnt = 1;
-            if (ZPP_Collide.flowpoly.head == null) {
-              let cx_cont = true;
-              let cx_itei = s1.polygon.gverts.next;
-              let u2 = cx_itei;
-              let cx_itej = cx_itei.next;
-              while (cx_itej != null) {
-                const v4 = cx_itej;
-                let min2 = 2.0;
-                const cx_cont1 = true;
-                let cx_itei1 = s2.polygon.gverts.next;
-                let a = cx_itei1;
-                let cx_itej1 = cx_itei1.next;
-                while (cx_itej1 != null) {
-                  const b = cx_itej1;
-                  let t6 = 0.0;
-                  const _sx = u2.x - a.x;
-                  const _sy = u2.y - a.y;
-                  const _vx = v4.x - u2.x;
-                  const _vy = v4.y - u2.y;
-                  const _qx = b.x - a.x;
-                  const _qy = b.y - a.y;
-                  let den = _vy * _qx - _vx * _qy;
-                  let tmp;
-                  if (den * den > Config.epsilon * Config.epsilon) {
-                    den = 1 / den;
-                    const txx = (_qy * _sx - _qx * _sy) * den;
-                    if (txx > Config.epsilon && txx < 1 - Config.epsilon) {
-                      const sxx = (_vy * _sx - _vx * _sy) * den;
-                      if (sxx > Config.epsilon && sxx < 1 - Config.epsilon) {
-                        t6 = txx;
-                        tmp = true;
-                      } else {
-                        tmp = false;
-                      }
-                    } else {
-                      tmp = false;
-                    }
-                  } else {
-                    tmp = false;
-                  }
-                  if (tmp) {
-                    if (t6 < min2) {
-                      min2 = t6;
-                      ite2 = cx_itei1;
-                    }
-                  }
-                  cx_itei1 = cx_itej1;
-                  a = b;
-                  cx_itej1 = cx_itej1.next;
-                }
-                if (cx_cont1) {
-                  while (true) {
-                    cx_itej1 = s2.polygon.gverts.next;
-                    const b1 = cx_itej1;
-                    let t7 = 0.0;
-                    const _sx1 = u2.x - a.x;
-                    const _sy1 = u2.y - a.y;
-                    const _vx1 = v4.x - u2.x;
-                    const _vy1 = v4.y - u2.y;
-                    const _qx1 = b1.x - a.x;
-                    const _qy1 = b1.y - a.y;
-                    let den1 = _vy1 * _qx1 - _vx1 * _qy1;
-                    let tmp1;
-                    if (den1 * den1 > Config.epsilon * Config.epsilon) {
-                      den1 = 1 / den1;
-                      const txx1 = (_qy1 * _sx1 - _qx1 * _sy1) * den1;
-                      if (txx1 > Config.epsilon && txx1 < 1 - Config.epsilon) {
-                        const sxx1 = (_vy1 * _sx1 - _vx1 * _sy1) * den1;
-                        if (sxx1 > Config.epsilon && sxx1 < 1 - Config.epsilon) {
-                          t7 = txx1;
-                          tmp1 = true;
-                        } else {
-                          tmp1 = false;
-                        }
-                      } else {
-                        tmp1 = false;
-                      }
-                    } else {
-                      tmp1 = false;
-                    }
-                    if (tmp1) {
-                      if (t7 < min2) {
-                        min2 = t7;
-                        ite2 = cx_itei1;
-                      }
-                    }
-                    break;
-                  }
-                }
-                if (min2 != 2.0) {
-                  const T = min2;
-                  const cx = u2.x + (v4.x - u2.x) * T;
-                  const cy = u2.y + (v4.y - u2.y) * T;
-                  const ret = ZPP_Vec2.get(cx, cy);
-                  fst_vert = ret;
-                  ZPP_Collide.flowpoly.add(fst_vert);
-                  poly1 = true;
-                  ite1 = cx_itei;
-                  cx_cont = false;
-                  break;
-                }
-                cx_itei = cx_itej;
-                u2 = v4;
-                cx_itej = cx_itej.next;
-              }
-              if (cx_cont) {
-                while (true) {
-                  cx_itej = s1.polygon.gverts.next;
-                  const v5 = cx_itej;
-                  let min3 = 2.0;
-                  const cx_cont2 = true;
-                  let cx_itei2 = s2.polygon.gverts.next;
-                  let a1 = cx_itei2;
-                  let cx_itej2 = cx_itei2.next;
-                  while (cx_itej2 != null) {
-                    const b2 = cx_itej2;
-                    let t8 = 0.0;
-                    const _sx2 = u2.x - a1.x;
-                    const _sy2 = u2.y - a1.y;
-                    const _vx2 = v5.x - u2.x;
-                    const _vy2 = v5.y - u2.y;
-                    const _qx2 = b2.x - a1.x;
-                    const _qy2 = b2.y - a1.y;
-                    let den2 = _vy2 * _qx2 - _vx2 * _qy2;
-                    let tmp2;
-                    if (den2 * den2 > Config.epsilon * Config.epsilon) {
-                      den2 = 1 / den2;
-                      const txx2 = (_qy2 * _sx2 - _qx2 * _sy2) * den2;
-                      if (txx2 > Config.epsilon && txx2 < 1 - Config.epsilon) {
-                        const sxx2 = (_vy2 * _sx2 - _vx2 * _sy2) * den2;
-                        if (sxx2 > Config.epsilon && sxx2 < 1 - Config.epsilon) {
-                          t8 = txx2;
-                          tmp2 = true;
-                        } else {
-                          tmp2 = false;
-                        }
-                      } else {
-                        tmp2 = false;
-                      }
-                    } else {
-                      tmp2 = false;
-                    }
-                    if (tmp2) {
-                      if (t8 < min3) {
-                        min3 = t8;
-                        ite2 = cx_itei2;
-                      }
-                    }
-                    cx_itei2 = cx_itej2;
-                    a1 = b2;
-                    cx_itej2 = cx_itej2.next;
-                  }
-                  if (cx_cont2) {
-                    while (true) {
-                      cx_itej2 = s2.polygon.gverts.next;
-                      const b3 = cx_itej2;
-                      let t9 = 0.0;
-                      const _sx3 = u2.x - a1.x;
-                      const _sy3 = u2.y - a1.y;
-                      const _vx3 = v5.x - u2.x;
-                      const _vy3 = v5.y - u2.y;
-                      const _qx3 = b3.x - a1.x;
-                      const _qy3 = b3.y - a1.y;
-                      let den3 = _vy3 * _qx3 - _vx3 * _qy3;
-                      let tmp3;
-                      if (den3 * den3 > Config.epsilon * Config.epsilon) {
-                        den3 = 1 / den3;
-                        const txx3 = (_qy3 * _sx3 - _qx3 * _sy3) * den3;
-                        if (txx3 > Config.epsilon && txx3 < 1 - Config.epsilon) {
-                          const sxx3 = (_vy3 * _sx3 - _vx3 * _sy3) * den3;
-                          if (sxx3 > Config.epsilon && sxx3 < 1 - Config.epsilon) {
-                            t9 = txx3;
-                            tmp3 = true;
-                          } else {
-                            tmp3 = false;
-                          }
-                        } else {
-                          tmp3 = false;
-                        }
-                      } else {
-                        tmp3 = false;
-                      }
-                      if (tmp3) {
-                        if (t9 < min3) {
-                          min3 = t9;
-                          ite2 = cx_itei2;
-                        }
-                      }
-                      break;
-                    }
-                  }
-                  if (min3 != 2.0) {
-                    const T1 = min3;
-                    const cx1 = u2.x + (v5.x - u2.x) * T1;
-                    const cy1 = u2.y + (v5.y - u2.y) * T1;
-                    const ret1 = ZPP_Vec2.get(cx1, cy1);
-                    fst_vert = ret1;
-                    ZPP_Collide.flowpoly.add(fst_vert);
-                    poly1 = true;
-                    ite1 = cx_itei;
-                    break;
-                  }
-                  break;
-                }
-              }
-              cnt = 2;
-            }
-            while (true)
-              if (poly1) {
-                ite1 = ite1.next;
-                ++ind11;
-                if (ite1 == null) {
-                  ite1 = s1.polygon.gverts.next;
-                  ind11 = 0;
-                }
-                if (!out1[ind11]) {
-                  const ex = ite1;
-                  let tmp4;
-                  if (fst_vert != null) {
-                    const dx = ex.x - fst_vert.x;
-                    const dy = ex.y - fst_vert.y;
-                    tmp4 = dx * dx + dy * dy < Config.epsilon;
-                  } else {
-                    tmp4 = false;
-                  }
-                  if (tmp4) {
-                    break;
-                  }
-                  ZPP_Collide.flowpoly.add(ex);
-                  if (fst_vert == null) {
-                    fst_vert = ZPP_Collide.flowpoly.head.elt;
-                  }
-                  cnt = 1;
-                } else {
-                  const a2 = ZPP_Collide.flowpoly.head.elt;
-                  const b4 = ite1;
-                  let u3 = ite2;
-                  let itm = ite2.next;
-                  if (itm == null) {
-                    itm = s2.polygon.gverts.next;
-                  }
-                  let max = -1.0;
-                  let itmo = null;
-                  let indo = 0;
-                  let icnt = 0;
-                  const beg_ite = itm;
-                  let cx_ite6 = itm;
-                  while (true) {
-                    const v6 = cx_ite6;
-                    let t10 = 0.0;
-                    const _sx4 = u3.x - a2.x;
-                    const _sy4 = u3.y - a2.y;
-                    const _vx4 = v6.x - u3.x;
-                    const _vy4 = v6.y - u3.y;
-                    const _qx4 = b4.x - a2.x;
-                    const _qy4 = b4.y - a2.y;
-                    let den4 = _vy4 * _qx4 - _vx4 * _qy4;
-                    let tmp5;
-                    if (den4 * den4 > Config.epsilon * Config.epsilon) {
-                      den4 = 1 / den4;
-                      const txx4 = (_qy4 * _sx4 - _qx4 * _sy4) * den4;
-                      if (txx4 > Config.epsilon && txx4 < 1 - Config.epsilon) {
-                        const sxx4 = (_vy4 * _sx4 - _vx4 * _sy4) * den4;
-                        if (sxx4 > Config.epsilon && sxx4 < 1 - Config.epsilon) {
-                          t10 = txx4;
-                          tmp5 = true;
-                        } else {
-                          tmp5 = false;
-                        }
-                      } else {
-                        tmp5 = false;
-                      }
-                    } else {
-                      tmp5 = false;
-                    }
-                    if (tmp5) {
-                      if (t10 >= max) {
-                        itmo = ite2;
-                        indo = ind2;
-                        if (++icnt == cnt) {
-                          max = t10;
-                          cx_ite6 = beg_ite;
-                          break;
-                        } else {
-                          max = t10;
-                        }
-                      }
-                    }
-                    u3 = v6;
-                    ite2 = cx_ite6;
-                    ++ind2;
-                    if (ind2 >= s2.polygon.edgeCnt) {
-                      ind2 = 0;
-                    }
-                    cx_ite6 = cx_ite6.next;
-                    if (cx_ite6 == null) {
-                      cx_ite6 = s2.polygon.gverts.next;
-                    }
-                    break;
-                  }
-                  while (cx_ite6 != beg_ite) {
-                    const v7 = cx_ite6;
-                    let t11 = 0.0;
-                    const _sx5 = u3.x - a2.x;
-                    const _sy5 = u3.y - a2.y;
-                    const _vx5 = v7.x - u3.x;
-                    const _vy5 = v7.y - u3.y;
-                    const _qx5 = b4.x - a2.x;
-                    const _qy5 = b4.y - a2.y;
-                    let den5 = _vy5 * _qx5 - _vx5 * _qy5;
-                    let tmp6;
-                    if (den5 * den5 > Config.epsilon * Config.epsilon) {
-                      den5 = 1 / den5;
-                      const txx5 = (_qy5 * _sx5 - _qx5 * _sy5) * den5;
-                      if (txx5 > Config.epsilon && txx5 < 1 - Config.epsilon) {
-                        const sxx5 = (_vy5 * _sx5 - _vx5 * _sy5) * den5;
-                        if (sxx5 > Config.epsilon && sxx5 < 1 - Config.epsilon) {
-                          t11 = txx5;
-                          tmp6 = true;
-                        } else {
-                          tmp6 = false;
-                        }
-                      } else {
-                        tmp6 = false;
-                      }
-                    } else {
-                      tmp6 = false;
-                    }
-                    if (tmp6) {
-                      if (t11 >= max) {
-                        itmo = ite2;
-                        indo = ind2;
-                        if (++icnt == cnt) {
-                          max = t11;
-                          break;
-                        } else {
-                          max = t11;
-                        }
-                      }
-                    }
-                    u3 = v7;
-                    ite2 = cx_ite6;
-                    ++ind2;
-                    if (ind2 >= s2.polygon.edgeCnt) {
-                      ind2 = 0;
-                    }
-                    cx_ite6 = cx_ite6.next;
-                    if (cx_ite6 == null) {
-                      cx_ite6 = s2.polygon.gverts.next;
-                    }
-                  }
-                  if (itmo == null) {
-                    break;
-                  }
-                  const u4 = itmo;
-                  let itm2 = itmo.next;
-                  if (itm2 == null) {
-                    itm2 = s2.polygon.gverts.next;
-                  }
-                  const v8 = itm2;
-                  const T2 = max;
-                  const cx2 = u4.x + (v8.x - u4.x) * T2;
-                  const cy2 = u4.y + (v8.y - u4.y) * T2;
-                  let tmp7;
-                  if (fst_vert != null) {
-                    const dx1 = cx2 - fst_vert.x;
-                    const dy1 = cy2 - fst_vert.y;
-                    tmp7 = dx1 * dx1 + dy1 * dy1 < Config.epsilon;
-                  } else {
-                    tmp7 = false;
-                  }
-                  if (tmp7) {
-                    break;
-                  }
-                  const tmp8 = ZPP_Collide.flowpoly;
-                  const ret2 = ZPP_Vec2.get(cx2, cy2);
-                  tmp8.add(ret2);
-                  if (fst_vert == null) {
-                    fst_vert = ZPP_Collide.flowpoly.head.elt;
-                  }
-                  ite2 = itmo;
-                  ind2 = indo;
-                  poly1 = !poly1;
-                  cnt = 2;
-                }
-              } else {
-                ite2 = ite2.next;
-                ++ind2;
-                if (ite2 == null) {
-                  ite2 = s2.polygon.gverts.next;
-                  ind2 = 0;
-                }
-                if (!out2[ind2]) {
-                  const ex1 = ite2;
-                  let tmp9;
-                  if (fst_vert != null) {
-                    const dx2 = ex1.x - fst_vert.x;
-                    const dy2 = ex1.y - fst_vert.y;
-                    tmp9 = dx2 * dx2 + dy2 * dy2 < Config.epsilon;
-                  } else {
-                    tmp9 = false;
-                  }
-                  if (tmp9) {
-                    break;
-                  }
-                  ZPP_Collide.flowpoly.add(ex1);
-                  if (fst_vert == null) {
-                    fst_vert = ZPP_Collide.flowpoly.head.elt;
-                  }
-                  cnt = 1;
-                } else {
-                  const a3 = ZPP_Collide.flowpoly.head.elt;
-                  const b5 = ite2;
-                  let u5 = ite1;
-                  let itm1 = ite1.next;
-                  if (itm1 == null) {
-                    itm1 = s1.polygon.gverts.next;
-                  }
-                  let max1 = -1.0;
-                  let itmo1 = null;
-                  let indo1 = 0;
-                  let icnt1 = 0;
-                  const beg_ite1 = itm1;
-                  let cx_ite7 = itm1;
-                  while (true) {
-                    const v9 = cx_ite7;
-                    let t12 = 0.0;
-                    const _sx6 = u5.x - a3.x;
-                    const _sy6 = u5.y - a3.y;
-                    const _vx6 = v9.x - u5.x;
-                    const _vy6 = v9.y - u5.y;
-                    const _qx6 = b5.x - a3.x;
-                    const _qy6 = b5.y - a3.y;
-                    let den6 = _vy6 * _qx6 - _vx6 * _qy6;
-                    let tmp10;
-                    if (den6 * den6 > Config.epsilon * Config.epsilon) {
-                      den6 = 1 / den6;
-                      const txx6 = (_qy6 * _sx6 - _qx6 * _sy6) * den6;
-                      if (txx6 > Config.epsilon && txx6 < 1 - Config.epsilon) {
-                        const sxx6 = (_vy6 * _sx6 - _vx6 * _sy6) * den6;
-                        if (sxx6 > Config.epsilon && sxx6 < 1 - Config.epsilon) {
-                          t12 = txx6;
-                          tmp10 = true;
-                        } else {
-                          tmp10 = false;
-                        }
-                      } else {
-                        tmp10 = false;
-                      }
-                    } else {
-                      tmp10 = false;
-                    }
-                    if (tmp10) {
-                      if (t12 >= max1) {
-                        itmo1 = ite1;
-                        indo1 = ind11;
-                        if (++icnt1 == cnt) {
-                          max1 = t12;
-                          cx_ite7 = beg_ite1;
-                          break;
-                        } else {
-                          max1 = t12;
-                        }
-                      }
-                    }
-                    u5 = v9;
-                    ite1 = cx_ite7;
-                    ++ind11;
-                    if (ind11 >= s1.polygon.edgeCnt) {
-                      ind11 = 0;
-                    }
-                    cx_ite7 = cx_ite7.next;
-                    if (cx_ite7 == null) {
-                      cx_ite7 = s1.polygon.gverts.next;
-                    }
-                    break;
-                  }
-                  while (cx_ite7 != beg_ite1) {
-                    const v10 = cx_ite7;
-                    let t13 = 0.0;
-                    const _sx7 = u5.x - a3.x;
-                    const _sy7 = u5.y - a3.y;
-                    const _vx7 = v10.x - u5.x;
-                    const _vy7 = v10.y - u5.y;
-                    const _qx7 = b5.x - a3.x;
-                    const _qy7 = b5.y - a3.y;
-                    let den7 = _vy7 * _qx7 - _vx7 * _qy7;
-                    let tmp11;
-                    if (den7 * den7 > Config.epsilon * Config.epsilon) {
-                      den7 = 1 / den7;
-                      const txx7 = (_qy7 * _sx7 - _qx7 * _sy7) * den7;
-                      if (txx7 > Config.epsilon && txx7 < 1 - Config.epsilon) {
-                        const sxx7 = (_vy7 * _sx7 - _vx7 * _sy7) * den7;
-                        if (sxx7 > Config.epsilon && sxx7 < 1 - Config.epsilon) {
-                          t13 = txx7;
-                          tmp11 = true;
-                        } else {
-                          tmp11 = false;
-                        }
-                      } else {
-                        tmp11 = false;
-                      }
-                    } else {
-                      tmp11 = false;
-                    }
-                    if (tmp11) {
-                      if (t13 >= max1) {
-                        itmo1 = ite1;
-                        indo1 = ind11;
-                        if (++icnt1 == cnt) {
-                          max1 = t13;
-                          break;
-                        } else {
-                          max1 = t13;
-                        }
-                      }
-                    }
-                    u5 = v10;
-                    ite1 = cx_ite7;
-                    ++ind11;
-                    if (ind11 >= s1.polygon.edgeCnt) {
-                      ind11 = 0;
-                    }
-                    cx_ite7 = cx_ite7.next;
-                    if (cx_ite7 == null) {
-                      cx_ite7 = s1.polygon.gverts.next;
-                    }
-                  }
-                  if (itmo1 == null) {
-                    break;
-                  }
-                  const u6 = itmo1;
-                  let itm21 = itmo1.next;
-                  if (itm21 == null) {
-                    itm21 = s1.polygon.gverts.next;
-                  }
-                  const v11 = itm21;
-                  const T3 = max1;
-                  const cx3 = u6.x + (v11.x - u6.x) * T3;
-                  const cy3 = u6.y + (v11.y - u6.y) * T3;
-                  let tmp12;
-                  if (fst_vert != null) {
-                    const dx3 = cx3 - fst_vert.x;
-                    const dy3 = cy3 - fst_vert.y;
-                    tmp12 = dx3 * dx3 + dy3 * dy3 < Config.epsilon;
-                  } else {
-                    tmp12 = false;
-                  }
-                  if (tmp12) {
-                    break;
-                  }
-                  const tmp13 = ZPP_Collide.flowpoly;
-                  const ret3 = ZPP_Vec2.get(cx3, cy3);
-                  tmp13.add(ret3);
-                  if (fst_vert == null) {
-                    fst_vert = ZPP_Collide.flowpoly.head.elt;
-                  }
-                  ite1 = itmo1;
-                  ind11 = indo1;
-                  poly1 = !poly1;
-                  cnt = 2;
-                }
-              }
-            if (
-              ZPP_Collide.flowpoly.head != null &&
-              ZPP_Collide.flowpoly.head.next != null &&
-              ZPP_Collide.flowpoly.head.next.next != null
-            ) {
-              let area2 = 0.0;
-              let COMx = 0;
-              let COMy = 0;
-              let cx_ite8 = ZPP_Collide.flowpoly.head;
-              let u7 = cx_ite8.elt;
-              cx_ite8 = cx_ite8.next;
-              let v12 = cx_ite8.elt;
-              cx_ite8 = cx_ite8.next;
-              while (cx_ite8 != null) {
-                const w6 = cx_ite8.elt;
-                area2 += v12.x * (w6.y - u7.y);
-                const cf6 = w6.y * v12.x - w6.x * v12.y;
-                COMx += (v12.x + w6.x) * cf6;
-                COMy += (v12.y + w6.y) * cf6;
-                u7 = v12;
-                v12 = w6;
-                cx_ite8 = cx_ite8.next;
-              }
-              cx_ite8 = ZPP_Collide.flowpoly.head;
-              const w7 = cx_ite8.elt;
-              area2 += v12.x * (w7.y - u7.y);
-              const cf7 = w7.y * v12.x - w7.x * v12.y;
-              COMx += (v12.x + w7.x) * cf7;
-              COMy += (v12.y + w7.y) * cf7;
-              u7 = v12;
-              v12 = w7;
-              cx_ite8 = cx_ite8.next;
-              const w8 = cx_ite8.elt;
-              area2 += v12.x * (w8.y - u7.y);
-              const cf8 = w8.y * v12.x - w8.x * v12.y;
-              COMx += (v12.x + w8.x) * cf8;
-              COMy += (v12.y + w8.y) * cf8;
-              area2 *= 0.5;
-              const ia = 1 / (6 * area2);
-              const t14 = ia;
-              COMx *= t14;
-              COMy *= t14;
-              arb.overlap = -area2;
-              arb.centroidx = COMx;
-              arb.centroidy = COMy;
-              return true;
-            } else {
-              return false;
-            }
+            return ZPP_Collide._flowPolyPoly(s1.polygon, s2.polygon, arb);
           } else {
             return false;
           }

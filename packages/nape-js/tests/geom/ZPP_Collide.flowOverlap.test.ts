@@ -268,6 +268,70 @@ describe("flowCollide — polygon ∩ polygon", () => {
       expectOverlap(b, a);
     }
   });
+
+  // The clipper used to walk the two outlines and give up when the walk
+  // started on the other polygon's boundary (intersections within epsilon of
+  // a segment end were discarded), dropping the fluid arbiter entirely or
+  // reporting a wrong area whose centroid could lie outside the fluid.
+  it("a vertex lying exactly on the other polygon's edge (fuzz repro: no arbiter at all)", () => {
+    // The triangle's first vertex sits on the pentagon's top-right edge.
+    const pentagon: Pt[] = [
+      [-29.40065196666985, -40.108526560403156],
+      [36.09958008248189, -35.99971478169255],
+      [51.711419437242405, 17.85947924001515],
+      [-4.14016526376413, 47.037479973395065],
+      [-54.270182289290304, 11.211282128685502],
+    ];
+    const triangle: Pt[] = [
+      [6.787267343222863, 41.328744695274494],
+      [-24.875073230368475, 114.437220364174],
+      [18.938563806024547, -11.326269291374665],
+    ];
+    expectOverlap(poly(pentagon), poly(triangle));
+    expectOverlap(poly(triangle), poly(pentagon));
+  });
+
+  it("collinear edges: a box resting flat on the fluid surface, half in", () => {
+    expectOverlap(poly(box(100, 40)), poly(box(30, 30), 50, 5));
+    expectOverlap(poly(box(100, 40)), poly(box(30, 30), 20, -20));
+  });
+
+  it("seeded random pairs with a vertex on (or within 1e-10..1e-2 of) an edge", () => {
+    let s = 4242;
+    const rnd = () => {
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      return s / 0x7fffffff;
+    };
+    for (let i = 0; i < 150; i++) {
+      const fluidPts = worldPoly({
+        kind: "poly",
+        local: regular(3 + Math.floor(rnd() * 4), 30 + rnd() * 30, rnd() * 6),
+        x: 0,
+        y: 0,
+        rot: 0,
+      });
+      const k = Math.floor(rnd() * fluidPts.length);
+      const [ax, ay] = fluidPts[k];
+      const [bx, by] = fluidPts[(k + 1) % fluidPts.length];
+      const t = rnd();
+      const local = regular(3 + Math.floor(rnd() * 4), 10 + rnd() * 40, rnd() * 6).map(
+        ([x, y]): Pt => [x * (1 + rnd()), y * 0.3],
+      );
+      const [lx, ly] = local[Math.floor(rnd() * local.length)];
+      const rot = rnd() * 6.28;
+      const c = Math.cos(rot);
+      const n = Math.sin(rot);
+      const off = i % 3 === 0 ? 0 : (rnd() - 0.5) * 10 ** (-2 - rnd() * 8);
+      const x = ax + (bx - ax) * t - (c * lx - n * ly) + off;
+      const y = ay + (by - ay) * t - (n * lx + c * ly) - off;
+      const fluid = poly(fluidPts);
+      const other = poly(local, x, y, rot);
+      // Slivers below the clipper's area epsilon legitimately produce no arbiter.
+      if (expected(fluid, other).area < 1e-6) continue;
+      expectOverlap(fluid, other);
+      expectOverlap(other, fluid);
+    }
+  });
 });
 
 describe("flowCollide — circle ∩ polygon", () => {
