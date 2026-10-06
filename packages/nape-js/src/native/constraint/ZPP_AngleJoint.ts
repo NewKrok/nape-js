@@ -450,8 +450,6 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
     return false;
   }
 
-  override draw(_g: any): void {}
-
   // ========== Static helpers shared by all joints ==========
 
   /**

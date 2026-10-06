@@ -9,8 +9,6 @@
 import { ZPP_Constraint } from "./ZPP_Constraint";
 import { ZPP_AngleJoint } from "./ZPP_AngleJoint";
 import { Config } from "../../Config";
-import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 
 export class ZPP_WeldJoint extends ZPP_Constraint {
   static _wrapFn: ((zpp: ZPP_WeldJoint) => any) | null = null;
@@ -127,88 +125,7 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
 
   setup_a1(): void {
     const napeNs = ZPP_Constraint._nape;
-    let x = this.a1localx;
-    let y = this.a1localy;
-    if (y == null) {
-      y = 0;
-    }
-    if (x == null) {
-      x = 0;
-    }
-    if (x != x || y != y) {
-      throw new Error("Vec2 components cannot be NaN");
-    }
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new napeNs.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-    if (ret.zpp_inner == null) {
-      let ret1: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        ret1 = new ZPP_Vec2();
-      } else {
-        ret1 = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.weak = false;
-      ret1._immutable = false;
-      ret1.x = x;
-      ret1.y = y;
-      ret.zpp_inner = ret1;
-      ret.zpp_inner.outer = ret;
-    } else {
-      if (ret != null && ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this = ret.zpp_inner;
-      if (_this._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (_this._isimmutable != null) {
-        _this._isimmutable();
-      }
-      if (x != x || y != y) {
-        throw new Error("Vec2 components cannot be NaN");
-      }
-      let tmp: boolean;
-      if (ret != null && ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this1 = ret.zpp_inner;
-      if (_this1._validate != null) {
-        _this1._validate();
-      }
-      if (ret.zpp_inner.x == x) {
-        if (ret != null && ret.zpp_disp) {
-          throw new Error("Vec2 has been disposed and cannot be used!");
-        }
-        const _this2 = ret.zpp_inner;
-        if (_this2._validate != null) {
-          _this2._validate();
-        }
-        tmp = ret.zpp_inner.y == y;
-      } else {
-        tmp = false;
-      }
-      if (!tmp) {
-        ret.zpp_inner.x = x;
-        ret.zpp_inner.y = y;
-        const _this3 = ret.zpp_inner;
-        if (_this3._invalidate != null) {
-          _this3._invalidate(_this3);
-        }
-      }
-    }
-    ret.zpp_inner.weak = false;
+    const ret = napeNs.geom.Vec2.get(this.a1localx, this.a1localy);
     this.wrap_a1 = ret;
     this.wrap_a1.zpp_inner._inuse = true;
     this.wrap_a1.zpp_inner._validate = this.validate_a1.bind(this);
@@ -229,88 +146,7 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
 
   setup_a2(): void {
     const napeNs = ZPP_Constraint._nape;
-    let x = this.a2localx;
-    let y = this.a2localy;
-    if (y == null) {
-      y = 0;
-    }
-    if (x == null) {
-      x = 0;
-    }
-    if (x != x || y != y) {
-      throw new Error("Vec2 components cannot be NaN");
-    }
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new napeNs.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-    if (ret.zpp_inner == null) {
-      let ret1: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        ret1 = new ZPP_Vec2();
-      } else {
-        ret1 = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.weak = false;
-      ret1._immutable = false;
-      ret1.x = x;
-      ret1.y = y;
-      ret.zpp_inner = ret1;
-      ret.zpp_inner.outer = ret;
-    } else {
-      if (ret != null && ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this = ret.zpp_inner;
-      if (_this._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (_this._isimmutable != null) {
-        _this._isimmutable();
-      }
-      if (x != x || y != y) {
-        throw new Error("Vec2 components cannot be NaN");
-      }
-      let tmp: boolean;
-      if (ret != null && ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this1 = ret.zpp_inner;
-      if (_this1._validate != null) {
-        _this1._validate();
-      }
-      if (ret.zpp_inner.x == x) {
-        if (ret != null && ret.zpp_disp) {
-          throw new Error("Vec2 has been disposed and cannot be used!");
-        }
-        const _this2 = ret.zpp_inner;
-        if (_this2._validate != null) {
-          _this2._validate();
-        }
-        tmp = ret.zpp_inner.y == y;
-      } else {
-        tmp = false;
-      }
-      if (!tmp) {
-        ret.zpp_inner.x = x;
-        ret.zpp_inner.y = y;
-        const _this3 = ret.zpp_inner;
-        if (_this3._invalidate != null) {
-          _this3._invalidate(_this3);
-        }
-      }
-    }
-    ret.zpp_inner.weak = false;
+    const ret = napeNs.geom.Vec2.get(this.a2localx, this.a2localy);
     this.wrap_a2 = ret;
     this.wrap_a2.zpp_inner._inuse = true;
     this.wrap_a2.zpp_inner._validate = this.validate_a2.bind(this);
@@ -815,6 +651,4 @@ export class ZPP_WeldJoint extends ZPP_Constraint {
 
     return false;
   }
-
-  override draw(_g: any): void {}
 }
