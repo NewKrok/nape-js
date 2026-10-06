@@ -161,6 +161,23 @@ function insidePoly(P: ZPP_GeomVert | null, x: number, y: number): boolean {
   return ret;
 }
 
+/**
+ * Unlink `v` from its circular vertex ring, free it to the pool and return
+ * its predecessor (null when `v` was the ring's only vertex).
+ */
+function eraseRingVert(v: any): any {
+  let ret = null;
+  if (v.prev != v) {
+    ret = v.prev;
+    v.prev.next = v.next;
+    v.next.prev = v.prev;
+  }
+  v.free();
+  v.next = ZPP_GeomVert.zpp_pool;
+  ZPP_GeomVert.zpp_pool = v;
+  return ret;
+}
+
 export class ZPP_Cutter {
   /** Internal list of intersections (ZNPList_ZPP_CutInt), lazily created. */
   static ints: any = null;
@@ -786,54 +803,7 @@ export class ZPP_Cutter {
     endof3!.next = origin;
     origin!.prev = endof3;
     const lastpath = ZPP_Cutter.paths.head.elt;
-    let xr: any;
-    if (firstpath == firstpath.parent) {
-      xr = firstpath;
-    } else {
-      let obj11: any = firstpath;
-      let stack: any = null;
-      while (obj11 != obj11.parent) {
-        const nxt = obj11.parent;
-        obj11.parent = stack;
-        stack = obj11;
-        obj11 = nxt;
-      }
-      while (stack != null) {
-        const nxt1 = stack.parent;
-        stack.parent = obj11;
-        stack = nxt1;
-      }
-      xr = obj11;
-    }
-    let yr: any;
-    if (lastpath == lastpath.parent) {
-      yr = lastpath;
-    } else {
-      let obj12 = lastpath;
-      let stack1: any = null;
-      while (obj12 != obj12.parent) {
-        const nxt2 = obj12.parent;
-        obj12.parent = stack1;
-        stack1 = obj12;
-        obj12 = nxt2;
-      }
-      while (stack1 != null) {
-        const nxt3 = stack1.parent;
-        stack1.parent = obj12;
-        stack1 = nxt3;
-      }
-      yr = obj12;
-    }
-    if (xr != yr) {
-      if (xr.rank < yr.rank) {
-        xr.parent = yr;
-      } else if (xr.rank > yr.rank) {
-        yr.parent = xr;
-      } else {
-        yr.parent = xr;
-        xr.rank++;
-      }
-    }
+    ZPP_CutVert.union(firstpath, lastpath);
     const xxlist = ZPP_Cutter.ints;
     if (xxlist.head != null && xxlist.head.next != null) {
       let head = xxlist.head;
@@ -919,354 +889,46 @@ export class ZPP_Cutter {
         i1.start.prev.next = j1.end.next;
         j1.end.next = i1.start;
         i1.start.prev = j1.end;
-        let xr1: any;
-        if (i1.path0 == i1.path0.parent) {
-          xr1 = i1.path0;
-        } else {
-          let obj13 = i1.path0;
-          let stack2: any = null;
-          while (obj13 != obj13.parent) {
-            const nxt5 = obj13.parent;
-            obj13.parent = stack2;
-            stack2 = obj13;
-            obj13 = nxt5;
-          }
-          while (stack2 != null) {
-            const nxt6 = stack2.parent;
-            stack2.parent = obj13;
-            stack2 = nxt6;
-          }
-          xr1 = obj13;
-        }
-        let yr1: any;
-        if (j1.path1 == j1.path1.parent) {
-          yr1 = j1.path1;
-        } else {
-          let obj14 = j1.path1;
-          let stack3: any = null;
-          while (obj14 != obj14.parent) {
-            const nxt7 = obj14.parent;
-            obj14.parent = stack3;
-            stack3 = obj14;
-            obj14 = nxt7;
-          }
-          while (stack3 != null) {
-            const nxt8 = stack3.parent;
-            stack3.parent = obj14;
-            stack3 = nxt8;
-          }
-          yr1 = obj14;
-        }
-        if (xr1 != yr1) {
-          if (xr1.rank < yr1.rank) {
-            xr1.parent = yr1;
-          } else if (xr1.rank > yr1.rank) {
-            yr1.parent = xr1;
-          } else {
-            yr1.parent = xr1;
-            xr1.rank++;
-          }
-        }
-        let xr2: any;
-        if (i1.path1 == i1.path1.parent) {
-          xr2 = i1.path1;
-        } else {
-          let obj15 = i1.path1;
-          let stack4: any = null;
-          while (obj15 != obj15.parent) {
-            const nxt9 = obj15.parent;
-            obj15.parent = stack4;
-            stack4 = obj15;
-            obj15 = nxt9;
-          }
-          while (stack4 != null) {
-            const nxt10 = stack4.parent;
-            stack4.parent = obj15;
-            stack4 = nxt10;
-          }
-          xr2 = obj15;
-        }
-        let yr2: any;
-        if (j1.path0 == j1.path0.parent) {
-          yr2 = j1.path0;
-        } else {
-          let obj16 = j1.path0;
-          let stack5: any = null;
-          while (obj16 != obj16.parent) {
-            const nxt11 = obj16.parent;
-            obj16.parent = stack5;
-            stack5 = obj16;
-            obj16 = nxt11;
-          }
-          while (stack5 != null) {
-            const nxt12 = stack5.parent;
-            stack5.parent = obj16;
-            stack5 = nxt12;
-          }
-          yr2 = obj16;
-        }
-        if (xr2 != yr2) {
-          if (xr2.rank < yr2.rank) {
-            xr2.parent = yr2;
-          } else if (xr2.rank > yr2.rank) {
-            yr2.parent = xr2;
-          } else {
-            yr2.parent = xr2;
-            xr2.rank++;
-          }
-        }
+        ZPP_CutVert.union(i1.path0, j1.path1);
+        ZPP_CutVert.union(i1.path1, j1.path0);
       } else if (i1.virtualint && !j1.virtualint) {
-        let tmp7: any;
-        if (j1.end != null && j1.end.prev == j1.end) {
-          j1.end.next = j1.end.prev = null;
-          const o = j1.end;
-          disposeGeomVertWrap(o);
-          o.prev = o.next = null;
-          o.next = ZPP_GeomVert.zpp_pool;
-          ZPP_GeomVert.zpp_pool = o;
-          tmp7 = null;
-        } else {
-          const retnodes = j1.end.prev;
-          j1.end.prev.next = j1.end.next;
-          j1.end.next.prev = j1.end.prev;
-          j1.end.next = j1.end.prev = null;
-          const o3 = j1.end;
-          disposeGeomVertWrap(o3);
-          o3.prev = o3.next = null;
-          o3.next = ZPP_GeomVert.zpp_pool;
-          ZPP_GeomVert.zpp_pool = o3;
-          j1.end = null;
-          tmp7 = retnodes;
-        }
-        j1.end = tmp7;
+        j1.end = eraseRingVert(j1.end);
         if (!j1.vertex) {
           if (j1.end != j1.path0.vert) {
             j1.start.x = j1.end.x;
             j1.start.y = j1.end.y;
-            let tmp8: any;
-            if (j1.end != null && j1.end.prev == j1.end) {
-              j1.end.next = j1.end.prev = null;
-              const o6 = j1.end;
-              disposeGeomVertWrap(o6);
-              o6.prev = o6.next = null;
-              o6.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o6;
-              tmp8 = null;
-            } else {
-              const retnodes1 = j1.end.prev;
-              j1.end.prev.next = j1.end.next;
-              j1.end.next.prev = j1.end.prev;
-              j1.end.next = j1.end.prev = null;
-              const o9 = j1.end;
-              disposeGeomVertWrap(o9);
-              o9.prev = o9.next = null;
-              o9.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o9;
-              j1.end = null;
-              tmp8 = retnodes1;
-            }
-            j1.end = tmp8;
+            j1.end = eraseRingVert(j1.end);
           } else {
             const n = j1.start.next;
             j1.start.x = n.x;
             j1.start.y = n.y;
-            if (n != null && n.prev == n) {
-              n.next = n.prev = null;
-              const o12 = n;
-              disposeGeomVertWrap(o12);
-              o12.prev = o12.next = null;
-              o12.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o12;
-            } else {
-              n.prev.next = n.next;
-              n.next.prev = n.prev;
-              n.next = n.prev = null;
-              const o15 = n;
-              disposeGeomVertWrap(o15);
-              o15.prev = o15.next = null;
-              o15.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o15;
-            }
+            eraseRingVert(n);
           }
         }
         j1.end.next.prev = j1.start.prev;
         j1.start.prev.next = j1.end.next;
         j1.end.next = j1.start;
         j1.start.prev = j1.end;
-        let xr3: any;
-        if (j1.path0 == j1.path0.parent) {
-          xr3 = j1.path0;
-        } else {
-          let obj17 = j1.path0;
-          let stack6: any = null;
-          while (obj17 != obj17.parent) {
-            const nxt13 = obj17.parent;
-            obj17.parent = stack6;
-            stack6 = obj17;
-            obj17 = nxt13;
-          }
-          while (stack6 != null) {
-            const nxt14 = stack6.parent;
-            stack6.parent = obj17;
-            stack6 = nxt14;
-          }
-          xr3 = obj17;
-        }
-        let yr3: any;
-        if (j1.path1 == j1.path1.parent) {
-          yr3 = j1.path1;
-        } else {
-          let obj18 = j1.path1;
-          let stack7: any = null;
-          while (obj18 != obj18.parent) {
-            const nxt15 = obj18.parent;
-            obj18.parent = stack7;
-            stack7 = obj18;
-            obj18 = nxt15;
-          }
-          while (stack7 != null) {
-            const nxt16 = stack7.parent;
-            stack7.parent = obj18;
-            stack7 = nxt16;
-          }
-          yr3 = obj18;
-        }
-        if (xr3 != yr3) {
-          if (xr3.rank < yr3.rank) {
-            xr3.parent = yr3;
-          } else if (xr3.rank > yr3.rank) {
-            yr3.parent = xr3;
-          } else {
-            yr3.parent = xr3;
-            xr3.rank++;
-          }
-        }
+        ZPP_CutVert.union(j1.path0, j1.path1);
       } else if (j1.virtualint && !i1.virtualint) {
-        let tmp9: any;
-        if (i1.end != null && i1.end.prev == i1.end) {
-          i1.end.next = i1.end.prev = null;
-          const o18 = i1.end;
-          disposeGeomVertWrap(o18);
-          o18.prev = o18.next = null;
-          o18.next = ZPP_GeomVert.zpp_pool;
-          ZPP_GeomVert.zpp_pool = o18;
-          tmp9 = null;
-        } else {
-          const retnodes2 = i1.end.prev;
-          i1.end.prev.next = i1.end.next;
-          i1.end.next.prev = i1.end.prev;
-          i1.end.next = i1.end.prev = null;
-          const o21 = i1.end;
-          disposeGeomVertWrap(o21);
-          o21.prev = o21.next = null;
-          o21.next = ZPP_GeomVert.zpp_pool;
-          ZPP_GeomVert.zpp_pool = o21;
-          i1.end = null;
-          tmp9 = retnodes2;
-        }
-        i1.end = tmp9;
+        i1.end = eraseRingVert(i1.end);
         if (!i1.vertex) {
           if (i1.end != i1.path0.vert) {
             i1.start.x = i1.end.x;
             i1.start.y = i1.end.y;
-            let tmp10: any;
-            if (i1.end != null && i1.end.prev == i1.end) {
-              i1.end.next = i1.end.prev = null;
-              const o24 = i1.end;
-              disposeGeomVertWrap(o24);
-              o24.prev = o24.next = null;
-              o24.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o24;
-              tmp10 = null;
-            } else {
-              const retnodes3 = i1.end.prev;
-              i1.end.prev.next = i1.end.next;
-              i1.end.next.prev = i1.end.prev;
-              i1.end.next = i1.end.prev = null;
-              const o27 = i1.end;
-              disposeGeomVertWrap(o27);
-              o27.prev = o27.next = null;
-              o27.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o27;
-              i1.end = null;
-              tmp10 = retnodes3;
-            }
-            i1.end = tmp10;
+            i1.end = eraseRingVert(i1.end);
           } else {
             const n1 = i1.start.next;
             i1.start.x = n1.x;
             i1.start.y = n1.y;
-            if (n1 != null && n1.prev == n1) {
-              n1.next = n1.prev = null;
-              const o30 = n1;
-              disposeGeomVertWrap(o30);
-              o30.prev = o30.next = null;
-              o30.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o30;
-            } else {
-              n1.prev.next = n1.next;
-              n1.next.prev = n1.prev;
-              n1.next = n1.prev = null;
-              const o33 = n1;
-              disposeGeomVertWrap(o33);
-              o33.prev = o33.next = null;
-              o33.next = ZPP_GeomVert.zpp_pool;
-              ZPP_GeomVert.zpp_pool = o33;
-            }
+            eraseRingVert(n1);
           }
         }
         i1.end.next.prev = i1.start.prev;
         i1.start.prev.next = i1.end.next;
         i1.end.next = i1.start;
         i1.start.prev = i1.end;
-        let xr4: any;
-        if (i1.path0 == i1.path0.parent) {
-          xr4 = i1.path0;
-        } else {
-          let obj19 = i1.path0;
-          let stack8: any = null;
-          while (obj19 != obj19.parent) {
-            const nxt17 = obj19.parent;
-            obj19.parent = stack8;
-            stack8 = obj19;
-            obj19 = nxt17;
-          }
-          while (stack8 != null) {
-            const nxt18 = stack8.parent;
-            stack8.parent = obj19;
-            stack8 = nxt18;
-          }
-          xr4 = obj19;
-        }
-        let yr4: any;
-        if (i1.path1 == i1.path1.parent) {
-          yr4 = i1.path1;
-        } else {
-          let obj20 = i1.path1;
-          let stack9: any = null;
-          while (obj20 != obj20.parent) {
-            const nxt19 = obj20.parent;
-            obj20.parent = stack9;
-            stack9 = obj20;
-            obj20 = nxt19;
-          }
-          while (stack9 != null) {
-            const nxt20 = stack9.parent;
-            stack9.parent = obj20;
-            stack9 = nxt20;
-          }
-          yr4 = obj20;
-        }
-        if (xr4 != yr4) {
-          if (xr4.rank < yr4.rank) {
-            xr4.parent = yr4;
-          } else if (xr4.rank > yr4.rank) {
-            yr4.parent = xr4;
-          } else {
-            yr4.parent = xr4;
-            xr4.rank++;
-          }
-        }
+        ZPP_CutVert.union(i1.path0, i1.path1);
       }
       const o36 = i1;
       o36.end = o36.start = null;
@@ -1285,25 +947,7 @@ export class ZPP_Cutter {
     let cx_ite = ZPP_Cutter.paths.head;
     while (cx_ite != null) {
       const p5 = cx_ite.elt;
-      let poly: any;
-      if (p5 == p5.parent) {
-        poly = p5;
-      } else {
-        let obj21 = p5;
-        let stack10: any = null;
-        while (obj21 != obj21.parent) {
-          const nxt21 = obj21.parent;
-          obj21.parent = stack10;
-          stack10 = obj21;
-          obj21 = nxt21;
-        }
-        while (stack10 != null) {
-          const nxt22 = stack10.parent;
-          stack10.parent = obj21;
-          stack10 = nxt22;
-        }
-        poly = obj21;
-      }
+      const poly: any = ZPP_CutVert.find(p5);
       if (poly.used) {
         cx_ite = cx_ite.next;
         continue;

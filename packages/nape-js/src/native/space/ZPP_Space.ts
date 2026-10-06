@@ -6819,78 +6819,13 @@ export class ZPP_Space {
               : Config.contactBiasCoef;
           _this27.biasCoef = bias;
           _this27.continuous = false;
-          let pre6 = null;
-          let prei = null;
-          let cx_itei = _this27.innards.next;
+          _this27.cleanupContacts();
           let cx_ite8 = _this27.contacts.next;
           while (cx_ite8 != null) {
             const c = cx_ite8;
-            if (c.stamp + Config.arbiterExpirationDelay < _this27.stamp) {
-              const _this28 = _this27.contacts;
-              let old6;
-              let ret30;
-              if (pre6 == null) {
-                old6 = _this28.next;
-                ret30 = old6.next;
-                _this28.next = ret30;
-                if (_this28.next == null) {
-                  _this28.pushmod = true;
-                }
-              } else {
-                old6 = pre6.next;
-                ret30 = old6.next;
-                pre6.next = ret30;
-                if (ret30 == null) {
-                  _this28.pushmod = true;
-                }
-              }
-              old6._inuse = false;
-              _this28.modified = true;
-              _this28.length--;
-              _this28.pushmod = true;
-              cx_ite8 = ret30;
-              const _this29 = _this27.innards;
-              let old7;
-              let ret31;
-              if (prei == null) {
-                old7 = _this29.next;
-                ret31 = old7.next;
-                _this29.next = ret31;
-                if (_this29.next == null) {
-                  _this29.pushmod = true;
-                }
-              } else {
-                old7 = prei.next;
-                ret31 = old7.next;
-                prei.next = ret31;
-                if (ret31 == null) {
-                  _this29.pushmod = true;
-                }
-              }
-              old7._inuse = false;
-              _this29.modified = true;
-              _this29.length--;
-              _this29.pushmod = true;
-              cx_itei = ret31;
-              const o16 = c;
-              o16.arbiter = null;
-              o16.next = ZPP_Contact.zpp_pool;
-              ZPP_Contact.zpp_pool = o16;
-              continue;
-            }
-            const ci = c.inner;
-            const pact1 = c.active;
-            c.active = c.stamp == _this27.stamp;
             if (c.active) {
-              if (fst) {
-                fst = false;
-                _this27.c1 = ci;
-                _this27.oc1 = c;
-              } else {
-                _this27.hc2 = true;
-                _this27.c2 = ci;
-                _this27.oc2 = c;
-              }
+              fst = false;
+              const ci = c.inner;
               ci.r2x = c.px - _this27.b2.posx;
               ci.r2y = c.py - _this27.b2.posy;
               ci.r1x = c.px - _this27.b1.posx;
@@ -6929,32 +6864,11 @@ export class ZPP_Space {
               ci.jnAcc *= dtratio;
               ci.jtAcc *= dtratio;
             }
-            if (pact1 != c.active) {
-              _this27.contacts.modified = true;
-            }
-            pre6 = cx_ite8;
-            prei = cx_itei;
-            cx_itei = cx_itei.next;
             cx_ite8 = cx_ite8.next;
           }
-          if (_this27.hc2) {
-            _this27.hpc2 = true;
-            if (_this27.oc1.posOnly) {
-              const tmp3 = _this27.c1;
-              _this27.c1 = _this27.c2;
-              _this27.c2 = tmp3;
-              const tmp21 = _this27.oc1;
-              _this27.oc1 = _this27.oc2;
-              _this27.oc2 = tmp21;
-              _this27.hc2 = false;
-            } else if (_this27.oc2.posOnly) {
-              _this27.hc2 = false;
-            }
-            if (_this27.oc1.posOnly) {
-              fst = true;
-            }
-          } else {
-            _this27.hpc2 = false;
+          // A position-only primary contact leaves nothing for the velocity solver.
+          if (_this27.hpc2 && _this27.oc1.posOnly) {
+            fst = true;
           }
           _this27.jrAcc *= dtratio;
           if (!fst) {
@@ -7008,31 +6922,13 @@ export class ZPP_Space {
               _this27.Ka = _this27.kMassa;
               _this27.Kb = _this27.kMassb;
               _this27.Kc = _this27.kMassc;
-              let det = _this27.kMassa * _this27.kMassc - _this27.kMassb * _this27.kMassb;
-              if (det != det) {
-                _this27.kMassa = _this27.kMassb = _this27.kMassc = 0;
-              } else if (det == 0) {
-                let flag = 0;
-                if (_this27.kMassa != 0) {
-                  _this27.kMassa = 1 / _this27.kMassa;
-                } else {
-                  _this27.kMassa = 0;
-                  flag |= 1;
-                }
-                if (_this27.kMassc != 0) {
-                  _this27.kMassc = 1 / _this27.kMassc;
-                } else {
-                  _this27.kMassc = 0;
-                  flag |= 2;
-                }
-                _this27.kMassb = 0;
-              } else {
-                det = 1 / det;
-                const t = _this27.kMassc * det;
-                _this27.kMassc = _this27.kMassa * det;
-                _this27.kMassa = t;
-                _this27.kMassb *= -det;
-              }
+              // The guard above (0 <= norm < threshold * det) implies det > 0,
+              // so no NaN / singular fallback is needed here.
+              const det = 1 / (_this27.kMassa * _this27.kMassc - _this27.kMassb * _this27.kMassb);
+              const t = _this27.kMassc * det;
+              _this27.kMassc = _this27.kMassa * det;
+              _this27.kMassa = t;
+              _this27.kMassb *= -det;
             } else {
               _this27.hc2 = false;
               if (_this27.oc2.dist < _this27.oc1.dist) {
@@ -7340,107 +7236,18 @@ export class ZPP_Space {
       }
     } else if (arb.colarb != null) {
       const _this31 = arb.colarb;
+      _this31.cleanupContacts();
       let fst1 = true;
-      let pre7 = null;
-      let prei1 = null;
-      let cx_itei1 = _this31.innards.next;
-      _this31.hc2 = false;
       let cx_ite11 = _this31.contacts.next;
       while (cx_ite11 != null) {
-        const c3 = cx_ite11;
-        if (c3.stamp + Config.arbiterExpirationDelay < _this31.stamp) {
-          const _this32 = _this31.contacts;
-          let old8;
-          let ret32;
-          if (pre7 == null) {
-            old8 = _this32.next;
-            ret32 = old8.next;
-            _this32.next = ret32;
-            if (_this32.next == null) {
-              _this32.pushmod = true;
-            }
-          } else {
-            old8 = pre7.next;
-            ret32 = old8.next;
-            pre7.next = ret32;
-            if (ret32 == null) {
-              _this32.pushmod = true;
-            }
-          }
-          old8._inuse = false;
-          _this32.modified = true;
-          _this32.length--;
-          _this32.pushmod = true;
-          cx_ite11 = ret32;
-          const _this33 = _this31.innards;
-          let old9;
-          let ret33;
-          if (prei1 == null) {
-            old9 = _this33.next;
-            ret33 = old9.next;
-            _this33.next = ret33;
-            if (_this33.next == null) {
-              _this33.pushmod = true;
-            }
-          } else {
-            old9 = prei1.next;
-            ret33 = old9.next;
-            prei1.next = ret33;
-            if (ret33 == null) {
-              _this33.pushmod = true;
-            }
-          }
-          old9._inuse = false;
-          _this33.modified = true;
-          _this33.length--;
-          _this33.pushmod = true;
-          cx_itei1 = ret33;
-          const o17 = c3;
-          o17.arbiter = null;
-          o17.next = ZPP_Contact.zpp_pool;
-          ZPP_Contact.zpp_pool = o17;
-          continue;
+        if (cx_ite11.active) {
+          fst1 = false;
+          break;
         }
-        const ci1 = c3.inner;
-        const pact2 = c3.active;
-        c3.active = c3.stamp == _this31.stamp;
-        if (c3.active) {
-          if (fst1) {
-            fst1 = false;
-            _this31.c1 = ci1;
-            _this31.oc1 = c3;
-          } else {
-            _this31.hc2 = true;
-            _this31.c2 = ci1;
-            _this31.oc2 = c3;
-          }
-        }
-        if (pact2 != c3.active) {
-          _this31.contacts.modified = true;
-        }
-        pre7 = cx_ite11;
-        prei1 = cx_itei1;
-        cx_itei1 = cx_itei1.next;
         cx_ite11 = cx_ite11.next;
       }
-      if (_this31.hc2) {
-        _this31.hpc2 = true;
-        if (_this31.oc1.posOnly) {
-          const tmp4 = _this31.c1;
-          _this31.c1 = _this31.c2;
-          _this31.c2 = tmp4;
-          const tmp22 = _this31.oc1;
-          _this31.oc1 = _this31.oc2;
-          _this31.oc2 = tmp22;
-          _this31.hc2 = false;
-        } else if (_this31.oc2.posOnly) {
-          _this31.hc2 = false;
-        }
-        if (_this31.oc1.posOnly) {
-          fst1 = true;
-        }
-      } else {
-        _this31.hpc2 = false;
+      if (_this31.hpc2 && _this31.oc1.posOnly) {
+        fst1 = true;
       }
       if (fst1) {
         arb.active = false;

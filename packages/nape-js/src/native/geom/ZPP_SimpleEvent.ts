@@ -53,4 +53,11 @@ export class ZPP_SimpleEvent {
     this.segment = this.segment2 = null;
     this.node = null;
   }
+
+  /** {@link free} and return to the pool. */
+  release(): void {
+    this.free();
+    this.next = ZPP_SimpleEvent.zpp_pool;
+    ZPP_SimpleEvent.zpp_pool = this;
+  }
 }

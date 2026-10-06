@@ -459,6 +459,29 @@ waterShape.fluidProperties = new FluidProperties(1.5, 3.0);
 waterBody.shapes.add(waterShape);
 ```
 
+**Buoyancy flickers or vanishes when a vertex touches the surface (before
+`nape-js` 3.43.1):** the fluid overlap clipper lost track when a polygon
+vertex lay exactly on the fluid's edge (or on a fluid circle's rim), or when
+two edges were collinear — e.g. a box resting flat on the water line. The
+fluid arbiter disappeared for that step, or got the wrong area. Fixed by
+replacing the clipper with an exact polygon/circle clip; upgrade if you see it.
+
+---
+
+## A body struck by a very fast kinematic spinner jumps to the pivot
+
+**Known limitation.** A kinematic body spinning fast enough to sweep a large
+arc in one step (from roughly 30 rad/s for a 200 px arm at 60 Hz) does hit what
+it sweeps over (CCD sub-samples its swept AABB), but the struck body can then
+be pulled next to the pivot instead of flying off tangentially: after the time
+of impact the spinner keeps turning, and the position solver resolves the
+contact against the now-stale edge normal with an unclamped correction.
+
+**Workarounds:** set `space.subSteps` so the spinner turns less per step
+(`subSteps = 4` removes it up to ~60 rad/s for that arm; faster spinners need
+more), cap the spinner's angular velocity, or drive the paddle as a dynamic
+body with a `MotorJoint` instead of a kinematic body.
+
 ---
 
 ## "Cannot read property of disposed Vec2"

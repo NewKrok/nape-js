@@ -268,6 +268,70 @@ describe("flowCollide — polygon ∩ polygon", () => {
       expectOverlap(b, a);
     }
   });
+
+  // The clipper used to walk the two outlines and give up when the walk
+  // started on the other polygon's boundary (intersections within epsilon of
+  // a segment end were discarded), dropping the fluid arbiter entirely or
+  // reporting a wrong area whose centroid could lie outside the fluid.
+  it("a vertex lying exactly on the other polygon's edge (fuzz repro: no arbiter at all)", () => {
+    // The triangle's first vertex sits on the pentagon's top-right edge.
+    const pentagon: Pt[] = [
+      [-29.40065196666985, -40.108526560403156],
+      [36.09958008248189, -35.99971478169255],
+      [51.711419437242405, 17.85947924001515],
+      [-4.14016526376413, 47.037479973395065],
+      [-54.270182289290304, 11.211282128685502],
+    ];
+    const triangle: Pt[] = [
+      [6.787267343222863, 41.328744695274494],
+      [-24.875073230368475, 114.437220364174],
+      [18.938563806024547, -11.326269291374665],
+    ];
+    expectOverlap(poly(pentagon), poly(triangle));
+    expectOverlap(poly(triangle), poly(pentagon));
+  });
+
+  it("collinear edges: a box resting flat on the fluid surface, half in", () => {
+    expectOverlap(poly(box(100, 40)), poly(box(30, 30), 50, 5));
+    expectOverlap(poly(box(100, 40)), poly(box(30, 30), 20, -20));
+  });
+
+  it("seeded random pairs with a vertex on (or within 1e-10..1e-2 of) an edge", () => {
+    let s = 4242;
+    const rnd = () => {
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      return s / 0x7fffffff;
+    };
+    for (let i = 0; i < 150; i++) {
+      const fluidPts = worldPoly({
+        kind: "poly",
+        local: regular(3 + Math.floor(rnd() * 4), 30 + rnd() * 30, rnd() * 6),
+        x: 0,
+        y: 0,
+        rot: 0,
+      });
+      const k = Math.floor(rnd() * fluidPts.length);
+      const [ax, ay] = fluidPts[k];
+      const [bx, by] = fluidPts[(k + 1) % fluidPts.length];
+      const t = rnd();
+      const local = regular(3 + Math.floor(rnd() * 4), 10 + rnd() * 40, rnd() * 6).map(
+        ([x, y]): Pt => [x * (1 + rnd()), y * 0.3],
+      );
+      const [lx, ly] = local[Math.floor(rnd() * local.length)];
+      const rot = rnd() * 6.28;
+      const c = Math.cos(rot);
+      const n = Math.sin(rot);
+      const off = i % 3 === 0 ? 0 : (rnd() - 0.5) * 10 ** (-2 - rnd() * 8);
+      const x = ax + (bx - ax) * t - (c * lx - n * ly) + off;
+      const y = ay + (by - ay) * t - (n * lx + c * ly) - off;
+      const fluid = poly(fluidPts);
+      const other = poly(local, x, y, rot);
+      // Slivers below the clipper's area epsilon legitimately produce no arbiter.
+      if (expected(fluid, other).area < 1e-6) continue;
+      expectOverlap(fluid, other);
+      expectOverlap(other, fluid);
+    }
+  });
 });
 
 describe("flowCollide — circle ∩ polygon", () => {
@@ -314,6 +378,64 @@ describe("flowCollide — circle ∩ polygon", () => {
       const p = poly(regular(3 + Math.floor(rnd() * 6), 10 + rnd() * 40, rnd() * 6), 0, 0, rnd());
       expectOverlap(c, p);
       expectOverlap(p, c);
+    }
+  });
+
+  // Like the polygon clipper, the circle clipper used to walk the outline and
+  // lose its way when a polygon vertex sat on the circle or an edge was
+  // tangent to it: the overlap was dropped or misreported (e.g. 1137 for 833).
+  it("a polygon vertex on the circle (fuzz repro: area off by 37%)", () => {
+    const local: Pt[] = [
+      [-45.87426369778209, -21.12596005921202],
+      [7.331047120312885, -31.55288948890035],
+      [50.405099991262496, -3.390879964659768],
+      [23.821017880624368, 12.041225080876314],
+      [-35.68290129441765, 31.44058171538849],
+    ];
+    const c = circle(20.55943369891468);
+    const p = poly(local, -22.343381576874684, -19.95890214655952, 0.7944552520636726);
+    expectOverlap(c, p);
+    expectOverlap(p, c);
+  });
+
+  it("seeded random pairs with a vertex on, or an edge tangent to, the circle", () => {
+    let s = 2024;
+    const rnd = () => {
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      return s / 0x7fffffff;
+    };
+    for (let i = 0; i < 120; i++) {
+      const r = 20 + rnd() * 30;
+      const local = regular(3 + Math.floor(rnd() * 5), 15 + rnd() * 50, rnd() * 6);
+      const rot = rnd() * 6.28;
+      const c = Math.cos(rot);
+      const n = Math.sin(rot);
+      const off = i % 3 === 0 ? 0 : (rnd() - 0.5) * 10 ** (-2 - rnd() * 8);
+      let x: number;
+      let y: number;
+      if (i % 2 === 0) {
+        const ang = rnd() * 6.28;
+        const [lx, ly] = local[Math.floor(rnd() * local.length)];
+        x = (r + off) * Math.cos(ang) - (c * lx - n * ly);
+        y = (r + off) * Math.sin(ang) - (n * lx + c * ly);
+      } else {
+        const w = worldPoly({ kind: "poly", local, x: 0, y: 0, rot });
+        const k = Math.floor(rnd() * w.length);
+        const [ax, ay] = w[k];
+        const [bx, by] = w[(k + 1) % w.length];
+        const len = Math.hypot(bx - ax, by - ay);
+        const out = signedArea(w) > 0 ? 1 : -1;
+        const t = rnd();
+        x = -(ax + (bx - ax) * t + (out * (by - ay) * (r + off)) / len);
+        y = -(ay + (by - ay) * t - (out * (bx - ax) * (r + off)) / len);
+      }
+      const ci = circle(r);
+      const p = poly(local, x, y, rot);
+      // Slivers below the clipper's area epsilon legitimately produce no arbiter.
+      if (expected(ci, p).area < 1e-3) continue;
+      // The 4096-gon oracle's own error, relative to a thin sliver, exceeds 1e-5.
+      expectOverlap(ci, p, 2e-4);
+      expectOverlap(p, ci, 2e-4);
     }
   });
 });

@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7418 engine tests across 348 files, plus 79 pixi-adapter tests across 6 files.**
+**7448 engine tests across 350 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -81,12 +81,12 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~93% | ≥80% ✅ |
-| Branches | ~86% | — |
+| Statements | ~94% | ≥80% ✅ |
+| Branches | ~87% | — |
 | Functions | ~98% | — |
 
 **High coverage modules:** `packages/nape-js/src/native/callbacks/` (100%), `packages/nape-js/src/native/util/` (99%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/callbacks/` (99%), `packages/nape-js/src/replay/` (98%)
-**Low coverage modules:** `packages/nape-js/src/profiler/` (85%), `packages/nape-js/src/native/shape/` (90%), `packages/nape-js/src/native/geom/` (91%), `packages/nape-js/src/native/space/` (91%)
+**Low coverage modules:** `packages/nape-js/src/profiler/` (85%), `packages/nape-js/src/native/shape/` (90%), `packages/nape-js/src/shape/` (91%), `packages/nape-js/src/native/constraint/` (93%)
 
 Note: the arbiter classes' dead solver-method duplicates (the live solver is
 inlined inside `ZPP_Space.step`) were removed, and the Haxe-inline-expansion

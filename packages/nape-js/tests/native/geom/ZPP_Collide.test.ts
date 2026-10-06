@@ -19,16 +19,6 @@ function getZppShape(body: Body, space: Space): any {
 }
 
 describe("ZPP_Collide", () => {
-  describe("static fields", () => {
-    it("should have flowpoly initialized", () => {
-      expect(ZPP_Collide.flowpoly).not.toBeNull();
-    });
-
-    it("should have flowsegs initialized", () => {
-      expect(ZPP_Collide.flowsegs).not.toBeNull();
-    });
-  });
-
   describe("circleContains", () => {
     it("should return true for a point inside the circle", () => {
       const c = { worldCOMx: 0, worldCOMy: 0, radius: 10 };
