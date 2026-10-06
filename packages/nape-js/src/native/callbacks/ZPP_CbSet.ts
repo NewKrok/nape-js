@@ -152,7 +152,7 @@ export class ZPP_CbSet {
   }
 
   /** Helper: find or create a CbSetPair for sets a and b. */
-  private static findOrCreatePair(a: ZPP_CbSet, b: ZPP_CbSet): any {
+  static findOrCreatePair(a: ZPP_CbSet, b: ZPP_CbSet): any {
     let ret: any = null;
     const pairs = a.cbpairs.length < b.cbpairs.length ? a.cbpairs : b.cbpairs;
     let cx_ite = pairs.head;
