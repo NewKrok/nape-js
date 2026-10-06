@@ -61,7 +61,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.43.0" />
+  <link rel="stylesheet" href="../../style.css?v=3.43.1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
@@ -236,9 +236,11 @@ player.allowRotation = false;
 <hr>
 <h2 id="constraints">Constraints</h2>
 <h3 id="expecting-a-joint-to-break-without-enabling-it">Expecting a joint to break without enabling it</h3>
-<p><code>maxForce</code> / <code>maxError</code> alone only <strong>clamp</strong> a joint — it never breaks, and a
-BREAK listener never fires, until you opt in.</p>
-<pre><code class="language-typescript">// BAD — joint is clamped at 5000, never breaks
+<p><code>maxForce</code> / <code>maxError</code> alone never break a joint, and a BREAK listener never
+fires, until you opt in. On its own <code>maxForce</code> only clamps a soft joint
+(<code>stiff = false</code>); a stiff joint ignores it (<code>MotorJoint</code> and <code>SpringJoint</code>
+always clamp).</p>
+<pre><code class="language-typescript">// BAD — never breaks (and a stiff joint isn't even clamped)
 joint.maxForce = 5000;
 
 // GOOD — over-limit now breaks it (and removes it, see removeOnBreak)
@@ -397,7 +399,7 @@ body.shapes.clear();
       <p data-i18n="footer.license">MIT License</p>
     </div>
   </footer>
-  <script type="module" src="../../site-header.js?v=3.43.0"></script>
+  <script type="module" src="../../site-header.js?v=3.43.1"></script>
   <script>
     // Prism arrives deferred; highlight once it is here.
     window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });

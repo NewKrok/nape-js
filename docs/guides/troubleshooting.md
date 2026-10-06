@@ -115,7 +115,8 @@ compound.space = space;
 
 **Cause 1:** the joint never breaks. Breaking is opt-in — `breakUnderForce`
 and `breakUnderError` are both `false` by default, so a joint over its
-`maxForce` / `maxError` is just clamped.
+`maxForce` / `maxError` is at most clamped (and a stiff joint ignores
+`maxForce` entirely).
 
 ```typescript
 joint.maxForce = 5000;
@@ -293,6 +294,19 @@ sticks out. Both fixed in 3.43.0 (both inherited from Haxe nape).
 `allowMovement = false` against a static body) the solver inverted a singular
 matrix; with an anchor away from the body's centre the spin grew without
 bound. Fixed in 3.43.0. On older versions use `PivotJoint` + `AngleJoint`.
+
+---
+
+## Setting a `Capsule`'s radius after `scale()` is ignored or warps it
+
+**Cause (nape-js ≤ 3.43.1):** `scale()` rescaled the capsule, but the
+`radius` / `halfLength` setters compared against and rebuilt from the
+pre-scale values. After `capsule.scale(2, 2)`, setting `radius` back to its
+original value did nothing, and any other value rebuilt the outline with the
+old `halfLength` while the `halfLength` getter reported the scaled one.
+
+Fixed in 3.43.2. On older versions, rebuild the shape instead of resizing a
+scaled capsule: remove it and add `new Capsule(width, height)`.
 
 ---
 

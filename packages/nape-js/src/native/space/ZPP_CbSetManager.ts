@@ -110,45 +110,7 @@ export class ZPP_CbSetManager {
   }
 
   pair(a: any, b: any): any {
-    let ret: any = null;
-    const pairs = a.cbpairs.length < b.cbpairs.length ? a.cbpairs : b.cbpairs;
-    let cx_ite = pairs.head;
-    while (cx_ite != null) {
-      const p = cx_ite.elt;
-      if ((p.a == a && p.b == b) || (p.a == b && p.b == a)) {
-        ret = p;
-        break;
-      }
-      cx_ite = cx_ite.next;
-    }
-    if (ret == null) {
-      let ret1: any;
-      if (ZPP_CbSetPair.zpp_pool == null) {
-        ret1 = new ZPP_CbSetPair();
-      } else {
-        ret1 = ZPP_CbSetPair.zpp_pool;
-        ZPP_CbSetPair.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.zip_listeners = true;
-      if (ZPP_CbSet.setlt(a, b)) {
-        ret1.a = a;
-        ret1.b = b;
-      } else {
-        ret1.a = b;
-        ret1.b = a;
-      }
-      ret = ret1;
-      a.cbpairs.add(ret);
-      if (b != a) {
-        b.cbpairs.add(ret);
-      }
-    }
-    if (ret.zip_listeners) {
-      ret.zip_listeners = false;
-      ret.__validate();
-    }
-    return ret;
+    return ZPP_CbSet.findOrCreatePair(a, b);
   }
 
   valid_listener(i: any): boolean {

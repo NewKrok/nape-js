@@ -262,6 +262,10 @@ export class Constraint {
    *
    * When the required force exceeds this value the constraint becomes slack.
    * If `breakUnderForce` is `true` the constraint breaks instead.
+   *
+   * The clamp only applies to soft constraints (`stiff = false`): a stiff
+   * constraint ignores `maxForce` unless `breakUnderForce` is set.
+   * `MotorJoint` and `SpringJoint` are the exception and always clamp.
    * Must be `>= 0`. `Infinity` disables the limit.
    * @defaultValue `Infinity`
    */

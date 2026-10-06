@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7448 engine tests across 350 files, plus 79 pixi-adapter tests across 6 files.**
+**7513 engine tests across 354 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -81,8 +81,8 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~94% | ≥80% ✅ |
-| Branches | ~87% | — |
+| Statements | ~95% | ≥80% ✅ |
+| Branches | ~89% | — |
 | Functions | ~98% | — |
 
 **High coverage modules:** `packages/nape-js/src/native/callbacks/` (100%), `packages/nape-js/src/native/util/` (99%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/callbacks/` (99%), `packages/nape-js/src/replay/` (98%)
