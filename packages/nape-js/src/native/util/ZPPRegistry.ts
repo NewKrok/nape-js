@@ -368,7 +368,6 @@ export function registerZPPClasses(nape: any): any {
 
   // --- init statics (engine.ts calls _initEnums after TS enum classes load) ---
   zpp.callbacks.ZPP_InteractionListener._initStatics(zpp);
-  zpp.geom.ZPP_Collide._initStatics(zpp);
   zpp.space.ZPP_AABBTree._initStatics();
 
   return nape;

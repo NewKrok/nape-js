@@ -380,6 +380,64 @@ describe("flowCollide — circle ∩ polygon", () => {
       expectOverlap(p, c);
     }
   });
+
+  // Like the polygon clipper, the circle clipper used to walk the outline and
+  // lose its way when a polygon vertex sat on the circle or an edge was
+  // tangent to it: the overlap was dropped or misreported (e.g. 1137 for 833).
+  it("a polygon vertex on the circle (fuzz repro: area off by 37%)", () => {
+    const local: Pt[] = [
+      [-45.87426369778209, -21.12596005921202],
+      [7.331047120312885, -31.55288948890035],
+      [50.405099991262496, -3.390879964659768],
+      [23.821017880624368, 12.041225080876314],
+      [-35.68290129441765, 31.44058171538849],
+    ];
+    const c = circle(20.55943369891468);
+    const p = poly(local, -22.343381576874684, -19.95890214655952, 0.7944552520636726);
+    expectOverlap(c, p);
+    expectOverlap(p, c);
+  });
+
+  it("seeded random pairs with a vertex on, or an edge tangent to, the circle", () => {
+    let s = 2024;
+    const rnd = () => {
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      return s / 0x7fffffff;
+    };
+    for (let i = 0; i < 120; i++) {
+      const r = 20 + rnd() * 30;
+      const local = regular(3 + Math.floor(rnd() * 5), 15 + rnd() * 50, rnd() * 6);
+      const rot = rnd() * 6.28;
+      const c = Math.cos(rot);
+      const n = Math.sin(rot);
+      const off = i % 3 === 0 ? 0 : (rnd() - 0.5) * 10 ** (-2 - rnd() * 8);
+      let x: number;
+      let y: number;
+      if (i % 2 === 0) {
+        const ang = rnd() * 6.28;
+        const [lx, ly] = local[Math.floor(rnd() * local.length)];
+        x = (r + off) * Math.cos(ang) - (c * lx - n * ly);
+        y = (r + off) * Math.sin(ang) - (n * lx + c * ly);
+      } else {
+        const w = worldPoly({ kind: "poly", local, x: 0, y: 0, rot });
+        const k = Math.floor(rnd() * w.length);
+        const [ax, ay] = w[k];
+        const [bx, by] = w[(k + 1) % w.length];
+        const len = Math.hypot(bx - ax, by - ay);
+        const out = signedArea(w) > 0 ? 1 : -1;
+        const t = rnd();
+        x = -(ax + (bx - ax) * t + (out * (by - ay) * (r + off)) / len);
+        y = -(ay + (by - ay) * t - (out * (bx - ax) * (r + off)) / len);
+      }
+      const ci = circle(r);
+      const p = poly(local, x, y, rot);
+      // Slivers below the clipper's area epsilon legitimately produce no arbiter.
+      if (expected(ci, p).area < 1e-3) continue;
+      // The 4096-gon oracle's own error, relative to a thin sliver, exceeds 1e-5.
+      expectOverlap(ci, p, 2e-4);
+      expectOverlap(p, ci, 2e-4);
+    }
+  });
 });
 
 describe("flowCollide — polygon cutting a circle along several chords", () => {

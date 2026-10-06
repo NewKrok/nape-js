@@ -6,7 +6,6 @@
  */
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
-import { ZPP_GeomVert } from "./ZPP_GeomVert";
 import { ZPP_Shape } from "../shape/ZPP_Shape";
 import { ZPP_Body } from "../phys/ZPP_Body";
 import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
@@ -56,20 +55,6 @@ export class ZPP_Collide {
     }
     return c;
   }
-
-  /** Internal list for flow collision polygon vertices (ZNPList_ZPP_Vec2). */
-  static flowpoly: any = null;
-
-  /**
-   * Initialize static working lists. Called once from compiled factory.
-   */
-  static _initStatics(zpp_nape: any): void {
-    ZPP_Collide.flowpoly = new zpp_nape.util.ZNPList_ZPP_Vec2();
-    ZPP_Collide.flowsegs = new zpp_nape.util.ZNPList_ZPP_Vec2();
-  }
-
-  /** Internal list for flow collision segments (ZNPList_ZPP_Vec2). */
-  static flowsegs: any = null;
 
   static circleContains(c: any, p: ZPP_Vec2) {
     const dx = p.x - c.worldCOMx;
@@ -924,6 +909,91 @@ export class ZPP_Collide {
     return true;
   }
 
+  /**
+   * Fluid overlap of a circle and a convex polygon that partially overlap.
+   * Sums, over the polygon's edges, the signed intersection of the circle with
+   * the triangle (centre, a, b): edge pieces inside the circle contribute a
+   * triangle, pieces outside contribute the circular sector they subtend.
+   * Exact, and robust to vertices on the circle and tangent edges. Returns
+   * false when the overlap has no area.
+   */
+  static _flowCirclePoly(c: any, p: any, arb: ZPP_FluidArbiter): boolean {
+    const ox = c.worldCOMx;
+    const oy = c.worldCOMy;
+    const r = c.radius;
+    const r2 = r * r;
+    const r3 = (r2 * r) / 3;
+    let area = 0.0;
+    let mx = 0.0;
+    let my = 0.0;
+    const first = p.gverts.next;
+    let ax = 0.0;
+    let ay = 0.0;
+    let cur = first;
+    while (cur != null) {
+      ax = cur.x - ox;
+      ay = cur.y - oy;
+      cur = cur.next;
+    }
+    cur = first;
+    while (cur != null) {
+      const bx = cur.x - ox;
+      const by = cur.y - oy;
+      const dx = bx - ax;
+      const dy = by - ay;
+      const A = dx * dx + dy * dy;
+      const B = ax * dx + ay * dy;
+      const disc = B * B - A * (ax * ax + ay * ay - r2);
+      // Parameters along a→b where the edge enters / leaves the circle.
+      let t1 = 1.0;
+      let t2 = 1.0;
+      if (A > 0 && disc > 0) {
+        const sq = Math.sqrt(disc);
+        t1 = (-B - sq) / A;
+        t2 = (-B + sq) / A;
+        t1 = t1 < 0 ? 0 : t1 > 1 ? 1 : t1;
+        t2 = t2 < 0 ? 0 : t2 > 1 ? 1 : t2;
+      }
+      const p1x = ax + dx * t1;
+      const p1y = ay + dy * t1;
+      const p2x = ax + dx * t2;
+      const p2y = ay + dy * t2;
+      // Outside piece a→p1: circular sector.
+      if (t1 > 0) {
+        const la = Math.sqrt(ax * ax + ay * ay);
+        const l1 = Math.sqrt(p1x * p1x + p1y * p1y);
+        area += 0.5 * r2 * Math.atan2(ax * p1y - ay * p1x, ax * p1x + ay * p1y);
+        mx += r3 * (p1y / l1 - ay / la);
+        my += r3 * (ax / la - p1x / l1);
+      }
+      // Inside piece p1→p2: triangle with the centre.
+      if (t2 > t1) {
+        const cr = p1x * p2y - p2x * p1y;
+        area += 0.5 * cr;
+        mx += (cr * (p1x + p2x)) / 6;
+        my += (cr * (p1y + p2y)) / 6;
+      }
+      // Outside piece p2→b: circular sector.
+      if (t2 < 1) {
+        const l2 = Math.sqrt(p2x * p2x + p2y * p2y);
+        const lb = Math.sqrt(bx * bx + by * by);
+        area += 0.5 * r2 * Math.atan2(p2x * by - p2y * bx, p2x * bx + p2y * by);
+        mx += r3 * (by / lb - p2y / l2);
+        my += r3 * (p2x / l2 - bx / lb);
+      }
+      ax = bx;
+      ay = by;
+      cur = cur.next;
+    }
+    if (!(area * area > Config.epsilon * Config.epsilon)) {
+      return false;
+    }
+    arb.overlap = area < 0 ? -area : area;
+    arb.centroidx = ox + mx / area;
+    arb.centroidy = oy + my / area;
+    return true;
+  }
+
   static flowCollide(s1: ZPP_Shape, s2: ZPP_Shape, arb: ZPP_FluidArbiter) {
     if (s2.type == 1) {
       if (s1.type == 1) {
@@ -998,14 +1068,12 @@ export class ZPP_Collide {
           return false;
         }
       } else {
-        const inte = [];
         let total1 = true;
         let a0 = null;
         let vi = null;
         let max2 = -1e100;
         let cont1 = true;
         let vite = s2.polygon.gverts.next;
-        let ind3 = 0;
         let cx_ite9 = s2.polygon.edges.head;
         while (cx_ite9 != null) {
           const a4 = cx_ite9.elt;
@@ -1015,7 +1083,6 @@ export class ZPP_Collide {
             break;
           } else if (dist + s1.circle.radius > a4.gprojection + Config.epsilon) {
             total1 = false;
-            inte[ind3] = true;
           }
           dist -= a4.gprojection + s1.circle.radius;
           if (dist > max2) {
@@ -1024,7 +1091,6 @@ export class ZPP_Collide {
             vi = vite;
           }
           vite = vite.next;
-          ++ind3;
           cx_ite9 = cx_ite9.next;
         }
         if (cont1) {
@@ -1054,24 +1120,16 @@ export class ZPP_Collide {
               tmp14 = true;
             }
             if (tmp14) {
-              const ins = [];
-              let ind4 = 0;
               let total2 = true;
-              let vi1 = null;
-              let vind = 0;
               let cx_ite10 = s2.polygon.gverts.next;
               while (cx_ite10 != null) {
                 const v14 = cx_ite10;
                 const dx4 = v14.x - s1.circle.worldCOMx;
                 const dy4 = v14.y - s1.circle.worldCOMy;
                 const dist1 = dx4 * dx4 + dy4 * dy4;
-                if (!(ins[ind4] = dist1 <= s1.circle.radius * s1.circle.radius)) {
+                if (dist1 > s1.circle.radius * s1.circle.radius) {
                   total2 = false;
-                } else {
-                  vind = ind4;
-                  vi1 = cx_ite10;
                 }
-                ++ind4;
                 cx_ite10 = cx_ite10.next;
               }
               if (total2) {
@@ -1081,455 +1139,7 @@ export class ZPP_Collide {
                 arb.centroidy = s2.polygon.worldCOMy;
                 return true;
               } else {
-                while (ZPP_Collide.flowpoly.head != null) {
-                  const p1 = ZPP_Collide.flowpoly.pop_unsafe();
-                  if (!p1._inuse) {
-                    const o1 = p1;
-                    if (o1.outer != null) {
-                      o1.outer.zpp_inner = null;
-                      o1.outer = null;
-                    }
-                    o1._isimmutable = null;
-                    o1._validate = null;
-                    o1._invalidate = null;
-                    o1.next = ZPP_Vec2.zpp_pool;
-                    ZPP_Vec2.zpp_pool = o1;
-                  }
-                }
-                ZPP_Collide.flowsegs.clear();
-                let fst_vert1 = null;
-                let state = 1;
-                // No polygon vertex inside the circle: the walk only records
-                // edge/circle crossings, starting from the first entry point.
-                const startedOutside = vi1 == null;
-                if (vi1 == null) {
-                  vi1 = s2.polygon.gverts.next;
-                  state = 2;
-                } else {
-                  fst_vert1 = vi1;
-                  ZPP_Collide.flowpoly.add(fst_vert1);
-                }
-                while (state != 0)
-                  if (state == 1) {
-                    vi1 = vi1.next;
-                    if (vi1 == null) {
-                      vi1 = s2.polygon.gverts.next;
-                    }
-                    ++vind;
-                    if (vind >= s2.polygon.edgeCnt) {
-                      vind = 0;
-                    }
-                    if (ins[vind]) {
-                      const dx5 = fst_vert1.x - vi1.x;
-                      const dy5 = fst_vert1.y - vi1.y;
-                      if (dx5 * dx5 + dy5 * dy5 < Config.epsilon) {
-                        break;
-                      }
-                      ZPP_Collide.flowpoly.add(vi1);
-                    } else {
-                      const u9 = ZPP_Collide.flowpoly.head.elt;
-                      const v16 = vi1;
-                      const vx = v16.x - u9.x;
-                      const vy = v16.y - u9.y;
-                      const qx = u9.x - s1.circle.worldCOMx;
-                      const qy = u9.y - s1.circle.worldCOMy;
-                      let A = vx * vx + vy * vy;
-                      const B = 2 * (qx * vx + qy * vy);
-                      const C = qx * qx + qy * qy - s1.circle.radius * s1.circle.radius;
-                      const D = Math.sqrt(B * B - 4 * A * C);
-                      A = 1 / (2 * A);
-                      const t18 = (-B - D) * A;
-                      const tval = t18 < Config.epsilon ? (-B + D) * A : t18;
-                      let cx4 = 0.0;
-                      let cy4 = 0.0;
-                      const T4 = tval;
-                      cx4 = u9.x + (v16.x - u9.x) * T4;
-                      cy4 = u9.y + (v16.y - u9.y) * T4;
-                      const dx6 = fst_vert1.x - cx4;
-                      const dy6 = fst_vert1.y - cy4;
-                      if (dx6 * dx6 + dy6 * dy6 < Config.epsilon) {
-                        break;
-                      }
-                      const tmp15 = ZPP_Collide.flowpoly;
-                      const ret4 = ZPP_Vec2.get(cx4, cy4);
-                      tmp15.add(ret4);
-                      state = 2;
-                    }
-                  } else if (state == 2) {
-                    let vi2: ZPP_GeomVert | null = vi1.next;
-                    if (vi2 == null) {
-                      vi2 = s2.polygon.gverts.next;
-                    }
-                    let u10 = vi1;
-                    state = 0;
-                    const beg_ite2: ZPP_GeomVert | null = vi2;
-                    let cx_ite12: ZPP_GeomVert | null = vi2;
-                    while (true) {
-                      const v17 = cx_ite12!;
-                      let vind2 = vind + 1;
-                      if (vind2 == s2.polygon.edgeCnt) {
-                        vind2 = 0;
-                      }
-                      if (inte[vind]) {
-                        if (ins[vind2]) {
-                          const vx1 = v17.x - u10.x;
-                          const vy1 = v17.y - u10.y;
-                          const qx1 = u10.x - s1.circle.worldCOMx;
-                          const qy1 = u10.y - s1.circle.worldCOMy;
-                          let A1 = vx1 * vx1 + vy1 * vy1;
-                          const B1 = 2 * (qx1 * vx1 + qy1 * vy1);
-                          const C1 = qx1 * qx1 + qy1 * qy1 - s1.circle.radius * s1.circle.radius;
-                          const D1 = Math.sqrt(B1 * B1 - 4 * A1 * C1);
-                          A1 = 1 / (2 * A1);
-                          const t19 = (-B1 - D1) * A1;
-                          const tval1 = t19 < Config.epsilon ? (-B1 + D1) * A1 : t19;
-                          let cx5 = 0.0;
-                          let cy5 = 0.0;
-                          const T5 = tval1;
-                          cx5 = u10.x + (v17.x - u10.x) * T5;
-                          cy5 = u10.y + (v17.y - u10.y) * T5;
-                          const dx7 = fst_vert1.x - cx5;
-                          const dy7 = fst_vert1.y - cy5;
-                          if (dx7 * dx7 + dy7 * dy7 < Config.epsilon) {
-                            state = 0;
-                            cx_ite12 = beg_ite2;
-                            break;
-                          }
-                          const ret5 = ZPP_Vec2.get(cx5, cy5);
-                          const cp = ret5;
-                          ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
-                          ZPP_Collide.flowsegs.add(cp);
-                          ZPP_Collide.flowpoly.add(cp);
-                          state = 1;
-                          cx_ite12 = beg_ite2;
-                          break;
-                        } else {
-                          let t0 = 0.0;
-                          let t110 = 0.0;
-                          const vx2 = v17.x - u10.x;
-                          const vy2 = v17.y - u10.y;
-                          const qx2 = u10.x - s1.circle.worldCOMx;
-                          const qy2 = u10.y - s1.circle.worldCOMy;
-                          let A2 = vx2 * vx2 + vy2 * vy2;
-                          const B2 = 2 * (qx2 * vx2 + qy2 * vy2);
-                          const C2 = qx2 * qx2 + qy2 * qy2 - s1.circle.radius * s1.circle.radius;
-                          let D2 = B2 * B2 - 4 * A2 * C2;
-                          let two;
-                          if (D2 * D2 < Config.epsilon) {
-                            if (D2 < 0) {
-                              t0 = 10.0;
-                            } else {
-                              t110 = -B2 / (2 * A2);
-                              t0 = t110;
-                            }
-                            two = false;
-                          } else {
-                            D2 = Math.sqrt(D2);
-                            A2 = 1 / (2 * A2);
-                            t0 = (-B2 - D2) * A2;
-                            t110 = (-B2 + D2) * A2;
-                            two = true;
-                          }
-                          if (t0 < 1 - Config.epsilon && t110 > Config.epsilon) {
-                            let cx6 = 0.0;
-                            let cy6 = 0.0;
-                            const T6 = t0;
-                            cx6 = u10.x + (v17.x - u10.x) * T6;
-                            cy6 = u10.y + (v17.y - u10.y) * T6;
-                            let tmp16;
-                            if (fst_vert1 != null) {
-                              const dx8 = fst_vert1.x - cx6;
-                              const dy8 = fst_vert1.y - cy6;
-                              tmp16 = dx8 * dx8 + dy8 * dy8 < Config.epsilon;
-                            } else {
-                              tmp16 = false;
-                            }
-                            if (tmp16) {
-                              state = 0;
-                              cx_ite12 = beg_ite2;
-                              break;
-                            }
-                            const ret6 = ZPP_Vec2.get(cx6, cy6);
-                            const cp1 = ret6;
-                            if (ZPP_Collide.flowpoly.head != null) {
-                              ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
-                              ZPP_Collide.flowsegs.add(cp1);
-                            }
-                            ZPP_Collide.flowpoly.add(cp1);
-                            if (fst_vert1 == null) {
-                              fst_vert1 = ZPP_Collide.flowpoly.head.elt;
-                            }
-                            if (two) {
-                              let cx7 = 0.0;
-                              let cy7 = 0.0;
-                              const T7 = t110;
-                              cx7 = u10.x + (v17.x - u10.x) * T7;
-                              cy7 = u10.y + (v17.y - u10.y) * T7;
-                              const tmp17 = ZPP_Collide.flowpoly;
-                              const ret7 = ZPP_Vec2.get(cx7, cy7);
-                              tmp17.add(ret7);
-                            }
-                          }
-                        }
-                      }
-                      u10 = v17;
-                      vi1 = cx_ite12;
-                      vind = vind2;
-                      cx_ite12 = cx_ite12!.next;
-                      if (cx_ite12 == null) {
-                        cx_ite12 = s2.polygon.gverts.next;
-                      }
-                      break;
-                    }
-                    while (cx_ite12 != beg_ite2) {
-                      const v18 = cx_ite12!;
-                      let vind21 = vind + 1;
-                      if (vind21 == s2.polygon.edgeCnt) {
-                        vind21 = 0;
-                      }
-                      if (inte[vind]) {
-                        if (ins[vind21]) {
-                          const vx3 = v18.x - u10.x;
-                          const vy3 = v18.y - u10.y;
-                          const qx3 = u10.x - s1.circle.worldCOMx;
-                          const qy3 = u10.y - s1.circle.worldCOMy;
-                          let A3 = vx3 * vx3 + vy3 * vy3;
-                          const B3 = 2 * (qx3 * vx3 + qy3 * vy3);
-                          const C3 = qx3 * qx3 + qy3 * qy3 - s1.circle.radius * s1.circle.radius;
-                          const D3 = Math.sqrt(B3 * B3 - 4 * A3 * C3);
-                          A3 = 1 / (2 * A3);
-                          const t20 = (-B3 - D3) * A3;
-                          const tval2 = t20 < Config.epsilon ? (-B3 + D3) * A3 : t20;
-                          let cx8 = 0.0;
-                          let cy8 = 0.0;
-                          const T8 = tval2;
-                          cx8 = u10.x + (v18.x - u10.x) * T8;
-                          cy8 = u10.y + (v18.y - u10.y) * T8;
-                          const dx9 = fst_vert1.x - cx8;
-                          const dy9 = fst_vert1.y - cy8;
-                          if (dx9 * dx9 + dy9 * dy9 < Config.epsilon) {
-                            state = 0;
-                            cx_ite12 = beg_ite2;
-                            break;
-                          }
-                          const ret8 = ZPP_Vec2.get(cx8, cy8);
-                          const cp2 = ret8;
-                          ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
-                          ZPP_Collide.flowsegs.add(cp2);
-                          ZPP_Collide.flowpoly.add(cp2);
-                          state = 1;
-                          cx_ite12 = beg_ite2;
-                          break;
-                        } else {
-                          let t01 = 0.0;
-                          let t111 = 0.0;
-                          const vx4 = v18.x - u10.x;
-                          const vy4 = v18.y - u10.y;
-                          const qx4 = u10.x - s1.circle.worldCOMx;
-                          const qy4 = u10.y - s1.circle.worldCOMy;
-                          let A4 = vx4 * vx4 + vy4 * vy4;
-                          const B4 = 2 * (qx4 * vx4 + qy4 * vy4);
-                          const C4 = qx4 * qx4 + qy4 * qy4 - s1.circle.radius * s1.circle.radius;
-                          let D4 = B4 * B4 - 4 * A4 * C4;
-                          let two1;
-                          if (D4 * D4 < Config.epsilon) {
-                            if (D4 < 0) {
-                              t01 = 10.0;
-                            } else {
-                              t111 = -B4 / (2 * A4);
-                              t01 = t111;
-                            }
-                            two1 = false;
-                          } else {
-                            D4 = Math.sqrt(D4);
-                            A4 = 1 / (2 * A4);
-                            t01 = (-B4 - D4) * A4;
-                            t111 = (-B4 + D4) * A4;
-                            two1 = true;
-                          }
-                          if (t01 < 1 - Config.epsilon && t111 > Config.epsilon) {
-                            let cx9 = 0.0;
-                            let cy9 = 0.0;
-                            const T9 = t01;
-                            cx9 = u10.x + (v18.x - u10.x) * T9;
-                            cy9 = u10.y + (v18.y - u10.y) * T9;
-                            let tmp18;
-                            if (fst_vert1 != null) {
-                              const dx10 = fst_vert1.x - cx9;
-                              const dy10 = fst_vert1.y - cy9;
-                              tmp18 = dx10 * dx10 + dy10 * dy10 < Config.epsilon;
-                            } else {
-                              tmp18 = false;
-                            }
-                            if (tmp18) {
-                              state = 0;
-                              cx_ite12 = beg_ite2;
-                              break;
-                            }
-                            const ret9 = ZPP_Vec2.get(cx9, cy9);
-                            const cp3 = ret9;
-                            if (ZPP_Collide.flowpoly.head != null) {
-                              ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
-                              ZPP_Collide.flowsegs.add(cp3);
-                            }
-                            ZPP_Collide.flowpoly.add(cp3);
-                            if (fst_vert1 == null) {
-                              fst_vert1 = ZPP_Collide.flowpoly.head.elt;
-                            }
-                            if (two1) {
-                              let cx10 = 0.0;
-                              let cy10 = 0.0;
-                              const T10 = t111;
-                              cx10 = u10.x + (v18.x - u10.x) * T10;
-                              cy10 = u10.y + (v18.y - u10.y) * T10;
-                              const tmp19 = ZPP_Collide.flowpoly;
-                              const ret10 = ZPP_Vec2.get(cx10, cy10);
-                              tmp19.add(ret10);
-                            }
-                          }
-                        }
-                      }
-                      u10 = v18;
-                      vi1 = cx_ite12;
-                      vind = vind21;
-                      cx_ite12 = cx_ite12!.next;
-                      if (cx_ite12 == null) {
-                        cx_ite12 = s2.polygon.gverts.next;
-                      }
-                    }
-                  }
-                if (ZPP_Collide.flowpoly.head == null) {
-                  return false;
-                } else if (ZPP_Collide.flowpoly.head.next == null) {
-                  let all = true;
-                  let cx_ite13 = s2.polygon.edges.head;
-                  while (cx_ite13 != null) {
-                    const e = cx_ite13.elt;
-                    const dist2 = e.gnormx * s1.circle.worldCOMx + e.gnormy * s1.circle.worldCOMy;
-                    if (dist2 > e.gprojection) {
-                      all = false;
-                      break;
-                    }
-                    cx_ite13 = cx_ite13.next;
-                  }
-                  if (all) {
-                    arb.overlap = s1.circle.area;
-                    arb.centroidx = s1.circle.worldCOMx;
-                    arb.centroidy = s1.circle.worldCOMy;
-                    return true;
-                  } else {
-                    return false;
-                  }
-                } else {
-                  let COMx1 = 0;
-                  let COMy1 = 0;
-                  let area4 = 0.0;
-                  if (ZPP_Collide.flowpoly.head.next.next != null) {
-                    let parea = 0.0;
-                    let pCOMx = 0;
-                    let pCOMy = 0;
-                    parea = 0.0;
-                    let cx_ite14 = ZPP_Collide.flowpoly.head;
-                    let u11 = cx_ite14.elt;
-                    cx_ite14 = cx_ite14.next;
-                    let v19 = cx_ite14.elt;
-                    cx_ite14 = cx_ite14.next;
-                    while (cx_ite14 != null) {
-                      const w12 = cx_ite14.elt;
-                      parea += v19.x * (w12.y - u11.y);
-                      const cf12 = w12.y * v19.x - w12.x * v19.y;
-                      pCOMx += (v19.x + w12.x) * cf12;
-                      pCOMy += (v19.y + w12.y) * cf12;
-                      u11 = v19;
-                      v19 = w12;
-                      cx_ite14 = cx_ite14.next;
-                    }
-                    cx_ite14 = ZPP_Collide.flowpoly.head;
-                    const w13 = cx_ite14.elt;
-                    parea += v19.x * (w13.y - u11.y);
-                    const cf13 = w13.y * v19.x - w13.x * v19.y;
-                    pCOMx += (v19.x + w13.x) * cf13;
-                    pCOMy += (v19.y + w13.y) * cf13;
-                    u11 = v19;
-                    v19 = w13;
-                    cx_ite14 = cx_ite14.next;
-                    const w14 = cx_ite14.elt;
-                    parea += v19.x * (w14.y - u11.y);
-                    const cf14 = w14.y * v19.x - w14.x * v19.y;
-                    pCOMx += (v19.x + w14.x) * cf14;
-                    pCOMy += (v19.y + w14.y) * cf14;
-                    parea *= 0.5;
-                    const ia1 = 1 / (6 * parea);
-                    const t21 = ia1;
-                    pCOMx *= t21;
-                    pCOMy *= t21;
-                    const t22 = -parea;
-                    COMx1 += pCOMx * t22;
-                    COMy1 += pCOMy * t22;
-                    area4 -= parea;
-                    if (startedOutside) {
-                      // The walk records the arc between consecutive crossings
-                      // but never the closing one, from the last exit back to
-                      // the first entry — add that circular segment too.
-                      ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
-                      ZPP_Collide.flowsegs.add(fst_vert1);
-                    }
-                  } else {
-                    ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.elt);
-                    ZPP_Collide.flowsegs.add(ZPP_Collide.flowpoly.head.next.elt);
-                  }
-                  while (ZPP_Collide.flowsegs.head != null) {
-                    const u12 = ZPP_Collide.flowsegs.pop_unsafe();
-                    const v20 = ZPP_Collide.flowsegs.pop_unsafe();
-                    const dx11 = v20.x - u12.x;
-                    const dy11 = v20.y - u12.y;
-                    let nx = dx11;
-                    let ny = dy11;
-                    const d = nx * nx + ny * ny;
-                    const imag = 1.0 / Math.sqrt(d);
-                    const t23 = imag;
-                    nx *= t23;
-                    ny *= t23;
-                    const t24 = nx;
-                    nx = -ny;
-                    ny = t24;
-                    let cx11 = u12.x + v20.x;
-                    let cy11 = u12.y + v20.y;
-                    const t25 = 0.5;
-                    cx11 *= t25;
-                    cy11 *= t25;
-                    const t26 = 1.0;
-                    cx11 -= s1.circle.worldCOMx * t26;
-                    cy11 -= s1.circle.worldCOMy * t26;
-                    const xd = nx * cx11 + ny * cy11;
-                    let carea = 0.0;
-                    let ccom = 0.0;
-                    const X = xd;
-                    const cos = X / s1.circle.radius;
-                    const sin = Math.sqrt(1 - cos * cos);
-                    const theta = Math.acos(cos);
-                    carea = s1.circle.radius * (s1.circle.radius * theta - X * sin);
-                    ccom =
-                      (0.66666666666666663 * s1.circle.radius * sin * sin * sin) /
-                      (theta - cos * sin);
-                    cx11 = s1.circle.worldCOMx;
-                    cy11 = s1.circle.worldCOMy;
-                    const t27 = ccom;
-                    cx11 += nx * t27;
-                    cy11 += ny * t27;
-                    const t28 = carea;
-                    COMx1 += cx11 * t28;
-                    COMy1 += cy11 * t28;
-                    area4 += carea;
-                  }
-                  const t29 = 1.0 / area4;
-                  COMx1 *= t29;
-                  COMy1 *= t29;
-                  arb.overlap = area4;
-                  arb.centroidx = COMx1;
-                  arb.centroidy = COMy1;
-                  return true;
-                }
+                return ZPP_Collide._flowCirclePoly(s1.circle, s2.polygon, arb);
               }
             } else {
               return false;
