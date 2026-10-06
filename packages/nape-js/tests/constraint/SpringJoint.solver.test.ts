@@ -384,3 +384,63 @@ describe("SpringJoint — impulse accessors under load", () => {
     expect(imp1.y + imp2.y).toBeCloseTo(0, 5);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Degenerate geometry, force cap, removal
+// ---------------------------------------------------------------------------
+
+describe("SpringJoint — coincident anchors", () => {
+  it("bodies on top of each other are pushed apart along +x, never NaN", () => {
+    const space = new Space(new Vec2(0, 0));
+    const a = dyn(space, 0, 0);
+    const b = dyn(space, 0, 0);
+    a.shapes.at(0).filter.collisionMask = 0; // isolate the spring from contact response
+    const j = new SpringJoint(a, b, new Vec2(0, 0), new Vec2(0, 0), 30);
+    j.space = space;
+    space.step(1 / 60);
+    expect(Number.isFinite(a.position.x) && Number.isFinite(b.position.x)).toBe(true);
+    expect(b.velocity.x).toBeGreaterThan(0);
+    expect(a.velocity.x).toBeLessThan(0);
+    expect(b.velocity.y).toBe(0);
+    for (let i = 0; i < 120; i++) space.step(1 / 60);
+    expect(Math.abs(b.position.x - a.position.x)).toBeGreaterThan(10);
+  });
+});
+
+describe("SpringJoint — maxForce caps the impulse without breaking", () => {
+  it("a capped spring accelerates the body at most maxForce / mass", () => {
+    const run = (maxForce: number) => {
+      const space = new Space(new Vec2(0, 0));
+      const anchor = staticBody(space, 0, 0);
+      const b = dyn(space, 300, 0); // 300 px from a 40 px rest length
+      const j = new SpringJoint(anchor, b, new Vec2(0, 0), new Vec2(0, 0), 40);
+      j.frequency = 10;
+      j.maxForce = maxForce;
+      j.space = space;
+      space.step(1 / 60);
+      return { dv: -b.velocity.x, mass: b.mass, j };
+    };
+    const capped = run(500);
+    const free = run(Infinity);
+    expect(capped.j.active).toBe(true);
+    expect(capped.dv).toBeGreaterThan(0);
+    expect(capped.dv).toBeLessThanOrEqual((500 / capped.mass) * (1 / 60) * 1.0001);
+    expect(free.dv).toBeGreaterThan(capped.dv * 2);
+  });
+});
+
+describe("SpringJoint — leaving the space", () => {
+  it("removing the spring unregisters it from both bodies", () => {
+    const space = new Space(new Vec2(0, 0));
+    const a = dyn(space, 0, 0);
+    const b = dyn(space, 50, 0);
+    const j = new SpringJoint(a, b, new Vec2(0, 0), new Vec2(0, 0), 40);
+    j.space = space;
+    space.step(1 / 60);
+    expect(a.constraints.length).toBe(1);
+    expect(b.constraints.length).toBe(1);
+    j.space = null;
+    expect(a.constraints.length).toBe(0);
+    expect(b.constraints.length).toBe(0);
+  });
+});

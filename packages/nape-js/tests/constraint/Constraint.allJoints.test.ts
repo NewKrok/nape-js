@@ -90,7 +90,13 @@ const JOINTS: JointCase[] = [
       b2.rotation += d;
     },
   },
-  { name: "SpringJoint", make: (b1, b2) => new SpringJoint(b1, b2, v(0, 0), v(0, 0), 40) },
+  {
+    // Always soft: `stiff = true` is a no-op, so both breaking variants run soft.
+    name: "SpringJoint",
+    make: (b1, b2) => new SpringJoint(b1, b2, v(0, 0), v(0, 0), 40),
+    error: (b1, b2) => Math.abs(dist(b1, b2) - 40),
+    violate: moveX,
+  },
   { name: "MotorJoint", make: (b1, b2) => new MotorJoint(b1, b2, 0, 1) },
 ];
 
