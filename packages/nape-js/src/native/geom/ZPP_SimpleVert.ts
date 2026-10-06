@@ -68,4 +68,11 @@ export class ZPP_SimpleVert {
     this.node = null;
     this.forced = false;
   }
+
+  /** {@link free} and return to the pool. */
+  release(): void {
+    this.free();
+    this.next = ZPP_SimpleVert.zpp_pool;
+    ZPP_SimpleVert.zpp_pool = this;
+  }
 }
