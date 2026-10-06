@@ -174,104 +174,10 @@ export class ZPP_AngleJoint extends ZPP_Constraint {
 
   override forest(): void {
     if (this.b1.type == 2) {
-      let xr;
-      if (this.b1.component == this.b1.component.parent) {
-        xr = this.b1.component;
-      } else {
-        let obj = this.b1.component;
-        let stack: any = null;
-        while (obj != obj.parent) {
-          const nxt = obj.parent;
-          obj.parent = stack;
-          stack = obj;
-          obj = nxt;
-        }
-        while (stack != null) {
-          const nxt1 = stack.parent;
-          stack.parent = obj;
-          stack = nxt1;
-        }
-        xr = obj;
-      }
-      let yr;
-      if (this.component == this.component.parent) {
-        yr = this.component;
-      } else {
-        let obj1 = this.component;
-        let stack1: any = null;
-        while (obj1 != obj1.parent) {
-          const nxt2 = obj1.parent;
-          obj1.parent = stack1;
-          stack1 = obj1;
-          obj1 = nxt2;
-        }
-        while (stack1 != null) {
-          const nxt3 = stack1.parent;
-          stack1.parent = obj1;
-          stack1 = nxt3;
-        }
-        yr = obj1;
-      }
-      if (xr != yr) {
-        if (xr.rank < yr.rank) {
-          xr.parent = yr;
-        } else if (xr.rank > yr.rank) {
-          yr.parent = xr;
-        } else {
-          yr.parent = xr;
-          xr.rank++;
-        }
-      }
+      ZPP_Constraint._unionComponents(this.b1.component, this.component);
     }
     if (this.b2.type == 2) {
-      let xr1;
-      if (this.b2.component == this.b2.component.parent) {
-        xr1 = this.b2.component;
-      } else {
-        let obj2 = this.b2.component;
-        let stack2: any = null;
-        while (obj2 != obj2.parent) {
-          const nxt4 = obj2.parent;
-          obj2.parent = stack2;
-          stack2 = obj2;
-          obj2 = nxt4;
-        }
-        while (stack2 != null) {
-          const nxt5 = stack2.parent;
-          stack2.parent = obj2;
-          stack2 = nxt5;
-        }
-        xr1 = obj2;
-      }
-      let yr1;
-      if (this.component == this.component.parent) {
-        yr1 = this.component;
-      } else {
-        let obj3 = this.component;
-        let stack3: any = null;
-        while (obj3 != obj3.parent) {
-          const nxt6 = obj3.parent;
-          obj3.parent = stack3;
-          stack3 = obj3;
-          obj3 = nxt6;
-        }
-        while (stack3 != null) {
-          const nxt7 = stack3.parent;
-          stack3.parent = obj3;
-          stack3 = nxt7;
-        }
-        yr1 = obj3;
-      }
-      if (xr1 != yr1) {
-        if (xr1.rank < yr1.rank) {
-          xr1.parent = yr1;
-        } else if (xr1.rank > yr1.rank) {
-          yr1.parent = xr1;
-        } else {
-          yr1.parent = xr1;
-          xr1.rank++;
-        }
-      }
+      ZPP_Constraint._unionComponents(this.b2.component, this.component);
     }
   }
 

@@ -148,11 +148,13 @@ player.allowRotation = false;
 
 ### Expecting a joint to break without enabling it
 
-`maxForce` / `maxError` alone only **clamp** a joint — it never breaks, and a
-BREAK listener never fires, until you opt in.
+`maxForce` / `maxError` alone never break a joint, and a BREAK listener never
+fires, until you opt in. On its own `maxForce` only clamps a soft joint
+(`stiff = false`); a stiff joint ignores it (`MotorJoint` and `SpringJoint`
+always clamp).
 
 ```typescript
-// BAD — joint is clamped at 5000, never breaks
+// BAD — never breaks (and a stiff joint isn't even clamped)
 joint.maxForce = 5000;
 
 // GOOD — over-limit now breaks it (and removes it, see removeOnBreak)

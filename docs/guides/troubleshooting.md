@@ -115,7 +115,8 @@ compound.space = space;
 
 **Cause 1:** the joint never breaks. Breaking is opt-in — `breakUnderForce`
 and `breakUnderError` are both `false` by default, so a joint over its
-`maxForce` / `maxError` is just clamped.
+`maxForce` / `maxError` is at most clamped (and a stiff joint ignores
+`maxForce` entirely).
 
 ```typescript
 joint.maxForce = 5000;
