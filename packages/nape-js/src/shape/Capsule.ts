@@ -1,5 +1,4 @@
 import { getNape } from "../core/engine";
-import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
@@ -73,12 +72,6 @@ export class Capsule extends Shape {
   /** @internal — The underlying ZPP_Polygon that handles physics. */
   zpp_inner_zn!: ZPP_Polygon;
 
-  /** @internal — Stored capsule radius (half height). */
-  private _radius: number;
-
-  /** @internal — Stored half-spine-length. */
-  private _halfLength: number;
-
   /**
    * Create a capsule with the given total width and height.
    *
@@ -110,9 +103,6 @@ export class Capsule extends Shape {
 
     const radius = height / 2;
     const halfLength = (width - height) / 2;
-
-    this._radius = radius;
-    this._halfLength = halfLength;
 
     // --- Create ZPP_Polygon internally (type=1) ---
     const zpp = new ZPP_Polygon();
@@ -191,30 +181,12 @@ export class Capsule extends Shape {
   static _wrap(inner: NapeInner): Capsule {
     if (!inner) return null as unknown as Capsule;
     if (inner instanceof Capsule) return inner;
-    if (inner instanceof ZPP_Polygon && (inner as any)._isCapsule) {
-      return getOrCreate(inner, (zpp: ZPP_Polygon) => {
-        const c = Object.create(Capsule.prototype) as Capsule;
-        c.zpp_inner_zn = zpp;
-        (c as any).zpp_inner = zpp;
-        c.zpp_inner_i = zpp;
-        c._radius = (zpp as any)._capsuleRadius ?? 0;
-        c._halfLength = (zpp as any)._capsuleHalfLength ?? 0;
-        zpp.outer = c;
-        zpp.outer_zn = c;
-        zpp.outer_i = c;
-        return c;
-      });
-    }
-    // Handle compiled objects (has zpp_inner_zn → extract ZPP_Polygon)
-    if (inner.zpp_inner_zn) return Capsule._wrap(inner.zpp_inner_zn);
-    // Fallback: wrap compiled inner directly
-    return getOrCreate(inner, (raw) => {
-      const c = Object.create(Capsule.prototype) as Capsule;
-      c.zpp_inner_i = raw.zpp_inner_i;
-      c._radius = (raw as any)._capsuleRadius ?? 0;
-      c._halfLength = (raw as any)._capsuleHalfLength ?? 0;
-      return c;
-    });
+    // A capsule-backed ZPP_Polygon is only ever built by the constructor above
+    // (Shape.copy() and deserialization go through it too), which sets `outer`,
+    // so the existing wrapper is always there to return.
+    const zpp = inner instanceof ZPP_Polygon ? inner : inner.zpp_inner_zn;
+    const outer = zpp != null && (zpp as any)._isCapsule ? zpp.outer : null;
+    return (outer instanceof Capsule ? outer : null) as unknown as Capsule;
   }
 
   // ---------------------------------------------------------------------------
@@ -238,7 +210,7 @@ export class Capsule extends Shape {
 
   /** The capsule's end-cap radius (half the height). */
   get radius(): number {
-    return (this.zpp_inner_zn as any)._capsuleRadius ?? this._radius;
+    return (this.zpp_inner_zn as any)._capsuleRadius;
   }
   set radius(value: number) {
     const zpp = this.zpp_inner_zn;
@@ -248,14 +220,14 @@ export class Capsule extends Shape {
         "Error: Cannot modify radius of Capsule contained in static object once added to space",
       );
     }
-    if (value !== this._radius) {
+    // Compare against the live metadata: scale() rescales it in place.
+    if (value !== this.radius) {
       if (value !== value) {
         throw new Error("Capsule::radius cannot be NaN");
       }
       if (value < Config.epsilon) {
         throw new Error("Capsule::radius (" + value + ") must be > Config.epsilon");
       }
-      this._radius = value;
       (zpp as any)._capsuleRadius = value;
       this._regenerateVertices();
     }
@@ -263,7 +235,7 @@ export class Capsule extends Shape {
 
   /** Half the spine length. Total width = 2 * (halfLength + radius). */
   get halfLength(): number {
-    return (this.zpp_inner_zn as any)._capsuleHalfLength ?? this._halfLength;
+    return (this.zpp_inner_zn as any)._capsuleHalfLength;
   }
   set halfLength(value: number) {
     const zpp = this.zpp_inner_zn;
@@ -273,14 +245,13 @@ export class Capsule extends Shape {
         "Error: Cannot modify halfLength of Capsule contained in static object once added to space",
       );
     }
-    if (value !== this._halfLength) {
+    if (value !== this.halfLength) {
       if (value !== value) {
         throw new Error("Capsule::halfLength cannot be NaN");
       }
       if (value < 0) {
         throw new Error("Capsule::halfLength (" + value + ") must be >= 0");
       }
-      this._halfLength = value;
       (zpp as any)._capsuleHalfLength = value;
       this._regenerateVertices();
     }
@@ -302,7 +273,7 @@ export class Capsule extends Shape {
     }
 
     // Generate new vertices
-    const verts = generateStadiumVertices(this._halfLength, this._radius);
+    const verts = generateStadiumVertices(this.halfLength, this.radius);
     for (const v of verts) {
       const vec = new Vec2(v.x + comX, v.y + comY);
       zpp.wrap_lverts.push(vec);
