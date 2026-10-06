@@ -117,7 +117,8 @@ describe("swept AABB sub-sampling of fast-spinning bodies", () => {
   // stale edge normal as an infinite half-plane. With ~90° of extra rotation
   // that reads as ~150 units of penetration, and the (unclamped) position
   // correction teleports the ball next to the pivot instead of letting it fly
-  // off tangentially. Slow spinners (≤ ~30 rad/s here) behave correctly.
+  // off tangentially. Shows from ~30 rad/s for this 200 px arm (see
+  // troubleshooting.md); space.subSteps mitigates it.
   it.fails("a ball hit by a very fast kinematic spinner is not pulled to the pivot", () => {
     const space = new Space();
     const ball = target(space, 0, 150);
