@@ -61,7 +61,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.43.1" />
+  <link rel="stylesheet" href="../../style.css?v=3.43.2" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
@@ -372,8 +372,10 @@ Fixed in 3.43.0. On older versions use <code>for (let i = 0; i &lt; l.length; i+
 <ul>
 <li><strong><code>GeomPoly.simpleDecomposition()</code> on degenerate input:</strong> three edges
 crossing at one point, a vertex visited twice (spikes, keyholes) can throw;
-rarely a piece has zero area or self-crosses; <code>isSimple()</code> can miss a
-crossing on a vertical edge. After a throw, call <code>simpleDecomposition()</code>
+rarely a piece has zero area or self-crosses; an edge crossing the
+interior of a <em>vertical</em> edge can be missed — <code>isSimple()</code> then returns
+<code>true</code>, and <code>simpleDecomposition()</code> can return the self-crossing ring as a
+single piece. After a throw, call <code>simpleDecomposition()</code>
 only on fresh engine state (static sweep state is left behind). Clean up
 input (<code>simplify</code>, remove duplicate points) first. Inherited from Haxe nape.</li>
 <li><strong><code>MarchingSquares.run</code> with bounds that are not a whole number of cells</strong>
@@ -629,7 +631,7 @@ sync rather than relying on cross-platform determinism. See the
       <p data-i18n="footer.license">MIT License</p>
     </div>
   </footer>
-  <script type="module" src="../../site-header.js?v=3.43.1"></script>
+  <script type="module" src="../../site-header.js?v=3.43.2"></script>
   <script>
     // Prism arrives deferred; highlight once it is here.
     window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
