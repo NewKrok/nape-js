@@ -886,10 +886,6 @@ export class ZPP_Body {
     this.zip_worldCOM = true;
   }
 
-  invalidate_worldCOM(): void {
-    this.zip_worldCOM = true;
-  }
-
   validate_localCOM(): void {
     if (this.zip_localCOM) {
       this.zip_localCOM = false;

@@ -18,10 +18,10 @@ export default defineConfig({
       // flap, high enough that a real regression fails `npm run coverage` (CI).
       // Raise these when coverage goes up — see docs/guides/testing.md.
       thresholds: {
-        statements: 95.7,
-        branches: 89.3,
+        statements: 95.9,
+        branches: 89.5,
         functions: 98,
-        lines: 95.9,
+        lines: 96.1,
       },
     },
   },

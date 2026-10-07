@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7534 engine tests across 358 files, plus 79 pixi-adapter tests across 6 files.**
+**7546 engine tests across 359 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -81,10 +81,10 @@ set yet.
 
 | Metric | Current | Enforced floor | Target (P29) |
 |--------|---------|----------------|--------------|
-| Statements | ~96% | 95.7% | ≥80% ✅ |
-| Branches | ~89.6% | 89.3% | — |
+| Statements | ~96.1% | 95.9% | ≥80% ✅ |
+| Branches | ~89.8% | 89.5% | — |
 | Functions | ~98% | 98% | — |
-| Lines | ~96% | 95.9% | — |
+| Lines | ~96.4% | 96.1% | — |
 
 The floors are `coverage.thresholds` in `packages/nape-js/vitest.config.ts`:
 `npm run coverage` (the CI **Coverage** job) fails when the full suite drops

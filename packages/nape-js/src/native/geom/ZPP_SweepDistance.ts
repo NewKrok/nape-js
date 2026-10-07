@@ -620,33 +620,15 @@ export class ZPP_SweepDistance {
       cx_ite = cx_ite.next;
     }
     const o = t1;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
     const o1 = t2;
-    if (o1.outer != null) {
-      o1.outer.zpp_inner = null;
-      o1.outer = null;
-    }
-    o1._isimmutable = null;
-    o1._validate = null;
-    o1._invalidate = null;
+    o1.free();
     o1.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o1;
     const o2 = ax;
-    if (o2.outer != null) {
-      o2.outer.zpp_inner = null;
-      o2.outer = null;
-    }
-    o2._isimmutable = null;
-    o2._validate = null;
-    o2._invalidate = null;
+    o2.free();
     o2.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o2;
     return min;

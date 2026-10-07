@@ -497,13 +497,7 @@ export class AABB {
     zpp_nape.util.ZPP_PubPool.nextVec2 = o;
     o.zpp_disp = true;
     const o1 = innerRef;
-    if (o1.outer != null) {
-      o1.outer.zpp_inner = null;
-      o1.outer = null;
-    }
-    o1._isimmutable = null;
-    o1._validate = null;
-    o1._invalidate = null;
+    o1.free();
     o1.next = zpp_nape.geom.ZPP_Vec2.zpp_pool;
     zpp_nape.geom.ZPP_Vec2.zpp_pool = o1;
   }

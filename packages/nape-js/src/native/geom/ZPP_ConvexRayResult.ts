@@ -154,13 +154,7 @@ export class ZPP_ConvexRayResult {
     v.zpp_disp = true;
 
     // Pool the ZPP_Vec2 inner
-    if (inner.outer != null) {
-      inner.outer.zpp_inner = null;
-      inner.outer = null;
-    }
-    inner._isimmutable = null;
-    inner._validate = null;
-    inner._invalidate = null;
+    inner.free();
     inner.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = inner;
   }

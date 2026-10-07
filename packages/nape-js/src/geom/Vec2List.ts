@@ -26,13 +26,7 @@ function ensureVec2Wrapper(zpp: any): any {
     zpp.outer = new nape.geom.Vec2();
     // Pool the default ZPP_Vec2 that the Vec2 constructor created
     const o = zpp.outer.zpp_inner;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
     // Re-bind wrapper to target ZPP_Vec2

@@ -54,13 +54,7 @@ export class ZPP_AABBTree {
       const o = node;
       o.height = -1;
       const o1 = o.aabb!;
-      if (o1.outer != null) {
-        o1.outer.zpp_inner = null;
-        o1.outer = null;
-      }
-      o1.wrap_min = o1.wrap_max = null;
-      o1._invalidate = null;
-      o1._validate = null;
+      o1.free();
       o1.next = ZPP_AABB.zpp_pool;
       ZPP_AABB.zpp_pool = o1;
       o.child1 = o.child2 = o.parent = null;
@@ -362,13 +356,7 @@ export class ZPP_AABBTree {
         const o = parent;
         o.height = -1;
         const o1 = o.aabb!;
-        if (o1.outer != null) {
-          o1.outer.zpp_inner = null;
-          o1.outer = null;
-        }
-        o1.wrap_min = o1.wrap_max = null;
-        o1._invalidate = null;
-        o1._validate = null;
+        o1.free();
         o1.next = ZPP_AABB.zpp_pool;
         ZPP_AABB.zpp_pool = o1;
         o.child1 = o.child2 = o.parent = null;
@@ -540,13 +528,7 @@ export class ZPP_AABBTree {
         const o2 = parent;
         o2.height = -1;
         const o3 = o2.aabb!;
-        if (o3.outer != null) {
-          o3.outer.zpp_inner = null;
-          o3.outer = null;
-        }
-        o3.wrap_min = o3.wrap_max = null;
-        o3._invalidate = null;
-        o3._validate = null;
+        o3.free();
         o3.next = ZPP_AABB.zpp_pool;
         ZPP_AABB.zpp_pool = o3;
         o2.child1 = o2.child2 = o2.parent = null;

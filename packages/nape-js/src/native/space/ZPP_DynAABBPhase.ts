@@ -187,13 +187,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
     const o2 = node;
     o2.height = -1;
     const o3 = o2.aabb;
-    if (o3.outer != null) {
-      o3.outer.zpp_inner = null;
-      o3.outer = null;
-    }
-    o3.wrap_min = o3.wrap_max = null;
-    o3._invalidate = null;
-    o3._validate = null;
+    o3.free();
     o3.next = ZPP_AABB.zpp_pool;
     ZPP_AABB.zpp_pool = o3;
     o2.child1 = o2.child2 = o2.parent = null;
@@ -621,13 +615,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
       }
     }
     const o = v;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
     return ret1;
@@ -718,13 +706,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
       }
     }
     const o = v;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
     return ret1;
