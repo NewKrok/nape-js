@@ -1010,9 +1010,6 @@ export class ZPP_Space {
       const o = body;
       if (!o.world) {
         o.component.waket = this.stamp + (this.midstep ? 0 : 1);
-        if (o.type == 3) {
-          o.kinematicDelaySleep = true;
-        }
         if (o.component.sleeping) {
           this.really_wake(o, true);
         }
@@ -1022,9 +1019,6 @@ export class ZPP_Space {
       const o1 = body;
       if (!o1.world) {
         o1.component.waket = this.stamp + (this.midstep ? 0 : 1);
-        if (o1.type == 3) {
-          o1.kinematicDelaySleep = true;
-        }
         if (o1.component.sleeping) {
           this.really_wake(o1, true);
         }
@@ -1073,43 +1067,15 @@ export class ZPP_Space {
   }
 
   shapesInCircle(pos: any, rad: any, cont: any, filter: any, output: any) {
-    const tmp = this.bphase;
-    if (pos != null && pos.zpp_disp) {
-      throw new Error("Vec2 has been disposed and cannot be used!");
-    }
-    const _this = pos.zpp_inner;
-    if (_this._validate != null) {
-      _this._validate();
-    }
-    const tmp1 = pos.zpp_inner.x;
-    if (pos != null && pos.zpp_disp) {
-      throw new Error("Vec2 has been disposed and cannot be used!");
-    }
-    const _this1 = pos.zpp_inner;
-    if (_this1._validate != null) {
-      _this1._validate();
-    }
-    return tmp.shapesInCircle(tmp1, pos.zpp_inner.y, rad, cont, filter, output);
+    // Space.shapesInCircle() has already rejected a null / disposed position.
+    pos.zpp_inner.validate();
+    return this.bphase.shapesInCircle(pos.zpp_inner.x, pos.zpp_inner.y, rad, cont, filter, output);
   }
 
   bodiesInCircle(pos: any, rad: any, cont: any, filter: any, output: any) {
-    const tmp = this.bphase;
-    if (pos != null && pos.zpp_disp) {
-      throw new Error("Vec2 has been disposed and cannot be used!");
-    }
-    const _this = pos.zpp_inner;
-    if (_this._validate != null) {
-      _this._validate();
-    }
-    const tmp1 = pos.zpp_inner.x;
-    if (pos != null && pos.zpp_disp) {
-      throw new Error("Vec2 has been disposed and cannot be used!");
-    }
-    const _this1 = pos.zpp_inner;
-    if (_this1._validate != null) {
-      _this1._validate();
-    }
-    return tmp.bodiesInCircle(tmp1, pos.zpp_inner.y, rad, cont, filter, output);
+    // Space.bodiesInCircle() has already rejected a null / disposed position.
+    pos.zpp_inner.validate();
+    return this.bphase.bodiesInCircle(pos.zpp_inner.x, pos.zpp_inner.y, rad, cont, filter, output);
   }
 
   shapesInShape(shape: any, cont: any, filter: any, output: any) {
@@ -1255,16 +1221,9 @@ export class ZPP_Space {
     if (dynamics) {
       this.addLiveSweepCandidates(aabb, deltaTime, filter, body, list);
     }
-    const o = aabb;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o.wrap_min = o.wrap_max = null;
-    o._invalidate = null;
-    o._validate = null;
-    o.next = ZPP_AABB.zpp_pool;
-    ZPP_AABB.zpp_pool = o;
+    aabb.free();
+    aabb.next = ZPP_AABB.zpp_pool;
+    ZPP_AABB.zpp_pool = aabb;
     let minAxisx = 0.0;
     let minAxisy = 0.0;
     minAxisx = 0;
@@ -1486,16 +1445,9 @@ export class ZPP_Space {
     if (dynamics) {
       this.addLiveSweepCandidates(aabb, deltaTime, filter, body, list);
     }
-    const o = aabb;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o.wrap_min = o.wrap_max = null;
-    o._invalidate = null;
-    o._validate = null;
-    o.next = ZPP_AABB.zpp_pool;
-    ZPP_AABB.zpp_pool = o;
+    aabb.free();
+    aabb.next = ZPP_AABB.zpp_pool;
+    ZPP_AABB.zpp_pool = aabb;
     const ret = output == null ? new ZPP_Space._nape.geom.ConvexResultList() : output;
     list.zpp_inner.valmod();
     const _g = ZPP_Space._nape.shape.ShapeIterator.get(list);
@@ -3970,9 +3922,6 @@ export class ZPP_Space {
             const o3 = arb.b1;
             if (!o3.world) {
               o3.component.waket = this.stamp + (this.midstep ? 0 : 1);
-              if (o3.type == 3) {
-                o3.kinematicDelaySleep = true;
-              }
               if (o3.component.sleeping) {
                 this.really_wake(o3, false);
               }
@@ -3982,9 +3931,6 @@ export class ZPP_Space {
             const o4 = arb.b2;
             if (!o4.world) {
               o4.component.waket = this.stamp + (this.midstep ? 0 : 1);
-              if (o4.type == 3) {
-                o4.kinematicDelaySleep = true;
-              }
               if (o4.component.sleeping) {
                 this.really_wake(o4, false);
               }
@@ -6708,9 +6654,7 @@ export class ZPP_Space {
                     }
                     break;
                   }
-                  if (!false) {
-                    break;
-                  }
+                  break;
                 }
               } else {
                 const rn11 = gnormy * c1r1x - gnormx * c1r1y;
