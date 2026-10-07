@@ -15,8 +15,6 @@ import { Interactor } from "../phys/Interactor";
 import { ShapeType } from "./ShapeType";
 import { ZPP_Geom } from "../native/geom/ZPP_Geom";
 import { ZPP_Collide } from "../native/geom/ZPP_Collide";
-import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 import { Config } from "../Config";
 
 // ---------------------------------------------------------------------------
@@ -563,38 +561,7 @@ export class Shape extends Interactor {
       throw new Error("Vec2 components cannot be NaN");
     }
     // Get or create Vec2 from pool
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret === ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-    if (ret.zpp_inner == null) {
-      let ret1: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        ret1 = new ZPP_Vec2();
-      } else {
-        ret1 = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.weak = false;
-      ret1._immutable = false;
-      ret1.x = x;
-      ret1.y = y;
-      ret.zpp_inner = ret1;
-      ret.zpp_inner.outer = ret;
-    } else {
-      ret.zpp_inner.x = x;
-      ret.zpp_inner.y = y;
-    }
-    ret.zpp_inner.weak = false;
+    const ret = nape.geom.Vec2.get(x, y);
     zpp.wrap_worldCOM = ret;
     zpp.wrap_worldCOM.zpp_inner._inuse = true;
     zpp.wrap_worldCOM.zpp_inner._immutable = true;

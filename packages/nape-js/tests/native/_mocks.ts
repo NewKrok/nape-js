@@ -6,6 +6,8 @@
  * minimal implementations of the required interfaces.
  */
 
+import { Vec2 } from "../../src/geom/Vec2";
+
 /** Minimal linked-list node mock (ZNPNode pattern). */
 export class MockZNPNode {
   static zpp_pool: MockZNPNode | null = null;
@@ -145,21 +147,8 @@ export function createMockNape() {
           next: null,
         };
       },
-      Vec2: class {
-        zpp_inner: any = {
-          outer: null,
-          _isimmutable: null,
-          _validate: null,
-          _invalidate: null,
-          _inuse: false,
-          weak: false,
-          x: 0,
-          y: 0,
-          next: null,
-        };
-        zpp_pool: any = null;
-        zpp_disp = false;
-      },
+      // The real public Vec2: native code allocates wrappers via Vec2.get().
+      Vec2,
       Mat23: class {
         zpp_inner: any = { next: null };
       },

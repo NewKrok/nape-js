@@ -186,15 +186,6 @@ describe("ZPP_Edge", () => {
 
   describe("getlnorm", () => {
     it("should create wrap_lnorm Vec2 from pool", () => {
-      const outerVec = { zpp_inner: null as any, zpp_pool: null, zpp_disp: false };
-      ZPP_Edge._nape = {
-        geom: {
-          Vec2: function (this: any) {
-            Object.assign(this, outerVec);
-          },
-        },
-      };
-
       const e = new ZPP_Edge();
       e.lnormx = 3;
       e.lnormy = 4;

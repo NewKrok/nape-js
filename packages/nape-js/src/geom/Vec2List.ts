@@ -12,7 +12,6 @@ import { getNape } from "../core/engine";
 import { installIterable } from "../util/iterable";
 import { ZPP_Vec2List } from "../native/util/ZPP_Vec2List";
 import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
 // ---------------------------------------------------------------------------
 // Helper: Ensure a ZPP_Vec2 has a public Vec2 wrapper. If the ZPP_Vec2
@@ -367,41 +366,7 @@ Vec2ListCtor.prototype.copy = function (this: any, deep?: boolean): any {
       if (_this2._validate != null) _this2._validate();
       const y = i.zpp_inner.y;
 
-      let copy: any;
-      if (ZPP_PubPool.poolVec2 == null) {
-        copy = new nape.geom.Vec2();
-      } else {
-        copy = ZPP_PubPool.poolVec2;
-        ZPP_PubPool.poolVec2 = copy.zpp_pool;
-        copy.zpp_pool = null;
-        copy.zpp_disp = false;
-        if (copy == ZPP_PubPool.nextVec2) {
-          ZPP_PubPool.nextVec2 = null;
-        }
-      }
-      if (copy.zpp_inner == null) {
-        let zpp: any;
-        if (ZPP_Vec2.zpp_pool == null) {
-          zpp = new ZPP_Vec2();
-        } else {
-          zpp = ZPP_Vec2.zpp_pool;
-          ZPP_Vec2.zpp_pool = zpp.next;
-          zpp.next = null;
-        }
-        zpp.weak = false;
-        zpp._immutable = false;
-        zpp.x = x;
-        zpp.y = y;
-        copy.zpp_inner = zpp;
-        copy.zpp_inner.outer = copy;
-      } else {
-        copy.zpp_inner.x = x;
-        copy.zpp_inner.y = y;
-        if (copy.zpp_inner._invalidate != null) {
-          copy.zpp_inner._invalidate(copy.zpp_inner);
-        }
-      }
-      copy.zpp_inner.weak = false;
+      const copy = nape.geom.Vec2.get(x, y);
       elem = copy;
     } else {
       elem = i;

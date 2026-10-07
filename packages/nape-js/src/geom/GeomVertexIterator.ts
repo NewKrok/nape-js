@@ -8,8 +8,6 @@
 import { getNape } from "../core/engine";
 import { installIterable } from "../util/iterable";
 import { ZPP_GeomVertexIterator } from "../native/geom/ZPP_GeomVertexIterator";
-import { ZPP_Vec2 } from "../native/geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../native/util/ZPP_PubPool";
 
 function GeomVertexIteratorCtor(this: any) {
   if (!ZPP_GeomVertexIterator.internal) {
@@ -49,54 +47,7 @@ GeomVertexIteratorCtor.prototype.next = function (this: any): any {
     }
 
     const nape = getNape();
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-
-    if (ret.zpp_inner == null) {
-      let zpp: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        zpp = new ZPP_Vec2();
-      } else {
-        zpp = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = zpp.next;
-        zpp.next = null;
-      }
-      zpp.weak = false;
-      zpp._immutable = false;
-      zpp.x = x;
-      zpp.y = y;
-      ret.zpp_inner = zpp;
-      ret.zpp_inner.outer = ret;
-    } else {
-      if (ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const inner = ret.zpp_inner;
-      if (inner._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (inner._isimmutable != null) {
-        inner._isimmutable();
-      }
-      if (!(inner.x == x && inner.y == y)) {
-        inner.x = x;
-        inner.y = y;
-        if (inner._invalidate != null) {
-          inner._invalidate(inner);
-        }
-      }
-    }
-    ret.zpp_inner.weak = false;
+    const ret = nape.geom.Vec2.get(x, y);
     vert.wrap = ret;
     vert.wrap.zpp_inner._inuse = true;
     vert.wrap.zpp_inner._invalidate = (n: any) => vert.modwrap(n);

@@ -8,7 +8,6 @@
 
 import { ZPP_AABB } from "../geom/ZPP_AABB";
 import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_Interactor } from "./ZPP_Interactor";
 import { Config } from "../../Config";
 import {
@@ -606,76 +605,7 @@ export class ZPP_Body {
     _validateFn: (() => void) | null,
   ): any {
     const nape = ZPP_Body._nape;
-
-    if (x != x || y != y) {
-      throw new Error("Vec2 components cannot be NaN");
-    }
-
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret === ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-
-    if (ret.zpp_inner == null) {
-      let inner: ZPP_Vec2;
-      if (ZPP_Vec2.zpp_pool == null) {
-        inner = new ZPP_Vec2();
-      } else {
-        inner = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = inner.next;
-        inner.next = null;
-      }
-      inner.weak = false;
-      inner._immutable = false;
-      inner.x = x;
-      inner.y = y;
-      ret.zpp_inner = inner;
-      ret.zpp_inner.outer = ret;
-    } else {
-      if (ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this = ret.zpp_inner;
-      if (_this._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (_this._isimmutable != null) {
-        _this._isimmutable();
-      }
-      if (x != x || y != y) {
-        throw new Error("Vec2 components cannot be NaN");
-      }
-      // Only invalidate if changed
-      let same: boolean;
-      if (ret.zpp_inner._validate != null) {
-        ret.zpp_inner._validate();
-      }
-      if (ret.zpp_inner.x === x) {
-        if (ret.zpp_inner._validate != null) {
-          ret.zpp_inner._validate();
-        }
-        same = ret.zpp_inner.y === y;
-      } else {
-        same = false;
-      }
-      if (!same) {
-        ret.zpp_inner.x = x;
-        ret.zpp_inner.y = y;
-        if (ret.zpp_inner._invalidate != null) {
-          ret.zpp_inner._invalidate(ret.zpp_inner);
-        }
-      }
-    }
-
-    ret.zpp_inner.weak = false;
+    const ret = nape.geom.Vec2.get(x, y);
     return ret;
   }
 
@@ -1067,32 +997,9 @@ export class ZPP_Body {
     this.svely = 0;
     this.angvel = this.torque = this.kinangvel = this.pre_rot = this.rot = 0;
 
-    // Invalidate all shapes for position change
-    let cx_ite = this.shapes.head;
-    while (cx_ite != null) {
-      const s = cx_ite.elt;
-      if (s.type === 1) {
-        s.polygon.invalidate_gverts();
-        s.polygon.invalidate_gaxi();
-      }
-      s.invalidate_worldCOM();
-      cx_ite = cx_ite.next;
-    }
+    // No per-shape position invalidation needed: the shape list was emptied above.
     this.zip_worldCOM = true;
     this.zip_axis = true;
-
-    // Second pass
-    cx_ite = this.shapes.head;
-    while (cx_ite != null) {
-      const s = cx_ite.elt;
-      if (s.type === 1) {
-        s.polygon.invalidate_gverts();
-        s.polygon.invalidate_gaxi();
-      }
-      s.invalidate_worldCOM();
-      cx_ite = cx_ite.next;
-    }
-    this.zip_worldCOM = true;
 
     this.axisx = 0;
     this.axisy = 1;

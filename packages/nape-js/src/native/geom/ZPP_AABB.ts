@@ -1,5 +1,3 @@
-import { ZPP_Vec2 } from "./ZPP_Vec2";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_AABB — Internal axis-aligned bounding box for the nape physics engine.
  *
@@ -128,54 +126,7 @@ export class ZPP_AABB {
       throw new Error("Vec2 components cannot be NaN");
     }
 
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new napeNs.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-
-    if (ret.zpp_inner == null) {
-      let inner: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        inner = new ZPP_Vec2();
-      } else {
-        inner = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = inner.next;
-        inner.next = null;
-      }
-      inner.weak = false;
-      inner._immutable = false;
-      inner.x = x;
-      inner.y = y;
-      ret.zpp_inner = inner;
-      ret.zpp_inner.outer = ret;
-    } else {
-      if (ret != null && ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const inner = ret.zpp_inner;
-      if (inner._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (inner._isimmutable != null) inner._isimmutable();
-      if (x !== x || y !== y) {
-        throw new Error("Vec2 components cannot be NaN");
-      }
-      if (inner._validate != null) inner._validate();
-      if (inner.x !== x || inner.y !== y) {
-        inner.x = x;
-        inner.y = y;
-        if (inner._invalidate != null) inner._invalidate(inner);
-      }
-    }
-    ret.zpp_inner.weak = false;
+    const ret = napeNs.geom.Vec2.get(x, y);
     return ret;
   }
 

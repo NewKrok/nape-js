@@ -344,59 +344,6 @@ describe("GeomVertexIterator", () => {
     expect(() => it.next()).toThrow("Vec2 components cannot be NaN");
   });
 
-  it("defensive path: a pooled shell with a live ZPP_Vec2 is re-targeted", () => {
-    const inner = new ZPP_Vec2();
-    inner.x = 1;
-    inner.y = 1;
-    const shell = forgedShell(inner);
-    shell.zpp_disp = false;
-    let invalidations = 0;
-    inner._invalidate = () => invalidations++;
-    const poly = new GeomPoly([new Vec2(4, 5), new Vec2(6, 5), new Vec2(6, 7)]);
-    const it = poly.forwardIterator();
-    it.hasNext();
-    const w = it.next();
-    expect(w).toBe(shell);
-    expect(w.zpp_inner).toBe(inner);
-    expect([inner.x, inner.y]).toEqual([4, 5]);
-    expect(invalidations).toBe(1);
-  });
-
-  it("defensive path: a pooled shell with matching coordinates is not invalidated", () => {
-    const inner = new ZPP_Vec2();
-    inner.x = 4;
-    inner.y = 5;
-    const shell = forgedShell(inner);
-    shell.zpp_disp = false;
-    let invalidations = 0;
-    inner._invalidate = () => invalidations++;
-    const poly = new GeomPoly([new Vec2(4, 5), new Vec2(6, 5), new Vec2(6, 7)]);
-    const it = poly.forwardIterator();
-    it.hasNext();
-    expect(it.next()).toBe(shell);
-    expect(invalidations).toBe(0);
-  });
-
-  it("defensive path: the _isimmutable guard is consulted for a pooled shell", () => {
-    const inner = new ZPP_Vec2();
-    inner._isimmutable = () => {
-      throw new Error("guarded");
-    };
-    forgedShell(inner);
-    const it = tri().forwardIterator();
-    it.hasNext();
-    expect(() => it.next()).toThrow("guarded");
-  });
-
-  it("defensive path: an immutable pooled ZPP_Vec2 is refused", () => {
-    const inner = new ZPP_Vec2();
-    inner._immutable = true;
-    forgedShell(inner).zpp_disp = false;
-    const it = tri().forwardIterator();
-    it.hasNext();
-    expect(() => it.next()).toThrow("Vec2 is immutable");
-  });
-
   it("cannot be constructed directly", () => {
     expect(() => new (GeomVertexIterator as any)()).toThrow(
       "Cannot instantiate GeomVertexIterator",

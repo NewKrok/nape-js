@@ -1,5 +1,3 @@
-import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_Edge — Internal edge representation for polygon shapes.
  *
@@ -111,41 +109,7 @@ export class ZPP_Edge {
     const nape = ZPP_Edge._nape;
     const x = this.lnormx;
     const y = this.lnormy;
-    if (x !== x || y !== y) {
-      throw new Error("Vec2 components cannot be NaN");
-    }
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-    if (ret.zpp_inner == null) {
-      let ret1: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        ret1 = new ZPP_Vec2();
-      } else {
-        ret1 = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.weak = false;
-      ret1._immutable = false;
-      ret1.x = x;
-      ret1.y = y;
-      ret.zpp_inner = ret1;
-      ret.zpp_inner.outer = ret;
-    } else {
-      ret.zpp_inner.x = x;
-      ret.zpp_inner.y = y;
-    }
-    ret.zpp_inner.weak = false;
+    const ret = nape.geom.Vec2.get(x, y);
     this.wrap_lnorm = ret;
     this.wrap_lnorm.zpp_inner._immutable = true;
     this.wrap_lnorm.zpp_inner._validate = this.lnorm_validate.bind(this);
@@ -155,41 +119,7 @@ export class ZPP_Edge {
     const nape = ZPP_Edge._nape;
     const x = this.gnormx;
     const y = this.gnormy;
-    if (x !== x || y !== y) {
-      throw new Error("Vec2 components cannot be NaN");
-    }
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2();
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-    if (ret.zpp_inner == null) {
-      let ret1: any;
-      if (ZPP_Vec2.zpp_pool == null) {
-        ret1 = new ZPP_Vec2();
-      } else {
-        ret1 = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.weak = false;
-      ret1._immutable = false;
-      ret1.x = x;
-      ret1.y = y;
-      ret.zpp_inner = ret1;
-      ret.zpp_inner.outer = ret;
-    } else {
-      ret.zpp_inner.x = x;
-      ret.zpp_inner.y = y;
-    }
-    ret.zpp_inner.weak = false;
+    const ret = nape.geom.Vec2.get(x, y);
     this.wrap_gnorm = ret;
     this.wrap_gnorm.zpp_inner._immutable = true;
     this.wrap_gnorm.zpp_inner._validate = this.gnorm_validate.bind(this);
