@@ -36,7 +36,7 @@ npm test -w @newkrok/nape-pixi      # adapter suite only
 
 # nape-js specifics (run from packages/nape-js):
 npm run test:watch                  # watch mode (nape-js only)
-npm test -- --coverage              # v8 coverage report
+npm run coverage                    # full v8 report + threshold check
 npm test -- tests/geom/Vec2.test.ts # single file
 npm test -- --reporter=verbose      # verbose output
 ```
@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7521 engine tests across 357 files, plus 79 pixi-adapter tests across 6 files.**
+**7534 engine tests across 358 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -79,11 +79,27 @@ packages/nape-pixi/tests/
 nape-js only — nape-pixi is new and the coverage target hasn't been
 set yet.
 
-| Metric | Current | Target (P29) |
-|--------|---------|--------------|
-| Statements | ~96% | ≥80% ✅ |
-| Branches | ~89% | — |
-| Functions | ~98% | — |
+| Metric | Current | Enforced floor | Target (P29) |
+|--------|---------|----------------|--------------|
+| Statements | ~96% | 95.7% | ≥80% ✅ |
+| Branches | ~89.6% | 89.3% | — |
+| Functions | ~98% | 98% | — |
+| Lines | ~96% | 95.9% | — |
+
+The floors are `coverage.thresholds` in `packages/nape-js/vitest.config.ts`:
+`npm run coverage` (the CI **Coverage** job) fails when the full suite drops
+below them. They sit ~0.25 pt under the measured numbers — raise them in the
+same PR when coverage goes up. A coverage run over a *subset* of tests always
+misses them; add `--coverage.thresholds.statements=0 --coverage.thresholds.branches=0
+--coverage.thresholds.functions=0 --coverage.thresholds.lines=0` (or ignore the
+exit code) when you only want the per-file report.
+
+**100% is not a goal.** v8 counts every `&&` / `||` / `?:` / implicit `else`
+as a branch, and much of what remains is structurally unreachable (guards on
+values a caller has already checked), object-pool "pool empty vs. not" pairs,
+singular-matrix fallbacks in the solvers, or sweep-comparator tie-breaks.
+Prefer deleting Haxe-inline residue (provably dead branches) and writing
+behavioural tests with an independent oracle over chasing the number.
 
 **High coverage modules:** `packages/nape-js/src/native/callbacks/` (100%), `packages/nape-js/src/native/util/` (99%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/callbacks/` (99%), `packages/nape-js/src/replay/` (98%)
 **Low coverage modules:** `packages/nape-js/src/profiler/` (85%), `packages/nape-js/src/dynamics/` (93%), `packages/nape-js/src/space/` (93%), `packages/nape-js/src/shape/` (93%)
