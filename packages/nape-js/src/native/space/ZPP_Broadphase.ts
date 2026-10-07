@@ -1,6 +1,4 @@
-import { ZPP_Vec2 } from "../geom/ZPP_Vec2";
 import { ZPP_Flags } from "../util/ZPP_Flags";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 /**
  * ZPP_Broadphase — Internal base broadphase container.
  *
@@ -163,80 +161,7 @@ export class ZPP_Broadphase {
       if (x1 == null) {
         x1 = 0;
       }
-      if (x1 !== x1 || y1 !== y1) {
-        throw new Error("Vec2 components cannot be NaN");
-      }
-      let ret: any;
-      if (ZPP_PubPool.poolVec2 == null) {
-        ret = new nape.geom.Vec2();
-      } else {
-        ret = ZPP_PubPool.poolVec2;
-        ZPP_PubPool.poolVec2 = ret.zpp_pool;
-        ret.zpp_pool = null;
-        ret.zpp_disp = false;
-        if (ret == ZPP_PubPool.nextVec2) {
-          ZPP_PubPool.nextVec2 = null;
-        }
-      }
-      if (ret.zpp_inner == null) {
-        let ret1: any;
-        if (ZPP_Vec2.zpp_pool == null) {
-          ret1 = new ZPP_Vec2();
-        } else {
-          ret1 = ZPP_Vec2.zpp_pool;
-          ZPP_Vec2.zpp_pool = ret1.next;
-          ret1.next = null;
-        }
-        ret1.weak = false;
-        ret1._immutable = false;
-        ret1.x = x1;
-        ret1.y = y1;
-        ret.zpp_inner = ret1;
-        ret.zpp_inner.outer = ret;
-      } else {
-        if (ret != null && ret.zpp_disp) {
-          throw new Error("Vec2 has been disposed and cannot be used!");
-        }
-        const _this1 = ret.zpp_inner;
-        if (_this1._immutable) {
-          throw new Error("Vec2 is immutable");
-        }
-        if (_this1._isimmutable != null) {
-          _this1._isimmutable();
-        }
-        if (x1 !== x1 || y1 !== y1) {
-          throw new Error("Vec2 components cannot be NaN");
-        }
-        let obj: boolean;
-        if (ret != null && ret.zpp_disp) {
-          throw new Error("Vec2 has been disposed and cannot be used!");
-        }
-        const _this2 = ret.zpp_inner;
-        if (_this2._validate != null) {
-          _this2._validate();
-        }
-        if (ret.zpp_inner.x == x1) {
-          if (ret != null && ret.zpp_disp) {
-            throw new Error("Vec2 has been disposed and cannot be used!");
-          }
-          const _this3 = ret.zpp_inner;
-          if (_this3._validate != null) {
-            _this3._validate();
-          }
-          obj = ret.zpp_inner.y == y1;
-        } else {
-          obj = false;
-        }
-        if (!obj) {
-          ret.zpp_inner.x = x1;
-          ret.zpp_inner.y = y1;
-          const _this4 = ret.zpp_inner;
-          if (_this4._invalidate != null) {
-            _this4._invalidate(_this4);
-          }
-        }
-      }
-      ret.zpp_inner.weak = false;
+      const ret = nape.geom.Vec2.get(x1, y1);
       const obj1 = (this.circShape = new nape.shape.Circle(r, ret));
       if (_this.zpp_inner.reverse_flag) {
         _this.push(obj1);

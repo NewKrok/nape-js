@@ -197,13 +197,7 @@ export class Edge {
     if (vert.outer == null) {
       vert.outer = new nape.geom.Vec2();
       const o = vert.outer.zpp_inner;
-      if (o.outer != null) {
-        o.outer.zpp_inner = null;
-        o.outer = null;
-      }
-      o._isimmutable = null;
-      o._validate = null;
-      o._invalidate = null;
+      o.free();
       o.next = ZPP_Vec2.zpp_pool;
       ZPP_Vec2.zpp_pool = o;
       vert.outer.zpp_inner = vert;

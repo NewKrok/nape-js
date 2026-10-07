@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ZPP_AABB } from "../../../src/native/geom/ZPP_AABB";
+import { Vec2 } from "../../../src/geom/Vec2";
 import { ZPP_Vec2 } from "../../../src/native/geom/ZPP_Vec2";
 import { ZPP_PubPool } from "../../../src/native/util/ZPP_PubPool";
 
@@ -367,15 +368,7 @@ describe("ZPP_AABB", () => {
   describe("getmin / dom_min / mod_min", () => {
     it("should create min wrapper with validation and invalidation", () => {
       // Setup mock namespaces
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(1, 2, 5, 6);
       a.getmin();
@@ -384,15 +377,7 @@ describe("ZPP_AABB", () => {
     });
 
     it("should not recreate wrapper on second call", () => {
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(1, 2, 5, 6);
       a.getmin();
@@ -455,15 +440,7 @@ describe("ZPP_AABB", () => {
 
   describe("getmax / dom_max / mod_max", () => {
     it("should create max wrapper", () => {
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(1, 2, 5, 6);
       a.getmax();
@@ -472,15 +449,7 @@ describe("ZPP_AABB", () => {
     });
 
     it("should not recreate wrapper on second call", () => {
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(1, 2, 5, 6);
       a.getmax();
@@ -490,15 +459,7 @@ describe("ZPP_AABB", () => {
     });
 
     it("should mark immutable when AABB is immutable", () => {
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(0, 0, 10, 10);
       a._immutable = true;
@@ -556,15 +517,7 @@ describe("ZPP_AABB", () => {
 
   describe("getmin with immutable AABB", () => {
     it("should set _immutable on wrapper when AABB is immutable", () => {
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(0, 0, 10, 10);
       a._immutable = true;
@@ -573,213 +526,15 @@ describe("ZPP_AABB", () => {
     });
   });
 
-  describe("_makeVec2Wrapper pool reuse paths", () => {
+  describe("_makeVec2Wrapper", () => {
     it("should throw for NaN components", () => {
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
+      ZPP_AABB._nape = { geom: { Vec2 } };
 
       const a = ZPP_AABB.get(0, 0, 10, 10);
       // NaN min values trigger the NaN check at line 133-134
       a.minx = NaN;
       a.miny = 0;
       expect(() => a.getmin()).toThrow("Vec2 components cannot be NaN");
-    });
-
-    it("should reuse pooled Vec2 and advance the pool chain", () => {
-      const pooledVec2: any = {
-        zpp_inner: null,
-        zpp_pool: null,
-        zpp_disp: false,
-      };
-      ZPP_PubPool.poolVec2 = pooledVec2;
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
-
-      const a = ZPP_AABB.get(3, 4, 10, 10);
-      a.getmin();
-      expect(a.wrap_min).toBe(pooledVec2);
-      expect(a.wrap_min.zpp_inner.x).toBe(3);
-      expect(a.wrap_min.zpp_inner.y).toBe(4);
-      expect(ZPP_PubPool.poolVec2).toBeNull();
-    });
-
-    it("should clear nextVec2 when pooled item matches nextVec2", () => {
-      const pooledVec2: any = {
-        zpp_inner: null,
-        zpp_pool: null,
-        zpp_disp: false,
-      };
-      ZPP_PubPool.poolVec2 = pooledVec2;
-      ZPP_PubPool.nextVec2 = pooledVec2;
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
-
-      const a = ZPP_AABB.get(1, 2, 5, 6);
-      a.getmin();
-      expect(ZPP_PubPool.nextVec2).toBeNull();
-    });
-
-    it("should reuse inner Vec2 from pool chain", () => {
-      // Seed the real inner Vec2 pool with a real ZPP_Vec2 instance.
-      const innerPooled = new ZPP_Vec2();
-      ZPP_Vec2.zpp_pool = innerPooled;
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = null;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
-
-      const a = ZPP_AABB.get(7, 8, 10, 10);
-      a.getmin();
-      expect(a.wrap_min.zpp_inner).toBe(innerPooled);
-      expect(innerPooled.x).toBe(7);
-      expect(innerPooled.y).toBe(8);
-      expect(ZPP_Vec2.zpp_pool).toBeNull();
-    });
-
-    it("should reuse existing zpp_inner with _isimmutable and _validate callbacks", () => {
-      let isimmutableCalled = false;
-      let validateCalled = false;
-      let invalidateCalled = false;
-      const existingInner: any = {
-        x: 0,
-        y: 0,
-        weak: false,
-        _immutable: false,
-        _isimmutable: () => {
-          isimmutableCalled = true;
-        },
-        _validate: () => {
-          validateCalled = true;
-        },
-        _invalidate: () => {
-          invalidateCalled = true;
-        },
-        _inuse: false,
-        outer: null,
-      };
-      const pooledVec2: any = {
-        zpp_inner: existingInner,
-        zpp_pool: null,
-        zpp_disp: false,
-      };
-      existingInner.outer = pooledVec2;
-      ZPP_PubPool.poolVec2 = pooledVec2;
-
-      const a = ZPP_AABB.get(5, 6, 10, 10);
-      a.getmin();
-      expect(isimmutableCalled).toBe(true);
-      expect(validateCalled).toBe(true);
-      expect(invalidateCalled).toBe(true);
-      expect(existingInner.x).toBe(5);
-      expect(existingInner.y).toBe(6);
-    });
-
-    it("should not invalidate when values unchanged on existing inner", () => {
-      let invalidateCalled = false;
-      const existingInner: any = {
-        x: 5,
-        y: 6,
-        weak: false,
-        _immutable: false,
-        _isimmutable: null,
-        _validate: null,
-        _invalidate: () => {
-          invalidateCalled = true;
-        },
-        _inuse: false,
-        outer: null,
-      };
-      const pooledVec2: any = {
-        zpp_inner: existingInner,
-        zpp_pool: null,
-        zpp_disp: false,
-      };
-      existingInner.outer = pooledVec2;
-      ZPP_PubPool.poolVec2 = pooledVec2;
-
-      const a = ZPP_AABB.get(5, 6, 10, 10);
-      a.getmin();
-      expect(invalidateCalled).toBe(false);
-      expect(existingInner.x).toBe(5);
-      expect(existingInner.y).toBe(6);
-    });
-
-    it("should throw when existing inner is immutable (via new Vec2 path)", () => {
-      const existingInner: any = {
-        x: 0,
-        y: 0,
-        weak: false,
-        _immutable: true,
-        _isimmutable: null,
-        _validate: null,
-        _invalidate: null,
-        _inuse: false,
-        outer: null,
-      };
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = existingInner;
-            zpp_pool: any = null;
-            zpp_disp = false;
-          },
-        },
-      };
-
-      const a = ZPP_AABB.get(1, 2, 5, 6);
-      expect(() => a.getmin()).toThrow("Vec2 is immutable");
-    });
-
-    it("should throw when existing inner is disposed (via new Vec2 path)", () => {
-      const existingInner: any = {
-        x: 0,
-        y: 0,
-        weak: false,
-        _immutable: false,
-        _isimmutable: null,
-        _validate: null,
-        _invalidate: null,
-        _inuse: false,
-        outer: null,
-      };
-      ZPP_AABB._nape = {
-        geom: {
-          Vec2: class {
-            zpp_inner: any = existingInner;
-            zpp_pool: any = null;
-            zpp_disp = true; // disposed
-          },
-        },
-      };
-
-      const a = ZPP_AABB.get(1, 2, 5, 6);
-      expect(() => a.getmin()).toThrow("Vec2 has been disposed and cannot be used!");
     });
   });
 });

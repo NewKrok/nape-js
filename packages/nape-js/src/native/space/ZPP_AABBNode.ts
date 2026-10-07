@@ -56,13 +56,7 @@ export class ZPP_AABBNode {
   free(): void {
     this.height = -1;
     const o = this.aabb!;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o.wrap_min = o.wrap_max = null;
-    o._invalidate = null;
-    o._validate = null;
+    o.free();
     o.next = ZPP_AABB.zpp_pool;
     ZPP_AABB.zpp_pool = o;
     this.child1 = this.child2 = this.parent = null;

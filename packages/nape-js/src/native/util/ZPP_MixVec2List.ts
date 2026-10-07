@@ -21,13 +21,7 @@ function ensureVec2Wrapper(zpp: ZPP_Vec2): any {
     const nape = getNape();
     zpp.outer = new nape.geom.Vec2();
     const o = zpp.outer.zpp_inner;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
     zpp.outer.zpp_inner = zpp;

@@ -223,13 +223,7 @@ export class ZPP_SweepPhase extends ZPP_Broadphase {
 
     // Release pooled vec2
     const o = v;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
 
@@ -266,13 +260,7 @@ export class ZPP_SweepPhase extends ZPP_Broadphase {
 
     // Release pooled vec2
     const o = v;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o._isimmutable = null;
-    o._validate = null;
-    o._invalidate = null;
+    o.free();
     o.next = ZPP_Vec2.zpp_pool;
     ZPP_Vec2.zpp_pool = o;
 
@@ -746,13 +734,7 @@ export class ZPP_SweepPhase extends ZPP_Broadphase {
 
     // Release pooled AABB
     const o = rayab;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o.wrap_min = o.wrap_max = null;
-    o._invalidate = null;
-    o._validate = null;
+    o.free();
     o.next = ZPP_AABB.zpp_pool;
     ZPP_AABB.zpp_pool = o;
 
@@ -877,13 +859,7 @@ export class ZPP_SweepPhase extends ZPP_Broadphase {
 
     // Release pooled AABB
     const o = rayab;
-    if (o.outer != null) {
-      o.outer.zpp_inner = null;
-      o.outer = null;
-    }
-    o.wrap_min = o.wrap_max = null;
-    o._invalidate = null;
-    o._validate = null;
+    o.free();
     o.next = ZPP_AABB.zpp_pool;
     ZPP_AABB.zpp_pool = o;
 

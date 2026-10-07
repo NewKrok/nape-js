@@ -110,32 +110,21 @@ export class Vec2 {
       ZPP_PubPool.nextVec2 = null;
     }
 
-    if (ret.zpp_inner == null) {
-      // Need a fresh ZPP_Vec2
-      let zpp: ZPP_Vec2;
-      if (ZPP_Vec2.zpp_pool == null) {
-        zpp = new ZPP_Vec2();
-      } else {
-        zpp = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = zpp.next;
-        zpp.next = null;
-      }
-      zpp.weak = false;
-      zpp._immutable = false;
-      zpp.x = x;
-      zpp.y = y;
-      ret.zpp_inner = zpp;
-      zpp.outer = ret;
+    // Every pool-return site (dispose, AABB, GeomVert, ConvexRayResult)
+    // detaches zpp_inner first, so a pooled wrapper always needs a fresh one.
+    let zpp: ZPP_Vec2;
+    if (ZPP_Vec2.zpp_pool == null) {
+      zpp = new ZPP_Vec2();
     } else {
-      // Reuse existing zpp_inner — set values via validation
-      ret.zpp_inner.immutable();
-      ret.zpp_inner.validate();
-      if (ret.zpp_inner.x !== x || ret.zpp_inner.y !== y) {
-        ret.zpp_inner.x = x;
-        ret.zpp_inner.y = y;
-        ret.zpp_inner.invalidate();
-      }
+      zpp = ZPP_Vec2.zpp_pool;
+      ZPP_Vec2.zpp_pool = zpp.next;
+      zpp.next = null;
     }
+    zpp._immutable = false;
+    zpp.x = x;
+    zpp.y = y;
+    ret.zpp_inner = zpp;
+    zpp.outer = ret;
 
     ret.zpp_inner.weak = weak;
     return ret;

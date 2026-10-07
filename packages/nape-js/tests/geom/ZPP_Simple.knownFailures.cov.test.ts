@@ -247,6 +247,29 @@ describe("ZPP_Simple.decompose — known failures", () => {
       5,
     );
   });
+
+  // Same vertical-segment comparator fault as the isSimple cases below, but
+  // here it also defeats the decomposition: the slanted edge (3,4)-(1,1)
+  // crosses the vertical edge (2,3)-(2,2) at (2, 2.5), yet the sweep never
+  // reports the intersection, so the self-crossing ring comes back unchanged
+  // as a single "simple" piece. Found by the lattice fuzz in
+  // GeomPoly.decompositions.oracle.cov.test.ts.
+  it.fails("slanted edge crossing a vertical edge is split", async () => {
+    await expectValidDecomposition(
+      [
+        [2, 3],
+        [2, 2],
+        [1, 0],
+        [3, 1],
+        [3, 2],
+        [4, 1],
+        [3, 4],
+        [1, 1],
+      ],
+      0,
+      4,
+    );
+  });
 });
 
 describe("ZPP_Simple.isSimple — known failures", () => {
@@ -285,6 +308,35 @@ describe("ZPP_Simple.isSimple — known failures", () => {
     ).toBe(false);
   });
 
+  // A SLANTED edge crossing the interior of a vertical edge is missed too
+  // (found by the lattice fuzz): (4,2)-(1,0) crosses (3,3)-(3,1) at
+  // (3, 4/3), and (4,3)-(2,0) crosses (3,2)-(3,1) at (3, 1.5). Both rings
+  // are reported non-simple when reversed (see the controls).
+  it.fails("slanted edge crossing a vertical edge is not simple (a)", async () => {
+    const poly = await freshEngine();
+    expect(
+      poly([
+        [0, 0],
+        [3, 3],
+        [3, 1],
+        [4, 2],
+        [1, 0],
+      ]).isSimple(),
+    ).toBe(false);
+  });
+
+  it.fails("slanted edge crossing a vertical edge is not simple (b)", async () => {
+    const poly = await freshEngine();
+    expect(
+      poly([
+        [4, 3],
+        [2, 0],
+        [3, 2],
+        [3, 1],
+      ]).isSimple(),
+    ).toBe(false);
+  });
+
   // Sanity controls (plain `it`): the mirrored/rotated variants above work,
   // so the it.fails tests fail for the stated reason and not a setup error.
   it("controls: rotated / reversed variants are reported non-simple", async () => {
@@ -304,6 +356,23 @@ describe("ZPP_Simple.isSimple — known failures", () => {
         [2, 0],
         [3, 3],
         [4, 0],
+      ]).isSimple(),
+    ).toBe(false);
+    expect(
+      poly([
+        [1, 0],
+        [4, 2],
+        [3, 1],
+        [3, 3],
+        [0, 0],
+      ]).isSimple(),
+    ).toBe(false);
+    expect(
+      poly([
+        [3, 1],
+        [3, 2],
+        [2, 0],
+        [4, 3],
       ]).isSimple(),
     ).toBe(false);
     const list = poly([

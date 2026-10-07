@@ -18,64 +18,68 @@ export class ZPP_Shape {
   // --- Static: init guard ---
   static _initialized = false;
 
+  // Instance fields are declarations only: ZPP_Shape is never constructed.
+  // ZPP_Circle / ZPP_Polygon copy its prototype and call `_initShape()`, so
+  // field initializers here would never run (and never did).
+
   // --- Instance: public wrapper ---
-  outer: any = null;
+  outer!: any;
 
   // --- Instance: body reference ---
-  body: any = null;
+  body!: any;
 
   // --- Instance: shape type (0=circle, 1=polygon, 2=capsule) ---
-  type = 0;
+  type!: number;
 
   // --- Instance: area/inertia ---
-  area = 0;
-  zip_area_inertia = false;
-  inertia = 0;
+  area!: number;
+  zip_area_inertia!: boolean;
+  inertia!: number;
 
   // --- Instance: angular drag ---
-  angDrag = 0;
-  zip_angDrag = false;
+  angDrag!: number;
+  zip_angDrag!: boolean;
 
   // --- Instance: local center of mass ---
-  localCOMx = 0;
-  localCOMy = 0;
-  zip_localCOM = false;
+  localCOMx!: number;
+  localCOMy!: number;
+  zip_localCOM!: boolean;
 
   // --- Instance: world center of mass ---
-  worldCOMx = 0;
-  worldCOMy = 0;
-  zip_worldCOM = false;
-  wrap_localCOM: any = null;
-  wrap_worldCOM: any = null;
+  worldCOMx!: number;
+  worldCOMy!: number;
+  zip_worldCOM!: boolean;
+  wrap_localCOM!: any;
+  wrap_worldCOM!: any;
 
   // --- Instance: sweep radius ---
-  sweepRadius = 0;
-  zip_sweepRadius = false;
-  sweepCoef = 0;
+  sweepRadius!: number;
+  zip_sweepRadius!: boolean;
+  sweepCoef!: number;
 
   // --- Instance: circle/polygon subtype references ---
-  circle: any = null;
-  polygon: any = null;
+  circle!: any;
+  polygon!: any;
 
   // --- Instance: material/filter/fluid ---
-  refmaterial: any = null;
-  material: any = null;
-  filter: any = null;
-  fluidProperties: any = null;
-  fluidEnabled = false;
-  sensorEnabled = false;
+  refmaterial!: any;
+  material!: any;
+  filter!: any;
+  fluidProperties!: any;
+  fluidEnabled!: boolean;
+  sensorEnabled!: boolean;
 
   // --- Instance: broadphase ---
-  sweep: any = null;
-  node: any = null;
-  pairs: any = null;
+  sweep!: any;
+  node!: any;
+  pairs!: any;
 
   // --- Instance: AABB ---
-  aabb: any = null;
-  zip_aabb = false;
+  aabb!: any;
+  zip_aabb!: boolean;
 
   // --- Interactor fields (re-declared, set by _initShape via ZPP_Interactor.call) ---
-  ishape: any = null;
+  ishape!: any;
 
   // --- Stub declarations for methods inherited from ZPP_Interactor ---
   wake!: () => void;
@@ -84,7 +88,7 @@ export class ZPP_Shape {
   insert_cbtype!: (cb: any) => void;
   __iaddedToSpace!: () => void;
   __iremovedFromSpace!: () => void;
-  userData: any = null;
+  userData!: any;
 
   /**
    * Initialize shape state. Separated from constructor so that compiled
