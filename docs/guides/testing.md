@@ -70,7 +70,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7513 engine tests across 354 files, plus 79 pixi-adapter tests across 6 files.**
+**7509 engine tests across 356 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -81,12 +81,12 @@ set yet.
 
 | Metric | Current | Target (P29) |
 |--------|---------|--------------|
-| Statements | ~95% | ≥80% ✅ |
+| Statements | ~96% | ≥80% ✅ |
 | Branches | ~89% | — |
 | Functions | ~98% | — |
 
 **High coverage modules:** `packages/nape-js/src/native/callbacks/` (100%), `packages/nape-js/src/native/util/` (99%), `packages/nape-js/src/worker/` (99%), `packages/nape-js/src/core/` (99%), `packages/nape-js/src/callbacks/` (99%), `packages/nape-js/src/replay/` (98%)
-**Low coverage modules:** `packages/nape-js/src/profiler/` (85%), `packages/nape-js/src/native/shape/` (90%), `packages/nape-js/src/shape/` (91%), `packages/nape-js/src/native/constraint/` (93%)
+**Low coverage modules:** `packages/nape-js/src/profiler/` (85%), `packages/nape-js/src/dynamics/` (93%), `packages/nape-js/src/space/` (93%), `packages/nape-js/src/shape/` (93%)
 
 Note: the arbiter classes' dead solver-method duplicates (the live solver is
 inlined inside `ZPP_Space.step`) were removed, and the Haxe-inline-expansion
@@ -96,6 +96,12 @@ polygon branches inside circle-only paths and vice versa) was deduplicated
 into the canonical `ZPP_Shape.validate_*` / `ZPP_Body.validate_*` /
 `ZPP_Polygon.validate_gaxi` helpers (issue #229) — statement coverage rose
 ~80% → ~83% for free as those unreachable lines disappeared.
+
+The 16 Haxe-inlined copies of the public `Vec2` pool allocator were replaced
+by `Vec2.get()`: every pool-return site detaches `zpp_inner`, so their
+"pooled wrapper with a live inner" branch (disposed / immutable / validate
+callbacks) was unreachable. Tests that forged such impossible pool states were
+dropped along with it.
 
 A later audit classified every never-executed function by its call sites
 (not by coverage alone — several "uncovered" methods were reachable test

@@ -261,6 +261,8 @@ export class ZPP_Compound {
     if (todo == null) todo = [];
 
     const ret = new napeNs.phys.Compound();
+    // Each child copy is brand new (no compound, no space), so it is simply
+    // appended to the matching list of the new compound.
 
     // Copy child compounds
     let cx_ite = this.compounds.head;
@@ -268,22 +270,7 @@ export class ZPP_Compound {
       const c = cx_ite.elt;
       const cc = c.copy(dict, todo);
       cc.zpp_inner.immutable_midstep("Compound::compound");
-      if ((cc.zpp_inner.compound == null ? null : cc.zpp_inner.compound.outer) !== ret) {
-        if ((cc.zpp_inner.compound == null ? null : cc.zpp_inner.compound.outer) != null) {
-          (cc.zpp_inner.compound == null
-            ? null
-            : cc.zpp_inner.compound.outer
-          ).zpp_inner.wrap_compounds.remove(cc);
-        }
-        if (ret != null) {
-          const _this = ret.zpp_inner.wrap_compounds;
-          if (_this.zpp_inner.reverse_flag) {
-            _this.push(cc);
-          } else {
-            _this.unshift(cc);
-          }
-        }
-      }
+      ret.zpp_inner.wrap_compounds.add(cc);
       cx_ite = cx_ite.next;
     }
 
@@ -293,22 +280,7 @@ export class ZPP_Compound {
       const b = cx_ite1.elt;
       const bc = b.outer.copy();
       dict!.push(zpp.constraint.ZPP_CopyHelper.dict(b.id, bc));
-      if ((bc.zpp_inner.compound == null ? null : bc.zpp_inner.compound.outer) !== ret) {
-        if ((bc.zpp_inner.compound == null ? null : bc.zpp_inner.compound.outer) != null) {
-          (bc.zpp_inner.compound == null
-            ? null
-            : bc.zpp_inner.compound.outer
-          ).zpp_inner.wrap_bodies.remove(bc);
-        }
-        if (ret != null) {
-          const _this1 = ret.zpp_inner.wrap_bodies;
-          if (_this1.zpp_inner.reverse_flag) {
-            _this1.push(bc);
-          } else {
-            _this1.unshift(bc);
-          }
-        }
-      }
+      ret.zpp_inner.wrap_bodies.add(bc);
       cx_ite1 = cx_ite1.next;
     }
 
@@ -317,22 +289,7 @@ export class ZPP_Compound {
     while (cx_ite2 != null) {
       const c1 = cx_ite2.elt;
       const cc1 = c1.copy(dict, todo);
-      if ((cc1.zpp_inner.compound == null ? null : cc1.zpp_inner.compound.outer) !== ret) {
-        if ((cc1.zpp_inner.compound == null ? null : cc1.zpp_inner.compound.outer) != null) {
-          (cc1.zpp_inner.compound == null
-            ? null
-            : cc1.zpp_inner.compound.outer
-          ).zpp_inner.wrap_constraints.remove(cc1);
-        }
-        if (ret != null) {
-          const _this2 = ret.zpp_inner.wrap_constraints;
-          if (_this2.zpp_inner.reverse_flag) {
-            _this2.push(cc1);
-          } else {
-            _this2.unshift(cc1);
-          }
-        }
-      }
+      ret.zpp_inner.wrap_constraints.add(cc1);
       cx_ite2 = cx_ite2.next;
     }
 
