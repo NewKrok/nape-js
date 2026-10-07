@@ -322,8 +322,10 @@ Fixed in 3.43.0. On older versions use `for (let i = 0; i < l.length; i++) l.at(
 
 - **`GeomPoly.simpleDecomposition()` on degenerate input:** three edges
   crossing at one point, a vertex visited twice (spikes, keyholes) can throw;
-  rarely a piece has zero area or self-crosses; `isSimple()` can miss a
-  crossing on a vertical edge. After a throw, call `simpleDecomposition()`
+  rarely a piece has zero area or self-crosses; an edge crossing the
+  interior of a *vertical* edge can be missed — `isSimple()` then returns
+  `true`, and `simpleDecomposition()` can return the self-crossing ring as a
+  single piece. After a throw, call `simpleDecomposition()`
   only on fresh engine state (static sweep state is left behind). Clean up
   input (`simplify`, remove duplicate points) first. Inherited from Haxe nape.
 - **`MarchingSquares.run` with bounds that are not a whole number of cells**
