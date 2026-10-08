@@ -115,15 +115,6 @@ export class ZPP_CbType {
     }
   }
 
-  invalidateint(): void {
-    let cx_ite = this.cbsets.head;
-    while (cx_ite != null) {
-      cx_ite.elt.zip_listeners = true;
-      cx_ite.elt.invalidate_pairs();
-      cx_ite = cx_ite.next;
-    }
-  }
-
   // ========== Body listeners (priority-ordered) ==========
 
   addbody(x: ZPP_BodyListener): void {
@@ -152,14 +143,6 @@ export class ZPP_CbType {
     }
   }
 
-  invalidatebody(): void {
-    let cx_ite = this.cbsets.head;
-    while (cx_ite != null) {
-      cx_ite.elt.zip_bodylisteners = true;
-      cx_ite = cx_ite.next;
-    }
-  }
-
   // ========== Constraint listeners (priority-ordered) ==========
 
   addconstraint(x: ZPP_ConstraintListener): void {
@@ -181,14 +164,6 @@ export class ZPP_CbType {
 
   removeconstraint(x: ZPP_ConstraintListener): void {
     this.conlisteners.remove(x);
-    let cx_ite = this.cbsets.head;
-    while (cx_ite != null) {
-      cx_ite.elt.zip_conlisteners = true;
-      cx_ite = cx_ite.next;
-    }
-  }
-
-  invalidateconstraint(): void {
     let cx_ite = this.cbsets.head;
     while (cx_ite != null) {
       cx_ite.elt.zip_conlisteners = true;

@@ -109,45 +109,6 @@ export class ZPP_CbSet {
     return ret;
   }
 
-  /** Check if a listener is compatible with sets a and b. */
-  static compatible(i: any, a: ZPP_CbSet, b: ZPP_CbSet): boolean {
-    let tmp: boolean;
-    const _this = i.options1;
-    const xs = a.cbTypes;
-    if (
-      _this.nonemptyintersection(xs, _this.includes) &&
-      !_this.nonemptyintersection(xs, _this.excludes)
-    ) {
-      const _this1 = i.options2;
-      const xs1 = b.cbTypes;
-      tmp =
-        _this1.nonemptyintersection(xs1, _this1.includes) &&
-        !_this1.nonemptyintersection(xs1, _this1.excludes);
-    } else {
-      tmp = false;
-    }
-    if (!tmp) {
-      const _this2 = i.options2;
-      const xs2 = a.cbTypes;
-      if (
-        _this2.nonemptyintersection(xs2, _this2.includes) &&
-        !_this2.nonemptyintersection(xs2, _this2.excludes)
-      ) {
-        const _this3 = i.options1;
-        const xs3 = b.cbTypes;
-        if (_this3.nonemptyintersection(xs3, _this3.includes)) {
-          return !_this3.nonemptyintersection(xs3, _this3.excludes);
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
-  }
-
   /** Helper: find or create a CbSetPair for sets a and b. */
   static findOrCreatePair(a: ZPP_CbSet, b: ZPP_CbSet): any {
     let ret: any = null;
@@ -206,32 +167,7 @@ export class ZPP_CbSet {
     }
   }
 
-  static find_all(
-    a: ZPP_CbSet,
-    b: ZPP_CbSet,
-    event: number,
-    cb: (listener: ZPP_InteractionListener) => void,
-  ): void {
-    const ret = ZPP_CbSet.findOrCreatePair(a, b);
-    let cx_ite1 = ret.listeners.head;
-    while (cx_ite1 != null) {
-      const x = cx_ite1.elt!;
-      if (x.event == event) {
-        cb(x);
-      }
-      cx_ite1 = cx_ite1.next;
-    }
-  }
-
   // ========== Instance methods ==========
-
-  increment(): void {
-    this.count++;
-  }
-
-  decrement(): boolean {
-    return --this.count == 0;
-  }
 
   invalidate_pairs(): void {
     let cx_ite = this.cbpairs.head;

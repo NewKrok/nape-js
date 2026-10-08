@@ -268,56 +268,6 @@ describe("ZPP_Callback", () => {
     });
   });
 
-  describe("rotateL / rotateR", () => {
-    it("rotateL should move front to back", () => {
-      const list = new ZPP_Callback();
-      const a = new ZPP_Callback();
-      const b = new ZPP_Callback();
-      list.push(a);
-      list.push(b);
-
-      list.rotateL();
-      expect(list.next).toBe(b);
-      expect(list.prev).toBe(a);
-    });
-
-    it("rotateR should move back to front", () => {
-      const list = new ZPP_Callback();
-      const a = new ZPP_Callback();
-      const b = new ZPP_Callback();
-      list.push(a);
-      list.push(b);
-
-      list.rotateR();
-      expect(list.next).toBe(b);
-      expect(list.prev).toBe(a);
-    });
-  });
-
-  describe("cycleNext / cyclePrev", () => {
-    it("cycleNext should wrap around to head", () => {
-      const list = new ZPP_Callback();
-      const a = new ZPP_Callback();
-      const b = new ZPP_Callback();
-      list.push(a);
-      list.push(b);
-
-      expect(list.cycleNext(a)).toBe(b);
-      expect(list.cycleNext(b)).toBe(a);
-    });
-
-    it("cyclePrev should wrap around to tail", () => {
-      const list = new ZPP_Callback();
-      const a = new ZPP_Callback();
-      const b = new ZPP_Callback();
-      list.push(a);
-      list.push(b);
-
-      expect(list.cyclePrev(a)).toBe(b);
-      expect(list.cyclePrev(b)).toBe(a);
-    });
-  });
-
   describe("at / rev_at", () => {
     it("at should return item at index from front", () => {
       const list = new ZPP_Callback();
@@ -328,17 +278,6 @@ describe("ZPP_Callback", () => {
 
       expect(list.at(0)).toBe(a);
       expect(list.at(1)).toBe(b);
-    });
-
-    it("rev_at should return item at index from back", () => {
-      const list = new ZPP_Callback();
-      const a = new ZPP_Callback();
-      const b = new ZPP_Callback();
-      list.push(a);
-      list.push(b);
-
-      expect(list.rev_at(0)).toBe(b);
-      expect(list.rev_at(1)).toBe(a);
     });
   });
 
@@ -371,29 +310,6 @@ describe("ZPP_Callback", () => {
     it("should handle null wrap_arbiters", () => {
       const cb = new ZPP_Callback();
       expect(() => cb.free()).not.toThrow();
-    });
-  });
-
-  describe("genarbs", () => {
-    it("should create wrap_arbiters when null", () => {
-      const cb = new ZPP_Callback();
-      cb.set = { arbiters: ["arb1"] };
-      cb.genarbs();
-      expect(cb.wrap_arbiters).not.toBeNull();
-      expect(cb.wrap_arbiters.zpp_inner.zip_length).toBe(true);
-      expect(cb.wrap_arbiters.zpp_inner.at_ite).toBeNull();
-    });
-
-    it("should update existing wrap_arbiters", () => {
-      const cb = new ZPP_Callback();
-      cb.set = { arbiters: ["arb2"] };
-      cb.wrap_arbiters = {
-        zpp_inner: { inner: null, zip_length: false, at_ite: { id: "old" } },
-      };
-      cb.genarbs();
-      expect(cb.wrap_arbiters.zpp_inner.inner).toEqual(["arb2"]);
-      expect(cb.wrap_arbiters.zpp_inner.zip_length).toBe(true);
-      expect(cb.wrap_arbiters.zpp_inner.at_ite).toBeNull();
     });
   });
 });

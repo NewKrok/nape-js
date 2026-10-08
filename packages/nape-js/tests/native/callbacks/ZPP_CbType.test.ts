@@ -166,20 +166,6 @@ describe("ZPP_CbType", () => {
     });
   });
 
-  describe("invalidateint", () => {
-    it("should mark all cbsets as needing listener revalidation", () => {
-      const ct = new ZPP_CbType();
-      const cbset1 = { zip_listeners: false, invalidate_pairs: () => {} };
-      const cbset2 = { zip_listeners: false, invalidate_pairs: () => {} };
-      ct.cbsets.add(cbset1);
-      ct.cbsets.add(cbset2);
-
-      ct.invalidateint();
-      expect(cbset1.zip_listeners).toBe(true);
-      expect(cbset2.zip_listeners).toBe(true);
-    });
-  });
-
   describe("addbody", () => {
     it("should add body listener in priority order", () => {
       const ct = new ZPP_CbType();
@@ -233,16 +219,6 @@ describe("ZPP_CbType", () => {
     });
   });
 
-  describe("invalidatebody", () => {
-    it("should mark all cbsets as needing body listener revalidation", () => {
-      const ct = new ZPP_CbType();
-      const cbset = { zip_bodylisteners: false };
-      ct.cbsets.add(cbset);
-      ct.invalidatebody();
-      expect(cbset.zip_bodylisteners).toBe(true);
-    });
-  });
-
   describe("addconstraint", () => {
     it("should add constraint listener in priority order", () => {
       const ct = new ZPP_CbType();
@@ -282,16 +258,6 @@ describe("ZPP_CbType", () => {
       ct.cbsets.add(cbset);
 
       ct.removeconstraint(listener);
-      expect(cbset.zip_conlisteners).toBe(true);
-    });
-  });
-
-  describe("invalidateconstraint", () => {
-    it("should mark all cbsets as needing constraint listener revalidation", () => {
-      const ct = new ZPP_CbType();
-      const cbset = { zip_conlisteners: false };
-      ct.cbsets.add(cbset);
-      ct.invalidateconstraint();
       expect(cbset.zip_conlisteners).toBe(true);
     });
   });

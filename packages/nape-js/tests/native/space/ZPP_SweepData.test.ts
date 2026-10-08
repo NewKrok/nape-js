@@ -26,23 +26,6 @@ describe("ZPP_SweepData", () => {
     expect(sd.prev).toBeNull();
   });
 
-  it("gt should compare by aabb.minx", () => {
-    const a = new ZPP_SweepData();
-    const b = new ZPP_SweepData();
-    a.aabb = { minx: 10 };
-    b.aabb = { minx: 5 };
-    expect(a.gt(b)).toBe(true);
-    expect(b.gt(a)).toBe(false);
-  });
-
-  it("gt should return false for equal minx", () => {
-    const a = new ZPP_SweepData();
-    const b = new ZPP_SweepData();
-    a.aabb = { minx: 5 };
-    b.aabb = { minx: 5 };
-    expect(a.gt(b)).toBe(false);
-  });
-
   it("static pool should start as null", () => {
     expect(ZPP_SweepData.zpp_pool === null || ZPP_SweepData.zpp_pool instanceof ZPP_SweepData).toBe(
       true,

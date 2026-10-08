@@ -178,15 +178,6 @@ describe("ZPP_Vec2", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should set weak to false", () => {
-      const v = new ZPP_Vec2();
-      v.weak = true;
-      v.alloc();
-      expect(v.weak).toBe(false);
-    });
-  });
-
   describe("copy", () => {
     it("should create a copy with same x,y", () => {
       const v = new ZPP_Vec2();
@@ -219,21 +210,6 @@ describe("ZPP_Vec2", () => {
       v.x = 1.5;
       v.y = 2.5;
       expect(v.toString()).toBe("{ x: 1.5 y: 2.5 }");
-    });
-  });
-
-  // ========== Linked List Operations ==========
-  describe("begin", () => {
-    it("should return next (head)", () => {
-      const list = new ZPP_Vec2();
-      const item = new ZPP_Vec2();
-      list.next = item;
-      expect(list.begin()).toBe(item);
-    });
-
-    it("should return null when empty", () => {
-      const list = new ZPP_Vec2();
-      expect(list.begin()).toBeNull();
     });
   });
   describe("add", () => {

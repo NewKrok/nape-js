@@ -31,10 +31,6 @@ export class ZNPList<T> {
     ZNPNode.zpp_pool = node;
   }
 
-  begin(): ZNPNode<T> | null {
-    return this.head;
-  }
-
   add(o: T): T {
     const node = this._allocNode();
     node.elt = o;

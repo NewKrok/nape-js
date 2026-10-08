@@ -180,47 +180,6 @@ describe("ZPP_AABB", () => {
     });
   });
 
-  describe("perimeter", () => {
-    it("should return 2*(width+height)", () => {
-      const a = ZPP_AABB.get(0, 0, 3, 4);
-      expect(a.perimeter()).toBe(14);
-    });
-  });
-
-  describe("intersectX", () => {
-    it("should return true for overlapping X ranges", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 10);
-      const b = ZPP_AABB.get(5, 0, 15, 10);
-      expect(a.intersectX(b)).toBe(true);
-    });
-
-    it("should return false for non-overlapping X ranges", () => {
-      const a = ZPP_AABB.get(0, 0, 5, 10);
-      const b = ZPP_AABB.get(6, 0, 10, 10);
-      expect(a.intersectX(b)).toBe(false);
-    });
-
-    it("should return true for touching X ranges", () => {
-      const a = ZPP_AABB.get(0, 0, 5, 10);
-      const b = ZPP_AABB.get(5, 0, 10, 10);
-      expect(a.intersectX(b)).toBe(true);
-    });
-  });
-
-  describe("intersectY", () => {
-    it("should return true for overlapping Y ranges", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 10);
-      const b = ZPP_AABB.get(0, 5, 10, 15);
-      expect(a.intersectY(b)).toBe(true);
-    });
-
-    it("should return false for non-overlapping Y ranges", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 5);
-      const b = ZPP_AABB.get(0, 6, 10, 10);
-      expect(a.intersectY(b)).toBe(false);
-    });
-  });
-
   describe("intersect", () => {
     it("should return true for overlapping AABBs", () => {
       const a = ZPP_AABB.get(0, 0, 10, 10);
@@ -286,75 +245,6 @@ describe("ZPP_AABB", () => {
       const a = ZPP_AABB.get(2, 2, 8, 8);
       const b = ZPP_AABB.get(0, 0, 10, 10);
       expect(a.contains(b)).toBe(false);
-    });
-  });
-
-  describe("containsPoint", () => {
-    it("should return true for point inside", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 10);
-      expect(a.containsPoint({ x: 5, y: 5 })).toBe(true);
-    });
-
-    it("should return true for point on edge", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 10);
-      expect(a.containsPoint({ x: 0, y: 0 })).toBe(true);
-      expect(a.containsPoint({ x: 10, y: 10 })).toBe(true);
-    });
-
-    it("should return false for point outside", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 10);
-      expect(a.containsPoint({ x: -1, y: 5 })).toBe(false);
-      expect(a.containsPoint({ x: 5, y: 11 })).toBe(false);
-    });
-  });
-
-  describe("setCombine", () => {
-    it("should set bounds to combined AABB of a and b", () => {
-      const target = new ZPP_AABB();
-      const a = ZPP_AABB.get(0, 0, 5, 5);
-      const b = ZPP_AABB.get(3, 3, 10, 10);
-      target.setCombine(a, b);
-      expect(target.minx).toBe(0);
-      expect(target.miny).toBe(0);
-      expect(target.maxx).toBe(10);
-      expect(target.maxy).toBe(10);
-    });
-  });
-
-  describe("setExpand", () => {
-    it("should expand by fatten amount", () => {
-      const target = new ZPP_AABB();
-      const a = ZPP_AABB.get(5, 5, 10, 10);
-      target.setExpand(a, 2);
-      expect(target.minx).toBe(3);
-      expect(target.miny).toBe(3);
-      expect(target.maxx).toBe(12);
-      expect(target.maxy).toBe(12);
-    });
-  });
-
-  describe("setExpandPoint", () => {
-    it("should expand to include point below min", () => {
-      const a = ZPP_AABB.get(5, 5, 10, 10);
-      a.setExpandPoint(2, 3);
-      expect(a.minx).toBe(2);
-      expect(a.miny).toBe(3);
-    });
-
-    it("should expand to include point above max", () => {
-      const a = ZPP_AABB.get(5, 5, 10, 10);
-      a.setExpandPoint(12, 13);
-      expect(a.maxx).toBe(12);
-      expect(a.maxy).toBe(13);
-    });
-
-    it("should not change when point is inside", () => {
-      const a = ZPP_AABB.get(0, 0, 10, 10);
-      a.setExpandPoint(5, 5);
-      expect(a.minx).toBe(0);
-      expect(a.miny).toBe(0);
-      expect(a.maxx).toBe(10);
-      expect(a.maxy).toBe(10);
     });
   });
 

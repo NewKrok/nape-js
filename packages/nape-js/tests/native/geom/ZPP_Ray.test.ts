@@ -131,13 +131,6 @@ describe("ZPP_Ray — invalidation callbacks", () => {
     expect(r.diry).toBe(0);
     expect(r.zip_dir).toBe(true);
   });
-
-  it("invalidate_dir sets zip_dir to true", () => {
-    const r = new ZPP_Ray();
-    r.zip_dir = false;
-    r.invalidate_dir();
-    expect(r.zip_dir).toBe(true);
-  });
 });
 
 // ---------------------------------------------------------------------------

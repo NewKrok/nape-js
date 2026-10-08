@@ -10,7 +10,7 @@ import { ZPP_AABB } from "../../../src/native/geom/ZPP_AABB";
 
 function createLeaf(minx: number, miny: number, maxx: number, maxy: number): ZPP_AABBNode {
   const node = new ZPP_AABBNode();
-  node.alloc();
+  node.aabb = new ZPP_AABB();
   node.aabb!.minx = minx;
   node.aabb!.miny = miny;
   node.aabb!.maxx = maxx;
@@ -35,29 +35,9 @@ describe("ZPP_AABBNode", () => {
     expect(node.first_sync).toBe(false);
   });
 
-  it("alloc creates aabb and resets flags", () => {
-    const node = new ZPP_AABBNode();
-    node.alloc();
-    expect(node.aabb).not.toBeNull();
-    expect(node.aabb).toBeInstanceOf(ZPP_AABB);
-    expect(node.moved).toBe(false);
-    expect(node.synced).toBe(false);
-    expect(node.first_sync).toBe(false);
-  });
-
-  it("alloc uses pool when available", () => {
-    const oldPool = ZPP_AABB.zpp_pool;
-    const pooled = new ZPP_AABB();
-    ZPP_AABB.zpp_pool = pooled;
-    const node = new ZPP_AABBNode();
-    node.alloc();
-    expect(node.aabb).toBe(pooled);
-    ZPP_AABB.zpp_pool = oldPool;
-  });
-
   it("free returns aabb to pool and clears pointers", () => {
     const node = new ZPP_AABBNode();
-    node.alloc();
+    node.aabb = new ZPP_AABB();
     const aabb = node.aabb!;
     node.child1 = new ZPP_AABBNode();
     node.child2 = new ZPP_AABBNode();
@@ -75,17 +55,6 @@ describe("ZPP_AABBNode", () => {
     expect(node.mnext).toBeNull();
     expect(ZPP_AABB.zpp_pool).toBe(aabb);
     ZPP_AABB.zpp_pool = oldPool;
-  });
-
-  it("isLeaf returns true when child1 is null", () => {
-    const node = new ZPP_AABBNode();
-    expect(node.isLeaf()).toBe(true);
-  });
-
-  it("isLeaf returns false when child1 is set", () => {
-    const node = new ZPP_AABBNode();
-    node.child1 = new ZPP_AABBNode();
-    expect(node.isLeaf()).toBe(false);
   });
 
   it("static pool field exists", () => {
@@ -154,7 +123,7 @@ describe("ZPP_AABBTree", () => {
     }
     expect(tree.root).not.toBeNull();
     for (const leaf of leaves) {
-      expect(leaf.isLeaf()).toBe(true);
+      expect(leaf.child1).toBeNull();
     }
   });
 
@@ -238,7 +207,7 @@ describe("ZPP_AABBTree", () => {
 
   it("balance returns node with height < 2 unchanged", () => {
     const node = new ZPP_AABBNode();
-    node.alloc();
+    node.aabb = new ZPP_AABB();
     node.height = 1;
     node.child1 = createLeaf(0, 0, 5, 5);
     node.child2 = createLeaf(5, 5, 10, 10);
@@ -248,10 +217,10 @@ describe("ZPP_AABBTree", () => {
 
   it("balance rotates right-heavy subtree", () => {
     const a = new ZPP_AABBNode();
-    a.alloc();
+    a.aabb = new ZPP_AABB();
     const b = createLeaf(0, 0, 5, 5);
     const c = new ZPP_AABBNode();
-    c.alloc();
+    c.aabb = new ZPP_AABB();
     const f = createLeaf(10, 10, 15, 15);
     const g = createLeaf(20, 20, 25, 25);
 
@@ -281,9 +250,9 @@ describe("ZPP_AABBTree", () => {
 
   it("balance rotates left-heavy subtree", () => {
     const a = new ZPP_AABBNode();
-    a.alloc();
+    a.aabb = new ZPP_AABB();
     const b = new ZPP_AABBNode();
-    b.alloc();
+    b.aabb = new ZPP_AABB();
     const c = createLeaf(20, 20, 25, 25);
     const f = createLeaf(0, 0, 5, 5);
     const g = createLeaf(10, 10, 15, 15);

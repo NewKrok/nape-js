@@ -21,9 +21,4 @@ export class ZPP_MarchSpan {
   free(): void {
     this.parent = this;
   }
-
-  alloc(): void {
-    this.out = false;
-    this.rank = 0;
-  }
 }

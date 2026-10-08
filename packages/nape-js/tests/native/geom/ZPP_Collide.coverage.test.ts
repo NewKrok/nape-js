@@ -479,37 +479,6 @@ describe("ZPP_Collide — testCollide_safe", () => {
 });
 
 // -------------------------------------------------------------------------
-// 8. bodyContains
-// -------------------------------------------------------------------------
-
-describe("ZPP_Collide — bodyContains", () => {
-  it("point inside multi-shape body returns true", () => {
-    const space = new Space(new Vec2(0, 0));
-    const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-    b.shapes.add(new Circle(10));
-    b.shapes.add(new Polygon(Polygon.box(40, 40)));
-    b.space = space;
-    space.step(1 / 60);
-
-    const zppBody = (b as any).zpp_inner;
-    const point = { x: 18, y: 0 };
-    expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(true);
-  });
-
-  it("point outside all shapes returns false", () => {
-    const space = new Space(new Vec2(0, 0));
-    const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-    b.shapes.add(new Circle(10));
-    b.space = space;
-    space.step(1 / 60);
-
-    const zppBody = (b as any).zpp_inner;
-    const point = { x: 100, y: 100 };
-    expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(false);
-  });
-});
-
-// -------------------------------------------------------------------------
 // 9. capsuleContains boundary (point exactly on capsule surface)
 // -------------------------------------------------------------------------
 

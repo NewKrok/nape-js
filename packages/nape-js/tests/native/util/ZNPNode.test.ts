@@ -9,12 +9,6 @@ describe("ZNPNode", () => {
     expect(node.next).toBeNull();
   });
 
-  it("elem() should return elt", () => {
-    const node = new ZNPNode<string>();
-    node.elt = "hello";
-    expect(node.elem()).toBe("hello");
-  });
-
   it("free() should clear elt", () => {
     const node = new ZNPNode<number>();
     node.elt = 42;

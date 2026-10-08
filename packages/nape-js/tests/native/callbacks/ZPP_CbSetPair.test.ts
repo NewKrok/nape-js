@@ -137,15 +137,6 @@ describe("ZPP_CbSetPair", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should set zip_listeners to true", () => {
-      const p = new ZPP_CbSetPair();
-      p.zip_listeners = false;
-      p.alloc();
-      expect(p.zip_listeners).toBe(true);
-    });
-  });
-
   describe("invalidate", () => {
     it("should set zip_listeners to true", () => {
       const p = new ZPP_CbSetPair();
@@ -351,31 +342,6 @@ describe("ZPP_CbSetPair", () => {
       p.listeners.add({ id: 2 });
       p.listeners.add(l);
       expect(p.single_intersection(l)).toBe(false);
-    });
-  });
-
-  describe("forall", () => {
-    it("should call callback for matching event listeners", () => {
-      const p = new ZPP_CbSetPair();
-      const l1 = { event: 1, id: "a" };
-      const l2 = { event: 2, id: "b" };
-      const l3 = { event: 1, id: "c" };
-      p.listeners.add(l3);
-      p.listeners.add(l2);
-      p.listeners.add(l1);
-
-      const results: string[] = [];
-      p.forall(1, (x) => results.push(x.id));
-      expect(results).toEqual(["a", "c"]);
-    });
-
-    it("should not call callback for non-matching events", () => {
-      const p = new ZPP_CbSetPair();
-      p.listeners.add({ event: 1, id: "a" });
-
-      const results: string[] = [];
-      p.forall(2, (x) => results.push(x.id));
-      expect(results).toEqual([]);
     });
   });
 

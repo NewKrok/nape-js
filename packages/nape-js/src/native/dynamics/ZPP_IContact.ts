@@ -40,10 +40,6 @@ export class ZPP_IContact {
 
   // ========== Linked list methods (ZNPList pattern) ==========
 
-  begin(): ZPP_IContact | null {
-    return this.next;
-  }
-
   add(o: ZPP_IContact): ZPP_IContact {
     o._inuse = true;
     const temp = o;

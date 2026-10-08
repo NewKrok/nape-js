@@ -369,50 +369,6 @@ describe("ZPP_Body", () => {
       expect(body.axisx).toBe(0.42);
       expect(body.axisy).toBe(0.42);
     });
-
-    it("quick_validate_axis updates axis without clearing the flag", () => {
-      const body = new ZPP_Body();
-      body.rot = 0;
-      body.zip_axis = true;
-      body.axisx = 99;
-      body.axisy = 99;
-
-      body.quick_validate_axis();
-
-      expect(body.axisx).toBeCloseTo(0);
-      expect(body.axisy).toBeCloseTo(1);
-      // intentionally does NOT clear zip_axis (quick-path used during step()
-      // when other callers will clear it later)
-      expect(body.zip_axis).toBe(true);
-    });
-
-    it("delta_rot applies the Taylor expansion for small rotations", () => {
-      const body = new ZPP_Body();
-      body.axisx = 0;
-      body.axisy = 1;
-      body.zip_axis = true;
-
-      body.delta_rot(0.001); // small dr → Taylor branch
-
-      expect(body.zip_axis).toBe(false);
-      // (p*0 + dr*1)*m ≈ 0.001
-      expect(body.axisx).toBeCloseTo(0.001, 5);
-      expect(body.axisy).toBeCloseTo(1, 5);
-    });
-
-    it("delta_rot uses exact sin/cos for large rotations", () => {
-      const body = new ZPP_Body();
-      body.axisx = 0;
-      body.axisy = 1;
-      body.rot = Math.PI / 3;
-      body.zip_axis = true;
-
-      body.delta_rot(1.0); // dr*dr > 1e-4 → exact branch
-
-      expect(body.zip_axis).toBe(false);
-      expect(body.axisx).toBeCloseTo(Math.sin(Math.PI / 3));
-      expect(body.axisy).toBeCloseTo(Math.cos(Math.PI / 3));
-    });
   });
 
   describe("velocity / force guards", () => {

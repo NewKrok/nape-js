@@ -697,28 +697,6 @@ export class ZPP_Body {
     }
   }
 
-  quick_validate_axis(): void {
-    if (this.zip_axis) {
-      this.axisx = Math.sin(this.rot);
-      this.axisy = Math.cos(this.rot);
-    }
-  }
-
-  delta_rot(dr: number): void {
-    if (dr * dr > 0.0001) {
-      this.axisx = Math.sin(this.rot);
-      this.axisy = Math.cos(this.rot);
-    } else {
-      const d2 = dr * dr;
-      const p = 1 - 0.5 * d2;
-      const m = 1 - (d2 * d2) / 8;
-      const nx = (p * this.axisx + dr * this.axisy) * m;
-      this.axisy = (p * this.axisy - dr * this.axisx) * m;
-      this.axisx = nx;
-    }
-    this.zip_axis = false;
-  }
-
   // ---- Mass ----
 
   invalidate_mass(): void {

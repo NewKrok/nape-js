@@ -142,23 +142,6 @@ describe("ZPP_CbSet", () => {
     });
   });
 
-  describe("increment / decrement", () => {
-    it("increment should increase count", () => {
-      const s = new ZPP_CbSet();
-      s.increment();
-      expect(s.count).toBe(1);
-      s.increment();
-      expect(s.count).toBe(2);
-    });
-
-    it("decrement should decrease count and return true when reaching 0", () => {
-      const s = new ZPP_CbSet();
-      s.count = 2;
-      expect(s.decrement()).toBe(false);
-      expect(s.decrement()).toBe(true);
-    });
-  });
-
   describe("invalidate_pairs", () => {
     it("should mark all cbpairs zip_listeners true", () => {
       const s = new ZPP_CbSet();
@@ -485,121 +468,6 @@ describe("ZPP_CbSet", () => {
     });
   });
 
-  describe("compatible (static)", () => {
-    it("should return true when options match forward", () => {
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-
-      const includes = new MockZNPList();
-      const excludes = new MockZNPList();
-      const options = {
-        ...OPTION_METHODS,
-        nonemptyintersection: (_xs: any, list: any) => list === includes,
-        includes,
-        excludes,
-      };
-
-      const i = { options1: options, options2: options };
-      expect(ZPP_CbSet.compatible(i, a, b)).toBe(true);
-    });
-
-    it("should try reverse when forward fails", () => {
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-
-      let callCount = 0;
-      const fail = {
-        ...OPTION_METHODS,
-        nonemptyintersection: () => {
-          callCount++;
-          return callCount > 2;
-        },
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-
-      const succeed = {
-        ...OPTION_METHODS,
-        nonemptyintersection: () => true,
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-
-      const i = { options1: fail, options2: succeed };
-      const result = ZPP_CbSet.compatible(i, a, b);
-      expect(typeof result).toBe("boolean");
-    });
-
-    it("should return false when completely incompatible", () => {
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-
-      const fail = {
-        ...OPTION_METHODS,
-        nonemptyintersection: () => false,
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-
-      const i = { options1: fail, options2: fail };
-      expect(ZPP_CbSet.compatible(i, a, b)).toBe(false);
-    });
-  });
-
-  describe("compatible (reverse path)", () => {
-    it("should return true via reverse path when options2 matches a and options1 matches b", () => {
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-
-      // Forward: options1 on a fails
-      const options1 = {
-        ...OPTION_METHODS,
-        nonemptyintersection: (xs: any, list: any) => {
-          return xs === b.cbTypes && list === options1.includes;
-        },
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-      // Reverse: options2 on a succeeds
-      const options2 = {
-        ...OPTION_METHODS,
-        nonemptyintersection: (xs: any, list: any) => {
-          return xs === a.cbTypes && list === options2.includes;
-        },
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-
-      const i = { options1, options2 };
-      expect(ZPP_CbSet.compatible(i, a, b)).toBe(true);
-    });
-
-    it("should return false when reverse options1 includes check on b fails", () => {
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-
-      // Forward fails
-      const options1fail = {
-        ...OPTION_METHODS,
-        nonemptyintersection: () => false,
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-      // Reverse: options2 on a succeeds
-      const options2succeed = {
-        ...OPTION_METHODS,
-        nonemptyintersection: (xs: any, list: any) => list === options2succeed.includes,
-        includes: new MockZNPList(),
-        excludes: new MockZNPList(),
-      };
-
-      const i = { options1: options1fail, options2: options2succeed };
-      // Reverse: options2 on a -> includes match (true), excludes match (false) => passes
-      // Then options1 on b -> includes check returns false => return false
-      expect(ZPP_CbSet.compatible(i, a, b)).toBe(false);
-    });
-  });
-
   describe("findOrCreatePair and static methods", () => {
     // Helper producing plain pair objects used as pre-existing data in cbpairs
     // (findOrCreatePair itself now constructs real ZPP_CbSetPair instances).
@@ -791,51 +659,6 @@ describe("ZPP_CbSet", () => {
       b.cbpairs.add(existing);
 
       expect(ZPP_CbSet.single_intersection(a, b, { id: 1 })).toBe(false);
-    });
-
-    it("find_all should call callback for matching event listeners", () => {
-      const MockPair = setupCbSetPairMock();
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-      a.cbpairs = new MockZNPList();
-      b.cbpairs = new MockZNPList();
-
-      const l1 = { event: 1, id: "a" };
-      const l2 = { event: 2, id: "b" };
-      const l3 = { event: 1, id: "c" };
-      const existing = new MockPair() as any;
-      existing.a = a;
-      existing.b = b;
-      existing.zip_listeners = false;
-      existing.listeners.add(l3);
-      existing.listeners.add(l2);
-      existing.listeners.add(l1);
-      a.cbpairs.add(existing);
-      b.cbpairs.add(existing);
-
-      const results: string[] = [];
-      ZPP_CbSet.find_all(a, b, 1, (x) => results.push(x.id));
-      expect(results).toEqual(["a", "c"]);
-    });
-
-    it("find_all should not call callback for non-matching events", () => {
-      const MockPair = setupCbSetPairMock();
-      const a = new ZPP_CbSet();
-      const b = new ZPP_CbSet();
-      a.cbpairs = new MockZNPList();
-      b.cbpairs = new MockZNPList();
-
-      const existing = new MockPair() as any;
-      existing.a = a;
-      existing.b = b;
-      existing.zip_listeners = false;
-      existing.listeners.add({ event: 1, id: "a" });
-      a.cbpairs.add(existing);
-      b.cbpairs.add(existing);
-
-      const results: string[] = [];
-      ZPP_CbSet.find_all(a, b, 99, (x) => results.push(x.id));
-      expect(results).toEqual([]);
     });
 
     it("findOrCreatePair should find pair when (p.a == b && p.b == a)", () => {

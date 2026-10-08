@@ -33,21 +33,6 @@ describe("ZPP_IContact", () => {
       // Haxe class reference
     });
   });
-
-  // ---------------------------------------------------------------------------
-  // Linked list methods (ZNPList pattern)
-  // ---------------------------------------------------------------------------
-
-  describe("linked list — elem/begin", () => {
-    it("begin() should return next", () => {
-      const head = new ZPP_IContact();
-      expect(head.begin()).toBeNull();
-
-      const node = new ZPP_IContact();
-      head.next = node;
-      expect(head.begin()).toBe(node);
-    });
-  });
   describe("linked list — add", () => {
     it("should add to front of list", () => {
       const head = new ZPP_IContact();

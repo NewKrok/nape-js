@@ -7,9 +7,6 @@ import { ZNPList_ZPP_InteractionGroup, ZNPList_ZPP_Interactor } from "../util/ZN
  */
 
 export class ZPP_InteractionGroup {
-  // --- Static: type flags ---
-  static SHAPE = 1;
-  static BODY = 2;
   // --- Static: namespace references (assigned by ZPPRegistry) ---
 
   // --- Static: wrapper factory callback (set by InteractionGroup.ts) ---
@@ -84,18 +81,6 @@ export class ZPP_InteractionGroup {
       g.invalidate(force);
       cx_ite1 = cx_ite1.next;
     }
-  }
-
-  /** Add a child group. */
-  addGroup(group: ZPP_InteractionGroup): void {
-    this.groups.add(group);
-    group.depth = this.depth + 1;
-  }
-
-  /** Remove a child group. */
-  remGroup(group: ZPP_InteractionGroup): void {
-    this.groups.remove(group);
-    group.depth = 0;
   }
 
   /** Register an interactor in this group. */

@@ -35,10 +35,6 @@ export class ZPP_GeomVert {
     return ret;
   }
 
-  alloc(): void {
-    this.forced = false;
-  }
-
   /** Free this vertex: dispose wrap Vec2, clear linked-list pointers. */
   free(): void {
     disposeGeomVertWrap(this);

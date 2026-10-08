@@ -7,7 +7,6 @@
 
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_Shape } from "../shape/ZPP_Shape";
-import { ZPP_Body } from "../phys/ZPP_Body";
 import { ZPP_ColArbiter } from "../dynamics/ZPP_ColArbiter";
 import { ZPP_FluidArbiter } from "../dynamics/ZPP_FluidArbiter";
 import { ZPP_Contact } from "../dynamics/ZPP_Contact";
@@ -83,20 +82,6 @@ export class ZPP_Collide {
     } else {
       return ZPP_Collide.polyContains(s.polygon, p);
     }
-  }
-  static bodyContains(b: ZPP_Body, p: ZPP_Vec2) {
-    let retvar;
-    retvar = false;
-    let cx_ite = b.shapes.head;
-    while (cx_ite != null) {
-      const s = cx_ite.elt;
-      if (ZPP_Collide.shapeContains(s, p)) {
-        retvar = true;
-        break;
-      }
-      cx_ite = cx_ite.next;
-    }
-    return retvar;
   }
   static containTest(s1: ZPP_Shape, s2: ZPP_Shape) {
     const _this = s1.aabb;

@@ -12,9 +12,6 @@ import { ZPP_Contact } from "./ZPP_Contact";
 import { ZPP_IContact } from "./ZPP_IContact";
 
 export class ZPP_ColArbiter extends ZPP_Arbiter {
-  // --- Static: face type constants ---
-  static FACE1 = 0;
-  static FACE2 = 1;
   static CIRCLE = 2;
 
   // --- Static: object pool ---

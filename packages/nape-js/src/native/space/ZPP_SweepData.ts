@@ -24,8 +24,4 @@ export class ZPP_SweepData {
   }
 
   // ========== Comparison ==========
-
-  gt(x: ZPP_SweepData): boolean {
-    return this.aabb.minx > x.aabb.minx;
-  }
 }

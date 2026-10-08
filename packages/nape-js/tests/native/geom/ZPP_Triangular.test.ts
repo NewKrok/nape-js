@@ -22,29 +22,6 @@ describe("ZPP_Triangular", () => {
     });
   });
 
-  describe("right_turn", () => {
-    it("should return positive number for clockwise turn", () => {
-      const a = { x: 0, y: 0 };
-      const b = { x: 1, y: 0 };
-      const c = { x: 1, y: -1 };
-      expect(ZPP_Triangular.right_turn(a, b, c)).toBeGreaterThan(0);
-    });
-
-    it("should return negative number for counter-clockwise turn", () => {
-      const a = { x: 0, y: 0 };
-      const b = { x: 1, y: 0 };
-      const c = { x: 1, y: 1 };
-      expect(ZPP_Triangular.right_turn(a, b, c)).toBeLessThan(0);
-    });
-
-    it("should return 0 for collinear points", () => {
-      const a = { x: 0, y: 0 };
-      const b = { x: 1, y: 0 };
-      const c = { x: 2, y: 0 };
-      expect(ZPP_Triangular.right_turn(a, b, c)).toBe(0);
-    });
-  });
-
   describe("delaunay", () => {
     it("should be a static method", () => {
       expect(typeof ZPP_Triangular.delaunay).toBe("function");

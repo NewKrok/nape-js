@@ -39,13 +39,6 @@ describe("ZPP_GeomVert pooling", () => {
     expect(ZPP_GeomVert.get(0, 0)).not.toBe(a);
   });
 
-  it("alloc() clears the forced flag", () => {
-    const v = ZPP_GeomVert.get(0, 0);
-    v.forced = true;
-    v.alloc();
-    expect(v.forced).toBe(false);
-  });
-
   it("GeomPoly pop/shift/clear return vertices to the pool and re-pushes reuse them", () => {
     const poly = new GeomPoly([new Vec2(0, 0), new Vec2(1, 0), new Vec2(1, 1), new Vec2(0, 1)]);
     const verts: any[] = [];

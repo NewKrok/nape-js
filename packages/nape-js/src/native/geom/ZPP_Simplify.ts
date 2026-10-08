@@ -19,10 +19,6 @@ interface XYPoint {
 export class ZPP_Simplify {
   static stack: ZNPList<ZPP_SimplifyP> | null = null;
 
-  static lessval(a: XYPoint, b: XYPoint): number {
-    return a.x - b.x + (a.y - b.y);
-  }
-
   static less(a: XYPoint, b: XYPoint): boolean {
     return a.x - b.x + (a.y - b.y) < 0.0;
   }

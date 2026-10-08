@@ -18,21 +18,6 @@ describe("ZNPList", () => {
     const list = new ListClass();
     expect(list).toBeInstanceOf(ZNPList);
   });
-  describe("begin / empty", () => {
-    it("empty list should have null begin", () => {
-      const list = new ListClass();
-      expect(list.begin()).toBeNull();
-      expect(list.empty()).toBe(true);
-    });
-
-    it("non-empty list should return head from begin()", () => {
-      const list = new ListClass();
-      list.add("x");
-      expect(list.begin()).not.toBeNull();
-      expect(list.begin().elt).toBe("x");
-      expect(list.empty()).toBe(false);
-    });
-  });
   describe("has", () => {
     it("should find existing elements", () => {
       const list = new ListClass();
@@ -63,7 +48,7 @@ describe("ZNPList", () => {
       const list = new ListClass();
       list.add("a");
       list.add("b");
-      const head = list.begin();
+      const head = list.head;
       list.insert(head, "mid");
       expect(list.at(0)).toBe("b");
       expect(list.at(1)).toBe("mid");

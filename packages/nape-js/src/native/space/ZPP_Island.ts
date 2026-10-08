@@ -33,10 +33,6 @@ export class ZPP_Island {
 
   // ========== Linked list methods (ZNPList pattern) ==========
 
-  begin(): ZPP_Component | null {
-    return this.next;
-  }
-
   add(o: ZPP_Component): ZPP_Component {
     o._inuse = true;
     const temp = o;
@@ -187,8 +183,4 @@ export class ZPP_Island {
   }
 
   // ========== Pool callbacks ==========
-
-  alloc(): void {
-    this.waket = 0;
-  }
 }

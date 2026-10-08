@@ -8,13 +8,6 @@ import {
 // ZPP_InteractionGroup imports its ZNPList classes directly and no longer
 // reads the _zpp namespace static, so no mock namespace setup is needed.
 describe("ZPP_InteractionGroup", () => {
-  describe("static type flags", () => {
-    it("should define SHAPE and BODY", () => {
-      expect(ZPP_InteractionGroup.SHAPE).toBe(1);
-      expect(ZPP_InteractionGroup.BODY).toBe(2);
-    });
-  });
-
   describe("constructor", () => {
     it("should initialize with defaults", () => {
       const g = new ZPP_InteractionGroup();
@@ -169,29 +162,6 @@ describe("ZPP_InteractionGroup", () => {
       });
       g.invalidate();
       expect(wakes).toEqual([]);
-    });
-  });
-
-  describe("addGroup / remGroup", () => {
-    it("should add child group and set depth", () => {
-      const parent = new ZPP_InteractionGroup();
-      parent.depth = 1;
-      const child = new ZPP_InteractionGroup();
-
-      parent.addGroup(child);
-      expect(parent.groups.has(child)).toBe(true);
-      expect(child.depth).toBe(2);
-    });
-
-    it("should remove child group and reset depth", () => {
-      const parent = new ZPP_InteractionGroup();
-      parent.depth = 1;
-      const child = new ZPP_InteractionGroup();
-      parent.addGroup(child);
-
-      parent.remGroup(child);
-      expect(parent.groups.has(child)).toBe(false);
-      expect(child.depth).toBe(0);
     });
   });
 

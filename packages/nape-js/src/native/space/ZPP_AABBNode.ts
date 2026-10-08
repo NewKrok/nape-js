@@ -40,19 +40,6 @@ export class ZPP_AABBNode {
 
   // ========== Pool callbacks ==========
 
-  alloc(): void {
-    if (ZPP_AABB.zpp_pool == null) {
-      this.aabb = new ZPP_AABB();
-    } else {
-      this.aabb = ZPP_AABB.zpp_pool;
-      ZPP_AABB.zpp_pool = this.aabb.next;
-      this.aabb.next = null;
-    }
-    this.moved = false;
-    this.synced = false;
-    this.first_sync = false;
-  }
-
   free(): void {
     this.height = -1;
     const o = this.aabb!;
@@ -66,8 +53,4 @@ export class ZPP_AABBNode {
   }
 
   // ========== Leaf check ==========
-
-  isLeaf(): boolean {
-    return this.child1 == null;
-  }
 }
