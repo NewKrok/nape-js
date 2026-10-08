@@ -25,6 +25,7 @@ import {
   builtinConstraintType,
   findUserConstraintCodec,
   checkedUserData,
+  WORLD_BODY_REF,
   type SerializationOptions,
 } from "./constraints";
 import type { Compound } from "../phys/Compound";
@@ -395,6 +396,7 @@ export function spaceToJSON(space: Space, options?: SerializationOptions): Space
     zppBodyIdToIndex.set(zppId, id);
     bodies.push(serializeBody(body, id));
   }
+  zppBodyIdToIndex.set(space.world.zpp_inner.id, WORLD_BODY_REF);
 
   // Top-level bodies
   const spaceBodyList = space.bodies;
@@ -479,7 +481,12 @@ export function spaceToJSON(space: Space, options?: SerializationOptions): Space
   // 4. Space-level properties
   // ------------------------------------------------------------------
   const bphase = space.zpp_inner.bphase;
-  const broadphase = bphase.is_sweep ? "SWEEP_AND_PRUNE" : "DYNAMIC_AABB_TREE";
+  // Check is_spatial_hash first: the spatial hash also sets is_sweep.
+  const broadphase = bphase.is_spatial_hash
+    ? "SPATIAL_HASH"
+    : bphase.is_sweep
+      ? "SWEEP_AND_PRUNE"
+      : "DYNAMIC_AABB_TREE";
   const grav = space.gravity;
 
   return {

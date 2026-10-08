@@ -30,7 +30,7 @@ import { PulleyJoint } from "../constraint/PulleyJoint";
 import { WeldJoint } from "../constraint/WeldJoint";
 import { SpringJoint } from "../constraint/SpringJoint";
 import type { Constraint } from "../constraint/Constraint";
-import { codecForType, type SerializationOptions } from "./constraints";
+import { codecForType, resolveBodyRef, type SerializationOptions } from "./constraints";
 import { Compound } from "../phys/Compound";
 import { BinaryReader } from "./binary-reader";
 import { BINARY_SNAPSHOT_VERSION } from "./serialize-binary";
@@ -291,12 +291,13 @@ function applyBase(
 function readConstraint(
   r: BinaryReader,
   bodies: Body[],
+  world: Body,
   options: SerializationOptions | undefined,
 ): Constraint {
   const typeTag = r.readUint8();
   const base = readConstraintBase(r);
-  const b1 = base.body1Id >= 0 ? (bodies[base.body1Id] ?? null) : null;
-  const b2 = base.body2Id >= 0 ? (bodies[base.body2Id] ?? null) : null;
+  const b1 = resolveBodyRef(base.body1Id, bodies, world);
+  const b2 = resolveBodyRef(base.body2Id, bodies, world);
 
   switch (typeTag) {
     case CONSTRAINT_PIVOT: {
@@ -363,8 +364,8 @@ function readConstraint(
       if (typeTag === CONSTRAINT_PULLEY4) {
         const b3Id = r.readInt32();
         const b4Id = r.readInt32();
-        b3 = b3Id >= 0 ? (bodies[b3Id] ?? null) : null;
-        b4 = b4Id >= 0 ? (bodies[b4Id] ?? null) : null;
+        b3 = resolveBodyRef(b3Id, bodies, world);
+        b4 = resolveBodyRef(b4Id, bodies, world);
       }
       const a1x = r.readFloat64(),
         a1y = r.readFloat64();
@@ -419,7 +420,7 @@ function readConstraint(
       const linked: (Body | null)[] = [];
       for (let i = 0; i < count; i++) {
         const id = r.readInt32();
-        linked.push(id >= 0 ? (bodies[id] ?? null) : null);
+        linked.push(resolveBodyRef(id, bodies, world));
       }
       const data = JSON.parse(r.readString()) as Record<string, unknown>;
       const c = codec.load(data, linked);
@@ -494,7 +495,11 @@ export function spaceFromBinary(data: Uint8Array, options?: SerializationOptions
   const broadphaseType = r.readUint8();
 
   const broadphase =
-    broadphaseType === 0 ? Broadphase.SWEEP_AND_PRUNE : Broadphase.DYNAMIC_AABB_TREE;
+    broadphaseType === 0
+      ? Broadphase.SWEEP_AND_PRUNE
+      : broadphaseType === 2
+        ? Broadphase.SPATIAL_HASH
+        : Broadphase.DYNAMIC_AABB_TREE;
   const space = new Space(Vec2.weak(gravX, gravY), broadphase);
   space.worldLinearDrag = worldLinearDrag;
   space.worldAngularDrag = worldAngularDrag;
@@ -514,7 +519,7 @@ export function spaceFromBinary(data: Uint8Array, options?: SerializationOptions
   // ------------------------------------------------------------------
   const constraints: Constraint[] = new Array(constraintCount);
   for (let i = 0; i < constraintCount; i++) {
-    constraints[i] = readConstraint(r, bodies, options);
+    constraints[i] = readConstraint(r, bodies, space.world, options);
   }
 
   // ------------------------------------------------------------------

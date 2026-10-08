@@ -18,6 +18,24 @@ import { PulleyJoint } from "../constraint/PulleyJoint";
 import { WeldJoint } from "../constraint/WeldJoint";
 import { SpringJoint } from "../constraint/SpringJoint";
 
+/**
+ * Body reference stored for `space.world` (constraints pinned to the static
+ * world body). Bodies are otherwise referenced by their index in the
+ * snapshot; `null` (JSON) / `-1` (binary) means "no body".
+ */
+export const WORLD_BODY_REF = -2;
+
+/** Resolve a stored body reference against the restored bodies and world. */
+export function resolveBodyRef(
+  id: number | null | undefined,
+  bodies: Body[],
+  world: Body,
+): Body | null {
+  if (id == null) return null;
+  if (id === WORLD_BODY_REF) return world;
+  return id >= 0 ? (bodies[id] ?? null) : null;
+}
+
 /** Snapshot `type` of every built-in joint. */
 export type BuiltinConstraintType =
   | "PivotJoint"

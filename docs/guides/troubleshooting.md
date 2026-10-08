@@ -237,6 +237,53 @@ keeps the original iteration order and steps identically (same platform, and
 Also check that both sides use the same `Config` values — they are not part of
 the snapshot.
 
+**Known limitation — snapshots taken mid-contact:** contact state (the
+accumulated contact impulses the solver warm-starts from) is not part of a
+snapshot either. A snapshot taken while bodies are pressing on each other —
+a stack still settling, a pile being pushed — restores bit-close but not
+bit-identical: a four-box stack drifts ~0.1 px from the original over the next
+30 steps. Snapshots taken before contacts form, or while the touching bodies
+sleep, restore exactly. For rollback, have every peer restore from the same
+snapshot rather than comparing a restored copy against a live space.
+
+---
+
+## Collision callbacks crash with "Cannot read properties of null (reading 'remove_arb')"
+
+**Cause (nape-js ≤ 3.43.2):** with a collision `InteractionListener`
+registered, two situations generated the same END twice and crashed on the
+second one:
+
+- `space.subSteps > 1` and a contact that ended during a step (a bouncing
+  ball is enough) — the END was generated once per sub-step;
+- a body switched to `BodyType.STATIC` while touching a static body, then
+  back to `DYNAMIC` — and no BEGIN fired for the renewed contact.
+
+Fixed in 3.43.3. On older versions keep `subSteps = 1` when you listen for
+collision events, and remove a body from the space instead of making it
+static while it rests on static geometry.
+
+---
+
+## A body switched STATIC → DYNAMIC sinks into the floor for a few steps
+
+**Cause (nape-js ≤ 3.43.2):** with the default `DYNAMIC_AABB_TREE`
+broadphase, a body made static kept its broadphase leaf in the dynamic tree.
+Made dynamic again while resting on a static body, its contact pairs were not
+re-checked until it had moved out of its padded bounding box, so it fell ~3 px
+into the floor and then snapped back. Fixed in 3.43.3.
+
+---
+
+## Joints pinned to `space.world` break the restored space
+
+**Cause (nape-js ≤ 3.43.2):** a constraint attached to `space.world` was saved
+as "no body", came back with a `null` body, and the restored space threw
+"cannot be simulated null bodies" on its first step. Separately, a space using
+`Broadphase.SPATIAL_HASH` was restored with `SWEEP_AND_PRUNE`. Fixed in
+3.43.3 for both formats (the world is stored as body id `-2`); snapshots saved
+by older versions still contain `null` for those joints, so re-save them.
+
 ---
 
 ## Constraints missing after `spaceFromJSON` / `spaceFromBinary`

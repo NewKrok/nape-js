@@ -146,6 +146,10 @@ player.restore();   // idempotent — rewinds to frame 0
   use `spaceToJSON` directly (and accept the size cost).
 - **Sleeping state** — bodies wake fresh on snapshot restore. The simulation
   re-resolves sleep on the next step.
+- **Contact warm-start state** — the solver's accumulated contact impulses.
+  A keyframe taken while bodies press on each other (a settling stack)
+  restores bit-close, not bit-identical; the initial snapshot is unaffected
+  when contacts have not formed yet.
 - **`UserConstraint` instances** — only with a codec. Pass
   `userConstraints: [codec]` to both `new Recorder(space, { … })` and
   `new Player(replay, apply, { … })` (see the

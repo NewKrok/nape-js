@@ -807,6 +807,21 @@ export class ZPP_Space {
         this.really_wake(o1, true);
       }
     }
+    // Re-sync the shapes so the AABB-tree broadphase moves their leaves to the
+    // tree matching the new type. Without it a body switched to STATIC kept
+    // its leaf in the dynamic tree; switched back while resting on a static
+    // body, the leaf type matched again, its asleep static-static pairs were
+    // never re-queried, and the body sank until it left its fat AABB.
+    if (!this.bphase.is_sweep) {
+      let cx_ite = p.shapes.head;
+      while (cx_ite != null) {
+        const shape = cx_ite.elt;
+        if (shape.node != null) {
+          this.bphase.sync(shape);
+        }
+        cx_ite = cx_ite.next;
+      }
+    }
   }
 
   removed_shape(s: any, deleting: any) {
@@ -3632,7 +3647,9 @@ export class ZPP_Space {
           const arb = cx_ite.elt;
           if (arb.sleeping) {
             arb.sleeping = false;
+            const ended = arb.endGenerated > arb.up_stamp;
             arb.up_stamp += this.stamp - arb.sleep_stamp;
+            if (ended) arb.up_stamp--;
             if (arb.type == ZPP_Arbiter.COL) {
               const carb = arb.colarb;
               if (carb.stat) {
@@ -3840,7 +3857,14 @@ export class ZPP_Space {
         const arb = cx_ite1.elt;
         if (arb.sleeping) {
           arb.sleeping = false;
+          // An arbiter that already generated END before falling asleep must
+          // stay ended: the shift below preserves "last updated one step
+          // before sleep", which would read as "touching until the previous
+          // step" and fire END a second time (crashing on the pair's removed
+          // callback set) and suppress BEGIN on renewed contact.
+          const ended = arb.endGenerated > arb.up_stamp;
           arb.up_stamp += this.stamp + (this.midstep ? 0 : 1) - arb.sleep_stamp;
+          if (ended) arb.up_stamp--;
           if (arb.type == ZPP_Arbiter.COL) {
             const carb = arb.colarb;
             if (carb.stat) {
@@ -5000,7 +5024,14 @@ export class ZPP_Space {
       return true;
     }
     if (!arb.cleared || arb.present != 0 || arb.intchange) {
-      const endcb = !cont && arb.up_stamp == this.stamp - 1 && !arb.cleared && !arb.intchange;
+      // endGenerated: with subSteps > 1 this runs once per sub-step under the
+      // same stamp, and END must be generated only once.
+      const endcb =
+        !cont &&
+        arb.up_stamp == this.stamp - 1 &&
+        arb.endGenerated != this.stamp &&
+        !arb.cleared &&
+        !arb.intchange;
       const begcb = arb.fresh && !arb.cleared && !arb.intchange;
       if (endcb) {
         arb.endGenerated = this.stamp;
@@ -6902,6 +6933,7 @@ export class ZPP_Space {
               arb1.b2.arbiters.add(arb1);
               arb1.active = true;
               arb1.present = 0;
+              arb1.endGenerated = 0;
               arb1.cleared = false;
               arb1.sleeping = false;
               arb1.fresh = false;
@@ -7009,6 +7041,7 @@ export class ZPP_Space {
               arb3.b2.arbiters.add(arb3);
               arb3.active = true;
               arb3.present = 0;
+              arb3.endGenerated = 0;
               arb3.cleared = false;
               arb3.sleeping = false;
               arb3.fresh = false;
@@ -7130,6 +7163,7 @@ export class ZPP_Space {
               arb5.b2.arbiters.add(arb5);
               arb5.active = true;
               arb5.present = 0;
+              arb5.endGenerated = 0;
               arb5.cleared = false;
               arb5.sleeping = false;
               arb5.fresh = false;

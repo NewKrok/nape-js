@@ -28,7 +28,7 @@ import { PulleyJoint } from "../constraint/PulleyJoint";
 import { WeldJoint } from "../constraint/WeldJoint";
 import { SpringJoint } from "../constraint/SpringJoint";
 import type { Constraint } from "../constraint/Constraint";
-import { codecForType, type SerializationOptions } from "./constraints";
+import { codecForType, resolveBodyRef, type SerializationOptions } from "./constraints";
 import { Compound } from "../phys/Compound";
 import {
   SNAPSHOT_VERSION,
@@ -209,10 +209,11 @@ function applyConstraintBase(
 function buildConstraint(
   d: ConstraintData,
   bodies: Body[],
+  world: Body,
   options: SerializationOptions | undefined,
 ): Constraint {
-  const b1 = d.body1Id != null ? (bodies[d.body1Id] ?? null) : null;
-  const b2 = d.body2Id != null ? (bodies[d.body2Id] ?? null) : null;
+  const b1 = resolveBodyRef(d.body1Id, bodies, world);
+  const b2 = resolveBodyRef(d.body2Id, bodies, world);
 
   switch (d.type) {
     case "PivotJoint": {
@@ -259,8 +260,8 @@ function buildConstraint(
       const c = new PulleyJoint(
         b1,
         b2,
-        d.body3Id != null ? (bodies[d.body3Id] ?? null) : null,
-        d.body4Id != null ? (bodies[d.body4Id] ?? null) : null,
+        resolveBodyRef(d.body3Id, bodies, world),
+        resolveBodyRef(d.body4Id, bodies, world),
         toVec2Weak(d.anchor1),
         toVec2Weak(d.anchor2),
         toVec2Weak(d.anchor3),
@@ -284,7 +285,7 @@ function buildConstraint(
     }
     case "UserConstraint": {
       const codec = codecForType(d.userType, options);
-      const linked = d.bodyIds.map((id) => (id != null ? (bodies[id] ?? null) : null));
+      const linked = d.bodyIds.map((id) => resolveBodyRef(id, bodies, world));
       const c = codec.load(d.data, linked);
       applyConstraintBase(c, d);
       return c;
@@ -335,7 +336,9 @@ export function spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOp
   const broadphase =
     snapshot.broadphase === "SWEEP_AND_PRUNE"
       ? Broadphase.SWEEP_AND_PRUNE
-      : Broadphase.DYNAMIC_AABB_TREE;
+      : snapshot.broadphase === "SPATIAL_HASH"
+        ? Broadphase.SPATIAL_HASH
+        : Broadphase.DYNAMIC_AABB_TREE;
 
   const space = new Space(toVec2Weak(snapshot.gravity), broadphase);
   space.worldLinearDrag = snapshot.worldLinearDrag;
@@ -352,7 +355,9 @@ export function spaceFromJSON(snapshot: SpaceSnapshot, options?: SerializationOp
   // ------------------------------------------------------------------
   // 3. Build all constraints (not added to space yet)
   // ------------------------------------------------------------------
-  const constraints = snapshot.constraints.map((cd) => buildConstraint(cd, bodies, options));
+  const constraints = snapshot.constraints.map((cd) =>
+    buildConstraint(cd, bodies, space.world, options),
+  );
 
   // ------------------------------------------------------------------
   // 4. Build compounds — bodies/constraints inside a compound are owned

@@ -11,9 +11,11 @@
  *
  * Binary layout (little-endian):
  *   Header: magic "NAPE" (4B), version u16, bodyCount u32, constraintCount u32, compoundCount u32
- *   Space:  gravity (2×f64), worldLinearDrag f64, worldAngularDrag f64, sortContacts u8, deterministic u8, broadphase u8
+ *   Space:  gravity (2×f64), worldLinearDrag f64, worldAngularDrag f64, sortContacts u8, deterministic u8,
+ *           broadphase u8 (0 sweep-and-prune, 1 AABB tree, 2 spatial hash)
  *   Bodies: [per body — see writeBinaryBody]
- *   Constraints: [per constraint — see writeBinaryConstraint]
+ *   Constraints: [per constraint — see writeBinaryConstraint]; body references are
+ *           i32 indices, -1 for no body, -2 for space.world
  *   Compounds: [per compound — bodyCount u16, bodyIds u32[], constraintCount u16, constraintIdxs u32[], childCount u16, childIdxs u32[]]
  */
 
@@ -36,6 +38,7 @@ import {
   builtinConstraintType,
   findUserConstraintCodec,
   checkedUserData,
+  WORLD_BODY_REF,
   type BuiltinConstraintType,
   type SerializationOptions,
 } from "./constraints";
@@ -421,6 +424,7 @@ export function spaceToBinary(space: Space, options?: SerializationOptions): Uin
     zppBodyIdToIndex.set(zppId, idx);
     allBodies.push(body);
   }
+  zppBodyIdToIndex.set(space.world.zpp_inner.id, WORLD_BODY_REF);
 
   const spaceBodyList = space.bodies;
   const bodyCount = spaceBodyList.length;
@@ -486,7 +490,9 @@ export function spaceToBinary(space: Space, options?: SerializationOptions): Uin
   w.writeFloat64(space.worldAngularDrag);
   w.writeBool(space.sortContacts);
   w.writeBool(space.deterministic);
-  w.writeUint8(space.zpp_inner.bphase.is_sweep ? 0 : 1);
+  const bphase = space.zpp_inner.bphase;
+  // Check is_spatial_hash first: the spatial hash also sets is_sweep.
+  w.writeUint8(bphase.is_spatial_hash ? 2 : bphase.is_sweep ? 0 : 1);
 
   // ------------------------------------------------------------------
   // 5. Bodies

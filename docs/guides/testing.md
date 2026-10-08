@@ -50,10 +50,11 @@ packages/nape-js/tests/
 ├── setup.ts               # bootstrap + subclass imports
 ├── callbacks/             # callback system (8 files)
 ├── constraint/            # joints & constraints (14 files)
-├── core/                  # engine core (2 files)
+├── core/                  # engine core, public API surface snapshot
 ├── dynamics/              # collision & arbiters (10 files)
 ├── geom/                  # geometry: Vec2, AABB, Mat23, Ray… (15 files)
 ├── helpers/               # CharacterController, createConcaveBody
+├── integration/           # cross-system scenarios; golden/ + __goldens__/ (refactor safety net)
 ├── misc/                  # coverage-focused edge-case tests
 ├── native/                # internal ZPP_* classes (85 files)
 ├── phys/                  # Body, Material, InteractionFilter… (15 files)
@@ -70,7 +71,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7546 engine tests across 359 files, plus 79 pixi-adapter tests across 6 files.**
+**7694 engine tests across 363 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -159,6 +160,55 @@ used exact degeneracies (vertices on the line, edges along it). Random
 floating-point inputs almost never hit those — build them on an integer grid.
 Sampling alone can miss thin slivers, so pair it with an exact check (e.g.
 total area) where one exists.
+
+---
+
+## Refactor Safety Net (golden behaviour tests)
+
+Coverage says which lines ran, not whether a rewrite still behaves the same.
+Before refactoring or optimising engine internals, these suites pin the
+observable behaviour:
+
+| Suite | Pins |
+|-------|------|
+| `integration/Behaviour.golden` | one scenario per subsystem (`integration/golden/scenarios.ts`): free flight, forces, mass properties, restitution, friction, resting contacts, every shape pair, multi-shape bodies, sensors, fluids, filters / groups, interaction-type switches, pre-listeners, ONGOING + precedence, sleep / wake, every joint type, breaking, UserConstraint, kinematics / surfaceVel, compounds, all three broadphases, CCD, sub-stepping, mid-step mutation, every space query, CharacterController + tilemap, RadialGravityField, serialization continuation |
+| `integration/Determinism.golden` | the original six pile / chain / CCD / sleep snapshots |
+| `core/PublicApi.surface` | every runtime export of the five entry points, and each public class's static / prototype members with their kind (internal `_foo` / `zpp_*` members excluded) |
+
+A behaviour scenario records sampled body states, the full callback log
+(collision / sensor / fluid BEGIN-END, body and constraint WAKE / SLEEP /
+BREAK) and probes (contact points and impulses, joint impulses, query results,
+mass data). It is checked in three tiers:
+
+1. **Exact** — bit-identical to `__goldens__/behaviour.golden.json`. Any
+   observable change fails, down to one ULP or a callback moving one step.
+   Platform-pinned (Math.sin/cos differ in the last bit across V8 builds): it
+   runs only on the recording platform, CI's linux-x64.
+2. **Tolerance** — scenarios marked `stable` (not chaotic) are also compared
+   within 1e-6 relative, on every platform. When an optimisation deliberately
+   changes floating-point rounding (reordered arithmetic, cached terms), tier
+   1 fails everywhere; tier 2 tells you whether the physics is unchanged. A
+   guard test perturbs `dt` by 1e-12 to keep the `stable` flags honest.
+   Chaotic scenarios (piles, shape-pair drops) amplify rounding, so for them
+   only tier 1 applies — review their diff by eye.
+3. **Run-to-run** — two runs in one process are bit-identical.
+
+Failures name the step, body label and field, e.g.
+`samples @step 30, body "raft".vy: 180.567 !== golden 180.522`.
+
+**Workflow during a refactor:** keep tier 1 green for pure restructuring. If a
+change is meant to alter rounding only, check tier 2 and the event logs, then
+regenerate. If it is meant to change behaviour, regenerate and review the
+golden diff in the PR. Regenerate on CI's platform with
+`gh workflow run regen-goldens.yml --ref <branch>` (records both golden
+files and commits them), or locally on linux-x64 with node 22:
+`UPDATE_GOLDENS=1 npx vitest run tests/integration/Behaviour.golden.test.ts`.
+The API surface file is platform independent:
+`UPDATE_GOLDENS=1 npx vitest run tests/core/PublicApi.surface.test.ts`.
+
+Add a scenario when you add a subsystem: label every tracked body
+(`t.body(b, "name")`), keep construction seeded, and measure whether it is
+`stable` (the guard test will tell you).
 
 ---
 

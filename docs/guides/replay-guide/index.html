@@ -61,7 +61,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.43.0" />
+  <link rel="stylesheet" href="../../style.css?v=3.43.2" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
@@ -246,6 +246,10 @@ If you need to round-trip userData, encode it into your input payload, or
 use <code>spaceToJSON</code> directly (and accept the size cost).</li>
 <li><strong>Sleeping state</strong> — bodies wake fresh on snapshot restore. The simulation
 re-resolves sleep on the next step.</li>
+<li><strong>Contact warm-start state</strong> — the solver's accumulated contact impulses.
+A keyframe taken while bodies press on each other (a settling stack)
+restores bit-close, not bit-identical; the initial snapshot is unaffected
+when contacts have not formed yet.</li>
 <li><strong><code>UserConstraint</code> instances</strong> — only with a codec. Pass
 <code>userConstraints: [codec]</code> to both <code>new Recorder(space, { … })</code> and
 <code>new Player(replay, apply, { … })</code> (see the
@@ -352,7 +356,7 @@ Click to throw balls, Stop, then Replay — identical physics every time.</li>
       <p data-i18n="footer.license">MIT License</p>
     </div>
   </footer>
-  <script type="module" src="../../site-header.js?v=3.43.0"></script>
+  <script type="module" src="../../site-header.js?v=3.43.2"></script>
   <script>
     // Prism arrives deferred; highlight once it is here.
     window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });
