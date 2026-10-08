@@ -296,4 +296,3 @@ export class Capsule extends Shape {
 
 // Bind Capsule._wrap into Shape so Shape._wrap can dispatch without circular import.
 _bindCapsuleWrap((inner) => Capsule._wrap(inner));
-

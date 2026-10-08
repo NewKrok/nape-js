@@ -171,4 +171,3 @@ export class Circle extends Shape {
 
 // Bind Circle._wrap into Shape so Shape._wrap can dispatch without circular import.
 _bindCircleWrap((inner) => Circle._wrap(inner));
-
