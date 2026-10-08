@@ -126,9 +126,15 @@ export interface BodyData {
 
 /** Properties shared by every constraint type. */
 export interface ConstraintBaseData {
-  /** Index into SpaceSnapshot.bodies, or null for a static world anchor. */
+  /**
+   * Index into SpaceSnapshot.bodies, `-2` for `space.world`, or null for no
+   * body.
+   */
   body1Id: number | null;
-  /** Index into SpaceSnapshot.bodies, or null for a static world anchor. */
+  /**
+   * Index into SpaceSnapshot.bodies, `-2` for `space.world`, or null for no
+   * body.
+   */
   body2Id: number | null;
   active: boolean;
   ignore: boolean;
@@ -263,7 +269,7 @@ export interface SpaceSnapshot {
   worldAngularDrag: number;
   sortContacts: boolean;
   deterministic: boolean;
-  broadphase: "SWEEP_AND_PRUNE" | "DYNAMIC_AABB_TREE";
+  broadphase: "SWEEP_AND_PRUNE" | "DYNAMIC_AABB_TREE" | "SPATIAL_HASH";
   bodies: BodyData[];
   constraints: ConstraintData[];
   compounds: CompoundData[];
