@@ -1,0 +1,1421 @@
+{
+  ".": {
+    "AABB": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "fromPoints": "method"
+      },
+      "proto": {
+        "clone": "method",
+        "copy": "method",
+        "equals": "method",
+        "height": "accessor",
+        "max": "accessor",
+        "min": "accessor",
+        "toString": "method",
+        "width": "accessor",
+        "x": "accessor",
+        "y": "accessor"
+      }
+    },
+    "AngleJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "isSlack": "method",
+        "jointMax": "accessor",
+        "jointMin": "accessor",
+        "ratio": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "Arbiter": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "body1": "getter",
+        "body2": "getter",
+        "collisionArbiter": "getter",
+        "fluidArbiter": "getter",
+        "isCollisionArbiter": "method",
+        "isFluidArbiter": "method",
+        "isSensorArbiter": "method",
+        "isSleeping": "getter",
+        "shape1": "getter",
+        "shape2": "getter",
+        "state": "getter",
+        "toString": "method",
+        "totalImpulse": "method",
+        "type": "getter"
+      }
+    },
+    "ArbiterType": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "COLLISION": "getter",
+        "FLUID": "getter",
+        "SENSOR": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Body": {
+      "kind": "class",
+      "extends": "Interactor",
+      "static": {},
+      "proto": {
+        "align": "method",
+        "allowMovement": "accessor",
+        "allowRotation": "accessor",
+        "angularVel": "accessor",
+        "applyAngularImpulse": "method",
+        "applyImpulse": "method",
+        "arbiters": "getter",
+        "bounds": "getter",
+        "buoyancyImpulse": "method",
+        "compound": "accessor",
+        "connectedBodies": "method",
+        "constraintInertia": "getter",
+        "constraintMass": "getter",
+        "constraintVelocity": "getter",
+        "constraints": "getter",
+        "constraintsImpulse": "method",
+        "contains": "method",
+        "copy": "method",
+        "crushFactor": "method",
+        "disableCCD": "accessor",
+        "dragImpulse": "method",
+        "force": "accessor",
+        "gravMass": "accessor",
+        "gravMassMode": "accessor",
+        "gravMassScale": "accessor",
+        "inertia": "accessor",
+        "inertiaMode": "accessor",
+        "integrate": "method",
+        "interactingBodies": "method",
+        "isBullet": "accessor",
+        "isDynamic": "method",
+        "isKinematic": "method",
+        "isSleeping": "getter",
+        "isStatic": "method",
+        "kinAngVel": "accessor",
+        "kinematicVel": "accessor",
+        "localCOM": "getter",
+        "localPointToWorld": "method",
+        "localVectorToWorld": "method",
+        "mass": "accessor",
+        "massMode": "accessor",
+        "normalImpulse": "method",
+        "position": "accessor",
+        "rollingImpulse": "method",
+        "rotate": "method",
+        "rotateShapes": "method",
+        "rotation": "accessor",
+        "scaleShapes": "method",
+        "setShapeFilters": "method",
+        "setShapeFluidProperties": "method",
+        "setShapeMaterials": "method",
+        "setVelocityFromTarget": "method",
+        "shapes": "getter",
+        "space": "accessor",
+        "surfaceVel": "accessor",
+        "tangentImpulse": "method",
+        "toString": "method",
+        "torque": "accessor",
+        "totalContactsImpulse": "method",
+        "totalFluidImpulse": "method",
+        "totalImpulse": "method",
+        "transformShapes": "method",
+        "translateShapes": "method",
+        "type": "accessor",
+        "velocity": "accessor",
+        "worldCOM": "getter",
+        "worldPointToLocal": "method",
+        "worldVectorToLocal": "method"
+      }
+    },
+    "BodyCallback": {
+      "kind": "class",
+      "extends": "Callback",
+      "static": {},
+      "proto": {
+        "body": "getter",
+        "toString": "method"
+      }
+    },
+    "BodyListener": {
+      "kind": "class",
+      "extends": "Listener",
+      "static": {},
+      "proto": {
+        "handler": "accessor",
+        "options": "accessor"
+      }
+    },
+    "BodyType": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "DYNAMIC": "getter",
+        "KINEMATIC": "getter",
+        "STATIC": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Broadphase": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "DYNAMIC_AABB_TREE": "getter",
+        "SPATIAL_HASH": "getter",
+        "SWEEP_AND_PRUNE": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Callback": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "event": "getter",
+        "listener": "getter",
+        "toString": "method"
+      }
+    },
+    "Capsule": {
+      "kind": "class",
+      "extends": "Shape",
+      "static": {},
+      "proto": {
+        "halfLength": "accessor",
+        "height": "getter",
+        "isCapsule": "method",
+        "isPolygon": "method",
+        "radius": "accessor",
+        "type": "getter",
+        "width": "getter"
+      }
+    },
+    "CbEvent": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "BEGIN": "getter",
+        "BREAK": "getter",
+        "END": "getter",
+        "ONGOING": "getter",
+        "PRE": "getter",
+        "SLEEP": "getter",
+        "WAKE": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "CbType": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "ANY_BODY": "getter",
+        "ANY_COMPOUND": "getter",
+        "ANY_CONSTRAINT": "getter",
+        "ANY_SHAPE": "getter"
+      },
+      "proto": {
+        "constraints": "getter",
+        "excluding": "method",
+        "id": "getter",
+        "including": "method",
+        "interactors": "getter",
+        "toString": "method",
+        "userData": "getter"
+      }
+    },
+    "CharacterController": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "destroy": "method",
+        "down": "accessor",
+        "groundBody": "getter",
+        "groundNormal": "getter",
+        "grounded": "getter",
+        "maxSlopeAngle": "accessor",
+        "setDown": "method",
+        "setVelocity": "method",
+        "timeSinceGrounded": "getter",
+        "update": "method",
+        "wallFriction": "getter"
+      }
+    },
+    "Circle": {
+      "kind": "class",
+      "extends": "Shape",
+      "static": {},
+      "proto": {
+        "radius": "accessor"
+      }
+    },
+    "CollisionArbiter": {
+      "kind": "class",
+      "extends": "Arbiter",
+      "static": {},
+      "proto": {
+        "contacts": "getter",
+        "dynamicFriction": "accessor",
+        "elasticity": "accessor",
+        "firstVertex": "method",
+        "normal": "getter",
+        "normalImpulse": "method",
+        "radius": "getter",
+        "referenceEdge1": "getter",
+        "referenceEdge2": "getter",
+        "rollingFriction": "accessor",
+        "rollingImpulse": "method",
+        "secondVertex": "method",
+        "staticFriction": "accessor",
+        "tangentImpulse": "method",
+        "totalImpulse": "method"
+      }
+    },
+    "Compound": {
+      "kind": "class",
+      "extends": "Interactor",
+      "static": {},
+      "proto": {
+        "COM": "method",
+        "bodies": "getter",
+        "breakApart": "method",
+        "compound": "accessor",
+        "compounds": "getter",
+        "constraints": "getter",
+        "copy": "method",
+        "rotate": "method",
+        "space": "accessor",
+        "toString": "method",
+        "translate": "method",
+        "visitBodies": "method",
+        "visitCompounds": "method",
+        "visitConstraints": "method"
+      }
+    },
+    "Config": {
+      "kind": "object",
+      "keys": [
+        "angularCCDSlipScale",
+        "angularSleepThreshold",
+        "arbiterExpirationDelay",
+        "bulletCCDAngularThreshold",
+        "bulletCCDLinearThreshold",
+        "collisionSlop",
+        "collisionSlopCCD",
+        "constraintAngularSlop",
+        "constraintLinearSlop",
+        "contactBiasCoef",
+        "contactContinuousBiasCoef",
+        "contactContinuousStaticBiasCoef",
+        "contactStaticBiasCoef",
+        "distanceThresholdCCD",
+        "dynamicSweepAngularThreshold",
+        "dynamicSweepLinearThreshold",
+        "elasticThreshold",
+        "epsilon",
+        "fluidAngularDrag",
+        "fluidAngularDragFriction",
+        "fluidLinearDrag",
+        "fluidVacuumDrag",
+        "illConditionedThreshold",
+        "linearSleepThreshold",
+        "sleepDelay",
+        "staticCCDAngularThreshold",
+        "staticCCDLinearThreshold",
+        "staticFrictionThreshold"
+      ]
+    },
+    "Constraint": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "active": "accessor",
+        "bodyImpulse": "method",
+        "breakUnderError": "accessor",
+        "breakUnderForce": "accessor",
+        "cbTypes": "getter",
+        "compound": "accessor",
+        "copy": "method",
+        "damping": "accessor",
+        "frequency": "accessor",
+        "ignore": "accessor",
+        "impulse": "method",
+        "isSleeping": "getter",
+        "maxError": "accessor",
+        "maxForce": "accessor",
+        "removeOnBreak": "accessor",
+        "space": "accessor",
+        "stiff": "accessor",
+        "toString": "method",
+        "userData": "getter",
+        "visitBodies": "method"
+      }
+    },
+    "ConstraintCallback": {
+      "kind": "class",
+      "extends": "Callback",
+      "static": {},
+      "proto": {
+        "constraint": "getter",
+        "toString": "method"
+      }
+    },
+    "ConstraintListener": {
+      "kind": "class",
+      "extends": "Listener",
+      "static": {},
+      "proto": {
+        "handler": "accessor",
+        "options": "accessor"
+      }
+    },
+    "Contact": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "arbiter": "getter",
+        "fresh": "getter",
+        "friction": "getter",
+        "normalImpulse": "method",
+        "penetration": "getter",
+        "position": "getter",
+        "rollingImpulse": "method",
+        "tangentImpulse": "method",
+        "toString": "method",
+        "totalImpulse": "method"
+      }
+    },
+    "ConvexResult": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "dispose": "method",
+        "normal": "getter",
+        "position": "getter",
+        "shape": "getter",
+        "toString": "method",
+        "toi": "getter"
+      }
+    },
+    "Debug": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "clearObjectPools": "method",
+        "version": "method"
+      },
+      "proto": {}
+    },
+    "DebugDraw": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "drawCapsule": "method",
+        "drawCircle": "method",
+        "drawPoint": "method",
+        "drawPolygon": "method",
+        "drawSegment": "method",
+        "drawSolidCapsule": "method",
+        "drawSolidCircle": "method",
+        "drawSolidPolygon": "method"
+      }
+    },
+    "DebugDrawFlags": {
+      "kind": "object",
+      "keys": ["AABB", "ALL", "CENTER_OF_MASS", "CONTACTS", "JOINTS", "SHAPES", "VELOCITIES"]
+    },
+    "DistanceJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "anchor1": "accessor",
+        "anchor2": "accessor",
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "isSlack": "method",
+        "jointMax": "accessor",
+        "jointMin": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "Edge": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "length": "getter",
+        "localNormal": "getter",
+        "localProjection": "getter",
+        "localVertex1": "getter",
+        "localVertex2": "getter",
+        "polygon": "getter",
+        "toString": "method",
+        "worldNormal": "getter",
+        "worldProjection": "getter",
+        "worldVertex1": "getter",
+        "worldVertex2": "getter"
+      }
+    },
+    "FluidArbiter": {
+      "kind": "class",
+      "extends": "Arbiter",
+      "static": {},
+      "proto": {
+        "buoyancyImpulse": "method",
+        "dragImpulse": "method",
+        "overlap": "accessor",
+        "position": "accessor",
+        "totalImpulse": "method"
+      }
+    },
+    "FluidProperties": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "copy": "method",
+        "density": "accessor",
+        "gravity": "accessor",
+        "shapes": "getter",
+        "toString": "method",
+        "userData": "getter",
+        "viscosity": "accessor"
+      }
+    },
+    "Geom": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "contains": "method",
+        "distance": "method",
+        "distanceBody": "method",
+        "intersects": "method",
+        "intersectsBody": "method"
+      },
+      "proto": {}
+    },
+    "GeomPoly": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "get": "method"
+      },
+      "proto": {
+        "area": "method",
+        "backwardsIterator": "method",
+        "bottom": "method",
+        "bounds": "method",
+        "clear": "method",
+        "contains": "method",
+        "convexDecomposition": "method",
+        "copy": "method",
+        "current": "method",
+        "cut": "method",
+        "dispose": "method",
+        "empty": "method",
+        "erase": "method",
+        "forwardIterator": "method",
+        "inflate": "method",
+        "isClockwise": "method",
+        "isConvex": "method",
+        "isDegenerate": "method",
+        "isMonotone": "method",
+        "isSimple": "method",
+        "iterator": "method",
+        "left": "method",
+        "monotoneDecomposition": "method",
+        "pop": "method",
+        "push": "method",
+        "right": "method",
+        "shift": "method",
+        "simpleDecomposition": "method",
+        "simplify": "method",
+        "size": "method",
+        "skipBackwards": "method",
+        "skipForward": "method",
+        "toString": "method",
+        "top": "method",
+        "transform": "method",
+        "triangularDecomposition": "method",
+        "unshift": "method",
+        "winding": "method"
+      }
+    },
+    "GravMassMode": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "DEFAULT": "getter",
+        "FIXED": "getter",
+        "SCALED": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "InertiaMode": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "DEFAULT": "getter",
+        "FIXED": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "InteractionCallback": {
+      "kind": "class",
+      "extends": "Callback",
+      "static": {},
+      "proto": {
+        "arbiters": "getter",
+        "int1": "getter",
+        "int2": "getter",
+        "toString": "method"
+      }
+    },
+    "InteractionFilter": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "collisionGroup": "accessor",
+        "collisionMask": "accessor",
+        "copy": "method",
+        "fluidGroup": "accessor",
+        "fluidMask": "accessor",
+        "sensorGroup": "accessor",
+        "sensorMask": "accessor",
+        "shapes": "getter",
+        "shouldCollide": "method",
+        "shouldFlow": "method",
+        "shouldSense": "method",
+        "toString": "method",
+        "userData": "getter"
+      }
+    },
+    "InteractionGroup": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "group": "accessor",
+        "groups": "getter",
+        "ignore": "accessor",
+        "interactors": "getter",
+        "toString": "method"
+      }
+    },
+    "InteractionListener": {
+      "kind": "class",
+      "extends": "Listener",
+      "static": {},
+      "proto": {
+        "allowSleepingCallbacks": "accessor",
+        "handler": "accessor",
+        "interactionType": "accessor",
+        "options1": "accessor",
+        "options2": "accessor"
+      }
+    },
+    "InteractionType": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "ANY": "getter",
+        "COLLISION": "getter",
+        "FLUID": "getter",
+        "SENSOR": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Interactor": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "castBody": "getter",
+        "castCompound": "getter",
+        "castShape": "getter",
+        "cbTypes": "getter",
+        "group": "accessor",
+        "id": "getter",
+        "isBody": "method",
+        "isCompound": "method",
+        "isShape": "method",
+        "toString": "method",
+        "userData": "getter"
+      }
+    },
+    "LineJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "anchor1": "accessor",
+        "anchor2": "accessor",
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "direction": "accessor",
+        "impulse": "method",
+        "jointMax": "accessor",
+        "jointMin": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "Listener": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "event": "accessor",
+        "precedence": "accessor",
+        "space": "accessor",
+        "toString": "method",
+        "type": "getter"
+      }
+    },
+    "ListenerType": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "BODY": "getter",
+        "CONSTRAINT": "getter",
+        "INTERACTION": "getter",
+        "PRE": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "MarchingSquares": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "run": "method"
+      },
+      "proto": {}
+    },
+    "MassMode": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "DEFAULT": "getter",
+        "FIXED": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Mat23": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "rotation": "method",
+        "scale": "method",
+        "translation": "method"
+      },
+      "proto": {
+        "a": "accessor",
+        "b": "accessor",
+        "c": "accessor",
+        "clone": "method",
+        "concat": "method",
+        "copy": "method",
+        "d": "accessor",
+        "determinant": "getter",
+        "equals": "method",
+        "equiorthogonal": "method",
+        "equiorthogonalise": "method",
+        "inverse": "method",
+        "inverseTransform": "method",
+        "orthogonal": "method",
+        "orthogonalise": "method",
+        "reset": "method",
+        "set": "method",
+        "setAs": "method",
+        "singular": "method",
+        "toString": "method",
+        "transform": "method",
+        "transpose": "method",
+        "tx": "accessor",
+        "ty": "accessor"
+      }
+    },
+    "MatMN": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "clone": "method",
+        "cols": "getter",
+        "equals": "method",
+        "mul": "method",
+        "rows": "getter",
+        "setx": "method",
+        "toString": "method",
+        "transpose": "method",
+        "x": "method"
+      }
+    },
+    "Material": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "glass": "method",
+        "ice": "method",
+        "rubber": "method",
+        "sand": "method",
+        "steel": "method",
+        "wood": "method"
+      },
+      "proto": {
+        "copy": "method",
+        "density": "accessor",
+        "dynamicFriction": "accessor",
+        "elasticity": "accessor",
+        "rollingFriction": "accessor",
+        "staticFriction": "accessor",
+        "toString": "method",
+        "userData": "getter"
+      }
+    },
+    "MotorJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "rate": "accessor",
+        "ratio": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "OptionType": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "excludes": "getter",
+        "excluding": "method",
+        "includes": "getter",
+        "including": "method",
+        "toString": "method"
+      }
+    },
+    "ParticleEmitter": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "active": "getter",
+        "ages": "getter",
+        "destroy": "method",
+        "emit": "method",
+        "killAll": "method",
+        "lifetimes": "getter",
+        "poolSize": "getter",
+        "requestKill": "method",
+        "totalSpawned": "getter",
+        "update": "method"
+      }
+    },
+    "ParticleEmitterGroup": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "add": "method",
+        "clear": "method",
+        "destroyAll": "method",
+        "length": "getter",
+        "remove": "method",
+        "update": "method"
+      }
+    },
+    "PivotJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "anchor1": "accessor",
+        "anchor2": "accessor",
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "visitBodies": "method"
+      }
+    },
+    "Polygon": {
+      "kind": "class",
+      "extends": "Shape",
+      "static": {
+        "box": "method",
+        "rect": "method",
+        "regular": "method"
+      },
+      "proto": {
+        "edges": "getter",
+        "localVerts": "getter",
+        "validity": "method",
+        "worldVerts": "getter"
+      }
+    },
+    "PreCallback": {
+      "kind": "class",
+      "extends": "Callback",
+      "static": {},
+      "proto": {
+        "arbiter": "getter",
+        "int1": "getter",
+        "int2": "getter",
+        "swapped": "getter",
+        "toString": "method"
+      }
+    },
+    "PreFlag": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "ACCEPT": "getter",
+        "ACCEPT_ONCE": "getter",
+        "IGNORE": "getter",
+        "IGNORE_ONCE": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "PreListener": {
+      "kind": "class",
+      "extends": "Listener",
+      "static": {},
+      "proto": {
+        "handler": "accessor",
+        "interactionType": "accessor",
+        "options1": "accessor",
+        "options2": "accessor",
+        "pure": "accessor"
+      }
+    },
+    "PulleyJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "anchor1": "accessor",
+        "anchor2": "accessor",
+        "anchor3": "accessor",
+        "anchor4": "accessor",
+        "body1": "accessor",
+        "body2": "accessor",
+        "body3": "accessor",
+        "body4": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "isSlack": "method",
+        "jointMax": "accessor",
+        "jointMin": "accessor",
+        "ratio": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "RadialGravityField": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "apply": "method",
+        "forceOn": "method",
+        "getPosition": "method"
+      }
+    },
+    "RadialGravityFieldGroup": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "add": "method",
+        "apply": "method",
+        "clear": "method",
+        "length": "getter",
+        "remove": "method"
+      }
+    },
+    "Ray": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "fromSegment": "method"
+      },
+      "proto": {
+        "aabb": "method",
+        "at": "method",
+        "clone": "method",
+        "copy": "method",
+        "direction": "accessor",
+        "maxDistance": "accessor",
+        "origin": "accessor",
+        "userData": "getter"
+      }
+    },
+    "RayResult": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "dispose": "method",
+        "distance": "getter",
+        "inner": "getter",
+        "normal": "getter",
+        "shape": "getter",
+        "toString": "method"
+      }
+    },
+    "Shape": {
+      "kind": "class",
+      "extends": "Interactor",
+      "static": {},
+      "proto": {
+        "angDrag": "getter",
+        "area": "getter",
+        "body": "accessor",
+        "bounds": "getter",
+        "castCapsule": "getter",
+        "castCircle": "getter",
+        "castPolygon": "getter",
+        "cbTypes": "getter",
+        "contains": "method",
+        "copy": "method",
+        "filter": "accessor",
+        "fluidEnabled": "accessor",
+        "fluidProperties": "accessor",
+        "inertia": "getter",
+        "isCapsule": "method",
+        "isCircle": "method",
+        "isPolygon": "method",
+        "localCOM": "accessor",
+        "material": "accessor",
+        "rotate": "method",
+        "scale": "method",
+        "sensorEnabled": "accessor",
+        "toString": "method",
+        "transform": "method",
+        "translate": "method",
+        "type": "getter",
+        "worldCOM": "getter"
+      }
+    },
+    "ShapeType": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "CAPSULE": "getter",
+        "CIRCLE": "getter",
+        "POLYGON": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Space": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "arbiters": "getter",
+        "bodies": "getter",
+        "bodiesInAABB": "method",
+        "bodiesInBody": "method",
+        "bodiesInCircle": "method",
+        "bodiesInShape": "method",
+        "bodiesUnderPoint": "method",
+        "broadphase": "getter",
+        "clear": "method",
+        "compounds": "getter",
+        "constraints": "getter",
+        "convexCast": "method",
+        "convexMultiCast": "method",
+        "debugDraw": "method",
+        "deterministic": "accessor",
+        "elapsedTime": "getter",
+        "gravity": "accessor",
+        "interactionType": "method",
+        "listeners": "getter",
+        "liveBodies": "getter",
+        "liveConstraints": "getter",
+        "metrics": "getter",
+        "profilerEnabled": "accessor",
+        "rayCast": "method",
+        "rayMultiCast": "method",
+        "shapesInAABB": "method",
+        "shapesInBody": "method",
+        "shapesInCircle": "method",
+        "shapesInShape": "method",
+        "shapesUnderPoint": "method",
+        "sortContacts": "accessor",
+        "step": "method",
+        "subSteps": "accessor",
+        "timeStamp": "getter",
+        "toString": "method",
+        "userData": "getter",
+        "visitBodies": "method",
+        "visitCompounds": "method",
+        "visitConstraints": "method",
+        "world": "getter",
+        "worldAngularDrag": "accessor",
+        "worldLinearDrag": "accessor"
+      }
+    },
+    "SpringJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "anchor1": "accessor",
+        "anchor2": "accessor",
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "restLength": "accessor",
+        "stiff": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "TriggerZone": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "body": "getter",
+        "dispose": "method",
+        "enabled": "accessor",
+        "onEnter": "accessor",
+        "onExit": "accessor",
+        "onStay": "accessor",
+        "space": "getter"
+      }
+    },
+    "UserConstraint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "__bindVec2": "method",
+        "__broken": "method",
+        "__clamp": "method",
+        "__copy": "method",
+        "__draw": "method",
+        "__eff_mass": "method",
+        "__impulse": "method",
+        "__invalidate": "method",
+        "__position": "method",
+        "__prepare": "method",
+        "__registerBody": "method",
+        "__validate": "method",
+        "__velocity": "method",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "visitBodies": "method"
+      }
+    },
+    "VERSION": {
+      "kind": "string"
+    },
+    "ValidationResult": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "CONCAVE": "getter",
+        "DEGENERATE": "getter",
+        "SELF_INTERSECTING": "getter",
+        "VALID": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "Vec2": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "distance": "method",
+        "dsq": "method",
+        "eq": "method",
+        "fromAngle": "method",
+        "fromPolar": "method",
+        "get": "method",
+        "lerp": "method",
+        "weak": "method"
+      },
+      "proto": {
+        "add": "method",
+        "addMul": "method",
+        "addeq": "method",
+        "angle": "accessor",
+        "clone": "method",
+        "copy": "method",
+        "cross": "method",
+        "dispose": "method",
+        "dot": "method",
+        "equals": "method",
+        "length": "accessor",
+        "lsq": "method",
+        "mul": "method",
+        "muleq": "method",
+        "normalise": "method",
+        "perp": "method",
+        "reflect": "method",
+        "rotate": "method",
+        "set": "method",
+        "setxy": "method",
+        "sub": "method",
+        "subeq": "method",
+        "toString": "method",
+        "unit": "method",
+        "x": "accessor",
+        "y": "accessor"
+      }
+    },
+    "Vec3": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "get": "method"
+      },
+      "proto": {
+        "clone": "method",
+        "dispose": "method",
+        "equals": "method",
+        "length": "accessor",
+        "lsq": "method",
+        "set": "method",
+        "setxyz": "method",
+        "toString": "method",
+        "x": "accessor",
+        "xy": "method",
+        "y": "accessor",
+        "z": "accessor"
+      }
+    },
+    "WeldJoint": {
+      "kind": "class",
+      "extends": "Constraint",
+      "static": {},
+      "proto": {
+        "anchor1": "accessor",
+        "anchor2": "accessor",
+        "body1": "accessor",
+        "body2": "accessor",
+        "bodyImpulse": "method",
+        "impulse": "method",
+        "phase": "accessor",
+        "visitBodies": "method"
+      }
+    },
+    "Winding": {
+      "kind": "class",
+      "extends": null,
+      "static": {
+        "ANTICLOCKWISE": "getter",
+        "CLOCKWISE": "getter",
+        "UNDEFINED": "getter"
+      },
+      "proto": {
+        "toString": "method"
+      }
+    },
+    "buildTilemapBody": {
+      "kind": "function",
+      "arity": 2
+    },
+    "computeVoronoi": {
+      "kind": "function",
+      "arity": 2
+    },
+    "createConcaveBody": {
+      "kind": "function",
+      "arity": 2
+    },
+    "fractureBody": {
+      "kind": "function",
+      "arity": 3
+    },
+    "generateFractureSites": {
+      "kind": "function",
+      "arity": 2
+    },
+    "ldtkLayerToGrid": {
+      "kind": "function",
+      "arity": 1
+    },
+    "meshTilemap": {
+      "kind": "function",
+      "arity": 1
+    },
+    "tiledLayerToGrid": {
+      "kind": "function",
+      "arity": 1
+    }
+  },
+  "./serialization": {
+    "BINARY_SNAPSHOT_VERSION": {
+      "kind": "number"
+    },
+    "SNAPSHOT_VERSION": {
+      "kind": "number"
+    },
+    "spaceFromBinary": {
+      "kind": "function",
+      "arity": 2
+    },
+    "spaceFromJSON": {
+      "kind": "function",
+      "arity": 2
+    },
+    "spaceToBinary": {
+      "kind": "function",
+      "arity": 2
+    },
+    "spaceToJSON": {
+      "kind": "function",
+      "arity": 2
+    }
+  },
+  "./replay": {
+    "Player": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "applyInput": "accessor",
+        "finished": "getter",
+        "frame": "getter",
+        "frameCount": "getter",
+        "replay": "getter",
+        "restore": "method",
+        "space": "getter",
+        "step": "method",
+        "stepTo": "method"
+      }
+    },
+    "REPLAY_VERSION": {
+      "kind": "number"
+    },
+    "Recorder": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "finish": "method",
+        "finished": "getter",
+        "frame": "getter",
+        "recordFrame": "method"
+      }
+    },
+    "decodeReplay": {
+      "kind": "function",
+      "arity": 1
+    },
+    "encodeReplay": {
+      "kind": "function",
+      "arity": 1
+    },
+    "validateDeterministicConfig": {
+      "kind": "function",
+      "arity": 1
+    }
+  },
+  "./worker": {
+    "FLOATS_PER_BODY": {
+      "kind": "number"
+    },
+    "HEADER_FLOATS": {
+      "kind": "number"
+    },
+    "PROTOCOL_VERSION": {
+      "kind": "number"
+    },
+    "PhysicsWorkerManager": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "addBody": "method",
+        "applyForce": "method",
+        "applyImpulse": "method",
+        "bodyCount": "getter",
+        "destroy": "method",
+        "doInit": "method",
+        "getTransform": "method",
+        "init": "method",
+        "isSharedBuffer": "getter",
+        "onFrameCallback": "setter",
+        "post": "method",
+        "rawTransforms": "getter",
+        "readAllTransforms": "method",
+        "removeBody": "method",
+        "setGravity": "method",
+        "setPosition": "method",
+        "setVelocity": "method",
+        "start": "method",
+        "step": "method",
+        "stepTimeMs": "getter",
+        "stop": "method",
+        "timestamp": "getter"
+      }
+    },
+    "buildWorkerScript": {
+      "kind": "function",
+      "arity": 1
+    }
+  },
+  "./profiler": {
+    "PerformanceOverlay": {
+      "kind": "class",
+      "extends": null,
+      "static": {},
+      "proto": {
+        "destroy": "method",
+        "update": "method"
+      }
+    }
+  }
+}

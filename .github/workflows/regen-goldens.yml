@@ -1,7 +1,8 @@
 name: Regenerate determinism goldens
 
 # Records the bit-exact golden snapshots for
-# packages/nape-js/tests/integration/Determinism.golden.test.ts on the same
+# packages/nape-js/tests/integration/Determinism.golden.test.ts and
+# packages/nape-js/tests/integration/Behaviour.golden.test.ts on the same
 # environment CI runs on (ubuntu / linux-x64 / node 22) and commits the result
 # back to the dispatched branch. Math.sin/cos differ in the last ULP across
 # platforms and V8 builds, so goldens recorded anywhere else would make CI's
@@ -30,17 +31,20 @@ jobs:
       - run: npm ci
 
       - name: Record goldens
-        run: UPDATE_GOLDENS=1 npx vitest run tests/integration/Determinism.golden.test.ts
+        run: >-
+          UPDATE_GOLDENS=1 npx vitest run
+          tests/integration/Determinism.golden.test.ts
+          tests/integration/Behaviour.golden.test.ts
         working-directory: packages/nape-js
 
       - name: Format golden file
-        run: npx prettier --write packages/nape-js/tests/integration/__goldens__/determinism.golden.json
+        run: npx prettier --write packages/nape-js/tests/integration/__goldens__/*.golden.json
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add packages/nape-js/tests/integration/__goldens__/determinism.golden.json
+          git add packages/nape-js/tests/integration/__goldens__/*.golden.json
           if git diff --cached --quiet; then
             echo "goldens unchanged"
             exit 0
