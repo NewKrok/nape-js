@@ -841,30 +841,7 @@ export class ZPP_Space {
                   if ((x.itype & xarb.type) != 0 && callbackset.empty_arb(x.itype)) {
                     const cb = this.push_callback(x);
                     cb.event = 1;
-                    const o1 = callbackset.int1;
-                    const o2 = callbackset.int2;
-                    let tmp;
-                    const _this2 = x.options1;
-                    const xs = o1.cbTypes;
-                    if (
-                      _this2.nonemptyintersection(xs, _this2.includes) &&
-                      !_this2.nonemptyintersection(xs, _this2.excludes)
-                    ) {
-                      const _this3 = x.options2;
-                      const xs1 = o2.cbTypes;
-                      tmp =
-                        _this3.nonemptyintersection(xs1, _this3.includes) &&
-                        !_this3.nonemptyintersection(xs1, _this3.excludes);
-                    } else {
-                      tmp = false;
-                    }
-                    if (tmp) {
-                      cb.int1 = o1;
-                      cb.int2 = o2;
-                    } else {
-                      cb.int1 = o2;
-                      cb.int2 = o1;
-                    }
+                    ZPP_Interactor.int_callback(callbackset, x, cb);
                     cb.set = callbackset;
                   }
                 }
@@ -1947,30 +1924,7 @@ export class ZPP_Space {
           if ((!sleeping || x1.allowSleepingCallbacks) && !set.empty_arb(x1.itype)) {
             const cb = this.push_callback(x1);
             cb.event = 6;
-            const o11 = set.int1;
-            const o2 = set.int2;
-            let tmp;
-            const _this3 = x1.options1;
-            const xs = o11.cbTypes;
-            if (
-              _this3.nonemptyintersection(xs, _this3.includes) &&
-              !_this3.nonemptyintersection(xs, _this3.excludes)
-            ) {
-              const _this4 = x1.options2;
-              const xs1 = o2.cbTypes;
-              tmp =
-                _this4.nonemptyintersection(xs1, _this4.includes) &&
-                !_this4.nonemptyintersection(xs1, _this4.excludes);
-            } else {
-              tmp = false;
-            }
-            if (tmp) {
-              cb.int1 = o11;
-              cb.int2 = o2;
-            } else {
-              cb.int1 = o2;
-              cb.int2 = o11;
-            }
+            ZPP_Interactor.int_callback(set, x1, cb);
             cb.set = set;
           }
         }
@@ -4741,41 +4695,7 @@ export class ZPP_Space {
         arb.endGenerated = this.stamp;
       }
       if (begcb || endcb || arb.cleared || arb.intchange) {
-        const s1 = arb.ws1;
-        const s2 = arb.ws2;
-        this.mrca1.clear();
-        this.mrca2.clear();
-        if (s1.cbSet != null) {
-          this.mrca1.add(s1);
-        }
-        if (s1.body.cbSet != null) {
-          const o2 = s1.body;
-          this.mrca1.add(o2);
-        }
-        if (s2.cbSet != null) {
-          this.mrca2.add(s2);
-        }
-        if (s2.body.cbSet != null) {
-          const o3 = s2.body;
-          this.mrca2.add(o3);
-        }
-        let c1 = s1.body.compound;
-        let c2 = s2.body.compound;
-        while (c1 != c2) {
-          const d1 = c1 == null ? 0 : c1.depth;
-          const d2 = c2 == null ? 0 : c2.depth;
-          if (d1 < d2) {
-            if (c2.cbSet != null) {
-              this.mrca2.add(c2);
-            }
-            c2 = c2.compound;
-          } else {
-            if (c1.cbSet != null) {
-              this.mrca1.add(c1);
-            }
-            c1 = c1.compound;
-          }
-        }
+        this.MRCA_chains(arb.ws1, arb.ws2);
         let cx_ite = this.mrca1.head;
         while (cx_ite != null) {
           const i1 = cx_ite.elt;
@@ -4803,30 +4723,7 @@ export class ZPP_Space {
                   if ((x.itype & arb.type) != 0 && callbackset.empty_arb(x.itype)) {
                     const cb = this.push_callback(x);
                     cb.event = 0;
-                    const o11 = callbackset.int1;
-                    const o21 = callbackset.int2;
-                    let tmp;
-                    const _this10 = x.options1;
-                    const xs = o11.cbTypes;
-                    if (
-                      _this10.nonemptyintersection(xs, _this10.includes) &&
-                      !_this10.nonemptyintersection(xs, _this10.excludes)
-                    ) {
-                      const _this11 = x.options2;
-                      const xs1 = o21.cbTypes;
-                      tmp =
-                        _this11.nonemptyintersection(xs1, _this11.includes) &&
-                        !_this11.nonemptyintersection(xs1, _this11.excludes);
-                    } else {
-                      tmp = false;
-                    }
-                    if (tmp) {
-                      cb.int1 = o11;
-                      cb.int2 = o21;
-                    } else {
-                      cb.int1 = o21;
-                      cb.int2 = o11;
-                    }
+                    ZPP_Interactor.int_callback(callbackset, x, cb);
                     cb.set = callbackset;
                   }
                 }
@@ -4864,30 +4761,7 @@ export class ZPP_Space {
                   if ((x1.itype & arb.type) != 0 && callbackset.empty_arb(x1.itype)) {
                     const cb3 = this.push_callback(x1);
                     cb3.event = 1;
-                    const o12 = callbackset.int1;
-                    const o22 = callbackset.int2;
-                    let tmp2;
-                    const _this14 = x1.options1;
-                    const xs2 = o12.cbTypes;
-                    if (
-                      _this14.nonemptyintersection(xs2, _this14.includes) &&
-                      !_this14.nonemptyintersection(xs2, _this14.excludes)
-                    ) {
-                      const _this15 = x1.options2;
-                      const xs3 = o22.cbTypes;
-                      tmp2 =
-                        _this15.nonemptyintersection(xs3, _this15.includes) &&
-                        !_this15.nonemptyintersection(xs3, _this15.excludes);
-                    } else {
-                      tmp2 = false;
-                    }
-                    if (tmp2) {
-                      cb3.int1 = o12;
-                      cb3.int2 = o22;
-                    } else {
-                      cb3.int1 = o22;
-                      cb3.int2 = o12;
-                    }
+                    ZPP_Interactor.int_callback(callbackset, x1, cb3);
                     cb3.set = callbackset;
                   }
                 }
@@ -6859,30 +6733,7 @@ export class ZPP_Space {
             const listener1 = cx_ite8.elt;
             this.precb.zpp_inner.listener = listener1;
             const cb = this.precb.zpp_inner;
-            const o11 = callbackset.int1;
-            const o21 = callbackset.int2;
-            let ret24;
-            const _this20 = listener1.options1;
-            const xs = o11.cbTypes;
-            if (
-              _this20.nonemptyintersection(xs, _this20.includes) &&
-              !_this20.nonemptyintersection(xs, _this20.excludes)
-            ) {
-              const _this21 = listener1.options2;
-              const xs1 = o21.cbTypes;
-              ret24 =
-                _this21.nonemptyintersection(xs1, _this21.includes) &&
-                !_this21.nonemptyintersection(xs1, _this21.excludes);
-            } else {
-              ret24 = false;
-            }
-            if (ret24) {
-              cb.int1 = o11;
-              cb.int2 = o21;
-            } else {
-              cb.int1 = o21;
-              cb.int2 = o11;
-            }
+            ZPP_Interactor.int_callback(callbackset, listener1, cb);
             this.precb.zpp_inner.pre_swapped = i1 != this.precb.zpp_inner.int1;
             const ret25 = listener1.handlerp(this.precb);
             if (ret25 != null) {
@@ -6970,15 +6821,13 @@ export class ZPP_Space {
       this.mrca1.add(s1);
     }
     if (s1.body.cbSet != null) {
-      const o2 = s1.body;
-      this.mrca1.add(o2);
+      this.mrca1.add(s1.body);
     }
     if (s2.cbSet != null) {
       this.mrca2.add(s2);
     }
     if (s2.body.cbSet != null) {
-      const o3 = s2.body;
-      this.mrca2.add(o3);
+      this.mrca2.add(s2.body);
     }
     let c1 = s1.body.compound;
     let c2 = s2.body.compound;
