@@ -20,7 +20,10 @@
  *
  * `hash` is an FNV-1a digest of every body's float64 state after the first
  * trial. It must be identical between two builds when a change is meant to be
- * behaviour-preserving — compare it alongside the times.
+ * behaviour-preserving — compare it alongside the times. A demo whose first
+ * two trials disagree reads wall-clock time or other ambient state (cloth uses
+ * `performance.now()`); its hash is reported as `unstable` and cannot be
+ * compared.
  *
  * Usage:
  *   npm run benchmark:demos                       # builds, human-readable
@@ -154,6 +157,7 @@ async function benchDemo(id, frames) {
   const engine = [];
   const logic = [];
   let hash = null;
+  let hash2 = null;
   let bodies = 0;
   let arbiters = 0;
   let constraints = 0;
@@ -181,6 +185,7 @@ async function benchDemo(id, frames) {
     }
     engine.push(te / frames);
     logic.push(tl / frames);
+    if (t === 1) hash2 = stateHash(space);
     if (t === 0) {
       hash = stateHash(space);
       bodies = space.bodies.length;
@@ -188,6 +193,7 @@ async function benchDemo(id, frames) {
       arbiters = Math.round(arbSum / frames);
     }
   }
+  if (hash2 !== null && hash2 !== hash) hash = "unstable";
   return { id, engine, logic, hash, bodies, constraints, arbiters };
 }
 
