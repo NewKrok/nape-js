@@ -1,53 +1,34 @@
 /**
  * ZNPList<T> — Generic singly-linked list backed by ZNPNode<T>.
  *
- * Replaces the 35 identical ZNPList_* classes of the original Haxe build.
- *
- * Each concrete subclass must set a static `_NodeClass` property pointing
- * to the corresponding ZNPNode subclass for pool allocation.
+ * Replaces the 35 identical ZNPList_* classes of the original Haxe build:
+ * every ZNPList_X name is an alias of this class (see ZNPRegistry), so all
+ * lists share one object shape and one node pool.
  */
 import { ZNPNode } from "./ZNPNode";
 
-interface ZNPNodeClass<T> {
-  new (): ZNPNode<T>;
-  zpp_pool: ZNPNode<T> | null;
-}
-
-interface ZNPListConstructor<T> {
-  _NodeClass: ZNPNodeClass<T>;
-}
-
 export class ZNPList<T> {
-  static _NodeClass: ZNPNodeClass<unknown>;
-
   head: ZNPNode<T> | null = null;
   length: number = 0;
   modified: boolean = false;
   pushmod: boolean = false;
 
-  // Node class cached per instance so the pool fast path is a monomorphic
-  // field load instead of a megamorphic this.constructor lookup.
-  private readonly _N: ZNPNodeClass<T> = (this.constructor as unknown as ZNPListConstructor<T>)
-    ._NodeClass;
-
   private _allocNode(): ZNPNode<T> {
-    const N = this._N;
     let ret: ZNPNode<T>;
-    if (N.zpp_pool == null) {
-      ret = new N();
+    if (ZNPNode.zpp_pool == null) {
+      ret = new ZNPNode<T>();
     } else {
-      ret = N.zpp_pool;
-      N.zpp_pool = ret.next;
+      ret = ZNPNode.zpp_pool;
+      ZNPNode.zpp_pool = ret.next;
       ret.next = null;
     }
     return ret;
   }
 
   private _freeNode(node: ZNPNode<T>): void {
-    const N = this._N;
     node.elt = null;
-    node.next = N.zpp_pool;
-    N.zpp_pool = node;
+    node.next = ZNPNode.zpp_pool;
+    ZNPNode.zpp_pool = node;
   }
 
   begin(): ZNPNode<T> | null {

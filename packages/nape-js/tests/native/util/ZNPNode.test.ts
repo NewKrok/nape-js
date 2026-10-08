@@ -32,13 +32,11 @@ describe("ZNPNode", () => {
       expect(node.next).toBeNull();
     });
 
-    it("each node type should have its own pool", async () => {
+    it("every node name is the one ZNPNode class (one shape, one pool)", async () => {
       const { getNape } = await import("../../../src/core/engine");
       const zpp = getNape().__zpp;
-      const NodeBody = zpp.util.ZNPNode_ZPP_Body;
-      const NodeShape = zpp.util.ZNPNode_ZPP_Shape;
-      // Pools are separate statics
-      expect(NodeBody).not.toBe(NodeShape);
+      expect(zpp.util.ZNPNode_ZPP_Body).toBe(ZNPNode);
+      expect(zpp.util.ZNPNode_ZPP_Shape).toBe(ZNPNode);
     });
   });
 });

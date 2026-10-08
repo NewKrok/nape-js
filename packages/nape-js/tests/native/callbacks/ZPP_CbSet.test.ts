@@ -843,7 +843,6 @@ describe("ZPP_CbSet", () => {
 
       // Put a real node in the real pool
       const poolNode = new ZNPNode_ZPP_BodyListener();
-      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
 
       const listener = {
         precedence: 1,
@@ -860,6 +859,8 @@ describe("ZPP_CbSet", () => {
       cbType.bodylisteners.add(listener);
       s.cbTypes.add(cbType);
 
+      // Node lists share one pool: seed it after the setup lists have allocated.
+      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
       s.zip_bodylisteners = true;
       s.validate_bodylisteners();
       expect(s.bodylisteners.length).toBe(1);
@@ -970,7 +971,6 @@ describe("ZPP_CbSet", () => {
       s.manager = { space: "testSpace" };
 
       const poolNode = new ZNPNode_ZPP_ConstraintListener();
-      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
 
       const listener = {
         precedence: 1,
@@ -987,6 +987,8 @@ describe("ZPP_CbSet", () => {
       cbType.conlisteners.add(listener);
       s.cbTypes.add(cbType);
 
+      // Node lists share one pool: seed it after the setup lists have allocated.
+      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
       s.zip_conlisteners = true;
       s.validate_conlisteners();
       expect(s.conlisteners.length).toBe(1);
@@ -1081,13 +1083,14 @@ describe("ZPP_CbSet", () => {
       s.manager = { space: "testSpace" };
 
       const poolNode = new ZNPNode_ZPP_InteractionListener();
-      ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
 
       const listener = { precedence: 1, id: 1, space: "testSpace" };
       const cbType: any = { listeners: new MockZNPList() };
       cbType.listeners.add(listener);
       s.cbTypes.add(cbType);
 
+      // Node lists share one pool: seed it after the setup lists have allocated.
+      ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
       s.zip_listeners = true;
       s.validate_listeners();
       expect(s.listeners.length).toBe(1);

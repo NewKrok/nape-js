@@ -1,233 +1,167 @@
 /**
- * ZNPRegistry — the 78 named ZNP list/node and ZPP_Set subclasses.
+ * ZNPRegistry — the ZNP list / node names and the ZPP_Set subclasses.
  *
- * Originally these were manufactured at runtime (a Haxe leftover: the classes
- * were only reachable through the zpp_nape namespace object). They are now
- * plain exported classes so engine code imports them directly and the pool
- * statics live on named, monomorphic classes. registerZNPClasses() only
- * assigns them into the nape namespace for compatibility.
- *
- * Each subclass declares its own static pool slot — pools must not be
- * shared through the base class.
+ * The Haxe build had one ZNPList_X / ZNPNode_X class per element type. Here
+ * every ZNPList_X is the single ZNPList class and every ZNPNode_X the single
+ * ZNPNode class (with one shared node pool), kept as named aliases so call
+ * sites read as before. One class per role keeps the list methods and node
+ * accesses monomorphic: with ~35 subclasses, the shared ZNPList methods saw
+ * ~35 object shapes and V8 fell back to megamorphic property lookups —
+ * measurably slower in the step loop (joint-heavy scenes 10–40%).
+ * registerZNPClasses() only assigns the names into the nape namespace for
+ * compatibility.
  */
 
 import { ZNPNode } from "./ZNPNode";
 import { ZNPList } from "./ZNPList";
 import { ZPP_Set } from "./ZPP_Set";
 
+type ZNPNodeAlias = typeof ZNPNode & (new () => ZNPNode<any>);
+type ZNPListAlias = typeof ZNPList & (new () => ZNPList<any>);
+
 // --- ZNPNode classes ---
-export class ZNPNode_ZPP_CbType extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_CbType | null = null;
-}
-export class ZNPNode_ZPP_CallbackSet extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_CallbackSet | null = null;
-}
-export class ZNPNode_ZPP_Shape extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Shape | null = null;
-}
-export class ZNPNode_ZPP_Body extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Body | null = null;
-}
-export class ZNPNode_ZPP_Constraint extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Constraint | null = null;
-}
-export class ZNPNode_ZPP_Compound extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Compound | null = null;
-}
-export class ZNPNode_ZPP_Arbiter extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Arbiter | null = null;
-}
-export class ZNPNode_ZPP_InteractionListener extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_InteractionListener | null = null;
-}
-export class ZNPNode_ZPP_CbSet extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_CbSet | null = null;
-}
-export class ZNPNode_ZPP_Interactor extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Interactor | null = null;
-}
-export class ZNPNode_ZPP_BodyListener extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_BodyListener | null = null;
-}
-export class ZNPNode_ZPP_CbSetPair extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_CbSetPair | null = null;
-}
-export class ZNPNode_ZPP_ConstraintListener extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_ConstraintListener | null = null;
-}
-export class ZNPNode_ZPP_CutInt extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_CutInt | null = null;
-}
-export class ZNPNode_ZPP_CutVert extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_CutVert | null = null;
-}
-export class ZNPNode_ZPP_PartitionVertex extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_PartitionVertex | null = null;
-}
-export class ZNPNode_ZPP_SimplifyP extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_SimplifyP | null = null;
-}
-export class ZNPNode_ZPP_PartitionedPoly extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_PartitionedPoly | null = null;
-}
-export class ZNPNode_ZPP_GeomVert extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_GeomVert | null = null;
-}
-export class ZNPNode_ZPP_SimpleVert extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_SimpleVert | null = null;
-}
-export class ZNPNode_ZPP_SimpleEvent extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_SimpleEvent | null = null;
-}
-export class ZNPNode_ZPP_Vec2 extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Vec2 | null = null;
-}
-export class ZNPNode_ZPP_AABBPair extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_AABBPair | null = null;
-}
-export class ZNPNode_ZPP_Edge extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Edge | null = null;
-}
-export class ZNPNode_ZPP_AABBNode extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_AABBNode | null = null;
-}
-export class ZNPNode_ZPP_Component extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Component | null = null;
-}
-export class ZNPNode_ZPP_FluidArbiter extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_FluidArbiter | null = null;
-}
-export class ZNPNode_ZPP_SensorArbiter extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_SensorArbiter | null = null;
-}
-export class ZNPNode_ZPP_Listener extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_Listener | null = null;
-}
-export class ZNPNode_ZPP_ColArbiter extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_ColArbiter | null = null;
-}
-export class ZNPNode_ZPP_InteractionGroup extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_InteractionGroup | null = null;
-}
-export class ZNPNode_ZPP_ToiEvent extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_ToiEvent | null = null;
-}
-export class ZNPNode_ConvexResult extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ConvexResult | null = null;
-}
-export class ZNPNode_ZPP_GeomPoly extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_ZPP_GeomPoly | null = null;
-}
-export class ZNPNode_RayResult extends ZNPNode<any> {
-  static zpp_pool: ZNPNode_RayResult | null = null;
-}
+export const ZNPNode_ZPP_CbType: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_CbType = ZNPNode<any>;
+export const ZNPNode_ZPP_CallbackSet: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_CallbackSet = ZNPNode<any>;
+export const ZNPNode_ZPP_Shape: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Shape = ZNPNode<any>;
+export const ZNPNode_ZPP_Body: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Body = ZNPNode<any>;
+export const ZNPNode_ZPP_Constraint: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Constraint = ZNPNode<any>;
+export const ZNPNode_ZPP_Compound: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Compound = ZNPNode<any>;
+export const ZNPNode_ZPP_Arbiter: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Arbiter = ZNPNode<any>;
+export const ZNPNode_ZPP_InteractionListener: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_InteractionListener = ZNPNode<any>;
+export const ZNPNode_ZPP_CbSet: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_CbSet = ZNPNode<any>;
+export const ZNPNode_ZPP_Interactor: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Interactor = ZNPNode<any>;
+export const ZNPNode_ZPP_BodyListener: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_BodyListener = ZNPNode<any>;
+export const ZNPNode_ZPP_CbSetPair: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_CbSetPair = ZNPNode<any>;
+export const ZNPNode_ZPP_ConstraintListener: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_ConstraintListener = ZNPNode<any>;
+export const ZNPNode_ZPP_CutInt: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_CutInt = ZNPNode<any>;
+export const ZNPNode_ZPP_CutVert: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_CutVert = ZNPNode<any>;
+export const ZNPNode_ZPP_PartitionVertex: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_PartitionVertex = ZNPNode<any>;
+export const ZNPNode_ZPP_SimplifyP: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_SimplifyP = ZNPNode<any>;
+export const ZNPNode_ZPP_PartitionedPoly: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_PartitionedPoly = ZNPNode<any>;
+export const ZNPNode_ZPP_GeomVert: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_GeomVert = ZNPNode<any>;
+export const ZNPNode_ZPP_SimpleVert: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_SimpleVert = ZNPNode<any>;
+export const ZNPNode_ZPP_SimpleEvent: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_SimpleEvent = ZNPNode<any>;
+export const ZNPNode_ZPP_Vec2: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Vec2 = ZNPNode<any>;
+export const ZNPNode_ZPP_AABBPair: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_AABBPair = ZNPNode<any>;
+export const ZNPNode_ZPP_Edge: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Edge = ZNPNode<any>;
+export const ZNPNode_ZPP_AABBNode: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_AABBNode = ZNPNode<any>;
+export const ZNPNode_ZPP_Component: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Component = ZNPNode<any>;
+export const ZNPNode_ZPP_FluidArbiter: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_FluidArbiter = ZNPNode<any>;
+export const ZNPNode_ZPP_SensorArbiter: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_SensorArbiter = ZNPNode<any>;
+export const ZNPNode_ZPP_Listener: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_Listener = ZNPNode<any>;
+export const ZNPNode_ZPP_ColArbiter: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_ColArbiter = ZNPNode<any>;
+export const ZNPNode_ZPP_InteractionGroup: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_InteractionGroup = ZNPNode<any>;
+export const ZNPNode_ZPP_ToiEvent: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_ToiEvent = ZNPNode<any>;
+export const ZNPNode_ConvexResult: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ConvexResult = ZNPNode<any>;
+export const ZNPNode_ZPP_GeomPoly: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_ZPP_GeomPoly = ZNPNode<any>;
+export const ZNPNode_RayResult: ZNPNodeAlias = ZNPNode;
+export type ZNPNode_RayResult = ZNPNode<any>;
 
 // --- ZNPList classes ---
-export class ZNPList_ZPP_CbType extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_CbType;
-}
-export class ZNPList_ZPP_CallbackSet extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_CallbackSet;
-}
-export class ZNPList_ZPP_Shape extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Shape;
-}
-export class ZNPList_ZPP_Body extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Body;
-}
-export class ZNPList_ZPP_Constraint extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Constraint;
-}
-export class ZNPList_ZPP_Compound extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Compound;
-}
-export class ZNPList_ZPP_Arbiter extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Arbiter;
-}
-export class ZNPList_ZPP_InteractionListener extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_InteractionListener;
-}
-export class ZNPList_ZPP_CbSet extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_CbSet;
-}
-export class ZNPList_ZPP_Interactor extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Interactor;
-}
-export class ZNPList_ZPP_BodyListener extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_BodyListener;
-}
-export class ZNPList_ZPP_CbSetPair extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_CbSetPair;
-}
-export class ZNPList_ZPP_ConstraintListener extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_ConstraintListener;
-}
-export class ZNPList_ZPP_CutInt extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_CutInt;
-}
-export class ZNPList_ZPP_CutVert extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_CutVert;
-}
-export class ZNPList_ZPP_PartitionVertex extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_PartitionVertex;
-}
-export class ZNPList_ZPP_SimplifyP extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_SimplifyP;
-}
-export class ZNPList_ZPP_PartitionedPoly extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_PartitionedPoly;
-}
-export class ZNPList_ZPP_GeomVert extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_GeomVert;
-}
-export class ZNPList_ZPP_SimpleVert extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_SimpleVert;
-}
-export class ZNPList_ZPP_SimpleEvent extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_SimpleEvent;
-}
-export class ZNPList_ZPP_Vec2 extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Vec2;
-}
-export class ZNPList_ZPP_AABBPair extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_AABBPair;
-}
-export class ZNPList_ZPP_Edge extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Edge;
-}
-export class ZNPList_ZPP_AABBNode extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_AABBNode;
-}
-export class ZNPList_ZPP_Component extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Component;
-}
-export class ZNPList_ZPP_FluidArbiter extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_FluidArbiter;
-}
-export class ZNPList_ZPP_SensorArbiter extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_SensorArbiter;
-}
-export class ZNPList_ZPP_Listener extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_Listener;
-}
-export class ZNPList_ZPP_ColArbiter extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_ColArbiter;
-}
-export class ZNPList_ZPP_InteractionGroup extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_InteractionGroup;
-}
-export class ZNPList_ZPP_ToiEvent extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_ToiEvent;
-}
-export class ZNPList_ConvexResult extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ConvexResult;
-}
-export class ZNPList_ZPP_GeomPoly extends ZNPList<any> {
-  static _NodeClass = ZNPNode_ZPP_GeomPoly;
-}
-export class ZNPList_RayResult extends ZNPList<any> {
-  static _NodeClass = ZNPNode_RayResult;
-}
+export const ZNPList_ZPP_CbType: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_CbType = ZNPList<any>;
+export const ZNPList_ZPP_CallbackSet: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_CallbackSet = ZNPList<any>;
+export const ZNPList_ZPP_Shape: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Shape = ZNPList<any>;
+export const ZNPList_ZPP_Body: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Body = ZNPList<any>;
+export const ZNPList_ZPP_Constraint: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Constraint = ZNPList<any>;
+export const ZNPList_ZPP_Compound: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Compound = ZNPList<any>;
+export const ZNPList_ZPP_Arbiter: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Arbiter = ZNPList<any>;
+export const ZNPList_ZPP_InteractionListener: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_InteractionListener = ZNPList<any>;
+export const ZNPList_ZPP_CbSet: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_CbSet = ZNPList<any>;
+export const ZNPList_ZPP_Interactor: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Interactor = ZNPList<any>;
+export const ZNPList_ZPP_BodyListener: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_BodyListener = ZNPList<any>;
+export const ZNPList_ZPP_CbSetPair: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_CbSetPair = ZNPList<any>;
+export const ZNPList_ZPP_ConstraintListener: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_ConstraintListener = ZNPList<any>;
+export const ZNPList_ZPP_CutInt: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_CutInt = ZNPList<any>;
+export const ZNPList_ZPP_CutVert: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_CutVert = ZNPList<any>;
+export const ZNPList_ZPP_PartitionVertex: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_PartitionVertex = ZNPList<any>;
+export const ZNPList_ZPP_SimplifyP: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_SimplifyP = ZNPList<any>;
+export const ZNPList_ZPP_PartitionedPoly: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_PartitionedPoly = ZNPList<any>;
+export const ZNPList_ZPP_GeomVert: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_GeomVert = ZNPList<any>;
+export const ZNPList_ZPP_SimpleVert: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_SimpleVert = ZNPList<any>;
+export const ZNPList_ZPP_SimpleEvent: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_SimpleEvent = ZNPList<any>;
+export const ZNPList_ZPP_Vec2: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Vec2 = ZNPList<any>;
+export const ZNPList_ZPP_AABBPair: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_AABBPair = ZNPList<any>;
+export const ZNPList_ZPP_Edge: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Edge = ZNPList<any>;
+export const ZNPList_ZPP_AABBNode: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_AABBNode = ZNPList<any>;
+export const ZNPList_ZPP_Component: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Component = ZNPList<any>;
+export const ZNPList_ZPP_FluidArbiter: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_FluidArbiter = ZNPList<any>;
+export const ZNPList_ZPP_SensorArbiter: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_SensorArbiter = ZNPList<any>;
+export const ZNPList_ZPP_Listener: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_Listener = ZNPList<any>;
+export const ZNPList_ZPP_ColArbiter: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_ColArbiter = ZNPList<any>;
+export const ZNPList_ZPP_InteractionGroup: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_InteractionGroup = ZNPList<any>;
+export const ZNPList_ZPP_ToiEvent: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_ToiEvent = ZNPList<any>;
+export const ZNPList_ConvexResult: ZNPListAlias = ZNPList;
+export type ZNPList_ConvexResult = ZNPList<any>;
+export const ZNPList_ZPP_GeomPoly: ZNPListAlias = ZNPList;
+export type ZNPList_ZPP_GeomPoly = ZNPList<any>;
+export const ZNPList_RayResult: ZNPListAlias = ZNPList;
+export type ZNPList_RayResult = ZNPList<any>;
 
 // --- ZPP_Set classes ---
 export class ZPP_Set_ZPP_Body extends ZPP_Set<any> {
