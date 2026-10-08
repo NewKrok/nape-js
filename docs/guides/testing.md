@@ -71,7 +71,7 @@ packages/nape-pixi/tests/
 └── workerProtocol.test.ts
 ```
 
-**7694 engine tests across 363 files, plus 79 pixi-adapter tests across 6 files.**
+**7564 engine tests across 362 files, plus 79 pixi-adapter tests across 6 files.**
 
 ---
 
@@ -82,10 +82,10 @@ set yet.
 
 | Metric | Current | Enforced floor | Target (P29) |
 |--------|---------|----------------|--------------|
-| Statements | ~96.1% | 95.9% | ≥80% ✅ |
-| Branches | ~89.8% | 89.5% | — |
-| Functions | ~98% | 98% | — |
-| Lines | ~96.4% | 96.1% | — |
+| Statements | ~96.3% | 95.9% | ≥80% ✅ |
+| Branches | ~90.0% | 89.5% | — |
+| Functions | ~98.0% | 97.75% | — |
+| Lines | ~96.5% | 96.1% | — |
 
 The floors are `coverage.thresholds` in `packages/nape-js/vitest.config.ts`:
 `npm run coverage` (the CI **Coverage** job) fails when the full suite drops
@@ -94,6 +94,11 @@ same PR when coverage goes up. A coverage run over a *subset* of tests always
 misses them; add `--coverage.thresholds.statements=0 --coverage.thresholds.branches=0
 --coverage.thresholds.functions=0 --coverage.thresholds.lines=0` (or ignore the
 exit code) when you only want the per-file report.
+
+Deleting dead code that tests still exercised lowers the percentages without
+any loss of real coverage (covered lines leave, uncovered ones stay); lower the
+floor in the same PR when that happens, and say so — the functions floor went
+98 → 97.75 when ~50 test-only internal methods were removed.
 
 **100% is not a goal.** v8 counts every `&&` / `||` / `?:` / implicit `else`
 as a branch, and much of what remains is structurally unreachable (guards on
