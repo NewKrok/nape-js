@@ -382,28 +382,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     if (pre && this.space != null) this.space.preListenerCount++;
 
     this.with_union((cb: ZPP_CbType) => {
-      // Insert this listener into cb.listeners at precedence-sorted position
-      let pre1: any = null;
-      let cx_ite = cb.listeners.head;
-      while (cx_ite != null) {
-        const j = cx_ite.elt!;
-        if (this.precedence > j.precedence || (this.precedence == j.precedence && this.id > j.id)) {
-          break;
-        }
-        pre1 = cx_ite;
-        cx_ite = cx_ite.next;
-      }
-      cb.listeners.insert(pre1, this);
-
-      // Invalidate cbsets
-      let cx_ite1 = cb.cbsets.head;
-      while (cx_ite1 != null) {
-        const cbset = cx_ite1.elt;
-        cbset.zip_listeners = true;
-        cbset.invalidate_pairs();
-        cx_ite1 = cx_ite1.next;
-      }
-
+      cb.addint(this);
       // Wake interactors if this is a pre listener
       if (pre) {
         let cx_ite2 = cb.interactors.head;
@@ -427,14 +406,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     if (pre && this.space != null) this.space.preListenerCount--;
 
     this.with_union((cb: ZPP_CbType) => {
-      cb.listeners.remove(this);
-      let cx_ite = cb.cbsets.head;
-      while (cx_ite != null) {
-        const cbset = cx_ite.elt;
-        cbset.zip_listeners = true;
-        cbset.invalidate_pairs();
-        cx_ite = cx_ite.next;
-      }
+      cb.removeint(this);
       if (pre) {
         let cx_ite1 = cb.interactors.head;
         while (cx_ite1 != null) {

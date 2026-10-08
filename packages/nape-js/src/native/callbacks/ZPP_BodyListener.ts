@@ -26,24 +26,7 @@ export class ZPP_BodyListener extends ZPP_Listener {
       this.cbtype_change(cb, included, added);
     let cx_ite = this.options.includes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      let pre: any = null;
-      let cx_ite1 = cb.bodylisteners.head;
-      while (cx_ite1 != null) {
-        const j = cx_ite1.elt;
-        if (this.precedence > j.precedence || (this.precedence == j.precedence && this.id > j.id)) {
-          break;
-        }
-        pre = cx_ite1;
-        cx_ite1 = cx_ite1.next;
-      }
-      cb.bodylisteners.insert(pre, this);
-      let cx_ite2 = cb.cbsets.head;
-      while (cx_ite2 != null) {
-        const cb1 = cx_ite2.elt;
-        cb1.zip_bodylisteners = true;
-        cx_ite2 = cx_ite2.next;
-      }
+      cx_ite.elt.addbody(this);
       cx_ite = cx_ite.next;
     }
   }
@@ -51,14 +34,7 @@ export class ZPP_BodyListener extends ZPP_Listener {
   removedFromSpace(): void {
     let cx_ite = this.options.includes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      cb.bodylisteners.remove(this);
-      let cx_ite1 = cb.cbsets.head;
-      while (cx_ite1 != null) {
-        const cb1 = cx_ite1.elt;
-        cb1.zip_bodylisteners = true;
-        cx_ite1 = cx_ite1.next;
-      }
+      cx_ite.elt.removebody(this);
       cx_ite = cx_ite.next;
     }
     this.options.handler = null;
