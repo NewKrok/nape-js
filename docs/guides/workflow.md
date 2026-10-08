@@ -214,6 +214,17 @@ and could not resolve anything below ~10%). Two practical consequences:
 Changes below ~5% need a dedicated measurement (many trials, idle machine), not
 a single suite run.
 
+**Demo benchmark.** `npm run benchmark:demos` steps the real `docs/demos/*.js`
+headlessly in Node (DOM stubs, no rendering; `benchmarks/demo-env.mjs` maps the
+demos' engine imports onto `dist/`): the frame-dropping physics demos
+(exploding-50, pulse, plinko, asteroid-field, ragdoll-royale, …) and the
+showpieces (attract mode). `Math.random` is seeded per trial, and each demo
+reports `space.step` time, the demo's own `demo.step` time (mostly public-API
+traffic in the games) and a **state hash** of every body after the run. For a
+change meant to be behaviour-preserving, the hashes must match the base build:
+build the base branch in a worktree and point `NAPE_DIST=<worktree>/packages/nape-js/dist`
+at it, then compare. `--json` output works with `compare.mjs`.
+
 ---
 
 ## Commit Conventions
@@ -280,6 +291,7 @@ out to both nape-js and nape-pixi where applicable.
 | `npm run check:circular` | madge circular dep check (nape-js only; nape-pixi has none) |
 | `npm run benchmark` | Performance benchmark (uses `packages/nape-js/dist/`) |
 | `npm run benchmark:compare` | Compare vs baseline |
+| `npm run benchmark:demos` | Headless demo benchmark (engine + demo logic time, state hash) |
 | `npm run benchmark:update-baseline` | Save new baseline |
 | `npm run build:docs` | Build bundle + stamp + generate site pages + prerender + TypeDoc |
 | `npm run build:site-pages` | Regenerate demo/games/showcase/guide pages + sitemap only |
