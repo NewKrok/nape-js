@@ -10,7 +10,6 @@ import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_AABB } from "./ZPP_AABB";
 import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_ConvexRayResult } from "./ZPP_ConvexRayResult";
-import { ZNPNode_RayResult } from "../util/ZNPRegistry";
 import { Config } from "../../Config";
 
 export class ZPP_Ray {
@@ -346,25 +345,7 @@ export class ZPP_Ray {
       pre = cx_ite;
       cx_ite = cx_ite.next;
     }
-    const _this = list.zpp_inner.inner;
-    let node: any;
-    if (ZNPNode_RayResult.zpp_pool == null) {
-      node = new ZNPNode_RayResult();
-    } else {
-      node = ZNPNode_RayResult.zpp_pool;
-      ZNPNode_RayResult.zpp_pool = node.next;
-      node.next = null;
-    }
-    node.elt = res;
-    if (pre == null) {
-      node.next = _this.head;
-      _this.head = node;
-    } else {
-      node.next = pre.next;
-      pre.next = node;
-    }
-    _this.pushmod = _this.modified = true;
-    _this.length++;
+    list.zpp_inner.inner.insert(pre, res);
   }
 
   // ---------------------------------------------------------------------------

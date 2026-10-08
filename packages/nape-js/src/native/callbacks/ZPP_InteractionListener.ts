@@ -12,12 +12,7 @@ import { ZPP_CbSet } from "./ZPP_CbSet";
 import { ZPP_CbType } from "./ZPP_CbType";
 import { ZPP_OptionType } from "./ZPP_OptionType";
 import { ZPP_CbSetPair } from "./ZPP_CbSetPair";
-import {
-  ZNPNode_ZPP_CbSet,
-  ZNPNode_ZPP_CbType,
-  ZNPNode_ZPP_InteractionListener,
-  ZPP_Set_ZPP_CbSetPair,
-} from "../util/ZNPRegistry";
+import { ZNPNode_ZPP_CbSet, ZNPNode_ZPP_CbType, ZPP_Set_ZPP_CbSetPair } from "../util/ZNPRegistry";
 
 export class ZPP_InteractionListener extends ZPP_Listener {
   // --- Static: working lists for set operations (initialized at engine init time) ---
@@ -398,26 +393,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
         pre1 = cx_ite;
         cx_ite = cx_ite.next;
       }
-      const _this = cb.listeners;
-      let ret: any;
-      if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-        ret = new ZNPNode_ZPP_InteractionListener();
-      } else {
-        ret = ZNPNode_ZPP_InteractionListener.zpp_pool;
-        ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
-        ret.next = null;
-      }
-      ret.elt = this;
-      const temp = ret;
-      if (pre1 == null) {
-        temp.next = _this.head;
-        _this.head = temp;
-      } else {
-        temp.next = pre1.next;
-        pre1.next = temp;
-      }
-      _this.pushmod = _this.modified = true;
-      _this.length++;
+      cb.listeners.insert(pre1, this);
 
       // Invalidate cbsets
       let cx_ite1 = cb.cbsets.head;

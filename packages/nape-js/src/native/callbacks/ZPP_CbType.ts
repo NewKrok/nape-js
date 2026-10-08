@@ -16,9 +16,6 @@ import {
   ZNPList_ZPP_ConstraintListener,
   ZNPList_ZPP_InteractionListener,
   ZNPList_ZPP_Interactor,
-  ZNPNode_ZPP_BodyListener,
-  ZNPNode_ZPP_ConstraintListener,
-  ZNPNode_ZPP_InteractionListener,
 } from "../util/ZNPRegistry";
 
 export class ZPP_CbType {
@@ -98,25 +95,7 @@ export class ZPP_CbType {
       cx_ite = cx_ite.next;
     }
     // Insert node from pool
-    const list = this.listeners;
-    let ret: any;
-    if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-      ret = new ZNPNode_ZPP_InteractionListener();
-    } else {
-      ret = ZNPNode_ZPP_InteractionListener.zpp_pool;
-      ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.elt = x;
-    if (pre == null) {
-      ret.next = list.head;
-      list.head = ret;
-    } else {
-      ret.next = pre.next;
-      pre.next = ret;
-    }
-    list.pushmod = list.modified = true;
-    list.length++;
+    this.listeners.insert(pre, x);
     // Invalidate all callback sets
     let cb_ite = this.cbsets.head;
     while (cb_ite != null) {
@@ -156,25 +135,7 @@ export class ZPP_CbType {
       pre = cx_ite;
       cx_ite = cx_ite.next;
     }
-    const list = this.bodylisteners;
-    let ret: any;
-    if (ZNPNode_ZPP_BodyListener.zpp_pool == null) {
-      ret = new ZNPNode_ZPP_BodyListener();
-    } else {
-      ret = ZNPNode_ZPP_BodyListener.zpp_pool;
-      ZNPNode_ZPP_BodyListener.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.elt = x;
-    if (pre == null) {
-      ret.next = list.head;
-      list.head = ret;
-    } else {
-      ret.next = pre.next;
-      pre.next = ret;
-    }
-    list.pushmod = list.modified = true;
-    list.length++;
+    this.bodylisteners.insert(pre, x);
     let cb_ite = this.cbsets.head;
     while (cb_ite != null) {
       cb_ite.elt.zip_bodylisteners = true;
@@ -210,25 +171,7 @@ export class ZPP_CbType {
       pre = cx_ite;
       cx_ite = cx_ite.next;
     }
-    const list = this.conlisteners;
-    let ret: any;
-    if (ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
-      ret = new ZNPNode_ZPP_ConstraintListener();
-    } else {
-      ret = ZNPNode_ZPP_ConstraintListener.zpp_pool;
-      ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.elt = x;
-    if (pre == null) {
-      ret.next = list.head;
-      list.head = ret;
-    } else {
-      ret.next = pre.next;
-      pre.next = ret;
-    }
-    list.pushmod = list.modified = true;
-    list.length++;
+    this.conlisteners.insert(pre, x);
     let cb_ite = this.cbsets.head;
     while (cb_ite != null) {
       cb_ite.elt.zip_conlisteners = true;

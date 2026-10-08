@@ -6,7 +6,6 @@
  */
 
 import { ZPP_Listener } from "./ZPP_Listener";
-import { ZNPNode_ZPP_ConstraintListener } from "../util/ZNPRegistry";
 
 export class ZPP_ConstraintListener extends ZPP_Listener {
   handler: any = null;
@@ -38,26 +37,7 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
         pre = cx_ite1;
         cx_ite1 = cx_ite1.next;
       }
-      const _this = cb.conlisteners;
-      let ret: any;
-      if (ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
-        ret = new ZNPNode_ZPP_ConstraintListener();
-      } else {
-        ret = ZNPNode_ZPP_ConstraintListener.zpp_pool;
-        ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
-        ret.next = null;
-      }
-      ret.elt = this;
-      const temp = ret;
-      if (pre == null) {
-        temp.next = _this.head;
-        _this.head = temp;
-      } else {
-        temp.next = pre.next;
-        pre.next = temp;
-      }
-      _this.pushmod = _this.modified = true;
-      _this.length++;
+      cb.conlisteners.insert(pre, this);
       let cx_ite2 = cb.cbsets.head;
       while (cx_ite2 != null) {
         const cb1 = cx_ite2.elt;

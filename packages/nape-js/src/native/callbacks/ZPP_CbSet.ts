@@ -20,9 +20,6 @@ import {
   ZNPList_ZPP_ConstraintListener,
   ZNPList_ZPP_InteractionListener,
   ZNPList_ZPP_Interactor,
-  ZNPNode_ZPP_BodyListener,
-  ZNPNode_ZPP_ConstraintListener,
-  ZNPNode_ZPP_InteractionListener,
 } from "../util/ZNPRegistry";
 
 export class ZPP_CbSet {
@@ -281,27 +278,7 @@ export class ZPP_CbSet {
           }
           if (tmp) {
             if (cx.space == this.manager.space) {
-              const _this = this.listeners;
-              let ret: any;
-              if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-                ret = new ZNPNode_ZPP_InteractionListener();
-              } else {
-                ret = ZNPNode_ZPP_InteractionListener.zpp_pool;
-                ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
-                ret.next = null;
-              }
-              ret.elt = cx;
-              const temp = ret;
-              if (npre == null) {
-                temp.next = _this.head;
-                _this.head = temp;
-              } else {
-                temp.next = npre.next;
-                npre.next = temp;
-              }
-              _this.pushmod = _this.modified = true;
-              _this.length++;
-              npre = temp;
+              npre = this.listeners.insert(npre, cx);
             }
             cite = cite.next;
           } else {
@@ -353,27 +330,7 @@ export class ZPP_CbSet {
               !_this.nonemptyintersection(this.cbTypes, _this.excludes) &&
               cx.space == this.manager.space
             ) {
-              const _this1 = this.bodylisteners;
-              let ret: any;
-              if (ZNPNode_ZPP_BodyListener.zpp_pool == null) {
-                ret = new ZNPNode_ZPP_BodyListener();
-              } else {
-                ret = ZNPNode_ZPP_BodyListener.zpp_pool;
-                ZNPNode_ZPP_BodyListener.zpp_pool = ret.next;
-                ret.next = null;
-              }
-              ret.elt = cx;
-              const temp = ret;
-              if (npre == null) {
-                temp.next = _this1.head;
-                _this1.head = temp;
-              } else {
-                temp.next = npre.next;
-                npre.next = temp;
-              }
-              _this1.pushmod = _this1.modified = true;
-              _this1.length++;
-              npre = temp;
+              npre = this.bodylisteners.insert(npre, cx);
             }
             cite = cite.next;
           } else {
@@ -425,27 +382,7 @@ export class ZPP_CbSet {
               !_this.nonemptyintersection(this.cbTypes, _this.excludes) &&
               cx.space == this.manager.space
             ) {
-              const _this1 = this.conlisteners;
-              let ret: any;
-              if (ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
-                ret = new ZNPNode_ZPP_ConstraintListener();
-              } else {
-                ret = ZNPNode_ZPP_ConstraintListener.zpp_pool;
-                ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
-                ret.next = null;
-              }
-              ret.elt = cx;
-              const temp = ret;
-              if (npre == null) {
-                temp.next = _this1.head;
-                _this1.head = temp;
-              } else {
-                temp.next = npre.next;
-                npre.next = temp;
-              }
-              _this1.pushmod = _this1.modified = true;
-              _this1.length++;
-              npre = temp;
+              npre = this.conlisteners.insert(npre, cx);
             }
             cite = cite.next;
           } else {
