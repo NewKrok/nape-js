@@ -8,7 +8,6 @@
 import { getNape } from "../../core/engine";
 import { ZPP_Vec2 } from "./ZPP_Vec2";
 import { ZPP_AABB } from "./ZPP_AABB";
-import { ZPP_PubPool } from "../util/ZPP_PubPool";
 import { ZPP_ConvexRayResult } from "./ZPP_ConvexRayResult";
 import { Config } from "../../Config";
 
@@ -233,75 +232,7 @@ export class ZPP_Ray {
   // ---------------------------------------------------------------------------
 
   private static _allocVec2(x: number, y: number): any {
-    const nape = getNape();
-    if (x != x || y != y) {
-      throw new Error("Vec2 components cannot be NaN");
-    }
-
-    let ret: any;
-    if (ZPP_PubPool.poolVec2 == null) {
-      ret = new nape.geom.Vec2() as any;
-    } else {
-      ret = ZPP_PubPool.poolVec2;
-      ZPP_PubPool.poolVec2 = ret.zpp_pool;
-      ret.zpp_pool = null;
-      ret.zpp_disp = false;
-      if (ret == ZPP_PubPool.nextVec2) {
-        ZPP_PubPool.nextVec2 = null;
-      }
-    }
-
-    if (ret.zpp_inner == null) {
-      let inner: ZPP_Vec2;
-      if (ZPP_Vec2.zpp_pool == null) {
-        inner = new ZPP_Vec2();
-      } else {
-        inner = ZPP_Vec2.zpp_pool;
-        ZPP_Vec2.zpp_pool = inner.next;
-        inner.next = null;
-      }
-      inner.weak = false;
-      inner._immutable = false;
-      inner.x = x;
-      inner.y = y;
-      ret.zpp_inner = inner;
-      ret.zpp_inner.outer = ret;
-    } else {
-      if (ret != null && ret.zpp_disp) {
-        throw new Error("Vec2 has been disposed and cannot be used!");
-      }
-      const _this = ret.zpp_inner;
-      if (_this._immutable) {
-        throw new Error("Vec2 is immutable");
-      }
-      if (_this._isimmutable != null) {
-        _this._isimmutable();
-      }
-      if (x != x || y != y) {
-        throw new Error("Vec2 components cannot be NaN");
-      }
-      let same: boolean;
-      if (ret.zpp_inner._validate != null) {
-        ret.zpp_inner._validate();
-      }
-      if (ret.zpp_inner.x == x) {
-        if (ret.zpp_inner._validate != null) {
-          ret.zpp_inner._validate();
-        }
-        same = ret.zpp_inner.y == y;
-      } else {
-        same = false;
-      }
-      if (!same) {
-        ret.zpp_inner.x = x;
-        ret.zpp_inner.y = y;
-        if (ret.zpp_inner._invalidate != null) {
-          ret.zpp_inner._invalidate(ret.zpp_inner);
-        }
-      }
-    }
-    ret.zpp_inner.weak = false;
-    return ret;
+    return getNape().geom.Vec2.get(x, y);
   }
 
   // ---------------------------------------------------------------------------
