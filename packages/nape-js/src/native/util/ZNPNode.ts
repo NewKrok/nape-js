@@ -12,8 +12,4 @@ export class ZNPNode<T> {
   free(): void {
     this.elt = null;
   }
-
-  elem(): T | null {
-    return this.elt;
-  }
 }

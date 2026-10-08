@@ -67,10 +67,6 @@ export class ZPP_Ray {
     this.zip_dir = true;
   }
 
-  invalidate_dir(): void {
-    this.zip_dir = true;
-  }
-
   // ---------------------------------------------------------------------------
   // Direction validation (normalizes + computes inverse/normals)
   // ---------------------------------------------------------------------------

@@ -436,14 +436,6 @@ describe("ZPP_Island", () => {
     expect(island.at(10)).toBeNull();
   });
 
-  // --- begin / setbegin ---
-  it("begin returns head of list", () => {
-    expect(island.begin()).toBeNull();
-    const c = makeComp();
-    island.add(c);
-    expect(island.begin()).toBe(c);
-  });
-
   // --- clear ---
   it("clear is a no-op", () => {
     island.add(makeComp());
@@ -456,13 +448,6 @@ describe("ZPP_Island", () => {
     island.add(makeComp());
     island.clear();
     expect(island.length).toBe(1);
-  });
-
-  // --- Pool callbacks ---
-  it("alloc resets waket to 0", () => {
-    island.waket = 42;
-    island.alloc();
-    expect(island.waket).toBe(0);
   });
 
   // --- Static pool ---

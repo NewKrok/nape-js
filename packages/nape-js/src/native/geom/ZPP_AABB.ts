@@ -112,10 +112,6 @@ export class ZPP_AABB {
     return this.maxy - this.miny;
   }
 
-  perimeter(): number {
-    return (this.maxx - this.minx + (this.maxy - this.miny)) * 2;
-  }
-
   // ========== Min/Max Vec2 wrappers (lazy creation) ==========
 
   /** Helper: create a Vec2 wrapper from the engine pools. */
@@ -186,14 +182,6 @@ export class ZPP_AABB {
 
   // ========== Spatial queries ==========
 
-  intersectX(x: ZPP_AABB): boolean {
-    return !(x.minx > this.maxx || this.minx > x.maxx);
-  }
-
-  intersectY(x: ZPP_AABB): boolean {
-    return !(x.miny > this.maxy || this.miny > x.maxy);
-  }
-
   intersect(x: ZPP_AABB): boolean {
     return x.miny <= this.maxy && this.miny <= x.maxy && x.minx <= this.maxx && this.minx <= x.maxx;
   }
@@ -207,31 +195,6 @@ export class ZPP_AABB {
 
   contains(x: ZPP_AABB): boolean {
     return x.minx >= this.minx && x.miny >= this.miny && x.maxx <= this.maxx && x.maxy <= this.maxy;
-  }
-
-  containsPoint(v: { x: number; y: number }): boolean {
-    return v.x >= this.minx && v.x <= this.maxx && v.y >= this.miny && v.y <= this.maxy;
-  }
-
-  setCombine(a: ZPP_AABB, b: ZPP_AABB): void {
-    this.minx = a.minx < b.minx ? a.minx : b.minx;
-    this.miny = a.miny < b.miny ? a.miny : b.miny;
-    this.maxx = a.maxx > b.maxx ? a.maxx : b.maxx;
-    this.maxy = a.maxy > b.maxy ? a.maxy : b.maxy;
-  }
-
-  setExpand(a: ZPP_AABB, fatten: number): void {
-    this.minx = a.minx - fatten;
-    this.miny = a.miny - fatten;
-    this.maxx = a.maxx + fatten;
-    this.maxy = a.maxy + fatten;
-  }
-
-  setExpandPoint(x: number, y: number): void {
-    if (x < this.minx) this.minx = x;
-    if (x > this.maxx) this.maxx = x;
-    if (y < this.miny) this.miny = y;
-    if (y > this.maxy) this.maxy = y;
   }
 
   toString(): string {

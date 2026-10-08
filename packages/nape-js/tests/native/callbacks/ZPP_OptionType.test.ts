@@ -123,15 +123,6 @@ describe("ZPP_OptionType", () => {
       expect(ot.excluded(xs)).toBe(true);
     });
 
-    it("included should check intersection with includes", () => {
-      const ot = new ZPP_OptionType();
-      const cbType = { id: 1 };
-      ot.includes.add(cbType);
-      const xs = new MockZNPList();
-      xs.add(cbType);
-      expect(ot.included(xs)).toBe(true);
-    });
-
     it("compatible should return true when included and not excluded", () => {
       const ot = new ZPP_OptionType();
       const cbType = { id: 1 };

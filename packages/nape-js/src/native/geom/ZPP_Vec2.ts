@@ -96,17 +96,9 @@ export class ZPP_Vec2 {
     this._invalidate = null;
   }
 
-  alloc(): void {
-    this.weak = false;
-  }
-
   // ========== Linked list operations ==========
   // ZPP_Vec2 doubles as its own intrusive linked list (Haxe ZNPList pattern).
   // `this.next` acts as the head pointer when the instance is used as a list.
-
-  begin(): ZPP_Vec2 | null {
-    return this.next;
-  }
 
   add(o: ZPP_Vec2): ZPP_Vec2 {
     o._inuse = true;

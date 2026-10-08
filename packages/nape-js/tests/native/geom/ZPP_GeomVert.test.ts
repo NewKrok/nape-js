@@ -65,13 +65,6 @@ describe("ZPP_GeomVert", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should be callable (no-op)", () => {
-      const v = new ZPP_GeomVert();
-      expect(() => v.alloc()).not.toThrow();
-    });
-  });
-
   describe("circular linked list", () => {
     it("should support building a circular ring", () => {
       const v1 = ZPP_GeomVert.get(0, 0);

@@ -64,10 +64,6 @@ export class ZPP_PartitionPair {
 
   // --- Instance methods ---
 
-  begin(): ZPP_PartitionPair | null {
-    return this.next;
-  }
-
   add(o: ZPP_PartitionPair): ZPP_PartitionPair {
     o._inuse = true;
     const temp = o;

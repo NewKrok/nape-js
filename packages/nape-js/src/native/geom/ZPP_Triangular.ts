@@ -31,18 +31,6 @@ export class ZPP_Triangular {
     }
   }
 
-  static right_turn(
-    a: ZPP_PartitionVertex,
-    b: ZPP_PartitionVertex,
-    c: ZPP_PartitionVertex,
-  ): number {
-    const ux = c.x - b.x;
-    const uy = c.y - b.y;
-    const vx = b.x - a.x;
-    const vy = b.y - a.y;
-    return vy * ux - vx * uy;
-  }
-
   static delaunay(
     A: ZPP_PartitionVertex,
     B: ZPP_PartitionVertex,

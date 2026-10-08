@@ -59,10 +59,6 @@ export class ZPP_OptionType {
     return this.nonemptyintersection(xs, this.excludes);
   }
 
-  included(xs: any): boolean {
-    return this.nonemptyintersection(xs, this.includes);
-  }
-
   compatible(xs: any): boolean {
     if (this.nonemptyintersection(xs, this.includes)) {
       return !this.nonemptyintersection(xs, this.excludes);

@@ -21,7 +21,6 @@ import {
   Shape,
 } from "../../src/index";
 import { BodyList, ShapeList } from "../../src/util/registerLists";
-import { ZPP_Broadphase } from "../../src/native/space/ZPP_Broadphase";
 import { ZPP_SpatialHashPhase } from "../../src/native/space/ZPP_SpatialHashPhase";
 import { ZPP_AABB } from "../../src/native/geom/ZPP_AABB";
 
@@ -558,7 +557,6 @@ describe("ZPP_SpatialHashPhase specifics", () => {
     // average AABB extent is 20 → cell size 40
     expect(bp.cellSize).toBeCloseTo(40, 9);
     expect(bp.invCellSize).toBeCloseTo(1 / 40, 12);
-    expect(bp.cellKey(3, -2)).toBe((3 * 73856093) ^ (-2 * 19349663));
   });
 
   it("honours an explicit cell size (never re-tuned) and still finds every pair", () => {
@@ -585,43 +583,6 @@ describe("ZPP_SpatialHashPhase specifics", () => {
 // ---------------------------------------------------------------------------
 
 describe("ZPP_Broadphase base", () => {
-  it("_initFields resets every field and base query stubs return null", () => {
-    const o: any = {
-      space: 1,
-      is_sweep: true,
-      is_spatial_hash: true,
-      sweep: 1,
-      dynab: 1,
-      aabbShape: 1,
-      matrix: 1,
-      circShape: 1,
-    };
-    ZPP_Broadphase._initFields(o);
-    expect(o).toEqual({
-      space: null,
-      is_sweep: false,
-      is_spatial_hash: false,
-      sweep: null,
-      dynab: null,
-      aabbShape: null,
-      matrix: null,
-      circShape: null,
-    });
-    const base = new ZPP_Broadphase();
-    expect(base.shapesUnderPoint(0, 0, null, null)).toBeNull();
-    expect(base.bodiesUnderPoint(0, 0, null, null)).toBeNull();
-    expect(base.shapesInAABB(null, false, false, null, null)).toBeNull();
-    expect(base.bodiesInAABB(null, false, false, null, null)).toBeNull();
-    expect(base.shapesInCircle(0, 0, 1, false, null, null)).toBeNull();
-    expect(base.bodiesInCircle(0, 0, 1, false, null, null)).toBeNull();
-    expect(base.shapesInShape(null, false, null, null)).toBeNull();
-    expect(base.bodiesInShape(null, false, null, null)).toBeNull();
-    expect(base.rayCast(null, false, null)).toBeNull();
-    expect(base.rayMultiCast(null, false, null, null)).toBeNull();
-    expect(() => base.broadphase(null, true)).not.toThrow();
-    expect(() => base.clear()).not.toThrow();
-  });
-
   for (const [name, get] of BPS) {
     it(`${name}: query helper shapes are rescaled exactly for each query`, () => {
       const space = new Space(new Vec2(0, 0), get());

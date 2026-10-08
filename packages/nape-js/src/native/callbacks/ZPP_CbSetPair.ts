@@ -63,10 +63,6 @@ export class ZPP_CbSetPair {
     this.listeners.clear();
   }
 
-  alloc(): void {
-    this.zip_listeners = true;
-  }
-
   /**
    * Whether listener `i` matches this pair, in either orientation
    * (options1 ~ a and options2 ~ b, or options2 ~ a and options1 ~ b).
@@ -126,17 +122,6 @@ export class ZPP_CbSetPair {
       return ite.next == null;
     } else {
       return false;
-    }
-  }
-
-  forall(event: number, cb: (listener: any) => void): void {
-    let cx_ite = this.listeners.head;
-    while (cx_ite != null) {
-      const x = cx_ite.elt;
-      if (x.event == event) {
-        cb(x);
-      }
-      cx_ite = cx_ite.next;
     }
   }
 }

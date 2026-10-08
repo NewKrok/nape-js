@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Material } from "../phys/Material";
@@ -172,6 +171,3 @@ export class Circle extends Shape {
 
 // Bind Circle._wrap into Shape so Shape._wrap can dispatch without circular import.
 _bindCircleWrap((inner) => Circle._wrap(inner));
-
-const nape = getNape();
-nape.shape.Circle = Circle;

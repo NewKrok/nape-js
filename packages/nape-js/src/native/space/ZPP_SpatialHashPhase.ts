@@ -72,12 +72,6 @@ export class ZPP_SpatialHashPhase extends ZPP_Broadphase {
 
   // ========== Cell key hashing ==========
 
-  /** Compute a hash key for grid cell (cx, cy). */
-  cellKey(cx: number, cy: number): number {
-    // Large primes for spatial hashing — keeps collision rate low
-    return (cx * 73856093) ^ (cy * 19349663);
-  }
-
   // ========== Insert / Remove ==========
 
   __insert(shape: any): void {

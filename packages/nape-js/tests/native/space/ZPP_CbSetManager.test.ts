@@ -320,25 +320,3 @@ describe("ZPP_CbSetManager.validate()", () => {
     }
   });
 });
-
-// ---------------------------------------------------------------------------
-// valid_listener()
-// ---------------------------------------------------------------------------
-
-describe("ZPP_CbSetManager.valid_listener()", () => {
-  it("returns true when the listener's space matches the manager's space", () => {
-    const { space, mgr } = newManager();
-    expect(mgr.valid_listener({ space: space.zpp_inner })).toBe(true);
-  });
-
-  it("returns false for a listener bound to a different space", () => {
-    const { mgr: mgrA } = newManager();
-    const { space: spaceB } = newManager();
-    expect(mgrA.valid_listener({ space: spaceB.zpp_inner })).toBe(false);
-  });
-
-  it("returns false for an unattached listener (space == null)", () => {
-    const { mgr } = newManager();
-    expect(mgr.valid_listener({ space: null })).toBe(false);
-  });
-});

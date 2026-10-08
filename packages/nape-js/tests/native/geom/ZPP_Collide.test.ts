@@ -69,32 +69,6 @@ describe("ZPP_Collide", () => {
     });
   });
 
-  describe("bodyContains (integration)", () => {
-    it("should detect point inside a body with circle shape", () => {
-      const space = new Space(new Vec2(0, 0));
-      const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-      b.shapes.add(new Circle(10));
-      b.space = space;
-      space.step(1 / 60);
-
-      const zppBody = (b as any).zpp_inner;
-      const point = { x: 3, y: 4 };
-      expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(true);
-    });
-
-    it("should detect point outside a body", () => {
-      const space = new Space(new Vec2(0, 0));
-      const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-      b.shapes.add(new Circle(10));
-      b.space = space;
-      space.step(1 / 60);
-
-      const zppBody = (b as any).zpp_inner;
-      const point = { x: 20, y: 0 };
-      expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(false);
-    });
-  });
-
   describe("containTest (integration)", () => {
     it("should return true when a smaller circle is inside a larger one", () => {
       const space = new Space(new Vec2(0, 0));
@@ -347,61 +321,6 @@ describe("ZPP_Collide — polyContains", () => {
 
     const point = { x: 100, y: 0 };
     expect(ZPP_Collide.shapeContains(zppShape, point)).toBe(false);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Additional coverage: bodyContains with multiple shapes
-// ---------------------------------------------------------------------------
-
-describe("ZPP_Collide — bodyContains (multi-shape body)", () => {
-  it("should return true when point is in first of two shapes", () => {
-    const space = new Space(new Vec2(0, 0));
-    const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-    b.shapes.add(new Circle(10));
-    b.shapes.add(new Circle(5));
-    b.space = space;
-    space.step(1 / 60);
-
-    const zppBody = (b as any).zpp_inner;
-    const point = { x: 3, y: 0 };
-    expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(true);
-  });
-
-  it("should return false when point is outside all shapes", () => {
-    const space = new Space(new Vec2(0, 0));
-    const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-    b.shapes.add(new Circle(5));
-    b.space = space;
-    space.step(1 / 60);
-
-    const zppBody = (b as any).zpp_inner;
-    const point = { x: 100, y: 100 };
-    expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(false);
-  });
-
-  it("bodyContains with polygon shape — inside", () => {
-    const space = new Space(new Vec2(0, 0));
-    const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-    b.shapes.add(new Polygon(Polygon.box(30, 30)));
-    b.space = space;
-    space.step(1 / 60);
-
-    const zppBody = (b as any).zpp_inner;
-    const point = { x: 0, y: 0 };
-    expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(true);
-  });
-
-  it("bodyContains with polygon shape — outside", () => {
-    const space = new Space(new Vec2(0, 0));
-    const b = new Body(BodyType.STATIC, new Vec2(0, 0));
-    b.shapes.add(new Polygon(Polygon.box(10, 10)));
-    b.space = space;
-    space.step(1 / 60);
-
-    const zppBody = (b as any).zpp_inner;
-    const point = { x: 50, y: 0 };
-    expect(ZPP_Collide.bodyContains(zppBody, point)).toBe(false);
   });
 });
 

@@ -24,22 +24,6 @@ export class ZPP_Broadphase {
   matrix: any = null; // ZPP_Mat23 — circular
   circShape: any = null; // ZPP_Shape — circular
 
-  /**
-   * Initialize instance fields on a target object.
-   * Used by child class constructors (both TS and compiled) since
-   * ES6 class constructors can't be called with .call().
-   */
-  static _initFields(self: any): void {
-    self.space = null;
-    self.is_sweep = false;
-    self.is_spatial_hash = false;
-    self.sweep = null;
-    self.dynab = null;
-    self.aabbShape = null;
-    self.matrix = null;
-    self.circShape = null;
-  }
-
   // ========== insert / remove / sync ==========
 
   insert(shape: any): void {

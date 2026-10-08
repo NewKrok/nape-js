@@ -22,7 +22,6 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
 
   // --- Static: constants ---
   static FATTEN = 3.0;
-  static VEL_STEPS = 2.0;
 
   // --- Instance fields ---
   stree: ZPP_AABBTree;

@@ -154,39 +154,9 @@ export class ZPP_Callback {
     return ret;
   }
 
-  rotateL(): void {
-    this.push(this.pop());
-  }
-
-  rotateR(): void {
-    this.push_rev(this.pop_rev());
-  }
-
-  cycleNext(o: ZPP_Callback): ZPP_Callback | null {
-    if (o.next == null) {
-      return this.next;
-    } else {
-      return o.next;
-    }
-  }
-
-  cyclePrev(o: ZPP_Callback): ZPP_Callback | null {
-    if (o.prev == null) {
-      return this.prev;
-    } else {
-      return o.prev;
-    }
-  }
-
   at(i: number): ZPP_Callback {
     let ret: any = this.next;
     while (i-- != 0) ret = ret.next;
-    return ret;
-  }
-
-  rev_at(i: number): ZPP_Callback {
-    let ret: any = this.prev;
-    while (i-- != 0) ret = ret.prev;
     return ret;
   }
 
@@ -199,16 +169,5 @@ export class ZPP_Callback {
       this.wrap_arbiters.zpp_inner.inner = null;
     }
     this.set = null;
-  }
-
-  genarbs(): void {
-    const zpp = ZPP_Callback._zpp;
-    if (this.wrap_arbiters == null) {
-      this.wrap_arbiters = zpp.util.ZPP_ArbiterList.get(this.set.arbiters, true);
-    } else {
-      this.wrap_arbiters.zpp_inner.inner = this.set.arbiters;
-    }
-    this.wrap_arbiters.zpp_inner.zip_length = true;
-    this.wrap_arbiters.zpp_inner.at_ite = null;
   }
 }

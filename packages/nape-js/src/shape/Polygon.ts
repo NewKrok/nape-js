@@ -358,6 +358,3 @@ export class Polygon extends Shape {
 
 // Bind Polygon._wrap into Shape so Shape._wrap can dispatch without circular import.
 _bindPolygonWrap((inner) => Polygon._wrap(inner));
-
-const nape = getNape();
-nape.shape.Polygon = Polygon;

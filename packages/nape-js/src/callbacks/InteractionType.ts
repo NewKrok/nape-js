@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -68,5 +67,3 @@ export class InteractionType {
 // ---------------------------------------------------------------------------
 // Register this class in the nape namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.callbacks.InteractionType = InteractionType;

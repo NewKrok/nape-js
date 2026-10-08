@@ -38,22 +38,6 @@ describe("ZPP_MarchSpan", () => {
     });
   });
 
-  describe("alloc", () => {
-    it("should reset out to false", () => {
-      const span = new ZPP_MarchSpan();
-      span.out = true;
-      span.alloc();
-      expect(span.out).toBe(false);
-    });
-
-    it("should reset rank to 0", () => {
-      const span = new ZPP_MarchSpan();
-      span.rank = 5;
-      span.alloc();
-      expect(span.rank).toBe(0);
-    });
-  });
-
   describe("static pool", () => {
     it("should initialize pool to null", () => {
       expect(ZPP_MarchSpan.zpp_pool).toBeNull();

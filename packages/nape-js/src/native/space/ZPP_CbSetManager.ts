@@ -112,8 +112,4 @@ export class ZPP_CbSetManager {
   pair(a: any, b: any): any {
     return ZPP_CbSet.findOrCreatePair(a, b);
   }
-
-  valid_listener(i: any): boolean {
-    return i.space == this.space;
-  }
 }
