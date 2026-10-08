@@ -5,6 +5,18 @@ import { ZPP_CbSet } from "../../../src/native/callbacks/ZPP_CbSet";
 import { ZNPList_ZPP_CallbackSet, ZNPList_ZPP_CbType } from "../../../src/native/util/ZNPRegistry";
 import { createMockNape, createMockZpp, MockZNPList } from "../_mocks";
 
+/** compatible() / excluded() exactly as ZPP_OptionType defines them, over a mock's nonemptyintersection. */
+const OPTION_METHODS = {
+  compatible(this: any, xs: any): boolean {
+    return (
+      this.nonemptyintersection(xs, this.includes) && !this.nonemptyintersection(xs, this.excludes)
+    );
+  },
+  excluded(this: any, xs: any): boolean {
+    return this.nonemptyintersection(xs, this.excludes);
+  },
+};
+
 /**
  * ZPP_Interactor is the abstract base for ZPP_Body, ZPP_Compound, and ZPP_Shape.
  *
@@ -96,6 +108,7 @@ describe("ZPP_Interactor", () => {
       return {
         includes,
         excludes,
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, ys: any) => {
           // simple "share at least one element" check
           let xite = xs.head;

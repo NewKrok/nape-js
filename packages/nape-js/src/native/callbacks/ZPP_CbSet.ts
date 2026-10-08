@@ -325,11 +325,7 @@ export class ZPP_CbSet {
             tmp = true;
           }
           if (tmp) {
-            const _this = cx.options;
-            if (
-              !_this.nonemptyintersection(this.cbTypes, _this.excludes) &&
-              cx.space == this.manager.space
-            ) {
+            if (!cx.options.excluded(this.cbTypes) && cx.space == this.manager.space) {
               npre = this.bodylisteners.insert(npre, cx);
             }
             cite = cite.next;
@@ -377,11 +373,7 @@ export class ZPP_CbSet {
             tmp = true;
           }
           if (tmp) {
-            const _this = cx.options;
-            if (
-              !_this.nonemptyintersection(this.cbTypes, _this.excludes) &&
-              cx.space == this.manager.space
-            ) {
+            if (!cx.options.excluded(this.cbTypes) && cx.space == this.manager.space) {
               npre = this.conlisteners.insert(npre, cx);
             }
             cite = cite.next;

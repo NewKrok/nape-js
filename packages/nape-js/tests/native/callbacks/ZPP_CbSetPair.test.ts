@@ -3,6 +3,18 @@ import { ZPP_CbSetPair } from "../../../src/native/callbacks/ZPP_CbSetPair";
 import { ZNPList_ZPP_InteractionListener } from "../../../src/native/util/ZNPRegistry";
 import { MockZNPList } from "../_mocks";
 
+/** compatible() / excluded() exactly as ZPP_OptionType defines them, over a mock's nonemptyintersection. */
+const OPTION_METHODS = {
+  compatible(this: any, xs: any): boolean {
+    return (
+      this.nonemptyintersection(xs, this.includes) && !this.nonemptyintersection(xs, this.excludes)
+    );
+  },
+  excluded(this: any, xs: any): boolean {
+    return this.nonemptyintersection(xs, this.excludes);
+  },
+};
+
 describe("ZPP_CbSetPair", () => {
   beforeEach(() => {
     // ZPP_CbSetPair imports ZPP_CbSet (for setlt) and its ZNPList class
@@ -168,6 +180,7 @@ describe("ZPP_CbSetPair", () => {
       const excludes = new MockZNPList();
 
       const options = {
+        ...OPTION_METHODS,
         nonemptyintersection: (_xs: any, list: any) => list === includes,
         includes,
         excludes,
@@ -193,6 +206,7 @@ describe("ZPP_CbSetPair", () => {
       p.b.listeners.add(listener);
 
       const failOptions = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -243,6 +257,7 @@ describe("ZPP_CbSetPair", () => {
       const includes = new MockZNPList();
       const excludes = new MockZNPList();
       const options = {
+        ...OPTION_METHODS,
         nonemptyintersection: (_xs: any, list: any) => list === includes,
         includes,
         excludes,
@@ -259,6 +274,7 @@ describe("ZPP_CbSetPair", () => {
 
       let callCount = 0;
       const failFirst = {
+        ...OPTION_METHODS,
         nonemptyintersection: (_xs: any, _ys: any) => {
           callCount++;
           return callCount > 2; // fail first 2 calls, succeed later
@@ -267,6 +283,7 @@ describe("ZPP_CbSetPair", () => {
         excludes: new MockZNPList(),
       };
       const succeed = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => true,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -285,6 +302,7 @@ describe("ZPP_CbSetPair", () => {
       p.b = { cbTypes: new MockZNPList() };
 
       const fail = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -369,12 +387,14 @@ describe("ZPP_CbSetPair", () => {
 
       // options1 fails on a (forward path fails at first check)
       const options1fail = {
+        ...OPTION_METHODS,
         nonemptyintersection: (_xs: any, _list: any) => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
       };
       // options2 succeeds on a (reverse path: options2 on a succeeds)
       const options2succeed = {
+        ...OPTION_METHODS,
         nonemptyintersection: (_xs: any, list: any) => list === options2succeed.includes,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -396,6 +416,7 @@ describe("ZPP_CbSetPair", () => {
 
       // Forward path: options1 on a fails
       const options1 = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => {
           // Fail when checking against a.cbTypes (forward), succeed against b.cbTypes (reverse)
           return xs === p.b.cbTypes && list === options1.includes;
@@ -405,6 +426,7 @@ describe("ZPP_CbSetPair", () => {
       };
       // options2 succeeds on a
       const options2 = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => {
           return xs === p.a.cbTypes && list === options2.includes;
         },
@@ -423,6 +445,7 @@ describe("ZPP_CbSetPair", () => {
 
       // Both options fail on a, so both forward and reverse fail
       const failAll = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -443,6 +466,7 @@ describe("ZPP_CbSetPair", () => {
 
       // options1 fails forward (on a) but succeeds reverse (on b)
       const options1 = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => {
           return xs === p.b.cbTypes && list === options1.includes;
         },
@@ -451,6 +475,7 @@ describe("ZPP_CbSetPair", () => {
       };
       // options2 succeeds reverse (on a)
       const options2 = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => {
           return xs === p.a.cbTypes && list === options2.includes;
         },
@@ -473,6 +498,7 @@ describe("ZPP_CbSetPair", () => {
 
       // Both directions fail
       const failOpts = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
