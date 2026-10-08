@@ -26,9 +26,12 @@ Engine bootstrap (packages/nape-js/src/core/engine.ts → ZPPRegistry.ts + boots
   and `packages/nape-js/tests/setup.ts`.
 - `packages/nape-js/src/native/util/ZPPRegistry.ts` (`registerZPPClasses`) — fills the
   skeleton with all ZPP classes in place (idempotent), calls `_init()`/`_initStatics()`.
-- `packages/nape-js/src/native/util/ZNPRegistry.ts` — the 78 ZNPNode/ZNPList/ZPP_Set
-  subclasses are real exported classes (each with its own static pool); engine code
-  imports them directly. `registerZNPClasses` only aliases them into the namespace.
+- `packages/nape-js/src/native/util/ZNPRegistry.ts` — the `ZNPList_*` / `ZNPNode_*`
+  names (one per element type, as in Haxe) are aliases of the single `ZNPList` /
+  `ZNPNode` class with one shared node pool, so list code stays monomorphic (one object
+  shape instead of ~35 — V8 otherwise falls back to megamorphic property lookups in the
+  step loop). The 8 `ZPP_Set_*` classes are real subclasses with their own pools.
+  `registerZNPClasses` only assigns the names into the namespace.
 - Enum singletons (`BodyType.STATIC`, `CbEvent.BEGIN`, `CbType.ANY_*`, ...) are created
   lazily by their public getters — there is no init barrier.
 

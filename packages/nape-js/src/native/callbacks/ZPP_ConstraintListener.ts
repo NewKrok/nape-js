@@ -6,7 +6,6 @@
  */
 
 import { ZPP_Listener } from "./ZPP_Listener";
-import { ZNPNode_ZPP_ConstraintListener } from "../util/ZNPRegistry";
 
 export class ZPP_ConstraintListener extends ZPP_Listener {
   handler: any = null;
@@ -27,43 +26,7 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
       this.cbtype_change(cb, included, added);
     let cx_ite = this.options.includes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      let pre: any = null;
-      let cx_ite1 = cb.conlisteners.head;
-      while (cx_ite1 != null) {
-        const j = cx_ite1.elt;
-        if (this.precedence > j.precedence || (this.precedence == j.precedence && this.id > j.id)) {
-          break;
-        }
-        pre = cx_ite1;
-        cx_ite1 = cx_ite1.next;
-      }
-      const _this = cb.conlisteners;
-      let ret: any;
-      if (ZNPNode_ZPP_ConstraintListener.zpp_pool == null) {
-        ret = new ZNPNode_ZPP_ConstraintListener();
-      } else {
-        ret = ZNPNode_ZPP_ConstraintListener.zpp_pool;
-        ZNPNode_ZPP_ConstraintListener.zpp_pool = ret.next;
-        ret.next = null;
-      }
-      ret.elt = this;
-      const temp = ret;
-      if (pre == null) {
-        temp.next = _this.head;
-        _this.head = temp;
-      } else {
-        temp.next = pre.next;
-        pre.next = temp;
-      }
-      _this.pushmod = _this.modified = true;
-      _this.length++;
-      let cx_ite2 = cb.cbsets.head;
-      while (cx_ite2 != null) {
-        const cb1 = cx_ite2.elt;
-        cb1.zip_conlisteners = true;
-        cx_ite2 = cx_ite2.next;
-      }
+      cx_ite.elt.addconstraint(this);
       cx_ite = cx_ite.next;
     }
   }
@@ -71,14 +34,7 @@ export class ZPP_ConstraintListener extends ZPP_Listener {
   removedFromSpace(): void {
     let cx_ite = this.options.includes.head;
     while (cx_ite != null) {
-      const cb = cx_ite.elt;
-      cb.conlisteners.remove(this);
-      let cx_ite1 = cb.cbsets.head;
-      while (cx_ite1 != null) {
-        const cb1 = cx_ite1.elt;
-        cb1.zip_conlisteners = true;
-        cx_ite1 = cx_ite1.next;
-      }
+      cx_ite.elt.removeconstraint(this);
       cx_ite = cx_ite.next;
     }
     this.options.handler = null;

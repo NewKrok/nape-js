@@ -67,43 +67,17 @@ export class ZPP_CbSetPair {
     this.zip_listeners = true;
   }
 
-  /** Check if a listener is compatible with both sets in this pair. */
+  /**
+   * Whether listener `i` matches this pair, in either orientation
+   * (options1 ~ a and options2 ~ b, or options2 ~ a and options1 ~ b).
+   */
   compatible(i: any): boolean {
-    let tmp: boolean;
-    const _this = i.options1;
-    const xs = this.a.cbTypes;
-    if (
-      _this.nonemptyintersection(xs, _this.includes) &&
-      !_this.nonemptyintersection(xs, _this.excludes)
-    ) {
-      const _this1 = i.options2;
-      const xs1 = this.b.cbTypes;
-      tmp =
-        _this1.nonemptyintersection(xs1, _this1.includes) &&
-        !_this1.nonemptyintersection(xs1, _this1.excludes);
-    } else {
-      tmp = false;
-    }
-    if (!tmp) {
-      const _this2 = i.options2;
-      const xs2 = this.a.cbTypes;
-      if (
-        _this2.nonemptyintersection(xs2, _this2.includes) &&
-        !_this2.nonemptyintersection(xs2, _this2.excludes)
-      ) {
-        const _this3 = i.options1;
-        const xs3 = this.b.cbTypes;
-        if (_this3.nonemptyintersection(xs3, _this3.includes)) {
-          return !_this3.nonemptyintersection(xs3, _this3.excludes);
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
+    const ta = this.a.cbTypes;
+    const tb = this.b.cbTypes;
+    return (
+      (i.options1.compatible(ta) && i.options2.compatible(tb)) ||
+      (i.options2.compatible(ta) && i.options1.compatible(tb))
+    );
   }
 
   invalidate(): void {
@@ -126,41 +100,7 @@ export class ZPP_CbSetPair {
       const ax = aite.elt;
       const bx = bite.elt;
       if (ax == bx) {
-        let tmp: boolean;
-        let tmp1: boolean;
-        const _this = ax.options1;
-        const xs = this.a.cbTypes;
-        if (
-          _this.nonemptyintersection(xs, _this.includes) &&
-          !_this.nonemptyintersection(xs, _this.excludes)
-        ) {
-          const _this1 = ax.options2;
-          const xs1 = this.b.cbTypes;
-          tmp1 =
-            _this1.nonemptyintersection(xs1, _this1.includes) &&
-            !_this1.nonemptyintersection(xs1, _this1.excludes);
-        } else {
-          tmp1 = false;
-        }
-        if (!tmp1) {
-          const _this2 = ax.options2;
-          const xs2 = this.a.cbTypes;
-          if (
-            _this2.nonemptyintersection(xs2, _this2.includes) &&
-            !_this2.nonemptyintersection(xs2, _this2.excludes)
-          ) {
-            const _this3 = ax.options1;
-            const xs3 = this.b.cbTypes;
-            tmp =
-              _this3.nonemptyintersection(xs3, _this3.includes) &&
-              !_this3.nonemptyintersection(xs3, _this3.excludes);
-          } else {
-            tmp = false;
-          }
-        } else {
-          tmp = true;
-        }
-        if (tmp) {
+        if (this.compatible(ax)) {
           this.listeners.add(ax);
         }
         aite = aite.next;

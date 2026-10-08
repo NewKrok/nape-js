@@ -238,18 +238,7 @@ export class ZPP_Vec2 {
   copy(): ZPP_Vec2 {
     const x = this.x;
     const y = this.y;
-    let ret: ZPP_Vec2;
-    if (ZPP_Vec2.zpp_pool == null) {
-      ret = new ZPP_Vec2();
-    } else {
-      ret = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.weak = false;
-    ret._immutable = false;
-    ret.x = x;
-    ret.y = y;
+    const ret: ZPP_Vec2 = ZPP_Vec2.get(x, y, false);
     return ret;
   }
 

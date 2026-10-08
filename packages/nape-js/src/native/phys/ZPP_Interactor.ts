@@ -8,11 +8,7 @@
 
 import { ZPP_ID } from "../util/ZPP_ID";
 import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
-import {
-  ZNPList_ZPP_CallbackSet,
-  ZNPList_ZPP_CbType,
-  ZNPNode_ZPP_CbType,
-} from "../util/ZNPRegistry";
+import { ZNPList_ZPP_CallbackSet, ZNPList_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_Interactor {
   /**
@@ -81,25 +77,14 @@ export class ZPP_Interactor {
     return ret;
   }
 
+  /**
+   * Point a callback's int1 / int2 at the set's interactors in the order the
+   * listener's options expect (options1 matches int1).
+   */
   static int_callback(set: any, x: any, cb: any): void {
     const o1 = set.int1;
     const o2 = set.int2;
-    let tmp: boolean;
-    const _this = x.options1;
-    const xs = o1.cbTypes;
-    if (
-      _this.nonemptyintersection(xs, _this.includes) &&
-      !_this.nonemptyintersection(xs, _this.excludes)
-    ) {
-      const _this1 = x.options2;
-      const xs1 = o2.cbTypes;
-      tmp =
-        _this1.nonemptyintersection(xs1, _this1.includes) &&
-        !_this1.nonemptyintersection(xs1, _this1.excludes);
-    } else {
-      tmp = false;
-    }
-    if (tmp) {
+    if (x.options1.compatible(o1.cbTypes) && x.options2.compatible(o2.cbTypes)) {
       cb.int1 = o1;
       cb.int2 = o2;
     } else {
@@ -228,26 +213,7 @@ export class ZPP_Interactor {
         pre = cx_ite;
         cx_ite = cx_ite.next;
       }
-      const _this = this.cbTypes;
-      let ret: any;
-      if (ZNPNode_ZPP_CbType.zpp_pool == null) {
-        ret = new ZNPNode_ZPP_CbType();
-      } else {
-        ret = ZNPNode_ZPP_CbType.zpp_pool;
-        ZNPNode_ZPP_CbType.zpp_pool = ret.next;
-        ret.next = null;
-      }
-      ret.elt = cb;
-      const temp = ret;
-      if (pre == null) {
-        temp.next = _this.head;
-        _this.head = temp;
-      } else {
-        temp.next = pre.next;
-        pre.next = temp;
-      }
-      _this.pushmod = _this.modified = true;
-      _this.length++;
+      this.cbTypes.insert(pre, cb);
       if (space != null) {
         this.alloc_cbSet();
         this.wake();

@@ -356,17 +356,7 @@ export class ZPP_Simple {
     }
     const x = cur.x;
     const y = cur.y;
-    let ret1: ZPP_GeomVert;
-    if (ZPP_GeomVert.zpp_pool == null) {
-      ret1 = new ZPP_GeomVert();
-    } else {
-      ret1 = ZPP_GeomVert.zpp_pool;
-      ZPP_GeomVert.zpp_pool = ret1.next;
-      ret1.next = null;
-    }
-    ret1.forced = false;
-    ret1.x = x;
-    ret1.y = y;
+    const ret1: ZPP_GeomVert = ZPP_GeomVert.get(x, y);
     const obj = ret1;
     if (ret == null) {
       obj.prev = obj.next = obj;
@@ -392,17 +382,7 @@ export class ZPP_Simple {
       }
       const x1 = nxt.x;
       const y1 = nxt.y;
-      let ret2: ZPP_GeomVert;
-      if (ZPP_GeomVert.zpp_pool == null) {
-        ret2 = new ZPP_GeomVert();
-      } else {
-        ret2 = ZPP_GeomVert.zpp_pool;
-        ZPP_GeomVert.zpp_pool = ret2.next;
-        ret2.next = null;
-      }
-      ret2.forced = false;
-      ret2.x = x1;
-      ret2.y = y1;
+      const ret2: ZPP_GeomVert = ZPP_GeomVert.get(x1, y1);
       const obj1 = ret2;
       if (ret == null) {
         obj1.prev = obj1.next = obj1;

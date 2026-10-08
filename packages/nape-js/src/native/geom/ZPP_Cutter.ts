@@ -51,17 +51,7 @@ function ringArea(P: ZPP_GeomVert): number {
 }
 
 function allocGeomVert(x: number, y: number): ZPP_GeomVert {
-  let ret: ZPP_GeomVert;
-  if (ZPP_GeomVert.zpp_pool == null) {
-    ret = new ZPP_GeomVert();
-  } else {
-    ret = ZPP_GeomVert.zpp_pool;
-    ZPP_GeomVert.zpp_pool = ret.next;
-    ret.next = null;
-  }
-  ret.forced = false;
-  ret.x = x;
-  ret.y = y;
+  const ret: ZPP_GeomVert = ZPP_GeomVert.get(x, y);
   return ret;
 }
 
@@ -465,17 +455,7 @@ export class ZPP_Cutter {
     let start1: ZPP_GeomVert | null = null;
     const x2 = verts.posx;
     const y2 = verts.posy;
-    let ret2: ZPP_GeomVert;
-    if (ZPP_GeomVert.zpp_pool == null) {
-      ret2 = new ZPP_GeomVert();
-    } else {
-      ret2 = ZPP_GeomVert.zpp_pool;
-      ZPP_GeomVert.zpp_pool = ret2.next;
-      ret2.next = null;
-    }
-    ret2.forced = false;
-    ret2.x = x2;
-    ret2.y = y2;
+    const ret2: ZPP_GeomVert = ZPP_GeomVert.get(x2, y2);
     const obj1 = ret2;
     obj1.prev = obj1.next = obj1;
     start1 = obj1;
@@ -499,17 +479,7 @@ export class ZPP_Cutter {
       const j = i.next;
       const x3 = j!.posx;
       const y3 = j!.posy;
-      let ret4: ZPP_GeomVert;
-      if (ZPP_GeomVert.zpp_pool == null) {
-        ret4 = new ZPP_GeomVert();
-      } else {
-        ret4 = ZPP_GeomVert.zpp_pool;
-        ZPP_GeomVert.zpp_pool = ret4.next;
-        ret4.next = null;
-      }
-      ret4.forced = false;
-      ret4.x = x3;
-      ret4.y = y3;
+      const ret4: ZPP_GeomVert = ZPP_GeomVert.get(x3, y3);
       const pj = ret4;
       if (i.positive == j!.positive) {
         const obj2 = pj;
@@ -536,21 +506,7 @@ export class ZPP_Cutter {
           if (virtualint == null) {
             virtualint = false;
           }
-          let ret5: ZPP_CutInt;
-          if (ZPP_CutInt.zpp_pool == null) {
-            ret5 = new ZPP_CutInt();
-          } else {
-            ret5 = ZPP_CutInt.zpp_pool;
-            ZPP_CutInt.zpp_pool = ret5.next;
-            ret5.next = null;
-          }
-          ret5.virtualint = virtualint;
-          ret5.end = null;
-          ret5.start = null;
-          ret5.path0 = null;
-          ret5.path1 = null;
-          ret5.time = s;
-          ret5.vertex = false;
+          const ret5: ZPP_CutInt = ZPP_CutInt.get(s, null, null, null, null, virtualint, false);
           tmp.add(ret5);
           const obj3 = pj;
           if (start1 == null) {
@@ -568,17 +524,7 @@ export class ZPP_Cutter {
           start1 = null;
           const x4 = endof!.x;
           const y4 = endof!.y;
-          let ret6: ZPP_GeomVert;
-          if (ZPP_GeomVert.zpp_pool == null) {
-            ret6 = new ZPP_GeomVert();
-          } else {
-            ret6 = ZPP_GeomVert.zpp_pool;
-            ZPP_GeomVert.zpp_pool = ret6.next;
-            ret6.next = null;
-          }
-          ret6.forced = false;
-          ret6.x = x4;
-          ret6.y = y4;
+          const ret6: ZPP_GeomVert = ZPP_GeomVert.get(x4, y4);
           const obj4 = ret6;
           obj4.prev = obj4.next = obj4;
           start1 = obj4;
@@ -613,21 +559,15 @@ export class ZPP_Cutter {
           if (virtualint1 == null) {
             virtualint1 = false;
           }
-          let ret8: ZPP_CutInt;
-          if (ZPP_CutInt.zpp_pool == null) {
-            ret8 = new ZPP_CutInt();
-          } else {
-            ret8 = ZPP_CutInt.zpp_pool;
-            ZPP_CutInt.zpp_pool = ret8.next;
-            ret8.next = null;
-          }
-          ret8.virtualint = virtualint1;
-          ret8.end = endof;
-          ret8.start = start1;
-          ret8.path0 = prepath;
-          ret8.path1 = postpath;
-          ret8.time = s;
-          ret8.vertex = false;
+          const ret8: ZPP_CutInt = ZPP_CutInt.get(
+            s,
+            endof,
+            start1,
+            prepath,
+            postpath,
+            virtualint1,
+            false,
+          );
           tmp2.add(ret8);
         } else if (j!.value == 0) {
           const obj6 = pj;
@@ -645,17 +585,7 @@ export class ZPP_Cutter {
           start1 = null;
           const x5 = j!.posx;
           const y5 = j!.posy;
-          let ret9: ZPP_GeomVert;
-          if (ZPP_GeomVert.zpp_pool == null) {
-            ret9 = new ZPP_GeomVert();
-          } else {
-            ret9 = ZPP_GeomVert.zpp_pool;
-            ZPP_GeomVert.zpp_pool = ret9.next;
-            ret9.next = null;
-          }
-          ret9.forced = false;
-          ret9.x = x5;
-          ret9.y = y5;
+          const ret9: ZPP_GeomVert = ZPP_GeomVert.get(x5, y5);
           const obj7 = ret9;
           obj7.prev = obj7.next = obj7;
           start1 = obj7;
@@ -680,21 +610,15 @@ export class ZPP_Cutter {
           if (virtualint2 == null) {
             virtualint2 = false;
           }
-          let ret11: ZPP_CutInt;
-          if (ZPP_CutInt.zpp_pool == null) {
-            ret11 = new ZPP_CutInt();
-          } else {
-            ret11 = ZPP_CutInt.zpp_pool;
-            ZPP_CutInt.zpp_pool = ret11.next;
-            ret11.next = null;
-          }
-          ret11.virtualint = virtualint2;
-          ret11.end = endof1;
-          ret11.start = start1;
-          ret11.path0 = prepath1;
-          ret11.path1 = postpath1;
-          ret11.time = s;
-          ret11.vertex = false;
+          const ret11: ZPP_CutInt = ZPP_CutInt.get(
+            s,
+            endof1,
+            start1,
+            prepath1,
+            postpath1,
+            virtualint2,
+            false,
+          );
           tmp4.add(ret11);
         } else {
           const t4 = (dy * pax - dx * pay) * denom;
@@ -705,17 +629,7 @@ export class ZPP_Cutter {
           const t5 = t4;
           qx += ux * t5;
           qy += uy * t5;
-          let ret12: ZPP_GeomVert;
-          if (ZPP_GeomVert.zpp_pool == null) {
-            ret12 = new ZPP_GeomVert();
-          } else {
-            ret12 = ZPP_GeomVert.zpp_pool;
-            ZPP_GeomVert.zpp_pool = ret12.next;
-            ret12.next = null;
-          }
-          ret12.forced = false;
-          ret12.x = qx;
-          ret12.y = qy;
+          const ret12: ZPP_GeomVert = ZPP_GeomVert.get(qx, qy);
           const obj8 = ret12;
           if (start1 == null) {
             obj8.prev = obj8.next = obj8;
@@ -729,17 +643,7 @@ export class ZPP_Cutter {
           const endof2 = start1!.prev;
           // eslint-disable-next-line no-useless-assignment
           start1 = null;
-          let ret13: ZPP_GeomVert;
-          if (ZPP_GeomVert.zpp_pool == null) {
-            ret13 = new ZPP_GeomVert();
-          } else {
-            ret13 = ZPP_GeomVert.zpp_pool;
-            ZPP_GeomVert.zpp_pool = ret13.next;
-            ret13.next = null;
-          }
-          ret13.forced = false;
-          ret13.x = qx;
-          ret13.y = qy;
+          const ret13: ZPP_GeomVert = ZPP_GeomVert.get(qx, qy);
           const obj9 = ret13;
           obj9.prev = obj9.next = obj9;
           start1 = obj9;
@@ -774,21 +678,15 @@ export class ZPP_Cutter {
           if (virtualint3 == null) {
             virtualint3 = false;
           }
-          let ret15: ZPP_CutInt;
-          if (ZPP_CutInt.zpp_pool == null) {
-            ret15 = new ZPP_CutInt();
-          } else {
-            ret15 = ZPP_CutInt.zpp_pool;
-            ZPP_CutInt.zpp_pool = ret15.next;
-            ret15.next = null;
-          }
-          ret15.virtualint = virtualint3;
-          ret15.end = endof2;
-          ret15.start = start1;
-          ret15.path0 = prepath2;
-          ret15.path1 = postpath2;
-          ret15.time = s;
-          ret15.vertex = false;
+          const ret15: ZPP_CutInt = ZPP_CutInt.get(
+            s,
+            endof2,
+            start1,
+            prepath2,
+            postpath2,
+            virtualint3,
+            false,
+          );
           tmp6.add(ret15);
         }
       }

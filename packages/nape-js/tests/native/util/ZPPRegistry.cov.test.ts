@@ -41,46 +41,38 @@ describe("ZNPRegistry", () => {
     expect(util.ZNPList_ZPP_Vec2).toBe(ZNP.ZNPList_ZPP_Vec2);
   });
 
-  it("every node/list/set class extends the right base and owns a separate pool slot", () => {
+  it("ZNPNode_* / ZNPList_* are aliases of the one node / list class; ZPP_Set_* own their pools", () => {
     for (const [name, cls] of exportedClasses) {
-      if (name.startsWith("ZNPNode_")) expect(cls.prototype).toBeInstanceOf(ZNPNode);
-      else if (name.startsWith("ZNPList_")) expect(cls.prototype).toBeInstanceOf(ZNPList);
-      else if (name.startsWith("ZPP_Set_")) expect(cls.prototype).toBeInstanceOf(ZPP_Set);
-      if (!name.startsWith("ZNPList_")) {
+      if (name.startsWith("ZNPNode_")) expect(cls).toBe(ZNPNode);
+      else if (name.startsWith("ZNPList_")) expect(cls).toBe(ZNPList);
+      else if (name.startsWith("ZPP_Set_")) {
+        expect(cls.prototype).toBeInstanceOf(ZPP_Set);
         expect(Object.prototype.hasOwnProperty.call(cls, "zpp_pool")).toBe(true);
       }
     }
   });
 
-  it("each list allocates from and frees to its own node class pool", () => {
-    const { ZNPList_ZPP_Body, ZNPNode_ZPP_Body, ZNPList_ZPP_Shape, ZNPNode_ZPP_Shape } = ZNP;
-    ZNPNode_ZPP_Body.zpp_pool = null;
-    ZNPNode_ZPP_Shape.zpp_pool = null;
+  it("every list allocates from and frees to the shared node pool (LIFO)", () => {
+    const { ZNPList_ZPP_Body, ZNPList_ZPP_Shape } = ZNP;
+    ZNPNode.zpp_pool = null;
     const bodies = new ZNPList_ZPP_Body();
     const shapes = new ZNPList_ZPP_Shape();
     bodies.add("a" as any);
     bodies.add("b" as any);
     const nodeA = bodies.head!.next!;
     const nodeB = bodies.head!;
-    expect(nodeA).toBeInstanceOf(ZNPNode_ZPP_Body);
     bodies.pop(); // frees b
     bodies.pop(); // frees a
-    expect(ZNPNode_ZPP_Body.zpp_pool).toBe(nodeA);
-    expect(ZNPNode_ZPP_Body.zpp_pool!.next).toBe(nodeB);
+    expect(ZNPNode.zpp_pool).toBe(nodeA);
+    expect(ZNPNode.zpp_pool!.next).toBe(nodeB);
     expect(nodeA.elt).toBeNull();
-    expect(ZNPNode_ZPP_Shape.zpp_pool).toBeNull();
 
-    // Shape list does not steal Body nodes.
+    // Any list reuses pooled nodes, most recently freed first.
     shapes.add("s" as any);
-    expect(shapes.head).toBeInstanceOf(ZNPNode_ZPP_Shape);
-    expect(ZNPNode_ZPP_Body.zpp_pool).toBe(nodeA);
-
-    // Body list reuses its pooled nodes LIFO.
+    expect(shapes.head).toBe(nodeA);
     bodies.add("c" as any);
-    expect(bodies.head).toBe(nodeA);
-    bodies.add("d" as any);
     expect(bodies.head).toBe(nodeB);
-    expect(ZNPNode_ZPP_Body.zpp_pool).toBeNull();
+    expect(ZNPNode.zpp_pool).toBeNull();
   });
 });
 

@@ -40,17 +40,7 @@ export class ZPP_MarchingSquares {
   // Helper: allocate a ZPP_GeomVert from pool
   // ---------------------------------------------------------------------------
   private static _allocVert(x: number, y: number): ZPP_GeomVert {
-    let ret: ZPP_GeomVert;
-    if (ZPP_GeomVert.zpp_pool == null) {
-      ret = new ZPP_GeomVert();
-    } else {
-      ret = ZPP_GeomVert.zpp_pool;
-      ZPP_GeomVert.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.forced = false;
-    ret.x = x;
-    ret.y = y;
+    const ret: ZPP_GeomVert = ZPP_GeomVert.get(x, y);
     return ret;
   }
 

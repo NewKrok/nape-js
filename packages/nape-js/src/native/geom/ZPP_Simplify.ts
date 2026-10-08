@@ -66,33 +66,14 @@ export class ZPP_Simplify {
     let fst: ZPP_SimplifyV | null = null;
     let cur = P;
     while (true) {
-      let ret1: ZPP_SimplifyV;
-      if (ZPP_SimplifyV.zpp_pool == null) {
-        ret1 = new ZPP_SimplifyV();
-      } else {
-        ret1 = ZPP_SimplifyV.zpp_pool;
-        ZPP_SimplifyV.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.x = cur.x;
-      ret1.y = cur.y;
-      ret1.flag = false;
+      const ret1: ZPP_SimplifyV = ZPP_SimplifyV.get(cur);
       const v = ret1;
       v.forced = cur.forced;
       if (v.forced) {
         v.flag = true;
         if (pre != null) {
           const tmp = ZPP_Simplify.stack;
-          let ret2: ZPP_SimplifyP;
-          if (ZPP_SimplifyP.zpp_pool == null) {
-            ret2 = new ZPP_SimplifyP();
-          } else {
-            ret2 = ZPP_SimplifyP.zpp_pool;
-            ZPP_SimplifyP.zpp_pool = ret2.next;
-            ret2.next = null;
-          }
-          ret2.min = pre;
-          ret2.max = v;
+          const ret2: ZPP_SimplifyP = ZPP_SimplifyP.get(pre, v);
           tmp.add(ret2);
         } else {
           fst = v;
@@ -129,28 +110,10 @@ export class ZPP_Simplify {
       if (fst == null) {
         min!.flag = max!.flag = true;
         const tmp1 = ZPP_Simplify.stack;
-        let ret3: ZPP_SimplifyP;
-        if (ZPP_SimplifyP.zpp_pool == null) {
-          ret3 = new ZPP_SimplifyP();
-        } else {
-          ret3 = ZPP_SimplifyP.zpp_pool;
-          ZPP_SimplifyP.zpp_pool = ret3.next;
-          ret3.next = null;
-        }
-        ret3.min = min;
-        ret3.max = max;
+        const ret3: ZPP_SimplifyP = ZPP_SimplifyP.get(min, max);
         tmp1.add(ret3);
         const tmp2 = ZPP_Simplify.stack;
-        let ret4: ZPP_SimplifyP;
-        if (ZPP_SimplifyP.zpp_pool == null) {
-          ret4 = new ZPP_SimplifyP();
-        } else {
-          ret4 = ZPP_SimplifyP.zpp_pool;
-          ZPP_SimplifyP.zpp_pool = ret4.next;
-          ret4.next = null;
-        }
-        ret4.min = max;
-        ret4.max = min;
+        const ret4: ZPP_SimplifyP = ZPP_SimplifyP.get(max, min);
         tmp2.add(ret4);
       } else {
         let d1 = min!.x - fst.x + (min!.y - fst.y);
@@ -164,69 +127,24 @@ export class ZPP_Simplify {
         if (d1 > d2) {
           min!.flag = fst.flag = true;
           const tmp3 = ZPP_Simplify.stack;
-          let ret5: ZPP_SimplifyP;
-          if (ZPP_SimplifyP.zpp_pool == null) {
-            ret5 = new ZPP_SimplifyP();
-          } else {
-            ret5 = ZPP_SimplifyP.zpp_pool;
-            ZPP_SimplifyP.zpp_pool = ret5.next;
-            ret5.next = null;
-          }
-          ret5.min = min;
-          ret5.max = fst;
+          const ret5: ZPP_SimplifyP = ZPP_SimplifyP.get(min, fst);
           tmp3.add(ret5);
           const tmp4 = ZPP_Simplify.stack;
-          let ret6: ZPP_SimplifyP;
-          if (ZPP_SimplifyP.zpp_pool == null) {
-            ret6 = new ZPP_SimplifyP();
-          } else {
-            ret6 = ZPP_SimplifyP.zpp_pool;
-            ZPP_SimplifyP.zpp_pool = ret6.next;
-            ret6.next = null;
-          }
-          ret6.min = fst;
-          ret6.max = min;
+          const ret6: ZPP_SimplifyP = ZPP_SimplifyP.get(fst, min);
           tmp4.add(ret6);
         } else {
           max!.flag = fst.flag = true;
           const tmp5 = ZPP_Simplify.stack;
-          let ret7: ZPP_SimplifyP;
-          if (ZPP_SimplifyP.zpp_pool == null) {
-            ret7 = new ZPP_SimplifyP();
-          } else {
-            ret7 = ZPP_SimplifyP.zpp_pool;
-            ZPP_SimplifyP.zpp_pool = ret7.next;
-            ret7.next = null;
-          }
-          ret7.min = max;
-          ret7.max = fst;
+          const ret7: ZPP_SimplifyP = ZPP_SimplifyP.get(max, fst);
           tmp5.add(ret7);
           const tmp6 = ZPP_Simplify.stack;
-          let ret8: ZPP_SimplifyP;
-          if (ZPP_SimplifyP.zpp_pool == null) {
-            ret8 = new ZPP_SimplifyP();
-          } else {
-            ret8 = ZPP_SimplifyP.zpp_pool;
-            ZPP_SimplifyP.zpp_pool = ret8.next;
-            ret8.next = null;
-          }
-          ret8.min = fst;
-          ret8.max = max;
+          const ret8: ZPP_SimplifyP = ZPP_SimplifyP.get(fst, max);
           tmp6.add(ret8);
         }
       }
     } else {
       const tmp7 = ZPP_Simplify.stack;
-      let ret9: ZPP_SimplifyP;
-      if (ZPP_SimplifyP.zpp_pool == null) {
-        ret9 = new ZPP_SimplifyP();
-      } else {
-        ret9 = ZPP_SimplifyP.zpp_pool;
-        ZPP_SimplifyP.zpp_pool = ret9.next;
-        ret9.next = null;
-      }
-      ret9.min = pre;
-      ret9.max = fst;
+      const ret9: ZPP_SimplifyP = ZPP_SimplifyP.get(pre, fst);
       tmp7.add(ret9);
     }
     while (ZPP_Simplify.stack.head != null) {
@@ -251,28 +169,10 @@ export class ZPP_Simplify {
       if (dv != null) {
         dv.flag = true;
         const tmp8 = ZPP_Simplify.stack;
-        let ret10: ZPP_SimplifyP;
-        if (ZPP_SimplifyP.zpp_pool == null) {
-          ret10 = new ZPP_SimplifyP();
-        } else {
-          ret10 = ZPP_SimplifyP.zpp_pool;
-          ZPP_SimplifyP.zpp_pool = ret10.next;
-          ret10.next = null;
-        }
-        ret10.min = min1;
-        ret10.max = dv;
+        const ret10: ZPP_SimplifyP = ZPP_SimplifyP.get(min1, dv);
         tmp8.add(ret10);
         const tmp9 = ZPP_Simplify.stack;
-        let ret11: ZPP_SimplifyP;
-        if (ZPP_SimplifyP.zpp_pool == null) {
-          ret11 = new ZPP_SimplifyP();
-        } else {
-          ret11 = ZPP_SimplifyP.zpp_pool;
-          ZPP_SimplifyP.zpp_pool = ret11.next;
-          ret11.next = null;
-        }
-        ret11.min = dv;
-        ret11.max = max1;
+        const ret11: ZPP_SimplifyP = ZPP_SimplifyP.get(dv, max1);
         tmp9.add(ret11);
       }
     }
@@ -281,17 +181,7 @@ export class ZPP_Simplify {
       if (ret.flag) {
         const x = ret.x;
         const y = ret.y;
-        let ret12: ZPP_GeomVert;
-        if (ZPP_GeomVert.zpp_pool == null) {
-          ret12 = new ZPP_GeomVert();
-        } else {
-          ret12 = ZPP_GeomVert.zpp_pool;
-          ZPP_GeomVert.zpp_pool = ret12.next;
-          ret12.next = null;
-        }
-        ret12.forced = false;
-        ret12.x = x;
-        ret12.y = y;
+        const ret12: ZPP_GeomVert = ZPP_GeomVert.get(x, y);
         const obj1 = ret12;
         if (retp == null) {
           obj1.prev = obj1.next = obj1;

@@ -15,6 +15,18 @@ import {
 } from "../../../src/native/util/ZNPRegistry";
 import { createMockZpp, MockZNPList } from "../_mocks";
 
+/** compatible() / excluded() exactly as ZPP_OptionType defines them, over a mock's nonemptyintersection. */
+const OPTION_METHODS = {
+  compatible(this: any, xs: any): boolean {
+    return (
+      this.nonemptyintersection(xs, this.includes) && !this.nonemptyintersection(xs, this.excludes)
+    );
+  },
+  excluded(this: any, xs: any): boolean {
+    return this.nonemptyintersection(xs, this.excludes);
+  },
+};
+
 describe("ZPP_CbSet", () => {
   beforeEach(() => {
     // The constructor still reads _zpp.ZPP_ID.CbSet(); the list/node/pair
@@ -353,6 +365,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -377,6 +390,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => true,
           excludes: new MockZNPList(),
         },
@@ -402,6 +416,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "otherSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -428,6 +443,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -452,6 +468,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => true,
           excludes: new MockZNPList(),
         },
@@ -476,6 +493,7 @@ describe("ZPP_CbSet", () => {
       const includes = new MockZNPList();
       const excludes = new MockZNPList();
       const options = {
+        ...OPTION_METHODS,
         nonemptyintersection: (_xs: any, list: any) => list === includes,
         includes,
         excludes,
@@ -491,6 +509,7 @@ describe("ZPP_CbSet", () => {
 
       let callCount = 0;
       const fail = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => {
           callCount++;
           return callCount > 2;
@@ -500,6 +519,7 @@ describe("ZPP_CbSet", () => {
       };
 
       const succeed = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => true,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -515,6 +535,7 @@ describe("ZPP_CbSet", () => {
       const b = new ZPP_CbSet();
 
       const fail = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -532,6 +553,7 @@ describe("ZPP_CbSet", () => {
 
       // Forward: options1 on a fails
       const options1 = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => {
           return xs === b.cbTypes && list === options1.includes;
         },
@@ -540,6 +562,7 @@ describe("ZPP_CbSet", () => {
       };
       // Reverse: options2 on a succeeds
       const options2 = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => {
           return xs === a.cbTypes && list === options2.includes;
         },
@@ -557,12 +580,14 @@ describe("ZPP_CbSet", () => {
 
       // Forward fails
       const options1fail = {
+        ...OPTION_METHODS,
         nonemptyintersection: () => false,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
       };
       // Reverse: options2 on a succeeds
       const options2succeed = {
+        ...OPTION_METHODS,
         nonemptyintersection: (xs: any, list: any) => list === options2succeed.includes,
         includes: new MockZNPList(),
         excludes: new MockZNPList(),
@@ -843,13 +868,13 @@ describe("ZPP_CbSet", () => {
 
       // Put a real node in the real pool
       const poolNode = new ZNPNode_ZPP_BodyListener();
-      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
 
       const listener = {
         precedence: 1,
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -860,6 +885,8 @@ describe("ZPP_CbSet", () => {
       cbType.bodylisteners.add(listener);
       s.cbTypes.add(cbType);
 
+      // Node lists share one pool: seed it after the setup lists have allocated.
+      ZNPNode_ZPP_BodyListener.zpp_pool = poolNode;
       s.zip_bodylisteners = true;
       s.validate_bodylisteners();
       expect(s.bodylisteners.length).toBe(1);
@@ -876,6 +903,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -902,13 +930,21 @@ describe("ZPP_CbSet", () => {
         precedence: 10,
         id: 1,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
       const low = {
         precedence: 1,
         id: 2,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
 
       const ct1: any = { bodylisteners: new MockZNPList() };
@@ -933,19 +969,31 @@ describe("ZPP_CbSet", () => {
         precedence: 10,
         id: 1,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
       const listenerB = {
         precedence: 5,
         id: 2,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
       const listenerC = {
         precedence: 1,
         id: 3,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
 
       // First cbType has A and C
@@ -970,13 +1018,13 @@ describe("ZPP_CbSet", () => {
       s.manager = { space: "testSpace" };
 
       const poolNode = new ZNPNode_ZPP_ConstraintListener();
-      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
 
       const listener = {
         precedence: 1,
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -987,6 +1035,8 @@ describe("ZPP_CbSet", () => {
       cbType.conlisteners.add(listener);
       s.cbTypes.add(cbType);
 
+      // Node lists share one pool: seed it after the setup lists have allocated.
+      ZNPNode_ZPP_ConstraintListener.zpp_pool = poolNode;
       s.zip_conlisteners = true;
       s.validate_conlisteners();
       expect(s.conlisteners.length).toBe(1);
@@ -1003,6 +1053,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "testSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -1028,13 +1079,21 @@ describe("ZPP_CbSet", () => {
         precedence: 10,
         id: 1,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
       const low = {
         precedence: 1,
         id: 2,
         space: "testSpace",
-        options: { nonemptyintersection: () => false, excludes: new MockZNPList() },
+        options: {
+          ...OPTION_METHODS,
+          nonemptyintersection: () => false,
+          excludes: new MockZNPList(),
+        },
       };
 
       const ct1: any = { conlisteners: new MockZNPList() };
@@ -1059,6 +1118,7 @@ describe("ZPP_CbSet", () => {
         id: 1,
         space: "otherSpace",
         options: {
+          ...OPTION_METHODS,
           nonemptyintersection: () => false,
           excludes: new MockZNPList(),
         },
@@ -1081,13 +1141,14 @@ describe("ZPP_CbSet", () => {
       s.manager = { space: "testSpace" };
 
       const poolNode = new ZNPNode_ZPP_InteractionListener();
-      ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
 
       const listener = { precedence: 1, id: 1, space: "testSpace" };
       const cbType: any = { listeners: new MockZNPList() };
       cbType.listeners.add(listener);
       s.cbTypes.add(cbType);
 
+      // Node lists share one pool: seed it after the setup lists have allocated.
+      ZNPNode_ZPP_InteractionListener.zpp_pool = poolNode;
       s.zip_listeners = true;
       s.validate_listeners();
       expect(s.listeners.length).toBe(1);

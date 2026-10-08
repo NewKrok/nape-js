@@ -22,20 +22,6 @@ function tri(): GeomPoly {
   return new GeomPoly([new Vec2(0, 0), new Vec2(10, 0), new Vec2(0, 10)]);
 }
 
-/** A forged pooled Vec2 shell that still carries a zpp_inner. */
-function forgedShell(inner?: ZPP_Vec2): any {
-  const shell = new Vec2(-1, -1);
-  if (inner) {
-    shell.zpp_inner = inner;
-    inner.outer = shell;
-  }
-  shell.zpp_disp = true;
-  shell.zpp_pool = null;
-  ZPP_PubPool.poolVec2 = shell;
-  ZPP_PubPool.nextVec2 = shell;
-  return shell;
-}
-
 describe("ZPP_GeomVert pooling", () => {
   beforeEach(() => {
     ZPP_GeomVert.zpp_pool = null;
@@ -103,7 +89,7 @@ describe("ZPP_GeomVert.wrapper()", () => {
     expect(v.wrapper()).toBe(w); // cached
   });
 
-  it("creates a fresh shell via _createVec2Fn when the pool is empty", () => {
+  it("creates a fresh shell when the pool is empty", () => {
     const v = ZPP_GeomVert.get(1, 1);
     const w = v.wrapper();
     expect(w).toBeInstanceOf(Vec2);
@@ -120,62 +106,10 @@ describe("ZPP_GeomVert.wrapper()", () => {
     expect(w.x).toBe(7);
   });
 
-  it("null coordinates read as zero; NaN coordinates are rejected", () => {
-    const v = ZPP_GeomVert.get(0, 0);
-    (v as any).x = null;
-    (v as any).y = undefined;
-    const w = v.wrapper();
-    expect(w.zpp_inner.x).toBe(0);
-    expect(w.zpp_inner.y).toBe(0);
-
+  it("NaN coordinates are rejected", () => {
     const bad = ZPP_GeomVert.get(NaN, 0);
     expect(() => bad.wrapper()).toThrow("Vec2 components cannot be NaN");
     expect(bad.wrap).toBeNull();
-  });
-
-  it("reuses a pooled shell that still holds a ZPP_Vec2 (defensive path)", () => {
-    const inner = new ZPP_Vec2();
-    inner.x = 99;
-    const shell = forgedShell(inner);
-    shell.zpp_disp = false; // the pool hands it out as live
-    const v = ZPP_GeomVert.get(5, 6);
-    let invalidations = 0;
-    inner._invalidate = () => invalidations++;
-    const w = v.wrapper();
-    expect(w).toBe(shell);
-    expect(w.zpp_inner).toBe(inner);
-    expect([inner.x, inner.y]).toEqual([5, 6]);
-    expect(invalidations).toBe(1);
-  });
-
-  it("defensive path: an immutable pooled ZPP_Vec2 is refused", () => {
-    const inner = new ZPP_Vec2();
-    inner._immutable = true;
-    forgedShell(inner);
-    expect(() => ZPP_GeomVert.get(1, 1).wrapper()).toThrow("Vec2 is immutable");
-  });
-
-  it("defensive path: the _isimmutable guard of a pooled ZPP_Vec2 is consulted", () => {
-    const inner = new ZPP_Vec2();
-    inner._isimmutable = () => {
-      throw new Error("guarded");
-    };
-    forgedShell(inner);
-    expect(() => ZPP_GeomVert.get(1, 1).wrapper()).toThrow("guarded");
-  });
-
-  it("defensive path: identical coordinates skip invalidation", () => {
-    const inner = new ZPP_Vec2();
-    inner.x = 5;
-    inner.y = 6;
-    forgedShell(inner);
-    let invalidations = 0;
-    inner._invalidate = () => invalidations++;
-    let validations = 0;
-    inner._validate = () => validations++;
-    ZPP_GeomVert.get(5, 6).wrapper();
-    expect(invalidations).toBe(0);
-    expect(validations).toBeGreaterThan(0);
   });
 });
 

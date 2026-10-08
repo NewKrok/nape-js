@@ -233,9 +233,6 @@ export function registerZPPClasses(nape: any): any {
   zpp.geom.ZPP_Geom = ZPP_Geom;
 
   zpp.geom.ZPP_GeomVert = ZPP_GeomVert;
-  (ZPP_GeomVert as any)._createVec2Fn = function () {
-    return new nape.geom.Vec2();
-  };
 
   zpp.geom.ZPP_GeomPoly = ZPP_GeomPoly;
 

@@ -12,12 +12,7 @@ import { ZPP_CbSet } from "./ZPP_CbSet";
 import { ZPP_CbType } from "./ZPP_CbType";
 import { ZPP_OptionType } from "./ZPP_OptionType";
 import { ZPP_CbSetPair } from "./ZPP_CbSetPair";
-import {
-  ZNPNode_ZPP_CbSet,
-  ZNPNode_ZPP_CbType,
-  ZNPNode_ZPP_InteractionListener,
-  ZPP_Set_ZPP_CbSetPair,
-} from "../util/ZNPRegistry";
+import { ZNPNode_ZPP_CbSet, ZNPNode_ZPP_CbType, ZPP_Set_ZPP_CbSetPair } from "../util/ZNPRegistry";
 
 export class ZPP_InteractionListener extends ZPP_Listener {
   // --- Static: working lists for set operations (initialized at engine init time) ---
@@ -387,47 +382,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     if (pre && this.space != null) this.space.preListenerCount++;
 
     this.with_union((cb: ZPP_CbType) => {
-      // Insert this listener into cb.listeners at precedence-sorted position
-      let pre1: any = null;
-      let cx_ite = cb.listeners.head;
-      while (cx_ite != null) {
-        const j = cx_ite.elt!;
-        if (this.precedence > j.precedence || (this.precedence == j.precedence && this.id > j.id)) {
-          break;
-        }
-        pre1 = cx_ite;
-        cx_ite = cx_ite.next;
-      }
-      const _this = cb.listeners;
-      let ret: any;
-      if (ZNPNode_ZPP_InteractionListener.zpp_pool == null) {
-        ret = new ZNPNode_ZPP_InteractionListener();
-      } else {
-        ret = ZNPNode_ZPP_InteractionListener.zpp_pool;
-        ZNPNode_ZPP_InteractionListener.zpp_pool = ret.next;
-        ret.next = null;
-      }
-      ret.elt = this;
-      const temp = ret;
-      if (pre1 == null) {
-        temp.next = _this.head;
-        _this.head = temp;
-      } else {
-        temp.next = pre1.next;
-        pre1.next = temp;
-      }
-      _this.pushmod = _this.modified = true;
-      _this.length++;
-
-      // Invalidate cbsets
-      let cx_ite1 = cb.cbsets.head;
-      while (cx_ite1 != null) {
-        const cbset = cx_ite1.elt;
-        cbset.zip_listeners = true;
-        cbset.invalidate_pairs();
-        cx_ite1 = cx_ite1.next;
-      }
-
+      cb.addint(this);
       // Wake interactors if this is a pre listener
       if (pre) {
         let cx_ite2 = cb.interactors.head;
@@ -451,14 +406,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
     if (pre && this.space != null) this.space.preListenerCount--;
 
     this.with_union((cb: ZPP_CbType) => {
-      cb.listeners.remove(this);
-      let cx_ite = cb.cbsets.head;
-      while (cx_ite != null) {
-        const cbset = cx_ite.elt;
-        cbset.zip_listeners = true;
-        cbset.invalidate_pairs();
-        cx_ite = cx_ite.next;
-      }
+      cb.removeint(this);
       if (pre) {
         let cx_ite1 = cb.interactors.head;
         while (cx_ite1 != null) {

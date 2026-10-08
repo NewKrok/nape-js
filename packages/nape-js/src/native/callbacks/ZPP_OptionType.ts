@@ -6,7 +6,7 @@
  */
 
 import { ZPP_CbType } from "./ZPP_CbType";
-import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../util/ZNPRegistry";
+import { ZNPList_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_OptionType {
   // --- Static: namespace references ---
@@ -104,24 +104,7 @@ export class ZPP_OptionType {
       pre = cx_ite;
       cx_ite = cx_ite.next;
     }
-    let ret: any;
-    if (ZNPNode_ZPP_CbType.zpp_pool == null) {
-      ret = new ZNPNode_ZPP_CbType();
-    } else {
-      ret = ZNPNode_ZPP_CbType.zpp_pool;
-      ZNPNode_ZPP_CbType.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.elt = val;
-    if (pre == null) {
-      ret.next = list.head;
-      list.head = ret;
-    } else {
-      ret.next = pre.next;
-      pre.next = ret;
-    }
-    list.pushmod = list.modified = true;
-    list.length++;
+    list.insert(pre, val);
   }
 
   effect_change(val: ZPP_CbType, included: boolean, added: boolean): void {

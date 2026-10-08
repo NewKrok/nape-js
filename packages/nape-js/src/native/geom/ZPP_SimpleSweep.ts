@@ -292,27 +292,10 @@ export class ZPP_SimpleSweep {
       } else {
         const x = 0.5 * (pl.x + ux * t + ql.x + vx * s);
         const y = 0.5 * (pl.y + uy * t + ql.y + vy * s);
-        let ret: ZPP_SimpleVert;
-        if (ZPP_SimpleVert.zpp_pool == null) {
-          ret = new ZPP_SimpleVert();
-        } else {
-          ret = ZPP_SimpleVert.zpp_pool;
-          ZPP_SimpleVert.zpp_pool = ret.next;
-          ret.next = null;
-        }
-        ret.x = x;
-        ret.y = y;
+        const ret: ZPP_SimpleVert = ZPP_SimpleVert.get(x, y);
         vet = ret;
       }
-      let ret1: ZPP_SimpleEvent;
-      if (ZPP_SimpleEvent.zpp_pool == null) {
-        ret1 = new ZPP_SimpleEvent();
-      } else {
-        ret1 = ZPP_SimpleEvent.zpp_pool;
-        ZPP_SimpleEvent.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.vertex = vet;
+      const ret1: ZPP_SimpleEvent = ZPP_SimpleEvent.get(vet);
       const ret2 = ret1;
       ret2.type = 0;
       ret2.segment = p;

@@ -14,7 +14,7 @@ import { ZPP_AABBTree } from "./ZPP_AABBTree";
 import { ZPP_AABBNode } from "./ZPP_AABBNode";
 import { ZPP_AABBPair } from "./ZPP_AABBPair";
 import { ZPP_Broadphase } from "./ZPP_Broadphase";
-import { ZNPList_ZPP_AABBNode, ZNPNode_ZPP_AABBNode } from "../util/ZNPRegistry";
+import { ZNPList_ZPP_AABBNode } from "../util/ZNPRegistry";
 
 export class ZPP_DynAABBPhase extends ZPP_Broadphase {
   // --- Static: namespace references ---
@@ -540,18 +540,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
 
   shapesUnderPoint(x: number, y: number, filter: any, output: any): any {
     this.sync_broadphase();
-    let ret;
-    if (ZPP_Vec2.zpp_pool == null) {
-      ret = new ZPP_Vec2();
-    } else {
-      ret = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.weak = false;
-    ret._immutable = false;
-    ret.x = x;
-    ret.y = y;
+    let ret = ZPP_Vec2.get(x, y, false);
     const v = ret;
     const ret1 = output == null ? new ZPP_DynAABBPhase._nape.shape.ShapeList() : output;
     if (this.stree.root != null) {
@@ -625,18 +614,7 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
 
   bodiesUnderPoint(x: number, y: number, filter: any, output: any): any {
     this.sync_broadphase();
-    let ret;
-    if (ZPP_Vec2.zpp_pool == null) {
-      ret = new ZPP_Vec2();
-    } else {
-      ret = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.weak = false;
-    ret._immutable = false;
-    ret.x = x;
-    ret.y = y;
+    let ret = ZPP_Vec2.get(x, y, false);
     const v = ret;
     const ret1 = output == null ? new ZPP_DynAABBPhase._nape.phys.BodyList() : output;
     if (this.stree.root != null) {
@@ -1547,27 +1525,8 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             pre = cx_ite;
             cx_ite = cx_ite.next;
           }
-          const _this = this.openlist;
           const o = this.dtree.root;
-          let ret;
-          if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-            ret = new ZNPNode_ZPP_AABBNode();
-          } else {
-            ret = ZNPNode_ZPP_AABBNode.zpp_pool;
-            ZNPNode_ZPP_AABBNode.zpp_pool = ret.next;
-            ret.next = null;
-          }
-          ret.elt = o;
-          const temp = ret;
-          if (pre == null) {
-            temp.next = _this.head;
-            _this.head = temp;
-          } else {
-            temp.next = pre.next;
-            pre.next = temp;
-          }
-          _this.pushmod = _this.modified = true;
-          _this.length++;
+          this.openlist.insert(pre, o);
         }
       }
     }
@@ -1586,27 +1545,8 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
             pre1 = cx_ite1;
             cx_ite1 = cx_ite1.next;
           }
-          const _this1 = this.openlist;
           const o1 = this.stree.root;
-          let ret1;
-          if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-            ret1 = new ZNPNode_ZPP_AABBNode();
-          } else {
-            ret1 = ZNPNode_ZPP_AABBNode.zpp_pool;
-            ZNPNode_ZPP_AABBNode.zpp_pool = ret1.next;
-            ret1.next = null;
-          }
-          ret1.elt = o1;
-          const temp1 = ret1;
-          if (pre1 == null) {
-            temp1.next = _this1.head;
-            _this1.head = temp1;
-          } else {
-            temp1.next = pre1.next;
-            pre1.next = temp1;
-          }
-          _this1.pushmod = _this1.modified = true;
-          _this1.length++;
+          this.openlist.insert(pre1, o1);
         }
       }
     }
@@ -1655,27 +1595,8 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
                 pre2 = cx_ite2;
                 cx_ite2 = cx_ite2.next;
               }
-              const _this3 = this.openlist;
               const o2 = cnode.child1;
-              let ret2;
-              if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-                ret2 = new ZNPNode_ZPP_AABBNode();
-              } else {
-                ret2 = ZNPNode_ZPP_AABBNode.zpp_pool;
-                ZNPNode_ZPP_AABBNode.zpp_pool = ret2.next;
-                ret2.next = null;
-              }
-              ret2.elt = o2;
-              const temp2 = ret2;
-              if (pre2 == null) {
-                temp2.next = _this3.head;
-                _this3.head = temp2;
-              } else {
-                temp2.next = pre2.next;
-                pre2.next = temp2;
-              }
-              _this3.pushmod = _this3.modified = true;
-              _this3.length++;
+              this.openlist.insert(pre2, o2);
             }
           }
         }
@@ -1694,27 +1615,8 @@ export class ZPP_DynAABBPhase extends ZPP_Broadphase {
                 pre3 = cx_ite3;
                 cx_ite3 = cx_ite3.next;
               }
-              const _this4 = this.openlist;
               const o3 = cnode.child2;
-              let ret3;
-              if (ZNPNode_ZPP_AABBNode.zpp_pool == null) {
-                ret3 = new ZNPNode_ZPP_AABBNode();
-              } else {
-                ret3 = ZNPNode_ZPP_AABBNode.zpp_pool;
-                ZNPNode_ZPP_AABBNode.zpp_pool = ret3.next;
-                ret3.next = null;
-              }
-              ret3.elt = o3;
-              const temp3 = ret3;
-              if (pre3 == null) {
-                temp3.next = _this4.head;
-                _this4.head = temp3;
-              } else {
-                temp3.next = pre3.next;
-                pre3.next = temp3;
-              }
-              _this4.pushmod = _this4.modified = true;
-              _this4.length++;
+              this.openlist.insert(pre3, o3);
             }
           }
         }

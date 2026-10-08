@@ -7,7 +7,7 @@
 
 import { ZPP_ID } from "../util/ZPP_ID";
 import { ZPP_CbSet } from "../callbacks/ZPP_CbSet";
-import { ZNPList_ZPP_CbType, ZNPNode_ZPP_CbType } from "../util/ZNPRegistry";
+import { ZNPList_ZPP_CbType } from "../util/ZNPRegistry";
 
 export class ZPP_Constraint {
   /**
@@ -155,26 +155,7 @@ export class ZPP_Constraint {
         pre = cx_ite;
         cx_ite = cx_ite.next;
       }
-      const _this = this.cbTypes;
-      let ret;
-      if (ZNPNode_ZPP_CbType.zpp_pool == null) {
-        ret = new ZNPNode_ZPP_CbType();
-      } else {
-        ret = ZNPNode_ZPP_CbType.zpp_pool;
-        ZNPNode_ZPP_CbType.zpp_pool = ret.next;
-        ret.next = null;
-      }
-      ret.elt = cb;
-      const temp = ret;
-      if (pre == null) {
-        temp.next = _this.head;
-        _this.head = temp;
-      } else {
-        temp.next = pre.next;
-        pre.next = temp;
-      }
-      _this.pushmod = _this.modified = true;
-      _this.length++;
+      this.cbTypes.insert(pre, cb);
       if (this.space != null) {
         this.alloc_cbSet();
         this.wake();
