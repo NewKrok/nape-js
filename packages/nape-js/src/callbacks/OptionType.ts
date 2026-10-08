@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_OptionType } from "../native/callbacks/ZPP_OptionType";
 import type { CbType } from "./CbType";
@@ -117,5 +116,3 @@ export class OptionType {
 }
 
 // Self-register in the nape namespace
-const nape = getNape();
-nape.callbacks.OptionType = OptionType;

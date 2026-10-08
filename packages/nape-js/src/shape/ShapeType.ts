@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -52,5 +51,3 @@ export class ShapeType {
 // ---------------------------------------------------------------------------
 // Register this class in the nape namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.shape.ShapeType = ShapeType;

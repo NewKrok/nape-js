@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -42,5 +41,3 @@ export class InertiaMode {
 // ---------------------------------------------------------------------------
 // Register this class in the nape namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.phys.InertiaMode = InertiaMode;

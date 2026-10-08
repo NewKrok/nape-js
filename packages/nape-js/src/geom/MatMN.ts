@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { getOrCreate } from "../core/cache";
 import { ZPP_MatMN } from "../native/geom/ZPP_MatMN";
 
@@ -191,5 +190,3 @@ export class MatMN {
 // ---------------------------------------------------------------------------
 // Register this class in the nape namespace (replaces compiled MatMN)
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.geom.MatMN = MatMN;

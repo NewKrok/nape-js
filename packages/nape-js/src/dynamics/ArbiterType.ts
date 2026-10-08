@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { ZPP_Flags } from "../native/util/ZPP_Flags";
 
 /**
@@ -53,5 +52,3 @@ export class ArbiterType {
 // ---------------------------------------------------------------------------
 // Register this class in the nape namespace
 // ---------------------------------------------------------------------------
-const nape = getNape();
-nape.dynamics.ArbiterType = ArbiterType;

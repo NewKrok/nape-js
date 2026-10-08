@@ -1,4 +1,3 @@
-import { getNape } from "../core/engine";
 import { Vec2, type NapeInner } from "../geom/Vec2";
 import { Material } from "../phys/Material";
 import { InteractionFilter } from "../dynamics/InteractionFilter";
@@ -298,5 +297,3 @@ export class Capsule extends Shape {
 // Bind Capsule._wrap into Shape so Shape._wrap can dispatch without circular import.
 _bindCapsuleWrap((inner) => Capsule._wrap(inner));
 
-const nape = getNape();
-nape.shape.Capsule = Capsule;
