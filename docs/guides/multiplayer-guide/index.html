@@ -61,7 +61,7 @@
     gtag('js', new Date());
     gtag('config', 'G-TF84DLZ4X8');
   </script>
-  <link rel="stylesheet" href="../../style.css?v=3.43.0" />
+  <link rel="stylesheet" href="../../style.css?v=3.43.2" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" media="print" onload="this.media='all'" />
@@ -509,6 +509,10 @@ True cross-platform bit-exact determinism (like Rapier's WASM approach)
 is impractical in pure JavaScript.</li>
 <li><strong>Performance:</strong> ~1-5% overhead on <code>step()</code> when deterministic mode is enabled.
 Zero overhead when disabled (default).</li>
+<li><strong>Mid-contact snapshots:</strong> contact warm-start impulses are not serialized,
+so a snapshot taken while bodies press on each other restores bit-close
+(~0.1 px over 30 steps for a settling stack), not bit-identical. Peers that
+all restore from the same snapshot stay in sync with each other.</li>
 <li><strong>Same-platform requirement:</strong> For prediction/rollback, ensure client and
 server run on the same JS engine (e.g., both on V8/Node.js).</li>
 <li><strong>Single space per process:</strong> The engine uses global object pools shared across
@@ -685,7 +689,7 @@ all physics.</p>
       <p data-i18n="footer.license">MIT License</p>
     </div>
   </footer>
-  <script type="module" src="../../site-header.js?v=3.43.0"></script>
+  <script type="module" src="../../site-header.js?v=3.43.2"></script>
   <script>
     // Prism arrives deferred; highlight once it is here.
     window.addEventListener("load", () => { if (window.Prism) { document.querySelectorAll(".guide-content pre").forEach((p) => p.classList.add("line-numbers")); Prism.highlightAll(); } });

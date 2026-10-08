@@ -313,6 +313,10 @@ runs on the same browser/OS given the same inputs.
   is impractical in pure JavaScript.
 - **Performance:** ~1-5% overhead on `step()` when deterministic mode is enabled.
   Zero overhead when disabled (default).
+- **Mid-contact snapshots:** contact warm-start impulses are not serialized,
+  so a snapshot taken while bodies press on each other restores bit-close
+  (~0.1 px over 30 steps for a settling stack), not bit-identical. Peers that
+  all restore from the same snapshot stay in sync with each other.
 - **Same-platform requirement:** For prediction/rollback, ensure client and
   server run on the same JS engine (e.g., both on V8/Node.js).
 - **Single space per process:** The engine uses global object pools shared across
