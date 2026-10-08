@@ -160,6 +160,18 @@ export class ZPP_Space {
   prelisteners: any = null;
   mrca1: any = null;
   mrca2: any = null;
+  /** PreListeners currently registered in this space (see runPreListeners). */
+  preListenerCount = 0;
+  /**
+   * The arbiters the solver iterates — active, mutable `c_arbiters_false`
+   * then `c_arbiters_true`, in list order — rebuilt only when that set can
+   * have changed (see iterateVel / iteratePos). Walking this array instead
+   * of re-filtering both linked lists on every iteration is the same work
+   * in the same order.
+   */
+  solveArbs: any[] = [];
+  solveCount = 0;
+  solveDirty = true;
 
   constructor(gravity?: any, broadphase?: any) {
     this.prelisteners = null;
@@ -6044,7 +6056,30 @@ export class ZPP_Space {
     }
   }
 
+  private buildSolveArbs(): void {
+    this.solveDirty = false;
+    const out = this.solveArbs;
+    let n = 0;
+    let it = this.c_arbiters_false.head;
+    let second = false;
+    while (it != null || !second) {
+      if (it == null) {
+        it = this.c_arbiters_true.head;
+        second = true;
+        continue;
+      }
+      const arb = it.elt;
+      if (arb.active && (arb.immState & 1) != 0) out[n++] = arb;
+      it = it.next;
+    }
+    // Drop references past the new end so pooled arbiters are not retained.
+    for (let i = n; i < this.solveCount; i++) out[i] = null;
+    this.solveCount = n;
+  }
+
   iterateVel(times: number) {
+    // CCD / narrowphase may have changed the arbiter lists since last solve.
+    this.solveDirty = true;
     let _g = 0;
     const _g1 = times;
     while (_g < _g1) {
@@ -6097,6 +6132,7 @@ export class ZPP_Space {
         const con = cx_ite1.elt;
         if (con.applyImpulseVel()) {
           cx_ite1 = this.live_constraints.erase(pre);
+          this.solveDirty = true;
           con.broken();
           this.constraintCbBreak(con);
           if (con.removeOnBreak) {
@@ -6117,15 +6153,12 @@ export class ZPP_Space {
         pre = cx_ite1;
         cx_ite1 = cx_ite1.next;
       }
-      let arbi = this.c_arbiters_false.head;
-      let fst = true;
-      if (arbi == null) {
-        arbi = this.c_arbiters_true.head;
-        fst = false;
-      }
-      while (arbi != null) {
-        const arb1 = arbi.elt;
-        if (arb1.active && (arb1.immState & 1) != 0) {
+      if (this.solveDirty) this.buildSolveArbs();
+      const solveArbs = this.solveArbs;
+      const solveCount = this.solveCount;
+      for (let si = 0; si < solveCount; si++) {
+        const arb1 = solveArbs[si];
+        {
           let v1x =
             arb1.k1x +
             arb1.b2.velx -
@@ -6303,16 +6336,13 @@ export class ZPP_Space {
             arb1.b1.angvel -= arb1.rn1a * j * arb1.b1.iinertia;
           }
         }
-        arbi = arbi.next;
-        if (fst && arbi == null) {
-          arbi = this.c_arbiters_true.head;
-          fst = false;
-        }
       }
     }
   }
 
   iteratePos(times: number) {
+    // continuousCollisions runs between iterateVel and iteratePos.
+    this.solveDirty = true;
     let _g = 0;
     const _g1 = times;
     while (_g < _g1) {
@@ -6324,6 +6354,7 @@ export class ZPP_Space {
         if (!con.__velocity && con.stiff) {
           if (con.applyImpulsePos()) {
             cx_ite = this.live_constraints.erase(pre);
+            this.solveDirty = true;
             con.broken();
             this.constraintCbBreak(con);
             if (con.removeOnBreak) {
@@ -6345,15 +6376,12 @@ export class ZPP_Space {
         pre = cx_ite;
         cx_ite = cx_ite.next;
       }
-      let arbi = this.c_arbiters_false.head;
-      let fst = true;
-      if (arbi == null) {
-        arbi = this.c_arbiters_true.head;
-        fst = false;
-      }
-      while (arbi != null) {
-        const arb = arbi.elt;
-        if (arb.active && (arb.immState & 1) != 0) {
+      if (this.solveDirty) this.buildSolveArbs();
+      const solveArbs = this.solveArbs;
+      const solveCount = this.solveCount;
+      for (let si = 0; si < solveCount; si++) {
+        const arb = solveArbs[si];
+        {
           if (arb.ptype == 2) {
             const c = arb.c1;
             let r2x = 0.0;
@@ -6740,11 +6768,6 @@ export class ZPP_Space {
               }
             }
           }
-        }
-        arbi = arbi.next;
-        if (fst && arbi == null) {
-          arbi = this.c_arbiters_true.head;
-          fst = false;
         }
       }
     }
@@ -7216,6 +7239,9 @@ export class ZPP_Space {
    * callback set. Returns whether any impure listener matched.
    */
   runPreListeners(arb: any, inttype: number, continuous: any): boolean {
+    // No PreListener in this space: every pair's PRE list is empty, so the
+    // walk below would only fill scratch lists and caches.
+    if (this.preListenerCount === 0) return false;
     let anyimpure = false;
     const arbs1 = arb.ws1.id > arb.ws2.id ? arb.ws2 : arb.ws1;
     const arbs2 = arb.ws1.id > arb.ws2.id ? arb.ws1 : arb.ws2;

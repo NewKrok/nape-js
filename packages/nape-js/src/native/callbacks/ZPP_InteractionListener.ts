@@ -384,6 +384,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
 
   addedToSpace(): void {
     const pre = this.type == 3;
+    if (pre && this.space != null) this.space.preListenerCount++;
 
     this.with_union((cb: ZPP_CbType) => {
       // Insert this listener into cb.listeners at precedence-sorted position
@@ -447,6 +448,7 @@ export class ZPP_InteractionListener extends ZPP_Listener {
   removedFromSpace(): void {
     this.with_uniquesets(false);
     const pre = this.type == 3;
+    if (pre && this.space != null) this.space.preListenerCount--;
 
     this.with_union((cb: ZPP_CbType) => {
       cb.listeners.remove(this);
