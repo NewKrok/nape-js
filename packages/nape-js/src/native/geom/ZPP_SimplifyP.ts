@@ -14,7 +14,7 @@ export class ZPP_SimplifyP {
   min: ZPP_SimplifyV | null = null;
   max: ZPP_SimplifyV | null = null;
 
-  static get(min: ZPP_SimplifyV, max: ZPP_SimplifyV): ZPP_SimplifyP {
+  static get(min: ZPP_SimplifyV | null, max: ZPP_SimplifyV | null): ZPP_SimplifyP {
     let ret: ZPP_SimplifyP;
     if (ZPP_SimplifyP.zpp_pool == null) {
       ret = new ZPP_SimplifyP();

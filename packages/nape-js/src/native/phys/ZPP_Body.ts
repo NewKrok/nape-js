@@ -224,18 +224,7 @@ export class ZPP_Body {
     this.zip_aabb = true;
 
     // Pool or create AABB
-    let aabb: ZPP_AABB;
-    if (ZPP_AABB.zpp_pool == null) {
-      aabb = new ZPP_AABB();
-    } else {
-      aabb = ZPP_AABB.zpp_pool;
-      ZPP_AABB.zpp_pool = aabb.next;
-      aabb.next = null;
-    }
-    aabb.minx = 0;
-    aabb.miny = 0;
-    aabb.maxx = 0;
-    aabb.maxy = 0;
+    const aabb: ZPP_AABB = ZPP_AABB.get(0, 0, 0, 0);
     this.aabb = aabb;
     this.aabb._immutable = true;
     this.aabb._validate = this.aabb_validate.bind(this);

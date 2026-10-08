@@ -69,16 +69,7 @@ export class ZPP_PartitionedPoly {
     while (true) {
       let tmp: ZPP_PartitionVertex;
       if (cw) {
-        let ret: ZPP_PartitionVertex;
-        if (ZPP_PartitionVertex.zpp_pool == null) {
-          ret = new ZPP_PartitionVertex();
-        } else {
-          ret = ZPP_PartitionVertex.zpp_pool;
-          ZPP_PartitionVertex.zpp_pool = ret.next;
-          ret.next = null;
-        }
-        ret.x = p.x;
-        ret.y = p.y;
+        const ret: ZPP_PartitionVertex = ZPP_PartitionVertex.get(p);
         const obj = ret;
         if (this.vertices == null) {
           this.vertices = obj.prev = obj.next = obj;
@@ -90,16 +81,7 @@ export class ZPP_PartitionedPoly {
         }
         tmp = obj;
       } else {
-        let ret1: ZPP_PartitionVertex;
-        if (ZPP_PartitionVertex.zpp_pool == null) {
-          ret1 = new ZPP_PartitionVertex();
-        } else {
-          ret1 = ZPP_PartitionVertex.zpp_pool;
-          ZPP_PartitionVertex.zpp_pool = ret1.next;
-          ret1.next = null;
-        }
-        ret1.x = p.x;
-        ret1.y = p.y;
+        const ret1: ZPP_PartitionVertex = ZPP_PartitionVertex.get(p);
         const obj1 = ret1;
         if (this.vertices == null) {
           this.vertices = obj1.prev = obj1.next = obj1;
@@ -297,16 +279,7 @@ export class ZPP_PartitionedPoly {
     }
     let next: ZPP_PartitionVertex = start;
     while (true) {
-      let ret1: ZPP_PartitionVertex;
-      if (ZPP_PartitionVertex.zpp_pool == null) {
-        ret1 = new ZPP_PartitionVertex();
-      } else {
-        ret1 = ZPP_PartitionVertex.zpp_pool;
-        ZPP_PartitionVertex.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.x = next.x;
-      ret1.y = next.y;
+      const ret1: ZPP_PartitionVertex = ZPP_PartitionVertex.get(next);
       ret1.forced = next.forced;
       const obj = ret1;
       if (poly.vertices == null) {
@@ -408,17 +381,7 @@ export class ZPP_PartitionedPoly {
     while (true) {
       const x = next.x;
       const y = next.y;
-      let ret1: ZPP_GeomVert;
-      if (ZPP_GeomVert.zpp_pool == null) {
-        ret1 = new ZPP_GeomVert();
-      } else {
-        ret1 = ZPP_GeomVert.zpp_pool;
-        ZPP_GeomVert.zpp_pool = ret1.next;
-        ret1.next = null;
-      }
-      ret1.forced = false;
-      ret1.x = x;
-      ret1.y = y;
+      const ret1: ZPP_GeomVert = ZPP_GeomVert.get(x, y);
       const obj = ret1;
       if (poly == null) {
         obj.prev = obj.next = obj;

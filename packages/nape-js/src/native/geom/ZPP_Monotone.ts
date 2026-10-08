@@ -28,18 +28,7 @@ export class ZPP_Monotone {
     const uy = b.y - a.y;
     const vx = c.x - b.x;
     const vy = c.y - b.y;
-    let ret: ZPP_Vec2;
-    if (ZPP_Vec2.zpp_pool == null) {
-      ret = new ZPP_Vec2();
-    } else {
-      ret = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.weak = false;
-    ret._immutable = false;
-    ret.x = -uy - vy;
-    ret.y = ux + vx;
+    const ret: ZPP_Vec2 = ZPP_Vec2.get(-uy - vy, ux + vx, false);
     const ret1 = ret;
     const d = ret1.x * ret1.x + ret1.y * ret1.y;
     const imag = 1.0 / Math.sqrt(d);

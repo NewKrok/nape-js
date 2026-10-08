@@ -169,18 +169,7 @@ export class ZPP_Polygon {
     }
 
     // Allocate a gvert
-    let vec: any;
-    if (ZPP_Vec2.zpp_pool == null) {
-      vec = new ZPP_Vec2();
-    } else {
-      vec = ZPP_Vec2.zpp_pool;
-      ZPP_Vec2.zpp_pool = vec.next;
-      vec.next = null;
-    }
-    vec.weak = false;
-    vec._immutable = true;
-    vec.x = 0;
-    vec.y = 0;
+    const vec: any = ZPP_Vec2.get(0, 0, true);
     this.gverts.insert(ite, vec);
 
     if (this.lverts.next.next != null) {

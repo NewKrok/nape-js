@@ -133,16 +133,7 @@ export class ZPP_PartitionVertex {
   }
 
   copy(): ZPP_PartitionVertex {
-    let ret: ZPP_PartitionVertex;
-    if (ZPP_PartitionVertex.zpp_pool == null) {
-      ret = new ZPP_PartitionVertex();
-    } else {
-      ret = ZPP_PartitionVertex.zpp_pool;
-      ZPP_PartitionVertex.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.x = this.x;
-    ret.y = this.y;
+    const ret: ZPP_PartitionVertex = ZPP_PartitionVertex.get(this);
     ret.forced = this.forced;
     return ret;
   }

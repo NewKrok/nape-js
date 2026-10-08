@@ -133,18 +133,7 @@ export class ZPP_Ray {
       y1 = t1;
     }
 
-    let ret: ZPP_AABB;
-    if (ZPP_AABB.zpp_pool == null) {
-      ret = new ZPP_AABB();
-    } else {
-      ret = ZPP_AABB.zpp_pool;
-      ZPP_AABB.zpp_pool = ret.next;
-      ret.next = null;
-    }
-    ret.minx = x0;
-    ret.miny = y0;
-    ret.maxx = x1;
-    ret.maxy = y1;
+    const ret: ZPP_AABB = ZPP_AABB.get(x0, y0, x1, y1);
     return ret;
   }
 
